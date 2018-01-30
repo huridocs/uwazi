@@ -25,17 +25,22 @@ const hub7 = db.id();
 const hub8 = db.id();
 const hub9 = db.id();
 const hub10 = db.id();
+const hub11 = db.id();
+
 
 export default {
   connections: [
-    {entity: 'source1', hub: hub1, range: {text: 'sourceRange'}, template: relation1},
-    {entity: 'source2', hub: hub1, range: {text: ''}, template: relation1, language: 'es'},
+    {entity: 'source1', hub: hub1, range: {text: 'english'}, language: 'en', template: relation1},
+    {entity: 'source2', hub: hub1, template: relation1},
 
-    {entity: 'source2', hub: hub2, range: {text: 'range2'}, template: relation2, language: 'en'},
-    {entity: 'doc3', hub: hub2, range: {text: 'targetRange'}, template: relation2},
+    {entity: 'source2', hub: hub2, template: relation2},
+    {entity: 'doc3', hub: hub2, template: relation2, range: {text: 'english'}, language: 'en'},
 
-    {entity: 'source2', hub: hub3, range: {text: 'range3'}, template: relation2},
-    {entity: 'doc4', hub: hub3, range: {text: ''}, template: relation2},
+    {entity: 'source2', hub: hub11, template: relation2},
+    {entity: 'doc3', hub: hub11, template: relation2, range: {text: 'rusian'}, language: 'ru'},
+
+    {entity: 'source2', hub: hub3, template: relation2},
+    {entity: 'doc4', hub: hub3, template: relation2},
 
     {entity: 'doc5', hub: hub4, template: relation1},
     {entity: 'source2', hub: hub4, template: relation1},
@@ -45,7 +50,7 @@ export default {
 
     {entity: 'target1', hub: hub6},
 
-    {_id: connectionID1, entity: 'entity_id', hub: hub7, range: {text: 'sourceRange'}, template: relation1},
+    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
     {_id: inbound, entity: value2ID, hub: hub8},
     {entity: 'entity_id', hub: hub8},
@@ -90,18 +95,18 @@ export default {
     ]}
   ],
   entities: [
-    {sharedId: 'source1', language: 'es', title: 'source1 title', type: 'document', template: template, file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
-    {sharedId: 'source2', language: 'es', title: 'source2 title', type: 'document', template: template, file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
-    {sharedId: 'doc3', language: 'es', title: 'doc3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
-    {sharedId: 'doc4', language: 'es', title: 'doc4 title', type: 'document', template: template, file: {language: 'eng'}, metadata: {data: 'data3'}, creationDate: 789},
-    {sharedId: 'doc5', language: 'es', title: 'doc5 title', type: 'document', template: template, published: true},
-    {sharedId: selectValueID, language: 'es', title: 'selectValue', type: 'entity'},
-    {sharedId: value1ID, language: 'es', title: 'value1', type: 'entity'},
-    {sharedId: value2ID, language: 'es', title: 'value2', type: 'entity', template},
-    {sharedId: 'bruceWayne', language: 'es', title: 'bruceWayne', type: 'entity', template},
-    {sharedId: 'thomasWayne', language: 'es', title: 'thomasWayne', type: 'entity', template},
-    {sharedId: 'alfred', language: 'es', title: 'alfred', type: 'entity', template},
-    {sharedId: 'robin', language: 'es', title: 'robin', type: 'entity', template}
+    {sharedId: 'source1', language: 'en', title: 'source1 title', type: 'document', template: template, file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {sharedId: 'source2', language: 'en', title: 'source2 title', type: 'document', template: template, file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
+    {sharedId: 'doc3', language: 'en', title: 'doc3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {sharedId: 'doc4', language: 'en', title: 'doc4 title', type: 'document', template: template, file: {language: 'eng'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc5', language: 'en', title: 'doc5 title', type: 'document', template: template, published: true},
+    {sharedId: selectValueID, language: 'en', title: 'selectValue', type: 'entity'},
+    {sharedId: value1ID, language: 'en', title: 'value1', type: 'entity'},
+    {sharedId: value2ID, language: 'en', title: 'value2', type: 'entity', template},
+    {sharedId: 'bruceWayne', language: 'en', title: 'bruceWayne', type: 'entity', template},
+    {sharedId: 'thomasWayne', language: 'en', title: 'thomasWayne', type: 'entity', template},
+    {sharedId: 'alfred', language: 'en', title: 'alfred', type: 'entity', template},
+    {sharedId: 'robin', language: 'en', title: 'robin', type: 'entity', template}
   ],
   dictionaries: [
     {_id: thesauri}

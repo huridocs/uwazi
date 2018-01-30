@@ -21,19 +21,19 @@ describe('relationships', () => {
     it('should return all the relationships', (done) => {
       relationships.get()
       .then((result) => {
-        expect(result.length).toBe(18);
+        expect(result.length).toBe(20);
         done();
       }).catch(catchErrors(done));
     });
   });
 
   describe('getByDocument()', () => {
-    it('should return all the relationships of a document', (done) => {
-      relationships.getByDocument('source2', 'es')
+    it('should return all the relationships of a document in the current language', (done) => {
+      relationships.getByDocument('source2', 'en')
       .then((result) => {
         expect(result.length).toBe(8);
         const source1Connection = result.find((connection) => connection.entity === 'source1');
-        expect(source1Connection.range).toEqual({text: 'sourceRange'});
+        expect(source1Connection.range).toEqual({text: 'english'});
         expect(source1Connection.entityData.title).toBe('source1 title');
         expect(source1Connection.entityData.icon).toBe('icon1');
         expect(source1Connection.entityData.type).toBe('document');
@@ -43,7 +43,7 @@ describe('relationships', () => {
         expect(source1Connection.entityData.file).toEqual({language: 'spa'});
 
         const doc3Connection = result.find((connection) => connection.entity === 'doc3');
-        expect(doc3Connection.range).toEqual({text: 'targetRange'});
+        expect(doc3Connection.range).toEqual({text: 'english'});
         expect(doc3Connection.entityData.title).toBe('doc3 title');
         expect(doc3Connection.entityData.icon).toBe('icon3');
         expect(doc3Connection.entityData.type).toBe('entity');
@@ -61,24 +61,23 @@ describe('relationships', () => {
 
   describe('getGroupsByConnection()', () => {
     it('should return groups of connection types and templates of all the relationships of a document', (done) => {
-      relationships.getGroupsByConnection('source2', 'es')
+      relationships.getGroupsByConnection('source2', 'en')
       .then(results => {
-        expect(results.length).toBe(2);
+        const group1 = results.find((r) => r.key === relation1.toString());
+        expect(group1.key).toBe(relation1.toString());
+        expect(group1.connectionLabel).toBe('relation 1');
+        expect(group1.context).toBe(relation1.toString());
+        expect(group1.templates.length).toBe(1);
+        expect(group1.templates[0].count).toBe(1);
 
-        expect(results[0].key).toBe(relation2.toString());
-        expect(results[0].connectionLabel).toBe('relation 2');
-        expect(results[0].context).toBe(relation2.toString());
-        expect(results[0].templates.length).toBe(1);
+        const group2 = results.find((r) => r.key === relation2.toString());
+        expect(group2.key).toBe(relation2.toString());
+        expect(group2.connectionLabel).toBe('relation 2');
+        expect(group2.context).toBe(relation2.toString());
+        expect(group2.templates.length).toBe(1);
 
-        expect(results[0].templates[0]._id.toString()).toBe(template.toString());
-        expect(results[0].templates[0].label).toBe('template');
-
-        expect(results[1].key).toBe(relation1.toString());
-        expect(results[1].connectionLabel).toBe('relation 1');
-        expect(results[1].context).toBe(relation1.toString());
-        expect(results[1].templates.length).toBe(1);
-
-        expect(results[1].templates[0].count).toBe(1);
+        expect(group2.templates[0]._id.toString()).toBe(template.toString());
+        expect(group2.templates[0].label).toBe('template');
 
         done();
       })
@@ -86,15 +85,16 @@ describe('relationships', () => {
     });
 
     it('should return groups of connection including unpublished docs if user is found', (done) => {
-      relationships.getGroupsByConnection('source2', 'es', {user: 'found'})
+      relationships.getGroupsByConnection('source2', 'en', {user: 'found'})
       .then(results => {
         expect(results.length).toBe(2);
+        const group1 = results.find((r) => r.key === relation1.toString());
+        expect(group1.key).toBe(relation1.toString());
+        expect(group1.templates[0]._id.toString()).toBe(template.toString());
 
-        expect(results[0].key).toBe(relation1.toString());
-        expect(results[0].templates[0]._id.toString()).toBe(template.toString());
-
-        expect(results[1].key).toBe(relation2.toString());
-        expect(results[1].templates[0].count).toBe(2);
+        const group2 = results.find((r) => r.key === relation2.toString());
+        expect(group2.key).toBe(relation2.toString());
+        expect(group2.templates[0].count).toBe(2);
 
         done();
       })
@@ -102,7 +102,7 @@ describe('relationships', () => {
     });
 
     it('should return groups of connection wihtout refs if excluded', (done) => {
-      relationships.getGroupsByConnection('source2', 'es', {excludeRefs: true})
+      relationships.getGroupsByConnection('source2', 'en', {excludeRefs: true})
       .then(results => {
         expect(results.length).toBe(2);
         expect(results[0].templates[0].refs).toBeUndefined();
@@ -130,7 +130,7 @@ describe('relationships', () => {
     it('should return number of relationships using a relationType', (done) => {
       relationships.countByRelationType(relation2.toString())
       .then((result) => {
-        expect(result).toBe(4);
+        expect(result).toBe(6);
         done();
       }).catch(catchErrors(done));
     });
@@ -148,7 +148,7 @@ describe('relationships', () => {
   describe('save()', () => {
     describe('When creating a new reference to a hub', () => {
       it('should save it and return it with the entity data', (done) => {
-        relationships.save({entity: 'doc3', range: {text: 'range'}, hub: hub1}, 'es')
+        relationships.save({entity: 'doc3', range: {text: 'range'}, hub: hub1}, 'en')
         .then(([result]) => {
           expect(result.entity).toBe('doc3');
           expect(result.entityData.template).toEqual(template);
@@ -166,7 +166,7 @@ describe('relationships', () => {
 
     describe('When creating new relationships', () => {
       it('should assign them a hub and return them with the entity data', (done) => {
-        relationships.save([{entity: 'doc3'}, {entity: 'doc4'}], 'es')
+        relationships.save([{entity: 'doc3'}, {entity: 'doc4'}], 'en')
         .then(([doc3Connection, doc4Connection]) => {
           expect(doc3Connection.entity).toBe('doc3');
           expect(doc3Connection.entityData.template).toEqual(template);
@@ -190,6 +190,16 @@ describe('relationships', () => {
         })
         .catch(catchErrors(done));
       });
+
+      it('should assign them language if its a text reference', (done) => {
+        relationships.save([{entity: 'doc3'}, {entity: 'doc4', range: {text: 'something'}}], 'en')
+        .then(([doc3Connection, doc4Connection]) => {
+          expect(doc3Connection.language).not.toBeDefined();
+          expect(doc4Connection.language).toBe('en');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
 
     describe('when the reference exists', () => {
@@ -197,7 +207,7 @@ describe('relationships', () => {
         relationships.getById(connectionID1)
         .then((reference) => {
           reference.entity = 'source1';
-          return relationships.save(reference, 'es');
+          return relationships.save(reference, 'en');
         })
         .then(([result]) => {
           expect(result.entity).toBe('source1');
@@ -210,7 +220,7 @@ describe('relationships', () => {
 
     describe('when saving one reference without hub', () => {
       it('should throw an error', (done) => {
-        relationships.save({entity: 'doc3', range: {text: 'range'}}, 'es')
+        relationships.save({entity: 'doc3', range: {text: 'range'}}, 'en')
         .then(() => {
           done.fail('Should throw an error');
         })
@@ -232,7 +242,7 @@ describe('relationships', () => {
         }
       };
 
-      relationships.saveEntityBasedReferences(entity, 'es')
+      relationships.saveEntityBasedReferences(entity, 'en')
       .then(() => {
         return relationships.getByDocument('bruceWayne');
       })
@@ -255,9 +265,9 @@ describe('relationships', () => {
         }
       };
 
-      relationships.saveEntityBasedReferences(entity, 'es')
-      .then(() => relationships.saveEntityBasedReferences(entity, 'es'))
-      .then(() => relationships.getByDocument('bruceWayne', 'es'))
+      relationships.saveEntityBasedReferences(entity, 'en')
+      .then(() => relationships.saveEntityBasedReferences(entity, 'en'))
+      .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
         expect(connections.length).toBe(4);
         done();
@@ -274,26 +284,26 @@ describe('relationships', () => {
         }
       };
 
-      relationships.saveEntityBasedReferences(entity, 'es')
-      .then(() => relationships.getByDocument('bruceWayne', 'es'))
+      relationships.saveEntityBasedReferences(entity, 'en')
+      .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
         expect(connections.length).toBe(5);
         entity.metadata = {
           family: ['thomasWayne'],
           friend: ['alfred']
         };
-        return relationships.saveEntityBasedReferences(entity, 'es');
+        return relationships.saveEntityBasedReferences(entity, 'en');
       })
-      .then(() => relationships.getByDocument('bruceWayne', 'es'))
+      .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
         expect(connections.length).toBe(4);
         entity.metadata = {
           family: ['alfred'],
           friend: ['robin']
         };
-        return relationships.saveEntityBasedReferences(entity, 'es');
+        return relationships.saveEntityBasedReferences(entity, 'en');
       })
-      .then(() => relationships.getByDocument('bruceWayne', 'es'))
+      .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
         expect(connections.length).toBe(4);
         done();
@@ -305,10 +315,13 @@ describe('relationships', () => {
     it('should prepare a query with ids based on an entity id and a searchTerm', (done) => {
       const searchResponse = Promise.resolve({rows: []});
       spyOn(search, 'search').and.returnValue(searchResponse);
-      relationships.search('source2', {filter: {}, searchTerm: 'something'}, 'es')
+      relationships.search('source2', {filter: {}, searchTerm: 'something'}, 'en')
       .then(() => {
-        let expectedQuery = {searchTerm: 'something', ids: ['source1', 'doc3', 'doc4', 'doc5'], includeUnpublished: true, limit: 9999};
-        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'es');
+        let actualQuery = search.search.calls.mostRecent().args[0];
+        expect(actualQuery.searchTerm).toEqual('something');
+        expect(actualQuery.ids).toEqual(['doc5', 'doc4', 'doc3', 'source1']);
+        expect(actualQuery.includeUnpublished).toBe(true);
+        expect(actualQuery.limit).toBe(9999);
         done();
       });
     });
@@ -318,10 +331,13 @@ describe('relationships', () => {
       spyOn(search, 'search').and.returnValue(searchResponse);
       let query = {filter: {}, searchTerm: 'something'};
       query.filter[relation2] = [relation2 + template];
-      relationships.search('source2', query, 'es')
+      relationships.search('source2', query, 'en')
       .then(() => {
-        let expectedQuery = {searchTerm: 'something', ids: ['doc3', 'doc4'], includeUnpublished: true, limit: 9999};
-        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'es');
+        let actualQuery = search.search.calls.mostRecent().args[0];
+        expect(actualQuery.searchTerm).toEqual('something');
+        expect(actualQuery.ids).toEqual(['doc4', 'doc3']);
+        expect(actualQuery.includeUnpublished).toBe(true);
+        expect(actualQuery.limit).toBe(9999);
         done();
       });
     });
@@ -329,7 +345,7 @@ describe('relationships', () => {
     it('should return the matching entities with their relationships and the current entity with the respective relationships', (done) => {
       const searchResponse = Promise.resolve({rows: [{sharedId: 'source1'}, {sharedId: 'doc3'}, {sharedId: 'doc4'}, {sharedId: 'doc5'}]});
       spyOn(search, 'search').and.returnValue(searchResponse);
-      relationships.search('source2', {filter: {}, searchTerm: 'something'}, 'es')
+      relationships.search('source2', {filter: {}, searchTerm: 'something'}, 'en')
       .then((result) => {
         expect(result.rows.length).toBe(5);
         expect(result.rows[0].connections.length).toEqual(1);
@@ -375,16 +391,30 @@ describe('relationships', () => {
         done();
       });
     });
+
+    describe('when there is no condition', () => {
+      it('should throw an error', (done) => {
+        relationships.delete()
+        .then(() => {
+          done.fail('Should throw an error');
+        })
+        .catch((error) => {
+          expect(error.code).toBe(500);
+          done();
+        });
+      });
+    });
   });
 
   describe('deleteTextReferences()', () => {
     it('should delete the entity text relationships (that match language)', (done) => {
-      relationships.deleteTextReferences('source2', 'es')
+      relationships.deleteTextReferences('doc3', 'en')
       .then(() => {
-        return relationships.getByDocument('source2', 'es');
+        return Promise.all([relationships.getByDocument('doc3', 'en'), relationships.getByDocument('doc3', 'ru')]);
       })
-      .then(results => {
-        expect(results.length).toBe(6);
+      .then(([relationshipsInEnglish, relationshipsInRusian]) => {
+        expect(relationshipsInEnglish.length).toBe(0);
+        expect(relationshipsInRusian.length).toBe(2);
         done();
       });
     });

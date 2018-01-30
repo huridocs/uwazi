@@ -62,22 +62,38 @@ export default {
     return model.getById(id);
   },
 
-  getByDocument(id, language) {
+  getDocumentHubs(id, language) {
     return model.get({entity: id})
     .then((ownRelations) => {
-      const hubs = ownRelations.map(relationship => relationship.hub);
-      return model.get({hub: {$in: hubs}});
+      const hubsIds = ownRelations.map(relationship => relationship.hub);
+      const relationshipsQuery = {hub: {$in: hubsIds}, range: {$exists: false}};
+      const referencesQuery = {hub: {$in: hubsIds}, range: {$exists: true}, language};
+      return model.db.aggregate([
+        {$match: {$or: [relationshipsQuery, referencesQuery]}},
+        {$group: {
+          _id: '$hub',
+          relationships: {$push: '$$ROOT'},
+          count: {$sum: 1}
+        }}
+      ]);
     })
-    .then((response) => {
-      let relationships = response.map((relationship) => normalizeConnection(relationship, id));
-      let connectedEntityiesSharedId = relationships.map((relationship) => relationship.entity);
+    .then((hubs) => {
+      return hubs.filter((hub) => hub.count > 1);
+    });
+  },
+
+  getByDocument(id, language) {
+    return this.getDocumentHubs(id, language)
+    .then((hubs) => {
+      const relationsips = Array.prototype.concat(...hubs.map((hub) => hub.relationships));
+      let connectedEntityiesSharedId = relationsips.map((relationship) => relationship.entity);
       return entities.get({sharedId: {$in: connectedEntityiesSharedId}, language})
       .then((_connectedDocuments) => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return relationships.map((relationship) => {
+        return relationsips.map((relationship) => {
           return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
         });
       });
@@ -124,7 +140,9 @@ export default {
     return Promise.all(
       relationships.map((relationship) => {
         relationship.hub = hub;
-        relationship.language = language;
+        if (relationship.range) {
+          relationship.language = language;
+        }
         return model.save(relationship)
         .then((r) => {
           return normalizeConnection(r);
@@ -189,7 +207,6 @@ export default {
   },
 
   search(entitySharedId, query, language) {
-
     return Promise.all([this.getByDocument(entitySharedId, language), entities.getById(entitySharedId, language)])
     .then(([relationships, entity]) => {
       let filter = Object.keys(query.filter).reduce((result, filterGroupKey) => {
@@ -231,6 +248,9 @@ export default {
   },
 
   delete(condition) {
+    if (!condition) {
+      return Promise.reject(createError('Cant delete without a condition'));
+    }
     return model.get(condition)
     .then((relationships) => {
       return Promise.all(relationships.map((relation) => model.delete({_id: relation._id})))
