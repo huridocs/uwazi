@@ -1,4 +1,3 @@
-// TEST!!!
 import {createSelector} from 'reselect';
 import {fromJS as Immutable} from 'immutable';
 
@@ -18,7 +17,6 @@ const getParsedReferences = (doc, refs) => {
     return hubs;
   }, [])
   .reduce((memo, hubId) => {
-    console.log('HubId:', hubId);
     let references = memo;
     const baseReference = refs.find(r => isRelationshipAReference(doc, r) && r.get('hub') === hubId);
     const otherRelationshipsOfHub = refs.filter(r => r.get('_id') !== baseReference.get('_id') && r.get('hub') === hubId);
