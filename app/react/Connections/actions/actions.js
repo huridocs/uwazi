@@ -81,13 +81,6 @@ export function saveConnection(connection, callback) {
       callback(response.json);
       dispatch(notify('saved successfully !', 'success'));
     });
-
-    // return referencesAPI.save(connection)
-    // .then((referenceCreated) => {
-    //   dispatch({type: types.CONNECTION_CREATED, connection: referenceCreated});
-    //   callback(referenceCreated);
-    //   dispatch(notify('saved successfully !', 'success'));
-    // });
   };
 }
 
