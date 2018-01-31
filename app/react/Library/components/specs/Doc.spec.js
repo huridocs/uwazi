@@ -32,7 +32,8 @@ describe('Doc', () => {
       unselectDocument: jasmine.createSpy('unselectDocument'),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
       searchParams: {sort: 'sortProperty'},
-      storeKey: 'library'
+      storeKey: 'library',
+      additionalText: 'passedAdditionalText'
     };
   });
 
@@ -83,6 +84,11 @@ describe('Doc', () => {
     it('should pass the searchParams to the item', () => {
       render();
       expect(component.find(Item).props().searchParams.sort).toBe('sortProperty');
+    });
+
+    it('should pass the additionalText to the item', () => {
+      render();
+      expect(component.find(Item).props().additionalText).toBe('passedAdditionalText');
     });
   });
 
