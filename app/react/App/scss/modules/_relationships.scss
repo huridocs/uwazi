@@ -502,6 +502,27 @@ $relationship-type-height: 32px;
   }
 }
 
+.leftRelationshipType .leftRelationshipQuote {
+  border: 1px dashed #bbb;
+  margin-top: 5px;
+  padding: 5px 25px 5px 25px;
+  position: relative;
+
+  .quoteIconStart {
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    color: #aaa;
+  }
+
+  .quoteIconEnd {
+    position: absolute;
+    bottom: 7px;
+    right: 7px;
+    color: #aaa;
+  }
+}
+
 .leftRelationshipType .rw-dropdown-list {
   @media(max-width: 1023px) {
     margin-bottom: 10px;

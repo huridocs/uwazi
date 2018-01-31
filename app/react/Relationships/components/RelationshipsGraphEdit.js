@@ -95,7 +95,8 @@ export class RelationshipsGraphEdit extends Component {
         </div>
 
         <div>
-          {hubs.map((hub, index) =>
+          {hubs.map((hub, index) => {
+            return (
             <div className="relationshipsHub" key={index}>
               {this.editingSelector(null,
                 <div className="removeHub">
@@ -118,6 +119,15 @@ export class RelationshipsGraphEdit extends Component {
                                 filter="contains"
                                 onChange={this.updateLeftRelationshipType(index)} />
                 )}
+                {(() => {
+                  if (hub.getIn(['leftRelationship', 'range', 'text'])) {
+                    return <div className="leftRelationshipQuote">
+                            <i className="quoteIconStart fa fa-quote-left"></i>
+                            {hub.getIn(['leftRelationship', 'range', 'text'])}
+                            <i className="quoteIconEnd fa fa-quote-right"></i>
+                           </div>;
+                  }
+                })()}
               </div>
               <div className="hubRelationship">
                 <figure></figure>
@@ -158,11 +168,16 @@ export class RelationshipsGraphEdit extends Component {
                         })()}
                       </div>
                     )}
-                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) =>
+                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) => {
+                      return (
                       <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
                            key={relationshipIndex}>
                         <div className="rightRelationshipType">
-                          <Doc className="item-collapsed" doc={relationship.get('entity')} searchParams={search} onClick={this.onClick.bind(this)}/>
+                          <Doc className="item-collapsed"
+                               additionalText={relationship.getIn(['range', 'text'])}
+                               doc={relationship.get('entity')}
+                               searchParams={search}
+                               onClick={this.onClick.bind(this)}/>
                         </div>
                         {this.editingSelector(null,
                           <div className="removeEntity">
@@ -171,6 +186,8 @@ export class RelationshipsGraphEdit extends Component {
                           </div>
                         )}
                       </div>
+                      );
+                    }
                     )}
                     {(() => {
                       if (editing && rightRelationship.has('template')) {
@@ -191,6 +208,8 @@ export class RelationshipsGraphEdit extends Component {
                 )}
               </div>
             </div>
+            );
+          }
           )}
 
           {this.editingSelector(null,
