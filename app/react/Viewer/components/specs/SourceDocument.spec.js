@@ -37,7 +37,7 @@ describe('SourceDocument', function () {
     component = shallow(<SourceDocument />, {context: {store}});
   };
 
-  fit('should map props', () => {
+  it('should map props', () => {
     render();
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});

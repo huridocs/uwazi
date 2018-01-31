@@ -77,7 +77,6 @@ export function saveConnection(connection, callback) {
 
     return api.post('relationships/bulk', apiCall)
     .then(response => {
-      console.log('Success:', response);
       dispatch({type: types.CONNECTION_CREATED});
       callback(response.json);
       dispatch(notify('saved successfully !', 'success'));

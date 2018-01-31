@@ -14,7 +14,6 @@ const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeRefer
 
 const mapStateToProps = (state) => {
   const {user, documentViewer} = state;
-  console.log('STATE:', state);
   return {
     snippets: documentViewer.sidepanel.snippets,
     selection: selectSourceRange(documentViewer),

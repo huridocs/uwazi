@@ -20,7 +20,7 @@ describe('Connections actions', () => {
     mockID();
     store = mockStore({});
     spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: [{type: 'entity'}, {type: 'doc'}]}}));
-    spyOn(api, 'post').and.callFake((url, data) => {
+    spyOn(api, 'post').and.callFake((url) => {
       if (url === 'relationships/bulk') {
         return Promise.resolve({status: 200, json: 'bulkResponse(ArrayOfTwo)'});
       }
@@ -99,7 +99,7 @@ describe('Connections actions', () => {
     });
   });
 
-  fdescribe('saveConnection', () => {
+  describe('saveConnection', () => {
     let connection;
 
     beforeEach(() => {
@@ -112,7 +112,7 @@ describe('Connections actions', () => {
       };
     });
 
-    fit('should set the creating flag to true and attempt to save the connection (using the new hub format)', () => {
+    it('should set the creating flag to true and attempt to save the connection (using the new hub format)', () => {
       const expectedCall = {delete: [], save: [[
         {entity: 'sourceId', template: null, range: {start: 397, end: 422, text: 'source text'}},
         {entity: 'targetId', template: 'relationTypeId'}
@@ -123,7 +123,7 @@ describe('Connections actions', () => {
       expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedCall);
     });
 
-    fit('should allow for targetted range connections (using the new hub format)', () => {
+    it('should allow for targetted range connections (using the new hub format)', () => {
       connection.targetRange = {start: 79, end: 125, text: 'target text'};
 
       const expectedCall = {delete: [], save: [[
@@ -143,7 +143,7 @@ describe('Connections actions', () => {
       expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId', language: 'es'});
     });
 
-    fit('should broadcast CONNECTION_CREATED, execute the callback and broadcast success', (done) => {
+    it('should broadcast CONNECTION_CREATED, execute the callback and broadcast success', (done) => {
       const callback = jasmine.createSpy('callback');
       actions.saveConnection(connection, callback)(store.dispatch, getState)
       .then(() => {
