@@ -106,10 +106,6 @@ export default function (state = initialState, action = {}) {
     value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted']);
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], !value);
 
-  case types.SAVED_RELATIONSHIPS:
-    console.log('SAVED en hubsReducer');
-    return state;
-
   default:
     return fromJS(state);
   }
