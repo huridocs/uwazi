@@ -18,7 +18,7 @@ export default app => {
   });
 
   app.delete('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
-    relationships.delete(req.query._id)
+    relationships.delete({_id: req.query._id})
     .then(response => res.json(response))
     .catch(error => res.json({error: error.json}));
   });

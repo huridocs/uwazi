@@ -1,6 +1,5 @@
 import relationshipsRroutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import search from '../../search/search';
 import relationships from 'api/relationships/relationships';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -50,7 +49,7 @@ describe('relationships routes', () => {
 
       routes.delete('/api/references', req)
       .then(() => {
-        expect(relationships.delete).toHaveBeenCalledWith(req.query._id);
+        expect(relationships.delete).toHaveBeenCalledWith({_id: req.query._id});
         done();
       })
       .catch(catchErrors(done));
