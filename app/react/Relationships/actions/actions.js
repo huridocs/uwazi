@@ -6,6 +6,7 @@ import {notify} from 'app/Notifications';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
+import * as routeUtils from '../utils/routeUtils';
 
 
 export function parseResults(results, parentEntity, editing) {
@@ -58,10 +59,20 @@ export function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
   return {type: types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY, index, rightIndex, relationshipIndex};
 }
 
+export function reloadRelationships(parentEntityId) {
+  return function (dispatch, getState) {
+    return routeUtils.requestState(parentEntityId, getState().templates)
+    .then(([connectionsGroups, searchResults]) => {
+      dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
+      dispatch(actions.set('relationships/list/searchResults', searchResults));
+    });
+  };
+}
+
 export function saveRelationships() {
   return function (dispatch, getState) {
     dispatch({type: types.SAVING_RELATIONSHIPS});
-    const parentEntityId = getState().entityView.entity.get('sharedId');
+    const parentEntityId = getState().relationships.list.entityId;
     const hubs = getState().relationships.hubs.toJS();
 
     const apiCall = hubs.reduce((apiActions, hubData) => {
@@ -113,7 +124,12 @@ export function saveRelationships() {
 
     return api.post('relationships/bulk', apiCall)
     .then((response) => {
+      return Promise.all([response, reloadRelationships(parentEntityId)(dispatch, getState)]);
+    })
+    .then(([response]) => {
+      dispatch(uiActions.closePanel());
       dispatch(notify('Relationships saved', 'success'));
+      dispatch(edit(false, getState().relationships.list.searchResults, getState().relationships.list.entity));
       dispatch({type: types.SAVED_RELATIONSHIPS, response});
     });
   };
