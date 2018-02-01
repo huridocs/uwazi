@@ -3,6 +3,7 @@ import api from 'app/utils/api';
 import {actions} from 'app/BasicReducer';
 import debounce from 'app/utils/debounce';
 import {notify} from 'app/Notifications';
+import {referencesActions} from 'app/Viewer';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -128,9 +129,10 @@ export function saveRelationships() {
     })
     .then(([response]) => {
       dispatch(uiActions.closePanel());
-      dispatch(notify('Relationships saved', 'success'));
       dispatch(edit(false, getState().relationships.list.searchResults, getState().relationships.list.entity));
+      dispatch(referencesActions.loadReferences(parentEntityId));
       dispatch({type: types.SAVED_RELATIONSHIPS, response});
+      dispatch(notify('Relationships saved', 'success'));
     });
   };
 }

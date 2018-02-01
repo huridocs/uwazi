@@ -1,5 +1,5 @@
 import * as types from 'app/Viewer/actions/actionTypes';
-import refenrecesAPI from 'app/Viewer/referencesAPI';
+import referencesAPI from 'app/Viewer/referencesAPI';
 import {notify} from 'app/Notifications';
 import {actions} from 'app/BasicReducer';
 
@@ -13,6 +13,17 @@ export function setReferences(references) {
     references
   };
 }
+
+// TEST!!!
+export function loadReferences(documentId) {
+  return function (dispatch) {
+    return referencesAPI.get(documentId)
+    .then(references => {
+      dispatch(setReferences(references));
+    });
+  };
+}
+// ----------
 
 export function addReference(references, docInfo, delayActivation) {
   return function (dispatch, getState) {
@@ -53,7 +64,7 @@ export function saveTargetRangedReference(connection, targetRange, onCreate) {
 
 export function deleteReference(reference) {
   return function (dispatch) {
-    return refenrecesAPI.delete(reference)
+    return referencesAPI.delete(reference)
     .then(() => {
       dispatch({
         type: types.REMOVE_REFERENCE,
