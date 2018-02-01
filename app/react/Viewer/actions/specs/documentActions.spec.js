@@ -9,7 +9,6 @@ import {PDFUtils} from '../../../PDF/';
 import {mockID} from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
-import referencesUtils from '../../utils/referencesUtils';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
@@ -266,22 +265,17 @@ describe('documentActions', () => {
     });
 
     describe('loadTargetDocument', () => {
-      beforeEach(() => {
-        spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
-      });
-
       it('should loadTargetDocument with id passed', (done) => {
         let targetId = 'targetId';
 
         const expectedActions = [
           {type: 'viewer/targetDoc/SET', value: {target: 'document', pdfInfo: 'test'}},
-          {type: 'viewer/targetDocReferences/SET', value: ['filteredReferences']}
+          {type: 'viewer/targetDocReferences/SET', value: [{connectedDocument: '1'}]}
         ];
         const store = mockStore({locale: 'es'});
 
         store.dispatch(actions.loadTargetDocument(targetId))
         .then(() => {
-          expect(referencesUtils.filterRelevant).toHaveBeenCalledWith([{connectedDocument: '1'}], 'es');
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

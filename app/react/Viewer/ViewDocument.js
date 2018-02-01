@@ -19,7 +19,6 @@ export default class ViewDocument extends RouteHandler {
   }
 
   static requestState({documentId, lang}, query, globalResources) {
-    // TEST!!! sending globalResources
     return requestViewerState(documentId, lang, globalResources);
   }
 
@@ -49,9 +48,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
-    // TEST!!!
     this.context.store.dispatch(relationships.emptyState());
-    // -------
   }
 
   setReduxState(state) {

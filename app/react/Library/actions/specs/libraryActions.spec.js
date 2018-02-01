@@ -14,7 +14,6 @@ import {browserHistory} from 'react-router';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
 import SearchApi from 'app/Search/SearchAPI';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -297,32 +296,10 @@ describe('libraryActions', () => {
     describe('getDocumentReferences', () => {
       it('should set the library sidepanel references', (done) => {
         mockID();
-        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
-        spyOn(referencesUtils, 'filterRelevant').and.callFake((references, locale) => 'relevantReferences for ' + references + ', ' + locale);
+        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('referencesResponse'));
 
         const expectedActions = [
-          {type: 'library.sidepanel.references/SET', value: 'relevantReferences for response, es'}
-        ];
-
-        const store = mockStore({locale: 'es'});
-
-        store.dispatch(actions.getDocumentReferences('id', 'library'))
-        .then(() => {
-          expect(referencesAPI.get).toHaveBeenCalledWith('id');
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-    describe('getDocumentReferences', () => {
-      it('should set the library sidepanel references', (done) => {
-        mockID();
-        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
-        spyOn(referencesUtils, 'filterRelevant').and.callFake((references, locale) => 'relevantReferences for ' + references + ', ' + locale);
-
-        const expectedActions = [
-          {type: 'library.sidepanel.references/SET', value: 'relevantReferences for response, es'}
+          {type: 'library.sidepanel.references/SET', value: 'referencesResponse'}
         ];
 
         const store = mockStore({locale: 'es'});

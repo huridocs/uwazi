@@ -8,7 +8,6 @@ import {browserHistory} from 'react-router';
 import rison from 'rison';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import {api as entitiesAPI} from 'app/Entities';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import {toUrlParams} from 'shared/JSONRequest';
 
 export function enterLibrary() {
@@ -293,10 +292,10 @@ export function getSuggestions() {
 }
 
 export function getDocumentReferences(documentId, storeKey) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     return referencesAPI.get(documentId)
     .then((references) => {
-      dispatch(actions.set(storeKey + '.sidepanel.references', referencesUtils.filterRelevant(references, getState().locale)));
+      dispatch(actions.set(storeKey + '.sidepanel.references', references));
     });
   };
 }

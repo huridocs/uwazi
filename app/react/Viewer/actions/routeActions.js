@@ -1,6 +1,5 @@
 import referencesAPI from 'app/Viewer/referencesAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
 import {getDocument} from 'app/Viewer/actions/documentActions';
 
 import {actions} from 'app/BasicReducer';
@@ -12,18 +11,15 @@ export function requestViewerState(documentId, lang, globalResources) {
     getDocument(documentId),
     referencesAPI.get(documentId),
     relationTypesAPI.get(),
-    // TEST!!!
     relationships.requestState(documentId, globalResources.templates)
-    // ---------
   ])
   .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort]]) => {
     return {
       documentViewer: {
         doc,
-        references: referencesUtils.filterRelevant(references, lang),
+        references: references,
         relationTypes
       },
-      // TEST!!!
       relationships: {
         list: {
           entityId: doc.sharedId,
@@ -35,7 +31,6 @@ export function requestViewerState(documentId, lang, globalResources) {
           view: 'graph'
         }
       },
-      // ----------
       relationTypes
     };
   });
@@ -48,9 +43,6 @@ export function setViewerState(state) {
     dispatch(actions.set('viewer/doc', documentViewer.doc));
     dispatch(actions.set('viewer/relationTypes', documentViewer.relationTypes));
     dispatch(setReferences(documentViewer.references));
-
-    // TEST!!!
     dispatch(relationships.setReduxState(state));
-    // -------
   };
 }
