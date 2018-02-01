@@ -5,6 +5,7 @@ import {actions} from 'app/BasicReducer';
 
 import * as uiActions from './uiActions';
 import {actions as connectionsActions} from 'app/Connections';
+import {actions as relationshipsActions} from 'app/Relationships';
 
 export function setReferences(references) {
   return {
@@ -14,7 +15,7 @@ export function setReferences(references) {
 }
 
 export function addReference(references, docInfo, delayActivation) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     const tab = 'references';
 
     // TEST!!!
@@ -24,6 +25,9 @@ export function addReference(references, docInfo, delayActivation) {
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
+    // TEST!!!
+    dispatch(relationshipsActions.reloadRelationships(getState().relationships.list.entityId));
+
     if (delayActivation) {
       // TEST!!!
       dispatch({type: types.ACTIVE_REFERENCE, reference: references[0][0]._id});
