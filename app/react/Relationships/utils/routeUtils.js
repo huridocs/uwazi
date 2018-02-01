@@ -26,6 +26,8 @@ function emptyState() {
     dispatch(actions.unset('relationships/list/filters'));
     dispatch(actions.unset('relationships/list.sort'));
     dispatch(actions.unset('relationships/list/view'));
+
+    dispatch(actions.set('relationships/connection', {}));
   };
 }
 
