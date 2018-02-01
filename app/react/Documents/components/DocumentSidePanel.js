@@ -73,7 +73,7 @@ export class DocumentSidePanel extends Component {
   }
 
   render() {
-    const {doc, docBeingEdited, DocumentForm, readOnly, references, EntityForm, connectionsGroups} = this.props;
+    const {doc, docBeingEdited, DocumentForm, readOnly, references, EntityForm, connectionsGroups, isTargetDoc} = this.props;
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
@@ -145,13 +145,17 @@ export class DocumentSidePanel extends Component {
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
-              <li>
-                <TabLink to="connections">
-                  <i className="fa fa-exchange"></i>
-                  <span className="connectionsNumber">{summary.totalConnections}</span>
-                  <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                </TabLink>
-              </li>
+              {(() => {
+                if (!isTargetDoc) {
+                  return <li>
+                          <TabLink to="connections">
+                            <i className="fa fa-exchange"></i>
+                            <span className="connectionsNumber">{summary.totalConnections}</span>
+                            <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                          </TabLink>
+                         </li>;
+                }
+              })()}
             </ul>
           </Tabs>
         </div>
@@ -224,7 +228,7 @@ export class DocumentSidePanel extends Component {
                     <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />
                     <AttachmentsList files={fromJS(attachments)}
                       readOnly={false}
-                      isTargetDoc={this.props.isTargetDoc}
+                      isTargetDoc={isTargetDoc}
                       isDocumentAttachments={Boolean(doc.get('file'))}
                       parentId={doc.get('_id')}
                       parentSharedId={doc.get('sharedId')}
