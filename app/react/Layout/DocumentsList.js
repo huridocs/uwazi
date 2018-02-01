@@ -38,7 +38,7 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections, GraphView, view} = this.props;
+    const {documents, connections, GraphView, view, hideFooter} = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
       counter = <span>
@@ -48,6 +48,7 @@ export default class DocumentsList extends Component {
 
     const Search = this.props.SearchBar;
     const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
+    const FooterComponent = !hideFooter ? <Footer /> : null;
 
     return (
       <div className="documents-list">
@@ -122,7 +123,7 @@ export default class DocumentsList extends Component {
               </div>
             </NeedAuthorization>
           </div>
-          <Footer/>
+          {FooterComponent}
         </div>
       </div>
     );
@@ -152,5 +153,6 @@ DocumentsList.propTypes = {
     PropTypes.func,
     PropTypes.object
   ]),
+  hideFooter: PropTypes.bool,
   view: PropTypes.string
 };
