@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import {bindActionCreators} from 'redux';
 
 import ContextMenu from 'app/ContextMenu';
+import {actions} from 'app/BasicReducer';
 
 import {loadDefaultViewerMenu, loadTargetDocument} from '../actions/documentActions';
 import {openPanel} from '../actions/uiActions';
@@ -32,6 +33,10 @@ export class Viewer extends Component {
 
   componentWillMount() {
     this.context.store.dispatch(openPanel('viewMetadataPanel'));
+    // TEST!!!
+    if (this.props.sidepanelTab === 'connections') {
+      this.context.store.dispatch(actions.set('viewer.sidepanel.tab', ''));
+    }
   }
 
   componentDidMount() {
@@ -71,7 +76,7 @@ export class Viewer extends Component {
               <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
-              <ConnectionsList deleteConnection={() => {}} />
+              <ConnectionsList hideFooter={true} />
             </ShowIf>
             <TargetDocument />
             <Footer/>
