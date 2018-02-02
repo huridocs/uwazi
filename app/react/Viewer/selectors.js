@@ -7,7 +7,7 @@ function isRelationshipAReference(doc, reference) {
   return reference.get('entity') === doc.get('sharedId') && typeof reference.getIn(['range', 'start']) !== 'undefined';
 }
 
-const getParsedReferences = (doc, refs) => {
+const parseReferences = (doc, refs) => {
   return refs
   .filter(r => isRelationshipAReference(doc, r))
   .reduce((hubs, r) => {
@@ -33,7 +33,7 @@ const selectRefs = createSelector(s => documentViewer(s).references, references 
 const selectReferences = createSelector(
   selectDoc,
   selectRefs,
-  getParsedReferences
+  parseReferences
 );
 
 const selectTargetDoc = createSelector(s => documentViewer(s).targetDoc, doc => doc);
@@ -42,12 +42,13 @@ const selectTargetRefs = createSelector(s => documentViewer(s).targetDocReferenc
 const selectTargetReferences = createSelector(
   selectTargetDoc,
   selectTargetRefs,
-  getParsedReferences
+  parseReferences
 );
 
 export {
   selectDoc,
   selectReferences,
   selectTargetDoc,
-  selectTargetReferences
+  selectTargetReferences,
+  parseReferences
 };
