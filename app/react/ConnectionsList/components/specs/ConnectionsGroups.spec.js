@@ -5,7 +5,7 @@ import {fromJS as Immutable} from 'immutable';
 import {ConnectionsGroups} from '../ConnectionsGroups';
 import ConnectionsGroup from '../ConnectionsGroup';
 
-fdescribe('ConnectionsGroups', () => {
+describe('ConnectionsGroups', () => {
   let component;
   let props;
 
