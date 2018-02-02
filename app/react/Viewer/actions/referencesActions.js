@@ -14,7 +14,6 @@ export function setReferences(references) {
   };
 }
 
-// TEST!!!
 export function loadReferences(documentId) {
   return function (dispatch) {
     return referencesAPI.get(documentId)
@@ -23,30 +22,25 @@ export function loadReferences(documentId) {
     });
   };
 }
-// ----------
 
 export function addReference(references, docInfo, delayActivation) {
   return function (dispatch, getState) {
     const tab = 'references';
 
-    // TEST!!!
     dispatch({type: types.ADD_REFERENCE, reference: references[0][1]});
     dispatch({type: types.ADD_REFERENCE, reference: references[0][0]});
 
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
-    // TEST!!!
     dispatch(relationshipsActions.reloadRelationships(getState().relationships.list.entityId));
 
     if (delayActivation) {
-      // TEST!!!
       dispatch({type: types.ACTIVE_REFERENCE, reference: references[0][0]._id});
       dispatch(uiActions.goToActive());
       dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
       dispatch(actions.set('viewer.sidepanel.tab', tab));
     } else {
-      // TEST!!!
       dispatch(uiActions.activateReference(references[0][0], docInfo, tab));
     }
   };
@@ -64,12 +58,9 @@ export function saveTargetRangedReference(connection, targetRange, onCreate) {
 
 export function deleteReference(reference) {
   return function (dispatch) {
-    return referencesAPI.delete(reference)
+    return referencesAPI.delete(reference.associatedRelationship)
     .then(() => {
-      dispatch({
-        type: types.REMOVE_REFERENCE,
-        reference
-      });
+      dispatch({type: types.REMOVE_REFERENCE, reference});
       dispatch(notify('Connection deleted', 'success'));
     });
   };
