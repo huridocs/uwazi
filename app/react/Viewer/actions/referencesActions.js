@@ -57,9 +57,10 @@ export function saveTargetRangedReference(connection, targetRange, onCreate) {
 }
 
 export function deleteReference(reference) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     return referencesAPI.delete(reference.associatedRelationship)
     .then(() => {
+      dispatch(relationshipsActions.reloadRelationships(getState().relationships.list.entityId));
       dispatch({type: types.REMOVE_REFERENCE, reference});
       dispatch(notify('Connection deleted', 'success'));
     });

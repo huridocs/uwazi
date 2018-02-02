@@ -30,6 +30,9 @@ describe('Viewer referencesActions', () => {
       spyOn(scroller, 'to');
       backend.restore();
       backend.delete(APIURL + 'references?_id=bcd', {body: JSON.stringify({_id: 'reference'})});
+      spyOn(relationshipsActions, 'reloadRelationships').and.callFake((entityId) => {
+        return {type: 'reloadRelationships', entityId};
+      });
     });
 
     afterEach(() => backend.restore());
@@ -64,12 +67,9 @@ describe('Viewer referencesActions', () => {
           {_id: 'addedReference1', reference: 'reference', sourceRange: {text: 'Text'}},
           {_id: 'addedReference2', reference: 'reference'}
         ]];
-        spyOn(relationshipsActions, 'reloadRelationships').and.callFake((entityId) => {
-          return {type: 'reloadRelationships', entityId};
-        });
       });
 
-      it('should add the reference', () => {
+      it('should add the reference and reload relationships', () => {
         let expectedActions = [
           {type: types.ADD_REFERENCE, reference: references[0][1]},
           {type: types.ADD_REFERENCE, reference: references[0][0]},
@@ -139,17 +139,19 @@ describe('Viewer referencesActions', () => {
     });
 
     describe('deleteReference', () => {
-      it('should delete the reference\'s associated relationship and dispatch a success notification', (done) => {
+      it('should delete the reference\'s associated relationship and reload relationships', (done) => {
         let reference = {_id: 'abc', associatedRelationship: {_id: 'bcd'}};
 
         const expectedActions = [
+          {type: 'reloadRelationships', entityId: 'docId'},
           {type: types.REMOVE_REFERENCE, reference},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Connection deleted', type: 'success', id: 'unique_id'}}
         ];
 
         const store = mockStore({});
         let getState = jasmine.createSpy('getState').and.returnValue({
-          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
+          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])},
+          relationships: {list: {entityId: 'docId'}}
         });
 
         actions.deleteReference(reference)(store.dispatch, getState)
