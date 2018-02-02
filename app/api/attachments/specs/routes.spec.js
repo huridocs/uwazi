@@ -18,6 +18,7 @@ describe('Attachments Routes', () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachmentsPath;
     paths.attachmentsPath = __dirname + '/uploads/';
+    routes = instrumentRoutes(attachmentsRoutes);
 
     db.clearAllAndLoad(fixtures, (err) => {
       if (err) {
@@ -25,7 +26,6 @@ describe('Attachments Routes', () => {
       }
       done();
     });
-    routes = instrumentRoutes(attachmentsRoutes);
   });
 
   afterEach(() => {

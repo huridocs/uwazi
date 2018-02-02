@@ -26,6 +26,21 @@ let matchers = {
         return result;
       }
     };
+  },
+  containItems() {
+    return {
+      compare(actual, expected) {
+        const result = {};
+        const missingItems = expected.filter((item) => !actual.includes(item));
+        result.pass = !missingItems.length && actual.length === expected.length;
+        if (result.pass) {
+          result.message = 'Collections are equal';
+        } else {
+          result.message = 'Expected: [' + expected + '] but got: [' + actual + ']';
+        }
+        return result;
+      }
+    };
   }
 };
 

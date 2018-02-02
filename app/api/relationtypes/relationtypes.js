@@ -1,6 +1,6 @@
 import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
-import model from './relationTypesModel';
+import model from './model';
 import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from '../templates/utils';
 let checkDuplicated = (relationtype) => {
   return model.get()

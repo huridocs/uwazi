@@ -1,6 +1,8 @@
 import P from 'bluebird';
 
-import relationshipsModel from '../relationships/relationshipsModel';
+import relationshipsModel from '../relationships/model';
+import settings from '../settings/settings';
+import relationships from '../relationships/relationships';
 import templatesModel from '../templates/templates';
 import relationtypes from '../relationtypes/relationtypes';
 import entities from '../entities/entities';
@@ -58,8 +60,10 @@ let totalRelations;
 let relationsProcessedInAdifferentHub = [];
 
 function migrateRelationships() {
-  return relationshipsModel.get()
-  .then((relations) => {
+  return Promise.all([relationshipsModel.get(), settings.get()])
+  .then(([relations, _settings]) => {
+    const defaultLanguage = _settings.languages.find((lang) => lang.default) || settings.languages[0];
+    const language = defaultLanguage.key;
     totalRelations = relations.length;
     return P.resolve(relations).map((relationship) => {
       if (!relationship.sourceDocument) {
@@ -94,15 +98,15 @@ function migrateRelationships() {
           });
           return Promise.all([
             relationshipsModel.delete(relationship),
-            relationshipsModel.save(relationsHub)
+            relationships.save(relationsHub, language)
           ]);
         });
       }
 
       return Promise.all([
         relationshipsModel.delete(relationship),
-        relationshipsModel.save({entity: relationship.sourceDocument, hub, template: null}),
-        relationshipsModel.save({entity: relationship.targetDocument, hub, template: relationship.relationType})
+        relationships.save({entity: relationship.sourceDocument, hub, template: null}, language),
+        relationships.save({entity: relationship.targetDocument, hub, template: relationship.relationType}, language)
       ]);
     }, {concurrency: 1});
   });

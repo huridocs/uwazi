@@ -27,36 +27,41 @@ const hub9 = db.id();
 const hub10 = db.id();
 const hub11 = db.id();
 
+const sharedId1  = db.id();
+const sharedId2  = db.id();
+const sharedId3  = db.id();
 
 export default {
   connections: [
-    {entity: 'source1', hub: hub1, range: {text: 'english'}, language: 'en', template: relation1},
-    {entity: 'source2', hub: hub1, template: relation1},
+    {entity: 'entity1', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
+    {entity: 'entity2', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
 
-    {entity: 'source2', hub: hub2, template: relation2},
-    {entity: 'doc3', hub: hub2, template: relation2, range: {text: 'english'}, language: 'en'},
+    {entity: 'entity2', hub: hub2, template: relation2, sharedId: db.id(), language: 'en'},
+    {entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}, language: 'en', sharedId: sharedId1},
 
-    {entity: 'source2', hub: hub11, template: relation2},
-    {entity: 'doc3', hub: hub11, template: relation2, range: {text: 'rusian'}, language: 'ru'},
+    {entity: 'entity2', hub: hub11, template: relation2, sharedId: db.id(), language: 'ru'},
+    {entity: 'entity3', hub: hub11, template: relation2, range: {text: 'rusian'}, language: 'ru', sharedId: sharedId1},
 
-    {entity: 'source2', hub: hub3, template: relation2},
-    {entity: 'doc4', hub: hub3, template: relation2},
+    {entity: 'entity2', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
+    {entity: 'doc4', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
 
-    {entity: 'doc5', hub: hub4, template: relation1},
-    {entity: 'source2', hub: hub4, template: relation1},
+    {entity: 'doc5', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
+    {entity: 'entity2', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
 
-    {entity: 'target', hub: hub5},
-    {entity: 'target', hub: hub5},
+    {entity: 'target', hub: hub5, sharedId: db.id(), language: 'en'},
+    {entity: 'target', hub: hub5, sharedId: db.id(), language: 'en'},
 
-    {entity: 'target1', hub: hub6},
+    {entity: 'target1', hub: hub6, sharedId: db.id(), language: 'en'},
 
-    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1},
-    {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
-    {_id: inbound, entity: value2ID, hub: hub8},
-    {entity: 'entity_id', hub: hub8},
-    {entity: 'entity_id', hub: hub8},
-    {entity: 'bruceWayne', hub: hub9},
-    {entity: 'thomasWayne', hub: hub9, template: family}
+    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1, sharedId: sharedId2, language: 'en'},
+    {entity: 'entity_id', hub: hub7, template: relation1, sharedId: sharedId2, language: 'es'},
+    {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'en'},
+    {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'es'},
+    {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
+    {entity: 'entity_id', hub: hub8, sharedId: db.id()},
+    {entity: 'entity_id', hub: hub8, sharedId: db.id()},
+    {entity: 'bruceWayne', hub: hub9, sharedId: db.id()},
+    {entity: 'thomasWayne', hub: hub9, template: family, sharedId: db.id()}
   ],
   templates: [
     {_id: templateWithoutProperties},
@@ -95,10 +100,15 @@ export default {
     ]}
   ],
   entities: [
-    {sharedId: 'source1', language: 'en', title: 'source1 title', type: 'document', template: template, file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
-    {sharedId: 'source2', language: 'en', title: 'source2 title', type: 'document', template: template, file: {language: 'spa'}, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
-    {sharedId: 'doc3', language: 'en', title: 'doc3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
-    {sharedId: 'doc4', language: 'en', title: 'doc4 title', type: 'document', template: template, file: {language: 'eng'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'entity1', language: 'en', title: 'entity1 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {sharedId: 'entity2', language: 'en', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
+    {sharedId: 'entity3', language: 'en', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {sharedId: 'entity3', language: 'ru', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {sharedId: 'entity4', language: 'en', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {sharedId: 'entity4', language: 'ru', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {sharedId: 'doc4', language: 'en', title: 'doc4 en title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc4', language: 'es', title: 'doc4 es title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc4', language: 'pt', title: 'doc4 pt title', type: 'document', template: template, file: {filename: 'pt'}, metadata: {data: 'data3'}, creationDate: 789},
     {sharedId: 'doc5', language: 'en', title: 'doc5 title', type: 'document', template: template, published: true},
     {sharedId: selectValueID, language: 'en', title: 'selectValue', type: 'entity'},
     {sharedId: value1ID, language: 'en', title: 'value1', type: 'entity'},
@@ -112,10 +122,14 @@ export default {
     {_id: thesauri}
   ],
   relationtypes: [
-    {_id: relation1, name: 'relation 1', type: 'relationtype'},
-    {_id: relation2, name: 'relation 2', type: 'relationtype'},
-    {_id: friend, name: 'relation 1', type: 'friend'},
-    {_id: family, name: 'relation 1', type: 'family'}
+    {_id: relation1, name: 'relation 1', properties: [
+      {type: 'text', name: 'title'},
+      {type: 'multiselect', name: 'options'},
+      {type: 'date', name: 'date'}
+    ]},
+    {_id: relation2, name: 'relation 2'},
+    {_id: friend, name: 'friend'},
+    {_id: family, name: 'family'}
   ]
 };
 

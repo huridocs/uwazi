@@ -1,19 +1,14 @@
 import templatesAPI from 'api/templates';
-import relationTypesAPI from 'api/relationtypes/relationtypes';
+import relationtypes from 'api/relationtypes';
 import {generateNamesAndIds} from '../templates/utils';
 import entities from '../entities';
 
-import model from './relationshipsModel.js';
+import model from './model';
 import search from '../search/search';
 import {generateID} from 'api/odm';
 import {createError} from 'api/utils';
 
 import {filterRelevantRelationships, groupRelationships} from './groupByRelationships';
-
-let normalizeConnection = (relationship) => {
-  relationship.range = relationship.range || {text: ''};
-  return relationship;
-};
 
 let normalizeConnectedDocumentData = (relationship, connectedDocument) => {
   relationship.entityData = connectedDocument;
@@ -63,13 +58,14 @@ export default {
   },
 
   getDocumentHubs(id, language) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
     return model.get({entity: id})
     .then((ownRelations) => {
       const hubsIds = ownRelations.map(relationship => relationship.hub);
-      const relationshipsQuery = {hub: {$in: hubsIds}, range: {$exists: false}};
-      const referencesQuery = {hub: {$in: hubsIds}, range: {$exists: true}, language};
       return model.db.aggregate([
-        {$match: {$or: [relationshipsQuery, referencesQuery]}},
+        {$match: {hub: {$in: hubsIds}, language}},
         {$group: {
           _id: '$hub',
           relationships: {$push: '$$ROOT'},
@@ -83,17 +79,20 @@ export default {
   },
 
   getByDocument(id, language) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
     return this.getDocumentHubs(id, language)
     .then((hubs) => {
-      const relationsips = Array.prototype.concat(...hubs.map((hub) => hub.relationships));
-      let connectedEntityiesSharedId = relationsips.map((relationship) => relationship.entity);
+      const relationships = Array.prototype.concat(...hubs.map((hub) => hub.relationships));
+      let connectedEntityiesSharedId = relationships.map((relationship) => relationship.entity);
       return entities.get({sharedId: {$in: connectedEntityiesSharedId}, language})
       .then((_connectedDocuments) => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return relationsips.map((relationship) => {
+        return relationships.map((relationship) => {
           return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
         });
       });
@@ -101,10 +100,13 @@ export default {
   },
 
   getGroupsByConnection(id, language, options = {}) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
     return Promise.all([
       this.getByDocument(id, language),
       templatesAPI.get(),
-      relationTypesAPI.get()
+      relationtypes.get()
     ])
     .then(([references, templates, relationTypes]) => {
       const relevantReferences = filterRelevantRelationships(references, id, language, options.user);
@@ -119,15 +121,73 @@ export default {
     });
   },
 
-  getHub(hub) {
-    return model.get({hub});
+  getHub(hub, language) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
+    return model.get({hub, language});
   },
 
   countByRelationType(typeId) {
     return model.count({template: typeId});
   },
 
+  getAllLanguages(sharedId) {
+    return model.get({sharedId});
+  },
+
+  updateRelationship(relationship) {
+    return Promise.all([relationtypes.getById(relationship.template), model.get({sharedId: relationship.sharedId})])
+    .then(([template, relationshipsVersions]) => {
+      let toSyncProperties = [];
+      if (template && template.properties) {
+        toSyncProperties = template.properties
+        .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
+        .map(p => p.name);
+      }
+
+      relationship.metadata = relationship.metadata || {};
+      const updateRelationships = relationshipsVersions.map((relation) => {
+        if (relationship._id.equals(relation._id)) {
+          return model.save(relationship);
+        }
+
+        toSyncProperties.map((propertyName) => {
+          relation.metadata = relation.metadata || {};
+          relation.metadata[propertyName] = relationship.metadata[propertyName];
+        });
+
+        return model.save(relation);
+      });
+
+      return Promise.all(updateRelationships);
+    });
+  },
+
+  createRelationship(relationship) {
+    relationship.sharedId = generateID();
+    return entities.get({sharedId: relationship.entity})
+    .then((entitiesVersions) => {
+      const currentLanguageEntity = entitiesVersions.find((entity) => entity.language === relationship.language);
+      currentLanguageEntity.file = currentLanguageEntity.file || {};
+      const relationshipsCreation = entitiesVersions.map((entity) => {
+        const isATextReference = relationship.range;
+        entity.file = entity.file || {};
+        const entityFileDoesNotMatch = currentLanguageEntity.file.filename !== entity.file.filename;
+        if (isATextReference && entityFileDoesNotMatch) {
+          return Promise.resolve();
+        }
+        relationship.language = entity.language;
+        return model.save(relationship);
+      });
+      return Promise.all(relationshipsCreation);
+    });
+  },
+
   save(_relationships, language) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
     let relationships = _relationships;
     if (!Array.isArray(relationships)) {
       relationships = [relationships];
@@ -139,24 +199,32 @@ export default {
     const hub = relationships[0].hub || generateID();
     return Promise.all(
       relationships.map((relationship) => {
+        let action;
         relationship.hub = hub;
-        if (relationship.range) {
-          relationship.language = language;
+        relationship.language = language;
+        if (relationship.sharedId) {
+          action = this.updateRelationship(relationship);
         }
-        return model.save(relationship)
-        .then((r) => {
-          return normalizeConnection(r);
-        })
-        .then((savedConnection) => {
-          return Promise.all([savedConnection, entities.getById(savedConnection.entity, language)]);
+
+        if (!relationship.sharedId) {
+          action = this.createRelationship(relationship);
+        }
+
+        return action
+        .then(([savedRelationship]) => {
+          return Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)]);
         })
         .then(([result, connectedEntity]) => {
           return normalizeConnectedDocumentData(result, connectedEntity);
-        });
+        })
+        .catch(console.log);
       }));
   },
 
   saveEntityBasedReferences(entity, language) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
     if (!entity.template) {
       return Promise.resolve([]);
     }
@@ -178,25 +246,24 @@ export default {
         if (!propertyHub) {
           propertyHub = [{entity: entity.sharedId, hub: generateID()}];
         }
+
         let referencesOfThisType = references.filter((reference) =>
           reference.template &&
           reference.template.toString() === propertyRelationType.toString()
         );
+
         propertyValues.forEach((entitySharedId) => {
           let relationshipDoesNotExists = !referencesOfThisType.find((reference) => reference.entity === entitySharedId);
           if (relationshipDoesNotExists) {
             propertyHub.push({entity: entitySharedId, hub: propertyHub[0].hub, template: propertyRelationType});
           }
         });
-
         propertyHub = propertyHub.filter((reference) => reference.entity === entity.sharedId || propertyValues.includes(reference.entity));
-
         const referencesToBeDeleted = references.filter((reference) => {
           return !(reference.entity === entity.sharedId) &&
           reference.template.toString() === propertyRelationType.toString() &&
           !propertyValues.includes(reference.entity);
         });
-
         let actions = referencesToBeDeleted.map((reference) => this.delete({_id: reference._id}));
         if (propertyHub.length > 1) {
           actions = actions.concat(this.save(propertyHub, language));
@@ -207,6 +274,9 @@ export default {
   },
 
   search(entitySharedId, query, language) {
+    if (!language) {
+      return Promise.reject(createError('Language cant be undefined'));
+    }
     return Promise.all([this.getByDocument(entitySharedId, language), entities.getById(entitySharedId, language)])
     .then(([relationships, entity]) => {
       let filter = Object.keys(query.filter).reduce((result, filterGroupKey) => {
@@ -248,25 +318,35 @@ export default {
   },
 
   delete(condition) {
+    let relationshipsDeleted = 0;
+    let hubsDeleted = 0;
     if (!condition) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
     return model.get(condition)
     .then((relationships) => {
-      return Promise.all(relationships.map((relation) => model.delete({_id: relation._id})))
+      return Promise.all(relationships.map((relation) => {
+        relationshipsDeleted += 1;
+        return model.delete({sharedId: relation.sharedId});
+      }))
       .then(() => {
-        return Promise.all(relationships.map((relation) => model.get({hub: relation.hub})));
+        return Promise.all(relationships.map((relation) => model.get({hub: relation.hub, language: relation.language})));
       });
     })
     .then((hubs) => {
       return Promise.all(hubs.map((hub) => {
         const shouldDeleteTheLoneConnectionToo = hub.length === 1;
         if (shouldDeleteTheLoneConnectionToo) {
+          relationshipsDeleted += 1;
+          hubsDeleted += 1;
           return model.delete({hub: hub[0].hub});
         }
 
         return Promise.resolve();
       }));
+    })
+    .then(() => {
+      return {hubsDeleted, relationshipsDeleted};
     })
     .catch(console.log);
   },

@@ -598,7 +598,7 @@ describe('entities', () => {
 
     it('should delete the document relationships', (done) => {
       return entities.delete('shared')
-      .then(() => relationships.getByDocument('shared'))
+      .then(() => relationships.get({entity: 'shared'}))
       .then((refs) => {
         expect(refs.length).toBe(0);
         done();
