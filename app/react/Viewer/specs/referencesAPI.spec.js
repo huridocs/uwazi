@@ -16,7 +16,7 @@ describe('referencesAPI', () => {
     .get(APIURL + 'references/search/sourceDocument', {body: JSON.stringify(searchResponse)})
     .get(APIURL + 'references/search/sourceDocument?sort=title', {body: JSON.stringify(searchSortedResponse)})
     .get(APIURL + 'references/count_by_relationtype?relationtypeId=abc1', {body: '2'})
-    .delete(APIURL + 'references?_id=id&_rev=rev', {body: JSON.stringify({backendResponse: 'testdelete'})})
+    .delete(APIURL + 'references?_id=id', {body: JSON.stringify({backendResponse: 'testdelete'})})
     .post(APIURL + 'references', {body: JSON.stringify({backednResponse: 'test'})});
   });
 
@@ -79,7 +79,7 @@ describe('referencesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {_id: 'id', _rev: 'rev', omitProperty: 'omit'};
+      let document = {_id: 'id', omitProperty: 'omit'};
       referencesAPI.delete(document)
       .then((response) => {
         expect(response).toEqual({backendResponse: 'testdelete'});
