@@ -10,7 +10,7 @@ describe('RadioButtons', () => {
   beforeEach(() => {
     props = {
       label: 'input label',
-      value: [],
+      value: '',
       options: [{label: 'Option1', value: 'option1'}, {label: 'Option2', value: 'option2'}],
       onChange: jasmine.createSpy('onChange')
     };
@@ -43,7 +43,7 @@ describe('RadioButtons', () => {
     beforeEach(() => {
       props = {
         label: 'input label',
-        value: [],
+        value: '',
         options: [{name: 'Option1', id: 'option1'}, {name: 'Option2', id: 'option2'}],
         optionsValue: 'id',
         optionsLabel: 'name'

@@ -12,9 +12,9 @@ describe('FiltersForm', () => {
   beforeEach(() => {
     props = {
       searchDocuments: jasmine.createSpy('searchDocuments'),
-      fields: Immutable([{author: {initialValue: 'Philip K. Dick'}}]),
+      fields: Immutable([{name: 'name', author: {initialValue: 'Philip K. Dick'}}]),
       documentTypes: Immutable({}),
-      templates: [],
+      templates: Immutable([]),
       aggregations: Immutable({}),
       search: {searchTerm: 'Batman'},
       storeKey: 'library'

@@ -1,10 +1,9 @@
 import React from 'react';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
 import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
-
 import PropertyOption, {dragSource as dragSourceOption} from 'app/Templates/components/PropertyOption';
 
 function wrapInTestContext(DecoratedComponent) {
@@ -21,9 +20,6 @@ describe('PropertyOption', () => {
   function renderComponent(ComponentToRender, props) {
     let result;
     store = createStore(() => {});
-    let renderer = TestUtils.createRenderer();
-    renderer.render(<ComponentToRender {...props}/>);
-
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props}/></Provider>);
     return result;
   }

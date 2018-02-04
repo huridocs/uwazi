@@ -1,23 +1,22 @@
+import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
+import {browserHistory} from 'react-router';
+import {connect} from 'react-redux';
+import {createSelector} from 'reselect';
+import Immutable, {fromJS} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import SidePanel from 'app/Layout/SidePanel';
-import {ShowMetadata} from 'app/Metadata';
-import {t} from 'app/I18N';
-import {browserHistory} from 'react-router';
 
+import {MetadataFormButtons, ShowMetadata} from 'app/Metadata';
+import {NeedAuthorization} from 'app/Auth';
+import {t} from 'app/I18N';
 import AttachmentsList from 'app/Attachments/components/AttachmentsList';
-import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
-import {NeedAuthorization} from 'app/Auth';
-import ShowToc from './ShowToc';
-import {MetadataFormButtons} from 'app/Metadata';
-import SearchText from './SearchText';
-import SnippetsTab from './SnippetsTab';
+import SidePanel from 'app/Layout/SidePanel';
 
-import {fromJS} from 'immutable';
-import {createSelector} from 'reselect';
+import SearchText from './SearchText';
+import ShowToc from './ShowToc';
+import SnippetsTab from './SnippetsTab';
 
 const selectReferences = createSelector(
   s => s.references,
@@ -293,8 +292,8 @@ DocumentSidePanel.propTypes = {
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
-  references: PropTypes.object,
-  connections: PropTypes.object,
+  references: PropTypes.instanceOf(Immutable.List),
+  connections: PropTypes.instanceOf(Immutable.List),
   tocFormState: PropTypes.object,
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
