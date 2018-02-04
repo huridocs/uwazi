@@ -314,6 +314,7 @@ DocumentSidePanel.contextTypes = {
 
 DocumentSidePanel.defaultProps = {
   tocFormComponent: () => false,
+  DocumentForm: () => false,
   EntityForm: () => false
 };
 
