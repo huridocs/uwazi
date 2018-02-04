@@ -89,7 +89,7 @@ describe('Attachment', () => {
     render();
     const deleteButton = component.find('.attachment-buttons').find('a').at(1);
 
-    expect(deleteButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
+    expect(deleteButton.parents().at(2).is(NeedAuthorization)).toBe(true);
     expect(deleteButton.parent().props().if).toBe(true);
 
     deleteButton.simulate('click');
@@ -143,7 +143,7 @@ describe('Attachment', () => {
       expect(replaceButton.props().documentId).toBe(props.parentId);
       expect(replaceButton.props().storeKey).toBe('storeKey');
       expect(replaceButton.props().documentSharedId).toBe(props.parentSharedId);
-      expect(replaceButton.parent().parent().parent().is(NeedAuthorization)).toBe(true);
+      expect(replaceButton.parents().at(2).is(NeedAuthorization)).toBe(true);
       expect(replaceButton.parent().props().if).toBe(true);
     });
   });

@@ -70,7 +70,7 @@ describe('DocumentsList', () => {
 
     it('should render GraphView prop', () => {
       expect(component.find(props.GraphView).length).toBe(1);
-      expect(component.find(props.GraphView).node.type().props.children).toBe('GraphView');
+      expect(component.find(props.GraphView).getElements()[0].type().props.children).toBe('GraphView');
     });
   });
 
@@ -83,7 +83,7 @@ describe('DocumentsList', () => {
 
     render();
     expect(component.find('.search-list-actions').length).toBe(1);
-    expect(component.find('.search-list-actions').childAt(0).node.type().props.children).toBe('action buttons');
+    expect(component.find('.search-list-actions').childAt(0).getElements()[0].type().props.children).toBe('action buttons');
   });
 
   it('should hold sortButtons with search callback and selectedTemplates', () => {

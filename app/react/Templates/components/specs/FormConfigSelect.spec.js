@@ -32,10 +32,10 @@ describe('FormConfigSelect', () => {
   it('should render fields with the correct datas', () => {
     component = shallow(<FormConfigSelect {...props}/>);
     const formFields = component.find(Field);
-    expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
-    expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
-    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].showInCard');
-    expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].filter');
+    expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
+    expect(formFields.getElements()[1].props.model).toBe('template.data.properties[0].required');
+    expect(formFields.getElements()[2].props.model).toBe('template.data.properties[0].showInCard');
+    expect(formFields.getElements()[3].props.model).toBe('template.data.properties[0].filter');
 
     expect(component.find(Select).props().model).toBe('template.data.properties[0].content');
   });

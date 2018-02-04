@@ -82,7 +82,7 @@ describe('ConnectionsList', () => {
         render();
         component.find(Item).last().simulate('click');
         expect(props.activateReference).toHaveBeenCalledWith(props.references.toJS()[0], props.doc.pdfInfo, 'tabName');
-        expect(component.find(Item).last().node.props.className).toContain('relationship-active');
+        expect(component.find(Item).last().getElements()[0].props.className).toContain('relationship-active');
       });
       describe('when readOnly', () => {
         it('should not activate it', () => {
@@ -90,7 +90,7 @@ describe('ConnectionsList', () => {
           render();
           component.find(Item).last().simulate('click');
           expect(props.activateReference).not.toHaveBeenCalled();
-          expect(component.find(Item).last().node.props.className).not.toContain('relationship-active');
+          expect(component.find(Item).last().getElements()[0].props.className).not.toContain('relationship-active');
         });
       });
     });
@@ -101,7 +101,7 @@ describe('ConnectionsList', () => {
         render();
         component.find(Item).last().simulate('click');
         expect(props.selectReference).toHaveBeenCalledWith(props.references.toJS()[0], '');
-        expect(component.find(Item).last().node.props.className).toContain('relationship-selected');
+        expect(component.find(Item).last().getElements()[0].props.className).toContain('relationship-selected');
       });
 
       describe('when connection is to the entire document', () => {

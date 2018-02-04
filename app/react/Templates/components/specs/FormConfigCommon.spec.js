@@ -28,7 +28,7 @@ describe('FormConfigCommon', () => {
   it('should render Fields with the correct datas and corrected index', () => {
     component = shallow(<FormConfigCommon {...props}/>);
     const formFields = component.find(Field);
-    expect(formFields.nodes[0].props.model).toBe('template.data.commonProperties[1].prioritySorting');
+    expect(formFields.getElements()[0].props.model).toBe('template.data.commonProperties[1].prioritySorting');
   });
 
   describe('validation', () => {

@@ -86,7 +86,7 @@ describe('MetadataTemplate', () => {
 
     it('should render the template name field', () => {
       let component = shallow(<MetadataTemplate {...props} />);
-      expect(component.find(Field).node.props.model).toBe('.name');
+      expect(component.find(Field).getElements()[0].props.model).toBe('.name');
     });
 
     describe('when fields is empty', () => {

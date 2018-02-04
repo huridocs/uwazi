@@ -2,6 +2,10 @@ require('es6-promise').polyfill();
 // require('whatwg-fetch');
 require('isomorphic-fetch');
 console.error = function(){};
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-15';
+
+Enzyme.configure({ adapter: new Adapter() });
 //var context = require.context('./app/react', true, /\.spec\.js$/); //make sure you have your directory and regex test set correctly!
 //context.keys().forEach(context)
 
