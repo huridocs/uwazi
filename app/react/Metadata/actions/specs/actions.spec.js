@@ -202,7 +202,7 @@ describe('Metadata Actions', () => {
       }
       //
 
-      store = mockStore({locale: 'es'});
+      store = mockStore({locale: 'es', templates: 'immutableTemplates'});
       store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
     });
 
@@ -233,7 +233,7 @@ describe('Metadata Actions', () => {
       });
 
       it('should request and set viewer states', () => {
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es');
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es', {templates: 'immutableTemplates'});
         expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
         expect(store.getActions()).toContain({type: 'setViewerState'});
       });
