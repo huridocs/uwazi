@@ -45,6 +45,7 @@ export class FormConfigRelationship extends Component {
           <Select model={`template.data.properties[${index}].content`}
                   options={options}
                   optionsLabel="name"
+                  placeholder="Any entity or document"
                   optionsValue="_id" />
         </div>
 
