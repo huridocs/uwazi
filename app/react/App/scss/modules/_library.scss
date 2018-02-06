@@ -29,30 +29,30 @@
 
 .library-viewer .item {
   @media(min-width: 564px) {
-    width: calc(50% - 7px);
+    width: calc(50% - 15px);
   }
 
   @media(min-width: 860px) {
-    width: calc(33.33% - 10px);
+    width: calc(33.33% - 15px);
   }
 
   @media(min-width: 1024px) {
-    width: calc(50% - 7px);
+    width: calc(50% - 15px);
   }
 
   @media(min-width: 1280px) {
-    width: calc(33.33% - 10px);
+    width: calc(33.33% - 15px);
   }
 
   @media(min-width: 1440px) {
-    width: calc(25% - 11px);
+    width: calc(25% - 15px);
   }
 
   @media(min-width: 1920px) {
-    width: calc(20% - 12px);
+    width: calc(20% - 15px);
   }
 
   @media(min-width: 2240px) {
-    width: calc(16.666% - 12px);
+    width: calc(16.666% - 15px);
   }
 }

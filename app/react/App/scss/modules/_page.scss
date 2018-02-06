@@ -6,10 +6,10 @@
 
 .page-viewer .item {
   @media(min-width: 564px) {
-    width: calc(50% - 7px);
+    width: calc(50% - 15px);
   }
 
   @media(min-width: 860px) {
-    width: calc(33.33% - 10px);
+    width: calc(33.33% - 15px);
   }
 }

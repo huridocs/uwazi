@@ -3,8 +3,8 @@
   flex-wrap: wrap;
   list-style-type: none;
   padding: 0;
-  margin: auto;
-  justify-content: space-between;
+  margin-right: -15px;
+  justify-content: flex-start;
 }
 
 .item {
@@ -14,7 +14,8 @@
   width: 100%;
   min-height: 100px;
   padding: 0 0 30px 0;
-  margin: 0 0 15px;
+  margin-right:15px;
+  margin-bottom: 15px;
   top: 0;
   background: $c-white;
   border-radius: $border-radius;
