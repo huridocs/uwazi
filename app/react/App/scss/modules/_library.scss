@@ -58,3 +58,9 @@
     width: calc(16.666% - 15px);
   }
 }
+
+.library-viewer .item-group,
+.uploads-viewer .item-group,
+.entity-viewer .item-group {
+  margin-right: -15px;
+}
