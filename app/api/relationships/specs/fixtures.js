@@ -27,9 +27,9 @@ const hub9 = db.id();
 const hub10 = db.id();
 const hub11 = db.id();
 
-const sharedId1  = db.id();
-const sharedId2  = db.id();
-const sharedId3  = db.id();
+const sharedId1 = db.id();
+const sharedId2 = db.id();
+const sharedId3 = db.id();
 
 export default {
   connections: [
@@ -38,9 +38,11 @@ export default {
 
     {entity: 'entity2', hub: hub2, template: relation2, sharedId: db.id(), language: 'en'},
     {entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}, language: 'en', sharedId: sharedId1},
+    {entity: 'entity3', hub: hub2, language: 'en', sharedId: db.id()},
 
     {entity: 'entity2', hub: hub11, template: relation2, sharedId: db.id(), language: 'ru'},
     {entity: 'entity3', hub: hub11, template: relation2, range: {text: 'rusian'}, language: 'ru', sharedId: sharedId1},
+    {entity: 'entity3', hub: hub11, language: 'en', sharedId: db.id()},
 
     {entity: 'entity2', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
     {entity: 'doc4', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},

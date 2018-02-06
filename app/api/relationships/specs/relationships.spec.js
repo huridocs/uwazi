@@ -21,7 +21,7 @@ describe('relationships', () => {
     it('should return all the relationships of a document in the current language', (done) => {
       relationships.getByDocument('entity2', 'en')
       .then((result) => {
-        expect(result.length).toBe(8);
+        expect(result.length).toBe(9);
         const entity1Connection = result.find((connection) => connection.entity === 'entity1');
         expect(entity1Connection.entityData.title).toBe('entity1 title');
         expect(entity1Connection.entityData.icon).toBe('icon1');
@@ -74,7 +74,7 @@ describe('relationships', () => {
     it('should return groups of connection including unpublished docs if user is found', (done) => {
       relationships.getGroupsByConnection('entity2', 'en', {user: 'found'})
       .then(results => {
-        expect(results.length).toBe(2);
+        expect(results.length).toBe(3);
         const group1 = results.find((r) => r.key === relation1.toString());
         expect(group1.key).toBe(relation1.toString());
         expect(group1.templates[0]._id.toString()).toBe(template.toString());
@@ -82,6 +82,10 @@ describe('relationships', () => {
         const group2 = results.find((r) => r.key === relation2.toString());
         expect(group2.key).toBe(relation2.toString());
         expect(group2.templates[0].count).toBe(2);
+
+        const group3 = results.find((r) => !r.key);
+        expect(group3.key).toBe(null);
+        expect(group3.templates[0].count).toBe(1);
 
         done();
       })
@@ -91,9 +95,10 @@ describe('relationships', () => {
     it('should return groups of connection wihtout refs if excluded', (done) => {
       relationships.getGroupsByConnection('entity2', 'en', {excludeRefs: true})
       .then(results => {
-        expect(results.length).toBe(2);
+        expect(results.length).toBe(3);
         expect(results[0].templates[0].refs).toBeUndefined();
         expect(results[1].templates[0].refs).toBeUndefined();
+        expect(results[2].templates[0].refs).toBeUndefined();
 
         done();
       })
@@ -380,7 +385,7 @@ describe('relationships', () => {
       .then((result) => {
         expect(result.rows.length).toBe(5);
         expect(result.rows[0].connections.length).toEqual(1);
-        expect(result.rows[1].connections.length).toEqual(1);
+        expect(result.rows[1].connections.length).toEqual(2);
         expect(result.rows[2].connections.length).toEqual(1);
         expect(result.rows[3].connections.length).toEqual(1);
         expect(result.rows[4].connections.length).toEqual(4);
@@ -436,7 +441,7 @@ describe('relationships', () => {
         return Promise.all([relationships.getByDocument('entity3', 'en'), relationships.getByDocument('entity3', 'ru')]);
       })
       .then(([relationshipsInEnglish, relationshipsInRusian]) => {
-        expect(relationshipsInEnglish.length).toBe(0);
+        expect(relationshipsInEnglish.length).toBe(2);
         expect(relationshipsInRusian.length).toBe(2);
         done();
       });

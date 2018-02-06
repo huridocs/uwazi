@@ -61,7 +61,7 @@ export default {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
     }
-    return model.get({entity: id})
+    return model.get({entity: id, language})
     .then((ownRelations) => {
       const hubsIds = ownRelations.map(relationship => relationship.hub);
       return model.db.aggregate([
@@ -352,7 +352,7 @@ export default {
   },
 
   deleteTextReferences(sharedId, language) {
-    return model.delete({entity: sharedId, language});
+    return model.delete({entity: sharedId, language, range: {$exists: true}});
   },
 
   updateMetadataProperties(template, currentTemplate) {
