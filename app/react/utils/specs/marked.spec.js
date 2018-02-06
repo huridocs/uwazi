@@ -1,6 +1,6 @@
 import marked from '../marked';
 
-describe('marked (extended Marked util)', () => {
+fdescribe('marked (extended Marked util)', () => {
   it('should work as a "by-pass" to the main marked function', () => {
     expect(marked('#Header\n\nText')).toBe('<p>#Header</p>\n<p>Text</p>\n');
   });
@@ -23,13 +23,14 @@ describe('marked (extended Marked util)', () => {
   });
 
   describe('Vimeo markup', () => {
-    it('should append a vimeo iframe inside a video container div', () => {
+    fit('should append a vimeo iframe inside a video container div', () => {
       const markup = 'First paragraph\n\n{vimeo}(http://vimeo.com/6701902)\n\n' +
                      'Second paragraph\n\n{youtube}(https://youtu.be/qzzM4PT2Av8)\n\n' +
                      '{vimeo}(http://player.vimeo.com/video/67019023)\n\n' +
                      'Third paragraph\n\n{vimeo}(http://player.vimeo.com/video/6775546?title=0&byline=0&portrait=0)\n\n' +
                      '{vimeo}(http://vimeo.com/channels/staffpicks/67019026)\n\n' +
-                     '{vimeo}(https://vimeo.com/15414122)';
+                     '{vimeo}(https://vimeo.com/15414122)\n\n' +
+                     '{vimeo}(https://vimeo.com/15414123, {"title": false, "byline": false, "portrait": false})';
 
       expect(marked(markup)).toContain('<div class="video-container"><iframe src="https://player.vimeo.com/video/6701902');
       expect(marked(markup)).toContain('<div class="video-container"><iframe src="https://www.youtube.com/embed/qzzM4PT2Av8');
@@ -37,6 +38,7 @@ describe('marked (extended Marked util)', () => {
       expect(marked(markup)).toContain('<div class="video-container"><iframe src="https://player.vimeo.com/video/6775546');
       expect(marked(markup)).toContain('<div class="video-container"><iframe src="https://player.vimeo.com/video/67019026');
       expect(marked(markup)).toContain('<div class="video-container"><iframe src="https://player.vimeo.com/video/15414122');
+      expect(marked(markup)).toContain('<div class="video-container"><iframe src="https://player.vimeo.com/video/15414123?title=0&byline=0&portrait=0');
     });
 
     it('should append an error if video embeded in middle of a paragraph', () => {

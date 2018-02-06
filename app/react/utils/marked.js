@@ -4,14 +4,32 @@ import getYouTubeId from 'get-youtube-id';
 const youtubePlaceholder = '{---UWAZIYOUTUBE---}';
 const vimeoPlaceholder = '{---UWAZIVIMEO---}';
 
-function embedVideoHtml(videoId, type) {
+function embedYoutubeHtml(videoId) {
+  return '<div class="video-container"><iframe ' +
+           `src="https://www.youtube.com/embed/${videoId}` +
+           '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></div>';
+}
+
+function embedVimeoHtml(videoId, options) {
+  let queryOptions = '?';
+  if (options.title === false) {
+    queryOptions += 'title=0';
+  }
+  if (options.byline === false) {
+    queryOptions += '&byline=0';
+  }
+  if (options.portrait === false) {
+    queryOptions += '&portrait=0';
+  }
+  return '<div class="video-container"><iframe ' +
+         `src="https://player.vimeo.com/video/${videoId}${queryOptions}" ` +
+         'frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
+}
+
+function embedVideoHtml(videoId, type, options) {
   const videoHtmls = {
-    youtube: '<div class="video-container"><iframe ' +
-             `src="https://www.youtube.com/embed/${videoId}` +
-             '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></div>',
-    vimeo: '<div class="video-container"><iframe ' +
-           `src="https://player.vimeo.com/video/${videoId}" ` +
-           'frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>'
+    youtube: embedYoutubeHtml(videoId),
+    vimeo: embedVimeoHtml(videoId, options)
   };
   return videoHtmls[type];
 }
@@ -48,8 +66,13 @@ function appendVideo(markdown, type) {
 
   const placeholderMatch = RegExp(`<p>${placeholders[type]}` + '\\((.*?)\\)' + '</p>', 'g');
 
-  let postMarkedText = markdown.replace(placeholderMatch, (_, videoId) => {
-    const html = embedVideoHtml(videoId, type);
+  let postMarkedText = markdown.replace(placeholderMatch, (_, params) => {
+    const videoId = params.split(',')[0];
+    let options = params.split(', ');
+    options.shift();
+    options = options.join(', ') || '{}';
+    options = JSON.parse(options.replace(/&quot;/g, '"'));
+    const html = embedVideoHtml(videoId, type, options);
     return html;
   });
 
