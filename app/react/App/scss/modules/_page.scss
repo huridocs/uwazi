@@ -3,3 +3,13 @@
   padding-bottom: 0;
   background: $c-white;
 }
+
+.page-viewer .item {
+  @media(min-width: 564px) {
+    width: calc(50% - 7px);
+  }
+
+  @media(min-width: 860px) {
+    width: calc(33.33% - 10px);
+  }
+}
