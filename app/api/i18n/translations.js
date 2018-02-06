@@ -35,8 +35,8 @@ function processContextValues(context) {
 }
 
 function update(translation) {
-  return model.get(translation._id)
-  .then(([currentTranslationData]) => {
+  return model.getById(translation._id)
+  .then((currentTranslationData) => {
     currentTranslationData.contexts.forEach((context) => {
       let isPresentInTheComingData = translation.contexts.find((_context) => _context.id === context.id);
       if (!isPresentInTheComingData) {
