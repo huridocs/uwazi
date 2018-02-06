@@ -14,7 +14,7 @@
   &:hover {
     color: $c-black;
   }
-  
+
   &.fa-long-arrow-down:before {
     position: relative;
     bottom: 5px;
@@ -25,4 +25,42 @@
   .order-by-arrow {
     display: none;
   }
+}
+
+.uploads-viewer .item,
+.library-viewer .item,
+.entity-viewer .item-group .item {
+  @media(min-width: 564px) {
+    width: calc(50% - 15px);
+  }
+
+  @media(min-width: 860px) {
+    width: calc(33.33% - 15px);
+  }
+
+  @media(min-width: 1024px) {
+    width: calc(50% - 15px);
+  }
+
+  @media(min-width: 1280px) {
+    width: calc(33.33% - 15px);
+  }
+
+  @media(min-width: 1440px) {
+    width: calc(25% - 15px);
+  }
+
+  @media(min-width: 1920px) {
+    width: calc(20% - 15px);
+  }
+
+  @media(min-width: 2240px) {
+    width: calc(16.666% - 15px);
+  }
+}
+
+.library-viewer .item-group,
+.uploads-viewer .item-group,
+.entity-viewer .item-group {
+  margin-right: -15px;
 }
