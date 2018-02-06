@@ -27,6 +27,7 @@
   }
 }
 
+.uploads-viewer .item,
 .library-viewer .item {
   @media(min-width: 564px) {
     width: calc(50% - 15px);
