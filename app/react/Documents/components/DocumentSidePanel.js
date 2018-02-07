@@ -1,7 +1,6 @@
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import {browserHistory} from 'react-router';
 import {connect} from 'react-redux';
-import {createSelector} from 'reselect';
 import Immutable, {fromJS} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -19,7 +18,6 @@ import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 
-import {fromJS} from 'immutable';
 import * as viewerModule from 'app/Viewer';
 
 export class DocumentSidePanel extends Component {

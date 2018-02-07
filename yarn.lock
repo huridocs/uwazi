@@ -7062,6 +7062,13 @@ react-addons-shallow-compare@15.5.0:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
+react-addons-test-utils@15.5.0:
+  version "15.5.0"
+  resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.5.0.tgz#d09f7475ba7728bcdb288303a687b64c75b31a5c"
+  dependencies:
+    fbjs "^0.8.4"
+    object-assign "^4.1.0"
+
 react-async-component@^1.0.0-beta.3:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-async-component/-/react-async-component-1.0.1.tgz#ad60c4e13f6265fb6b456485ee0833e209258037"
