@@ -7,7 +7,7 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
       context: reference.template ? reference.template.toString() : null,
       connectionLabel: reference.template ? relationTypes.find((r) => {
         return r._id.toString() === reference.template.toString();
-      }).name,
+      }).name : null,
       templates: []
     };
     groupedReferences.push(groupData);
