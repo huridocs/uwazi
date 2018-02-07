@@ -38,7 +38,7 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections, GraphView, view, hideFooter} = this.props;
+    const {documents, connections, GraphView, view, searchCentered, hideFooter} = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
       counter = <span>
@@ -53,11 +53,11 @@ export default class DocumentsList extends Component {
     return (
       <div className="documents-list">
         <div className="main-wrapper">
-          <div className="search-list">
+          <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
             {ActionButtons}
             <Search storeKey={this.props.storeKey}/>
           </div>
-          <div className="sort-by">
+          <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
               <div className="documents-counter">
                 <span className="documents-counter-label">{counter}</span>
                 <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
@@ -153,6 +153,8 @@ DocumentsList.propTypes = {
     PropTypes.func,
     PropTypes.object
   ]),
+  // TEST!!!
+  searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
   view: PropTypes.string
 };

@@ -123,7 +123,7 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)}/>
+              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered={true} />
             </TabContent>
           </Tabs>
         </main>

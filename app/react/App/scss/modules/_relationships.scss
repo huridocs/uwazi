@@ -1,8 +1,16 @@
 $breakpoint: 768px;
 $c-background: #fcfcfc;
 
-.entity-viewer {
+.entity-viewer,
+.document-viewer {
   background-color: $c-background;
+
+  .search-list.centered,
+  .sort-by.centered {
+    max-width: 910px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .relationships-graph {

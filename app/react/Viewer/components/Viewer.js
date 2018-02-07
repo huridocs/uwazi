@@ -76,7 +76,7 @@ export class Viewer extends Component {
               <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
-              <ConnectionsList hideFooter={true} />
+              <ConnectionsList hideFooter={true} searchCentered={true} />
             </ShowIf>
             <TargetDocument />
             <Footer/>
