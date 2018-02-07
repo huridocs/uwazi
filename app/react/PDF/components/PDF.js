@@ -28,9 +28,11 @@ export class PDF extends Component {
   }
 
   componentDidMount() {
-    this.refs.pdfContainer.addEventListener('textlayerrendered', (e) => {
-      this.pageLoaded(e.detail.pageNumber);
-    });
+    if (this.refs.pdfContainer) {
+      this.refs.pdfContainer.addEventListener('textlayerrendered', (e) => {
+        this.pageLoaded(e.detail.pageNumber);
+      });
+    }
   }
 
   pageUnloaded(numPage) {

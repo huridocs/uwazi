@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
 import {DragDropContext} from 'react-dnd';
 import {Provider} from 'react-redux';
@@ -86,7 +86,7 @@ describe('MetadataTemplate', () => {
 
     it('should render the template name field', () => {
       let component = shallow(<MetadataTemplate {...props} />);
-      expect(component.find(Field).node.props.model).toBe('.name');
+      expect(component.find(Field).getElements()[0].props.model).toBe('.name');
     });
 
     describe('when fields is empty', () => {
@@ -98,7 +98,7 @@ describe('MetadataTemplate', () => {
 
     describe('when it has commonProperties', () => {
       it('should render all commonProperties as MetadataProperty', () => {
-        props.commonProperties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
+        props.commonProperties = [{label: 'country', type: 'text', _id: '1'}, {label: 'author', type: 'text', _id: '2'}];
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);
         expect(component.find(MetadataProperty).at(0).props().index).toBe(-2);
@@ -108,7 +108,7 @@ describe('MetadataTemplate', () => {
 
     describe('when it has properties', () => {
       it('should render all properties as MetadataProperty', () => {
-        props.properties = [{label: 'country', type: 'text'}, {label: 'author', type: 'text'}];
+        props.properties = [{label: 'country', type: 'text', _id: '1'}, {label: 'author', type: 'text', _id: '2'}];
         props.commonProperties = [];
         let component = shallow(<MetadataTemplate {...props} />);
         expect(component.find(MetadataProperty).length).toBe(2);

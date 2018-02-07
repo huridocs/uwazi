@@ -1,19 +1,19 @@
+import {Field, Form} from 'react-redux-form';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import Immutable, {is} from 'immutable';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {wrapDispatch} from 'app/Multireducer';
-import {Field, Form} from 'react-redux-form';
-import {is} from 'immutable';
 
 import {MultiSelect, DateRange, NestedMultiselect, NumericRange, Switcher} from 'app/ReactReduxForms';
-import ShowIf from 'app/App/ShowIf';
-import FormGroup from 'app/DocumentForm/components/FormGroup';
-import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {activateFilter} from 'app/Library/actions/filterActions';
-import libraryHelper from 'app/Library/helpers/libraryFilters';
+import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {t} from 'app/I18N';
+import {wrapDispatch} from 'app/Multireducer';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
+import ShowIf from 'app/App/ShowIf';
 import debounce from 'app/utils/debounce';
+import libraryHelper from 'app/Library/helpers/libraryFilters';
 
 export class FiltersForm extends Component {
 
@@ -200,7 +200,7 @@ export class FiltersForm extends Component {
 }
 
 FiltersForm.propTypes = {
-  templates: PropTypes.object,
+  templates: PropTypes.instanceOf(Immutable.List),
   aggregations: PropTypes.object,
   fields: PropTypes.object.isRequired,
   searchDocuments: PropTypes.func,

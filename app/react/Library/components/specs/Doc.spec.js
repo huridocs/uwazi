@@ -56,7 +56,7 @@ describe('Doc', () => {
 
       it('should pass the connections and include delete button for only non-metadata properties', () => {
         expect(header.find('.item-connection').length).toBe(2);
-        expect(header.find('button').at(0).parent().parent().is(NeedAuthorization)).toBe(true);
+        expect(header.find('button').at(0).parents().at(1).is(NeedAuthorization)).toBe(true);
         expect(header.find('button').at(0).parent().props().if).toBe(false);
         expect(header.find('button').at(1).parent().props().if).toBe(true);
       });

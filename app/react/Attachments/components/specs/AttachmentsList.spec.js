@@ -53,8 +53,8 @@ describe('AttachmentsList', () => {
     render();
     expect(component.find(UploadAttachment).props().entityId).toBe('parentId');
     expect(component.find(UploadAttachment).props().storeKey).toBe('storeKey');
-    expect(component.find(UploadAttachment).parent().parent().is(NeedAuthorization)).toBe(true);
-    expect(component.find(UploadAttachment).parent().parent().props().roles).toEqual(['admin', 'editor']);
+    expect(component.find(UploadAttachment).parents().at(1).is(NeedAuthorization)).toBe(true);
+    expect(component.find(UploadAttachment).parents().at(1).props().roles).toEqual(['admin', 'editor']);
   });
 
   describe('When parent is Target Document', () => {
@@ -77,7 +77,7 @@ describe('AttachmentsList', () => {
     it('should render nothing if user not logged in', () => {
       props.files = Immutable([]);
       render();
-      expect(component.node).toBe(null);
+      expect(component.getElements()[0]).toBe(null);
     });
 
     it('should add button in Downloads section', () => {

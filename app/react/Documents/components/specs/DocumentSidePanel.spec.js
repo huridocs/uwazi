@@ -20,8 +20,8 @@ describe('DocumentSidePanel', () => {
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
-      references: ['reference'],
-      connections: ['connection'],
+      references: Immutable.fromJS(['reference']),
+      connections: Immutable.fromJS(['connections']),
       formPath: 'formPath'
     };
   });

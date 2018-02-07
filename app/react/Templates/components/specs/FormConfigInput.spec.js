@@ -28,11 +28,11 @@ describe('FormConfigInput', () => {
   it('should render Fields with the correct datas', () => {
     component = shallow(<FormConfigInput {...props}/>);
     const formFields = component.find(Field);
-    expect(formFields.nodes[0].props.model).toBe('template.data.properties[0].label');
-    expect(formFields.nodes[1].props.model).toBe('template.data.properties[0].required');
-    expect(formFields.nodes[2].props.model).toBe('template.data.properties[0].showInCard');
-    expect(formFields.nodes[3].props.model).toBe('template.data.properties[0].filter');
-    expect(formFields.nodes[4].props.model).toBe('template.data.properties[0].prioritySorting');
+    expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
+    expect(formFields.getElements()[1].props.model).toBe('template.data.properties[0].required');
+    expect(formFields.getElements()[2].props.model).toBe('template.data.properties[0].showInCard');
+    expect(formFields.getElements()[3].props.model).toBe('template.data.properties[0].filter');
+    expect(formFields.getElements()[4].props.model).toBe('template.data.properties[0].prioritySorting');
   });
 
   it('should not allow prioritySorting on types others than text or date', () => {

@@ -33,7 +33,9 @@ export class SearchText extends Component {
   searchSnippets(searchTerm, sharedId) {
     if (sharedId) {
       this.props.searchSnippets(searchTerm, sharedId, this.props.storeKey);
-      this.formDispatch(formActions.change('searchText.searchTerm', searchTerm));
+      if (this.formDispatch) {
+        this.formDispatch(formActions.change('searchText.searchTerm', searchTerm));
+      }
     }
   }
 

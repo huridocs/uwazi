@@ -144,6 +144,9 @@ DocumentsList.propTypes = {
   sortButtonsStateProperty: PropTypes.string,
   storeKey: PropTypes.string,
   onSnippetClick: PropTypes.func,
-  clickOnDocument: PropTypes.func,
+  clickOnDocument: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object
+  ]),
   view: PropTypes.string
 };

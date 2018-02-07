@@ -83,10 +83,12 @@ describe('SearchText', () => {
       render();
       spyOn(instance, 'searchSnippets');
       instance.componentDidMount();
+      instance.attachDispatch(() => {});
       expect(instance.searchSnippets).not.toHaveBeenCalled();
 
       props.storeKey = 'documentViewer';
       render();
+      instance.attachDispatch(() => {});
       spyOn(instance, 'searchSnippets');
       instance.componentDidMount();
       expect(instance.searchSnippets).toHaveBeenCalledWith('term', 'sharedId');

@@ -1,11 +1,21 @@
 require('es6-promise').polyfill();
-// require('whatwg-fetch');
 require('isomorphic-fetch');
-console.error = function(){};
-//var context = require.context('./app/react', true, /\.spec\.js$/); //make sure you have your directory and regex test set correctly!
-//context.keys().forEach(context)
 
-// test/test_index.js
+// lots of errors to debug ...
+var error = console.error.bind(console);
+console.error = function(message){
+  if (message.match('/api/i18n/systemKeys')) {
+    return 
+  }
+  if (message.match('Unhandled promise rejection')) {
+    return
+  }
+  error(message);
+};
+//console.error = () => {};
+import Enzyme from 'enzyme';
+import Adapter from 'enzyme-adapter-react-15';
+Enzyme.configure({adapter: new Adapter()});
 
 // This gets replaced by karma webpack with the updated files on rebuild
 var __karmaWebpackManifest__ = [];

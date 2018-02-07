@@ -15,7 +15,7 @@ describe('RelationshipsGraph', () => {
 
   beforeEach(() => {
     props = {
-      parentEntity: 'parentEntity',
+      parentEntity: {parentEntity: 'parentEntity'},
       connections: Immutable.fromJS({rows: [
         {_id: '1', connections: []}
       ], totalRows: 1}),
@@ -63,7 +63,7 @@ describe('RelationshipsGraph', () => {
     it('should hold a sticky parent Doc', () => {
       expect(stickyElement.props().scrollElement).toBe('.entity-viewer');
       expect(stickyElement.props().boundaryElement).toBe('.group-row');
-      expect(stickyElement.find(Doc).props()).toEqual({doc: 'parentEntity', searchParams: props.search});
+      expect(stickyElement.find(Doc).props()).toEqual({doc: {parentEntity: 'parentEntity'}, searchParams: props.search});
     });
 
     it('should display correct blank state', () => {

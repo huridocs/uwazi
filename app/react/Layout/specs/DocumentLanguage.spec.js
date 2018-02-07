@@ -26,7 +26,7 @@ describe('DocumentLanguage', () => {
 
   it('should not show a language if doc is not a document-type entity is not present', () => {
     render();
-    expect(component.node).toBe(null);
+    expect(component.getElements()[0]).toBe(null);
   });
 
   describe('When file matches current locale', () => {
@@ -36,7 +36,7 @@ describe('DocumentLanguage', () => {
 
       render();
 
-      expect(component.node).toBe(null);
+      expect(component.getElements()[0]).toBe(null);
     });
   });
 

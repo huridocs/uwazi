@@ -68,7 +68,7 @@ describe('UploadAttachment', () => {
 
       expect(component.find('input').length).toBe(0);
 
-      expect(component.find('span').at(1).text()).toBe(' 77%');
+      expect(component.find('span').at(1).text()).toMatch('77%');
     });
   });
 });
