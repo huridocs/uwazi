@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import marked from 'app/utils/marked';
+import MarkdownViewer from 'app/Markdown';
 
 export default class MarkDown extends Component {
 
@@ -18,7 +18,7 @@ export default class MarkDown extends Component {
           <textarea className="form-control" rows={rows} onChange={this.props.onChange} value={this.props.value}/>
         </TabContent>
         <TabContent for="preview" className="markdownViewer">
-          <div className="document" dangerouslySetInnerHTML={{__html: marked(this.props.value)}}></div>
+          <MarkdownViewer markdown={this.props.value}/>
         </TabContent>
       </Tabs>
     );

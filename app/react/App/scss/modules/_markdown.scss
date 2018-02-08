@@ -145,7 +145,7 @@
   }
 }
 
-.video-container {
+.video-container > div:first-child {
     position: relative;
     padding-bottom: 56.25%;
     height: 0;
@@ -163,12 +163,20 @@
     height: 100%;
 }
 
-.page-viewer .pageSection > *:not(.hero) {
+.video-container .timelink {
+  cursor: pointer;
+
+  a {
+    color: $c-primary;
+  }
+}
+
+.page-viewer .markdown-viewer > *:not(.hero) {
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.page-viewer .pageSection .video-container{
+.page-viewer .video-container{
   padding-bottom: 36%;
 }

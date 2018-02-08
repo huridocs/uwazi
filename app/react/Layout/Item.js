@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import formater from '../Metadata/helpers/formater';
-import marked from 'app/utils/marked';
+import MarkdownViewer from 'app/Markdown';
 
 import t from '../I18N/t';
 
@@ -39,7 +39,7 @@ export class Item extends Component {
 
         if (property.markdown) {
           dlClassName = 'item-property-markdown';
-          value = <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
+          value = <MarkdownViewer markdown={property.markdown}/>;
         }
 
         if (property.type === 'date' || property.type === 'daterange' ||
