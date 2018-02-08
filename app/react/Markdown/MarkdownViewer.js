@@ -12,11 +12,6 @@ const customComponentMatcher = /{\w+}\(.+\)\(.+\)|{\w+}\(.+\)/g;
 
 export class MarkdownViewer extends Component {
 
-  constructor(props) {
-    super(props);
-    this.renderedLists = 0;
-  }
-
   errorHtml(index) {
     return <p key={index} className="error">
             <br />
@@ -92,6 +87,7 @@ export class MarkdownViewer extends Component {
   }
 
   render() {
+    this.renderedLists = 0;
     return (
       <div className="markdown-viewer">
         {this.markdownToHtml(this.props.markdown).map((item) => item)}

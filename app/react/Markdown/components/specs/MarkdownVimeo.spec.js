@@ -19,7 +19,15 @@ describe('MarkdownVimeo', () => {
   describe('render', () => {
     it('should render an iframe with the correct video id', () => {
       render();
-      expect(component.find('iframe').props().src).toBe('https://player.vimeo.com/video/253530307');
+      expect(component.find('iframe').props().src).toBe('https://player.vimeo.com/video/253530307?title=0&byline=0&portrait=0');
+    });
+
+    it('should accept options to show title, byline and portrait', () => {
+      props = {
+        config: '(https://www.vimeo.com/253530307, {"title": true, "byline": true, "portrait": true})'
+      };
+      render();
+      expect(component.find('iframe').props().src).toBe('https://player.vimeo.com/video/253530307?title=1&byline=1&portrait=1');
     });
 
     describe('Video timeline', () => {

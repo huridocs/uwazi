@@ -40,7 +40,11 @@ export class MarkdownVimeo extends Component {
 
   render() {
     const config = this.propsToConfig(this.props);
-    const src = `https://player.vimeo.com/video/${config.videoId}`;
+    let title = config.options.title ? '1' : '0';
+    let byline = config.options.byline ? '1' : '0';
+    let portrait = config.options.portrait ? '1' : '0';
+    const src = `https://player.vimeo.com/video/${config.videoId}?title=${title}&byline=${byline}&portrait=${portrait}`;
+
     return (
       <div className="video-container">
         <div>
