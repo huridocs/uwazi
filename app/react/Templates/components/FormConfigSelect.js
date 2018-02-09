@@ -15,7 +15,7 @@ export class FormConfigSelect extends Component {
   render() {
     const {index, data, formState} = this.props;
     const thesauris = this.props.thesauris.toJS();
-    const ptoperty = data.properties[index];
+    const property = data.properties[index];
 
     let optionGroups = [
       {label: 'Thesaurus', options: []},
@@ -80,7 +80,7 @@ export class FormConfigSelect extends Component {
         </Field>
 
         <div>
-          <Field model={`template.data.properties[${index}].filter`}>
+          <Field className="filter" model={`template.data.properties[${index}].filter`}>
             <input id={'filter' + this.props.index} type="checkbox"/>
             &nbsp;
             <label className="property-label" htmlFor={'filter' + this.props.index}>
@@ -93,7 +93,26 @@ export class FormConfigSelect extends Component {
               </i>
             </label>
           </Field>
-          <FilterSuggestions {...ptoperty} />
+          <ShowIf if={property.filter}>
+            <Field className="filter" model={`template.data.properties[${index}].defaultfilter`}>
+              <input
+                id={'defaultfilter' + this.props.index}
+                type="checkbox"
+                disabled={!property.filter}
+              />
+              &nbsp;
+              <label className="property-label" htmlFor={'defaultfilter' + this.props.index}>
+                Default filter
+                <i className="property-help fa fa-question-circle">
+                  <div className="property-description">
+                    Use this property as a default filter in the library.
+                    When there are no document types selected, this property will show as a default filter for your collection.
+                  </div>
+                </i>
+              </label>
+            </Field>
+          </ShowIf>
+          <FilterSuggestions {...property} />
         </div>
 
       </div>
@@ -109,11 +128,11 @@ FormConfigSelect.propTypes = {
   formKey: PropTypes.string
 };
 
-export function mapStateToProps(state) {
+export function mapStateToProps({template, thesauris}) {
   return {
-    data: state.template.data,
-    thesauris: state.thesauris,
-    formState: state.template.formState
+    data: template.data,
+    thesauris,
+    formState: template.formState
   };
 }
 

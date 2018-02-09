@@ -16,7 +16,7 @@ describe('FormConfigSelect', () => {
     props = {
       thesauris: Immutable.fromJS(thesauris),
       index: 0,
-      data: {properties: []},
+      data: {properties: [{}]},
       formState: {
         'properties.0.label': {valid: true, dirty: false, errors: {}},
         $form: {

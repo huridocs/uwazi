@@ -33,5 +33,15 @@ export default {
       });
     }
     return properties;
+  },
+  defaultFilters: (templates) => {
+    return templates.reduce((defaultFilters, template) => {
+      template.properties.forEach((prop) => {
+        if (prop.filter && prop.defaultfilter && !defaultFilters.find((_prop) => sameProperty(prop, _prop))) {
+          defaultFilters.push(prop);
+        }
+      });
+      return defaultFilters;
+    }, []);
   }
 };
