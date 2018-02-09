@@ -5,6 +5,7 @@ import {Select} from 'app/ReactReduxForms';
 import {connect} from 'react-redux';
 import {Field} from 'react-redux-form';
 import {t} from 'app/I18N';
+import ShowIf from 'app/App/ShowIf';
 
 export class FormConfigSelect extends Component {
 
