@@ -7,6 +7,7 @@ const propertiesSchema = new mongoose.Schema({
   content: String,
   name: String,
   filter: Boolean,
+  defaultfilter: Boolean,
   required: Boolean,
   sortable: Boolean,
   showInCard: Boolean,
