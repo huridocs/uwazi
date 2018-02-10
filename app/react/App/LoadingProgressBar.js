@@ -1,30 +1,26 @@
 import {isClient} from 'app/utils';
-import Nprogress from 'nprogress';
-
-if (isClient) {
-  window.NProgress = Nprogress;
-}
+import NProgress from 'nprogress';
 
 const loadingProgressBar = {
   requests: 0,
 
   start: () => {
-    if (isClient && window.NProgress) {
-      window.NProgress.configure({showSpinner: false, easing: 'ease', speed: 800, parent: '.app-content', minimum: 0.2});
-      window.NProgress.start();
+    if (isClient) {
+      NProgress.configure({showSpinner: false, easing: 'ease', speed: 800, minimum: 0.2});
+      NProgress.start();
       loadingProgressBar.requests += 1;
     }
   },
 
   done: () => {
-    if (isClient && window.NProgress) {
+    if (isClient && NProgress) {
       loadingProgressBar.requests -= 1;
       if (loadingProgressBar.requests <= 0) {
-        window.NProgress.done();
+        NProgress.done();
         return;
       }
 
-      window.NProgress.inc(0.1);
+      NProgress.inc(0.1);
     }
   }
 };
