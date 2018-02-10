@@ -40,7 +40,7 @@ export class PageCreator extends Component {
                 </Field>
               </div>
             </div>
-            <div className="panel-body">
+            <div className="panel-body page-viewer document-viewer">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
                   <i className="fa fa-terminal"></i> {pageUrl}

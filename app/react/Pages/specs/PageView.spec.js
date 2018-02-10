@@ -44,7 +44,7 @@ describe('PageView', () => {
       PageView.requestState({pageId: 'abc2'})
       .then((response) => {
         expect(PagesAPI.get).toHaveBeenCalledWith('abc2');
-        expect(response.page.pageView).toEqual({_id: 'abc2', title: 'Page 1', metadata: {content: 'parsedContent'}});
+        expect(response.page.pageView).toEqual({_id: 'abc2', title: 'Page 1', metadata: {content: 'originalContent'}});
         done();
       })
       .catch(done.fail);
