@@ -25,7 +25,6 @@ export class Document extends Component {
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
-      // TEST!!!
       const references = this.props.references.toJS();
       return this.props.activateReference(
         references.find(r => r._id === e.target.getAttribute('data-id')),
