@@ -5,6 +5,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import TargetDocument from 'app/Viewer/components/TargetDocument';
+import * as viewerSelectors from '../../selectors';
 
 describe('TargetDocument', function () {
   let component;
@@ -18,7 +19,7 @@ describe('TargetDocument', function () {
       }),
       targetDoc: Immutable.fromJS({name: 'document'}),
       targetDocHTML: Immutable.fromJS({pages: 'pages', css: 'css'}),
-      targetDocReferences: Immutable.fromJS([])
+      selectedTargetReferences: 'selectTargetReferences'
     }
   };
 
@@ -28,12 +29,15 @@ describe('TargetDocument', function () {
   };
 
   it('should map props', () => {
+    spyOn(viewerSelectors, 'selectTargetReferences').and
+    .callFake(fnSstate => fnSstate.documentViewer.selectedTargetReferences);
     render();
+
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});
     expect(props.doc.toJS().name).toBe('document');
     expect(props.docHTML.toJS()).toEqual({pages: 'pages', css: 'css'});
-    expect(props.references).toEqual([]);
+    expect(props.references).toBe('selectTargetReferences');
     expect(props.className).toBe('targetDocument');
   });
 });
