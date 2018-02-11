@@ -2,7 +2,7 @@ import {fromJS as Immutable} from 'immutable';
 import {mapStateToProps} from '../ConnectionsList';
 
 import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
-import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraph';
+import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
 
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
