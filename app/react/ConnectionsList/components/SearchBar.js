@@ -12,7 +12,6 @@ import {searchReferences} from '../actions/actions';
 export class SearchBar extends Component {
 
   resetSearchTerm() {
-    // TEST!!!
     this.props.change('relationships/list/search.searchTerm', '');
   }
 
@@ -39,7 +38,6 @@ export class SearchBar extends Component {
     const {search} = this.props;
     const searchTerm = search.searchTerm && search.searchTerm.value ? search.searchTerm.value : '';
 
-    // TEST!!! Form and field model
     return (
       <div className="search-box">
         <Form model="relationships/list/search" onSubmit={this.props.searchReferences} autoComplete="off">
