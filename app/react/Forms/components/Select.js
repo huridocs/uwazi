@@ -21,7 +21,7 @@ export default class Select extends Component {
         <select className="form-control" onChange={this.props.onChange} value={this.props.value}>
         {(() => {
           if (placeholder) {
-            return <option value='' selected>{placeholder}</option>;
+            return <option value='' >{placeholder}</option>;
           }
         })()}
         {sortedOptions.map((option, index) => {
@@ -38,8 +38,11 @@ export default class Select extends Component {
         </select>
     );
   }
-
 }
+
+Select.defaultValues = {
+  value: ''
+};
 
 Select.propTypes = {
   onChange: PropTypes.func,
