@@ -17,12 +17,6 @@ export class FormConfigSelect extends Component {
     const {index, data, formState} = this.props;
     const thesauris = this.props.thesauris.toJS();
     const property = data.properties[index];
-    const relationTypes = this.props.relationTypes.toJS();
-
-    let optionGroups = [
-      {label: 'Thesaurus', options: []},
-      {label: 'Entities', options: []}
-    ];
 
     const options = thesauris.filter((thesauri) => {
       return thesauri._id !== data._id && thesauri.type !== 'template';
@@ -119,18 +113,16 @@ export class FormConfigSelect extends Component {
 
 FormConfigSelect.propTypes = {
   thesauris: PropTypes.object,
-  relationTypes: PropTypes.object,
   data: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string
 };
 
-export function mapStateToProps({template, thesauris}) {
+export function mapStateToProps(state) {
   return {
     data: state.template.data,
     thesauris: state.thesauris,
-    relationTypes: state.relationTypes,
     formState: state.template.formState
   };
 }

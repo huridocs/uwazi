@@ -1,6 +1,5 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import referencesAPI from 'app/Viewer/referencesAPI';
 import api from 'app/utils/api';
 import {mockID} from 'shared/uniqueID.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
