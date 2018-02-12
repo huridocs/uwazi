@@ -3,6 +3,7 @@ import {shallow} from 'enzyme';
 import {fromJS} from 'immutable';
 
 import {DocumentSidePanel, mapStateToProps} from '../DocumentSidePanel';
+import {ConnectionsGroups} from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import {Tabs} from 'react-tabs-redux';
@@ -24,7 +25,11 @@ describe('DocumentSidePanel', () => {
       startNewConnection: jasmine.createSpy('startNewConnection'),
       references: Immutable.fromJS(['reference']),
       connections: Immutable.fromJS(['connections']),
-      formPath: 'formPath'
+      formPath: 'formPath',
+      connectionsGroups: Immutable.fromJS([
+        {templates: [{count: 1}, {count: 2}]},
+        {templates: [{count: 3}, {count: 4}]}
+      ])
     };
   });
 
@@ -59,9 +64,9 @@ describe('DocumentSidePanel', () => {
   });
 
   describe('connections', () => {
-    it('should render 2 connections list, for connections and references', () => {
+    it('should render 2 connections sections, for connections and references', () => {
       expect(component.find(Connections).at(0).props().references).toEqual(props.references);
-      expect(component.find(Connections).at(1).props().references).toEqual(props.connections);
+      expect(component.find(ConnectionsGroups).length).toBe(1);
     });
   });
 

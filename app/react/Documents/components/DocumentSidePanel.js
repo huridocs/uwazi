@@ -86,7 +86,7 @@ export class DocumentSidePanel extends Component {
       tab = 'metadata';
     }
 
-    // TEST!!! Duplicated code from EntityViewer, check if it merits an abstraction
+    // Duplicated code from EntityViewer, check if it merits an abstraction
     const summary = connectionsGroups.reduce((summaryData, g) => {
       g.get('templates').forEach(template => {
         summaryData.totalConnections += template.get('count');
@@ -273,6 +273,7 @@ DocumentSidePanel.propTypes = {
   showModal: PropTypes.func,
   deleteDocument: PropTypes.func,
   resetForm: PropTypes.func,
+  connectionsGroups: PropTypes.instanceOf(Immutable.List),
   references: PropTypes.instanceOf(Immutable.List),
   connections: PropTypes.instanceOf(Immutable.List),
   tocFormState: PropTypes.object,
