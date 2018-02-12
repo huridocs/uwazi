@@ -143,6 +143,7 @@ describe('relationships', () => {
         relationships.save({entity: 'entity3', hub: hub1}, 'en')
         .then(([result]) => {
           expect(result.entity).toBe('entity3');
+          expect(result.language).toBe('en');
           expect(result.entityData.template).toEqual(template);
           expect(result.entityData.type).toBe('entity');
           expect(result.entityData.title).toBe('entity3 title');
@@ -213,15 +214,21 @@ describe('relationships', () => {
 
       describe('when creating text references', () => {
         it('should assign them language and fallback for the same document in other languages', (done) => {
-          relationships.save([{entity: 'entity3'}, {entity: 'doc4', range: {text: 'something'}}], 'en')
-          .then(() => relationships.get({entity: 'doc4'}))
-          .then((relations) => {
-            expect(relations.length).toBe(3);
+          relationships.save([{entity: 'doc5', range: {text: 'one thing'}}, {entity: 'doc4', range: {text: 'something'}}], 'es')
+          .then((saveResult) => {
+            expect(saveResult.length).toBe(2);
+            expect(saveResult[0].language).toBe('es');
+            expect(saveResult[1].language).toBe('es');
+            return Promise.all([relationships.get({entity: 'doc4'}), relationships.get({entity: 'doc5'})]);
+          })
+          .then(([doc4Realtions, doc5Relations]) => {
+            expect(doc4Realtions.length).toBe(3);
+            expect(doc5Relations.length).toBe(4);
 
-            expect(relations.find((r) => r.language === 'es')).toBeDefined();
-            expect(relations.find((r) => r.language === 'en')).toBeDefined();
-            expect(relations.find((r) => r.language === 'pt')).not.toBeDefined();
-            return relationships.save(relations.find((r) => r.language === 'en'), 'en')
+            expect(doc4Realtions.find((r) => r.language === 'es')).toBeDefined();
+            expect(doc4Realtions.find((r) => r.language === 'en')).toBeDefined();
+            expect(doc4Realtions.find((r) => r.language === 'pt')).not.toBeDefined();
+            return relationships.save(doc4Realtions.find((r) => r.language === 'en'), 'en')
             .then(() => relationships.get({entity: 'doc4'}));
           })
           .then((relations) => {

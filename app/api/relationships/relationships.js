@@ -211,7 +211,8 @@ export default {
         }
 
         return action
-        .then(([savedRelationship]) => {
+        .then((savedRelationships) => {
+          let savedRelationship = savedRelationships.find((rel) => rel && rel.language === language);
           return Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)]);
         })
         .then(([result, connectedEntity]) => {
