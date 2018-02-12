@@ -19,7 +19,7 @@ describe('TargetDocument', function () {
       }),
       targetDoc: Immutable.fromJS({name: 'document'}),
       targetDocHTML: Immutable.fromJS({pages: 'pages', css: 'css'}),
-      selectedTargetReferences: 'selectTargetReferences'
+      selectedTargetReferences: Immutable.fromJS({keysOf: 'selectTargetReferences'})
     }
   };
 
@@ -37,7 +37,7 @@ describe('TargetDocument', function () {
     expect(props.selection).toEqual({selection: 'selection'});
     expect(props.doc.toJS().name).toBe('document');
     expect(props.docHTML.toJS()).toEqual({pages: 'pages', css: 'css'});
-    expect(props.references).toBe('selectTargetReferences');
+    expect(props.references.toJS().keysOf).toBe('selectTargetReferences');
     expect(props.className).toBe('targetDocument');
   });
 });
