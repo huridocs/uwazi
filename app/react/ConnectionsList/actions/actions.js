@@ -1,4 +1,3 @@
-// TEST!! all changes to relationships/list instead of connectionsList
 import {actions} from 'app/BasicReducer';
 import {actions as formActions} from 'react-redux-form';
 import {notify} from 'app/Notifications';
@@ -67,7 +66,7 @@ export function loadAllReferences() {
 export function loadMoreReferences(storeKey, limit) {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
-    dispatch(actions.set('relationships.list/filters', relationshipsList.filters.set('limit', limit)));
+    dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('limit', limit)));
     return searchReferences()(dispatch, getState);
   };
 }

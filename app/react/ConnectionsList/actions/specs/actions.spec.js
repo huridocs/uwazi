@@ -18,7 +18,9 @@ describe('ConnectionsList actions', () => {
       return {
         templates: 'templates',
         entityView: {entity: Immutable({sharedId: 'sid'})},
-        connectionsList: {entityId: 'sid', sort: {order: 'order'}, filters: Immutable({filter: 'filter'})}
+        relationships: {
+          list: {entityId: 'sid', sort: {order: 'order'}, filters: Immutable({filter: 'filter'})}
+        }
       };
     };
 
@@ -37,11 +39,11 @@ describe('ConnectionsList actions', () => {
   });
 
   function checkLoadAllReferences(done, argPos = 0) {
-    expect(dispatch.calls.argsFor(argPos)[0].type).toBe('connectionsList/filters/SET');
+    expect(dispatch.calls.argsFor(argPos)[0].type).toBe('relationships/list/filters/SET');
     expect(dispatch.calls.argsFor(argPos)[0].value.toJS()).toEqual({filter: 'filter', limit: 9999});
 
     expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-    expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+    expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
     done();
   }
 
@@ -50,7 +52,7 @@ describe('ConnectionsList actions', () => {
       actions.searchReferences()(dispatch, getState)
       .then(() => {
         expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
         expect(dispatch).toHaveBeenCalledWith({type: 'SHOW_TAB', tab: 'connections'});
         done();
       });
@@ -58,7 +60,7 @@ describe('ConnectionsList actions', () => {
 
     it('should fetch the connections with custom text search', (done) => {
       getState = () => {
-        return {connectionsList: {entityId: 'sid', sort: {}, filters: Immutable({}), search: {searchTerm: {value: 'term'}}}};
+        return {relationships: {list: {entityId: 'sid', sort: {}, filters: Immutable({}), search: {searchTerm: {value: 'term'}}}}};
       };
       actions.searchReferences()(dispatch, getState)
       .then(() => {
@@ -79,9 +81,9 @@ describe('ConnectionsList actions', () => {
           templates: 'templates'
         });
 
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/SET', value: groupedConnections});
-        expect(dispatch).toHaveBeenCalledWith('merge: connectionsList.sort with: prioritySorting');
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/connectionsGroups/SET', value: groupedConnections});
+        expect(dispatch).toHaveBeenCalledWith('merge: relationships/list.sort with: prioritySorting');
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
         done();
       });
     });
@@ -93,9 +95,9 @@ describe('ConnectionsList actions', () => {
       .then(() => {
         expect(referencesAPI.delete).toHaveBeenCalledWith('data');
         expect(Notifications.notify).toHaveBeenCalledWith('Connection deleted', 'success');
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/connectionsGroups/SET', value: groupedConnections});
-        expect(dispatch).toHaveBeenCalledWith('merge: connectionsList.sort with: prioritySorting');
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/connectionsGroups/SET', value: groupedConnections});
+        expect(dispatch).toHaveBeenCalledWith('merge: relationships/list.sort with: prioritySorting');
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
         done();
       })
       .catch(done.fail);
@@ -115,11 +117,11 @@ describe('ConnectionsList actions', () => {
     it('should set the limit to the passed parameter', (done) => {
       actions.loadMoreReferences(null, 60)(dispatch, getState)
       .then(() => {
-        expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/filters/SET');
+        expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: 'filter', limit: 60});
 
         expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
         done();
       });
     });
@@ -130,24 +132,26 @@ describe('ConnectionsList actions', () => {
       getState = () => {
         return {
           templates: 'templates',
-          connectionsList: {
-            entityId: 'sid',
-            sort: {order: 'order'},
-            filters: Immutable({filter: Immutable({oldProperty: 'old', modifiedProperty: 'original'})})
+          relationships: {
+            list: {
+              entityId: 'sid',
+              sort: {order: 'order'},
+              filters: Immutable({filter: Immutable({oldProperty: 'old', modifiedProperty: 'original'})})
+            }
           }
         };
       };
 
       actions.setFilter({modifiedProperty: 'modified'})(dispatch, getState)
       .then(() => {
-        expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/filters/SET');
+        expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: {oldProperty: 'old', modifiedProperty: 'modified'}});
 
         expect(referencesAPI.search).toHaveBeenCalledWith(
           'sid',
-          {filter: getState().connectionsList.filters.get('filter').toJS(), order: 'order', searchTerm: ''}
+          {filter: getState().relationships.list.filters.get('filter').toJS(), order: 'order', searchTerm: ''}
         );
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
         done();
       });
     });
@@ -157,13 +161,13 @@ describe('ConnectionsList actions', () => {
     it('should set term and filters to blank state', (done) => {
       actions.resetSearch()(dispatch, getState)
       .then(() => {
-        expect(dispatch).toHaveBeenCalledWith('change: connectionsList/search.searchTerm with: empty');
+        expect(dispatch).toHaveBeenCalledWith('change: relationships/list/search.searchTerm with: empty');
 
-        expect(dispatch.calls.argsFor(1)[0].type).toBe('connectionsList/filters/SET');
+        expect(dispatch.calls.argsFor(1)[0].type).toBe('relationships/list/filters/SET');
         expect(dispatch.calls.argsFor(1)[0].value.toJS()).toEqual({});
 
         expect(referencesAPI.search).toHaveBeenCalledWith('sid', {filter: 'filter', order: 'order', searchTerm: ''});
-        expect(dispatch).toHaveBeenCalledWith({type: 'connectionsList/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
 
         done();
       });
@@ -173,7 +177,7 @@ describe('ConnectionsList actions', () => {
   describe('switchView', () => {
     it('should set view to passed type', () => {
       actions.switchView('specificType')(dispatch, getState);
-      expect(dispatch.calls.argsFor(0)[0].type).toBe('connectionsList/view/SET');
+      expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/view/SET');
       expect(dispatch.calls.argsFor(0)[0].value).toBe('specificType');
     });
 
