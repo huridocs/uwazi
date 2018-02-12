@@ -27,7 +27,6 @@ export default class Entity extends RouteHandler {
         entityView: {
           entity
         },
-        // TEST!!!
         relationships: {
           list: {
             entityId: entity.sharedId,
@@ -39,7 +38,6 @@ export default class Entity extends RouteHandler {
             view: 'graph'
           }
         },
-        // ---------
         relationTypes
       };
     });
@@ -63,10 +61,7 @@ export default class Entity extends RouteHandler {
   setReduxState(state) {
     this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
     this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
-
-    // TEST!!!
     this.context.store.dispatch(relationships.setReduxState(state));
-    // -------
   }
 
   static renderTools() {
