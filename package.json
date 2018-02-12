@@ -21,6 +21,7 @@
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors"
   },
   "dependencies": {
+    "@vimeo/player": "^2.2.1",
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
     "babel-plugin-add-module-exports": "0.2.1",
@@ -63,7 +64,7 @@
     "jsesc": "^1.0.0",
     "json-loader": "^0.5.4",
     "jvent": "^0.2.0",
-    "mark.js": "julmot/mark.js",
+    "mark.js": "^8.11.1",
     "marked": "^0.3.6",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",

@@ -37,8 +37,6 @@ export class PageView extends RouteHandler {
     return PagesAPI.get(pageId)
     .then(page => {
       const listsData = prepareLists(page);
-      page.metadata.content = listsData.content;
-
       return Promise.all([page, listsData.params, listsData.options].concat(listsData.searchs));
     })
     .then(results => {

@@ -3,9 +3,11 @@
   .bar {
     height: 4px !important;
     background: $c-primary !important;
+    position: absolute;
+    top: 50px;
   }
 
   .peg {
     box-shadow: 0 0 15px $c-primary, 0 0 7px $c-primary !important;
-  }  
+  }
 }

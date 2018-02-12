@@ -4,7 +4,7 @@ import queryBuilder from './documentQueryBuilder';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
 import templatesModel from '../templates';
-import {comonProperties} from 'shared/comonProperties';
+import {comonProperties, defaultFilters} from 'shared/comonProperties';
 import languages from 'shared/languagesList';
 import {detect as detectLanguage} from 'shared/languages';
 
@@ -63,7 +63,8 @@ export default {
     .then((templates) => {
       const allTemplates = templates.map((t) => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      const properties = comonProperties(templates, filteringTypes);
+      let properties = comonProperties(templates, filteringTypes);
+      properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
       let aggregations = properties
       .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
       .map((property) => {

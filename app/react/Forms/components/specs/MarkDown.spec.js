@@ -3,6 +3,7 @@ import {shallow} from 'enzyme';
 import {TabLink, TabContent} from 'react-tabs-redux';
 
 import MarkDown from '../MarkDown';
+import MarkDownViewer from 'app/Markdown';
 
 describe('MarkDown', () => {
   let component;
@@ -50,8 +51,8 @@ describe('MarkDown', () => {
     it('shows markdown as html', () => {
       props.value = '# <b>This is a title</b>';
       render();
-      let container = component.find(TabContent).last().find('div');
-      expect(container.props().dangerouslySetInnerHTML).toEqual({__html: '<h1 id="-b-this-is-a-title-b-">&lt;b&gt;This is a title&lt;/b&gt;</h1>\n'});
+      let container = component.find(MarkDownViewer);
+      expect(container.props().markdown).toBe('# <b>This is a title</b>');
     });
   });
 });

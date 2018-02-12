@@ -6,7 +6,7 @@ import {fromJS as Immutable} from 'immutable';
 import {I18NLink} from 'app/I18N';
 import t from 'app/I18N/t';
 import ShowIf from 'app/App/ShowIf';
-import marked from 'app/utils/marked';
+import MarkdownViewer from 'app/Markdown';
 import {Icon} from 'app/Layout/Icon';
 import {TemplateLabel, DocumentLanguage} from 'app/Layout';
 
@@ -40,7 +40,7 @@ export class ShowMetadata extends Component {
     }
 
     if (property.markdown) {
-      return <div className="markdownViewer" dangerouslySetInnerHTML={{__html: marked(property.markdown)}}/>;
+      return <MarkdownViewer markdown={property.markdown}/>;
     }
 
     if (property.value) {

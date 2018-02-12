@@ -11,8 +11,7 @@ import ShowIf from 'app/App/ShowIf';
 export class FormConfigInput extends Component {
 
   render() {
-    const {index, data, formState, type} = this.props;
-    const property = data.properties[index];
+    const {index, property, formState, type} = this.props;
     let labelClass = 'form-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
@@ -54,7 +53,7 @@ export class FormConfigInput extends Component {
         </Field>
 
         <div>
-          <Field model={`template.data.properties[${index}].filter`}>
+          <Field className="filter" model={`template.data.properties[${index}].filter`}>
             <input id={'filter' + this.props.index} type="checkbox"/>
             &nbsp;
             <label className="property-label" htmlFor={'filter' + this.props.index}>
@@ -68,6 +67,25 @@ export class FormConfigInput extends Component {
               </i>
             </label>
           </Field>
+          <ShowIf if={property.filter}>
+            <Field className="filter" model={`template.data.properties[${index}].defaultfilter`}>
+              <input
+                id={'defaultfilter' + this.props.index}
+                type="checkbox"
+                disabled={!property.filter}
+              />
+              &nbsp;
+              <label className="property-label" htmlFor={'defaultfilter' + this.props.index}>
+                Default filter
+                <i className="property-help fa fa-question-circle">
+                  <div className="property-description">
+                    Use this property as a default filter in the library.
+                    When there are no document types selected, this property will show as a default filter for your collection.
+                  </div>
+                </i>
+              </label>
+            </Field>
+          </ShowIf>
           <FilterSuggestions {...property} />
         </div>
 
@@ -84,16 +102,16 @@ export class FormConfigInput extends Component {
 }
 
 FormConfigInput.propTypes = {
-  data: PropTypes.object,
+  property: PropTypes.object,
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string,
   type: PropTypes.string
 };
 
-export function mapStateToProps({template}) {
+export function mapStateToProps({template}, props) {
   return {
-    data: template.data,
+    property: template.data.properties[props.index],
     formState: template.formState
   };
 }

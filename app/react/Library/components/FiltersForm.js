@@ -73,7 +73,7 @@ export class FiltersForm extends Component {
               <i className="fa fa-close"></i>
               <h4>{t('System', 'No common filters')}</h4>
               <p>The combination of document and entity types doesn't have any filters in common.</p>
-              <a href="#" target="_blank">Learn more</a>
+              <a href="https://github.com/huridocs/uwazi/wiki/Filter" target="_blank">Learn more</a>
             </div>;
           }
         })()}

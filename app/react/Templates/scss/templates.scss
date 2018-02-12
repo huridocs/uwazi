@@ -57,6 +57,11 @@
   border-left-color: transparent;
   outline: none;
   box-shadow: none;
+
+  .filter {
+    display: inline-block;
+    margin-right: 20px;
+  }
 }
 
 .metadataTemplate-constructor {

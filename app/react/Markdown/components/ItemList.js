@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {fromJS as Immutable} from 'immutable';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
@@ -38,10 +37,15 @@ export class ItemList extends Component {
   }
 }
 
+ItemList.defaultProps = {
+  items: [],
+  options: {}
+};
+
 ItemList.propTypes = {
   items: PropTypes.array,
   options: PropTypes.object,
   link: PropTypes.string
 };
 
-export default connect()(ItemList);
+export default ItemList;

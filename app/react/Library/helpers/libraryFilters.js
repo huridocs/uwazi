@@ -1,5 +1,5 @@
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import {comonProperties} from 'shared/comonProperties';
+import {comonProperties, defaultFilters} from 'shared/comonProperties';
 
 function getOptions(property, thesauris) {
   let matchingTHesauri = thesauris.find((thesauri) => {
@@ -26,6 +26,10 @@ export function populateOptions(filters, thesauris) {
 export function URLQueryToState(query, templates, thesauris) {
   let properties = comonProperties(templates, query.types)
   .filter((prop) => prop.filter);
+
+  if (!query.types || !query.types.length) {
+    properties = defaultFilters(templates);
+  }
 
   let {
     searchTerm = '',

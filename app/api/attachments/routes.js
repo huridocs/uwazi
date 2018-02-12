@@ -46,7 +46,7 @@ const processAllLanguages = (entity, req) => {
       additionalLanguageUpdates.push(entities.saveMultiple([assignAttachment(sibling, genericAddedFile)]));
     });
 
-    return Promise.all([addedFile, additionalLanguageUpdates]);
+    return Promise.all([addedFile].concat(additionalLanguageUpdates));
   });
 };
 
