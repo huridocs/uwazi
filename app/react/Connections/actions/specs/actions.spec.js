@@ -136,12 +136,12 @@ describe('Connections actions', () => {
     });
 
     // ??? Still required?
-    it('should attempt to save the connection with language if not basic', () => {
-      connection.type = 'ranged';
-      actions.saveConnection(connection)(store.dispatch, getState);
-      expect(store.getActions()).toEqual([{type: 'CREATING_CONNECTION'}]);
-      expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId', language: 'es'});
-    });
+    // it('should attempt to save the connection with language if not basic', () => {
+    //   connection.type = 'ranged';
+    //   actions.saveConnection(connection)(store.dispatch, getState);
+    //   expect(store.getActions()).toEqual([{type: 'CREATING_CONNECTION'}]);
+    //   expect(referencesAPI.save).toHaveBeenCalledWith({sourceDocument: 'sourceId', language: 'es'});
+    // });
 
     it('should broadcast CONNECTION_CREATED, execute the callback and broadcast success', (done) => {
       const callback = jasmine.createSpy('callback');
