@@ -170,8 +170,6 @@ export class EntityViewer extends Component {
 
 EntityViewer.propTypes = {
   entity: PropTypes.object,
-  selectedConnection: PropTypes.bool,
-  selectedConnectionMetadata: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
   sidepanelOpen: PropTypes.bool,
