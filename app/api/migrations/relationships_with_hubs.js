@@ -154,7 +154,5 @@ migrateTemplates()
 .then(() => {
   process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r\n`);
   mongoose.disconnect();
-  console.log('Reindexing changes...');
-  require('../../../database/reindex_elastic.js');
 })
 .catch(console.log);
