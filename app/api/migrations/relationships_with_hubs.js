@@ -26,7 +26,9 @@ function createRelationType(property) {
 
     connectionsRelationTypes[property.name] = result[0]._id;
     return result[0]._id;
-  }).catch(console.log);
+  }).catch((e) => {
+    console.log('Saving relation type error:', e);
+  });
 }
 
 function migrateTemplates() {
@@ -80,7 +82,7 @@ function migrateRelationships() {
         return templatesModel.get({_id: relationship.sourceTemplate})
         .then(([template]) => {
           const property = template.properties.find((prop) => prop.name === relationship.sourceProperty);
-          return relationtypes.get({name: property.label});
+          return relationtypes.get({name: {$regex: `^${property.label}$`, $options: 'i'}});
         })
         .then(([relationType]) => {
           return Promise.all([Promise.resolve(relationType), relationshipsModel.get({
@@ -127,6 +129,11 @@ function migrateEntities() {
     return P.resolve(_entities).map(({_id}) => {
       return entities.getById(_id)
       .then((entity) => {
+        if (!entity.template) {
+          entitiesProcessed += 1;
+          process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r`);
+          return Promise.resolve();
+        }
         let template = keyTemplates[entity.template];
         template.properties.forEach((property) => {
           if (property.type === 'relationship' && entity.metadata[property.name] && typeof entity.metadata[property.name] === 'string') {
