@@ -64,6 +64,7 @@
     "jsesc": "^1.0.0",
     "json-loader": "^0.5.4",
     "jvent": "^0.2.0",
+    "karma-cli": "^1.0.1",
     "mark.js": "^8.11.1",
     "marked": "^0.3.6",
     "moment": "^2.14.1",
