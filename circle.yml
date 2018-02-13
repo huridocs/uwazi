@@ -38,4 +38,4 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: karma start --single-run
+      - run: ./node_modules/karma/bin/karma start --single-run

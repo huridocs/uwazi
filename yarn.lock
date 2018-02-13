@@ -32,13 +32,16 @@
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.0.0.tgz#c1de4293081424da3ac30c23afa850af1019bb54"
 
-"@types/node@*":
-  version "9.4.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.0.tgz#b85a0bcf1e1cc84eb4901b7e96966aedc6f078d1"
-
-"@types/node@^8.0.24":
+"@types/node@*", "@types/node@^8.0.24":
   version "8.0.31"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.31.tgz#d9af61093cf4bfc9f066ca34de0175012cfb0ce9"
+
+"@vimeo/player@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@vimeo/player/-/player-2.2.1.tgz#2537c2224b25529a8680b375e33dea6f0fd99102"
+  dependencies:
+    es6-collections "0.5.6"
+    native-promise-only "0.8.1"
 
 "JSV@>= 4.0.x":
   version "4.0.2"
@@ -1081,11 +1084,11 @@ bluebird@^2.9.27:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
 
-bluebird@^3.0, bluebird@^3.3.1, bluebird@^3.4.6:
+bluebird@^3.0, bluebird@^3.4.6:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
-bluebird@^3.5.1:
+bluebird@^3.3.1, bluebird@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
@@ -2702,6 +2705,10 @@ es5-ext@^0.10.14, es5-ext@^0.10.9, es5-ext@~0.10.14:
   dependencies:
     es6-iterator "2"
     es6-symbol "~3.1"
+
+es6-collections@0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/es6-collections/-/es6-collections-0.5.6.tgz#5552e800ad12c1820cda2bd4a79ae7dbb03d89a2"
 
 es6-iterator@2, es6-iterator@^2.0.1, es6-iterator@~2.0.1:
   version "2.0.1"
@@ -4795,6 +4802,12 @@ karma-chrome-launcher@2.0.0:
     fs-access "^1.0.0"
     which "^1.2.1"
 
+karma-cli@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/karma-cli/-/karma-cli-1.0.1.tgz#ae6c3c58a313a1d00b45164c455b9b86ce17f960"
+  dependencies:
+    resolve "^1.1.6"
+
 karma-coverage@^0.5.3:
   version "0.5.5"
   resolved "https://registry.yarnpkg.com/karma-coverage/-/karma-coverage-0.5.5.tgz#b0d58b1025d59d5c6620263186f1d58f5d5348c5"
@@ -5376,9 +5389,9 @@ mapbox-gl@0.40.1:
     vt-pbf "^3.0.1"
     webworkify "^1.4.0"
 
-mark.js@julmot/mark.js:
-  version "8.11.0"
-  resolved "https://codeload.github.com/julmot/mark.js/tar.gz/8b9a10c1f3f93f9770f86a7aa414e621d2c27054"
+mark.js@^8.11.1:
+  version "8.11.1"
+  resolved "https://registry.yarnpkg.com/mark.js/-/mark.js-8.11.1.tgz#180f1f9ebef8b0e638e4166ad52db879beb2ffc5"
 
 marked@^0.3.6:
   version "0.3.6"
@@ -5711,6 +5724,10 @@ n-gram@^1.0.0:
 nan@^2.3.0, nan@^2.3.2:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
+
+native-promise-only@0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/native-promise-only/-/native-promise-only-0.8.1.tgz#20a318c30cb45f71fe7adfbf7b21c99c1472ef11"
 
 nearley@^2.7.10:
   version "2.11.0"
@@ -6912,13 +6929,7 @@ quote-stream@~0.0.0:
     minimist "0.0.8"
     through2 "~0.4.1"
 
-raf@^3.2.0:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/raf/-/raf-3.3.2.tgz#0c13be0b5b49b46f76d6669248d527cf2b02fe27"
-  dependencies:
-    performance-now "^2.1.0"
-
-raf@^3.4.0:
+raf@^3.2.0, raf@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/raf/-/raf-3.4.0.tgz#a28876881b4bc2ca9117d4138163ddb80f781575"
   dependencies:
@@ -9152,7 +9163,7 @@ wordwrap@~0.0.2:
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-0.0.3.tgz#a3d5da6cd5c0bc0008d37234bbaf1bed63059107"
 
 world-countries@^1.8.0:
-  version "1.8.1"
+  version v1.8.1
   resolved "https://registry.yarnpkg.com/world-countries/-/world-countries-1.8.1.tgz#14ba7d735d422d63de70deb6e35ec5e49341b209"
 
 wrap-ansi@^2.0.0:
