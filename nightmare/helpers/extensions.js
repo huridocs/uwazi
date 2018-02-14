@@ -25,12 +25,12 @@ Nightmare.action('librarySearch', function (searchTerm, done) {
 });
 
 Nightmare.action('write', function (selector, text, done) {
-  this.wait(300)
-  .wait(selector)
+  this.wait(selector)
+  // to prevet fails from multiple renders :(
+  .wait(300)
+  // to prevet fails from multiple renders :(
   .insert(selector, text)
-  .wait(5)
-  .then(done)
-  .catch(done);
+  .then(done);
 });
 
 Nightmare.action('gotoLibrary', function (done) {
@@ -223,7 +223,11 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 Nightmare.action('getInnerText', function (selector, done) {
   this.wait(selector)
   .evaluate_now((elementToSelect) => {
-    return document.querySelector(elementToSelect).innerText;
+    const element = document.querySelector(elementToSelect);
+    if (!element) {
+      throw new Error('Selector not Found! -> ' + elementToSelect);
+    }
+    return element.innerText;
   }, done, selector);
 });
 

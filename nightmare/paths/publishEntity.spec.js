@@ -74,7 +74,8 @@ describe('publish entity path', () => {
     })
     .then(() => {
       done();
-    });
+    })
+    .catch(done.fail);
   });
 
   it('should edit and fix some values', (done) => {
@@ -93,7 +94,8 @@ describe('publish entity path', () => {
     .then((result) => {
       expect(result).toBe(true);
       done();
-    });
+    })
+    .catch(done.fail);
   }, 10000);
 
   it('should refresh and check the values', (done) => {
@@ -131,7 +133,8 @@ describe('publish entity path', () => {
     })
     .then(() => {
       done();
-    });
+    })
+    .catch(done.fail);
   }, 10000);
 
   describe('closing browser', () => {
