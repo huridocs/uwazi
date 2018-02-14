@@ -16,7 +16,7 @@ describe('FullTextSearch zone', () => {
 
   it('should show text snippets when performing a text search', (done) => {
     nightmare
-    .librarySearch('batman')
+    .librarySearch('batman and robin')
     .wait(selectors.libraryView.libraryFirstDocumentSnippet)
     .getInnerText(selectors.libraryView.libraryFirstDocumentSnippet)
     .then(snippet => {
