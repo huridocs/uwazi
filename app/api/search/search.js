@@ -1,8 +1,7 @@
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
-import queryBuilder from './documentQueryBuilder';
-import entities from '../entities';
-import model from '../entities/entitiesModel';
+import documentQueryBuilder from './documentQueryBuilder';
+import entities from 'api/entities';
 import templatesModel from '../templates';
 import {comonProperties, defaultFilters} from 'shared/comonProperties';
 import languages from 'shared/languagesList';
@@ -31,9 +30,9 @@ function processFiltes(filters, properties) {
   return result;
 }
 
-export default {
+const search = {
   search(query, language, user) {
-    let documentsQuery = queryBuilder()
+    let documentsQuery = documentQueryBuilder()
     .fullTextSearch(query.searchTerm, query.fields, 2)
     .filterByTemplate(query.types)
     .filterById(query.ids)
@@ -106,11 +105,11 @@ export default {
   },
 
   getUploadsByUser(user, language) {
-    return model.get({user: user._id, language, published: false});
+    return entities.get({user: user._id, language, published: false});
   },
 
   searchSnippets(searchTerm, sharedId, language) {
-    let query = queryBuilder()
+    let query = documentQueryBuilder()
     .fullTextSearch(searchTerm, ['fullText'], 9999)
     .includeUnpublished()
     .filterById(sharedId)
@@ -245,3 +244,5 @@ export default {
     return elastic.delete({index: elasticIndex, type: 'entity', id});
   }
 };
+
+export default search;

@@ -1,9 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {index as elasticIndex} from 'api/config/elasticIndexes';
-import search from '../search.js';
-import elastic from '../elastic';
 import elasticResult from './elasticResult';
-import queryBuilder from 'api/search/documentQueryBuilder';
+import {search, documentQueryBuilder, elastic} from 'api/search';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import fixtures, {templateId, userId} from './fixtures';
@@ -440,7 +438,7 @@ describe('search', () => {
         includeUnpublished: true
       }, 'es')
       .then(() => {
-        let expectedQuery = queryBuilder()
+        let expectedQuery = documentQueryBuilder()
         .fullTextSearch('searchTerm', ['title', 'fullText'], 2)
         .includeUnpublished()
         .language('es')
