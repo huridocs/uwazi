@@ -17,8 +17,20 @@ Nightmare.action('typeEnter', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('waitFirstDocumentToMatch', function (term, done) {
+  this.wait((termToMatch, selector) => {
+    const element = document.querySelector(selector);
+    if (!element) {
+      throw new Error('Selector not Found! -> ' + selector);
+    }
+    return element.innerText.match(termToMatch);
+  }, term, selectors.libraryView.libraryFirstDocument)
+  .then(done)
+  .catch(done);
+});
+
 Nightmare.action('librarySearch', function (searchTerm, done) {
-  this.write(selectors.libraryView.searchInput, 'batman')
+  this.write(selectors.libraryView.searchInput, searchTerm)
   .type(selectors.libraryView.searchInput, '\u000d')
   .wait('.item-snippet')
   .then(done);

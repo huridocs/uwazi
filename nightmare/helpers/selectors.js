@@ -46,7 +46,7 @@ export default {
   },
   libraryView: {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',
-    libraryFirstDocumentSnippet: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div',
+    libraryFirstDocumentLink: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
     librarySidePanelFirstSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(1)',
     librarySidePanelSecondSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(2)',
     libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
@@ -130,7 +130,7 @@ export default {
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > a.item-shortcut.btn.btn-success',
     conectionsTabLink: '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div',
-    connectionsListView: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list > div.search-list-actions > div > button.btn.btn-default'
+    connectionsListView: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-tabs > ul > li:nth-child(2) > div'
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div.upload-box',
