@@ -4,7 +4,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
-describe('Connections', () => {
+fdescribe('Connections', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
@@ -45,7 +45,7 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('scarecrow')
     .connections.sidePanelSearchAndSelect('Ra\'s al Ghul')
     .connections.sidePanelSearchAndSelect('robin')
-    .connections.sidePanelSearchAndSelect('talia')
+    .connections.sidePanelSearchAndSelect('Talia al Ghul')
     .then(done)
     .catch(catchErrors(done));
   }, 10000);
@@ -60,7 +60,7 @@ describe('Connections', () => {
   it('should add the perpetrators', (done) => {
     nightmare
     .connections.sidePanelSearchAndSelect('batman')
-    .connections.sidePanelSearchAndSelect('alfred')
+    .connections.sidePanelSearchAndSelect('alfred pennyworth')
     .then(done)
     .catch(catchErrors(done));
   }, 10000);

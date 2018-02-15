@@ -165,7 +165,7 @@ export default {
     eventOption: 'li:nth-child(5)',
 
     sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
-    sidePanelFirstDocument: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div:nth-child(1)'
+    sidePanelDocuments: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div .item-name'
   },
   datePicker: {
     today: 'body div.react-datepicker__month div.react-datepicker__day.react-datepicker__day--today'

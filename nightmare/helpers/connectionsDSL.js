@@ -52,11 +52,26 @@ Nightmare.action('connections', {
   sidepanelSelect(matchingTitle, done) {
     this.wait(selectors.connections.sidePanelFirstDocument)
     .wait((termToMatch, selector) => {
+      const element = document.querySelectorAll(selector)[0];
+      if (element) {
+        return element.innerText.toLowerCase().match(termToMatch.toLowerCase());
+      }
+      return false;
+    }, matchingTitle, selectors.connections.sidePanelDocuments)
+    .evaluate((toMatch, selector) => {
       const helpers = document.__helpers;
-      const element = helpers.querySelector(selector);
-      return element.innerText.toLowerCase().match(termToMatch.toLowerCase());
-    }, matchingTitle, selectors.connections.sidePanelFirstDocument)
-    .waitToClick(selectors.connections.sidePanelFirstDocument)
+      const elements = helpers.querySelectorAll(selector);
+      let found;
+      elements.forEach((element) => {
+        if (found) {
+          return;
+        }
+        if (element.innerText.toLowerCase() === toMatch.toLowerCase()) {
+          found = element;
+        }
+      });
+      found.click();
+    }, matchingTitle, selectors.connections.sidePanelDocuments)
     .then(done)
     .catch(done);
   },
