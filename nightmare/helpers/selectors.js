@@ -157,13 +157,16 @@ export default {
     saveButton: '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
     newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div > div > button',
 
+    documentViewerConnectionsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(6) > div',
+
     rightHandRelationships: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.rightRelationships div.rightRelationshipsTypeGroup',
-    leftHandRelationships: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.leftRelationshipType',
 
     rightHandPerpetratorOption: 'li:nth-child(2)',
     rightHandHerosOption: 'li:nth-child(4)',
     eventOption: 'li:nth-child(5)',
+    interpretationOption: 'li:nth-child(6)',
 
+    sidePanelViewEntityButton : '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a > button',
     sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
     sidePanelDocuments: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div .item-name'
   },
