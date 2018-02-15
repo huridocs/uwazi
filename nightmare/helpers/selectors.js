@@ -152,6 +152,21 @@ export default {
     spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(1) > a',
     english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a'
   },
+  connections: {
+    editButton: '#app > div.content > div > div > div.sidepanel-footer > span > button',
+    saveButton: '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
+    newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div > div > button',
+
+    rightHandRelationships: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.rightRelationships div.rightRelationshipsTypeGroup',
+    leftHandRelationships: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.leftRelationshipType',
+
+    rightHandPerpetratorOption: 'li:nth-child(2)',
+    rightHandHerosOption: 'li:nth-child(4)',
+    eventOption: 'li:nth-child(5)',
+
+    sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
+    sidePanelFirstDocument: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div:nth-child(1)'
+  },
   datePicker: {
     today: 'body div.react-datepicker__month div.react-datepicker__day.react-datepicker__day--today'
   },
