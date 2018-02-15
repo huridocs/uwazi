@@ -32,7 +32,8 @@ describe('Entity zone', () => {
         expect(headerText).toContain('Man-bat (Dr. Langstrom)');
         expect(headerText).toContain('Super Villian');
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
     it('should allow changing the different template\'s properties', (done) => {
@@ -105,7 +106,8 @@ describe('Entity zone', () => {
       .then(text => {
         expect(text.match('Jekyll and Hyde story')).not.toBe(null);
       })
-      .then(done);
+      .then(done)
+      .catch(catchErrors(done));
     }, 20000);
   });
 

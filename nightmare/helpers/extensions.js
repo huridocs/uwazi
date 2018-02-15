@@ -238,8 +238,7 @@ Nightmare.action('getInnerText', function (selector, done) {
   .evaluate_now((elementToSelect) => {
     const helpers = document.__helpers;
     return helpers.querySelector(elementToSelect).innerText;
-  }, done, selector)
-  .catch(done);
+  }, done, selector);
 });
 
 Nightmare.action('selectText', function (selector, done) {

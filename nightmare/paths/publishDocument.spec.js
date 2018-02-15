@@ -109,7 +109,8 @@ describe('PublishDocument', () => {
       .then(text => {
         expect(text).toBe('regeneration\n');
       })
-      .then(done);
+      .then(done)
+      .catch(catchErrors(done));
     }, 20000);
   });
 

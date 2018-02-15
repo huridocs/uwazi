@@ -4,7 +4,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
-fdescribe('Connections', () => {
+describe('Connections', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
