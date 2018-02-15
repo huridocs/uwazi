@@ -50,7 +50,10 @@
     width: 100%;
     border-top: 3px solid $c-white;
     padding: 60px 0;
+    border: 0;
     background: transparentize($c-black, .6);
+    padding: 0;
+    font-size: 24px;
 
     &:hover {
       background: transparentize($c-black, .5);
