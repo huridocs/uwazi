@@ -18,6 +18,7 @@ jasmine.loadConfig({
   spec_dir: '/',
   spec_files: [
     'nightmare/helpers/extensions.js',
+    'nightmare/helpers/connectionsDSL.js',
     'nightmare/**/*.spec.js'
   ]
 });

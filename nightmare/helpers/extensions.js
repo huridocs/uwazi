@@ -236,12 +236,10 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 Nightmare.action('getInnerText', function (selector, done) {
   this.wait(selector)
   .evaluate_now((elementToSelect) => {
-    const element = document.querySelector(elementToSelect);
-    if (!element) {
-      throw new Error('Selector not Found! -> ' + elementToSelect);
-    }
-    return element.innerText;
-  }, done, selector);
+    const helpers = document.__helpers;
+    return helpers.querySelector(elementToSelect).innerText;
+  }, done, selector)
+  .catch(done);
 });
 
 Nightmare.action('selectText', function (selector, done) {
@@ -405,100 +403,3 @@ Nightmare.action('pickToday', function (input, done) {
   .then(done);
 });
 
-Nightmare.action('connections', {
-  edit(done) {
-    this.waitToClick(selectors.connections.editButton)
-    .then(done)
-    .catch(done);
-  },
-  save(done) {
-    this.waitToClick(selectors.connections.saveButton)
-    .wait(() => {
-      const element = document.querySelector('.removeHub');
-      return element ? false : true;
-    })
-    .then(done)
-    .catch(done);
-  },
-  addNewRelationship(done) {
-    this.waitToClick(selectors.connections.newRelationshipButton)
-    .then(done)
-    .catch(done);
-  },
-  selectRightHandRelation(optionSelector, number = 0, done) {
-    this.evaluate_now((rightHandRelations, option, relationShipNumber) => {
-      const relation = document.querySelectorAll(rightHandRelations)[relationShipNumber];
-      relation.querySelector('button').click();
-      relation.querySelector(option).click();
-    }, done, selectors.connections.rightHandRelationships, optionSelector, number);
-  },
-  selectLeftHandRelation(optionSelector, number = 0, done) {
-    this.evaluate_now((leftHandRelations, option, relationShipNumber) => {
-      const relation = document.querySelectorAll(leftHandRelations)[relationShipNumber];
-      relation.querySelector('button').click();
-      relation.querySelector(option).click();
-    }, done, selectors.connections.leftHandRelationships, optionSelector, number);
-  },
-  sidePanelSearchAndSelect(term, done) {
-    this.connections.sidepanelSearch(term)
-    .connections.sidepanelSelect(term)
-    .then(done)
-    .catch(done);
-  },
-  sidepanelSearch(term, done) {
-    this.clearInput(selectors.connections.sidePanelSearchInput)
-    .write(selectors.connections.sidePanelSearchInput, term)
-    .then(done)
-    .catch(done);
-  },
-  sidepanelSelect(matchingTitle, done) {
-    this.wait(selectors.connections.sidePanelFirstDocument)
-    .wait((termToMatch, selector) => {
-      const element = document.querySelector(selector);
-      if (!element) {
-        throw new Error('Selector not Found! -> ' + selector);
-      }
-      return element.innerText.toLowerCase().match(termToMatch.toLowerCase());
-    }, matchingTitle, selectors.connections.sidePanelFirstDocument)
-    .waitToClick(selectors.connections.sidePanelFirstDocument)
-    .then(done)
-    .catch(done);
-  },
-  clickRemoveRelationButton(matchingTitle, done) {
-    this.evaluate_now((term) => {
-      let relations = document.querySelectorAll('.rightRelationship');
-      relations.forEach((relation) => {
-        if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          relation.querySelector('.removeEntity i').click();
-        }
-      });
-    }, done, matchingTitle);
-  },
-  removeRelation(matchingTitle, done) {
-    this.connections.clickRemoveRelationButton(matchingTitle).then(done);
-  },
-  undoRemoveRelation(matchingTitle, done) {
-    this.connections.clickRemoveRelationButton(matchingTitle).then(done);
-  },
-  getRelationsObjet(done) {
-    this.evaluate_now(() => {
-      let result = {};
-      const hubs = document.querySelectorAll('.relationshipsHub');
-
-      hubs.forEach((hub) => {
-        let hubName = hub.querySelector('.leftRelationshipType .rw-input').innerText;
-        result[hubName] = {};
-
-        let rightHandRelations = hub.querySelectorAll('.rightRelationshipsTypeGroup ');
-        rightHandRelations.forEach((relation) => {
-          let relationName = relation.querySelector('.rw-input').innerText;
-          result[hubName][relationName] = [];
-          relation.querySelectorAll('.item-name').forEach((item) => {
-            result[hubName][relationName].push(item.innerText);
-          });
-        });
-      });
-      return result;
-    }, done);
-  }
-});

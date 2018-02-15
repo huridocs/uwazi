@@ -7,7 +7,13 @@ realMouse(Nightmare);
 nightmareUpload(Nightmare);
 
 export default function createNightmare(width = 1100, height = 600) {
-  const nightmare = new Nightmare({show: true, typeInterval: 10}).viewport(width, height);
+  const nightmare = new Nightmare({
+    show: true,
+    typeInterval: 10,
+    webPreferences: {
+      preload: __dirname + '/custom-preload.js'
+    }
+  }).viewport(width, height);
 
   nightmare.on('page', function (type, message, error) {
     fail(error);

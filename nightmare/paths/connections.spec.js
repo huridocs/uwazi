@@ -104,7 +104,7 @@ fdescribe('Connections', () => {
     .catch(catchErrors(done));
   });
 
-  it('should fix the perpetrators, removing robin', (done) => {
+  it('should fix the perpetrators, removing robin with an undo remove of talia', (done) => {
     nightmare
     .connections.edit()
     .connections.removeRelation('talia')
