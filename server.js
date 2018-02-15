@@ -46,7 +46,7 @@ const port = ports[app.get('env')];
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
 
-mongoose.connect(dbConfig[app.get('env')], {useMongoClient: true});
+mongoose.connect(dbConfig[app.get('env')]);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {

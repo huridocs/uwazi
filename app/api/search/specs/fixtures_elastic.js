@@ -52,10 +52,9 @@ export default {
       }
     },
     {_id: db.id(), sharedId: 'missingTemplate', language: 'en', title: 'missingTemplate', published: true, user: userId},
-    {_id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: 'unpublished document', published: false, user: userId,
-      metadata: {field1: 'joker'}
-    }
-    //
+    {_id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: 'unpublished document', published: false, user: userId, metadata: {field1: 'joker'}},
+    {_id: db.id(), sharedId: 'abc123', language: 'en', title: 'Country Egypt', published: true, user: userId},
+    {_id: db.id(), sharedId: 'entityWithEgypt', template: templateMetadata1, language: 'en', title: 'Something', published: true, user: userId, metadata: {multiselect1: ['abc123']}}
   ],
   templates: [
     {_id: template, properties: []},
@@ -81,6 +80,7 @@ export default {
 export const ids = {
   batmanBegins,
   batmanFinishes,
+  userId,
   template1: template1.toString(),
   template2: template2.toString(),
   templateMetadata1: templateMetadata1.toString(),

@@ -28,7 +28,7 @@ jasmine.addReporter(new reporters.TerminalReporter({
   showStack: true
 }));
 
-mongoose.connect(dbConfig.development, {useMongoClient: true});
+mongoose.connect(dbConfig.development);
 var db = mongoose.connection;
 db.once('open', function () {
   exec('cd nightmare/fixtures;./restore.sh', (error) => {

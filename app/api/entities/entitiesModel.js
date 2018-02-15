@@ -5,7 +5,7 @@ const entitySchema = new mongoose.Schema({
   language: {type: String, index: true},
   sharedId: {type: String, index: true},
   type: String,
-  title: String,
+  title: {type: String, text: true},
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true},
   file: {
     originalname: String,
@@ -43,5 +43,7 @@ const entitySchema = new mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'}
 });
 
-let Model = mongoose.model('entities', entitySchema);
-export default instanceModel(Model);
+let schema = mongoose.model('entities', entitySchema);
+export default instanceModel(schema);
+
+export {schema};

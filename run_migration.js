@@ -13,7 +13,7 @@ var mongoose = require('mongoose');
 var indexConfig = require('./app/api/config/elasticIndexes.js');
 indexConfig.index = indexConfig.development;
 mongoose.Promise = Promise;
-mongoose.connect(dbConfig.development, {useMongoClient: true});
+mongoose.connect(dbConfig.development);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
