@@ -4,7 +4,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
-describe('Connections', () => {
+fdescribe('Connections', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
@@ -45,6 +45,7 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('scarecrow')
     .connections.sidePanelSearchAndSelect('Ra\'s al Ghul')
     .connections.sidePanelSearchAndSelect('robin')
+    .connections.sidePanelSearchAndSelect('talia')
     .then(done)
     .catch(catchErrors(done));
   }, 10000);
@@ -78,7 +79,7 @@ describe('Connections', () => {
       expect(relations).toEqual({
         Event: {
           Heros: ['Batman', 'Alfred Pennyworth'],
-          Perpetrator: ['Scarecrow', 'Robin', 'Ra\'s al Ghul', 'Joker']
+          Perpetrator: ['Scarecrow', 'Robin', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
         }
       });
     })
@@ -95,7 +96,27 @@ describe('Connections', () => {
       expect(relations).toEqual({
         Event: {
           Heros: ['Batman', 'Alfred Pennyworth'],
-          Perpetrator: ['Scarecrow', 'Robin', 'Ra\'s al Ghul', 'Joker']
+          Perpetrator: ['Scarecrow', 'Robin', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
+        }
+      });
+    })
+    .then(done)
+    .catch(catchErrors(done));
+  });
+
+  it('should fix the perpetrators, removing robin', (done) => {
+    nightmare
+    .connections.edit()
+    .connections.removeRelation('talia')
+    .connections.removeRelation('robin')
+    .connections.undoRemoveRelation('talia')
+    .connections.save()
+    .connections.getRelationsObjet()
+    .then((relations) => {
+      expect(relations).toEqual({
+        Event: {
+          Heros: ['Batman', 'Alfred Pennyworth'],
+          Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
         }
       });
     })

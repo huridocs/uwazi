@@ -464,6 +464,22 @@ Nightmare.action('connections', {
     .then(done)
     .catch(done);
   },
+  clickRemoveRelationButton(matchingTitle, done) {
+    this.evaluate_now((term) => {
+      let relations = document.querySelectorAll('.rightRelationship');
+      relations.forEach((relation) => {
+        if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
+          relation.querySelector('.removeEntity i').click();
+        }
+      });
+    }, done, matchingTitle);
+  },
+  removeRelation(matchingTitle, done) {
+    this.connections.clickRemoveRelationButton(matchingTitle).then(done);
+  },
+  undoRemoveRelation(matchingTitle, done) {
+    this.connections.clickRemoveRelationButton(matchingTitle).then(done);
+  },
   getRelationsObjet(done) {
     this.evaluate_now(() => {
       let result = {};
