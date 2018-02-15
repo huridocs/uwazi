@@ -4,7 +4,7 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
-fdescribe('Connections', () => {
+describe('Connections', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
@@ -77,8 +77,8 @@ fdescribe('Connections', () => {
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman Wikipedia', 'Alfred Pennyworth Wikipedia'],
-          Perpetrator: ['Scarecrow', 'Robin (comics) Wikipedia', 'Ra\'s al Ghul Wikipedia', 'Joker (comics) Wikipedia']
+          Heros: ['Batman', 'Alfred Pennyworth'],
+          Perpetrator: ['Scarecrow', 'Robin', 'Ra\'s al Ghul', 'Joker']
         }
       });
     })
@@ -94,8 +94,8 @@ fdescribe('Connections', () => {
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman Wikipedia', 'Alfred Pennyworth Wikipedia'],
-          Perpetrator: ['Scarecrow', 'Robin (comics) Wikipedia', 'Ra\'s al Ghul Wikipedia', 'Joker (comics) Wikipedia']
+          Heros: ['Batman', 'Alfred Pennyworth'],
+          Perpetrator: ['Scarecrow', 'Robin', 'Ra\'s al Ghul', 'Joker']
         }
       });
     })
