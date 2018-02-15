@@ -43,5 +43,16 @@ export default {
       });
       return defaultFilters;
     }, []);
+  },
+
+  allUniqueProperties: (templates) => {
+    return templates.reduce((defaultFilters, template) => {
+      template.properties.forEach((prop) => {
+        if (!defaultFilters.find((_prop) => sameProperty(prop, _prop))) {
+          defaultFilters.push(prop);
+        }
+      });
+      return defaultFilters;
+    }, []);
   }
 };

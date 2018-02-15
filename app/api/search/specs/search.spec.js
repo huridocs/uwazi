@@ -154,13 +154,15 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    it('should match entities related somehow with other entities with a title that matches the text search', (done) => {
+    fit('should match entities related somehow with other entities with a title that is the search term', (done) => {
       search.search({searchTerm: 'egypt'}, 'en')
       .then(({rows}) => {
         let country = rows.find((_result) => _result.sharedId === 'abc123');
         let entityWithEgypt = rows.find((_result) => _result.sharedId === 'entityWithEgypt');
+        let entityWithEgyptDictionary = rows.find((_result) => _result.sharedId === 'entityWithEgyptDictionary');
         expect(country).toBeDefined();
         expect(entityWithEgypt).toBeDefined();
+        expect(entityWithEgyptDictionary).toBeDefined();
         done();
       })
       .catch(catchErrors(done));
@@ -294,7 +296,7 @@ describe('search', () => {
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all.types.buckets;
-          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(1);
           expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
           expect(templateAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
@@ -333,7 +335,7 @@ describe('search', () => {
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
             const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
             expect(template2NestedAggs.rows.length).toBe(2);
-            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
+            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(2);
             expect(nestedAggs.find((a) => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
@@ -419,10 +421,10 @@ describe('search', () => {
         expect(asc.rows[2].title).toBe('metádata3');
         expect(asc.rows[3].title).toBe(' Metadáta4');
 
-        expect(desc.rows[0].title).toBe('Something');
-        expect(desc.rows[1].title).toBe('metadata5');
-        expect(desc.rows[2].title).toBe(' Metadáta4');
-        expect(desc.rows[3].title).toBe('metádata3');
+        expect(desc.rows[0].title).toBe('metadata5');
+        expect(desc.rows[1].title).toBe(' Metadáta4');
+        expect(desc.rows[2].title).toBe('metádata3');
+        expect(desc.rows[3].title).toBe('Metadata2');
         done();
       })
       .catch(catchErrors(done));

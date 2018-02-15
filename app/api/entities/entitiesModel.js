@@ -5,7 +5,7 @@ const entitySchema = new mongoose.Schema({
   language: {type: String, index: true},
   sharedId: {type: String, index: true},
   type: String,
-  title: {type: String, text: true},
+  title: {type: String},
   template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true},
   file: {
     originalname: String,

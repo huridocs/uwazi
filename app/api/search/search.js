@@ -2,14 +2,14 @@ import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
 import documentQueryBuilder from './documentQueryBuilder';
 import entities from 'api/entities';
+import dictionaries from 'api/thesauris/dictionariesModel';
 import templatesModel from '../templates';
-import {comonProperties, defaultFilters} from 'shared/comonProperties';
+import {comonProperties, defaultFilters, allUniqueProperties} from 'shared/comonProperties';
 import languages from 'shared/languagesList';
 import {detect as detectLanguage} from 'shared/languages';
 
 function processFiltes(filters, properties) {
-  let result = {};
-  Object.keys(filters || {}).forEach((propertyName) => {
+  return Object.keys(filters || {}).map((propertyName) => {
     let property = properties.find((p) => p.name === propertyName);
     let type = 'text';
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
@@ -24,19 +24,29 @@ function processFiltes(filters, properties) {
     if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
     }
-    result[property.name] = {value: filters[property.name], type};
+    return Object.assign(property, {value: filters[property.name], type});
   });
-
-  return result;
 }
 
-// function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle) {
-//   return properties.map((prop) => {
-//     if (prop.type === 'select' || prop.type === 'multiselect') {
-//       return {name: property.name, }
-//     }
-//   });
-// }
+function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionariesMatchByLabel, searchTerm) {
+  if (!entitiesMatchedByTitle.length && !dictionariesMatchByLabel.length) {
+    return [];
+  }
+  const values = entitiesMatchedByTitle.map((item) => item.sharedId);
+  values.concat(dictionariesMatchByLabel.map((dicitionary) => {
+    let regexp = RegExp(`.*${searchTerm}.*`);
+    return dicitionary.values.find((d) => {
+      console.log(d.label);
+      console.log(d.label.match(regexp));
+      return d.label.match(regexp);
+    }).id;
+  }));
+  return properties.map((prop) => {
+    if (prop.type === 'select' || prop.type === 'multiselect') {
+      return {name: prop.name, value: {values}, type: 'multiselect'};
+    }
+  }).filter((f) => f);
+}
 
 function agregationProperties(properties) {
   return properties
@@ -78,13 +88,14 @@ const search = {
     }
 
     let searchEntitiesbyTitle = Promise.resolve([]);
+    let searchDictionariesByTitle = Promise.resolve([]);
     if (query.searchTerm) {
-      searchEntitiesbyTitle = entities.get({$text: {$search: query.searchTerm}, language})
-      .then(console.log);
+      searchEntitiesbyTitle = entities.get({title: {$regex: `.*${query.searchTerm}.*`, $options: 'i'}, language});
+      searchDictionariesByTitle = dictionaries.get({'values.label': {$regex: `.*${query.searchTerm}.*`, $options: 'i'}});
     }
 
-    return Promise.all([templatesModel.get(), searchEntitiesbyTitle])
-    .then(([templates, entitiesMatchedByTitle]) => {
+    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel]) => {
       const allTemplates = templates.map((t) => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
       let properties = comonProperties(templates, filteringTypes);
@@ -92,10 +103,11 @@ const search = {
 
       const aggregations = agregationProperties(properties);
       const filters = processFiltes(query.filters, properties);
-      // const textSearchFilters = filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle);
-      // filters.concat(textSearchFilters);
+      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProperties(templates), entitiesMatchedByTitle, dictionariesMatchByLabel, query.searchTerm);
 
-      documentsQuery.filterMetadata(filters).aggregations(aggregations);
+      documentsQuery.filterMetadataByFullText(textSearchFilters);
+      documentsQuery.filterMetadata(filters);
+      documentsQuery.aggregations(aggregations);
 
       return elastic.search({index: elasticIndex, body: documentsQuery.query()})
       .then((response) => {

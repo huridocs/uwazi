@@ -54,7 +54,8 @@ export default {
     {_id: db.id(), sharedId: 'missingTemplate', language: 'en', title: 'missingTemplate', published: true, user: userId},
     {_id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: 'unpublished document', published: false, user: userId, metadata: {field1: 'joker'}},
     {_id: db.id(), sharedId: 'abc123', language: 'en', title: 'Country Egypt', published: true, user: userId},
-    {_id: db.id(), sharedId: 'entityWithEgypt', template: templateMetadata1, language: 'en', title: 'Something', published: true, user: userId, metadata: {multiselect1: ['abc123']}}
+    {_id: db.id(), sharedId: 'entityWithEgypt', template: template, language: 'en', title: 'Something', published: true, user: userId, metadata: {multiselect1: ['abc123']}},
+    {_id: db.id(), sharedId: 'entityWithEgyptDictionary', template: template, language: 'en', title: 'Something', published: true, user: userId, metadata: {multiselect1: ['35ae6c24-9f4c-4017-9f01-2bc42ff7ad83']}}
   ],
   templates: [
     {_id: template, properties: []},
@@ -74,6 +75,21 @@ export default {
       {name: 'multiselect1', type: 'multiselect'},
       {name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2']}
     ]}
+  ],
+  dictionaries: [
+    {
+      name: 'Contries Dcitionary',
+      values: [
+        {
+          label: 'Egypt',
+          id: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'
+        },
+        {
+          label: 'Chile',
+          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+        }
+      ]
+    }
   ]
 };
 
