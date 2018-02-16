@@ -2,6 +2,24 @@ import selectors from './selectors.js';
 import Nightmare from 'nightmare';
 
 Nightmare.action('connections', {
+  waitForRelationHubs(done) {
+    this.wait('.relationshipsHub').then(done);
+  },
+  sortBy(orderByText, done) {
+    this.waitToClick(selectors.connections.sortMenu)
+    .evaluate((sortBy) => {
+      const helpers = document.__helpers;
+      const sortOptions = helpers.querySelectorAll('.sort-buttons .Dropdown-option a');
+
+      sortOptions.forEach((option) => {
+        if (option.innerText.toLowerCase() === sortBy.toLowerCase()) {
+          option.click();
+        }
+      });
+    }, orderByText)
+    .wait(300)
+    .then(done);
+  },
   edit(done) {
     this.waitToClick(selectors.connections.editButton)
     .then(done)
@@ -150,9 +168,6 @@ Nightmare.action('connections', {
     }, matchingTitle)
     .then(done)
     .catch(done);
-  },
-  waitForRelationHubs(done) {
-    this.wait('.relationshipsHub').then(done);
   },
   getRelationsObjet(done) {
     this.evaluate_now(() => {

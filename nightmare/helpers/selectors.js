@@ -157,6 +157,8 @@ export default {
     saveButton: '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
     newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div > div > button',
 
+    sortMenu: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div > ul > li.Dropdown-option.is-active > a:nth-child(1)',
+
     documentViewerConnectionsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(6) > div',
 
     rightHandRelationships: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.rightRelationships div.rightRelationshipsTypeGroup',

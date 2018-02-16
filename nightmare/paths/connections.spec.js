@@ -240,6 +240,42 @@ describe('Connections', () => {
     .catch(catchErrors(done));
   }, 10000);
 
+  describe('when sorting by title a-z', () => {
+    it('should sort the connected entitites a to z', (done) => {
+      nightmare
+      .connections.sortBy('Title (A-Z)')
+      .connections.getRelationsObjet()
+      .then((relations) => {
+        expect(relations).toEqual({
+          Event: {
+            Heros: ['Alfred Pennyworth', 'Batman'],
+            Perpetrator: ['Joker', 'Ra\'s al Ghul', 'Scarecrow', 'Talia al Ghul']
+          }
+        });
+      })
+      .then(done)
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('when sorting by title z-a', () => {
+    it('should sort the connected entitites z to a', (done) => {
+      nightmare
+      .connections.sortBy('Title (Z-A)')
+      .connections.getRelationsObjet()
+      .then((relations) => {
+        expect(relations).toEqual({
+          Event: {
+            Perpetrator: ['Talia al Ghul', 'Scarecrow', 'Ra\'s al Ghul', 'Joker'],
+            Heros: ['Batman', 'Alfred Pennyworth']
+          }
+        });
+      })
+      .then(done)
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
