@@ -276,6 +276,24 @@ describe('Connections', () => {
     });
   });
 
+  describe('when searching', () => {
+    it('should filter and show search snippets', (done) => {
+      nightmare
+      .connections.search('talia')
+      .connections.getRelationsObjet()
+      .then((relations) => {
+        expect(relations).toEqual({
+          Event: {
+            Perpetrator: ['Talia al Ghul', 'Ra\'s al Ghul'],
+            Heros: ['Batman']
+          }
+        });
+      })
+      .then(done)
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()

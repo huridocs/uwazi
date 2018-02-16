@@ -73,6 +73,13 @@ Nightmare.action('connections', {
     .then(done)
     .catch(done);
   },
+  search(term, done) {
+    this.write(selectors.connections.searchInput, term)
+    .type(selectors.connections.searchInput, '\u000d')
+    .wait(300)
+    .then(done)
+    .catch(done);
+  },
   sidePanelSearchAndSelect(term, done) {
     this.connections.sidepanelSearch(term)
     .connections.sidepanelSelect(term)
