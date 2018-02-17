@@ -17,6 +17,9 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
 
+var webpack = require('webpack');
+var webpackConfig = require('./webpack.config.js');
+
 app.use(error_handling_middleware);
 app.use(compression());
 var oneYear = 31557600;
@@ -24,6 +27,16 @@ var oneYear = 31557600;
 var maxage = 0;
 if (app.get('env') === 'production') {
   maxage = oneYear;
+}
+
+if (app.get('env') === 'development') {
+  const compiler = webpack(webpackConfig);
+
+  app.use(require('webpack-dev-middleware')(compiler, {
+    logLevel: 'error', publicPath: webpackConfig.output.publicPath
+  }));
+
+  app.use(require('webpack-hot-middleware')(compiler));
 }
 
 app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: maxage}));

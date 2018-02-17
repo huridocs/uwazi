@@ -22,10 +22,34 @@ class Root extends Component {
   }
 
   render() {
-    //const isDeveloping = process.env.NODE_ENV !== 'production';
+    const isProduction = process.env.NODE_ENV === 'production';
     const head = this.props.head;
+    let pdfWorkerPathScript = 'window.pdfWorkerPath = \'/static/pdf.worker.js\';';
+    let JS = [
+      '/static/manifest.js',
+      '/static/nprogress.js',
+      '/static/vendor.js',
+      '/static/main.js'
+    ];
 
-    const pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
+    let CSS = [
+      '/static/vendor.styles.css',
+      '/static/styles.css'
+    ];
+
+    if (isProduction) {
+      pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
+      JS = [
+        this.props.assets.manifest.js,
+        this.props.assets.nprogress.js,
+        this.props.assets.vendor.js,
+        this.props.assets.main.js
+      ];
+      CSS = [
+        this.props.assets.main.css[0],
+        this.props.assets.main.css[1]
+      ];
+    }
 
     return (
       <html>
@@ -34,16 +58,9 @@ class Root extends Component {
           {head.meta.toComponent()}
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <link
-            href={this.props.assets.main.css[0]}
-            rel="stylesheet"
-            type="text/css"
-          />
-          <link
-            href={this.props.assets.main.css[1]}
-            rel="stylesheet"
-            type="text/css"
-          />
+          {CSS.map((style, key) => {
+            return <link key={key} href={style} rel="stylesheet" type="text/css" />;
+          })}
           <link rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
           />
@@ -54,10 +71,9 @@ class Root extends Component {
           {this.renderInitialData()}
           {head.script.toComponent()}
           <script dangerouslySetInnerHTML={{__html: pdfWorkerPathScript}} />
-          <script defer src={this.props.assets.manifest.js}></script>
-          <script defer src={this.props.assets.nprogress.js}></script>
-          <script defer src={this.props.assets.vendor.js}></script>
-          <script defer src={this.props.assets.main.js}></script>
+          {JS.map((file, index) => {
+            return <script key={index} src={file} />;
+          })}
         </body>
       </html>
     );
