@@ -237,7 +237,7 @@ function routeMatch(req, res, location) {
 }
 
 function getAssets() {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     return Promise.resolve();
   }
 

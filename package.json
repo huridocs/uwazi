@@ -17,7 +17,9 @@
   },
   "homepage": "",
   "scripts": {
-    "start": "node server",
+    "server": "nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --verbose",
+    "webpack-server": "node webpack.server.js",
+    "start": "npm run server & npm run webpack-server",
     "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors"
   },
   "dependencies": {

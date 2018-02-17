@@ -29,16 +29,6 @@ if (app.get('env') === 'production') {
   maxage = oneYear;
 }
 
-if (app.get('env') === 'development') {
-  const compiler = webpack(webpackConfig);
-
-  app.use(require('webpack-dev-middleware')(compiler, {
-    logLevel: 'error', publicPath: webpackConfig.output.publicPath
-  }));
-
-  app.use(require('webpack-hot-middleware')(compiler));
-}
-
 app.use(express.static(path.resolve(__dirname, 'dist'), {maxage: maxage}));
 app.use('/public', express.static(path.resolve(__dirname, 'public')));
 

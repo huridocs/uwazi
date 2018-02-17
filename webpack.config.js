@@ -20,10 +20,10 @@ config.plugins = config.plugins.concat([
 ])
 
 config.output = {
-  publicPath: '/static/',
+  publicPath: 'http://localhost:8080/',
   filename: '[name].js'
 }
 
-config.entry.main = ['react-hot-loader/patch', 'webpack-hot-middleware/client', path.join(rootPath, 'app/react/index.js')];
+config.entry.main = ['react-hot-loader/patch', 'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr', path.join(rootPath, 'app/react/index.js')];
 
 module.exports = config;

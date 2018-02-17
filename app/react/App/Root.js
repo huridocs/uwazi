@@ -26,15 +26,15 @@ class Root extends Component {
     const head = this.props.head;
     let pdfWorkerPathScript = 'window.pdfWorkerPath = \'/static/pdf.worker.js\';';
     let JS = [
-      '/static/manifest.js',
-      '/static/nprogress.js',
-      '/static/vendor.js',
-      '/static/main.js'
+      'http://localhost:8080/manifest.js',
+      'http://localhost:8080/nprogress.js',
+      'http://localhost:8080/vendor.js',
+      'http://localhost:8080/main.js'
     ];
 
     let CSS = [
-      '/static/vendor.styles.css',
-      '/static/styles.css'
+      'http://localhost:8080/vendor.styles.css',
+      'http://localhost:8080/styles.css'
     ];
 
     if (isProduction) {
