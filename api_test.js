@@ -48,7 +48,7 @@ jasmine.addReporter(new SpecReporter({
   }
 }));
 
-mongoose.connect('mongodb://localhost/uwazi_testing');
+mongoose.connect('mongodb://localhost/uwazi_testing', {useMongoClient: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {

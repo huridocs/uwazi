@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"uwazi_development.sessions"},{"v":1,"key":{"expires":1},"name":"expires_1","ns":"uwazi_development.sessions","expireAfterSeconds":0}]}
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"uwazi_development.sessions"},{"v":1,"key":{"expires":1},"name":"expires_1","expireAfterSeconds":0,"ns":"uwazi_development.sessions"}]}

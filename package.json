@@ -69,7 +69,7 @@
     "marked": "^0.3.6",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
-    "mongoose": "^5.0.5",
+    "mongoose": "4.9.8",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^4.0.1",
