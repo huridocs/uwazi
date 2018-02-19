@@ -21,8 +21,13 @@ export default function create(initialData = data) {
   return store;
 }
 
-if (!store) {
-  store = create();
+if (window && !window.store) {
+  console.log('NEW ONE !!');
+  window.store = create();
+}
+
+if (window) {
+  store = window.store;
 }
 
 
