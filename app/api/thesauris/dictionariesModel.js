@@ -5,7 +5,7 @@ const dictionarySchema = new mongoose.Schema({
   name: String,
   values: [{
     id: String,
-    label: String
+    label: {type: String}
   }]
 });
 

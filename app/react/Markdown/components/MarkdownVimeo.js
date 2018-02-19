@@ -8,7 +8,7 @@ export class MarkdownVimeo extends Component {
     let options = props.config.replace(/\(|\)/g, '').split(',');
     const videoUrl = options.shift();
     const videoId = videoUrl.split('/').reverse()[0];
-    options = options.join(', ') || '{}';
+    options = options.join(',') || '{}';
     options = options.replace(/&quot;/g, '"');
     try {
       options = JSON.parse(options);
@@ -32,9 +32,9 @@ export class MarkdownVimeo extends Component {
       let seconds = timeKey.split(':').reverse().reduce((_seconds, n, _index) => {
         return _seconds + parseInt(n, 10) * Math.pow(60, _index);
       }, 0);
-      return (<div className="timelink" key={index} onClick={this.setTime.bind(this, seconds)} className="timelink">
+      return <div className="timelink" key={index} onClick={this.setTime.bind(this, seconds)} className="timelink">
                 <a>{timeKey}</a><span> {config.options.timelinks[timeKey]}</span>
-              </div>);
+              </div>;
     });
   }
 

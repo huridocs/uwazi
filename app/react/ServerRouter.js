@@ -178,6 +178,7 @@ function handleRoute(res, renderProps, req) {
       renderPage(initialData, true);
     })
     .catch((error) => {
+      console.log(JSON.stringify(error, null, 4)); // eslint-disable-line
       console.trace(error); // eslint-disable-line
     });
   }
