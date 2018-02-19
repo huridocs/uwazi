@@ -4,7 +4,7 @@ import documentQueryBuilder from './documentQueryBuilder';
 import entities from 'api/entities';
 import dictionaries from 'api/thesauris/dictionariesModel';
 import templatesModel from '../templates';
-import {comonProperties, defaultFilters, allUniqueProperties} from 'shared/comonProperties';
+import {comonProperties, defaultFilters, allUniqueProperties, textFields} from 'shared/comonProperties';
 import languages from 'shared/languagesList';
 import {detect as detectLanguage} from 'shared/languages';
 
@@ -28,19 +28,12 @@ function processFiltes(filters, properties) {
   });
 }
 
-function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionariesMatchByLabel, searchTerm) {
+function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionariesMatchByLabel) {
   if (!entitiesMatchedByTitle.length && !dictionariesMatchByLabel.length) {
     return [];
   }
-  const values = entitiesMatchedByTitle.map((item) => item.sharedId);
-  values.concat(dictionariesMatchByLabel.map((dicitionary) => {
-    let regexp = RegExp(`.*${searchTerm}.*`);
-    return dicitionary.values.find((d) => {
-      console.log(d.label);
-      console.log(d.label.match(regexp));
-      return d.label.match(regexp);
-    }).id;
-  }));
+  let values = entitiesMatchedByTitle.map((item) => item.sharedId);
+  values = values.concat(dictionariesMatchByLabel.map((dictionary) => dictionary.values.id));
   return properties.map((prop) => {
     if (prop.type === 'select' || prop.type === 'multiselect') {
       return {name: prop.name, value: {values}, type: 'multiselect'};
@@ -61,41 +54,47 @@ function agregationProperties(properties) {
 
 const search = {
   search(query, language, user) {
-    let documentsQuery = documentQueryBuilder()
-    .fullTextSearch(query.searchTerm, query.fields, 2)
-    .filterByTemplate(query.types)
-    .filterById(query.ids)
-    .language(language);
-
-    if (query.sort) {
-      documentsQuery.sort(query.sort, query.order);
-    }
-
-    if (query.from) {
-      documentsQuery.from(query.from);
-    }
-
-    if (query.limit) {
-      documentsQuery.limit(query.limit);
-    }
-
-    if (query.includeUnpublished) {
-      documentsQuery.includeUnpublished();
-    }
-
-    if (query.unpublished && user) {
-      documentsQuery.unpublished();
-    }
-
     let searchEntitiesbyTitle = Promise.resolve([]);
     let searchDictionariesByTitle = Promise.resolve([]);
     if (query.searchTerm) {
-      searchEntitiesbyTitle = entities.get({title: {$regex: `.*${query.searchTerm}.*`, $options: 'i'}, language});
-      searchDictionariesByTitle = dictionaries.get({'values.label': {$regex: `.*${query.searchTerm}.*`, $options: 'i'}});
+      searchEntitiesbyTitle = entities.get({$text: {$search: query.searchTerm}, language});
+      let regexp = `.*${query.searchTerm}.*`;
+      searchDictionariesByTitle = dictionaries.db.aggregate([
+        {$match: {'values.label': {$regex: regexp, $options: 'i'}}},
+        {$unwind: '$values'},
+        {$match: {'values.label': {$regex: regexp, $options: 'i'}}}
+      ]);
     }
 
     return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle])
     .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel]) => {
+      let textFieldsToSearch = textFields(templates).map((prop) => 'metadata.' + prop.name).concat(['title', 'fullText']);
+      let documentsQuery = documentQueryBuilder()
+      .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+      .filterByTemplate(query.types)
+      .filterById(query.ids)
+      .language(language);
+
+      if (query.sort) {
+        documentsQuery.sort(query.sort, query.order);
+      }
+
+      if (query.from) {
+        documentsQuery.from(query.from);
+      }
+
+      if (query.limit) {
+        documentsQuery.limit(query.limit);
+      }
+
+      if (query.includeUnpublished) {
+        documentsQuery.includeUnpublished();
+      }
+
+      if (query.unpublished && user) {
+        documentsQuery.unpublished();
+      }
+
       const allTemplates = templates.map((t) => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
       let properties = comonProperties(templates, filteringTypes);
@@ -103,7 +102,7 @@ const search = {
 
       const aggregations = agregationProperties(properties);
       const filters = processFiltes(query.filters, properties);
-      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProperties(templates), entitiesMatchedByTitle, dictionariesMatchByLabel, query.searchTerm);
+      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProperties(templates), entitiesMatchedByTitle, dictionariesMatchByLabel);
 
       documentsQuery.filterMetadataByFullText(textSearchFilters);
       documentsQuery.filterMetadata(filters);

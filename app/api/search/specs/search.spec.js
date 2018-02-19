@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elasticResult from './elasticResult';
-import {schema} from 'api/entities/entitiesModel';
+import mongoose from 'mongoose';
 import {search, documentQueryBuilder, elastic} from 'api/search';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
@@ -50,7 +50,7 @@ describe('search', () => {
       db.clearAllAndLoad(elasticFixtures, () => {
         elasticTesting.reindex()
         .then(() => {
-          return schema.ensureIndexes();
+          return mongoose.model('entities').collection.createIndex({title: 'text'});
         })
         .then(done);
       });
@@ -84,7 +84,7 @@ describe('search', () => {
     });
   });
 
-  fdescribe('search', () => {
+  describe('search', () => {
     describe('searchSnippets', () => {
       it('perform a search on fullText of the document passed and return the snippets', (done) => {
         search.searchSnippets('spanish', ids.batmanFinishes, 'es')
@@ -154,9 +154,10 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should match entities related somehow with other entities with a title that is the search term', (done) => {
+    it('should match entities related somehow with other entities with a title that is the search term', (done) => {
       search.search({searchTerm: 'egypt'}, 'en')
       .then(({rows}) => {
+        expect(rows.length).toBe(3);
         let country = rows.find((_result) => _result.sharedId === 'abc123');
         let entityWithEgypt = rows.find((_result) => _result.sharedId === 'entityWithEgypt');
         let entityWithEgyptDictionary = rows.find((_result) => _result.sharedId === 'entityWithEgyptDictionary');
@@ -438,7 +439,7 @@ describe('search', () => {
       }, 'es')
       .then(() => {
         let expectedQuery = documentQueryBuilder()
-        .fullTextSearch('searchTerm', ['title', 'fullText'], 2)
+        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
         .includeUnpublished()
         .language('es')
         .query();

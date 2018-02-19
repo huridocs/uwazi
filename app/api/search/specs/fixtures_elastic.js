@@ -87,6 +87,10 @@ export default {
         {
           label: 'Chile',
           id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+        },
+        {
+          label: 'Egypto',
+          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
         }
       ]
     }

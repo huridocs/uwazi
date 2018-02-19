@@ -107,7 +107,7 @@ export default function () {
               query: term,
               type: 'phrase_prefix',
               fields,
-              boost: 5
+              boost: 6
             }
           });
         }
@@ -144,7 +144,7 @@ export default function () {
                         query: term,
                         type: 'phrase',
                         fields: ['fullText*'],
-                        boost: 2
+                        boost: 3
                       }
                     }
                   }
@@ -478,7 +478,6 @@ export default function () {
       properties.forEach((property) => {
         let path = `metadata.${property.name}.raw`;
         let should = baseQuery.query.bool.should[0].bool.should.filter((match) => {
-          console.log(match);
           return match && (!match.terms || match.terms && !match.terms[path]);
         });
 
