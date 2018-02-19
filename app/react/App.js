@@ -17,5 +17,3 @@ const App = () => {
 };
 
 export default App;
-
-//import './sockets';
