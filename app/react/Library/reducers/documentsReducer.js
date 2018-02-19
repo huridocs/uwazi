@@ -12,7 +12,6 @@ export default function documents(state = initialState, action = {}) {
   }
 
   if (action.type === types.UPDATE_DOCUMENT) {
-    console.log('RLY ?');
     const docIndex = state.get('rows').findIndex(doc => {
       return doc.get('_id') === action.doc._id;
     });

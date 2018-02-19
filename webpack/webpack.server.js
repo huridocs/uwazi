@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const webpackConfig = require('./webpack.config');
+const webpackConfig = require('./webpack.config.hot');
 const compiler = webpack(webpackConfig);
 const express = require('express');
 const app = express();

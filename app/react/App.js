@@ -1,11 +1,10 @@
-import React from 'react';
-import {browserHistory} from 'react-router';
-import {Router} from 'react-router';
-import Routes from './Routes';
 import {Provider} from 'react-redux';
+import {Router, browserHistory} from 'react-router';
+import React from 'react';
+
 import CustomProvider from './App/Provider';
-import {store} from './store';
-import './sockets';
+import Routes from './Routes';
+import {store} from './store.js';
 
 const App = () => {
   return (
@@ -18,3 +17,5 @@ const App = () => {
 };
 
 export default App;
+
+//import './sockets';

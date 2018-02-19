@@ -22,7 +22,7 @@ class Root extends Component {
   }
 
   render() {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isHotReload = process.env.HOT;
     const head = this.props.head;
     let pdfWorkerPathScript = 'window.pdfWorkerPath = \'/static/pdf.worker.js\';';
     let JS = [
@@ -37,7 +37,8 @@ class Root extends Component {
       'http://localhost:8080/styles.css'
     ];
 
-    if (isProduction) {
+
+    if (!isHotReload) {
       pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
       JS = [
         this.props.assets.manifest.js,

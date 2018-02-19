@@ -166,6 +166,13 @@ export class Item extends Component {
           {this.getSearchSnipett(doc)}
         </div>
         {metadata}
+        <ItemFooter>
+          <div className={`item-label-group ${templateClassName || ''}`}>
+            {doc.template ? <TemplateLabel template={doc.template}/> : false}
+            {this.props.labels}
+          </div>
+          {buttons}
+        </ItemFooter>
       </RowList.Item>
     );
   }

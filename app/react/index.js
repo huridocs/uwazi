@@ -19,24 +19,8 @@ if (module.hot) {
     const nextApp = require('./App.js');
     render(nextApp);
   });
-  //module.hot.accept('./store', () => {});
-  //module.hot.accept('./sockets', () => {});
-  module.hot.accept('./store', () => {
-    console.log('STORE !!!');
-    const rootReducer = require('./reducer');
-    window.store.replaceReducer(rootReducer);
-  });
-  //module.hot.accept('./reducer', () => {});
-  module.hot.accept('./reducer', () => {
-    console.log('REDUCER !!!');
-    const rootReducer = require('./reducer');
-    window.store.replaceReducer(rootReducer);
-  });
-  //module.hot.accept('./reducer', () => {});
-  //module.hot.accept('./', () => {
-  //const rootReducer = require('./reducer');
-  //console.log(rootReducer);
-  //});
 }
+
+import './sockets';
 
 

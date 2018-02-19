@@ -89,9 +89,9 @@ function handleRoute(res, renderProps, req) {
   //const isDeveloping = process.env.NODE_ENV !== 'production';
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
-  function renderPage(initialData, isRedux, assets) {
+  function renderPage(initialData, isRedux) {
     try {
-      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux, assets);
+      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
       res.status(200).send(wholeHtml);
     } catch (error) {
       console.trace(error); // eslint-disable-line
@@ -237,7 +237,7 @@ function routeMatch(req, res, location) {
 }
 
 function getAssets() {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.HOT) {
     return Promise.resolve();
   }
 
