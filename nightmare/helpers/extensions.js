@@ -25,13 +25,12 @@ Nightmare.action('librarySearch', function (searchTerm, done) {
 });
 
 Nightmare.action('write', function (selector, text, done) {
-  this.wait(selector)
+  this.wait(300)
+  .wait(selector)
   .insert(selector, text)
   .wait(5)
   .then(done)
-  .catch((error) => {
-    console.error(error);
-  });
+  .catch(done);
 });
 
 Nightmare.action('gotoLibrary', function (done) {

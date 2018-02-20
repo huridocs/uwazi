@@ -17,9 +17,11 @@ import {fromJS as Immutable} from 'immutable';
 import {getPropsFromRoute} from './utils';
 import translationsApi from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
+import fs from 'fs';
 
-import assets from '../../dist/webpack-assets.json';
+//import assets from '../../dist/webpack-assets.json';
 
+let assets = {};
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
   let componentHtml;
@@ -234,6 +236,26 @@ function routeMatch(req, res, location) {
   });
 }
 
+function getAssets() {
+  if (process.env.HOT) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    fs.readFile(__dirname + '/../../dist/webpack-assets.json', (err, data) => {
+      if (err) {
+        reject(err + '\nwebpack-assets.json do not exists or is malformed !, you probably need to build webpack with the production configuration');
+      }
+      try {
+        assets = JSON.parse(data);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  });
+}
+
 function ServerRouter(req, res) {
   if (!allowedRoute(req.user, req.url)) {
     const url = req.user ? '/' : '/login';
@@ -251,13 +273,17 @@ function ServerRouter(req, res) {
       if (settingsData.home_page) {
         location = settingsData.home_page;
       }
+      return getAssets();
     })
     .then(() => {
       routeMatch(req, res, location);
     });
   }
 
-  routeMatch(req, res, location);
+  getAssets()
+  .then(() => {
+    routeMatch(req, res, location);
+  });
 }
 
 export default ServerRouter;

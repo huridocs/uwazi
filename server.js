@@ -17,6 +17,9 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
 
+var webpack = require('webpack');
+var webpackConfig = require('./webpack.config.js');
+
 app.use(error_handling_middleware);
 app.use(compression());
 var oneYear = 31557600;
@@ -57,6 +60,10 @@ db.once('open', function () {
         console.log(err);
       }
       console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
+      if (process.env.HOT) {
+        console.info('');
+        console.info('webpack building...');
+      }
     });
   })
   .catch(console.log);

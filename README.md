@@ -27,7 +27,6 @@
   Several globally accessible gems and npm modules are required:
 
   ```
-  $ sudo gem install foreman
   $ sudo npm install -g webpack
   $ sudo npm install -g nodemon
   $ sudo npm install -g karma-cli
@@ -39,9 +38,12 @@
   $ ./database/blank_state.sh
   ```
 
-- launch application: `foreman start`, the app will be available after few seconds on localhost:3000
-- test api: `node test_api.js`
-- test react: `karma start`
+- launch application: 
+    - `npm run start`, for hot reloading build dev app and nodemon server
+    - `webpack --watch` and `npm run server`, for development build with nodemon server
+    - `webpack --config webpack.production.config.js;export NODE_ENV=production;node server.js`, for production env bundle
+- test server: `node test_api.js`
+- test client: `karma start`
 
 #Suggestions
 
