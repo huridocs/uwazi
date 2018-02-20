@@ -17,9 +17,6 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
 
-var webpack = require('webpack');
-var webpackConfig = require('./webpack.config.js');
-
 app.use(error_handling_middleware);
 app.use(compression());
 var oneYear = 31557600;
