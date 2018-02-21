@@ -1,7 +1,61 @@
 import pow from 'pow-mongodb-fixtures';
-let db = pow.connect('mongodb://localhost/uwazi_testing');
-db.id = (id) => {
+import mongoose from 'mongoose';
+import MongodbMemoryServer from 'mongodb-memory-server';
+
+mongoose.Promise = Promise;
+let testingDB = {};
+
+testingDB.id = (id) => {
   return pow.createObjectId(id);
 };
 
-export default db;
+let connected = false;
+let db;
+let mongod;
+
+const initMongoServer = () => {
+  mongod = new MongodbMemoryServer();
+  return mongod.getConnectionString()
+  .then((uri) => {
+    connected = true;
+    db = pow.connect(uri);
+    testingDB.clear = db.clear.bind(db);
+    return mongoose.connect(uri, {useMongoClient: true});
+  });
+};
+
+testingDB.connect = () => {
+  if (connected) {
+    return Promise.resolve();
+  }
+  return initMongoServer();
+};
+
+testingDB.clearAllAndLoad = (fixtures) => {
+  return testingDB.connect()
+  .then(() => {
+    return new Promise((resolve, reject) => {
+      db.clearAllAndLoad(fixtures, (error) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      });
+    });
+  });
+};
+
+testingDB.disconnect = () => {
+  return new Promise((resolve) => {
+    connected = false;
+    mongoose.disconnect()
+    .then(() => {
+      return mongod.stop();
+    })
+    .then(() => {
+      db.close(resolve);
+    });
+  });
+};
+
+export default testingDB;

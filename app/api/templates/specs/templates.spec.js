@@ -10,12 +10,7 @@ import fixtures, {templateToBeEditedId, templateToBeDeleted, templateWithContent
 describe('templates', () => {
   beforeEach((done) => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   describe('save', () => {

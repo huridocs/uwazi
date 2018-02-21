@@ -9,12 +9,7 @@ import search from '../../search/search';
 
 describe('relationships', () => {
   beforeEach((done) => {
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   describe('getByDocument()', () => {

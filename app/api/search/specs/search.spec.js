@@ -12,7 +12,6 @@ import languages from 'shared/languages';
 
 describe('search', () => {
   let result;
-  let fixturesLoaded = false;
   beforeEach((done) => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1', snippets: {
@@ -46,18 +45,15 @@ describe('search', () => {
     ])
     .toObject();
 
-    if (!fixturesLoaded) {
-      db.clearAllAndLoad(elasticFixtures, () => {
-        elasticTesting.reindex()
-        .then(() => {
-          return mongoose.model('entities').collection.createIndex({title: 'text'});
-        })
-        .then(done);
-      });
-      fixturesLoaded = true;
-      return;
-    }
-    done();
+    db.clearAllAndLoad(elasticFixtures)
+    .then(() => {
+      return elasticTesting.reindex();
+    })
+    .then(() => {
+      return mongoose.model('entities').collection.createIndex({title: 'text'});
+    })
+    .then(done)
+    .catch(catchErrors(done));
   });
 
   describe('countByTemplate', () => {

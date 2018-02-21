@@ -11,6 +11,7 @@ import elastic from 'api/search/elastic';
 import db from 'api/utils/testing_db';
 import fixtures, {entityId} from './fixtures.js';
 
+//slow tests
 describe('upload routes', () => {
   let routes;
   let req;
@@ -34,12 +35,7 @@ describe('upload routes', () => {
             size: 171411271};
     req = {language: 'es', user: 'admin', headers: {}, body: {document: 'id'}, files: [file], io};
 
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   describe('POST/upload', () => {

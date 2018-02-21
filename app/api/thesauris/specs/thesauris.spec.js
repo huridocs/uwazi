@@ -8,12 +8,7 @@ import fixtures, {dictionaryId, dictionaryIdToTranslate, dictionaryValueId} from
 
 describe('thesauris', () => {
   beforeEach((done) => {
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterEach((done) => {

@@ -20,12 +20,7 @@ describe('Attachments Routes', () => {
     paths.attachmentsPath = __dirname + '/uploads/';
     routes = instrumentRoutes(attachmentsRoutes);
 
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterEach(() => {
