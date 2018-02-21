@@ -83,13 +83,13 @@ export class Doc extends Component {
 
     const buttons = <div>
                       {doc.processed || isEntity ?
-                        <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
-                          <i className="fa fa-file-text-o"></i>
+                        <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={(e) => e.stopPropagation()}>
+                          <i className="fa fa-angle-right"></i> Read
                         </I18NLink> : false
                       }
                       {(doc.processed || isEntity) && !doc.published && hasTemplate ?
-                        <button className="item-shortcut btn btn-default btn-hover-success" onClick={this.publish.bind(this)}>
-                          <i className="fa fa-paper-plane"></i>
+                        <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
+                          <i className="fa fa-paper-plane"></i> Publish
                         </button> : false
                       }
                     </div>;

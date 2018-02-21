@@ -167,10 +167,8 @@ export class Item extends Component {
         </div>
         {metadata}
         <ItemFooter>
-          <div className={`item-label-group ${templateClassName || ''}`}>
-            {doc.template ? <TemplateLabel template={doc.template}/> : false}
-            {this.props.labels}
-          </div>
+          {doc.template ? <TemplateLabel template={doc.template}/> : false}
+          {this.props.labels}
           {buttons}
         </ItemFooter>
       </RowList.Item>
