@@ -56,10 +56,7 @@ function updateEntity(doc) {
     });
 
     return Promise.all(docs.map(d => {
-      return model.save(d)
-      .then((_d) => {
-        return search.index(_d);
-      });
+      return model.save(d);
     }));
   });
 }
@@ -72,7 +69,7 @@ function createEntity(doc, languages, sharedId) {
     return langDoc;
   });
 
-  return model.save(docs).then((savedDocs) => Promise.all(savedDocs.map((d) => search.index(d))));
+  return model.save(docs);
 }
 
 function getEntityTemplate(doc, language) {
@@ -150,13 +147,45 @@ export default {
     .then(response => {
       return Promise.all([response, relationships.saveEntityBasedReferences(response, language)]);
     })
+    .then((entities) => {
+      return this.indexEntities({sharedId}, '+fullText').then(() => entities);
+    })
     .then(([entity]) => {
       return entity;
     });
   },
 
+  indexEntities(query, select, limit = 200) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.getWithRelationships(query, select, {skip: offset, limit})
+      .then((docs) => search.bulkIndex(docs))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return this.count(query)
+    .then((totalRows) => {
+      return index(0, totalRows);
+    });
+  },
+
   get(query, select, pagination) {
     return model.get(query, select, pagination);
+  },
+
+  getWithRelationships(query, select, pagination) {
+    return model.get(query, select, pagination)
+    .then((entities) => {
+      return Promise.all(entities.map((entity) => {
+        return relationships.getByDocument(entity.sharedId, entity.language)
+        .then((relations) => {
+          entity.relationships = relations;
+          return entity;
+        });
+      }));
+    });
   },
 
   getById(sharedId, language) {
@@ -170,7 +199,7 @@ export default {
   saveMultiple(docs) {
     return model.save(docs)
     .then((response) => {
-      return Promise.all(response, search.indexEntities({_id: {$in: response.map(d => d._id)}}, '+fullText'));
+      return Promise.all(response, this.indexEntities({_id: {$in: response.map(d => d._id)}}, '+fullText'));
     })
     .then(response => response);
   },
@@ -237,7 +266,7 @@ export default {
       }
 
       return model.db.updateMany({template}, actions)
-      .then(() => search.indexEntities({template: template._id}, null, 1000));
+      .then(() => this.indexEntities({template: template._id}, null, 1000));
     });
   },
 
@@ -272,7 +301,7 @@ export default {
       return model.delete({sharedId})
       .then(() => docs)
       .catch((e) => {
-        return search.indexEntities({sharedId}, '+fullText').then(() => Promise.reject(e));
+        return this.indexEntities({sharedId}, '+fullText').then(() => Promise.reject(e));
       });
     })
     .then((docs) => {
@@ -301,7 +330,7 @@ export default {
       model.db.updateMany(query, {$set: changes})
     ])
     .then(([entitiesToReindex]) => {
-      return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+      return this.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
     });
   },
 
@@ -343,7 +372,7 @@ export default {
       ])
       .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
         let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
+        return this.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
       });
     });
   },

@@ -58,9 +58,6 @@ export default {
   },
 
   getDocumentHubs(id, language) {
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
-    }
     return model.get({entity: id, language})
     .then((ownRelations) => {
       const hubsIds = ownRelations.map(relationship => relationship.hub);
@@ -79,9 +76,6 @@ export default {
   },
 
   getByDocument(id, language) {
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
-    }
     return this.getDocumentHubs(id, language)
     .then((hubs) => {
       const relationships = Array.prototype.concat(...hubs.map((hub) => hub.relationships));
@@ -100,9 +94,6 @@ export default {
   },
 
   getGroupsByConnection(id, language, options = {}) {
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
-    }
     return Promise.all([
       this.getByDocument(id, language),
       templatesAPI.get(),
@@ -122,9 +113,6 @@ export default {
   },
 
   getHub(hub, language) {
-    if (!language) {
-      return Promise.reject(createError('Language cant be undefined'));
-    }
     return model.get({hub, language});
   },
 
@@ -216,10 +204,19 @@ export default {
           return Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)]);
         })
         .then(([result, connectedEntity]) => {
-          return normalizeConnectedDocumentData(result, connectedEntity);
+          return this.indexEntitiesByHub(hub)
+          .then(() => {
+            return normalizeConnectedDocumentData(result, connectedEntity);
+          });
         })
         .catch(console.log);
       }));
+  },
+
+  indexEntitiesByHub(hubId, language) {
+    return this.getHub(hubId).then((hub) => {
+      return entities.indexEntities({sharedId: {$in: hub.map((r) => r.entity)}});
+    });
   },
 
   saveEntityBasedReferences(entity, language) {
@@ -318,36 +315,25 @@ export default {
     });
   },
 
-  delete(condition) {
-    let relationshipsDeleted = 0;
-    let hubsDeleted = 0;
-    if (!condition) {
+  delete(relation) {
+    if (!relation) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
-    return model.get(condition)
+    return model.get(relation)
     .then((relationships) => {
-      return Promise.all(relationships.map((relation) => {
-        relationshipsDeleted += 1;
-        return model.delete({sharedId: relation.sharedId});
-      }))
-      .then(() => {
-        return Promise.all(relationships.map((relation) => model.get({hub: relation.hub, language: relation.language})));
-      });
+      return Promise.all(relationships.map((_relation) => model.get({hub: _relation.hub, language: _relation.language})));
     })
     .then((hubs) => {
       return Promise.all(hubs.map((hub) => {
-        const shouldDeleteTheLoneConnectionToo = hub.length === 1;
+        const shouldDeleteTheLoneConnectionToo = hub.length === 2;
         if (shouldDeleteTheLoneConnectionToo) {
-          relationshipsDeleted += 1;
-          hubsDeleted += 1;
-          return model.delete({hub: hub[0].hub});
+          const hubId = hub[0].hub;
+          return model.delete({hub: hubId})
+          .then(() => this.indexEntitiesByHub(hubId));
         }
 
-        return Promise.resolve();
+        return model.delete(relation).then(() => this.indexEntitiesByHub(relation));
       }));
-    })
-    .then(() => {
-      return {hubsDeleted, relationshipsDeleted};
     })
     .catch(console.log);
   },

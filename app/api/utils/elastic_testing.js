@@ -1,4 +1,4 @@
-import search from 'api/search/search';
+import entities from 'api/entities/entities';
 import elasticMapping from '../../../database/elastic_mapping';
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from 'api/search/elastic';
@@ -13,7 +13,7 @@ export default {
       });
     })
     .then(() => {
-      return search.indexEntities({}, '+fullText');
+      return entities.indexEntities({}, '+fullText');
     })
     .then(() => {
       return elastic.indices.refresh({index: elasticIndex});

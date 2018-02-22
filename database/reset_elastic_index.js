@@ -4,7 +4,7 @@ import search from '../app/api/search/search';
 import elasticMapping from './elastic_mapping';
 
 import indexConfig from '../app/api/config/elasticIndexes';
-import entities from '../app/api/entities/entitiesModel';
+import entities from '../app/api/entities/entities';
 import mongoose from 'mongoose';
 
 const limit = 200;
@@ -13,14 +13,14 @@ let pos = 0;
 let spinner = ['|', '/', '-', '\\'];
 
 function migrate(offset, totalRows) {
-  return entities.get({}, '+fullText', {skip: offset, limit})
+  return entities.getWithRelationships({}, '+fullText', {skip: offset, limit})
   .then((docsResponse) => {
     if (offset >= totalRows) {
       return;
     }
 
     return search.bulkIndex(docsResponse, 'index')
-    .then((res) => {
+    .then(() => {
       process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
       pos += 1;
       if (pos > 3) {

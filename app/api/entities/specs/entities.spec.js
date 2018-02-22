@@ -67,42 +67,29 @@ describe('entities', () => {
     });
 
     it('should index the newly created documents', (done) => {
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       let doc = {title: 'the dark knight', template: templateId};
       let user = {_id: db.id()};
 
       entities.save(doc, {user, language: 'en'})
       .then(() => {
-        expect(search.index.calls.all()[0].args[0].language).toBe('es');
-        expect(search.index.calls.all()[0].args[0]._id).toBeDefined();
-        expect(search.index.calls.all()[1].args[0].language).toBe('pt');
-        expect(search.index.calls.all()[2].args[0].language).toBe('en');
+        expect(entities.indexEntities).toHaveBeenCalled();
         done();
       })
       .catch(catchErrors(done));
     });
 
     it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', (done) => {
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       let partialDoc = {_id: batmanFinishesId, sharedId: 'shared', title: 'Updated title'};
       entities.save(partialDoc, {language: 'en'})
       .then(() => {
         return entities.getById(batmanFinishesId);
       })
       .then(savedEntity => {
-        const expectedIndex = {
-          _id: batmanFinishesId,
-          sharedId: 'shared',
-          type: 'entity',
-          template: templateId,
-          language: 'en',
-          title: 'Updated title',
-          published: true,
-          metadata: {property1: 'value1'},
-          file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}
-        };
-
         expect(savedEntity.title).toBe('Updated title');
         expect(savedEntity.metadata).toEqual({property1: 'value1'});
-        expect(search.index).toHaveBeenCalledWith(expectedIndex);
+        expect(entities.indexEntities).toHaveBeenCalled();
         done();
       })
       .catch(done.fail);
@@ -270,81 +257,99 @@ describe('entities', () => {
         .catch(catchErrors(done));
       });
     });
+  });
 
-    describe('Sanitize', () => {
-      it('should sanitize multidates, removing non valid dates', (done) => {
-        let doc = {
-          _id: batmanFinishesId, sharedId: 'shared',
-          metadata: {multidate: [null, 1234, null, 5678]},
-          published: false, template: templateId
-        };
+  describe('Sanitize', () => {
+    it('should sanitize multidates, removing non valid dates', (done) => {
+      let doc = {
+        _id: batmanFinishesId, sharedId: 'shared',
+        metadata: {multidate: [null, 1234, null, 5678]},
+        published: false, template: templateId
+      };
 
-        entities.save(doc, {language: 'en'})
-        .then((updatedDoc) => {
-          expect(updatedDoc.language).toBe('en');
-          return Promise.all([
-            entities.getById('shared', 'es'),
-            entities.getById('shared', 'en')
-          ]);
-        })
-        .then(([docES, docEN]) => {
-          expect(docES.metadata.multidate).toEqual([1234, 5678]);
-          expect(docEN.metadata.multidate).toEqual([1234, 5678]);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+      entities.save(doc, {language: 'en'})
+      .then((updatedDoc) => {
+        expect(updatedDoc.language).toBe('en');
+        return Promise.all([
+          entities.getById('shared', 'es'),
+          entities.getById('shared', 'en')
+        ]);
+      })
+      .then(([docES, docEN]) => {
+        expect(docES.metadata.multidate).toEqual([1234, 5678]);
+        expect(docEN.metadata.multidate).toEqual([1234, 5678]);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
 
-      it('should sanitize daterange, removing non valid dates', (done) => {
-        let doc1 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: 1, to: 2}}, template: templateId};
-        let doc2 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: null, to: 2}}, template: templateId};
-        let doc3 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: 2, to: null}}, template: templateId};
-        let doc4 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: null, to: null}}, template: templateId};
+    it('should sanitize daterange, removing non valid dates', (done) => {
+      let doc1 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: 1, to: 2}}, template: templateId};
+      let doc2 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: null, to: 2}}, template: templateId};
+      let doc3 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: 2, to: null}}, template: templateId};
+      let doc4 = {_id: batmanFinishesId, sharedId: 'shared', metadata: {daterange: {from: null, to: null}}, template: templateId};
 
-        entities.save(doc1, {language: 'en'}).then(() => entities.getById('shared', 'en'))
-        .then((doc) => {
-          expect(doc.metadata.daterange).toEqual(doc1.metadata.daterange);
-          return entities.save(doc2, {language: 'en'}).then(() => entities.getById('shared', 'en'));
-        })
-        .then((doc) => {
-          expect(doc.metadata.daterange).toEqual(doc2.metadata.daterange);
-          return entities.save(doc3, {language: 'en'}).then(() => entities.getById('shared', 'en'));
-        })
-        .then((doc) => {
-          expect(doc.metadata.daterange).toEqual(doc3.metadata.daterange);
-          return entities.save(doc4, {language: 'en'}).then(() => entities.getById('shared', 'en'));
-        })
-        .then((doc) => {
-          expect(doc.metadata.daterange).not.toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+      entities.save(doc1, {language: 'en'}).then(() => entities.getById('shared', 'en'))
+      .then((doc) => {
+        expect(doc.metadata.daterange).toEqual(doc1.metadata.daterange);
+        return entities.save(doc2, {language: 'en'}).then(() => entities.getById('shared', 'en'));
+      })
+      .then((doc) => {
+        expect(doc.metadata.daterange).toEqual(doc2.metadata.daterange);
+        return entities.save(doc3, {language: 'en'}).then(() => entities.getById('shared', 'en'));
+      })
+      .then((doc) => {
+        expect(doc.metadata.daterange).toEqual(doc3.metadata.daterange);
+        return entities.save(doc4, {language: 'en'}).then(() => entities.getById('shared', 'en'));
+      })
+      .then((doc) => {
+        expect(doc.metadata.daterange).not.toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
 
-      it('should sanitize multidaterange, removing non valid dates', (done) => {
-        let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidaterange: [
-          {from: 1, to: 2},
-          {from: null, to: null},
-          {from: null, to: 2},
-          {from: 2, to: null},
-          {from: null, to: null}
-        ]}, published: false, template: templateId};
+    it('should sanitize multidaterange, removing non valid dates', (done) => {
+      let doc = {_id: batmanFinishesId, sharedId: 'shared', metadata: {multidaterange: [
+        {from: 1, to: 2},
+        {from: null, to: null},
+        {from: null, to: 2},
+        {from: 2, to: null},
+        {from: null, to: null}
+      ]}, published: false, template: templateId};
 
-        entities.save(doc, {language: 'en'})
-        .then((updatedDoc) => {
-          expect(updatedDoc.language).toBe('en');
-          return Promise.all([
-            entities.getById('shared', 'es'),
-            entities.getById('shared', 'en')
-          ]);
-        })
-        .then(([docES, docEN]) => {
-          expect(docES.metadata.multidaterange).toEqual([{from: 1, to: 2}, {from: null, to: 2}, {from: 2, to: null}]);
-          expect(docEN.metadata.multidaterange).toEqual([{from: 1, to: 2}, {from: null, to: 2}, {from: 2, to: null}]);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+      entities.save(doc, {language: 'en'})
+      .then((updatedDoc) => {
+        expect(updatedDoc.language).toBe('en');
+        return Promise.all([
+          entities.getById('shared', 'es'),
+          entities.getById('shared', 'en')
+        ]);
+      })
+      .then(([docES, docEN]) => {
+        expect(docES.metadata.multidaterange).toEqual([{from: 1, to: 2}, {from: null, to: 2}, {from: 2, to: null}]);
+        expect(docEN.metadata.multidaterange).toEqual([{from: 1, to: 2}, {from: null, to: 2}, {from: 2, to: null}]);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('indexEntities', () => {
+    it('should index entities based on query params passed', (done) => {
+      spyOn(search, 'bulkIndex');
+      entities.indexEntities({sharedId: 'shared'}, {title: 1})
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex[0].title).toBeDefined();
+        expect(documentsToIndex[0].metadata).not.toBeDefined();
+        expect(documentsToIndex[1].title).toBeDefined();
+        expect(documentsToIndex[1].metadata).not.toBeDefined();
+        expect(documentsToIndex[2].title).toBeDefined();
+        expect(documentsToIndex[2].metadata).not.toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 
@@ -416,9 +421,9 @@ describe('entities', () => {
 
   describe('saveMultiple()', () => {
     it('should allow partial saves with correct full indexing', (done) => {
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       let partialDoc = {_id: batmanFinishesId, sharedId: 'shared', title: 'Updated title'};
       let partialDoc2 = {_id: syncPropertiesEntityId, sharedId: 'shared', title: 'Updated title 2'};
-      spyOn(search, 'indexEntities');
       entities.saveMultiple([partialDoc, partialDoc2])
       .then(response => {
         return Promise.all([response, entities.getById(batmanFinishesId)]);
@@ -431,7 +436,7 @@ describe('entities', () => {
         expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
         expect(savedEntity.title).toBe('Updated title');
         expect(savedEntity.metadata).toEqual({property1: 'value1'});
-        expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
+        expect(entities.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
         done();
       })
       .catch(done.fail);
@@ -457,13 +462,12 @@ describe('entities', () => {
     });
 
     it('should update property names on entities based on the changes to the template', (done) => {
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const template = {_id: templateChangingNames, properties: [
         {id: '1', type: 'text', name: 'property1', label: 'new name1'},
         {id: '2', type: 'text', name: 'property2', label: 'new name2'},
         {id: '3', type: 'text', name: 'property3', label: 'property3'}
       ]};
-
-      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
       entities.updateMetadataProperties(template)
       .then(() => Promise.all([
@@ -480,7 +484,7 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).toBe('value3');
 
         expect(docDiferentTemplate.metadata.property1).toBe('value1');
-        expect(search.indexEntities).toHaveBeenCalledWith({template: template._id}, null, 1000);
+        expect(entities.indexEntities).toHaveBeenCalledWith({template: template._id}, null, 1000);
         done();
       })
       .catch(catchErrors(done));
@@ -531,13 +535,14 @@ describe('entities', () => {
 
   describe('removeValuesFromEntities', () => {
     it('should remove values of properties passed on all entities having that property', (done) => {
-      spyOn(search, 'bulkIndex');
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       entities.removeValuesFromEntities({multiselect: []}, templateWithEntityAsThesauri)
       .then(() => {
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex.length).toBe(1);
-        expect(documentsToIndex[0].metadata.multiselect).toEqual([]);
-        //expect(documentsToIndex[1].metadata.select2).toBe('');
+        return entities.get({template: templateWithEntityAsThesauri});
+      })
+      .then((_entities) => {
+        expect(_entities[0].metadata.multiselect).toEqual([]);
+        expect(entities.indexEntities).toHaveBeenCalled();
         done();
       })
       .catch(catchErrors(done));
@@ -560,11 +565,11 @@ describe('entities', () => {
     describe('when database deletion throws an error', () => {
       it('should reindex the documents', (done) => {
         spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject('error'));
-        spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+        spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
 
         entities.delete('shared')
         .catch(() => {
-          expect(search.indexEntities).toHaveBeenCalledWith({sharedId: 'shared'}, '+fullText');
+          expect(entities.indexEntities).toHaveBeenCalledWith({sharedId: 'shared'}, '+fullText');
           done();
         });
       });

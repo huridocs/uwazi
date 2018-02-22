@@ -7,7 +7,7 @@ import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
 import {relation1, relation2, template} from './fixtures.js';
 import search from '../../search/search';
 
-describe('relationships', () => {
+fdescribe('relationships', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });

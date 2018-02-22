@@ -5,7 +5,7 @@ export default function () {
       include: [
         'title', 'icon', 'processed', 'creationDate', 'template',
         'metadata', 'type', 'sharedId', 'toc', 'attachments',
-        'language', 'file', 'uploaded', 'published'
+        'language', 'file', 'uploaded', 'published', 'relationships'
       ]
     },
     from: 0,

@@ -1,12 +1,13 @@
-import {index as elasticIndex} from 'api/config/elasticIndexes';
-import elastic from './elastic';
-import documentQueryBuilder from './documentQueryBuilder';
-import entities from 'api/entities';
-import dictionaries from 'api/thesauris/dictionariesModel';
-import templatesModel from '../templates';
 import {comonProperties, defaultFilters, allUniqueProperties, textFields} from 'shared/comonProperties';
-import languages from 'shared/languagesList';
 import {detect as detectLanguage} from 'shared/languages';
+import {index as elasticIndex} from 'api/config/elasticIndexes';
+import languages from 'shared/languagesList';
+import dictionaries from 'api/thesauris/dictionariesModel';
+
+import documentQueryBuilder from './documentQueryBuilder';
+import elastic from './elastic';
+import entities from '../entities';
+import templatesModel from '../templates';
 
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
@@ -173,10 +174,6 @@ const search = {
     });
   },
 
-  countByTemplate(templateId) {
-    return entities.countByTemplate(templateId);
-  },
-
   index(_entity) {
     const entity = Object.assign({}, _entity);
     const id = entity._id.toString();
@@ -258,22 +255,6 @@ const search = {
         });
       }
       return res;
-    });
-  },
-
-  indexEntities(query, select, limit = 200) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return entities.get(query, select, {skip: offset, limit})
-      .then((docs) => this.bulkIndex(docs))
-      .then(() => index(offset + limit, totalRows));
-    };
-    return entities.count(query)
-    .then((totalRows) => {
-      return index(0, totalRows);
     });
   },
 
