@@ -147,7 +147,7 @@
 
 .video-container > div:first-child {
     position: relative;
-    padding-bottom: 56.25%;
+    padding-bottom: 73.25%;
     height: 0;
     overflow: hidden;
     margin-top: 5px;
@@ -164,9 +164,33 @@
 }
 
 .video-container .timelink {
+  display: flex;
   cursor: pointer;
+  border-radius: 3px;
+  padding: 8px 16px;
+  
+  &:first-child {
+    margin-top: 16px;
+  }
+  &:nth-child(odd) {
+    background: $c-grey-lighten;
+  }
+  
+  &:hover {
+    background: $c-primary-lighten;
+  }
 
-  a {
+  b {
+    margin-right: 16px;
+    white-space: nowrap;
+  }
+
+  .fa {
+    color: $c-grey-light;
+    margin-right: 5px;
+  }
+
+  &:hover .fa {
     color: $c-primary;
   }
 }
