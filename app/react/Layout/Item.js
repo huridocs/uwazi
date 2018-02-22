@@ -55,7 +55,9 @@ export class Item extends Component {
           <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
             <dd className={isSortingProperty ? 'item-current-sort' : ''}>
-              <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+              <div className={value.length > 128 ? 'item-metadata-crop' : ''}>
+                <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+              </div>
             </dd>
           </dl>
         );

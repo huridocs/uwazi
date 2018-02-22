@@ -29,7 +29,7 @@ export class ShowMetadata extends Component {
     }
 
     if (typeof property.value === 'object') {
-      return <ul className={property.type === 'multidate' || property.type === 'multidaterange' ? 'multiline' : 'comma-separated'}>
+      return <ul className={'multiline'}>
                {property.value.map((value, indx) => {
                  if (value.url) {
                    return <li key={indx}><I18NLink to={value.url}>{value.value}</I18NLink></li>;

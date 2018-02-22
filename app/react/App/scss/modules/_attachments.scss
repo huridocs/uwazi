@@ -61,13 +61,8 @@
   width: 0; // flex overflow-hidden hack
   span {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 90%;
+    font-size: $f-size-sm;
     color: $c-black;
-    border-bottom: 1px dotted $c-grey;
-
-    .attachment-link:hover & {
-      border-color: $c-grey-dark;
-    }
 
     &.attachment-size {
       display: block;
