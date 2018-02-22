@@ -338,7 +338,13 @@ $item-padding: 15px;
   .item-icon {
     top: -1px;
   }
+
+  .markdown-viewer p,
+  .markdown-viewer li {
+    font-size: $f-size-sm;
+  }
   
+  //.markdown-viewer,
   .item-metadata-crop {
     position: relative;
     display: block;
