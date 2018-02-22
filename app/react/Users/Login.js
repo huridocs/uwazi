@@ -85,15 +85,15 @@ export class Login extends RouteHandler {
             </div>
             <div className={'form-group login-password ' + (this.state.error ? 'has-error' : '') + (this.state.recoverPassword ? ' is-hidden' : '')}>
               <label className="form-group-label" htmlFor="password">{t('System', 'Password')}</label>
-                <Field model="login.form.password">
-                  <input type="password" name="password" id="password" className="form-control"/>
-                </Field>
-                <div className="form-text">
-                  <span className="required">{t('System', 'Login failed')} - </span>
-                  <a title={t('System', 'Forgot Password?')}
-                    onClick={this.setRecoverPassword.bind(this)} className={(this.state.error ? 'label-danger' : '')}>
-                    {t('System', 'Forgot Password?')}
-                  </a>
+              <Field model="login.form.password">
+                <input type="password" name="password" id="password" className="form-control"/>
+              </Field>
+              <div className="form-text">
+                <span className="required">{t('System', 'Login failed')} - </span>
+                <a title={t('System', 'Forgot Password?')}
+                  onClick={this.setRecoverPassword.bind(this)} className={(this.state.error ? 'label-danger' : '')}>
+                  {t('System', 'Forgot Password?')}
+                </a>
               </div>
             </div>
             <p>

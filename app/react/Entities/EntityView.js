@@ -13,8 +13,7 @@ import SearchButton from 'app/Entities/components/SearchButton';
 import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 export default class Entity extends RouteHandler {
-
-  static requestState({entityId, lang}, query, globalResources) {
+  static requestState({entityId}, query, globalResources) {
     return Promise.all([
       entitiesAPI.get(entityId),
       relationTypesAPI.get(),

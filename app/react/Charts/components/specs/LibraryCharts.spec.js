@@ -135,16 +135,16 @@ describe('LibraryCharts', () => {
         aggregations: fromJS({
           all: {
             types: {buckets: [
-              {key: 'f1', filtered: {doc_count: 5}},  // eslint-disable-line camelcase
-              {key: 'f2', filtered: {doc_count: 1}},  // eslint-disable-line camelcase
-              {key: 'f3', filtered: {doc_count: 10}}  // eslint-disable-line camelcase
+              {key: 'f1', filtered: {doc_count: 5}}, // eslint-disable-line camelcase
+              {key: 'f2', filtered: {doc_count: 1}}, // eslint-disable-line camelcase
+              {key: 'f3', filtered: {doc_count: 10}} // eslint-disable-line camelcase
             ]},
             pname: {buckets: [
               {key: 'o1', filtered: {doc_count: 10}}, // eslint-disable-line camelcase
-              {key: 'o2', filtered: {doc_count: 8}},  // eslint-disable-line camelcase
-              {key: 'o3', filtered: {doc_count: 8}},  // eslint-disable-line camelcase
-              {key: 'o4', filtered: {doc_count: 8}},  // eslint-disable-line camelcase
-              {key: 'o5', filtered: {doc_count: 2}}   // eslint-disable-line camelcase
+              {key: 'o2', filtered: {doc_count: 8}}, // eslint-disable-line camelcase
+              {key: 'o3', filtered: {doc_count: 8}}, // eslint-disable-line camelcase
+              {key: 'o4', filtered: {doc_count: 8}}, // eslint-disable-line camelcase
+              {key: 'o5', filtered: {doc_count: 2}} // eslint-disable-line camelcase
             ]}
           }
         }),
