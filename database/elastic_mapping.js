@@ -175,15 +175,26 @@ languages.getAll().forEach((language) => {
     stopwords: `_${language}_`
   };
 
-  config.settings.analysis.filter[language + '_stemmer'] = {
-    type: 'stemmer',
-    language
-  };
+  let filters = [];
+  if (language === 'arabic') {
+    filters.push('arabic_normalization');
+  }
+  if (language === 'persian') {
+    filters.push('arabic_normalization');
+    filters.push('persian_normalization');
+  }
+  if (language !== 'persian') {
+    config.settings.analysis.filter[language + '_stemmer'] = {
+      type: 'stemmer',
+      language
+    };
+    filters.push(`${language}_stemmer`);
+  }
 
   config.settings.analysis.analyzer[language] = {
     type: 'custom',
     tokenizer: 'standard',
-    filter: ['lowercase', 'asciifolding', `${language}_stop`, `${language}_stemmer`],
+    filter: ['lowercase', 'asciifolding', `${language}_stop`].concat(filters),
     char_filter: ['remove_annotation']
   };
 
