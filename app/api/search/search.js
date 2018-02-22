@@ -1,16 +1,15 @@
 import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from './elastic';
-import queryBuilder from './documentQueryBuilder';
-import entities from '../entities';
-import model from '../entities/entitiesModel';
+import documentQueryBuilder from './documentQueryBuilder';
+import entities from 'api/entities';
+import dictionaries from 'api/thesauris/dictionariesModel';
 import templatesModel from '../templates';
-import {comonProperties, defaultFilters} from 'shared/comonProperties';
+import {comonProperties, defaultFilters, allUniqueProperties, textFields} from 'shared/comonProperties';
 import languages from 'shared/languagesList';
 import {detect as detectLanguage} from 'shared/languages';
 
 function processFiltes(filters, properties) {
-  let result = {};
-  Object.keys(filters || {}).forEach((propertyName) => {
+  return Object.keys(filters || {}).map((propertyName) => {
     let property = properties.find((p) => p.name === propertyName);
     let type = 'text';
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
@@ -25,58 +24,89 @@ function processFiltes(filters, properties) {
     if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
     }
-    result[property.name] = {value: filters[property.name], type};
+    return Object.assign(property, {value: filters[property.name], type});
   });
-
-  return result;
 }
 
-export default {
+function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionariesMatchByLabel) {
+  if (!entitiesMatchedByTitle.length && !dictionariesMatchByLabel.length) {
+    return [];
+  }
+  let values = entitiesMatchedByTitle.map((item) => item.sharedId);
+  values = values.concat(dictionariesMatchByLabel.map((dictionary) => dictionary.values.id));
+  return properties.map((prop) => {
+    if (prop.type === 'select' || prop.type === 'multiselect') {
+      return {name: prop.name, value: {values}, type: 'multiselect'};
+    }
+  }).filter((f) => f);
+}
+
+function agregationProperties(properties) {
+  return properties
+  .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+  .map((property) => {
+    if (property.type === 'nested') {
+      return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
+    }
+    return {name: property.name, nested: false};
+  });
+}
+
+const search = {
   search(query, language, user) {
-    let documentsQuery = queryBuilder()
-    .fullTextSearch(query.searchTerm, query.fields, 2)
-    .filterByTemplate(query.types)
-    .filterById(query.ids)
-    .language(language);
-
-    if (query.sort) {
-      documentsQuery.sort(query.sort, query.order);
+    let searchEntitiesbyTitle = Promise.resolve([]);
+    let searchDictionariesByTitle = Promise.resolve([]);
+    if (query.searchTerm) {
+      searchEntitiesbyTitle = entities.get({$text: {$search: query.searchTerm}, language});
+      let regexp = `.*${query.searchTerm}.*`;
+      searchDictionariesByTitle = dictionaries.db.aggregate([
+        {$match: {'values.label': {$regex: regexp, $options: 'i'}}},
+        {$unwind: '$values'},
+        {$match: {'values.label': {$regex: regexp, $options: 'i'}}}
+      ]);
     }
 
-    if (query.from) {
-      documentsQuery.from(query.from);
-    }
+    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel]) => {
+      let textFieldsToSearch = textFields(templates).map((prop) => 'metadata.' + prop.name).concat(['title', 'fullText']);
+      let documentsQuery = documentQueryBuilder()
+      .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+      .filterByTemplate(query.types)
+      .filterById(query.ids)
+      .language(language);
 
-    if (query.limit) {
-      documentsQuery.limit(query.limit);
-    }
+      if (query.sort) {
+        documentsQuery.sort(query.sort, query.order);
+      }
 
-    if (query.includeUnpublished) {
-      documentsQuery.includeUnpublished();
-    }
+      if (query.from) {
+        documentsQuery.from(query.from);
+      }
 
-    if (query.unpublished && user) {
-      documentsQuery.unpublished();
-    }
+      if (query.limit) {
+        documentsQuery.limit(query.limit);
+      }
 
-    return templatesModel.get()
-    .then((templates) => {
+      if (query.includeUnpublished) {
+        documentsQuery.includeUnpublished();
+      }
+
+      if (query.unpublished && user) {
+        documentsQuery.unpublished();
+      }
+
       const allTemplates = templates.map((t) => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
       let properties = comonProperties(templates, filteringTypes);
       properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
-      let aggregations = properties
-      .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
-      .map((property) => {
-        if (property.type === 'nested') {
-          return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
-        }
-        return {name: property.name, nested: false};
-      });
 
+      const aggregations = agregationProperties(properties);
       const filters = processFiltes(query.filters, properties);
-      documentsQuery.filterMetadata(filters)
-      .aggregations(aggregations);
+      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProperties(templates), entitiesMatchedByTitle, dictionariesMatchByLabel);
+
+      documentsQuery.filterMetadataByFullText(textSearchFilters);
+      documentsQuery.filterMetadata(filters);
+      documentsQuery.aggregations(aggregations);
 
       return elastic.search({index: elasticIndex, body: documentsQuery.query()})
       .then((response) => {
@@ -106,11 +136,11 @@ export default {
   },
 
   getUploadsByUser(user, language) {
-    return model.get({user: user._id, language, published: false});
+    return entities.get({user: user._id, language, published: false});
   },
 
   searchSnippets(searchTerm, sharedId, language) {
-    let query = queryBuilder()
+    let query = documentQueryBuilder()
     .fullTextSearch(searchTerm, ['fullText'], 9999)
     .includeUnpublished()
     .filterById(sharedId)
@@ -245,3 +275,5 @@ export default {
     return elastic.delete({index: elasticIndex, type: 'entity', id});
   }
 };
+
+export default search;

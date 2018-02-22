@@ -1,12 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 import {index as elasticIndex} from 'api/config/elasticIndexes';
-import search from '../search.js';
-import elastic from '../elastic';
 import elasticResult from './elasticResult';
-import queryBuilder from 'api/search/documentQueryBuilder';
+import mongoose from 'mongoose';
+import {search, documentQueryBuilder, elastic} from 'api/search';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
-import fixtures, {templateId, userId} from './fixtures';
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
 import elasticTesting from 'api/utils/elastic_testing';
@@ -14,6 +12,7 @@ import languages from 'shared/languages';
 
 describe('search', () => {
   let result;
+  let fixturesLoaded = false;
   beforeEach((done) => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1', snippets: {
@@ -47,29 +46,25 @@ describe('search', () => {
     ])
     .toObject();
 
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    if (!fixturesLoaded) {
+      db.clearAllAndLoad(elasticFixtures, () => {
+        elasticTesting.reindex()
+        .then(() => {
+          return mongoose.model('entities').collection.createIndex({title: 'text'});
+        })
+        .then(done);
+      });
+      fixturesLoaded = true;
+      return;
+    }
+    done();
   });
 
   describe('countByTemplate', () => {
     it('should return how many entities or documents are using the template passed', (done) => {
-      search.countByTemplate(templateId)
+      search.countByTemplate(ids.template1)
       .then((count) => {
         expect(count).toBe(4);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should return 0 when no count found', (done) => {
-      const newTemplate = db.id();
-      search.countByTemplate(newTemplate)
-      .then((count) => {
-        expect(count).toBe(0);
         done();
       })
       .catch(done.fail);
@@ -78,11 +73,11 @@ describe('search', () => {
 
   describe('getUploadsByUser', () => {
     it('should request all unpublished entities or documents for the user', (done) => {
-      let user = {_id: userId};
+      let user = {_id: ids.userId};
       search.getUploadsByUser(user, 'en')
       .then((response) => {
         expect(response.length).toBe(1);
-        expect(response[0].title).toBe('unpublished');
+        expect(response[0].title).toBe('metadata6');
         done();
       })
       .catch(catchErrors(done));
@@ -90,18 +85,6 @@ describe('search', () => {
   });
 
   describe('search', () => {
-    beforeEach((done) => {
-      db.clearAllAndLoad(elasticFixtures, (err) => {
-        if (err) {
-          done.fail(err);
-        }
-
-        elasticTesting.reindex()
-        .then(done)
-        .catch(done.fail);
-      });
-    });
-
     describe('searchSnippets', () => {
       it('perform a search on fullText of the document passed and return the snippets', (done) => {
         search.searchSnippets('spanish', ids.batmanFinishes, 'es')
@@ -171,6 +154,21 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
+    it('should match entities related somehow with other entities with a title that is the search term', (done) => {
+      search.search({searchTerm: 'egypt'}, 'en')
+      .then(({rows}) => {
+        expect(rows.length).toBe(3);
+        let country = rows.find((_result) => _result.sharedId === 'abc123');
+        let entityWithEgypt = rows.find((_result) => _result.sharedId === 'entityWithEgypt');
+        let entityWithEgyptDictionary = rows.find((_result) => _result.sharedId === 'entityWithEgyptDictionary');
+        expect(country).toBeDefined();
+        expect(entityWithEgypt).toBeDefined();
+        expect(entityWithEgyptDictionary).toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     it('should filter by templates', (done) => {
       Promise.all([
         search.search({types: [ids.template1]}, 'es'),
@@ -185,8 +183,8 @@ describe('search', () => {
         expect(template1en.rows.length).toBe(2);
         expect(template2es.rows.length).toBe(1);
         expect(allTemplatesEn.rows.length).toBe(3);
-        expect(onlyMissing.rows.length).toBe(1);
-        expect(template1AndMissing.rows.length).toBe(3);
+        expect(onlyMissing.rows.length).toBe(2);
+        expect(template1AndMissing.rows.length).toBe(4);
         done();
       })
       .catch(catchErrors(done));
@@ -299,7 +297,7 @@ describe('search', () => {
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all.types.buckets;
-          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
+          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(1);
           expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
           expect(templateAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
@@ -338,7 +336,7 @@ describe('search', () => {
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
             const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
             expect(template2NestedAggs.rows.length).toBe(2);
-            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
+            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(2);
             expect(nestedAggs.find((a) => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
@@ -440,8 +438,8 @@ describe('search', () => {
         includeUnpublished: true
       }, 'es')
       .then(() => {
-        let expectedQuery = queryBuilder()
-        .fullTextSearch('searchTerm', ['title', 'fullText'], 2)
+        let expectedQuery = documentQueryBuilder()
+        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
         .includeUnpublished()
         .language('es')
         .query();
@@ -591,15 +589,13 @@ describe('search', () => {
   describe('indexEntities', () => {
     it('should index entities based on query params passed', (done) => {
       spyOn(search, 'bulkIndex');
-      search.indexEntities({sharedId: 'shared'}, {title: 1})
+      search.indexEntities({sharedId: ids.batmanBegins}, {title: 1})
       .then(() => {
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
         expect(documentsToIndex[0].title).toBeDefined();
         expect(documentsToIndex[0].metadata).not.toBeDefined();
         expect(documentsToIndex[1].title).toBeDefined();
         expect(documentsToIndex[1].metadata).not.toBeDefined();
-        expect(documentsToIndex[2].title).toBeDefined();
-        expect(documentsToIndex[2].metadata).not.toBeDefined();
         done();
       })
       .catch(catchErrors(done));

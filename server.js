@@ -57,6 +57,10 @@ db.once('open', function () {
         console.log(err);
       }
       console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
+      if (process.env.HOT) {
+        console.info('');
+        console.info('webpack building...');
+      }
     });
   })
   .catch(console.log);
