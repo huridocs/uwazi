@@ -13,6 +13,7 @@ module.exports = {
     'libraryActions.spec.js',
     'Metadata/actions/specs/actions.spec.js',
     'MainListWrapper.spec.js',
+    'DocumentsList.spec.js',
     'EditTranslationForm.spec.js',
     'PDFPage.spec.js',
     'targetDocumentReducer.spec.js',
@@ -21,6 +22,7 @@ module.exports = {
     'referencesActions.spec.js',
     'Uploads',
     'Multireducer',
+    'Relationships',
     'Notifications'
   ],
   setupTestFrameworkScriptFile: '<rootDir>/setUpJest.js',

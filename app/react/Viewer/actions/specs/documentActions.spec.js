@@ -152,9 +152,9 @@ describe('documentActions', () => {
       backend.restore();
       backend
       .get(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', {body: JSON.stringify('documents')})
-      .get(APIURL + 'documents?_id=targetId', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
-      .get(APIURL + 'documents?_id=docWithPDFRdy', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
-      .get(APIURL + 'documents?_id=docWithPDFNotRdy', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
+      .get(APIURL + 'entities?_id=targetId', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
+      .get(APIURL + 'entities?_id=docWithPDFRdy', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
+      .get(APIURL + 'entities?_id=docWithPDFNotRdy', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
       .get(APIURL + 'references/by_document/targetId', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
 
