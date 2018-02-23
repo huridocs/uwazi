@@ -19,11 +19,19 @@ describe('metadata formater', () => {
         multidaterange: [{from: 10, to: 1000000}, {from: 2000000, to: 3000000}],
         markdown: 'markdown content',
         select: 'value3'
-      }
+      },
+      relationships: [
+        {template: null},
+        {template: 'relationType2'},
+        {template: 'relationType1', entityData: {template: 'template', title: 'relation1Title', type: 'entity', sharedId: 'shared1'}},
+        {template: 'relationType1', entityData: {template: 'template', title: 'relation2Title', type: 'document', sharedId: 'shared2'}},
+        {template: 'relationType1', entityData: {template: 'template2', title: 'relation3Title', type: 'document', sharedId: 'shared3'}}
+      ]
     };
 
     templates = fromJS([
       {_id: 'template'},
+      {_id: 'template2'},
       {
         _id: 'templateID',
         name: 'Mecanismo',
@@ -36,7 +44,9 @@ describe('metadata formater', () => {
           {name: 'daterange', type: 'daterange', label: 'Date Range'},
           {name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range'},
           {name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true},
-          {name: 'select', content: 'thesauriId', type: 'select', label: 'Select'}
+          {name: 'select', content: 'thesauriId', type: 'select', label: 'Select'},
+          {name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'template', relationType: 'relationType1'},
+          {name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1'}
         ]
       }
     ]);
@@ -66,11 +76,13 @@ describe('metadata formater', () => {
     let multidaterange;
     let markdown;
     let select;
+    let relationship1;
+    let relationship2;
 
     beforeEach(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
       metadata = data.metadata;
-      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select] = metadata;
+      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2] = metadata;
     });
 
     it('should maintain doc original data untouched', () => {
@@ -79,7 +91,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(8);
+      expect(data.metadata.length).toBe(10);
     });
 
     it('should process text type', () => {
@@ -132,6 +144,28 @@ describe('metadata formater', () => {
       expect(select.label).toBe('Select');
       expect(select.name).toBe('select');
       expect(select.value).toBe('Value 3');
+    });
+
+    it('should process bound relationship types', () => {
+      expect(relationship1.label).toBe('Relationship');
+      expect(relationship1.name).toBe('relationship1');
+      expect(relationship1.value.length).toBe(2);
+      expect(relationship1.value[0].value).toBe('relation1Title');
+      expect(relationship1.value[0].url).toBe('/entity/shared1');
+      expect(relationship1.value[1].value).toBe('relation2Title');
+      expect(relationship1.value[1].url).toBe('/document/shared2');
+    });
+
+    it('should process free relationsip types', () => {
+      expect(relationship2.label).toBe('Relationship 2');
+      expect(relationship2.name).toBe('relationship2');
+      expect(relationship2.value.length).toBe(3);
+      expect(relationship2.value[0].value).toBe('relation1Title');
+      expect(relationship2.value[0].url).toBe('/entity/shared1');
+      expect(relationship2.value[1].value).toBe('relation2Title');
+      expect(relationship2.value[1].url).toBe('/document/shared2');
+      expect(relationship2.value[2].value).toBe('relation3Title');
+      expect(relationship2.value[2].url).toBe('/document/shared3');
     });
   });
 

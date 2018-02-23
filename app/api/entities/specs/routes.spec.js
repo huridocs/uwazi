@@ -101,16 +101,16 @@ describe('entities', () => {
 
   describe('GET', () => {
     it('should return matching document', (done) => {
-      spyOn(entities, 'getById').and.returnValue(Promise.resolve('result'));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve('result'));
       let req = {
-        query: {_id: 'id'},
+        query: {_id: 'sharedId'},
         language: 'lang'
       };
 
       routes.get('/api/entities', req)
       .then((response) => {
-        expect(entities.getById).toHaveBeenCalledWith('id', 'lang');
-        expect(response).toEqual({rows: ['result']});
+        expect(entities.getWithRelationships).toHaveBeenCalledWith({sharedId: 'sharedId', language: 'lang'});
+        expect(response).toEqual({rows: 'result'});
         done();
       })
       .catch(catchErrors(done));

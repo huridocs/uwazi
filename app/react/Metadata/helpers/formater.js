@@ -1,5 +1,4 @@
 import moment from 'moment';
-import Immutable from 'immutable';
 import t from 'app/I18N/t';
 import {advancedSort} from 'app/utils/advancedSort';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
@@ -86,35 +85,18 @@ export default {
     return {label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard};
   },
 
-  relationship(property, thesauriValues, thesauris, showInCard) {
-    let allEntitiesThesauriValues = thesauris
-    .filter((_thesauri) => {
-      return _thesauri.get('type') === 'template';
-    })
-    .reduce((result, _thesauri) => {
-      if (result) {
-        return result.concat(_thesauri.get('values'));
-      }
-
-      return _thesauri.get('values');
-    }, null);
-
-    let thesauri = Immutable.fromJS({
-      values: allEntitiesThesauriValues,
-      type: 'template'
-    });
-
-    let values = thesauriValues.map((thesauriValue) => {
-      let option = thesauri.get('values').find(v => {
-        return v.get('id').toString() === thesauriValue.toString();
-      });
-
-      return this.getSelectOptions(option, thesauri);
-    });
-
-    const sortedValues = advancedSort(values, {property: 'value'});
-
-    return {label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard};
+  relationship(property, relationships) {
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value: relationships
+      .filter((r) => r.template === property.get('relationType'))
+      .filter((r) => !property.get('content') || property.get('content') === r.entityData.template)
+      .map((r) => ({
+        value: r.entityData.title,
+        url: `/${r.entityData.type}/${r.entityData.sharedId}`
+      }))
+    };
   },
 
   nested(property, rows, showInCard) {
@@ -168,8 +150,8 @@ export default {
         return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type});
       }
 
-      if (type === 'relationship' && value) {
-        return Object.assign(this.relationship(property, value, thesauris, showInCard), {type});
+      if (type === 'relationship') {
+        return Object.assign(this.relationship(property, doc.relationships), {type});
       }
 
       if (type === 'date' && value) {

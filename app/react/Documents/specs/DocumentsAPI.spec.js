@@ -12,14 +12,14 @@ describe('DocumentsAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(APIURL + 'documents', {body: JSON.stringify({rows: arrayResponse})})
+    .get(APIURL + 'entities', {body: JSON.stringify({rows: arrayResponse})})
+    .get(APIURL + 'entities?_id=documentId', {body: JSON.stringify({rows: singleResponse})})
     .get(APIURL + 'documents/search', {body: JSON.stringify(searchResponse)})
     .get(APIURL + 'documents/list?keys=%5B%221%22%2C%222%22%5D', {body: JSON.stringify({rows: listResponse})})
     .get(APIURL + 'documents/uploads', {body: JSON.stringify({rows: 'uploads'})})
     .get(APIURL + 'documents/count_by_template?templateId=templateId', {body: JSON.stringify(1)})
     .get(APIURL + 'documents/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
     .get(APIURL + 'documents/search?searchTerm=Batman&joker=true', {body: JSON.stringify(filteredSearchResult)})
-    .get(APIURL + 'documents?_id=documentId', {body: JSON.stringify({rows: singleResponse})})
     .delete(APIURL + 'documents?sharedId=shared', {body: JSON.stringify({backednResponse: 'testdelete'})})
     .post(APIURL + 'documents', {body: JSON.stringify({backednResponse: 'test'})});
   });
