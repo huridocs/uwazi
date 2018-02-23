@@ -20,9 +20,62 @@
       "ArrayExpression": "off", 
       "ObjectExpression": "off"}
     ],
-    "curly": 2,
+    "no-mixed-operators": "off",
+    "no-underscore-dangle": "off",
+    "comma-dangle": "off",
+    "spaced-comment": "off",
+    "object-curly-newline": "off",
+    "function-paren-newline": "off",
+    "react/prefer-stateless-function": "off",
+    "no-confusing-arrow": "off",
+
+    "object-curly-spacing": ["error", "never"],
+    "max-len": ["error", 150],
+
+    //all warns are activated by default if removed
+    "react/self-closing-comp": ["warn"],
+    "padded-blocks": ["warn"],
+    "consistent-return": ["warn"],
+    "prefer-const": ["warn"],
+    "arrow-body-style": ["warn"],
+    "arrow-parens": ["warn"],
+    "prefer-template": ["warn"],
+    "no-tabs": ["warn"],
+    "object-shorthand": ["warn"],
+    "prefer-destructuring": ["warn"],
+    "class-methods-use-this": ["warn"],
+    "no-return-assign": ["warn"],
+    "no-param-reassign": ["warn"],
+    "array-callback-return": ["warn"],
+    "prefer-arrow-callback": ["warn"],
+    "jsx-quotes": ["warn"],
 
     //import
-    "import/extensions": "never" 
+    "import/no-duplicates": ["warn"],
+    "import/no-named-as-default": ["warn"],
+    "import/first": ["warn"],
+    "import/extensions": "never",
+    "import/no-unresolved": "off",
+
+    //react
+    "react/jsx-closing-bracket-location": ["warn"],
+    "react/jsx-boolean-value": ["warn"],
+    "react/jsx-indent": ["warn"],
+    "react/jsx-indent-props": ["warn"],
+    "react/no-array-index-key": ["warn"],
+    "react/jsx-first-prop-new-line": ["warn"],
+    "react/no-unused-state": ["warn"],
+    "react/jsx-wrap-multilines": ["warn"],
+    "react/jsx-curly-brace-presence": ["warn"],
+    "react/require-default-props": ["warn"],
+    "react/forbid-prop-types": ["warn"],
+    "react/jsx-no-bind": ["warn"],
+    "react/sort-comp": ["warn"],
+    "react/jsx-filename-extension": "off",
+    "react/jsx-tag-spacing": "off",
+    "jsx-a11y/anchor-is-valid": ["warn"],
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/mouse-events-have-key-events": "off"
   }
 }
