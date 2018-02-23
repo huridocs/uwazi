@@ -4,14 +4,17 @@ import {index as elasticIndex} from 'api/config/elasticIndexes';
 import elastic from 'api/search/elastic';
 
 export default {
-  reindex() {
+  resetIndex() {
     return elastic.indices.delete({index: elasticIndex})
     .then(() => {
       return elastic.indices.create({
         index: elasticIndex,
         body: elasticMapping
       });
-    })
+    });
+  },
+  reindex() {
+    return this.resetIndex()
     .then(() => {
       return entities.indexEntities({}, '+fullText');
     })
