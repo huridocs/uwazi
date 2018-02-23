@@ -12,7 +12,7 @@ describe('Viewer routeActions', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(APIURL + 'documents?_id=documentId', {body: JSON.stringify({rows: [document]})})
+    .get(APIURL + 'entities?_id=documentId', {body: JSON.stringify({rows: [document]})})
     .get(APIURL + 'relationtypes', {body: JSON.stringify(relationTypes)})
     .get(APIURL + 'references/by_document/documentId', {body: JSON.stringify(references)});
 
