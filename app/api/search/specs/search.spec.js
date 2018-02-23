@@ -56,17 +56,6 @@ describe('search', () => {
     .catch(catchErrors(done));
   });
 
-  describe('countByTemplate', () => {
-    it('should return how many entities or documents are using the template passed', (done) => {
-      search.countByTemplate(ids.template1)
-      .then((count) => {
-        expect(count).toBe(4);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
   describe('getUploadsByUser', () => {
     it('should request all unpublished entities or documents for the user', (done) => {
       let user = {_id: ids.userId};
@@ -579,22 +568,6 @@ describe('search', () => {
         })
         .catch(catchErrors(done));
       });
-    });
-  });
-
-  describe('indexEntities', () => {
-    it('should index entities based on query params passed', (done) => {
-      spyOn(search, 'bulkIndex');
-      search.indexEntities({sharedId: ids.batmanBegins}, {title: 1})
-      .then(() => {
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].title).toBeDefined();
-        expect(documentsToIndex[0].metadata).not.toBeDefined();
-        expect(documentsToIndex[1].title).toBeDefined();
-        expect(documentsToIndex[1].metadata).not.toBeDefined();
-        done();
-      })
-      .catch(catchErrors(done));
     });
   });
 

@@ -10,9 +10,12 @@ process.on('warning', (warning) => {
 });
 
 var verbose = false;
+var folder = '**';
 
 if (process.argv[2] === '--v') {
   verbose = true;
+} else {
+  folder = process.argv[2] ? process.argv[2] + '/**' : folder;
 }
 
 var Jasmine = require('jasmine');
@@ -31,7 +34,7 @@ elasticConfig.index = elasticConfig.testing;
 jasmine.loadConfig({
   spec_dir: 'app/',
   spec_files: [
-    'api/**/*[sS]pec.js',
+    `api/${folder}/*[sS]pec.js`,
     'shared/**/*[sS]pec.js'
   ],
   helpers: [

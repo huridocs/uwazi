@@ -7,7 +7,7 @@ import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
 import {relation1, relation2, template} from './fixtures.js';
 import search from '../../search/search';
 
-fdescribe('relationships', () => {
+describe('relationships', () => {
   beforeEach((done) => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
@@ -399,9 +399,9 @@ fdescribe('relationships', () => {
 
   describe('delete()', () => {
     it('should delete the relationship in all languages and dont leave lone connection in the hub', (done) => {
-      return relationships.delete(connectionID1)
+      return relationships.delete({_id: connectionID1})
       .then(() => {
-        return relationships.get({hub: hub7.toString()});
+        return relationships.get({hub: hub7});
       })
       .then((result) => {
         expect(result).toEqual([]);

@@ -94,7 +94,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {2
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
       if (term) {
         let should = [];
 
@@ -368,7 +368,7 @@ export default function () {
         }
 
         if (filter.type === 'multiselect' || filters.type === 'relationship') {
-          match = this.multiselectFilter(filters);
+          match = this.multiselectFilter(filter);
         }
 
         if (filter.type === 'nested' && filter.value.strict) {

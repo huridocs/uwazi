@@ -1,7 +1,7 @@
 import templatesAPI from 'api/templates';
 import relationtypes from 'api/relationtypes';
 import {generateNamesAndIds} from '../templates/utils';
-import entities from '../entities';
+import entities from 'api/entities/entities';
 
 import model from './model';
 import search from '../search/search';
@@ -326,13 +326,13 @@ export default {
     .then((hubs) => {
       return Promise.all(hubs.map((hub) => {
         const shouldDeleteTheLoneConnectionToo = hub.length === 2;
+        const hubId = hub[0].hub;
         if (shouldDeleteTheLoneConnectionToo) {
-          const hubId = hub[0].hub;
           return model.delete({hub: hubId})
           .then(() => this.indexEntitiesByHub(hubId));
         }
 
-        return model.delete(relation).then(() => this.indexEntitiesByHub(relation));
+        return model.delete(relation).then(() => this.indexEntitiesByHub(hubId));
       }));
     })
     .catch(console.log);
