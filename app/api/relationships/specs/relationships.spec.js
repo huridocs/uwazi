@@ -249,6 +249,21 @@ describe('relationships', () => {
         })
         .catch(catchErrors(done));
       });
+
+      it('should update correctly if ID is not a mongo ObjectId', (done) => {
+        relationships.getById(connectionID1)
+        .then((reference) => {
+          reference.entity = 'entity1';
+          reference._id = reference._id.toString();
+          return relationships.save(reference, 'en');
+        })
+        .then(([result]) => {
+          expect(result.entity).toBe('entity1');
+          expect(result._id.equals(connectionID1)).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
 
     describe('when saving one reference without hub', () => {
