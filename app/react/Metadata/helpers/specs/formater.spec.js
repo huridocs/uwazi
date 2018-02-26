@@ -23,9 +23,9 @@ describe('metadata formater', () => {
       relationships: [
         {template: null},
         {template: 'relationType2'},
-        {template: 'relationType1', entityData: {template: 'template', title: 'relation1Title', type: 'entity', sharedId: 'shared1'}},
         {template: 'relationType1', entityData: {template: 'template', title: 'relation2Title', type: 'document', sharedId: 'shared2'}},
-        {template: 'relationType1', entityData: {template: 'template2', title: 'relation3Title', type: 'document', sharedId: 'shared3'}}
+        {template: 'relationType1', entityData: {template: 'template2', title: 'relation3Title', type: 'document', sharedId: 'shared3'}},
+        {template: 'relationType1', entityData: {template: 'template', title: 'relation1Title', type: 'entity', sharedId: 'shared1'}}
       ]
     };
 

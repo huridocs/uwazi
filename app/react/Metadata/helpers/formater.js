@@ -89,13 +89,13 @@ export default {
     return {
       label: property.get('label'),
       name: property.get('name'),
-      value: relationships
+      value: advancedSort(relationships
       .filter((r) => r.template === property.get('relationType'))
       .filter((r) => !property.get('content') || property.get('content') === r.entityData.template)
       .map((r) => ({
         value: r.entityData.title,
         url: `/${r.entityData.type}/${r.entityData.sharedId}`
-      }))
+      })), {property: 'value'})
     };
   },
 
