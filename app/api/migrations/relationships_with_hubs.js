@@ -75,8 +75,9 @@ function migrateRelationships() {
       relationsProcessed += 1;
       process.stdout.write(`Relations processed: ${relationsProcessed} of ${totalRelations}\r`);
       if (relationsProcessedInAdifferentHub.includes(relationship._id.toString())) {
-        return Promise.resolve();
+        return relationshipsModel.delete(relationship);
       }
+
       const hub = generateID();
       if (relationship.sourceType === 'metadata') {
         return templatesModel.get({_id: relationship.sourceTemplate})
