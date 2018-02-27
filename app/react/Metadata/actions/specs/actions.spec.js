@@ -29,6 +29,43 @@ describe('Metadata Actions', () => {
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
 
+    fit('should set relationship values into metadata object', () => {
+      spyOn(formActions, 'load').and.returnValue('formload');
+      let dispatch = jasmine.createSpy('dispatch');
+      let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}, relationships: [
+        {template: 'relationType2'},
+        {template: 'relationType1', entity: 'entity1', entityData: {template: 'template'}},
+        {template: 'relationType1', entity: 'entity2', entityData: {template: 'otherTemplate'}},
+        {template: 'relationType1', entity: 'entity3', entityData: {template: 'template'}}
+      ]};
+      let templates = [{
+        _id: 'templateId',
+        properties: [
+          {name: 'test'},
+          {name: 'newProp'},
+          {name: 'relation', type: 'relationship', relationType: 'relationType1', content: null},
+          {name: 'relation2', type: 'relationship', relationType: 'relationType1', content: 'template'},
+          {name: 'relation3', type: 'relationship', relationType: 'relationType3', content: 'template'}
+        ]
+      }];
+
+      actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
+      let expectedDoc = {
+        title: 'test',
+        template: 'templateId',
+        metadata: {
+          test: 'test',
+          test2: 'test2',
+          newProp: '',
+          relation: ['entity1', 'entity2', 'entity3'],
+          relation2: ['entity1', 'entity3'],
+          relation3: []
+        }
+      };
+      expect(dispatch).toHaveBeenCalledWith('formload');
+      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+    });
+
     describe('When doc has no template', () => {
       let dispatch;
       let doc;
@@ -61,7 +98,7 @@ describe('Metadata Actions', () => {
         }];
       });
 
-      it('should should set the first template', () => {
+      it('should set the first template', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId1'};
@@ -71,7 +108,7 @@ describe('Metadata Actions', () => {
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should should set the first document template if document has type document', () => {
+      it('should set the first document template if document has type document', () => {
         doc = {title: 'test', type: 'document'};
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
@@ -80,7 +117,7 @@ describe('Metadata Actions', () => {
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should should set the first entity template if document has type entity', () => {
+      it('should set the first entity template if document has type entity', () => {
         doc = {title: 'test', type: 'entity'};
         templates[0].isEntity = false;
         templates[1].isEntity = true;

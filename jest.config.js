@@ -11,7 +11,7 @@ module.exports = {
     'Attachments',
     'filterActions.spec.js',
     'libraryActions.spec.js',
-    'Metadata/actions/specs/actions.spec.js',
+    //'Metadata/actions/specs/actions.spec.js',
     'MainListWrapper.spec.js',
     'DocumentsList.spec.js',
     'EditTranslationForm.spec.js',

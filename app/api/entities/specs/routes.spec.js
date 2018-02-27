@@ -32,14 +32,16 @@ describe('entities', () => {
     });
 
     it('should create a new document with current user', (done) => {
-      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve({_id: 'id'}));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(['entityWithRelationShips']));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
 
       routes.post('/api/entities', req)
       .then((document) => {
-        expect(document).toBe('document');
+        expect(document).toBe('entityWithRelationShips');
         expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
+        expect(entities.getWithRelationships).toHaveBeenCalledWith({_id: 'id'});
         done();
       });
     });
@@ -61,7 +63,8 @@ describe('entities', () => {
         }
       };
 
-      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve({_id: 'id'}));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(['entityWithRelationShips']));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve('template')));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('templateTransformed')));
       routes.post('/api/entities', req)
