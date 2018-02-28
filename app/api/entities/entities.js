@@ -18,7 +18,7 @@ function updateEntity(doc) {
     if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
       return Promise.all([
         this.deleteEntityFromMetadata(docLanguages[0]),
-        relationships.delete({entity: doc.sharedId})
+        relationships.delete({entity: doc.sharedId}, null, false)
       ])
       .then(() => [docLanguages, templateResult]);
     }
@@ -120,7 +120,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(doc, {user, language}) {
+  save(doc, {user, language}, updateRelationships = true) {
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -144,14 +144,15 @@ export default {
       return this.createEntity(this.sanitize(doc, template), languages, sharedId);
     })
     .then(() => this.getById(sharedId, language))
-    .then(response => {
-      return Promise.all([response, relationships.saveEntityBasedReferences(response, language)]);
-    })
-    .then((entities) => {
-      return this.indexEntities({sharedId}, '+fullText').then(() => entities);
+    .then(entity => {
+      if (updateRelationships) {
+        return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
+      }
+
+      return [entity];
     })
     .then(([entity]) => {
-      return entity;
+      return this.indexEntities({sharedId}, '+fullText').then(() => entity);
     });
   },
 
@@ -161,7 +162,7 @@ export default {
         return Promise.resolve();
       }
 
-      return this.getWithRelationships(query, select, {skip: offset, limit})
+      return this.get(query, select, {skip: offset, limit})
       .then((docs) => search.bulkIndex(docs))
       .then(() => index(offset + limit, totalRows));
     };
@@ -230,6 +231,27 @@ export default {
 
   getByTemplate(template, language) {
     return model.get({template, language});
+  },
+
+  updateMetdataFromRelationships(entities, language) {
+    return templates.get()
+    .then((_templates) => {
+      return Promise.all(entities.map((entityId) => {
+        return Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
+        .then(([entity, relations]) => {
+          const template = _templates.find((t) => t._id.toString() === entity.template.toString());
+          const relationshipProperties = template.properties.filter((p) => p.type === 'relationship');
+          relationshipProperties.forEach((property) => {
+            const relationshipsGoingToThisProperty = relations.filter((r) => {
+              return r.template && r.template.toString() === property.relationType &&
+              (!property.content || r.entityData.template.toString() === property.content);
+            });
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
+          });
+          return this.save(entity, {language}, false);
+        });
+      }));
+    });
   },
 
   updateMetadataProperties(template) {
@@ -306,7 +328,7 @@ export default {
     })
     .then((docs) => {
       return Promise.all([
-        relationships.delete({entity: sharedId}),
+        relationships.delete({entity: sharedId}, null, false),
         this.deleteFiles(docs),
         this.deleteEntityFromMetadata(docs[0])
       ])

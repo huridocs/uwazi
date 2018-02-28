@@ -49,7 +49,8 @@ export default {
       {type: 'date', name: 'date'},
       {type: 'multidate', name: 'multidate'},
       {type: 'multidaterange', name: 'multidaterange'},
-      {type: 'daterange', name: 'daterange'}
+      {type: 'daterange', name: 'daterange'},
+      {type: 'relationship', name: 'friends', relationType: 'relation1'}
     ]},
     {_id: templateWithOnlyMultiselect, name: 'templateWithOnlyMultiSelectSelect', properties: [
       {type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString()}
@@ -72,16 +73,16 @@ export default {
     ]}
   ],
   connections: [
-    {_id: referenceId, entity: 'shared', template: 'relation1', hub: hub1},
-    {entity: 'shared2', template: 'relation1', hub: hub1},
-    {entity: 'shared', template: 'relation1', hub: hub2},
-    {entity: 'source2', template: 'relation2', hub: hub2},
-    {entity: 'another', template: 'relation3', hub: hub3},
-    {entity: 'document', template: 'relation3', hub: hub3},
-    {entity: 'shared', template: 'relation2', hub: hub4},
-    {entity: 'shared1', template: 'relation2', hub: hub4},
-    {entity: 'shared1', template: 'relation2', hub: hub5},
-    {entity: 'shared', template: 'relation2', hub: hub5}
+    {_id: referenceId, entity: 'shared', template: '', hub: hub1, language: 'en'},
+    {entity: 'shared2', template: 'relation1', hub: hub1, language: 'en'},
+    {entity: 'shared', template: '', hub: hub2, language: 'en'},
+    {entity: 'source2', template: 'relation2', hub: hub2, language: 'en'},
+    {entity: 'another', template: 'relation3', hub: hub3, language: 'en'},
+    {entity: 'document', template: 'relation3', hub: hub3, language: 'en'},
+    {entity: 'shared', template: 'relation2', hub: hub4, language: 'en'},
+    {entity: 'shared1', template: 'relation2', hub: hub4, language: 'en'},
+    {entity: 'shared1', template: 'relation2', hub: hub5, language: 'en'},
+    {entity: 'shared', template: 'relation2', hub: hub5, language: 'en'}
   ]
 };
 

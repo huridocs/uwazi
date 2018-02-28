@@ -45,11 +45,11 @@ describe('relationships routes', () => {
 
   describe('DELETE', () => {
     it('should delete the reference', (done) => {
-      let req = {query: {_id: 'to_delete_id'}};
+      let req = {query: {_id: 'to_delete_id'}, language: 'en'};
 
       routes.delete('/api/references', req)
       .then(() => {
-        expect(relationships.delete).toHaveBeenCalledWith({_id: req.query._id});
+        expect(relationships.delete).toHaveBeenCalledWith({_id: req.query._id}, 'en');
         done();
       })
       .catch(catchErrors(done));

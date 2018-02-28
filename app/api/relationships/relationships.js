@@ -75,7 +75,7 @@ export default {
     });
   },
 
-  getByDocument(id, language) {
+  getByDocument(id, language, withEntityData = true) {
     return this.getDocumentHubs(id, language)
     .then((hubs) => {
       const relationships = Array.prototype.concat(...hubs.map((hub) => hub.relationships));
@@ -87,7 +87,10 @@ export default {
           return res;
         }, {});
         return relationships.map((relationship) => {
-          return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
+          if (withEntityData) {
+            return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
+          }
+          return relationship;
         });
       });
     });
@@ -172,7 +175,7 @@ export default {
     });
   },
 
-  save(_relationships, language) {
+  save(_relationships, language, updateMetdata = true) {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
     }
@@ -204,19 +207,27 @@ export default {
           return Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)]);
         })
         .then(([result, connectedEntity]) => {
-          return this.indexEntitiesByHub(hub)
-          .then(() => {
-            return normalizeConnectedDocumentData(result, connectedEntity);
-          });
+          if (updateMetdata) {
+            return this.updateEntitiesMetadataByHub(hub, language)
+            .then(() => {
+              return normalizeConnectedDocumentData(result, connectedEntity);
+            });
+          }
+          return normalizeConnectedDocumentData(result, connectedEntity);
         })
         .catch(console.log);
       }));
   },
 
-  indexEntitiesByHub(hubId, language) {
-    return this.getHub(hubId).then((hub) => {
-      return entities.indexEntities({sharedId: {$in: hub.map((r) => r.entity)}});
+  updateEntitiesMetadataByHub(hubId, language) {
+    return this.getHub(hubId, language)
+    .then((hub) => {
+      return entities.updateMetdataFromRelationships(hub.map((r) => r.entity), language);
     });
+  },
+
+  updateEntitiesMetadata(entitiesIds, language) {
+    return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
   saveEntityBasedReferences(entity, language) {
@@ -262,9 +273,9 @@ export default {
           reference.template.toString() === propertyRelationType.toString() &&
           !propertyValues.includes(reference.entity);
         });
-        let actions = referencesToBeDeleted.map((reference) => this.delete({_id: reference._id}));
+        let actions = referencesToBeDeleted.map((reference) => this.delete({_id: reference._id}, language, false));
         if (propertyHub.length > 1) {
-          actions = actions.concat(this.save(propertyHub, language));
+          actions = actions.concat(this.save(propertyHub, language, false));
         }
         return Promise.all(actions);
       })).catch(console.log);
@@ -315,7 +326,7 @@ export default {
     });
   },
 
-  delete(relation) {
+  delete(relation, language, updateMetdata = true) {
     if (!relation) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
@@ -327,12 +338,17 @@ export default {
       return Promise.all(hubs.map((hub) => {
         const shouldDeleteTheLoneConnectionToo = hub.length === 2;
         const hubId = hub[0].hub;
+        let deleteAction;
         if (shouldDeleteTheLoneConnectionToo) {
-          return model.delete({hub: hubId})
-          .then(() => this.indexEntitiesByHub(hubId));
+          deleteAction = model.delete({hub: hubId});
+        } else {
+          deleteAction = model.delete(relation);
         }
 
-        return model.delete(relation).then(() => this.indexEntitiesByHub(hubId));
+        if (updateMetdata) {
+          return deleteAction.then(() => this.updateEntitiesMetadata(hub.map((r) => r.entity), language));
+        }
+        return deleteAction;
       }));
     })
     .catch(console.log);

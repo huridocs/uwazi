@@ -259,6 +259,17 @@ describe('entities', () => {
     });
   });
 
+  describe('updateMetdataFromRelationships', () => {
+    it('should update the metdata based on the entity relationships', (done) => {
+      entities.updateMetdataFromRelationships(['shared'], 'en')
+      .then(() => entities.getById('shared', 'en'))
+      .then((updatedEntity) => {
+        expect(updatedEntity.metadata.friends).toEqual(['shared2']);
+        done();
+      });
+    });
+  });
+
   describe('Sanitize', () => {
     it('should sanitize multidates, removing non valid dates', (done) => {
       let doc = {

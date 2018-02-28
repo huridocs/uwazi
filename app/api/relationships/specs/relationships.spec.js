@@ -1,14 +1,16 @@
 /* eslint-disable max-nested-callbacks */
-import relationships from '../relationships.js';
+import relationships from '../relationships';
+import entities from 'api/entities/entities';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {connectionID1, hub1, hub7} from './fixtures.js';
-import {relation1, relation2, template} from './fixtures.js';
+import fixtures, {connectionID1, hub1, hub7} from './fixtures';
+import {relation1, relation2, template} from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
   beforeEach((done) => {
+    spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -148,6 +150,14 @@ describe('relationships', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+
+      it('should call entities top update the metadata', (done) => {
+        relationships.save({entity: 'entity3', hub: hub1}, 'en')
+        .then(() => {
+          expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
+          done();
+        });
       });
     });
 
@@ -399,7 +409,7 @@ describe('relationships', () => {
 
   describe('delete()', () => {
     it('should delete the relationship in all languages and dont leave lone connection in the hub', (done) => {
-      return relationships.delete({_id: connectionID1})
+      return relationships.delete({_id: connectionID1}, 'en')
       .then(() => {
         return relationships.get({hub: hub7});
       })
@@ -408,6 +418,14 @@ describe('relationships', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should call entities top update the metadata', (done) => {
+      relationships.delete({entity: 'bruceWayne'}, 'en')
+      .then(() => {
+        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne'], 'en');
+        done();
+      });
     });
 
     it('should delete all the relationships for a given entity', (done) => {
