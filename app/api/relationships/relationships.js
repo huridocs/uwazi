@@ -139,7 +139,7 @@ export default {
 
       relationship.metadata = relationship.metadata || {};
       const updateRelationships = relationshipsVersions.map((relation) => {
-        if (relationship._id.equals(relation._id)) {
+        if (relationship._id.toString() === relation._id.toString()) {
           return model.save(relationship);
         }
 

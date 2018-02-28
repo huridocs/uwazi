@@ -75,7 +75,7 @@ export function deleteDocument(doc) {
 }
 
 export function getDocument(id) {
-  return api.get('documents?_id=' + id)
+  return api.get('entities?_id=' + id)
   .then((response) => {
     let doc = response.json.rows[0];
     if (!isClient) {

@@ -1,16 +1,9 @@
 import api from 'app/utils/api';
+import EntitiesApi from '../Entities/EntitiesAPI';
 
 export default {
   get(id) {
-    let url = 'documents';
-    if (id) {
-      url += `?_id=${id}`;
-    }
-
-    return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    return EntitiesApi.get(id);
   },
 
   countByTemplate(templateId) {

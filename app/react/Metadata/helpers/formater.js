@@ -1,9 +1,10 @@
-import moment from 'moment';
 import Immutable from 'immutable';
-import t from 'app/I18N/t';
+import moment from 'moment';
+
 import {advancedSort} from 'app/utils/advancedSort';
-import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import {store} from 'app/store';
+import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
+import t from 'app/I18N/t';
 
 export default {
 
@@ -168,7 +169,7 @@ export default {
         return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type});
       }
 
-      if (type === 'relationship' && value) {
+      if (type === 'relationship') {
         return Object.assign(this.relationship(property, value, thesauris, showInCard), {type});
       }
 

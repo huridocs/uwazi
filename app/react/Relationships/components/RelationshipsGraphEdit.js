@@ -256,6 +256,7 @@ const selectRelationTypes = createSelector(
 
 export function mapStateToProps(state) {
   const {relationships} = state;
+  console.log(relationships.hubs.toJS());
   return {
     parentEntity: relationships.list.entity,
     searchResults: relationships.list.searchResults,

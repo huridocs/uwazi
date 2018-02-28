@@ -15,7 +15,7 @@ import Immutable from 'immutable';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('Metadata Actions', () => {
+fdescribe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
@@ -61,7 +61,7 @@ describe('Metadata Actions', () => {
         }];
       });
 
-      it('should should set the first template', () => {
+      it('should set the first template', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId1'};
@@ -71,7 +71,7 @@ describe('Metadata Actions', () => {
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should should set the first document template if document has type document', () => {
+      it('should set the first document template if document has type document', () => {
         doc = {title: 'test', type: 'document'};
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
@@ -80,7 +80,7 @@ describe('Metadata Actions', () => {
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should should set the first entity template if document has type entity', () => {
+      it('should set the first entity template if document has type entity', () => {
         doc = {title: 'test', type: 'entity'};
         templates[0].isEntity = false;
         templates[1].isEntity = true;
