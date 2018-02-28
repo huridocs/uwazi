@@ -58,17 +58,6 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
     }
 
     let template = sortedTemplates.find((t) => t._id === entity.template);
-
-    const relationshipProps = template.properties.filter((p) => p.type === 'relationship');
-
-    relationshipProps.forEach((prop) => {
-      entity.metadata[prop.name] = entity.relationships
-      .filter(r => r.template === prop.relationType)
-      .filter(r => !prop.content || prop.content === r.entityData.template)
-      .map(r => r.entity);
-    });
-
-    delete entity.relationships;
     resetMetadata(entity.metadata, template, {resetExisting: false});
 
     dispatch(formActions.reset(form));
