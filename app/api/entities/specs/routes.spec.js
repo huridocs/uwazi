@@ -32,16 +32,14 @@ describe('entities', () => {
     });
 
     it('should create a new document with current user', (done) => {
-      spyOn(entities, 'save').and.returnValue(Promise.resolve({_id: 'id'}));
-      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(['entityWithRelationShips']));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
 
       routes.post('/api/entities', req)
       .then((document) => {
-        expect(document).toBe('entityWithRelationShips');
+        expect(document).toBe('entity');
         expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
-        expect(entities.getWithRelationships).toHaveBeenCalledWith({_id: 'id'});
         done();
       });
     });

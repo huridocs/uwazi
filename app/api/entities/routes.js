@@ -7,9 +7,6 @@ export default (app) => {
   app.post('/api/entities', needsAuthorization(['admin', 'editor']), (req, res) => {
     return entities.save(req.body, {user: req.user, language: req.language})
     .then(response => {
-      return entities.getWithRelationships({_id: response._id});
-    })
-    .then(([response]) => {
       res.json(response);
       return templates.getById(response.template);
     })
