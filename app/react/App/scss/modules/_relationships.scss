@@ -421,6 +421,10 @@ $relationship-type-height: 32px;
 		flex-direction: column;
 	}
 
+  .leftRelationshipType .rw-widget {
+    margin-bottom: 10px;
+  }
+
 	.rw-widget-input {
 		background: #EEEEEE;
 		border-radius: 0;
@@ -615,6 +619,21 @@ $relationship-type-height: 32px;
 
   &.deleted {
     opacity: 0.3;
+  }
+}
+
+.leftDocument {
+  width: 100%;
+  display: flex;
+  margin: 0;
+
+  &.deleted {
+    opacity: 0.3;
+  }
+
+  & .item {
+    margin-right: 0px;
+    margin-bottom: 0px;
   }
 }
 
