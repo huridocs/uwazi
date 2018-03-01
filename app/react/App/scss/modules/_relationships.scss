@@ -233,11 +233,11 @@ $c-background: #fcfcfc;
       position: relative;
 
       .item-label-group {
-	width: auto;
+  width: auto;
       }
 
       .item-shortcut {
-	display: none;
+  display: none;
       }
     }
 
@@ -413,26 +413,26 @@ $c-background: #fcfcfc;
 $relationship-type-height: 32px;
 
 .relationshipsHub {
-	display: flex;
-	position: relative;
-	margin-bottom: 30px;
+  display: flex;
+  position: relative;
+  margin-bottom: 30px;
 
-	@media(max-width: 1023px) {
-		flex-direction: column;
-	}
+  @media(max-width: 1023px) {
+    flex-direction: column;
+  }
 
   .leftRelationshipType .rw-widget {
     margin-bottom: 10px;
   }
 
-	.rw-widget-input {
-		background: #EEEEEE;
-		border-radius: 0;
-		padding: 0 5px;
-		box-shadow: none;
-		height: $relationship-type-height;
-		cursor: pointer;
-	}
+  .rw-widget-input {
+    background: #EEEEEE;
+    border-radius: 0;
+    padding: 0 5px;
+    box-shadow: none;
+    height: $relationship-type-height;
+    cursor: pointer;
+  }
 
   .rw-widget-input.no-edit,
   .rw-input.no-edit, {
@@ -441,68 +441,68 @@ $relationship-type-height: 32px;
 }
 
 .relationships-removeIcon {
-	position: absolute;
-	border: 1px solid $c-grey;
-	color: $c-grey;
-	margin: $relationship-type-height/4 0px;
-	width: $relationship-type-height/2;
-	height: $relationship-type-height/2;
-	text-align: center;
-	line-height: 13px !important;
-	font-size: $f-size-xs !important;
-	border-radius: 50%;
-	cursor: pointer;
+  position: absolute;
+  border: 1px solid $c-grey;
+  color: $c-grey;
+  margin: $relationship-type-height/4 0px;
+  width: $relationship-type-height/2;
+  height: $relationship-type-height/2;
+  text-align: center;
+  line-height: 13px !important;
+  font-size: $f-size-xs !important;
+  border-radius: 50%;
+  cursor: pointer;
 
-	.removeHub & {
-		left: -25px;
-	}
+  .removeHub & {
+    left: -25px;
+  }
 
-	.rightRelationship &,
-	.removeRightRelationshipGroup & {
-		right: -25px;
-	}
+  .rightRelationship &,
+  .removeRightRelationshipGroup & {
+    right: -25px;
+  }
 }
 
 .relationshipsParent,
 .leftRelationshipType,
 .rightRelationships {
-	position: relative;
+  position: relative;
 
   &.deleted {
     opacity: 0.3;
   }
 
-	@media(min-width: 1024px) {
-		width: 50%;
-	}
+  @media(min-width: 1024px) {
+    width: 50%;
+  }
 }
 
 .relationshipsParent,
 .leftRelationshipType {
-	@media(min-width: 1024px) {
-		padding-right: 50px;
-	}
+  @media(min-width: 1024px) {
+    padding-right: 50px;
+  }
 }
 
 
 .rightRelationships {
-	@media(max-width: 1023px) {
-		margin-left: 10px;
-	}
+  @media(max-width: 1023px) {
+    margin-left: 10px;
+  }
 
-	&:before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -1px;
-		width: 50px;
-		height: 7px;
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -1px;
+    width: 50px;
+    height: 7px;
     background: $c-background;
 
     @media(min-width: $breakpoint) {
       z-index: 2;
     }
-	}
+  }
 
   .last-of-type:after {
     content: '';
@@ -543,63 +543,65 @@ $relationship-type-height: 32px;
 }
 
 @media(max-width: 1023px) {
-	.leftRelationshipType .rw-dropdown-list:after {
-		content: '';
-		display: block;
-		width: 1px;
-		height: 35px;
-		background: #d7d7dc;
-		position: absolute;
-		top: 100%;
-		left: 10px;
-		z-index: 1;
-	}
+  .leftRelationshipType .rw-dropdown-list:after,
+  .leftDocument.docWithoutRelationshipType > div:after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 35px;
+    background: #d7d7dc;
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    z-index: 1;
+  }
 }
 
 @media(min-width: 1024px) {
-	.leftRelationshipType .rw-dropdown-list:after {
-		content: '';
-		display: block;
-		width: 50px;
-		height: 1px;
-		background: $c-grey-light;
-		position: absolute;
-		top: calc(50% - 1px);
-		left: 100%;
-	}
+  .leftRelationshipType .rw-dropdown-list:after,
+  .leftDocument.docWithoutRelationshipType > div:after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 1px;
+    background: $c-grey-light;
+    position: absolute;
+    top: calc(50% - 1px);
+    left: 100%;
+  }
 }
 
 .rightRelationships .rw-dropdown-list:after {
-	content: '';
-	display: block;
-	width: 50px;
-	height: 1px;
-	background: $c-grey-light;
-	position: absolute;
-	top: calc(50% - 1px);
-	right: 100%;
+  content: '';
+  display: block;
+  width: 50px;
+  height: 1px;
+  background: $c-grey-light;
+  position: absolute;
+  top: calc(50% - 1px);
+  right: 100%;
 }
 
 .hubRelationship {
-	z-index: 1;
+  z-index: 1;
 
-	@media(max-width: 1023px) {
-		display: none;
-	}
+  @media(max-width: 1023px) {
+    display: none;
+  }
 }
 
 .hubRelationship figure {
-	position: absolute;
-	width: 16px;
-	height: 16px;
-	background-color: $c-grey-light;
-	border-radius: 50%;
-	transform: translateX(-50%) translateY(7px);
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: $c-grey-light;
+  border-radius: 50%;
+  transform: translateX(-50%) translateY(7px);
 }
 
 .rightRelationshipsTypeGroup {
-	display: flex;
-	flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
   position: relative;
 
   &.deleted {
@@ -609,13 +611,13 @@ $relationship-type-height: 32px;
 
 
 .rightRelationshipsTypeGroup:not(:last-of-type) {
-	padding-bottom: 30px;
+  padding-bottom: 30px;
 }
 
 .rightRelationship {
-	width: 100%;
-	display: flex;
-	margin: 10px 0 0;
+  width: 100%;
+  display: flex;
+  margin: 10px 0 0;
 
   &.deleted {
     opacity: 0.3;
@@ -638,7 +640,7 @@ $relationship-type-height: 32px;
 }
 
 .rightRelationship .item {
-	margin: 0 !important;
+  margin: 0 !important;
 }
 
 .rightRelationshipsTypeGroup {
@@ -651,8 +653,8 @@ $relationship-type-height: 32px;
 }
 
 .rightRelationshipAdd {
-	width: 100%;
-	margin-top: 10px;
+  width: 100%;
+  margin-top: 10px;
 }
 
 .relationships-new {

@@ -131,10 +131,9 @@ export class RelationshipsGraphEdit extends Component {
                            </div>;
                   }
                 })()}
-                <div className="leftDocument">
-                  <Doc className={`item-collapsed
-                                   ${!hub.getIn(['leftRelationship', 'template']) && !hubActions.get('editing') ?
-                                   'rw-dropdown-list' : ''}`}
+                <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
+                                 'docWithoutRelationshipType' : ''}`}>
+                  <Doc className="item-collapsed"
                        doc={parentEntity}
                        searchParams={search}
                        onClick={this.onClick.bind(this)}/>
