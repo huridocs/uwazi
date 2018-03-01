@@ -90,10 +90,6 @@ export class RelationshipsGraphEdit extends Component {
     return (
       <div className="relationships-graph">
 
-        <div className="relationshipsParent">
-          <Doc doc={parentEntity} searchParams={search} />
-        </div>
-
         <div>
           {hubs.map((hub, index) => {
             return (
@@ -105,13 +101,20 @@ export class RelationshipsGraphEdit extends Component {
                 </div>)}
               <div className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
                 {this.editingSelector(
-                  <div className="rw-dropdown-list rw-widget">
-                    <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
-                      <div className="rw-input rw-dropdown-list-input no-edit">
-                        {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
-                      </div>
-                    </div>
-                  </div>,
+                  (() => {
+                    if (hub.getIn(['leftRelationship', 'template'])) {
+                      return (
+                        <div className="rw-dropdown-list rw-widget">
+                          <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+                            <div className="rw-input rw-dropdown-list-input no-edit">
+                              {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })(),
                   <DropdownList valueField="_id"
                                 textField="name"
                                 data={relationTypes}
@@ -128,6 +131,13 @@ export class RelationshipsGraphEdit extends Component {
                            </div>;
                   }
                 })()}
+                <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
+                                 'docWithoutRelationshipType' : ''}`}>
+                  <Doc className="item-collapsed"
+                       doc={parentEntity}
+                       searchParams={search}
+                       onClick={this.onClick.bind(this)}/>
+                </div>
               </div>
               <div className="hubRelationship">
                 <figure></figure>
@@ -142,8 +152,14 @@ export class RelationshipsGraphEdit extends Component {
                         <div className="rw-dropdown-list rw-widget">
                           <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
                             <div className="rw-input rw-dropdown-list-input no-edit">
-                              {relationTypes.find(r => r._id === rightRelationship.get('template')) ?
-                               relationTypes.find(r => r._id === rightRelationship.get('template')).name : null}
+                              {(() => {
+                                if (relationTypes.find(r => r._id === rightRelationship.get('template'))) {
+                                  return rightRelationship.get('template') ?
+                                         relationTypes.find(r => r._id === rightRelationship.get('template')).name :
+                                         <i className="fa fa-link"></i>;
+                                }
+                                return null;
+                              })()}
                             </div>
                           </div>
                         </div>,
@@ -256,7 +272,6 @@ const selectRelationTypes = createSelector(
 
 export function mapStateToProps(state) {
   const {relationships} = state;
-  console.log(relationships.hubs.toJS());
   return {
     parentEntity: relationships.list.entity,
     searchResults: relationships.list.searchResults,

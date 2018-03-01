@@ -1,78 +1,53 @@
 import P from 'bluebird';
 
 import relationshipsModel from '../relationships/model';
-import settings from '../settings/settings';
-import relationships from '../relationships/relationships';
-import templatesModel from '../templates/templates';
-import relationtypes from '../relationtypes/relationtypes';
-import entities from '../entities/entities';
 import entitiesModel from '../entities/entitiesModel';
 import mongoose from 'mongoose';
-import {generateID} from 'api/odm';
 
-const casesTemplateId = '58ada34c299e826748545061';
-const provisionalMeasuresTemplateId = '58ada34c299e826748545078';
-const courtRelationshipType = '58ada34d299e826748545115';
+const casesTemplateId = '58b2f3a35d59f31e1345b48a';
+const provisionalMeasuresTemplateId = '58b2f3a35d59f31e1345b4a4';
+const courtRelationshipType = '58b2f3a35d59f31e1345b53f';
+const commissionRelationshipType = '58b2f3a35d59f31e1345b540';
 
-const courtSentenceTemplateId = '58ada34c299e82674854508a';
-const separateVoteRelationshipType = '58ada34d299e826748545117';
+const courtSentenceTemplateId = '58b2f3a35d59f31e1345b4ac';
+const courtResolutionTemplateId = '58b2f3a35d59f31e1345b471';
+const separateVoteRelationshipType = '58b2f3a35d59f31e1345b541';
 
 let casesProcessed = 0;
 let courtSentencesProcessed = 0;
 
-function determineCaseCourtActions(caseRelationships) {
-  let courtActions = {toDelete: [], toSave: []};
+function determineActions(caseRelationships, relationshipType) {
+  let actions = {toDelete: [], toSave: []};
 
-  const courtHubs = caseRelationships.reduce((results, relationship) => {
-    if (relationship.template && relationship.template.toString() === courtRelationshipType) {
+  const relevantHubs = caseRelationships.reduce((results, relationship) => {
+    if (relationship.template && relationship.template.toString() === relationshipType) {
       results.push(relationship.hub.toString());
     }
     return results;
   }, []);
 
-  if (courtHubs.length) {
-    courtActions = caseRelationships.filter(r => courtHubs.indexOf(r.hub.toString()) !== -1)
+  if (relevantHubs.length) {
+    actions = caseRelationships
+    .filter(r => relevantHubs.indexOf(r.hub.toString()) !== -1)
     .reduce((results, relationship) => {
-      if (relationship.hub.toString() !== courtHubs[0] &&
-          relationship.template && relationship.template.toString() === courtRelationshipType) {
+      if (relationship.hub.toString() !== relevantHubs[0] &&
+          relationship.template && relationship.template.toString() === relationshipType) {
         results.toDelete.push({_id: relationship._id});
       } else {
-        results.toSave.push(Object.assign({}, relationship, {hub: courtHubs[0]}));
+        const switchedRelationship = Object.assign(
+          {},
+          relationship,
+          {hub: relevantHubs[0]},
+          !relationship.template ? {template: relationshipType} : {template: null}
+        );
+        results.toSave.push(switchedRelationship);
       }
       return results;
-    }, courtActions);
+    }, actions);
   }
 
-  return courtActions;
+  return actions;
 }
-
-function determineSeparateVoteActions(sentenceRelationships) {
-  let separateVoteActions = {toDelete: [], toSave: []};
-
-  const separateVoteHubs = sentenceRelationships.reduce((results, relationship) => {
-    if (relationship.template && relationship.template.toString() === separateVoteRelationshipType) {
-      results.push(relationship.hub.toString());
-    }
-    return results;
-  }, []);
-
-  if (separateVoteHubs.length) {
-    separateVoteActions = sentenceRelationships
-    .filter(r => separateVoteHubs.indexOf(r.hub.toString()) !== -1)
-    .reduce((results, relationship) => {
-      if (relationship.hub.toString() !== separateVoteHubs[0] &&
-          relationship.template && relationship.template.toString() === separateVoteRelationshipType) {
-        results.toDelete.push({_id: relationship._id});
-      } else {
-        results.toSave.push(Object.assign({}, relationship, {hub: separateVoteHubs[0]}));
-      }
-      return results;
-    }, separateVoteActions);
-  }
-
-  return separateVoteActions;
-}
-
 
 function processCasesAndMeasures() {
   console.log('');
@@ -98,11 +73,14 @@ function processCasesAndMeasures() {
         // console.log('caseRelationships:');
         // console.log(caseRelationships);
 
-        const courtActions = determineCaseCourtActions(caseRelationships);
+        const courtActions = determineActions(caseRelationships, courtRelationshipType);
+        const commissionActions = determineActions(caseRelationships, commissionRelationshipType);
 
         return Promise.all([
           P.resolve(courtActions.toDelete).map(relationshipsModel.delete, {concurrency: 1}),
-          P.resolve(courtActions.toSave).map(relationshipsModel.save, {concurrency: 1})
+          P.resolve(courtActions.toSave).map(relationshipsModel.save, {concurrency: 1}),
+          P.resolve(commissionActions.toDelete).map(relationshipsModel.delete, {concurrency: 1}),
+          P.resolve(commissionActions.toSave).map(relationshipsModel.save, {concurrency: 1})
         ]);
       });
     }, {concurrency: 1})
@@ -110,13 +88,13 @@ function processCasesAndMeasures() {
   });
 }
 
-function processCourtSentences() {
+function processCourtSentencesAndResolutions() {
   console.log('');
-  return entitiesModel.get({template: courtSentenceTemplateId})
+  return entitiesModel.get({template: {$in: [courtSentenceTemplateId, courtResolutionTemplateId]}})
   .then(sentences => {
     return P.resolve(sentences).map(sentence => {
       courtSentencesProcessed += 1;
-      process.stdout.write(`Processing court sentences: ${courtSentencesProcessed} of ${sentences.length}\r`);
+      process.stdout.write(`Processing court sentences and resolutions: ${courtSentencesProcessed} of ${sentences.length}\r`);
 
       return relationshipsModel.get({entity: sentence.sharedId, language: sentence.language})
       .then(sentenceDirectRelationships => {
@@ -131,7 +109,7 @@ function processCourtSentences() {
         return relationshipsModel.get({hub: {$in: sentenceHubs}, language: sentence.language});
       })
       .then(sentenceRelationships => {
-        const separateVoteActions = determineSeparateVoteActions(sentenceRelationships);
+        const separateVoteActions = determineActions(sentenceRelationships, separateVoteRelationshipType);
 
         return Promise.all([
           P.resolve(separateVoteActions.toDelete).map(relationshipsModel.delete, {concurrency: 1}),
@@ -144,7 +122,7 @@ function processCourtSentences() {
 }
 
 processCasesAndMeasures()
-.then(processCourtSentences)
+.then(processCourtSentencesAndResolutions)
 .then(() => {
   console.log('');
   console.log('Done!');
