@@ -10,7 +10,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
 import db from 'api/utils/testing_db';
 
-describe('entities', () => {
+fdescribe('entities', () => {
   beforeEach((done) => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
@@ -19,6 +19,27 @@ describe('entities', () => {
   });
 
   describe('save', () => {
+    it('should uniq the values on multiselect and relationship fields', (done) => {
+      const entity = {
+        title: 'Batman begins',
+        template: templateId,
+        metadata: {
+          multiselect: ['id1', 'id2', 'id2', 'id1', 'id3'],
+          friends: ['id1', 'id2', 'id2', 'id1', 'id3', 'id3']
+        }
+      };
+      const user = {};
+
+      entities.save(entity, {user, language: 'es'})
+      .then((e) => entities.getById(e._id))
+      .then((createdEntity) => {
+        expect(createdEntity.metadata.multiselect).toEqual(['id1', 'id2', 'id3']);
+        expect(createdEntity.metadata.friends).toEqual(['id1', 'id2', 'id3']);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
       const universalTime = 1;
       spyOn(date, 'currentUTC').and.returnValue(universalTime);
