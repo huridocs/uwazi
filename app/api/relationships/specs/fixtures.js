@@ -62,8 +62,9 @@ export default {
     {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
-    {entity: 'bruceWayne', hub: hub9, sharedId: db.id()},
-    {entity: 'thomasWayne', hub: hub9, template: family, sharedId: db.id()}
+    {entity: 'bruceWayne', hub: hub9, sharedId: db.id(), language: 'en'},
+    {entity: 'thomasWayne', hub: hub9, template: family, sharedId: db.id(), language: 'en'},
+    {entity: 'IHaveNoTemplate', hub: hub9, template: null, sharedId: db.id(), language: 'en'}
   ],
   templates: [
     {_id: templateWithoutProperties},
@@ -120,7 +121,8 @@ export default {
     {sharedId: 'bruceWayne', language: 'en', title: 'bruceWayne', type: 'entity', template},
     {sharedId: 'thomasWayne', language: 'en', title: 'thomasWayne', type: 'entity', template},
     {sharedId: 'alfred', language: 'en', title: 'alfred', type: 'entity', template},
-    {sharedId: 'robin', language: 'en', title: 'robin', type: 'entity', template}
+    {sharedId: 'robin', language: 'en', title: 'robin', type: 'entity', template},
+    {sharedId: 'IHaveNoTemplate', language: 'en', title: 'no template', type: 'entity', template}
   ],
   dictionaries: [
     {_id: thesauri}

@@ -305,7 +305,7 @@ describe('relationships', () => {
         return relationships.getByDocument('bruceWayne', 'en');
       })
       .then((connections) => {
-        expect(connections.length).toBe(2);
+        expect(connections.length).toBe(4);
         expect(connections.find((connection) => connection.entity === 'bruceWayne')).toBeDefined();
         expect(connections.find((connection) => connection.entity === 'robin')).toBeDefined();
         expect(connections[0].hub).toEqual(connections[1].hub);
@@ -328,7 +328,7 @@ describe('relationships', () => {
       .then(() => relationships.saveEntityBasedReferences(entity, 'en'))
       .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
-        expect(connections.length).toBe(4);
+        expect(connections.length).toBe(5);
         done();
       })
       .catch(catchErrors(done));
@@ -347,7 +347,7 @@ describe('relationships', () => {
       relationships.saveEntityBasedReferences(entity, 'en')
       .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
-        expect(connections.length).toBe(5);
+        expect(connections.length).toBe(6);
         entity.metadata = {
           family: ['thomasWayne'],
           friend: ['alfred']
@@ -356,7 +356,7 @@ describe('relationships', () => {
       })
       .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
-        expect(connections.length).toBe(4);
+        expect(connections.length).toBe(5);
         entity.metadata = {
           family: ['alfred'],
           friend: ['robin']
@@ -365,7 +365,7 @@ describe('relationships', () => {
       })
       .then(() => relationships.getByDocument('bruceWayne', 'en'))
       .then((connections) => {
-        expect(connections.length).toBe(4);
+        expect(connections.length).toBe(6);
         done();
       })
       .catch(catchErrors(done));
@@ -438,7 +438,7 @@ describe('relationships', () => {
     it('should call entities top update the metadata', (done) => {
       relationships.delete({entity: 'bruceWayne'}, 'en')
       .then(() => {
-        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne'], 'en');
+        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne', 'IHaveNoTemplate'], 'en');
         done();
       });
     });

@@ -73,9 +73,9 @@ export default {
     ]}
   ],
   connections: [
-    {_id: referenceId, entity: 'shared', template: '', hub: hub1, language: 'en'},
+    {_id: referenceId, entity: 'shared', template: null, hub: hub1, language: 'en'},
     {entity: 'shared2', template: 'relation1', hub: hub1, language: 'en'},
-    {entity: 'shared', template: '', hub: hub2, language: 'en'},
+    {entity: 'shared', template: null, hub: hub2, language: 'en'},
     {entity: 'source2', template: 'relation2', hub: hub2, language: 'en'},
     {entity: 'another', template: 'relation3', hub: hub3, language: 'en'},
     {entity: 'document', template: 'relation3', hub: hub3, language: 'en'},

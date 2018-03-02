@@ -38,7 +38,7 @@ function groupByHubs(references) {
 function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   return hubs.reduce((result, hub) => {
     const allReferencesAreOfTheType = hub.every((reference) => {
-      return reference.entity === entitySharedId || reference.template.toString() === propertyRelationType;
+      return reference.entity === entitySharedId || (reference.template && reference.template.toString() === propertyRelationType);
     });
     if (allReferencesAreOfTheType) {
       return hub;
@@ -142,16 +142,13 @@ export default {
         if (relationship._id.toString() === relation._id.toString()) {
           return model.save(relationship);
         }
-
         toSyncProperties.map((propertyName) => {
           relation.metadata = relation.metadata || {};
           relation.metadata[propertyName] = relationship.metadata[propertyName];
         });
-
         return model.save(relation);
       });
-
-      return Promise.all(updateRelationships);
+      return Promise.all(updateRelationships).then((relations) => relations.find((r) => r.language === relationship.language));
     });
   },
 
@@ -168,10 +165,11 @@ export default {
         if (isATextReference && entityFileDoesNotMatch) {
           return Promise.resolve();
         }
-        relationship.language = entity.language;
-        return model.save(relationship);
+        const _relationship = Object.assign({}, relationship);
+        _relationship.language = entity.language;
+        return model.save(_relationship);
       });
-      return Promise.all(relationshipsCreation);
+      return Promise.all(relationshipsCreation).then((relations) => relations.find((r) => r.language === relationship.language));
     });
   },
 
@@ -195,15 +193,12 @@ export default {
         relationship.language = language;
         if (relationship.sharedId) {
           action = this.updateRelationship(relationship);
-        }
-
-        if (!relationship.sharedId) {
+        } else {
           action = this.createRelationship(relationship);
         }
 
         return action
-        .then((savedRelationships) => {
-          let savedRelationship = savedRelationships.find((rel) => rel && rel.language === language);
+        .then((savedRelationship) => {
           return Promise.all([savedRelationship, entities.getById(savedRelationship.entity, language)]);
         })
         .then(([result, connectedEntity]) => {
@@ -214,8 +209,7 @@ export default {
             });
           }
           return normalizeConnectedDocumentData(result, connectedEntity);
-        })
-        .catch(console.log);
+        });
       }));
   },
 
@@ -250,10 +244,11 @@ export default {
           propertyValues = [propertyValues];
         }
         let hubs = groupByHubs(references);
-        let propertyRelationType = property.relationType;
-        let propertyHub = findPropertyHub(propertyRelationType, hubs, entity.sharedId);
-        if (!propertyHub) {
-          propertyHub = [{entity: entity.sharedId, hub: generateID()}];
+        let propertyRelationType = property.relationType.toString();
+        let entityType = property.content;
+        let hub = findPropertyHub(propertyRelationType, hubs, entity.sharedId);
+        if (!hub) {
+          hub = [{entity: entity.sharedId, hub: generateID()}];
         }
 
         let referencesOfThisType = references.filter((reference) =>
@@ -264,21 +259,25 @@ export default {
         propertyValues.forEach((entitySharedId) => {
           let relationshipDoesNotExists = !referencesOfThisType.find((reference) => reference.entity === entitySharedId);
           if (relationshipDoesNotExists) {
-            propertyHub.push({entity: entitySharedId, hub: propertyHub[0].hub, template: propertyRelationType});
+            hub.push({entity: entitySharedId, hub: hub[0].hub, template: propertyRelationType});
           }
         });
-        propertyHub = propertyHub.filter((reference) => reference.entity === entity.sharedId || propertyValues.includes(reference.entity));
         const referencesToBeDeleted = references.filter((reference) => {
           return !(reference.entity === entity.sharedId) &&
-          reference.template.toString() === propertyRelationType.toString() &&
+          reference.template && reference.template.toString() === propertyRelationType &&
+          (!entityType || reference.entityData.template.toString() === entityType) &&
           !propertyValues.includes(reference.entity);
         });
-        let actions = referencesToBeDeleted.map((reference) => this.delete({_id: reference._id}, language, false));
-        if (propertyHub.length > 1) {
-          actions = actions.concat(this.save(propertyHub, language, false));
+
+        let save = Promise.resolve();
+        if (hub.length > 1) {
+          save = this.save(hub, language, false);
         }
-        return Promise.all(actions);
-      })).catch(console.log);
+
+        return save.then(() => {
+          return Promise.all(referencesToBeDeleted.map((reference) => this.delete({_id: reference._id}, language, false)));
+        });
+      }));
     });
   },
 
