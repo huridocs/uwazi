@@ -13,6 +13,7 @@ import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
 import {actions as formActions} from 'react-redux-form';
+import {actions as relationshipActions} from 'app/Relationships';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -162,14 +163,16 @@ describe('documentActions', () => {
 
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
-        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(documents.api, 'save').and.returnValue(Promise.resolve({sharedId: 'responseId'}));
         let doc = {name: 'doc', fullText: 'fullText'};
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({type: 'reloadRelationships'});
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', fullText: 'fullText'}},
           {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
-          {type: 'viewer/doc/SET', value: 'response'}
+          {type: 'viewer/doc/SET', value: {sharedId: 'responseId'}},
+          {type: 'reloadRelationships'}
         ];
         const store = mockStore({});
 
@@ -211,6 +214,7 @@ describe('documentActions', () => {
     describe('saveToc', () => {
       it('should save the document with the new toc and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({type: 'reloadRelationships'});
         let doc = {name: 'doc', _id: 'id', _rev: 'rev', sharedId: 'sharedId', file: {fileName: '123.pdf'}};
         let toc = [
           {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0},
@@ -223,7 +227,8 @@ describe('documentActions', () => {
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {_id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: {fileName: '123.pdf'}}},
           {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
-          {type: 'viewer/doc/SET', value: 'response'}
+          {type: 'viewer/doc/SET', value: 'response'},
+          {type: 'reloadRelationships'}
         ];
         const store = mockStore({
           documentViewer: {

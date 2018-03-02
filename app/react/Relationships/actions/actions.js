@@ -125,9 +125,15 @@ export function saveRelationships() {
 
     return api.post('relationships/bulk', apiCall)
     .then((response) => {
-      return Promise.all([response, reloadRelationships(parentEntityId)(dispatch, getState)]);
+      return Promise.all([
+        response,
+        api.get(`entities?_id=${parentEntityId}`).then(r => r.json.rows[0]),
+        reloadRelationships(parentEntityId)(dispatch, getState)
+      ]);
     })
-    .then(([response]) => {
+    .then(([response, parentEntity]) => {
+      dispatch(actions.set('entityView/entity', parentEntity));
+      dispatch(actions.set('viewer/doc', parentEntity));
       dispatch(uiActions.closePanel());
       dispatch(edit(false, getState().relationships.list.searchResults, getState().relationships.list.entity));
       dispatch(referencesActions.loadReferences(parentEntityId));

@@ -98,14 +98,25 @@ function sanitize(doc, template) {
     return doc;
   }
 
+  if (!doc.metadata) {
+    return doc;
+  }
+
   return template.properties.reduce((sanitizedDoc, property) => {
-    if (property.type === 'multidate' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+    const type = property.type;
+    if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedDoc.metadata[property.name])) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+    }
+    if (type === 'relationship' && Array.isArray(sanitizedDoc.metadata[property.name])) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+    }
+    if (type === 'multidate' && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value);
     }
-    if (property.type === 'multidaterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+    if (type === 'multidaterange' && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value.from || value.to);
     }
-    if (property.type === 'daterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+    if (type === 'daterange' && sanitizedDoc.metadata[property.name]) {
       const value = sanitizedDoc.metadata[property.name];
       if (!value.to && !value.from) {
         delete sanitizedDoc.metadata[property.name];

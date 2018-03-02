@@ -13,6 +13,7 @@ import {removeDocument, unselectAllDocuments} from 'app/Library/actions/libraryA
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import {isClient} from 'app/utils';
+import {actions as relationshipActions} from 'app/Relationships';
 
 export function setDocument(document, html) {
   return {
@@ -49,6 +50,7 @@ export function saveDocument(doc) {
       dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', updatedDoc));
+      dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
     });
   };
 }
