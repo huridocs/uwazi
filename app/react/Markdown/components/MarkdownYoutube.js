@@ -9,7 +9,9 @@ export class MarkdownYoutube extends Component {
     const src = `https://www.youtube.com/embed/${videoId}?rel=0&amp;showinfo=0`;
     return (
       <div className="video-container">
-        <iframe src={src} frameBorder="0" allowFullScreen />
+        <div>
+          <iframe src={src} frameBorder="0" allowFullScreen />
+        </div>
       </div>
     );
   }
