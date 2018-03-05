@@ -5,54 +5,58 @@ import settings from '../settings/settings';
 import relationships from '../relationships/relationships';
 import templatesModel from '../templates/templates';
 import relationtypes from '../relationtypes/relationtypes';
-import entities from '../entities/entities';
-import entitiesmodel from '../entities/entitiesModel';
+import entitiesModel from '../entities/entitiesModel';
 import mongoose from 'mongoose';
 import {generateID} from 'api/odm';
+import entities from '../entities/entities';
+
+entities.save = () => {
+  return Promise.resolve();
+};
 
 const connectionsRelationTypes = {};
 
-function createRelationType(property) {
-  return relationtypes.get({name: property.label})
-  .then((result) => {
-    if (!result.length) {
-      console.log('Creating relation type:', property.label);
-      return relationtypes.save({name: property.label})
-      .then((newRelationType) => {
-        connectionsRelationTypes[property.name] = newRelationType._id;
-        return newRelationType._id;
-      });
+function createRelationTypesWhenNotExists(properties) {
+  return Promise.all(properties.map((property) => {
+    if (property.type !== 'select' && property.type !== 'multiselect') {
+      return Promise.resolve();
     }
-
-    connectionsRelationTypes[property.name] = result[0]._id;
-    return result[0]._id;
-  }).catch((e) => {
-    console.log('Saving relation type error:', e);
-  });
+    return relationtypes.get({name: property.label})
+    .then((result) => {
+      if (!result.length) {
+        console.log('Creating relation type:', property.label);
+        return relationtypes.save({name: property.label})
+        .then((newRelationType) => {
+          connectionsRelationTypes[property.name] = newRelationType._id;
+        });
+      }
+      connectionsRelationTypes[property.name] = result[0]._id;
+    });
+  }));
 }
 
 function migrateTemplates() {
   return templatesModel.get()
   .then((_templates) => {
     return P.resolve(_templates).map((template) => {
-      console.log('Migrating template:', template.name);
-      return P.resolve(template.properties.map((property) => {
-        if (property.type === 'select' || property.type === 'multiselect') {
-          return templatesModel.get({_id: property.content})
-          .then((result) => {
-            if (result.length) {
-              return createRelationType(property)
-              .then((relationTypeId) => {
-                property.type = 'relationship';
-                property.relationType = relationTypeId;
-              }).catch(console.log);
+      return createRelationTypesWhenNotExists(template.properties)
+      .then(() => {
+        console.log('Migrating template:', template.name);
+        template.properties = template.properties.map((property) => {
+          const contentIsTemplate = _templates.find((t) => t._id.toString() === property.content);
+          if (contentIsTemplate) {
+            if (property.type === 'select' || property.type === 'multiselect') {
+              property.type = 'relationship';
+              property.relationType = connectionsRelationTypes[property.name];
             }
-            return Promise.resolve();
-          });
-        }
-        return Promise.resolve();
-      }), {concurrency: 1})
-      .then(() => templatesModel.save(template)).catch(console.log);
+          }
+          return property;
+        });
+        return Promise.resolve(template);
+      })
+      .then((templateToSave) => {
+        return templatesModel.save(templateToSave);
+      }).catch(console.log);
     }, {concurrency: 1}).catch(console.log);
   });
 }
@@ -120,7 +124,7 @@ let totalEntities;
 
 function migrateEntities() {
   process.stdout.write(`Relations processed: ${relationsProcessed} of ${relationsProcessed}\r\n`);
-  return Promise.all([entities.get({}, {_id: 1}), templatesModel.get()])
+  return Promise.all([entitiesModel.get({}, {_id: 1}), templatesModel.get()])
   .then(([_entities, _templates]) => {
     totalEntities = _entities.length;
     let keyTemplates = _templates.reduce((response, template) => {
@@ -128,7 +132,7 @@ function migrateEntities() {
       return response;
     }, {});
     return P.resolve(_entities).map(({_id}) => {
-      return entities.getById(_id)
+      return entitiesModel.getById(_id)
       .then((entity) => {
         if (!entity.template) {
           entitiesProcessed += 1;
@@ -143,7 +147,7 @@ function migrateEntities() {
         });
         entitiesProcessed += 1;
         process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r`);
-        return entitiesmodel.save(entity);
+        return entitiesModel.save(entity);
       });
     }, {concurrency: 10});
   });
