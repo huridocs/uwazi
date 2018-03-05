@@ -259,10 +259,10 @@ export default {
             });
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
           });
-          if (!relationshipProperties.length) {
-            return Promise.resolve(entity);
+          if (relationshipProperties.length) {
+            return this.save(entity, {language}, false);
           }
-          return this.save(entity, {language}, false);
+          return Promise.resolve(entity);
         });
       }));
     });
