@@ -282,7 +282,7 @@ describe('search', () => {
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all.types.buckets;
-          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(1);
+          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
           expect(templateAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
@@ -321,7 +321,7 @@ describe('search', () => {
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
             const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
             expect(template2NestedAggs.rows.length).toBe(2);
-            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(2);
+            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
