@@ -252,24 +252,14 @@ export default {
         .then(([entity, relations]) => {
           const template = _templates.find((t) => t._id.toString() === entity.template.toString());
           const relationshipProperties = template.properties.filter((p) => p.type === 'relationship');
-          let changes = false;
           relationshipProperties.forEach((property) => {
-            let before = entity.metadata[property.name];
-            if (!Array.isArray(before)) {
-              before = [before];
-            }
             const relationshipsGoingToThisProperty = relations.filter((r) => {
               return r.template && r.template.toString() === property.relationType &&
               (!property.content || r.entityData.template.toString() === property.content);
             });
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
-            let after = entity.metadata[property.name];
-            after = after.sort();
-            before = before.sort();
-            const sameValues = JSON.stringify(after) === JSON.stringify(before);
-            changes = changes || !sameValues;
           });
-          if (changes) {
+          if (relationshipProperties.length) {
             return this.save(entity, {language}, false);
           }
           return Promise.resolve(entity);
