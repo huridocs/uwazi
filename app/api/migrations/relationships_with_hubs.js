@@ -149,11 +149,14 @@ function migrateEntities() {
   });
 }
 
+const start = Date.now();
 migrateTemplates()
 .then(migrateRelationships)
 .then(migrateEntities)
 .then(() => {
+  const end = Date.now();
   process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\r\n`);
+  process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
   mongoose.disconnect();
 })
 .catch(console.log);
