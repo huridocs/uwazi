@@ -33,7 +33,8 @@ export class MarkdownVimeo extends Component {
         return _seconds + parseInt(n, 10) * Math.pow(60, _index);
       }, 0);
       return <div className="timelink" key={index} onClick={this.setTime.bind(this, seconds)} className="timelink">
-                <a>{timeKey}</a><span> {config.options.timelinks[timeKey]}</span>
+                <b><i className="fa fa-play"></i> {timeKey}</b>
+                <span>{config.options.timelinks[timeKey]}</span>
               </div>;
     });
   }
