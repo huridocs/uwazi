@@ -56,6 +56,12 @@ export default {
           ]
         }
       ]
+    },
+    {
+      _id: db.id(),
+      type: 'translation',
+      locale: 'other',
+      contexts: []
     }
   ],
   settings: [

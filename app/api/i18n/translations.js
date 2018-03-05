@@ -76,6 +76,9 @@ export default {
     .then((result) => {
       return Promise.all(result.map((translation) => {
         let context = translation.contexts.find((ctx) => ctx.id === contextId);
+        if (!context) {
+          return Promise.resolve();
+        }
         context.values = context.values || [];
         context.values.push({key, value: defaultValue});
         return this.save(translation);
@@ -130,9 +133,17 @@ export default {
       });
 
       languages.forEach((language) => {
-        existingKeys = language.contexts.find(c => c.label === 'System').values;
-        let valuesWithRemovedValues = existingKeys.filter(i => newKeys.includes(i.key));
         let system = language.contexts.find(c => c.label === 'System');
+        if (!system) {
+          system = {
+            id: 'System',
+            label: 'System',
+            values: keys.map((k) => ({key: k.key, value: k.label}))
+          };
+          language.contexts.unshift(system);
+        }
+        existingKeys = system.values;
+        let valuesWithRemovedValues = existingKeys.filter(i => newKeys.includes(i.key));
         system.values = valuesWithRemovedValues.concat(keysToAdd);
       });
 
