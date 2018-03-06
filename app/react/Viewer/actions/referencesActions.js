@@ -5,7 +5,7 @@ import {actions} from 'app/BasicReducer';
 
 import * as uiActions from './uiActions';
 import {actions as connectionsActions} from 'app/Connections';
-import {actions as relationshipsActions} from 'app/Relationships';
+import {reloadRelationships} from 'app/Relationships/actions/actions';
 
 export function setReferences(references) {
   return {
@@ -33,7 +33,7 @@ export function addReference(references, docInfo, delayActivation) {
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
-    dispatch(relationshipsActions.reloadRelationships(getState().relationships.list.entityId));
+    dispatch(reloadRelationships(getState().relationships.list.entityId));
 
     if (delayActivation) {
       dispatch({type: types.ACTIVE_REFERENCE, reference: references[0][0]._id});
@@ -60,7 +60,7 @@ export function deleteReference(reference) {
   return function (dispatch, getState) {
     return referencesAPI.delete(reference.associatedRelationship)
     .then(() => {
-      dispatch(relationshipsActions.reloadRelationships(getState().relationships.list.entityId));
+      dispatch(reloadRelationships(getState().relationships.list.entityId));
       dispatch({type: types.REMOVE_REFERENCE, reference});
       dispatch(notify('Connection deleted', 'success'));
     });

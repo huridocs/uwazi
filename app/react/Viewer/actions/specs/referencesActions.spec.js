@@ -16,7 +16,7 @@ import scroller from 'app/Viewer/utils/Scroller';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-fdescribe('Viewer referencesActions', () => {
+describe('Viewer referencesActions', () => {
   describe('setReferences()', () => {
     it('should return a SET_REFERENCES type action with the references', () => {
       let action = actions.setReferences('references');
