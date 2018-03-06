@@ -8,14 +8,23 @@ import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria'
 
 import * as uiActions from 'app/Entities/actions/uiActions';
 
+export function search(params) {
+  const {entityId, sort, filters} = params;
+
+  const searchTerm = params.search && params.search.searchTerm ? params.search.searchTerm.value : '';
+
+  let options = Immutable(sort);
+  if (filters) {
+    options = filters.merge(sort).merge({searchTerm});
+  }
+
+  return referencesAPI.search(entityId, options.toJS());
+}
+
 export function searchReferences() {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
-    const {entityId, sort, filters} = relationshipsList;
-    const searchTerm = relationshipsList.search && relationshipsList.search.searchTerm ? relationshipsList.search.searchTerm.value : '';
-    const options = filters.merge(sort).merge({searchTerm});
-
-    return referencesAPI.search(entityId, options.toJS())
+    return search(relationshipsList)
     .then(results => {
       dispatch(actions.set('relationships/list/searchResults', results));
       dispatch(uiActions.showTab('connections'));

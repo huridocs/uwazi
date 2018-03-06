@@ -58,6 +58,25 @@ describe('ConnectionsList actions', () => {
       });
     });
 
+    it('should fetch the connections with the default state when filters is undefined', (done) => {
+      getState = () => {
+        return {
+          templates: 'templates',
+          entityView: {entity: Immutable({sharedId: 'sid'})},
+          relationships: {
+            list: {entityId: 'sid', sort: {order: 'order'}}
+          }
+        };
+      };
+      actions.searchReferences()(dispatch, getState)
+      .then(() => {
+        expect(referencesAPI.search).toHaveBeenCalledWith('sid', {order: 'order'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'relationships/list/searchResults/SET', value: 'searchResults'});
+        expect(dispatch).toHaveBeenCalledWith({type: 'SHOW_TAB', tab: 'connections'});
+        done();
+      });
+    });
+
     it('should fetch the connections with custom text search', (done) => {
       getState = () => {
         return {relationships: {list: {entityId: 'sid', sort: {}, filters: Immutable({}), search: {searchTerm: {value: 'term'}}}}};

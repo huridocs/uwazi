@@ -13,12 +13,12 @@ import * as relationships from 'app/Relationships/utils/routeUtils';
 
 export default class Entity extends RouteHandler {
 
-  static requestState({entityId, lang}, query, globalResources) {
+  static requestState({entityId, lang}, query, state) {
     return Promise.all([
       entitiesAPI.get(entityId),
       relationTypesAPI.get(),
       // TEST!!!
-      relationships.requestState(entityId, globalResources.templates)
+      relationships.requestState(entityId, state)
       // ---------
     ])
     .then(([entities, relationTypes, [connectionsGroups, searchResults, sort]]) => {

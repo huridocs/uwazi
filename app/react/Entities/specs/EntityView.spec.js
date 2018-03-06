@@ -24,7 +24,7 @@ describe('EntityView', () => {
     it('should get the entity, and all connectionsList items', (done) => {
       EntityView.requestState({entityId: '123', lang: 'es'}, null, {templates: 'templates'})
       .then((state) => {
-        expect(relationships.requestState).toHaveBeenCalledWith('123', 'templates');
+        expect(relationships.requestState).toHaveBeenCalledWith('123', {templates: 'templates'});
         expect(EntitiesAPI.get).toHaveBeenCalledWith('123');
         expect(state.entityView.entity).toEqual(entities[0]);
         expect(state.relationships.list.entityId).toBe('sid');

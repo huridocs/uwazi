@@ -15,7 +15,7 @@ import Immutable from 'immutable';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-fdescribe('Metadata Actions', () => {
+describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');

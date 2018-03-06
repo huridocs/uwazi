@@ -62,7 +62,7 @@ export function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
 
 export function reloadRelationships(parentEntityId) {
   return function (dispatch, getState) {
-    return routeUtils.requestState(parentEntityId, getState().templates)
+    return routeUtils.requestState(parentEntityId, getState())
     .then(([connectionsGroups, searchResults]) => {
       dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
       dispatch(actions.set('relationships/list/searchResults', searchResults));
@@ -134,6 +134,7 @@ export function saveRelationships() {
     .then(([response, parentEntity]) => {
       dispatch(actions.set('entityView/entity', parentEntity));
       dispatch(actions.set('viewer/doc', parentEntity));
+
       dispatch(uiActions.closePanel());
       dispatch(edit(false, getState().relationships.list.searchResults, getState().relationships.list.entity));
       dispatch(referencesActions.loadReferences(parentEntityId));

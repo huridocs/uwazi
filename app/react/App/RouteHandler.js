@@ -68,17 +68,12 @@ class RouteHandler extends Component {
       query = JSONUtils.parseNested(props.location.query);
     }
 
-    let globalResources = {};
-
+    let state = {};
     if (this.context.store && this.context.store.getState) {
-      const state = this.context.store.getState();
-      globalResources = {
-        templates: state.templates,
-        thesauris: state.thesauris
-      };
+      state = this.context.store.getState();
     }
 
-    this.constructor.requestState(props.params, query, globalResources)
+    this.constructor.requestState(props.params, query, state)
     .then((response) => {
       this.setReduxState(response);
     });

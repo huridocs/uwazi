@@ -117,7 +117,7 @@ describe('Relationships actions', () => {
 
       actions.reloadRelationships('parentEntityId')(store.dispatch, getState)
       .then(() => {
-        expect(routeUtils.requestState).toHaveBeenCalledWith('parentEntityId', templates);
+        expect(routeUtils.requestState).toHaveBeenCalledWith('parentEntityId', {templates});
         expect(store.getActions()).toEqual([
           {type: 'relationships/list/connectionsGroups/SET', value: 'connectionsGroups'},
           {type: 'relationships/list/searchResults/SET', value: 'searchResults'}
@@ -191,6 +191,7 @@ describe('Relationships actions', () => {
       }]);
 
       spyOn(api, 'post').and.returnValue(Promise.resolve('POSTresponse'));
+      spyOn(api, 'get').and.returnValue(Promise.resolve({json: {rows: ['entity']}}));
       spyOn(routeUtils, 'requestState').and.returnValue(Promise.resolve(['reloadedConnectionsGroups', 'reloadedSearchResults']));
       mockID();
     });
@@ -203,6 +204,8 @@ describe('Relationships actions', () => {
             {type: types.SAVING_RELATIONSHIPS},
             {type: 'relationships/list/connectionsGroups/SET', value: 'reloadedConnectionsGroups'},
             {type: 'relationships/list/searchResults/SET', value: 'reloadedSearchResults'},
+            {type: 'entityView/entity/SET', value: 'entity'},
+            {type: 'viewer/doc/SET', value: 'entity'},
             {type: 'CLOSE_RELATIONSHIPS_PANEL'},
             {type: 'EDIT_RELATIONSHIPS', value: false, results: 'storeSearchResults', parentEntity: 'fullEntity', editing: false},
             {type: 'SAVED_RELATIONSHIPS', response: 'POSTresponse'},
