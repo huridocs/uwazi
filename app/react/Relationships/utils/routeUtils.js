@@ -1,10 +1,9 @@
 // TEST!!!
 import {actions as formActions} from 'react-redux-form';
-import Immutable from 'immutable';
 
 import {actions} from 'app/BasicReducer';
 import {actions as connectionsListActions} from 'app/ConnectionsList';
-import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';
 
 function requestState(entityId, state) {
@@ -14,7 +13,7 @@ function requestState(entityId, state) {
       return templateIds.concat(group.templates.map(t => t._id.toString()));
     }, []);
 
-    const sortOptions = Immutable.fromJS(prioritySortingCriteria({currentCriteria: {}, filteredTemplates, templates: state.templates}));
+    const sortOptions = prioritySortingCriteria.get({currentCriteria: {}, filteredTemplates, templates: state.templates});
     let params = state.relationships ? state.relationships.list : {};
     params.entityId = entityId;
     params.sort = params.sort || sortOptions;

@@ -155,7 +155,7 @@ export default {
   connections: {
     editButton: '#app > div.content > div > div > div.sidepanel-footer > span > button',
     saveButton: '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
-    newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div > div > button',
+    newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div > div > div > button',
 
     sortMenu: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div > ul > li.Dropdown-option.is-active > a:nth-child(1)',
     searchInput: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list.centered > div > form > div > div > input',

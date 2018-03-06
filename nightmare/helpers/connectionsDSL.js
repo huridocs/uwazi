@@ -31,6 +31,7 @@ Nightmare.action('connections', {
       const element = document.querySelector('.removeHub');
       return element ? false : true;
     })
+    .connections.waitForSave()
     .then(done)
     .catch(done);
   },
@@ -176,6 +177,16 @@ Nightmare.action('connections', {
     .then(done)
     .catch(done);
   },
+  waitForSave(done) {
+    this.wait(() => {
+      const deleteButtons = document.querySelectorAll('.relationships-removeIcon');
+      return deleteButtons.length === 0;
+    })
+    .wait('.leftRelationshipType .rw-input')
+    .then(done)
+    .catch(done);
+  },
+
   getRelationsObjet(done) {
     this.evaluate_now(() => {
       const helpers = document.__helpers;
