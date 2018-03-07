@@ -1,6 +1,7 @@
 NaN.optimized
 node_modules
 .DS_Store
+stats.json
 coverage
 /dist
 /build

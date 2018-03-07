@@ -20,7 +20,8 @@
     "server": "nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared'",
     "webpack-server": "node ./webpack/webpack.server.js",
     "hot": "export HOT=true;npm run server & npm run webpack-server",
-    "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors"
+    "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
+    "analyze": "webpack --profile --json > stats.json;./node_modules/.bin/webpack-bundle-analyzer stats.json"
   },
   "dependencies": {
     "@vimeo/player": "^2.2.1",
@@ -118,7 +119,6 @@
     "tiny-cookie": "^0.5.5",
     "validate.js": "^0.9.0",
     "world-countries": "^1.8.0",
-    "redux-devtools-extension": "^2.13.2",
     "wrap-range-text": "^1.0.1"
   },
   "devDependencies": {
@@ -179,6 +179,7 @@
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "3.5.5",
+    "webpack-bundle-analyzer": "^2.11.1",
     "webpack-dev-middleware": "^2.0.4",
     "webpack-hot-middleware": "^2.21.0",
     "whatwg-fetch": "^0.10.1"
