@@ -289,8 +289,9 @@ export class TimelineViewer extends Component {
 
               {track.years[year].map((reference, index) => {
                 if (reference.reference) {
+                  const linkType = reference.reference.entityData.type === 'document' ? 'document' : 'entity';
                   return (
-                    <I18NLink to={`/${reference.reference.connectedDocumentType}/${reference.data.sharedId}`}
+                    <I18NLink to={`/${linkType}/${reference.data.sharedId}`}
                           key={index}
                           className={`timeline-item ${reference.additionalData.className}`}
                           data-toggle="tooltip"
