@@ -1,17 +1,23 @@
 /* TEST!!! Entire component */
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
+import Immutable from 'immutable';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+
+import Doc from 'app/Library/components/Doc';
+import DropdownList from 'app/Forms/components/DropdownList';
+import LazyLoad from 'react-lazyload';
 
 import * as actions from '../actions/actions';
 import * as uiActions from '../actions/uiActions';
 
-import Doc from 'app/Library/components/Doc';
+class RelationshipsHub extends Component {
+  render() {
 
-import DropdownList from 'app/Forms/components/DropdownList';
-
+  }
+}
 
 export class RelationshipsGraphEdit extends Component {
   constructor(props) {
@@ -92,138 +98,142 @@ export class RelationshipsGraphEdit extends Component {
 
         <div>
           {hubs.map((hub, index) => {
+            const numberOfRelationships = hub.get('rightRelationships')
+            .reduce((memo, r) => memo.concat(r.get('relationships')), Immutable.fromJS([])).size;
             return (
-            <div className="relationshipsHub" key={index}>
-              {this.editingSelector(null,
-                <div className="removeHub">
-                  <i onClick={this.toggelRemoveLeftRelationship(index)}
-                     className={`relationships-removeIcon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
-                </div>)}
-              <div className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
-                {this.editingSelector(
-                  (() => {
-                    if (hub.getIn(['leftRelationship', 'template'])) {
-                      return (
-                        <div className="rw-dropdown-list rw-widget">
-                          <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
-                            <div className="rw-input rw-dropdown-list-input no-edit">
-                              {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })(),
-                  <DropdownList valueField="_id"
-                                textField="name"
-                                data={relationTypes}
-                                value={hub.getIn(['leftRelationship', 'template'])}
-                                filter="contains"
-                                onChange={this.updateLeftRelationshipType(index)} />
-                )}
-                {(() => {
-                  if (hub.getIn(['leftRelationship', 'range', 'text'])) {
-                    return <div className="leftRelationshipQuote">
+              <LazyLoad key={index} height={numberOfRelationships * 40} offset={200} overflow unmountIfInvisible >
+                <div className="relationshipsHub">
+                  {this.editingSelector(null,
+                    <div className="removeHub">
+                      <i onClick={this.toggelRemoveLeftRelationship(index)}
+                        className={`relationships-removeIcon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
+                    </div>)}
+                    <div className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
+                      {this.editingSelector(
+                        (() => {
+                          if (hub.getIn(['leftRelationship', 'template'])) {
+                            return (
+                              <div className="rw-dropdown-list rw-widget">
+                                <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+                                  <div className="rw-input rw-dropdown-list-input no-edit">
+                                    {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })(),
+                        <DropdownList valueField="_id"
+                          textField="name"
+                          data={relationTypes}
+                          value={hub.getIn(['leftRelationship', 'template'])}
+                          filter="contains"
+                          onChange={this.updateLeftRelationshipType(index)} />
+                      )}
+                      {(() => {
+                        if (hub.getIn(['leftRelationship', 'range', 'text'])) {
+                          return <div className="leftRelationshipQuote">
                             <i className="quoteIconStart fa fa-quote-left"></i>
                             {hub.getIn(['leftRelationship', 'range', 'text'])}
                             <i className="quoteIconEnd fa fa-quote-right"></i>
-                           </div>;
-                  }
-                })()}
-                <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
-                                 'docWithoutRelationshipType' : ''}`}>
-                  <Doc className="item-collapsed"
-                       doc={parentEntity}
-                       searchParams={search}
-                       onClick={this.onClick.bind(this)}/>
-                </div>
-              </div>
-              <div className="hubRelationship">
-                <figure></figure>
-              </div>
-              <div className="rightRelationships">
-                {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
-                  <div className={`rightRelationshipsTypeGroup ${rightRelationship.get('deleted') ? 'deleted' : ''}`}
-                       key={rightRelationshipIndex}>
-                    <div className={`rightRelationshipType
-                                     ${rightRelationshipIndex === hub.get('rightRelationships').size - 1 ? 'last-of-type' : ''}`}>
-                      {this.editingSelector(
-                        <div className="rw-dropdown-list rw-widget">
-                          <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
-                            <div className="rw-input rw-dropdown-list-input no-edit">
-                              {(() => {
-                                if (relationTypes.find(r => r._id === rightRelationship.get('template'))) {
-                                  return rightRelationship.get('template') ?
-                                         relationTypes.find(r => r._id === rightRelationship.get('template')).name :
-                                         <i className="fa fa-link"></i>;
-                                }
-                                return null;
-                              })()}
-                            </div>
-                          </div>
-                        </div>,
-                        <DropdownList valueField="_id"
-                                      textField="name"
-                                      data={relationTypes}
-                                      value={rightRelationship.get('template')}
-                                      placeholder="New connection type"
-                                      filter="contains"
-                                      onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
-                      )}
-                    </div>
-                    {this.editingSelector(null,
-                      <div className="removeRightRelationshipGroup">
-                        {(() => {
-                          if (rightRelationship.has('template')) {
-                            return <i onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
-                                      className={`relationships-removeIcon fa ${!rightRelationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>;
-                          }
-
-                          return <span>&nbsp;</span>;
-                        })()}
-                      </div>
-                    )}
-                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) => {
-                      return (
-                      <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
-                           key={relationshipIndex}>
-                        <div className="rightRelationshipType">
+                          </div>;
+                        }
+                      })()}
+                      <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
+                          'docWithoutRelationshipType' : ''}`}>
                           <Doc className="item-collapsed"
-                               additionalText={relationship.getIn(['range', 'text'])}
-                               doc={relationship.get('entity')}
-                               searchParams={search}
-                               onClick={this.onClick.bind(this)}/>
+                            doc={parentEntity}
+                            searchParams={search}
+                            onClick={this.onClick.bind(this)}/>
                         </div>
-                        {this.editingSelector(null,
-                          <div className="removeEntity">
-                            <i onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                               className={`relationships-removeIcon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
-                          </div>
+                      </div>
+                      <div className="hubRelationship">
+                        <figure></figure>
+                      </div>
+                      <div className="rightRelationships">
+                        {hub.get('rightRelationships').map((rightRelationship, rightRelationshipIndex) =>
+                          <div className={`rightRelationshipsTypeGroup ${rightRelationship.get('deleted') ? 'deleted' : ''}`}
+                            key={rightRelationshipIndex}>
+                            <div className={`rightRelationshipType
+                                     ${rightRelationshipIndex === hub.get('rightRelationships').size - 1 ? 'last-of-type' : ''}`}>
+                                     {this.editingSelector(
+                                       <div className="rw-dropdown-list rw-widget">
+                                         <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+                                           <div className="rw-input rw-dropdown-list-input no-edit">
+                                             {(() => {
+                                               if (relationTypes.find(r => r._id === rightRelationship.get('template'))) {
+                                                 return rightRelationship.get('template') ?
+                                                   relationTypes.find(r => r._id === rightRelationship.get('template')).name :
+                                                   <i className="fa fa-link"></i>;
+                                               }
+                                               return null;
+                                             })()}
+                                           </div>
+                                         </div>
+                                       </div>,
+                                       <DropdownList valueField="_id"
+                                         textField="name"
+                                         data={relationTypes}
+                                         value={rightRelationship.get('template')}
+                                         placeholder="New connection type"
+                                         filter="contains"
+                                         onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}/>
+                                     )}
+                                   </div>
+                                   {this.editingSelector(null,
+                                     <div className="removeRightRelationshipGroup">
+                                       {(() => {
+                                         if (rightRelationship.has('template')) {
+                                           return <i onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                                             className={`relationships-removeIcon fa ${!rightRelationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>;
+                                         }
+
+                                         return <span>&nbsp;</span>;
+                                       })()}
+                                     </div>
+                                   )}
+                                   {rightRelationship.get('relationships').map((relationship, relationshipIndex) => {
+                                     return (
+                                       <div className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
+                                         key={relationshipIndex}>
+                                         <div className="rightRelationshipType">
+                                           <Doc className="item-collapsed"
+                                             additionalText={relationship.getIn(['range', 'text'])}
+                                             doc={relationship.get('entity')}
+                                             searchParams={search}
+                                             onClick={this.onClick.bind(this)}/>
+                                         </div>
+                                         {this.editingSelector(null,
+                                           <div className="removeEntity">
+                                             <i onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                                               className={`relationships-removeIcon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}></i>
+                                           </div>
+                                         )}
+                                       </div>
+                                     );
+                                   }
+                                   )}
+                                   {(() => {
+                                     if (editing && rightRelationship.has('template')) {
+                                       const isActive = hubActions.getIn(['addTo', 'hubIndex']) === index &&
+                                         hubActions.getIn(['addTo', 'rightRelationshipIndex']) === rightRelationshipIndex;
+                                       return <div className="rightRelationshipAdd">
+                                         <button className={`relationships-new ${isActive ? 'is-active' : ''}`}
+                                           onClick={this.setAddToData(index, rightRelationshipIndex)}>
+                                           <span>Add entities / documents</span>
+                                           <i className="fa fa-plus"></i>
+                                         </button>
+                                       </div>;
+                                     }
+
+                                     return null;
+                                   })()}
+                                 </div>
                         )}
                       </div>
-                      );
-                    }
-                    )}
-                    {(() => {
-                      if (editing && rightRelationship.has('template')) {
-                        const isActive = hubActions.getIn(['addTo', 'hubIndex']) === index &&
-                                         hubActions.getIn(['addTo', 'rightRelationshipIndex']) === rightRelationshipIndex;
-                        return <div className="rightRelationshipAdd">
-                                <button className={`relationships-new ${isActive ? 'is-active' : ''}`}
-                                        onClick={this.setAddToData(index, rightRelationshipIndex)}>
-                                  <span>Add entities / documents</span>
-                                  <i className="fa fa-plus"></i>
-                                </button>
-                               </div>;
-                      }
-
-                      return null;
-                    })()}
-                  </div>
-                )}
-              </div>
-            </div>
+                    </div>
+                  </LazyLoad>
             );
           }
           )}

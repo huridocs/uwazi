@@ -12,6 +12,7 @@ export default class Modal extends Component {
         className={`modal-dialog modal-${type}`}
         isOpen={this.props.isOpen}
         contentLabel=""
+        ariaHideApp={false}
       >
         <div className="modal-content">
           {this.props.children}

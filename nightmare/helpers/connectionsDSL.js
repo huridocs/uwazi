@@ -12,7 +12,7 @@ Nightmare.action('connections', {
       const sortOptions = helpers.querySelectorAll('.sort-buttons .Dropdown-option a');
 
       sortOptions.forEach((option) => {
-        if (option.innerText.toLowerCase() === sortBy.toLowerCase()) {
+        if (option.innerText.toLowerCase().trim() === sortBy.toLowerCase().trim()) {
           option.click();
         }
       });

@@ -171,6 +171,13 @@ describe('metadata formater', () => {
       expect(relationship2.value[2].value).toBe('Value 4');
       expect(relationship2.value[2].url).toBe('/entity/value4');
     });
+
+    it('should not fail when field do not exists on the document', () => {
+      doc.metadata.relationship1 = null;
+      doc.metadata.multiselect = null;
+      doc.metadata.select = null;
+      expect(formater.prepareMetadata.bind(formater, doc, templates, thesauris)).not.toThrow();
+    });
   });
 
   describe('prepareMetadataForCard', () => {

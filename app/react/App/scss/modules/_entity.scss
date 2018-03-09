@@ -10,8 +10,9 @@
   height: calc(100% - 100px);
   padding: 15px;
   background: $c-white;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  //overflow-x: hidden;
+  //overflow-y: scroll;
+  overflow: auto;
 
   @media(min-width: 1024px) {
     height: calc(100% - 51px);

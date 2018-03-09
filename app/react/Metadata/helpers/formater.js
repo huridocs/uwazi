@@ -169,7 +169,7 @@ export default {
         return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type});
       }
 
-      if (type === 'relationship') {
+      if (type === 'relationship' && value) {
         return Object.assign(this.relationship(property, value, thesauris, showInCard), {type});
       }
 

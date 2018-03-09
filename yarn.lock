@@ -2088,7 +2088,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.5.1, create-react-class@^15.5.2, create-react-class@^15.5.x, create-react-class@^15.6.0:
+create-react-class@^15.5.1, create-react-class@^15.5.x, create-react-class@^15.6.0:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   dependencies:
@@ -2858,10 +2858,6 @@ electron@^1.4.4:
     electron-download "^3.0.1"
     extract-zip "^1.0.3"
 
-element-class@^0.2.0:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/element-class/-/element-class-0.2.2.tgz#9d3bbd0767f9013ef8e1c8ebe722c1402a60050e"
-
 elliptic@^6.0.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.4.0.tgz#cac9af8762c85836187003c8dfe193e5e2eae5df"
@@ -2956,17 +2952,19 @@ entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
 
-enzyme-adapter-react-15@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/enzyme-adapter-react-15/-/enzyme-adapter-react-15-1.0.5.tgz#99f9a03ff2c2303e517342935798a6bdfbb75fac"
+enzyme-adapter-react-16@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.1.1.tgz#a8f4278b47e082fbca14f5bfb1ee50ee650717b4"
   dependencies:
-    enzyme-adapter-utils "^1.1.0"
+    enzyme-adapter-utils "^1.3.0"
     lodash "^4.17.4"
     object.assign "^4.0.4"
     object.values "^1.0.4"
-    prop-types "^15.5.10"
+    prop-types "^15.6.0"
+    react-reconciler "^0.7.0"
+    react-test-renderer "^16.0.0-0"
 
-enzyme-adapter-utils@^1.1.0:
+enzyme-adapter-utils@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/enzyme-adapter-utils/-/enzyme-adapter-utils-1.3.0.tgz#d6c85756826c257a8544d362cc7a67e97ea698c7"
   dependencies:
@@ -2974,7 +2972,7 @@ enzyme-adapter-utils@^1.1.0:
     object.assign "^4.0.4"
     prop-types "^15.6.0"
 
-enzyme@3.3.0:
+enzyme@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/enzyme/-/enzyme-3.3.0.tgz#0971abd167f2d4bf3f5bd508229e1c4b6dc50479"
   dependencies:
@@ -3342,11 +3340,7 @@ executable@^1.0.0:
   dependencies:
     meow "^3.1.0"
 
-exenv@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.0.tgz#3835f127abf075bfe082d0aed4484057c78e3c89"
-
-exenv@^1.2.1:
+exenv@^1.2.0, exenv@^1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
 
@@ -7913,13 +7907,6 @@ prop-types@>=15.5.10, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-prop-types@~15.5.0:
-  version "15.5.10"
-  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
-  dependencies:
-    fbjs "^0.8.9"
-    loose-envify "^1.3.1"
-
 protocol-buffers-schema@^2.0.2:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/protocol-buffers-schema/-/protocol-buffers-schema-2.2.0.tgz#d29c6cd73fb655978fb6989691180db844119f61"
@@ -8106,18 +8093,18 @@ react-addons-perf@15.4.2:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-react-addons-shallow-compare@15.5.0:
-  version "15.5.0"
-  resolved "https://registry.yarnpkg.com/react-addons-shallow-compare/-/react-addons-shallow-compare-15.5.0.tgz#4d95c68a5537ccb75f395169b64db1745617fab5"
+react-addons-shallow-compare@16.2.0:
+  version "16.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/react-addons-shallow-compare/-/react-addons-shallow-compare-16.0.0-alpha.3.tgz#487e23fecf57c84dd79210162b509a940cccdcc4"
   dependencies:
-    fbjs "^0.8.4"
+    fbjs "^0.8.9"
     object-assign "^4.1.0"
 
-react-addons-test-utils@15.5.0:
-  version "15.5.0"
-  resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.5.0.tgz#d09f7475ba7728bcdb288303a687b64c75b31a5c"
+react-addons-test-utils@16.2.0:
+  version "16.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-16.0.0-alpha.3.tgz#c17796f9b2c527b6be56f8d783b38020513fdb42"
   dependencies:
-    fbjs "^0.8.4"
+    fbjs "^0.8.9"
     object-assign "^4.1.0"
 
 react-async-component@^1.0.0-beta.3:
@@ -8177,18 +8164,14 @@ react-dnd@2.5.1:
     lodash "^4.2.0"
     prop-types "^15.5.10"
 
-react-dom-factories@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-dom-factories/-/react-dom-factories-1.0.2.tgz#eb7705c4db36fb501b3aa38ff759616aa0ff96e0"
-
-react-dom@15.5.0:
-  version "15.5.0"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.5.0.tgz#86a8d6dcde388473815039de3840706e1f28f697"
+react-dom@16.2.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.2.0.tgz#69003178601c0ca19b709b33a83369fe6124c044"
   dependencies:
-    fbjs "^0.8.9"
+    fbjs "^0.8.16"
     loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "~15.5.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 react-dropzone@^3.4.0:
   version "3.13.4"
@@ -8223,6 +8206,10 @@ react-hot-loader@^3.1.3:
     redbox-react "^1.3.6"
     source-map "^0.6.1"
 
+react-lazyload@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-lazyload/-/react-lazyload-2.3.0.tgz#ccb134223012447074a96543954f44b055dc6185"
+
 react-map-gl@^3.0.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-3.2.4.tgz#5e384c49e9b1a9adaf6553661816fa0a6400fdd7"
@@ -8236,16 +8223,13 @@ react-map-gl@^3.0.4:
     prop-types "^15.5.7"
     viewport-mercator-project "^5.0.0"
 
-react-modal@^1.2.0:
-  version "1.9.7"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-1.9.7.tgz#07ef56790b953e3b98ef1e2989e347983c72871d"
+react-modal@3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.3.1.tgz#7355db196482da0c7fa1cbecccf2bdd9bc366b14"
   dependencies:
-    create-react-class "^15.5.2"
-    element-class "^0.2.0"
-    exenv "1.2.0"
-    lodash.assign "^4.2.0"
-    prop-types "^15.5.7"
-    react-dom-factories "^1.0.0"
+    exenv "^1.2.0"
+    prop-types "^15.5.10"
+    warning "^3.0.0"
 
 react-onclickoutside@^5.11.1:
   version "5.11.1"
@@ -8281,6 +8265,15 @@ react-proxy@^3.0.0-alpha.0:
   resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-3.0.0-alpha.1.tgz#4400426bcfa80caa6724c7755695315209fa4b07"
   dependencies:
     lodash "^4.6.1"
+
+react-reconciler@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.7.0.tgz#9614894103e5f138deeeb5eabaf3ee80eb1d026d"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 react-redux-form@1.14.1:
   version "1.14.1"
@@ -8351,12 +8344,13 @@ react-tabs-redux@^1.3.1:
     classnames "^2.2.3"
     prop-types "^15.5.7"
 
-react-test-renderer@15.5.4:
-  version "15.5.4"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-15.5.4.tgz#d4ebb23f613d685ea8f5390109c2d20fbf7c83bc"
+react-test-renderer@16.2.0, react-test-renderer@^16.0.0-0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.2.0.tgz#bddf259a6b8fcd8555f012afc8eacc238872a211"
   dependencies:
-    fbjs "^0.8.9"
-    object-assign "^4.1.0"
+    fbjs "^0.8.16"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 react-transform-hmr@^1.0.1:
   version "1.0.4"
@@ -8393,14 +8387,14 @@ react-widgets@v4.0.0-rc.16:
     uncontrollable "^4.0.0"
     warning "^2.0.0"
 
-react@15.5.4:
-  version "15.5.4"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.5.4.tgz#fa83eb01506ab237cdc1c8c3b1cea8de012bf047"
+react@16.2.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
   dependencies:
-    fbjs "^0.8.9"
+    fbjs "^0.8.16"
     loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.7"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 react@^15.6.1:
   version "15.6.2"
