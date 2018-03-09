@@ -1,5 +1,7 @@
 const {configure} = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
+import * as matchers from 'jest-immutable-matchers';
+jest.addMatchers(matchers);
 
 // Setup enzyme's react adapter
 configure({adapter: new Adapter()});
@@ -27,4 +29,9 @@ jasmine.createSpyObj = (name, methodNames) => {
   return obj;
 };
 
-//console.error = () => { }
+const clock = {
+  install: jest.useFakeTimers,
+  uninstall: jest.clearAllTimers,
+  tick: jest.advanceTimersByTime
+};
+jasmine.clock = () => clock;

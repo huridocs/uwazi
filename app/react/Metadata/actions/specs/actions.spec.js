@@ -190,8 +190,8 @@ describe('Metadata Actions', () => {
 
     beforeEach(() => {
       mockUpload = superagent.post(APIURL + 'reupload');
-      spyOn(mockUpload, 'field').and.callThrough();
-      spyOn(mockUpload, 'attach').and.callThrough();
+      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
       spyOn(superagent, 'post').and.returnValue(mockUpload);
 
       // needed to work with firefox/chrome and phantomjs
@@ -207,6 +207,8 @@ describe('Metadata Actions', () => {
     });
 
     it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
+      spyOn(routeActions, 'requestViewerState').and.returnValue(Promise.resolve());
+      spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
       const expectedActions = [
         {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
@@ -235,7 +237,7 @@ describe('Metadata Actions', () => {
       it('should request and set viewer states', () => {
         expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es', {templates: 'immutableTemplates'});
         expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
-        expect(store.getActions()).toContain({type: 'setViewerState'});
+        expect(store.getActions()).toContainEqual({type: 'setViewerState'});
       });
     });
   });

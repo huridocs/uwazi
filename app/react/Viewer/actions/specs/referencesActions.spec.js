@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 
 import {mockID} from 'shared/uniqueID.js';
 import {APIURL} from 'app/config.js';
-import {actions as connectionsActions} from 'app/Connections';
+import * as connectionsActions from 'app/Connections/actions/actions';
 import {actions as relationshipsActions} from 'app/Relationships';
 import * as actions from 'app/Viewer/actions/referencesActions';
 import * as types from 'app/Viewer/actions/actionTypes';
@@ -124,7 +124,7 @@ describe('Viewer referencesActions', () => {
 
       it('should unset the targetDocReferences', () => {
         const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch, getState);
-        expect(store.getActions()).toContain({type: 'viewer/targetDocReferences/UNSET'});
+        expect(store.getActions()).toContainEqual({type: 'viewer/targetDocReferences/UNSET'});
         expect(connectionsActions.saveConnection).toHaveBeenCalledWith({sourceDocument: 'sourceId', targetRange: {text: 'target text'}}, onCreate);
         expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch, getState);
         expect(returnValue).toBe('returnValue');

@@ -10,6 +10,8 @@ export default function createNightmare(width = 1100, height = 600) {
   const nightmare = new Nightmare({
     show: true,
     typeInterval: 10,
+    x: 0,
+    y: 0,
     webPreferences: {
       preload: __dirname + '/custom-preload.js'
     }

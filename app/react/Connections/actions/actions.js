@@ -54,7 +54,7 @@ export function setTargetDocument(id) {
   };
 }
 
-export function saveConnection(connection, callback) {
+export function saveConnection(connection, callback = () => {}) {
   return function (dispatch, getState) {
     dispatch({type: types.CREATING_CONNECTION});
     if (connection.type !== 'basic') {

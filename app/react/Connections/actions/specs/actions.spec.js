@@ -33,14 +33,14 @@ describe('Connections actions', () => {
       it('should search for connections', () => {
         actions.immidiateSearch(store.dispatch, 'term');
         expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title']});
-        expect(store.getActions()).toContain({type: 'SEARCHING_CONNECTIONS'});
+        expect(store.getActions()).toContainEqual({type: 'SEARCHING_CONNECTIONS'});
       });
 
       it('should set the results upon response', (done) => {
         actions.immidiateSearch(store.dispatch, 'term')
         .then(() => {
           const expectedAction = {type: 'connections/searchResults/SET', value: [{type: 'entity'}, {type: 'doc'}]};
-          expect(store.getActions()).toContain(expectedAction);
+          expect(store.getActions()).toContainEqual(expectedAction);
           done();
         });
       });
@@ -48,7 +48,7 @@ describe('Connections actions', () => {
       it('should not include entities if targetRanged', (done) => {
         actions.immidiateSearch(store.dispatch, 'term', 'targetRanged')
         .then(() => {
-          expect(store.getActions()).toContain({type: 'connections/searchResults/SET', value: [{type: 'doc'}]});
+          expect(store.getActions()).toContainEqual({type: 'connections/searchResults/SET', value: [{type: 'doc'}]});
           done();
         });
       });
@@ -59,7 +59,7 @@ describe('Connections actions', () => {
         jasmine.clock().install();
 
         actions.search('term', 'basic')(store.dispatch);
-        expect(store.getActions()).toContain({type: 'connections/searchTerm/SET', value: 'term'});
+        expect(store.getActions()).toContainEqual({type: 'connections/searchTerm/SET', value: 'term'});
         expect(api.get).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);
@@ -79,8 +79,8 @@ describe('Connections actions', () => {
     it('should restore default search term and open the panel', (done) => {
       actions.startNewConnection('type', 'souceId')(store.dispatch)
       .then(() => {
-        expect(store.getActions()).toContain({type: 'connections/searchTerm/SET', value: ''});
-        expect(store.getActions()).toContain({type: 'OPEN_CONNECTION_PANEL', sourceDocument: 'souceId', connectionType: 'type'});
+        expect(store.getActions()).toContainEqual({type: 'connections/searchTerm/SET', value: ''});
+        expect(store.getActions()).toContainEqual({type: 'OPEN_CONNECTION_PANEL', sourceDocument: 'souceId', connectionType: 'type'});
         done();
       });
     });
@@ -146,9 +146,9 @@ describe('Connections actions', () => {
       const callback = jasmine.createSpy('callback');
       actions.saveConnection(connection, callback)(store.dispatch, getState)
       .then(() => {
-        expect(store.getActions()).toContain({type: 'CONNECTION_CREATED'});
+        expect(store.getActions()).toContainEqual({type: 'CONNECTION_CREATED'});
         expect(callback).toHaveBeenCalledWith('bulkResponse(ArrayOfTwo)');
-        expect(store.getActions()).toContain({
+        expect(store.getActions()).toContainEqual({
           type: notificationsTypes.NOTIFY,
           notification: {message: 'saved successfully !', type: 'success', id: 'unique_id'}
         });
@@ -162,7 +162,7 @@ describe('Connections actions', () => {
     it('should broadcast CREATING_RANGED_CONNECTION and execute callback with target id', () => {
       const callback = jasmine.createSpy('callback');
       actions.selectRangedTarget({targetDocument: 'targetId'}, callback)(store.dispatch);
-      expect(store.getActions()).toContain({type: 'CREATING_RANGED_CONNECTION'});
+      expect(store.getActions()).toContainEqual({type: 'CREATING_RANGED_CONNECTION'});
       expect(callback).toHaveBeenCalledWith('targetId');
     });
   });

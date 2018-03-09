@@ -184,6 +184,7 @@ describe('libraryActions', () => {
           type: 'library.selectedSorting/SET',
           value: {searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}
         };
+        spyOn(browserHistory, 'push');
         actions.searchDocuments(
           {search: {searchTerm: 'batman', filters: {author: 'batman'}, userSelectedSorting: true}}, storeKey
         )(dispatch, getState);

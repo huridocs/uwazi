@@ -3,27 +3,14 @@ module.exports = {
     '**/react/**/specs/*spec.js?(x)'
   ],
   testPathIgnorePatterns: [
-    'SearchBar.spec.js',
     'Scroller.spec.js',
-    'SearchText.spec.js',
-    'Connections',
-    'Text.spec.js',
+    'app/react/Viewer/utils/specs/Text.spec.js',
     'Attachments',
-    'filterActions.spec.js',
-    'libraryActions.spec.js',
-    'Metadata/actions/specs/actions.spec.js',
-    'MainListWrapper.spec.js',
     'DocumentsList.spec.js',
-    'EditTranslationForm.spec.js',
     'PDFPage.spec.js',
-    'targetDocumentReducer.spec.js',
-    'DocumentForm.spec.js',
-    'GoogleAnalytics.spec.js',
-    'referencesActions.spec.js',
-    'Uploads',
-    'Multireducer',
-    'Relationships',
-    'Notifications'
+    'UploadsRoute.spec.js',
+    'uploadsActions.spec.js',
+    'Relationships'
   ],
   setupTestFrameworkScriptFile: '<rootDir>/setUpJest.js',
   moduleNameMapper: {

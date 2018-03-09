@@ -41,7 +41,8 @@ let matchers = {
         return result;
       }
     };
-  }
+  },
+  toContainEqual: jasmine.matchers ? jasmine.matchers.toContain : () => {}
 };
 
 beforeEach(() => {
