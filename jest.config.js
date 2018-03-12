@@ -5,12 +5,7 @@ module.exports = {
   testPathIgnorePatterns: [
     'Scroller.spec.js',
     'app/react/Viewer/utils/specs/Text.spec.js',
-    'Attachments',
-    'DocumentsList.spec.js',
-    'PDFPage.spec.js',
-    'UploadsRoute.spec.js',
-    'uploadsActions.spec.js',
-    'Relationships'
+    'DocumentsList.spec.js'
   ],
   setupTestFrameworkScriptFile: '<rootDir>/setUpJest.js',
   moduleNameMapper: {

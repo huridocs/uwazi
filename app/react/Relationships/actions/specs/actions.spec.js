@@ -296,12 +296,12 @@ describe('Relationships actions', () => {
       it('should handle new hubs, taking into account deleted sections on new hubs', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].save).toContain([
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual([
             {entity: 'entityId', keys: 'newLeftRelationship1'},
             {keys: 'newRightRelationship1', entity: '1'}
           ]);
 
-          expect(api.post.calls.mostRecent().args[1].save).toContain([
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual([
             {entity: 'entityId', keys: 'newLeftRelationship2'},
             {keys: 'newRightRelationship2', entity: '2'},
             {keys: 'newRightRelationship4', entity: '4'}
@@ -314,11 +314,11 @@ describe('Relationships actions', () => {
       it('should handle modifications, taking into account new relationships on existing hubs and deleted relationships / sections', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].save).toContain({_id: 'originalRightRelationship1', entity: 'o1', hub: 'hub1'});
-          expect(api.post.calls.mostRecent().args[1].save).toContain({_id: 'originalRightRelationship2', entity: 'o2', hub: 'hub1'});
-          expect(api.post.calls.mostRecent().args[1].save).toContain({entity: 'n7', hub: 'hub1'});
-          expect(api.post.calls.mostRecent().args[1].save).toContain({entity: 'entityId', hub: 'hub2', _id: 'originalLeftRelationship2'});
-          expect(api.post.calls.mostRecent().args[1].save).toContain({entity: 'n10', hub: 'hub3'});
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({_id: 'originalRightRelationship1', entity: 'o1', hub: 'hub1'});
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({_id: 'originalRightRelationship2', entity: 'o2', hub: 'hub1'});
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({entity: 'n7', hub: 'hub1'});
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({entity: 'entityId', hub: 'hub2', _id: 'originalLeftRelationship2'});
+          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({entity: 'n10', hub: 'hub3'});
 
           done();
         });
@@ -327,13 +327,13 @@ describe('Relationships actions', () => {
       it('should handle deletions, taking into account new hubs and relationships', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalRightRelationship3'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalRightRelationship5'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalRightRelationship7'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalRightRelationship8'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalRightRelationship9'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalRightRelationship3'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContain({_id: 'originalLeftRelationship3'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship3'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship5'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship7'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship8'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship9'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship3'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalLeftRelationship3'});
 
           done();
         });
@@ -387,14 +387,14 @@ describe('Relationships actions', () => {
       it('should search for connections', () => {
         actions.immidiateSearch(store.dispatch, 'term');
         expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title']});
-        expect(store.getActions()).toContain({type: 'SEARCHING_RELATIONSHIPS'});
+        expect(store.getActions()).toContainEqual({type: 'SEARCHING_RELATIONSHIPS'});
       });
 
       it('should set the results upon response', (done) => {
         actions.immidiateSearch(store.dispatch, 'term')
         .then(() => {
           const expectedAction = {type: 'relationships/searchResults/SET', value: [{type: 'entity'}, {type: 'doc'}]};
-          expect(store.getActions()).toContain(expectedAction);
+          expect(store.getActions()).toContainEqual(expectedAction);
           done();
         });
       });
@@ -405,7 +405,7 @@ describe('Relationships actions', () => {
         jasmine.clock().install();
 
         actions.search('term', 'basic')(store.dispatch);
-        expect(store.getActions()).toContain({type: 'relationships/searchTerm/SET', value: 'term'});
+        expect(store.getActions()).toContainEqual({type: 'relationships/searchTerm/SET', value: 'term'});
         expect(api.get).not.toHaveBeenCalled();
 
         jasmine.clock().tick(400);

@@ -3,9 +3,9 @@ import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
 import {searchReferences, loadMoreReferences} from '../actions/actions';
 
-import DocumentsList from 'app/Layout/DocumentsList';
 import SearchBar from 'app/ConnectionsList/components/SearchBar';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
+import DocumentsList from 'app/Layout/DocumentsList';
 
 export function mapStateToProps({relationships}) {
   const documents = relationships.list.searchResults;

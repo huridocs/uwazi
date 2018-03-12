@@ -66,8 +66,8 @@ describe('uploadsActions', () => {
     describe('uploadDocument', () => {
       it('should create a document and upload file while dispatching the upload progress', () => {
         let mockUpload = superagent.post(APIURL + 'upload');
-        spyOn(mockUpload, 'field').and.callThrough();
-        spyOn(mockUpload, 'attach').and.callThrough();
+        spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+        spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
         spyOn(superagent, 'post').and.returnValue(mockUpload);
 
         const expectedActions = [
