@@ -99,7 +99,7 @@ describe('Entity zone', () => {
         return nightmare.getInnerText(selectors.manBatEntity.viewer.superpowers);
       })
       .then(text => {
-        expect(text).toBe('flylaser beam');
+        expect(text).toBe('fly\nlaser beam\n');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
       })
       .then(text => {

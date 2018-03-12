@@ -42,12 +42,9 @@
       text-overflow: ellipsis;
     }
   }
-  .item-type {
-    width: auto;
-  }
-  .item-type__name {
-    margin: -3px 0 -3px 10px;
-    max-width: 100%;
+  .btn-color {
+    margin-left: 5px;
+    font-size: $f-size-sm;
   }
 }
 

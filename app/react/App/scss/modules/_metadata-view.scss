@@ -42,12 +42,13 @@
       }
     }
     a {
-      color: $c-black;
-      border-bottom: 1px dotted $c-grey;
+      color: $c-primary;
+      border-bottom: 1px solid $c-primary-light;
       text-decoration: none !important;
 
       &:hover {
-        border-color: $c-black;
+        color: $c-primary;
+        border-color: $c-primary;
       }
     }
   }

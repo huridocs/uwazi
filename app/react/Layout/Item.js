@@ -55,7 +55,9 @@ export class Item extends Component {
           <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
             <dd className={isSortingProperty ? 'item-current-sort' : ''}>
-              <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+              <div className={value.length > 128 ? 'item-metadata-crop' : ''}>
+                <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+              </div>
             </dd>
           </dl>
         );
@@ -138,8 +140,8 @@ export class Item extends Component {
   }
 
   render() {
-    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
-      templateClassName, buttons, evalPublished} = this.props;
+    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
+           additionalText, buttons, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
@@ -167,10 +169,8 @@ export class Item extends Component {
         </div>
         {metadata}
         <ItemFooter>
-          <div className={`item-label-group ${templateClassName || ''}`}>
-            {doc.template ? <TemplateLabel template={doc.template}/> : false}
-            {this.props.labels}
-          </div>
+          {doc.template ? <TemplateLabel template={doc.template}/> : false}
+          {this.props.labels}
           {buttons}
         </ItemFooter>
       </RowList.Item>
@@ -196,7 +196,6 @@ Item.propTypes = {
   labels: PropTypes.object,
   className: PropTypes.string,
   titleProperty: PropTypes.string,
-  templateClassName: PropTypes.string,
   evalPublished: PropTypes.bool
 };
 
