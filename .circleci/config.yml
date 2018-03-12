@@ -1,0 +1,47 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/uwazi
+    docker:
+      - image: circleci/node:latest-browsers
+      - image: circleci/mongo:3.7.2-ram
+      - image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+        environment:
+          xpack.security.enabled: false
+          transport.host: localhost
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: yarn-install
+          command: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: api-tests
+          command: node api_test.js
+      - run:
+          name: client-tests
+          command: ./node_modules/karma/bin/karma start --single-run
+      # - run:
+      #     name: mongo
+      #     command: sudo apt-get install mongodb
+      # - run:
+      #     name: set-blank-state
+      #     command: ./database/blank_state.sh
+      # - run:
+      #     name: webpack
+      #     command: node_modules/webpack/bin/webpack.js
+      # - run:
+      #     name: start-server
+      #     command: node server.js
+      #     background: true
+      # - run:
+      #     name: wait-for-the-server
+      #     command: sleep 10 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:3000/
+      # - run:
+      #     name: e2e
+      #     command: node nightmare_tests.js
