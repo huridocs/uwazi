@@ -105,15 +105,15 @@ function migrateRelationships() {
           });
           return Promise.all([
             relationshipsModel.delete(relationship),
-            relationships.save(relationsHub, language)
+            relationships.save(relationsHub, language, false)
           ]);
         });
       }
 
       return Promise.all([
         relationshipsModel.delete(relationship),
-        relationships.save({entity: relationship.sourceDocument, hub, template: null}, language),
-        relationships.save({entity: relationship.targetDocument, hub, template: relationship.relationType}, language)
+        relationships.save({entity: relationship.sourceDocument, hub, template: null}, language, false),
+        relationships.save({entity: relationship.targetDocument, hub, template: relationship.relationType}, language, false)
       ]);
     }, {concurrency: 1});
   });
