@@ -140,8 +140,8 @@ export class Item extends Component {
   }
 
   render() {
-    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
-      templateClassName, buttons, evalPublished} = this.props;
+    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
+           additionalText, buttons, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
     const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
@@ -196,7 +196,6 @@ Item.propTypes = {
   labels: PropTypes.object,
   className: PropTypes.string,
   titleProperty: PropTypes.string,
-  templateClassName: PropTypes.string,
   evalPublished: PropTypes.bool
 };
 
