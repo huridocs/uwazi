@@ -14,6 +14,44 @@ entities.save = () => {
   return Promise.resolve();
 };
 
+function logProcess(processed, length, deleted) {
+  process.stdout.write(`Relations pre-processed: ${processed} of ${length}.  Deleted: ${deleted} \r`);
+}
+
+function sanitizeExistingData() {
+  console.log('Sanitizing current DB:');
+  let processedRelationships = 0;
+  let deletedRelationships = 0;
+
+  return relationshipsModel.get()
+  .then(relations => {
+    return P.resolve(relations).map(relationship => {
+      processedRelationships += 1;
+      if (!relationship.sourceDocument) { // Avoid issues if instance already migrated.
+        logProcess(processedRelationships, relations.length, deletedRelationships);
+        return Promise.resolve();
+      }
+
+      return Promise.all([
+        entitiesModel.get({sharedId: relationship.sourceDocument}, {_id: 1}),
+        entitiesModel.get({sharedId: relationship.targetDocument}, {_id: 1})
+      ])
+      .then(([sourceEntities, targetEntities]) => {
+        if (!sourceEntities.length || !targetEntities.length) {
+          deletedRelationships += 1;
+          logProcess(processedRelationships, relations.length, deletedRelationships);
+          return relationshipsModel.delete(relationship);
+        }
+
+        logProcess(processedRelationships, relations.length, deletedRelationships);
+        return Promise.resolve();
+      });
+    }, {concurrency: 1});
+  })
+  .then(() => console.log(''))
+  .catch(console.log);
+}
+
 const connectionsRelationTypes = {};
 
 function createRelationTypesWhenNotExists(properties) {
@@ -154,7 +192,8 @@ function migrateEntities() {
 }
 
 const start = Date.now();
-migrateTemplates()
+sanitizeExistingData()
+.then(migrateTemplates)
 .then(migrateRelationships)
 .then(migrateEntities)
 .then(() => {
