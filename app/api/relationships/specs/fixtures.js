@@ -49,6 +49,7 @@ export default {
 
     {entity: 'doc5', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
     {entity: 'entity2', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
+    {entity: 'entity3', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
 
     {entity: 'target', hub: hub5, sharedId: db.id(), language: 'en'},
     {entity: 'target', hub: hub5, sharedId: db.id(), language: 'en'},

@@ -18,7 +18,7 @@ describe('relationships', () => {
     it('should return all the relationships of a document in the current language', (done) => {
       relationships.getByDocument('entity2', 'en')
       .then((result) => {
-        expect(result.length).toBe(9);
+        expect(result.length).toBe(10);
         const entity1Connection = result.find((connection) => connection.entity === 'entity1');
         expect(entity1Connection.entityData.title).toBe('entity1 title');
         expect(entity1Connection.entityData.icon).toBe('icon1');
@@ -52,7 +52,7 @@ describe('relationships', () => {
         expect(group1.connectionLabel).toBe('relation 1');
         expect(group1.context).toBe(relation1.toString());
         expect(group1.templates.length).toBe(1);
-        expect(group1.templates[0].count).toBe(1);
+        expect(group1.templates[0].count).toBe(2);
 
         const group2 = results.find((r) => r.key === relation2.toString());
         expect(group2.key).toBe(relation2.toString());
@@ -411,11 +411,37 @@ describe('relationships', () => {
       relationships.search('entity2', {filter: {}, searchTerm: 'something'}, 'en')
       .then((result) => {
         expect(result.rows.length).toBe(5);
-        expect(result.rows[0].connections.length).toEqual(1);
-        expect(result.rows[1].connections.length).toEqual(2);
-        expect(result.rows[2].connections.length).toEqual(1);
-        expect(result.rows[3].connections.length).toEqual(1);
-        expect(result.rows[4].connections.length).toEqual(4);
+        expect(result.rows[0].connections.length).toBe(1);
+        expect(result.rows[1].connections.length).toBe(3);
+        expect(result.rows[2].connections.length).toBe(1);
+        expect(result.rows[3].connections.length).toBe(1);
+        expect(result.rows[4].connections.length).toBe(4);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should retrun number of hubs and allow limiting the number of HUBs returned', (done) => {
+      const searchResponse = Promise.resolve({rows: [{sharedId: 'entity1'}, {sharedId: 'entity3'}, {sharedId: 'doc4'}, {sharedId: 'doc5'}]});
+      spyOn(search, 'search').and.returnValue(searchResponse);
+
+      relationships.search('entity2', {filter: {}, searchTerm: 'something', limit: 2}, 'en')
+      .then((result) => {
+        expect(result.totalHubs).toBe(4);
+        const expectedHubIds = result.rows[result.rows.length - 1].connections.map(c => c.hub.toString());
+
+        expect(result.rows[0].sharedId).toBe('entity1');
+        expect(result.rows[0].connections.length).toBe(1);
+        expect(expectedHubIds).toContain(result.rows[0].connections[0].hub.toString());
+
+        expect(result.rows[1].sharedId).toBe('entity3');
+        expect(result.rows[1].connections.length).toBe(2);
+        expect(expectedHubIds).toContain(result.rows[1].connections[0].hub.toString());
+        expect(expectedHubIds).toContain(result.rows[1].connections[1].hub.toString());
+
+        expect(result.rows[2].sharedId).toBe('entity2');
+        expect(result.rows[2].connections.length).toBe(2);
+
         done();
       })
       .catch(catchErrors(done));
@@ -476,7 +502,7 @@ describe('relationships', () => {
         return Promise.all([relationships.getByDocument('entity3', 'en'), relationships.getByDocument('entity3', 'ru')]);
       })
       .then(([relationshipsInEnglish, relationshipsInRusian]) => {
-        expect(relationshipsInEnglish.length).toBe(2);
+        expect(relationshipsInEnglish.length).toBe(5);
         expect(relationshipsInRusian.length).toBe(2);
         done();
       });
