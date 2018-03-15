@@ -11,8 +11,6 @@ import Footer from 'app/App/Footer';
 import {NeedAuthorization} from 'app/Auth';
 import {t} from 'app/I18N';
 
-const loadMoreAmmount = 30;
-
 export default class DocumentsList extends Component {
 
   constructor(props, context) {
@@ -24,7 +22,7 @@ export default class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + loadMoreAmmount);
+    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + this.props.loadMoreAmmount);
   }
 
   componentWillReceiveProps() {
@@ -38,7 +36,7 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections, GraphView, view, searchCentered, hideFooter} = this.props;
+    const {documents, connections, GraphView, view, searchCentered, hideFooter, LoadMoreButton, loadMoreAmmount} = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
       counter = <span>
@@ -99,6 +97,10 @@ export default class DocumentsList extends Component {
               }
             })()}
             {(() => {
+              if (LoadMoreButton) {
+                return <LoadMoreButton />;
+              }
+
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
@@ -131,7 +133,8 @@ export default class DocumentsList extends Component {
 }
 
 DocumentsList.defaultProps = {
-  SearchBar
+  SearchBar,
+  loadMoreAmmount: 30
 };
 
 DocumentsList.propTypes = {
@@ -148,6 +151,7 @@ DocumentsList.propTypes = {
   deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string,
   storeKey: PropTypes.string,
+  LoadMoreButton: PropTypes.func,
   onSnippetClick: PropTypes.func,
   clickOnDocument: PropTypes.oneOfType([
     PropTypes.func,
@@ -156,5 +160,6 @@ DocumentsList.propTypes = {
   // TEST!!!
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
+  loadMoreAmmount: PropTypes.number,
   view: PropTypes.string
 };

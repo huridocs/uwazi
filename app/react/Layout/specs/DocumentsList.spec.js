@@ -93,6 +93,24 @@ describe('DocumentsList', () => {
     expect(component.find(SortButtons).props().selectedTemplates).toBe(props.filters.get('documentTypes'));
   });
 
+  describe('Load More button', () => {
+    it('should render by default a load more button', () => {
+      props.documents = props.documents.set('totalRows', 3);
+      render();
+
+      expect(component.find('.btn-load-more').length).toBe(1);
+    });
+
+    it('should render a custom passed load more', () => {
+      props.documents = props.documents.set('totalRows', 3);
+      props.LoadMoreButton = () => <div className="customLoadMoreButton"/>;
+      render();
+
+      expect(component.find('.btn-load-more').length).toBe(0);
+      expect(component.find(props.LoadMoreButton).length).toBe(1);
+    });
+  });
+
   describe('Footer', () => {
     it('should render by default', () => {
       render();
