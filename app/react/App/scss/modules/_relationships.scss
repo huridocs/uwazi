@@ -235,7 +235,8 @@ $c-background: #fcfcfc;
       }
 
       .item-shortcut {
-        opacity: 1;
+        display: none;
+        opacity: 0;
         position: absolute;
         right: 0;
         bottom: 0;
