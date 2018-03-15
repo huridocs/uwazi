@@ -16,7 +16,7 @@ describe('EntityView', () => {
       spyOn(EntitiesAPI, 'get').and.returnValue(Promise.resolve(entities));
       spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
       spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'priorized'});
-      spyOn(relationships, 'requestState').and.returnValue(Promise.resolve(['connectionsGroups', 'searchResults', 'sort']));
+      spyOn(relationships, 'requestState').and.returnValue(Promise.resolve(['connectionsGroups', 'searchResults', 'sort', 'filters']));
       spyOn(relationships, 'emptyState').and.returnValue({type: 'RELATIONSHIPS_EMPTY_STATE'});
       spyOn(relationships, 'setReduxState').and.returnValue({type: 'RELATIONSHIPS_SET_REDUX_STATE'});
     });
@@ -32,7 +32,7 @@ describe('EntityView', () => {
         expect(state.relationships.list.connectionsGroups).toBe('connectionsGroups');
         expect(state.relationships.list.searchResults).toBe('searchResults');
         expect(state.relationships.list.sort).toBe('sort');
-        expect(state.relationships.list.filters).toEqual({});
+        expect(state.relationships.list.filters).toBe('filters');
         expect(state.relationships.list.view).toBe('graph');
         expect(state.relationTypes).toEqual(relationTypes);
         done();
