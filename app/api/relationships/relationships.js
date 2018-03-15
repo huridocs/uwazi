@@ -70,7 +70,7 @@ const conformRelationships = (rows, parentEntitySharedId) => {
         }
         const newConnection = connection.set('entity', row.delete('connections'));
         hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
-                                            hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
+                                             hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
       }
     });
 
@@ -82,9 +82,6 @@ const conformRelationships = (rows, parentEntitySharedId) => {
     const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
       let newMemo = memo.push(fromJS({}).set('template', template).set('relationships', relationshipsArray));
       index += 1;
-      // if (action.editing && index === hub.get('rightRelationships').size) {
-      //   newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
-      // }
       return newMemo;
     }, fromJS([]));
     return hubs.push(hub.set('rightRelationships', rightRelationships));
