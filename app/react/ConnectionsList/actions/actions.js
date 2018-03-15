@@ -72,7 +72,7 @@ export function loadAllReferences() {
   };
 }
 
-export function loadMoreReferences(storeKey, limit) {
+export function loadMoreReferences(limit) {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('limit', limit)));
