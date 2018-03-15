@@ -9,48 +9,45 @@ import {deleteFiles} from '../utils/files.js';
 
 import model from './entitiesModel';
 
-function updateEntity(doc) {
-  return Promise.all([
-    this.getAllLanguages(doc.sharedId),
-    templates.getById(doc.template)
-  ])
-  .then(([docLanguages, templateResult]) => {
-    if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
+function updateEntity(entity, _template) {
+  this.getAllLanguages(entity.sharedId)
+  .then((docLanguages) => {
+    if (docLanguages[0].template && entity.template && docLanguages[0].template.toString() !== entity.template.toString()) {
       return Promise.all([
         this.deleteEntityFromMetadata(docLanguages[0]),
-        relationships.delete({entity: doc.sharedId}, null, false)
+        relationships.delete({entity: entity.sharedId}, null, false)
       ])
-      .then(() => [docLanguages, templateResult]);
+      .then(() => docLanguages);
     }
-    return [docLanguages, templateResult];
+    return docLanguages;
   })
-  .then(([docLanguages, templateResult]) => {
-    const template = templateResult || {properties: []};
+  .then((docLanguages) => {
+    const template = _template || {properties: []};
     const toSyncProperties = template.properties
-    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
+    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship'))
     .map(p => p.name);
-    const currentDoc = docLanguages.find((d) => d._id.toString() === doc._id.toString());
+    const currentDoc = docLanguages.find((d) => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
-      if (d._id.equals(doc._id)) {
-        return doc;
+      if (d._id.equals(entity._id)) {
+        return entity;
       }
       if (!d.metadata) {
-        d.metadata = doc.metadata;
+        d.metadata = entity.metadata;
       }
       toSyncProperties.forEach((p) => {
-        d.metadata[p] = doc.metadata[p];
+        d.metadata[p] = entity.metadata[p];
       });
 
-      if (typeof doc.published !== 'undefined') {
-        d.published = doc.published;
+      if (typeof entity.published !== 'undefined') {
+        d.published = entity.published;
       }
 
-      if (doc.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
-        d.toc = doc.toc;
+      if (entity.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
+        d.toc = entity.toc;
       }
 
-      if (typeof doc.template !== 'undefined') {
-        d.template = doc.template;
+      if (typeof entity.template !== 'undefined') {
+        d.template = entity.template;
       }
       return d;
     });
@@ -149,7 +146,7 @@ export default {
     ])
     .then(([{languages}, template]) => {
       if (doc.sharedId) {
-        return this.updateEntity(this.sanitize(doc, template));
+        return this.updateEntity(this.sanitize(doc, template), template);
       }
 
       return this.createEntity(this.sanitize(doc, template), languages, sharedId);
@@ -164,6 +161,22 @@ export default {
     })
     .then(([entity]) => {
       return this.indexEntities({sharedId}, '+fullText').then(() => entity);
+    });
+  },
+
+  bulkProcessMetadataFromRelationships(query, language, limit = 200) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get(query, 'sharedId', {skip: offset, limit})
+      .then((entities) => this.updateMetdataFromRelationships(entities.map((entity) => entity.sharedId), language))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return this.count(query)
+    .then((totalRows) => {
+      return index(0, totalRows);
     });
   },
 
@@ -240,11 +253,12 @@ export default {
     return model.count({template});
   },
 
-  getByTemplate(template, language) {
-    return model.get({template, language});
+  getByTemplate(template, language, published = true) {
+    return model.get({template, language, published});
   },
 
   updateMetdataFromRelationships(entities, language) {
+    const entitiesToReindex = [];
     return templates.get()
     .then((_templates) => {
       return Promise.all(entities.map((entityId) => {
@@ -260,15 +274,17 @@ export default {
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
           });
           if (relationshipProperties.length) {
-            return this.save(entity, {language}, false);
+            entitiesToReindex.push(entity.sharedId);
+            return this.updateEntity(this.sanitize(entity, template), template);
           }
           return Promise.resolve(entity);
         });
       }));
-    });
+    })
+    .then(() => this.indexEntities({sharedId: {$in: entitiesToReindex}}));
   },
 
-  updateMetadataProperties(template) {
+  updateMetadataProperties(template, language) {
     let actions = {};
     actions.$rename = {};
     actions.$unset = {};
@@ -297,12 +313,14 @@ export default {
         delete actions.$rename;
       }
 
-      if (noneToRename && noneToUnset) {
-        return Promise.resolve();
-      }
-
       return model.db.updateMany({template}, actions)
-      .then(() => this.indexEntities({template: template._id}, null, 1000));
+      .then(() => {
+        if (!template.properties.find(p => p.type === 'relationship')) {
+          return this.indexEntities({template: template._id}, null, 1000);
+        }
+
+        return this.bulkProcessMetadataFromRelationships({template: template._id, language}, language);
+      });
     });
   },
 

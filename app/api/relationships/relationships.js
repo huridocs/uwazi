@@ -245,6 +245,43 @@ export default {
     });
   },
 
+  bulk(bulkData, language) {
+    const saveActions = bulkData.save.map((reference) => this.save(reference, language), false);
+    const deleteActions = bulkData.delete.map((reference) => this.delete(reference, language), false);
+    const unique = (elem, pos, arr) => {
+      return arr.indexOf(elem) === pos;
+    };
+
+    const hubsAffectedBySave = bulkData.save.map((item) => {
+      if (Array.isArray(item)) {
+        return item[0].hub;
+      }
+      return item.hub;
+    }).filter(unique);
+
+    const hubsAffectedByDelete = bulkData.delete.map((item) => {
+      return item.hub;
+    }).filter(unique);
+
+    const hubsAffected = hubsAffectedBySave.concat(hubsAffectedByDelete).filter(unique);
+    const entitiesAffectedByDelete = bulkData.delete.map((item) => {
+      return item.entity;
+    }).filter(unique);
+
+    return Promise.all(saveActions.concat(deleteActions))
+    .then((bulkResponse) => {
+      return Promise.all(hubsAffected.map((hubid) => this.getHub(hubid, language)))
+      .then((hubs) =>{
+        const entitiesAffected = hubs.reduce((result, hub) => {
+          result.concat(hub.map((relationship) => relationship.entity));
+        }, []).concat(entitiesAffectedByDelete).filter(unique);
+
+        return entities.updateMetdataFromRelationships(entitiesAffected, language)
+        .then(() => bulkResponse);
+      });
+    });
+  },
+
   save(_relationships, language, updateMetdata = true) {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));

@@ -62,7 +62,7 @@ let save = (template) => {
 };
 
 export default {
-  save(template) {
+  save(template, language) {
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
 
@@ -85,8 +85,8 @@ export default {
         }
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
-      .then(() => entities.updateMetadataProperties(template))
-      .then(() => save(template));
+      .then(() => save(template))
+      .then((savedTemplate) => entities.updateMetadataProperties(template, language).then(() => savedTemplate));
     }
 
     return save(template)
