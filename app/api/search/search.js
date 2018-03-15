@@ -72,7 +72,7 @@ const search = {
 
     return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle])
     .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel]) => {
-      let textFieldsToSearch = textFields(templates).map((prop) => 'metadata.' + prop.name).concat(['title', 'fullText']);
+      let textFieldsToSearch = query.fields || textFields(templates).map((prop) => 'metadata.' + prop.name).concat(['title', 'fullText']);
       let documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
       .filterByTemplate(query.types)

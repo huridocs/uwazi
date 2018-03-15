@@ -115,6 +115,19 @@ describe('search', () => {
       });
     });
 
+    it('should perform a fullTextSearch on passed fields', (done) => {
+      Promise.all([
+        search.search({searchTerm: 'spanish', fields: ['title']}, 'es'),
+        search.search({searchTerm: 'Batman', fields: ['title']}, 'es')
+      ])
+      .then(([resultsNotFound, resultsFound]) => {
+        expect(resultsNotFound.rows.length).toBe(0);
+        expect(resultsFound.rows.length).toBe(2);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     it('should perform a fullTextSearch on fullText and title', (done) => {
       Promise.all([
         search.search({searchTerm: 'spanish'}, 'es'),

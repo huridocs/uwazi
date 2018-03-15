@@ -4,7 +4,6 @@ const batmanFinishesId = db.id();
 const unpublishedId = db.id();
 const syncPropertiesEntityId = db.id();
 const templateId = db.id();
-const referenceId = db.id();
 const userId = db.id();
 
 export default {
