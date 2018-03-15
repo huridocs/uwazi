@@ -70,7 +70,7 @@ function createRelationTypesWhenNotExists(properties) {
       }
       connectionsRelationTypes[property.name] = result[0]._id;
     });
-  }));
+  })).catch(console.log);
 }
 
 function migrateTemplates() {
@@ -81,11 +81,11 @@ function migrateTemplates() {
       .then(() => {
         console.log('Migrating template:', template.name);
         template.properties = template.properties.map((property) => {
-          const contentIsTemplate = _templates.find((t) => t._id.toString() === property.content);
-          if (contentIsTemplate) {
-            if (property.type === 'select' || property.type === 'multiselect') {
-              property.type = 'relationship';
-              property.relationType = connectionsRelationTypes[property.name];
+          if (property.type === 'select' || property.type === 'multiselect') {
+            const contentIsTemplate = !!_templates.find((t) => t._id.toString() === property.content);
+            if (contentIsTemplate) {
+                property.type = 'relationship';
+                property.relationType = connectionsRelationTypes[property.name];
             }
           }
           return property;
