@@ -1,4 +1,5 @@
 // TEST!!!
+import {fromJS} from 'immutable';
 import {actions as formActions} from 'react-redux-form';
 
 import {actions} from 'app/BasicReducer';
@@ -17,8 +18,9 @@ function requestState(entityId, state) {
     let params = state.relationships ? state.relationships.list : {};
     params.entityId = entityId;
     params.sort = params.sort || sortOptions;
+    params.filters = fromJS({limit: 10});
 
-    return Promise.all([connectionsGroups, connectionsListActions.search(params), params.sort]);
+    return Promise.all([connectionsGroups, connectionsListActions.search(params), params.sort, params.filters]);
   });
 }
 
