@@ -74,6 +74,7 @@ export default [
 {key: 'Flag', label: 'Flag'},
 {key: 'Forgot Password?', label: 'Forgot Password?'},
 {key: 'Google Analytics ID', label: 'Google Analytics ID'},
+{key: 'hubs', label: 'hubs'},
 {key: 'Icon', label: 'Icon'},
 {key: 'Info', label: 'Info'},
 {key: 'Info', label: 'Info'},
