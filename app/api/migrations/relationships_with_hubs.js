@@ -70,7 +70,7 @@ function createRelationTypesWhenNotExists(properties) {
       }
       connectionsRelationTypes[property.name] = result[0]._id;
     });
-  }));
+  })).catch(console.log);
 }
 
 function migrateTemplates() {
