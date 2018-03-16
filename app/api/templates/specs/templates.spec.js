@@ -160,15 +160,15 @@ describe('templates', () => {
 
     describe('when passing _id', () => {
       beforeEach(() => {
-        spyOn(entities, 'updateMetadataProperties');
+        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
       });
 
       it('should updateMetadataProperties', (done) => {
         spyOn(translations, 'updateContext');
         let toSave = {_id: templateToBeEditedId, name: 'changed name'};
-        templates.save(toSave)
+        templates.save(toSave, 'en')
         .then(() => {
-          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave);
+          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, 'en');
           done();
         })
         .catch(catchErrors(done));

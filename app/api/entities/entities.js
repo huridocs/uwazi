@@ -28,15 +28,18 @@ function updateEntity(entity, _template) {
     .map(p => p.name);
     const currentDoc = docLanguages.find((d) => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
-      if (d._id.equals(entity._id)) {
+      if (d._id.toString() === entity._id.toString()) {
         return entity;
       }
       if (!d.metadata) {
         d.metadata = entity.metadata;
       }
-      toSyncProperties.forEach((p) => {
-        d.metadata[p] = entity.metadata[p];
-      });
+
+      if (entity.metadata) {
+        toSyncProperties.forEach((p) => {
+          d.metadata[p] = entity.metadata[p];
+        });
+      }
 
       if (typeof entity.published !== 'undefined') {
         d.published = entity.published;
@@ -313,13 +316,19 @@ export default {
         delete actions.$rename;
       }
 
-      return model.db.updateMany({template}, actions)
+      let dbUpdate = Promise.resolve();
+      if (actions.$unset || actions.$rename) {
+        dbUpdate = model.db.updateMany({template}, actions);
+      }
+
+      return dbUpdate
       .then(() => {
         if (!template.properties.find(p => p.type === 'relationship')) {
           return this.indexEntities({template: template._id}, null, 1000);
         }
 
-        return this.bulkProcessMetadataFromRelationships({template: template._id, language}, language);
+        let asd = this.bulkProcessMetadataFromRelationships({template: template._id, language}, language);
+        return asd;
       });
     });
   },

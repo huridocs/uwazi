@@ -86,7 +86,10 @@ export default {
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
       .then(() => save(template))
-      .then((savedTemplate) => entities.updateMetadataProperties(template, language).then(() => savedTemplate));
+      .then((savedTemplate) => {
+        return entities.updateMetadataProperties(template, language)
+        .then(() => savedTemplate);
+      });
     }
 
     return save(template)

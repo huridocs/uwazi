@@ -19,7 +19,7 @@ export default {
   ],
   entities: [
     {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'english entity', language: 'en', template: db.id(entityTemplateId), icon: 'Icon'},
-    {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon'}
+    {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon', published: true}
   ]
 };
 

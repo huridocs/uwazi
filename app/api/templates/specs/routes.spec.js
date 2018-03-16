@@ -65,12 +65,12 @@ describe('templates routes', () => {
   describe('POST', () => {
     it('should create a template', (done) => {
       spyOn(templates, 'save').and.returnValue(new Promise((resolve) => resolve('response')));
-      let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}};
+      let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}, language: 'en'};
 
       routes.post('/api/templates', req)
       .then((response) => {
         expect(response).toBe('response');
-        expect(templates.save).toHaveBeenCalledWith(req.body);
+        expect(templates.save).toHaveBeenCalledWith(req.body, req.language);
         done();
       })
       .catch(catchErrors(done));
