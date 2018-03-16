@@ -90,9 +90,19 @@ describe('Relationships actions', () => {
   });
 
   describe('addEntity', () => {
-    it('should pass action with index, rightIndex and entity', () => {
-      expect(actions.addEntity(3, 7, 'entity'))
-      .toEqual({type: types.ADD_RELATIONSHIPS_ENTITY, index: 3, rightIndex: 7, entity: 'entity'});
+    it('should notify success and pass action with index, rightIndex and entity', () => {
+      mockID();
+      const store = mockStore({});
+      const entity = {title: 'a short title'};
+      actions.addEntity(3, 7, entity)(store.dispatch);
+
+      expect(store.getActions())
+      .toEqual([
+        {type: 'NOTIFY', notification: {
+          id: 'unique_id', message: 'a short title added to hub.  Save your work to make change permanent.', type: 'success'
+        }},
+        {type: types.ADD_RELATIONSHIPS_ENTITY, index: 3, rightIndex: 7, entity}
+      ]);
     });
   });
 

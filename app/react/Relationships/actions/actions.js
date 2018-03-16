@@ -53,7 +53,11 @@ export function updateRightRelationshipType(index, rightIndex, _id) {
 }
 
 export function addEntity(index, rightIndex, entity) {
-  return {type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity};
+  return function (dispatch) {
+    const title = entity.title.length > 75 ? entity.title.slice(0, 75) + '(...)' : entity.title;
+    dispatch(notify(`${title} added to hub.  Save your work to make change permanent.`, 'success'));
+    dispatch({type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity});
+  };
 }
 
 export function toggleRemoveEntity(index, rightIndex, relationshipIndex) {
