@@ -421,13 +421,14 @@ describe('relationships', () => {
       .catch(catchErrors(done));
     });
 
-    it('should retrun number of hubs and allow limiting the number of HUBs returned', (done) => {
+    it('should retrun number of hubs (total and requested) and allow limiting the number of HUBs returned', (done) => {
       const searchResponse = Promise.resolve({rows: [{sharedId: 'entity1'}, {sharedId: 'entity3'}, {sharedId: 'doc4'}, {sharedId: 'doc5'}]});
       spyOn(search, 'search').and.returnValue(searchResponse);
 
       relationships.search('entity2', {filter: {}, searchTerm: 'something', limit: 2}, 'en')
       .then((result) => {
         expect(result.totalHubs).toBe(4);
+        expect(result.requestedHubs).toBe(2);
         const expectedHubIds = result.rows[result.rows.length - 1].connections.map(c => c.hub.toString());
 
         expect(result.rows[0].sharedId).toBe('entity1');

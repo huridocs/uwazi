@@ -8,13 +8,15 @@ const emptyRigthRelationship = () => {
 };
 
 const conformRelationships = (action) => {
+  let order = -1;
   const hubsObject = action.results.get('rows')
   .reduce((hubs, row) => {
     let hubsImmutable = hubs;
     row.get('connections').forEach(connection => {
-      const hubId = connection.get('hub');
+      const hubId = connection.get('hub').toString();
       if (!hubsImmutable.has(hubId)) {
-        hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, leftRelationship: {}, rightRelationships: {}}));
+        order += 1;
+        hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, order, leftRelationship: {}, rightRelationships: {}}));
       }
 
       if (row.get('sharedId') === action.parentEntity.get('sharedId')) {
@@ -43,7 +45,7 @@ const conformRelationships = (action) => {
       }
       return newMemo;
     }, fromJS([]));
-    return hubs.push(hub.set('rightRelationships', rightRelationships));
+    return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
   }, fromJS([]));
 };
 

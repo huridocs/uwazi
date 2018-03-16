@@ -1,10 +1,11 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fromJS as Immutable} from 'immutable';
-import {searchReferences, loadMoreReferences} from '../actions/actions';
+import {searchReferences} from '../actions/actions';
 
 import SearchBar from 'app/ConnectionsList/components/SearchBar';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
+import LoadMoreRelationshipsButton from 'app/Relationships/components/LoadMoreRelationshipsButton';
 import DocumentsList from 'app/Layout/DocumentsList';
 
 export function mapStateToProps({relationships}) {
@@ -22,13 +23,13 @@ export function mapStateToProps({relationships}) {
     sortButtonsStateProperty: 'relationships/list.sort',
     SearchBar,
     GraphView: RelationshipsGraph,
-    view: 'graph'
+    view: 'graph',
+    LoadMoreButton: LoadMoreRelationshipsButton
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    loadMoreDocuments: loadMoreReferences,
     searchDocuments: searchReferences
   }, dispatch);
 }

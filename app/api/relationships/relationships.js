@@ -52,13 +52,15 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
 
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!
 const conformRelationships = (rows, parentEntitySharedId) => {
+  let order = -1;
   const hubsObject = fromJS(rows)
   .reduce((hubs, row) => {
     let hubsImmutable = hubs;
     row.get('connections').forEach(connection => {
-      const hubId = connection.get('hub');
+      const hubId = connection.get('hub').toString();
       if (!hubsImmutable.has(hubId)) {
-        hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, leftRelationship: {}, rightRelationships: {}}));
+        order += 1;
+        hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, order, leftRelationship: {}, rightRelationships: {}}));
       }
 
       if (row.get('sharedId') === parentEntitySharedId) {
@@ -70,7 +72,7 @@ const conformRelationships = (rows, parentEntitySharedId) => {
         }
         const newConnection = connection.set('entity', row.delete('connections'));
         hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
-                                            hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
+                                             hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
       }
     });
 
@@ -78,24 +80,19 @@ const conformRelationships = (rows, parentEntitySharedId) => {
   }, fromJS({}));
 
   return hubsObject.reduce((hubs, hub) => {
-    let index = 0;
     const rightRelationships = hub.get('rightRelationships').reduce((memo, relationshipsArray, template) => {
       let newMemo = memo.push(fromJS({}).set('template', template).set('relationships', relationshipsArray));
-      index += 1;
-      // if (action.editing && index === hub.get('rightRelationships').size) {
-      //   newMemo = newMemo.push(fromJS(emptyRigthRelationship()));
-      // }
       return newMemo;
     }, fromJS([]));
-    return hubs.push(hub.set('rightRelationships', rightRelationships));
+    return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
   }, fromJS([]));
 };
 // -------------------------------------------------------------
 
 const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
   const hubs = conformRelationships(results.rows, entitySharedId).toJS();
-
   results.totalHubs = hubs.length;
+  results.requestedHubs = Number(hubsLimit);
 
   if (hubsLimit) {
     const hubsToReturn = hubs.slice(0, hubsLimit).map(h => h.hub.toString());

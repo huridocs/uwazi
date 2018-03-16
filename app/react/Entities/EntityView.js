@@ -17,11 +17,9 @@ export default class Entity extends RouteHandler {
     return Promise.all([
       entitiesAPI.get(entityId),
       relationTypesAPI.get(),
-      // TEST!!!
       relationships.requestState(entityId, state)
-      // ---------
     ])
-    .then(([entities, relationTypes, [connectionsGroups, searchResults, sort]]) => {
+    .then(([entities, relationTypes, [connectionsGroups, searchResults, sort, filters]]) => {
       const entity = entities[0];
       return {
         entityView: {
@@ -34,7 +32,7 @@ export default class Entity extends RouteHandler {
             connectionsGroups,
             searchResults,
             sort,
-            filters: {},
+            filters,
             view: 'graph'
           }
         },

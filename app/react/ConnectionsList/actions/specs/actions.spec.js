@@ -134,7 +134,7 @@ describe('ConnectionsList actions', () => {
 
   describe('loadMoreReferences', () => {
     it('should set the limit to the passed parameter', (done) => {
-      actions.loadMoreReferences(null, 60)(dispatch, getState)
+      actions.loadMoreReferences(60)(dispatch, getState)
       .then(() => {
         expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
         expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({filter: 'filter', limit: 60});
