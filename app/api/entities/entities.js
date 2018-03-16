@@ -10,7 +10,7 @@ import {deleteFiles} from '../utils/files.js';
 import model from './entitiesModel';
 
 function updateEntity(entity, _template) {
-  this.getAllLanguages(entity.sharedId)
+  return this.getAllLanguages(entity.sharedId)
   .then((docLanguages) => {
     if (docLanguages[0].template && entity.template && docLanguages[0].template.toString() !== entity.template.toString()) {
       return Promise.all([
@@ -272,7 +272,7 @@ export default {
           relationshipProperties.forEach((property) => {
             const relationshipsGoingToThisProperty = relations.filter((r) => {
               return r.template && r.template.toString() === property.relationType &&
-              (!property.content || r.entityData.template.toString() === property.content);
+                (!property.content || r.entityData.template.toString() === property.content);
             });
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
           });

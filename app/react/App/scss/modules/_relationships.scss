@@ -221,9 +221,7 @@ $c-background: #fcfcfc;
     min-height: 0;
 
     .item-actions {
-      margin: 0 15px 10px;
-      padding: 0;
-      flex: 0;
+      padding: 0 10px 10px;
       display: -webkit-flex;
       -webkit-align-items: center;
       align-items: center;
@@ -244,7 +242,7 @@ $c-background: #fcfcfc;
     }
 
     .item-info {
-      padding: 5px 15px;
+      padding: 5px 10px;
     }
     .item-metadata {
       display: none;

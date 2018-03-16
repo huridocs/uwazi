@@ -36,11 +36,18 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections, GraphView, view, searchCentered, hideFooter, LoadMoreButton, loadMoreAmmount} = this.props;
+    const {documents, connections, GraphView, view, searchCentered, hideFooter,
+           connectionsGroups, LoadMoreButton, loadMoreAmmount} = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
+      const summary = connectionsGroups.reduce((summaryData, g) => {
+        g.get('templates').forEach(template => {
+          summaryData.totalConnections += template.get('count');
+        });
+        return summaryData;
+      }, {totalConnections: 0});
       counter = <span>
-                  <b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+                  <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
                 </span>;
     }
 
@@ -158,6 +165,7 @@ DocumentsList.propTypes = {
     PropTypes.object
   ]),
   // TEST!!!
+  connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
   loadMoreAmmount: PropTypes.number,

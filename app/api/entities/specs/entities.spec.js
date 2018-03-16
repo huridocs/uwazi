@@ -1,14 +1,14 @@
 /* eslint-disable max-nested-callbacks */
-import fs from 'fs';
-import entities from '../entities.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
-import search from 'api/search/search';
-import relationships from 'api/relationships';
-import entitiesModel from 'api/entities/entitiesModel';
-
-import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
 import db from 'api/utils/testing_db';
+import entitiesModel from 'api/entities/entitiesModel';
+import fs from 'fs';
+import relationships from 'api/relationships';
+import search from 'api/search/search';
+
+import entities from '../entities.js';
+import fixtures, {batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri} from './fixtures.js';
 
 describe('entities', () => {
   beforeEach((done) => {
@@ -82,6 +82,22 @@ describe('entities', () => {
         expect(createdDocument.language).toEqual('en');
         expect(createdDocument.fullText).not.toBeDefined();
         expect(createdDocument.metadata).not.toBeDefined();
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should return updated entity', (done) => {
+      let doc = {title: 'the dark knight', fullText: 'the full text!', metadata: {data: 'should not be here'}};
+      let user = {_id: db.id()};
+
+      entities.save(doc, {user, language: 'en'})
+      .then((createdDocument) => {
+        createdDocument.title = 'updated title';
+        return entities.save(createdDocument, {user, language: 'en'});
+      })
+      .then((updatedDocument) => {
+        expect(updatedDocument.title).toBe('updated title');
         done();
       })
       .catch(catchErrors(done));

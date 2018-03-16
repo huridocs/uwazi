@@ -242,6 +242,7 @@ export default {
     });
   },
 
+  // TEST!!!!
   bulk(bulkData, language) {
     const saveActions = bulkData.save.map((reference) => this.save(reference, language), false);
     const deleteActions = bulkData.delete.map((reference) => this.delete(reference, language), false);
