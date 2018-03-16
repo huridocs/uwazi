@@ -158,7 +158,6 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "2.0.4",
-    "mongo-memory": "^0.0.5",
     "mongodb-memory-server": "^1.7.0",
     "nightmare": "2.10.0",
     "nightmare-real-mouse": "^1.0.0",
