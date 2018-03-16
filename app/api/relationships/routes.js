@@ -5,25 +5,25 @@ export default app => {
   app.post('/api/relationships/bulk', needsAuthorization(['admin', 'editor']), (req, res) => {
     relationships.bulk(req.body, req.language)
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.post('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
     relationships.save(req.body, req.language)
     .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .catch(res.error);
   });
 
   app.delete('/api/references', needsAuthorization(['admin', 'editor']), (req, res) => {
     relationships.delete({_id: req.query._id}, req.language)
     .then(response => res.json(response))
-    .catch(error => res.json({error: error.json}));
+    .catch(res.error);
   });
 
   app.get('/api/references/by_document/:id', (req, res) => {
     relationships.getByDocument(req.params.id, req.language)
     .then((response) => res.json(response))
-    .catch((error) => res.status(500).json({error: error.json}));
+    .catch(res.error);
   });
 
   app.get('/api/references/group_by_connection/:id', (req, res) => {
@@ -31,9 +31,7 @@ export default app => {
     .then((response) => {
       res.json(response);
     })
-    .catch((error) => {
-      res.status(500).json({error: error.json});
-    });
+    .catch(res.error);
   });
 
   app.get('/api/references/search/:id', (req, res) => {
@@ -42,13 +40,12 @@ export default app => {
     .then(results => {
       return res.json(results);
     })
-    .catch((error) => {
-      res.status(500).json({error: error.json});
-    });
+    .catch(res.error);
   });
 
   app.get('/api/references/count_by_relationtype', (req, res) => {
     relationships.countByRelationType(req.query.relationtypeId)
-    .then((response) => res.json(response));
+    .then((response) => res.json(response))
+    .catch(res.error);
   });
 };
