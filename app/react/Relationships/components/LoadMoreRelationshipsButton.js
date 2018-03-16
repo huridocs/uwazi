@@ -14,14 +14,14 @@ export const LoadMoreRelationshipsButton = ({totalHubs, requestedHubs, action, l
     };
 
     return (
-      <React.Fragment>
+      <div>
         <p className="col-sm-12 text-center documents-counter">
           <b>{requestedHubs}</b>{` ${t('System', 'of')} `}<b>{totalHubs}</b>{` ${t('System', 'hubs')}`}
         </p>
         <button onClick={actionFunction} className="btn btn-default btn-load-more">
          {loadMoreAmmount + ' ' + t('System', 'x more')}
         </button>
-      </React.Fragment>
+      </div>
     );
   }
 
