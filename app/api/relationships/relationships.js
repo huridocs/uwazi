@@ -483,6 +483,7 @@ export default {
         actions.$rename['metadata.' + currentProperty.name] = 'metadata.' + property.name;
       }
     });
+    currentTemplate.properties = currentTemplate.properties || [];
     currentTemplate.properties.forEach((property) => {
       if (!template.properties.find(p => p.id === property.id)) {
         actions.$unset['metadata.' + property.name] = '';
