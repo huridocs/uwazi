@@ -100,7 +100,7 @@ export function saveRelationships() {
 
       if (hubData.hub) {
         if (hubData.deleted) {
-          apiActions.delete.push({_id: hubData.leftRelationship._id});
+          apiActions.delete.push({_id: hubData.leftRelationship._id, entity: parentEntityId});
         }
 
         if (hubData.modified && !hubData.deleted) {
@@ -112,7 +112,7 @@ export function saveRelationships() {
             const deleted = rightGroup.deleted || r.deleted;
 
             if (deleted && r._id) {
-              apiActions.delete.push(Object.assign({_id: r._id}));
+              apiActions.delete.push(Object.assign({_id: r._id, entity: r.entity.sharedId}));
             }
 
             const toSave = rightGroup.modified || !r._id;

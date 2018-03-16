@@ -337,13 +337,12 @@ describe('Relationships actions', () => {
       it('should handle deletions, taking into account new hubs and relationships', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship3'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship5'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship7'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship8'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship9'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship3'});
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalLeftRelationship3'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship3', entity: 'o3'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship5', entity: 'o5'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship7', entity: 'o7'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship8', entity: 'o8'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalRightRelationship9', entity: 'o9'});
+          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({_id: 'originalLeftRelationship3', entity: 'entityId'});
 
           done();
         });
@@ -369,12 +368,12 @@ describe('Relationships actions', () => {
             ]
           ];
           const expectedDeletes = [
-            {_id: 'originalRightRelationship3'},
-            {_id: 'originalRightRelationship5'},
-            {_id: 'originalRightRelationship7'},
-            {_id: 'originalRightRelationship8'},
-            {_id: 'originalRightRelationship9'},
-            {_id: 'originalLeftRelationship3'}
+            {_id: 'originalRightRelationship3', entity: 'o3'},
+            {_id: 'originalRightRelationship5', entity: 'o5'},
+            {_id: 'originalRightRelationship7', entity: 'o7'},
+            {_id: 'originalRightRelationship8', entity: 'o8'},
+            {_id: 'originalRightRelationship9', entity: 'o9'},
+            {_id: 'originalLeftRelationship3', entity: 'entityId'}
           ];
 
           expect(api.post.calls.mostRecent().args[1].save).toEqual(expectedSaves);
