@@ -8,7 +8,7 @@ import fixtures, {connectionID1, hub1, hub7, hub2, sharedId1} from './fixtures';
 import {relation1, relation2, template} from './fixtures';
 import search from '../../search/search';
 
-fdescribe('relationships', () => {
+describe('relationships', () => {
   beforeEach((done) => {
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
@@ -135,7 +135,7 @@ fdescribe('relationships', () => {
   });
 
   describe('bulk()', () => {
-    fit('should call save and delete and then ask entities to update the ones affected by the changes', (done) => {
+    it('should call save and delete and then ask entities to update the ones affected by the changes', (done) => {
       spyOn(relationships, 'save').and.returnValue(Promise.resolve());
       spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
       let data = {
