@@ -24,7 +24,8 @@ export function mapStateToProps({relationships}) {
     SearchBar,
     GraphView: RelationshipsGraph,
     view: 'graph',
-    LoadMoreButton: LoadMoreRelationshipsButton
+    LoadMoreButton: LoadMoreRelationshipsButton,
+    connectionsGroups: relationships.list.connectionsGroups
   };
 }
 
