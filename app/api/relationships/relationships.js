@@ -270,7 +270,7 @@ export default {
       return Promise.all(hubsAffected.map((hubid) => this.getHub(hubid, language)))
       .then((hubs) =>{
         const entitiesAffected = hubs.reduce((result, hub) => {
-          result.concat(hub.map((relationship) => relationship.entity));
+          return result.concat(hub.map((relationship) => relationship.entity));
         }, []).concat(entitiesAffectedByDelete).filter(unique);
 
         return entities.updateMetdataFromRelationships(entitiesAffected, language)

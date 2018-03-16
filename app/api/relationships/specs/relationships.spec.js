@@ -4,11 +4,11 @@ import entities from 'api/entities/entities';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {connectionID1, hub1, hub7} from './fixtures';
+import fixtures, {connectionID1, hub1, hub7, hub2, sharedId1} from './fixtures';
 import {relation1, relation2, template} from './fixtures';
 import search from '../../search/search';
 
-describe('relationships', () => {
+fdescribe('relationships', () => {
   beforeEach((done) => {
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
@@ -131,6 +131,22 @@ describe('relationships', () => {
         expect(result).toBe(0);
         done();
       }).catch(catchErrors(done));
+    });
+  });
+
+  describe('bulk()', () => {
+    fit('should call save and delete and then ask entities to update the ones affected by the changes', (done) => {
+      spyOn(relationships, 'save').and.returnValue(Promise.resolve());
+      spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
+      let data = {
+        save: [{entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}, language: 'en', sharedId: sharedId1}],
+        delete: [{hub: hub1, entity: '123'}, {hub: hub1, entity: '456'}]
+      };
+      relationships.bulk(data, 'en')
+      .then(() => {
+        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity2', 'entity3', 'entity1', '123', '456'], 'en');
+        done();
+      });
     });
   });
 
