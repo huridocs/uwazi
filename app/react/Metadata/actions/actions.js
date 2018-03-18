@@ -23,6 +23,9 @@ const resetMetadata = (metadata, template, options) => {
     if (assignProperty && property.type === 'multiselect') {
       metadata[property.name] = [];
     }
+    if (assignProperty && property.type === 'relationship') {
+      metadata[property.name] = [];
+    }
     if (assignProperty && property.type === 'nested') {
       metadata[property.name] = [];
     }

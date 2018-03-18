@@ -21,10 +21,10 @@ describe('Metadata Actions', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
       let dispatch = jasmine.createSpy('dispatch');
       let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
-      let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
+      let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}, {name: 'testRelation', type: 'relationship'}]}];
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: ''}};
+      let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: '', testRelation: []}};
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
