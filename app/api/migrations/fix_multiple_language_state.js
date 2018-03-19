@@ -18,9 +18,8 @@ entities.get({published: false})
       }
     });
     //return migrateDoc(doc).catch(console.log);
-  }, {concurrency: 1})
+  }, {concurrency: 1});
 })
 .then(() => {
-  const end = Date.now();
   mongoose.disconnect();
 });

@@ -1,7 +1,4 @@
 import thesauris from '../thesauris.js';
-import database from '../../utils/database.js';
-import {db_url as dbUrl} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -164,7 +161,7 @@ describe('thesauris', () => {
       let data = {name: 'Scarecrow nightmares'};
 
       thesauris.save(data)
-      .then((response) => {
+      .then(() => {
         return thesauris.get();
       })
       .then((response) => {

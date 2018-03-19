@@ -1,7 +1,4 @@
 import thesaurisRoute from '../routes.js';
-import database from '../../utils/database.js';
-import {db_url as dbUrl} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import thesauris from '../thesauris';
 import translations from 'api/i18n/translations';
@@ -28,7 +25,8 @@ describe('thesauris routes', () => {
       spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
       routes.get('/api/thesauris', {language: 'es'})
       .then((response) => {
-        expect(thesauris.get).toHaveBeenCalledWith(undefined, 'es');
+        let undefinedVar;
+        expect(thesauris.get).toHaveBeenCalledWith(undefinedVar, 'es');
         expect(response).toEqual({rows: 'response'});
         done();
       })
@@ -42,7 +40,8 @@ describe('thesauris routes', () => {
 
         routes.get('/api/thesauris', req)
         .then(() => {
-          expect(thesauris.get).toHaveBeenCalledWith('id', undefined);
+          let undefinedVar;
+          expect(thesauris.get).toHaveBeenCalledWith('id', undefinedVar);
           done();
         })
         .catch(catchErrors(done));

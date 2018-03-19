@@ -90,7 +90,12 @@ describe('entities', () => {
         spyOn(entities, 'multipleUpdate').and.returnValue(new Promise((resolve) => resolve([{sharedId: '1'}, {sharedId: '2'}])));
         routes.post('/api/entities/multipleupdate', req)
         .then((response) => {
-          expect(entities.multipleUpdate).toHaveBeenCalledWith(['1', '2'], {metadata: {text: 'new text'}}, {user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}, language: 'lang'});
+          expect(entities.multipleUpdate)
+          .toHaveBeenCalledWith(
+            ['1', '2'],
+            {metadata: {text: 'new text'}},
+            {user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}, language: 'lang'}
+          );
           expect(response).toEqual(['1', '2']);
           done();
         })

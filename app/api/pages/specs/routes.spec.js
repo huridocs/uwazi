@@ -1,6 +1,4 @@
 import pagesRoutes from '../routes.js';
-import database from '../../utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import pages from '../pages';
 import {catchErrors} from 'api/utils/jasmineHelpers';

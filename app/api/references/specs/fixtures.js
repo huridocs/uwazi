@@ -1,3 +1,4 @@
+/* eslint-disable */
 import db from 'api/utils/testing_db';
 const inbound = db.id();
 const template = db.id();
