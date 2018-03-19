@@ -1,7 +1,6 @@
 .btn,
 .form-control,
 .input-group-addon {
-  font-size: $f-size;
   transition: all 100ms;
 }
 
@@ -39,6 +38,56 @@
   border-color: $c-danger-dark;
   color: $c-white;
 }
+
+.btn-color {
+  font-size: 12px;
+  color: $c-white;
+  padding: 1px 5px;
+  line-height: 1.5;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,.2);
+  //cursor: pointer;
+}
+
+.btn-color-0  { background-color: $c-type-0; }
+.btn-color-1  { background-color: $c-type-1; }
+.btn-color-2  { background-color: $c-type-2; }
+.btn-color-3  { background-color: $c-type-3; }
+.btn-color-4  { background-color: $c-type-4; }
+.btn-color-5  { background-color: $c-type-5; }
+.btn-color-6  { background-color: $c-type-6; }
+.btn-color-7  { background-color: $c-type-7; }
+.btn-color-8  { background-color: $c-type-8; }
+.btn-color-9  { background-color: $c-type-9; }
+.btn-color-10 { background-color: $c-type-10; }
+.btn-color-11 { background-color: $c-type-11; }
+.btn-color-12 { background-color: $c-type-12; }
+.btn-color-13 { background-color: $c-type-13; }
+.btn-color-14 { background-color: $c-type-14; }
+.btn-color-15 { background-color: $c-type-15; }
+.btn-color-16 { background-color: $c-type-16; }
+.btn-color-17 { background-color: $c-type-17; }
+.btn-color-18 { background-color: $c-type-18; }
+
+//.btn-color-0:hover,  .btn-color-0:focus,  .btn-color-0:active  { background-color: darken($c-type-0, 10%); }
+//.btn-color-1:hover,  .btn-color-1:focus,  .btn-color-1:active  { background-color: darken($c-type-1, 10%); }
+//.btn-color-2:hover,  .btn-color-2:focus,  .btn-color-2:active  { background-color: darken($c-type-2, 10%); }
+//.btn-color-3:hover,  .btn-color-3:focus,  .btn-color-3:active  { background-color: darken($c-type-3, 10%); }
+//.btn-color-4:hover,  .btn-color-4:focus,  .btn-color-4:active  { background-color: darken($c-type-4, 10%); }
+//.btn-color-5:hover,  .btn-color-5:focus,  .btn-color-5:active  { background-color: darken($c-type-5, 10%); }
+//.btn-color-6:hover,  .btn-color-6:focus,  .btn-color-6:active  { background-color: darken($c-type-6, 10%); }
+//.btn-color-7:hover,  .btn-color-7:focus,  .btn-color-7:active  { background-color: darken($c-type-7, 10%); }
+//.btn-color-8:hover,  .btn-color-8:focus,  .btn-color-8:active  { background-color: darken($c-type-8, 10%); }
+//.btn-color-9:hover,  .btn-color-9:focus,  .btn-color-9:active  { background-color: darken($c-type-9, 10%); }
+//.btn-color-10:hover, .btn-color-10:focus, .btn-color-10:active { background-color: darken($c-type-10, 10%); }
+//.btn-color-11:hover, .btn-color-11:focus, .btn-color-11:active { background-color: darken($c-type-11, 10%); }
+//.btn-color-12:hover, .btn-color-12:focus, .btn-color-12:active { background-color: darken($c-type-12, 10%); }
+//.btn-color-13:hover, .btn-color-13:focus, .btn-color-13:active { background-color: darken($c-type-13, 10%); }
+//.btn-color-14:hover, .btn-color-14:focus, .btn-color-14:active { background-color: darken($c-type-14, 10%); }
+//.btn-color-15:hover, .btn-color-15:focus, .btn-color-15:active { background-color: darken($c-type-15, 10%); }
+//.btn-color-16:hover, .btn-color-16:focus, .btn-color-16:active { background-color: darken($c-type-16, 10%); }
+//.btn-color-17:hover, .btn-color-17:focus, .btn-color-17:active { background-color: darken($c-type-17, 10%); }
+//.btn-color-18:hover, .btn-color-18:focus, .btn-color-18:active { background-color: darken($c-type-18, 10%); }
 
 .form-control {
   height: 32px;

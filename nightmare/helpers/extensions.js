@@ -339,7 +339,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
     });
 
     if (found) {
-      found.querySelector('a.item-shortcut').click();
+      found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
   .wait(elementToSelect => {

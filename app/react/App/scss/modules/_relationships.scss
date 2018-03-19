@@ -228,12 +228,8 @@ $c-background: #fcfcfc;
         height: auto;
         position: relative;
 
-        .item-label-group {
-          width: auto;
-        }
-
-        .item-shortcut {
-          display: none;
+        .btn-color {
+          max-width: 75px;
         }
       }
 

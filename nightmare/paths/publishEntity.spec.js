@@ -70,7 +70,7 @@ describe('publish entity path', () => {
       return nightmare.getInnerText(selectors.newEntity.viewer.superpowers);
     })
     .then(text => {
-      expect(text).toBe('flylaser beam');
+      expect(text).toBe('fly\nlaser beam\n');
     })
     .then(() => {
       done();
@@ -120,7 +120,7 @@ describe('publish entity path', () => {
       return nightmare.getInnerText(selectors.newEntity.viewer.superpowers);
     })
     .then(text => {
-      expect(text).toBe('flylaser beam');
+      expect(text).toBe('fly\nlaser beam\n');
       return nightmare.getInnerText(selectors.newEntity.viewer.whoIsHe);
     })
     .then(text => {

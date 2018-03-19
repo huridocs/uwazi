@@ -107,7 +107,7 @@ describe('PublishDocument', () => {
         return nightmare.getInnerText(selectors.doc.viewer.superpowers);
       })
       .then(text => {
-        expect(text).toBe('regeneration');
+        expect(text).toBe('regeneration\n');
       })
       .then(done);
     }, 20000);
