@@ -78,12 +78,12 @@
   td a {
     display: inline;
     color: $c-primary;
-    border-bottom: 1px dotted $c-primary;
+    border-bottom: 1px solid $c-primary-light;
     text-decoration: none !important;
     padding: 0 2px;
     &:hover {
       color: $c-primary;
-      border-bottom: 1px solid $c-primary;
+      border-color: $c-primary;
     }
   }
   img {

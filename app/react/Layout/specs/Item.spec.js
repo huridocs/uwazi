@@ -98,7 +98,7 @@ describe('Item', () => {
   it('should include a template label and custom buttons inside the footer', () => {
     render();
     expect(component.find(ItemFooter).find(TemplateLabel).props().template).toBe('templateId');
-    expect(component.find(ItemFooter).find('div').at(1).text()).toContain('Buttons');
+    expect(component.find(ItemFooter).find('div').at(0).text()).toContain('Buttons');
   });
 
   describe('Metadata', () => {
@@ -191,7 +191,7 @@ describe('Item', () => {
       expect(component.find('.item-metadata').html()).toContain('customIcon');
       expect(component.find('.item-metadata').html()).toContain('value1');
       expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
-      expect(component.find('.item-metadata').html()).toContain('<dd class="">value2</dd>');
+      expect(component.find('.item-metadata').html()).toContain('<dd class=""><div class="">value2</div></dd>');
     });
 
     it('should render multiple values separated by comas', () => {
