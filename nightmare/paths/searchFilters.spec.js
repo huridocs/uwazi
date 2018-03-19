@@ -53,6 +53,7 @@ describe('search filters path', () => {
     it('should filter', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
+      .wait(searchRequestTime)
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
       .waitToClick(selectors.libraryView.filters.sixthPower)
@@ -68,6 +69,7 @@ describe('search filters path', () => {
     it('should filter by multiple options', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
+      .wait(searchRequestTime)
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
       .waitToClick(selectors.libraryView.filters.sixthPower)
@@ -142,7 +144,7 @@ describe('search filters path', () => {
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
       .write(selectors.libraryView.filters.planetsConqueredTo, 600)
-      .waitToClick(selectors.libraryView.filters.searchButton)
+      //.waitToClick(selectors.libraryView.filters.searchButton)
       .wait(searchRequestTime + 200)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
@@ -159,7 +161,7 @@ describe('search filters path', () => {
       .wait(searchRequestTime)
       .write(selectors.libraryView.filters.planetsConqueredFrom, 516)
       .write(selectors.libraryView.filters.planetsConqueredTo, 517)
-      .waitToClick(selectors.libraryView.filters.searchButton)
+      //.waitToClick(selectors.libraryView.filters.searchButton)
       .wait(searchRequestTime + 200)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
@@ -177,7 +179,7 @@ describe('search filters path', () => {
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
       .write(selectors.libraryView.filters.dobFrom, '18/05/1984')
-      .waitToClick(selectors.libraryView.filters.searchButton)
+      //.waitToClick(selectors.libraryView.filters.searchButton)
       .wait(searchRequestTime)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
