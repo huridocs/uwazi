@@ -155,7 +155,7 @@ export class Item extends Component {
         onMouseEnter={onMouseEnter || function () {}}
         onMouseLeave={onMouseLeave || function () {}}
         active={active}
-        tabindex="1">
+        tabIndex="1">
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">

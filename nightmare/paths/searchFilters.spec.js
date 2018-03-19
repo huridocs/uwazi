@@ -3,7 +3,7 @@ import selectors from '../helpers/selectors.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
-const searchRequestTime = 600;
+const searchRequestTime = 800;
 selectors.libraryView.filters = {
   firstPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
   secondPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name',
@@ -39,7 +39,7 @@ describe('search filters path', () => {
       nightmare.gotoLibrary()
       .waitToClick(selectors.libraryView.superVillianType)
       .waitToClick(selectors.libraryView.minorVillianType)
-      .wait(searchRequestTime)
+      .wait(searchRequestTime + 200)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Man-bat');
@@ -72,14 +72,14 @@ describe('search filters path', () => {
       .wait(searchRequestTime)
       .waitToClick(selectors.libraryView.filters.sixthPower)
       .waitToClick(selectors.libraryView.filters.fifthPower)
-      .wait(searchRequestTime + 200)
+      .wait(searchRequestTime + 600)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Daneryl');
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 7000);
 
     describe('AND switch', () => {
       it('should filter entities having all the values selected', (done) => {
@@ -108,7 +108,7 @@ describe('search filters path', () => {
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
       .write(selectors.libraryView.filters.planetsConqueredFrom, 120)
-      .waitToClick(selectors.libraryView.filters.searchButton)
+      //.waitToClick(selectors.libraryView.filters.searchButton)
       .wait(searchRequestTime + 200)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
@@ -121,10 +121,12 @@ describe('search filters path', () => {
     it('should filter by a range', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.resetFilters)
+      .wait(searchRequestTime)
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
+      .clearInput(selectors.libraryView.filters.planetsConqueredFrom)
       .write(selectors.libraryView.filters.planetsConqueredFrom, 140)
-      .waitToClick(selectors.libraryView.filters.searchButton)
+      //.waitToClick(selectors.libraryView.filters.searchButton)
       .wait(searchRequestTime + 200)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
@@ -190,7 +192,7 @@ describe('search filters path', () => {
       .waitToClick(selectors.libraryView.superVillianType)
       .wait(searchRequestTime)
       .write(selectors.libraryView.filters.dobTo, '30/06/1939')
-      .waitToClick(selectors.libraryView.filters.searchButton)
+      //.waitToClick(selectors.libraryView.filters.searchButton)
       .wait(searchRequestTime)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
@@ -214,7 +216,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 10000);
   });
 
   describe('closing browser', () => {

@@ -63,7 +63,7 @@ describe('FullTextSearch zone', () => {
       done();
     })
     .catch(catchErrors(done));
-  });
+  }, 10000);
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {

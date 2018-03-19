@@ -29,7 +29,7 @@ describe('publish entity path', () => {
     .select(selectors.newEntity.form.type, '58f0aed2e147e720856a0741')
     .write(selectors.newEntity.form.realName, '?')
     .write(selectors.newEntity.form.age, '40')
-    .select(selectors.newEntity.form.knownAccomplices, 'o184buh2w179o1or')
+    .waitToClick(selectors.newEntity.form.knownAccomplices.joker)
     .select(selectors.newEntity.form.mainSuperpower, 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb')
     .waitToClick(selectors.newEntity.form.suporPowers.fly)
     .wait(selectors.newEntity.form.suporPowers.laserBeam)
