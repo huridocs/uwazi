@@ -1,7 +1,6 @@
 import fs from 'fs';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import {catchErrors} from 'api/utils/jasmineHelpers';
-import search from 'api/search/search';
 import paths, {attachmentsPath} from '../../config/paths';
 
 import entities from '../../entities';
@@ -14,8 +13,7 @@ describe('Attachments Routes', () => {
   let originalAttachmentsPath;
 
   beforeEach((done) => {
-    spyOn(search, 'index').and.returnValue(Promise.resolve());
-    spyOn(search, 'delete').and.returnValue(Promise.resolve());
+    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachmentsPath;
     paths.attachmentsPath = __dirname + '/uploads/';
     routes = instrumentRoutes(attachmentsRoutes);
@@ -25,6 +23,10 @@ describe('Attachments Routes', () => {
 
   afterEach(() => {
     paths.attachmentsPath = originalAttachmentsPath;
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('/download', () => {

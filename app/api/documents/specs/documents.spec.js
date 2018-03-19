@@ -15,8 +15,13 @@ describe('documents', () => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
+    spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     mockID();
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('get', () => {
@@ -38,6 +43,21 @@ describe('documents', () => {
     it('should call entities.save', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
       let doc = {title: 'Batman begins'};
+      let user = {_id: db.id()};
+      let language = 'es';
+
+      documents.save(doc, {user, language})
+      .then((docs) => {
+        expect(entities.save).toHaveBeenCalledWith({title: 'Batman begins', type: 'document'}, {user, language});
+        expect(docs).toBe('result');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should not allow passing a file', (done) => {
+      spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
+      let doc = {title: 'Batman begins', file: 'file'};
       let user = {_id: db.id()};
       let language = 'es';
 

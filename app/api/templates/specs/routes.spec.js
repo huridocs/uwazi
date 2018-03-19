@@ -1,6 +1,7 @@
 import templateRoutes from 'api/templates/routes.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import templates from 'api/templates/templates';
+import settings from 'api/settings/settings';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('templates routes', () => {
@@ -39,6 +40,7 @@ describe('templates routes', () => {
   describe('DELETE', () => {
     it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
+      spyOn(settings, 'removeTemplateFromFilters').and.returnValue(Promise.resolve());
       routes.delete('/api/templates', {query: {_id: '123'}})
       .then((response) => {
         expect(templates.delete).toHaveBeenCalledWith({_id: '123'});

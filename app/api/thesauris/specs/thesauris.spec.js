@@ -11,8 +11,8 @@ describe('thesauris', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
-  afterEach((done) => {
-    db.clear(done);
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('get()', () => {

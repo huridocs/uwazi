@@ -15,6 +15,10 @@ describe('thesauris routes', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('GET', () => {
     it('should return all thesauris by default', (done) => {
       spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));

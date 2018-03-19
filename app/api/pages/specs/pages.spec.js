@@ -11,6 +11,10 @@ describe('pages', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('save', () => {
     it('should create a new document with logged user id and UTC date for each language', (done) => {
       spyOn(date, 'currentUTC').and.returnValue(1);

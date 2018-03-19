@@ -13,6 +13,10 @@ describe('Users', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('save', () => {
     let currentUser = {_id: userId};
 

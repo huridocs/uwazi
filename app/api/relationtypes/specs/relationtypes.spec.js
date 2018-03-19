@@ -10,6 +10,10 @@ describe('relationtypes', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('get()', () => {
     it('should return all the relationtypes in the database', (done) => {
       relationtypes.get()

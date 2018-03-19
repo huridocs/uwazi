@@ -22,15 +22,6 @@ var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
 var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 
-//var customMatchers = require('./app/api/utils/jasmineMatchers.js');
-//jasmine.getEnv().addMatchers(customMatchers);
-
-var db_config = require('./app/api/config/database.js');
-db_config.db_url = db_config.testing;
-
-var elasticConfig = require('./app/api/config/elasticIndexes.js');
-elasticConfig.index = elasticConfig.testing;
-
 jasmine.loadConfig({
   spec_dir: 'app/',
   spec_files: [

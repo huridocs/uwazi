@@ -13,6 +13,10 @@ describe('templates', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('save', () => {
     it('should return the saved template', (done) => {
       let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};

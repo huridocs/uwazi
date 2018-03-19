@@ -14,6 +14,10 @@ describe('relationships', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('getByDocument()', () => {
     it('should return all the relationships of a document in the current language', (done) => {
       relationships.getByDocument('entity2', 'en')

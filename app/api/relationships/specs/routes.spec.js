@@ -2,14 +2,20 @@ import relationshipsRroutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import relationships from 'api/relationships/relationships';
 import {catchErrors} from 'api/utils/jasmineHelpers';
+import db from 'api/utils/testing_db';
 
 describe('relationships routes', () => {
   let routes;
 
-  beforeEach(() => {
+  beforeEach((done) => {
     routes = instrumentRoutes(relationshipsRroutes);
     spyOn(relationships, 'save').and.returnValue(Promise.resolve());
     spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
+    db.clearAllAndLoad({}).then(done);
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('POST', () => {

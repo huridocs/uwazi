@@ -1,10 +1,13 @@
 import elastic from '../elastic';
-import elasticTesting from 'api/utils/elastic_testing';
+import instanceElasticTesting from 'api/utils/elastic_testing';
 import {index as elasticIndex} from 'api/config/elasticIndexes';
+import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('custom language analyzers', () => {
+  const elasticTesting = instanceElasticTesting('analyzers_index_test');
   beforeEach((done) => {
-    elasticTesting.resetIndex().then(done);
+    elasticTesting.resetIndex().then(done)
+    .catch(catchErrors(done));
   });
 
   describe('persian', () => {
@@ -16,7 +19,7 @@ describe('custom language analyzers', () => {
 استادتان.`;
 
       elastic.index({index: elasticIndex, type: 'fullText', body: {fullText_persian: persianText}, id: '123_whatever', parent: 123})
-      .then(done)
+      .then(() => done())
       .catch(done.fail);
     });
   });

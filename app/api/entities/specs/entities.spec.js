@@ -15,7 +15,12 @@ describe('entities', () => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
+    spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('save', () => {
@@ -385,7 +390,6 @@ describe('entities', () => {
 
   describe('indexEntities', () => {
     it('should index entities based on query params passed', (done) => {
-      spyOn(search, 'bulkIndex');
       entities.indexEntities({sharedId: 'shared'}, {title: 1})
       .then(() => {
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
@@ -672,7 +676,6 @@ describe('entities', () => {
 
     describe('when entity is being used as thesauri', () => {
       it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
-        spyOn(search, 'bulkIndex');
         entities.delete('shared')
         .then(() => {
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
@@ -687,7 +690,6 @@ describe('entities', () => {
 
       describe('when there is no multiselects but there is selects', () => {
         it('should only delete selects and not throw an error', (done) => {
-          spyOn(search, 'bulkIndex');
           entities.delete('shared10')
           .then(() => {
             const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
@@ -700,7 +702,6 @@ describe('entities', () => {
 
       describe('when there is no selects but there is multiselects', () => {
         it('should only delete multiselects and not throw an error', (done) => {
-          spyOn(search, 'bulkIndex');
           entities.delete('multiselect')
           .then(() => {
             const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];

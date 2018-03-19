@@ -7,11 +7,13 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
-import elasticTesting from 'api/utils/elastic_testing';
+import instanceElasticTesting from 'api/utils/elastic_testing';
 import languages from 'shared/languages';
 
 describe('search', () => {
   let result;
+  const elasticTesting = instanceElasticTesting('search_index_test');
+
   beforeEach((done) => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1', snippets: {
@@ -47,13 +49,17 @@ describe('search', () => {
 
     db.clearAllAndLoad(elasticFixtures)
     .then(() => {
-      return elasticTesting.reindex();
+      return mongoose.model('entities').collection.createIndex({title: 'text'});
     })
     .then(() => {
-      return mongoose.model('entities').collection.createIndex({title: 'text'});
+      return elasticTesting.reindex();
     })
     .then(done)
     .catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('getUploadsByUser', () => {

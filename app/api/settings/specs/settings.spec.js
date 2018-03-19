@@ -11,6 +11,10 @@ describe('settings', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('save()', () => {
     it('should save the settings', (done) => {
       let config = {site_name: 'My collection'};

@@ -10,6 +10,10 @@ describe('translations', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('process System context', () => {
     it('should add keys that do not exist into all languages', (done) => {
       const keys = [{key: 'Password'}, {key: 'Account'}, {key: 'Email'}, {key: 'Age'}, {key: 'new key'}, {key: 'new key 2', label: 'label2'}];
@@ -104,7 +108,8 @@ describe('translations', () => {
       .then((result) => {
         expect(result._id).toBeDefined();
         done();
-      }).catch(catchErrors(done));
+      })
+      .catch(catchErrors(done));
     });
 
     it('should transform values from map to array if its a map', (done) => {
@@ -115,7 +120,8 @@ describe('translations', () => {
         expect(fr.contexts[0].values.test).toEqual('value');
         expect(fr.contexts[1].values.test2).toEqual('value2');
         done();
-      }).catch(catchErrors(done));
+      })
+      .catch(catchErrors(done));
     });
 
     it('should save partial translations', (done) => {

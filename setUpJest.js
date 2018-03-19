@@ -3,7 +3,7 @@ const Adapter = require('enzyme-adapter-react-16');
 import * as matchers from 'jest-immutable-matchers';
 jest.addMatchers(matchers);
 
-// Setup enzyme's react adapter
+ //Setup enzyme's react adapter
 configure({adapter: new Adapter()});
 
 const error = console.error.bind(console);
