@@ -122,6 +122,13 @@ export class RelationshipsGraphEdit extends Component {
                       filter="contains"
                       onChange={this.updateLeftRelationshipType(index)} />
                   )}
+                  <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
+                      'docWithoutRelationshipType' : ''}`}>
+                      <Doc className="item-collapsed"
+                        doc={parentEntity}
+                        searchParams={search}
+                        onClick={this.onClick.bind(this)}/>
+                  </div>
                   {(() => {
                     if (hub.getIn(['leftRelationship', 'range', 'text'])) {
                       return <div className="leftRelationshipQuote">
@@ -131,13 +138,6 @@ export class RelationshipsGraphEdit extends Component {
                       </div>;
                     }
                   })()}
-                  <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
-                      'docWithoutRelationshipType' : ''}`}>
-                      <Doc className="item-collapsed"
-                        doc={parentEntity}
-                        searchParams={search}
-                        onClick={this.onClick.bind(this)}/>
-                  </div>
                 </div>
                 <div className="hubRelationship">
                   <figure></figure>
