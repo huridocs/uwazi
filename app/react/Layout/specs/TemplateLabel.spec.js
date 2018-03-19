@@ -39,10 +39,10 @@ describe('TemplateLabel', () => {
   it('should add consecutive type classNames for each template', () => {
     props.template = 'templateId';
     render();
-    expect(component.prop('typeIndex')).toBe('item-type item-type-0');
+    expect(component.prop('typeIndex')).toBe('btn-color btn-color-0');
 
     props.template = 'templateId2';
     render();
-    expect(component.prop('typeIndex')).toBe('item-type item-type-1');
+    expect(component.prop('typeIndex')).toBe('btn-color btn-color-1');
   });
 });

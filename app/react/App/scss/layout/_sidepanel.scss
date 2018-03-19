@@ -44,9 +44,10 @@ $c-sidebar: $c-white;
       margin: 0;
     }
   }
-  .item-info .item-type {
-    display: block;
-    margin-top: 15px;
+  .item-info .btn-color {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: $f-size-sm;
   }
 
   .fa.closeSidepanel {
