@@ -14,7 +14,7 @@ describe('search', () => {
   let result;
   const elasticTesting = instanceElasticTesting('search_index_test');
 
-  beforeEach((done) => {
+  beforeAll((done) => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1', snippets: {
         hits: {
@@ -25,23 +25,6 @@ describe('search', () => {
               }
             }
           ]
-        }
-      }},
-      {title: 'doc2', _id: 'id2', snippets: {
-        hits: {
-          hits: [
-            {
-              highlight: {
-                fullText: []
-              }
-            }
-          ]
-        }
-      }},
-      {title: 'doc3', _id: 'id3'},
-      {title: 'doc4', _id: 'id4', snippets: {
-        hits: {
-          hits: []
         }
       }}
     ])
