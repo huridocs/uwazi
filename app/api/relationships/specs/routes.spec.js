@@ -95,14 +95,27 @@ describe('relationships routes', () => {
   });
 
   describe('GET search', () => {
-    it('should return entities from relationships search()', (done) => {
-      let req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {searchTerm: 'Something'}};
-
+    beforeEach(() => {
       spyOn(relationships, 'search').and.returnValue(Promise.resolve('search results'));
+    });
+
+    it('should return entities from relationships search() including unpublished documents when logged', (done) => {
+      let req = {params: {id: 'documentId'}, language: 'es', user: 'user', query: {searchTerm: 'Something'}};
 
       routes.get('/api/references/search/:id', req)
       .then((response) => {
-        expect(relationships.search).toHaveBeenCalledWith('documentId', {searchTerm: 'Something', filter: {}}, 'es');
+        expect(relationships.search).toHaveBeenCalledWith('documentId', {searchTerm: 'Something', filter: {}}, 'es', true);
+        expect(response).toBe('search results');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+    it('should not include unpublished documents when not logged', (done) => {
+      let req = {params: {id: 'documentId'}, language: 'es', query: {searchTerm: 'Something'}};
+
+      routes.get('/api/references/search/:id', req)
+      .then((response) => {
+        expect(relationships.search).toHaveBeenCalledWith('documentId', {searchTerm: 'Something', filter: {}}, 'es', false);
         expect(response).toBe('search results');
         done();
       })

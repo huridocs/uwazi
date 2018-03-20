@@ -388,7 +388,7 @@ export default {
     });
   },
 
-  search(entitySharedId, query, language) {
+  search(entitySharedId, query, language, includeUnpublished = true) {
     const hubsLimit = query.limit || 0;
 
     if (!language) {
@@ -396,7 +396,6 @@ export default {
     }
     return Promise.all([this.getByDocument(entitySharedId, language), entities.getById(entitySharedId, language)])
     .then(([relationships, entity]) => {
-      // Hack needed to ensure consistent results each time.
       relationships.sort((a, b) => {
         return (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString());
       });
@@ -417,7 +416,7 @@ export default {
         return result;
       }, []);
       query.ids = ids.length ? ids : ['no_results'];
-      query.includeUnpublished = true;
+      query.includeUnpublished = includeUnpublished;
       query.limit = 9999;
       delete query.filter;
 

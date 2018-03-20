@@ -425,6 +425,19 @@ describe('relationships', () => {
       .catch(catchErrors(done));
     });
 
+    it('should filter out ids based on publish status and logged in status', (done) => {
+      spyOn(search, 'search').and.returnValue(Promise.resolve({rows: []}));
+      let query = {filter: {}, searchTerm: 'something'};
+      query.filter[relation2] = [relation2 + template];
+      relationships.search('entity2', query, 'en', false)
+      .then(() => {
+        let actualQuery = search.search.calls.mostRecent().args[0];
+        expect(actualQuery.includeUnpublished).toBe(false);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     it('should return the matching entities with their relationships and the current entity with the respective relationships', (done) => {
       const searchResponse = Promise.resolve({rows: [{sharedId: 'entity1'}, {sharedId: 'entity3'}, {sharedId: 'doc4'}, {sharedId: 'doc5'}]});
       spyOn(search, 'search').and.returnValue(searchResponse);
