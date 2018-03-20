@@ -388,7 +388,7 @@ export default {
     });
   },
 
-  search(entitySharedId, query, language, includeUnpublished = true) {
+  search(entitySharedId, query, language, user) {
     const hubsLimit = query.limit || 0;
 
     if (!language) {
@@ -416,11 +416,11 @@ export default {
         return result;
       }, []);
       query.ids = ids.length ? ids : ['no_results'];
-      query.includeUnpublished = includeUnpublished;
+      query.includeUnpublished = true;
       query.limit = 9999;
       delete query.filter;
 
-      return search.search(query, language)
+      return search.search(query, language, user)
       .then(results => {
         results.rows.forEach(item => {
           item.connections = filteredRelationships.filter((relationship) => relationship.entity === item.sharedId);

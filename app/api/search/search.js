@@ -91,7 +91,7 @@ const search = {
         documentsQuery.limit(query.limit);
       }
 
-      if (query.includeUnpublished) {
+      if (query.includeUnpublished && user) {
         documentsQuery.includeUnpublished();
       }
 

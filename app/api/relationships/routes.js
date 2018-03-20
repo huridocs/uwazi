@@ -35,9 +35,8 @@ export default app => {
   });
 
   app.get('/api/references/search/:id', (req, res) => {
-    const includeUnpublished = Boolean(req.user);
     req.query.filter = JSON.parse(req.query.filter || '{}');
-    relationships.search(req.params.id, req.query, req.language, includeUnpublished)
+    relationships.search(req.params.id, req.query, req.language, req.user)
     .then(results => {
       return res.json(results);
     })

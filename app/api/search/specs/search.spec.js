@@ -418,7 +418,25 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    it('should allow including unpublished documents', (done) => {
+    it('should allow including unpublished documents if user', (done) => {
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+      search.search({
+        searchTerm: 'searchTerm',
+        includeUnpublished: true
+      }, 'es', 'user')
+      .then(() => {
+        let expectedQuery = documentQueryBuilder()
+        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
+        .includeUnpublished()
+        .language('es')
+        .query();
+
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
+        done();
+      });
+    });
+
+    it('should not include unpublished documents if no user', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
       search.search({
         searchTerm: 'searchTerm',
@@ -427,7 +445,6 @@ describe('search', () => {
       .then(() => {
         let expectedQuery = documentQueryBuilder()
         .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
-        .includeUnpublished()
         .language('es')
         .query();
 

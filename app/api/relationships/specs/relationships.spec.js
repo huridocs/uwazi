@@ -408,31 +408,24 @@ describe('relationships', () => {
       .catch(catchErrors(done));
     });
 
-    it('should filter out ids based on filtered relation types and templates', (done) => {
+    it('should filter out ids based on filtered relation types and templates, and pass the user to search', (done) => {
       const searchResponse = Promise.resolve({rows: []});
       spyOn(search, 'search').and.returnValue(searchResponse);
       let query = {filter: {}, searchTerm: 'something'};
       query.filter[relation2] = [relation2 + template];
-      relationships.search('entity2', query, 'en')
+      relationships.search('entity2', query, 'en', 'user')
       .then(() => {
         let actualQuery = search.search.calls.mostRecent().args[0];
+        let language = search.search.calls.mostRecent().args[1];
+        let user = search.search.calls.mostRecent().args[2];
+
         expect(actualQuery.searchTerm).toEqual('something');
         expect(actualQuery.ids).containItems(['doc4', 'entity3']);
         expect(actualQuery.includeUnpublished).toBe(true);
         expect(actualQuery.limit).toBe(9999);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
 
-    it('should filter out ids based on publish status and logged in status', (done) => {
-      spyOn(search, 'search').and.returnValue(Promise.resolve({rows: []}));
-      let query = {filter: {}, searchTerm: 'something'};
-      query.filter[relation2] = [relation2 + template];
-      relationships.search('entity2', query, 'en', false)
-      .then(() => {
-        let actualQuery = search.search.calls.mostRecent().args[0];
-        expect(actualQuery.includeUnpublished).toBe(false);
+        expect(language).toBe('en');
+        expect(user).toBe('user');
         done();
       })
       .catch(catchErrors(done));
