@@ -2,8 +2,7 @@ module.exports = {
   name: 'client',
   displayName: 'Client',
   testMatch: [
-    '**/react/**/specs/*spec.js?(x)',
-    '**/shared/**/specs/*spec.js?(x)'
+    '**/react/**/specs/*spec.js?(x)'
   ],
   testPathIgnorePatterns: [
     //client
