@@ -7,7 +7,6 @@ module.exports = {
   testPathIgnorePatterns: [
     //client
     'Scroller.spec.js',
-    'app/react/Viewer/utils/specs/Text.spec.js',
     'DocumentsList.spec.js'
   ],
   setupTestFrameworkScriptFile: '<rootDir>/setUpJestClient.js',
