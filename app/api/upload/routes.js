@@ -54,9 +54,6 @@ export default (app) => {
       ]);
     })
     .then(([conversion, _docs]) => {
-      let sessionSockets = req.io.getCurrentSessionSockets();
-      sessionSockets.emit('documentProcessed', req.body.document);
-
       const docs = _docs.map((doc) => {
         doc.processed = true;
         doc.fullText = conversion.fullText;
@@ -65,7 +62,10 @@ export default (app) => {
         return doc;
       });
 
-      return entities.saveMultiple(docs);
+      return entities.saveMultiple(docs).then(() => {
+        const sessionSockets = req.io.getCurrentSessionSockets();
+        sessionSockets.emit('documentProcessed', req.body.document);
+      });
     })
     .catch((err) => {
       if (err.error === 'conversion_error') {

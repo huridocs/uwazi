@@ -50,10 +50,16 @@ testingDB.disconnect = () => {
     connected = false;
     mongoose.disconnect()
     .then(() => {
-      return mongod.stop();
+      if (mongod) {
+        return mongod.stop();
+      }
+      return Promise.resolve();
     })
     .then(() => {
-      db.close(resolve);
+      if (db) {
+        return db.close(resolve);
+      }
+      return Promise.resolve();
     });
   });
 };

@@ -6,12 +6,10 @@ import documents from 'api/documents';
 import relationships from 'api/relationships';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
-import elastic from 'api/search/elastic';
 
 import db from 'api/utils/testing_db';
 import fixtures, {entityId} from './fixtures.js';
 
-//slow tests
 describe('upload routes', () => {
   let routes;
   let req;
@@ -19,7 +17,8 @@ describe('upload routes', () => {
   let iosocket;
 
   beforeEach((done) => {
-    spyOn(search, 'index').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.returnValue(Promise.resolve());
+    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
     iosocket = jasmine.createSpyObj('socket', ['emit']);
     let io = {getCurrentSessionSockets: () => {
       return {sockets: [iosocket], emit: iosocket.emit};
@@ -38,12 +37,15 @@ describe('upload routes', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('POST/upload', () => {
     // Temporary test for PDF conversion. This should probably go elsewhere?
     it('should process the document after upload', (done) => {
-      routes.post('/api/upload', req)
-      .then(() => {
-        setTimeout(() => {
+      iosocket.emit.and.callFake((eventName) => {
+        if (eventName === 'documentProcessed') {
           return Promise.all([
             documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
             documents.get({sharedId: 'id', language: 'en'}, '+fullText')
@@ -61,20 +63,19 @@ describe('upload routes', () => {
             done();
           })
           .catch(catchErrors(done));
-        }, 1000);
-      })
+        }
+      });
+      routes.post('/api/upload', req)
       .catch(catchErrors(done));
     });
 
     describe('Language detection', () => {
       it('should detect English documents and store the result', (done) => {
-        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         file.filename = 'eng.pdf';
         file.path = __dirname + '/uploads/eng.pdf';
 
-        routes.post('/api/upload', req)
-        .then(() => {
-          setTimeout(() => {
+        iosocket.emit.and.callFake((eventName) => {
+          if (eventName === 'documentProcessed') {
             return Promise.all([
               documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
               documents.get({sharedId: 'id', language: 'en'}, '+fullText')
@@ -85,19 +86,18 @@ describe('upload routes', () => {
               done();
             })
             .catch(catchErrors(done));
-          }, 1000);
-        })
+          }
+        });
+
+        routes.post('/api/upload', req)
         .catch(catchErrors(done));
       });
 
       it('should detect Spanish documents and store the result', (done) => {
-        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         file.filename = 'spn.pdf';
         file.path = __dirname + '/uploads/spn.pdf';
-
-        routes.post('/api/upload', req)
-        .then(() => {
-          setTimeout(() => {
+        iosocket.emit.and.callFake((eventName) => {
+          if (eventName === 'documentProcessed') {
             return Promise.all([
               documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
               documents.get({sharedId: 'id', language: 'en'}, '+fullText')
@@ -108,8 +108,10 @@ describe('upload routes', () => {
               done();
             })
             .catch(catchErrors(done));
-          }, 1000);
-        })
+          }
+        });
+
+        routes.post('/api/upload', req)
         .catch(catchErrors(done));
       });
     });
@@ -118,7 +120,7 @@ describe('upload routes', () => {
 
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
-        spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
+        //spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'conversionFailed') {
             setTimeout(() => {
