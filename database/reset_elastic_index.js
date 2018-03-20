@@ -42,7 +42,7 @@ request.delete(indexUrl)
 .catch(console.log)
 .then(() => {
   process.stdout.write(`Creating index... ${indexConfig.index}\n`);
-  request.put(indexUrl, elasticMapping).catch(console.log);
+  return request.put(indexUrl, elasticMapping).catch(console.log);
 })
 .then(() => {
   return entities.count()
