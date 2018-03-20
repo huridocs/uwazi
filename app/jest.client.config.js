@@ -4,11 +4,7 @@ module.exports = {
   testMatch: [
     '**/react/**/specs/*spec.js?(x)'
   ],
-  testPathIgnorePatterns: [
-    //client
-    'Scroller.spec.js',
-    'DocumentsList.spec.js'
-  ],
+  testPathIgnorePatterns: ['DocumentsList.spec.js'],
   setupTestFrameworkScriptFile: '<rootDir>/setUpJestClient.js',
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy'
