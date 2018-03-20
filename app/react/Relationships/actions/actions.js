@@ -1,4 +1,3 @@
-// TEST!!! Entire component
 import api from 'app/utils/api';
 import {actions} from 'app/BasicReducer';
 import debounce from 'app/utils/debounce';
