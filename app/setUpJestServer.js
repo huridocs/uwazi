@@ -1,3 +1,6 @@
+import mongoose from 'mongoose';
+mongoose.Promise = Promise;
+
 jasmine.createSpyObj = (name, methodNames) => {
   let names = methodNames;
   if (Array.isArray(name)) {
