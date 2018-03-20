@@ -426,7 +426,7 @@ describe('entities', () => {
     it('should return how many entities using the template passed', (done) => {
       entities.countByTemplate(templateId)
       .then((count) => {
-        expect(count).toBe(4);
+        expect(count).toBe(5);
         done();
       })
       .catch(done.fail);
@@ -443,12 +443,24 @@ describe('entities', () => {
   });
 
   describe('getByTemplate', () => {
-    it('should return all entities with passed template and language', (done) => {
+    it('should return only published entities with passed template and language', (done) => {
       entities.getByTemplate(templateId, 'en')
       .then((docs) => {
         expect(docs.length).toBe(2);
         expect(docs[0].title).toBe('Batman finishes');
         expect(docs[1].title).toBe('EN');
+        done();
+      })
+      .catch(done.fail);
+    });
+
+    it('should return all entities (including unpublished) if required', (done) => {
+      entities.getByTemplate(templateId, 'en', false)
+      .then((docs) => {
+        expect(docs.length).toBe(3);
+        expect(docs[0].title).toBe('Batman finishes');
+        expect(docs[1].title).toBe('Unpublished entity');
+        expect(docs[2].title).toBe('EN');
         done();
       })
       .catch(done.fail);

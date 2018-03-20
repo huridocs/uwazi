@@ -81,8 +81,9 @@ export default {
     });
   },
 
-  templateToThesauri(template, language) {
-    return entities.getByTemplate(template._id, language)
+  templateToThesauri(template, language, user) {
+    const onlyPublished = !user;
+    return entities.getByTemplate(template._id, language, onlyPublished)
     .then((response) => {
       template.values = response.map((entity) => {
         return {id: entity.sharedId, label: entity.title, icon: entity.icon};
@@ -96,7 +97,7 @@ export default {
     return model.getById(id);
   },
 
-  get(thesauriId, language) {
+  get(thesauriId, language, user) {
     let query;
     if (thesauriId) {
       query = {_id: thesauriId};
@@ -107,7 +108,7 @@ export default {
     ])
     .then(([dictionaries, allTemplates]) => {
       let processTemplates = Promise.all(allTemplates.map((result) => {
-        return this.templateToThesauri(result, language)
+        return this.templateToThesauri(result, language, user)
         .then((templateTransformedInThesauri) => {
           return templateTransformedInThesauri;
         });

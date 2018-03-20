@@ -22,6 +22,7 @@ export default {
     {_id: batmanFinishesId, sharedId: 'shared', type: 'entity', template: templateId, language: 'en', title: 'Batman finishes', published: true, metadata: {property1: 'value1'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
     {_id: db.id(), sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf'}},
     {_id: db.id(), sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
+    {_id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: {property1: 'value1'}},
     //select/multiselect/date sync
     {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: {property1: 'text'}, file: {filename: 'nonexistent.pdf'}},
     {_id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: {property1: 'text'}, file: {filename: 'nonexistent.pdf'}},

@@ -20,12 +20,12 @@ describe('thesauris routes', () => {
   });
 
   describe('GET', () => {
-    it('should return all thesauris by default', (done) => {
+    it('should return all thesauris by default, passing user', (done) => {
       spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
-      routes.get('/api/thesauris', {language: 'es'})
+      routes.get('/api/thesauris', {language: 'es', user: 'user'})
       .then((response) => {
         let undefinedVar;
-        expect(thesauris.get).toHaveBeenCalledWith(undefinedVar, 'es');
+        expect(thesauris.get).toHaveBeenCalledWith(undefinedVar, 'es', 'user');
         expect(response).toEqual({rows: 'response'});
         done();
       })
@@ -40,7 +40,7 @@ describe('thesauris routes', () => {
         routes.get('/api/thesauris', req)
         .then(() => {
           let undefinedVar;
-          expect(thesauris.get).toHaveBeenCalledWith('id', undefinedVar);
+          expect(thesauris.get).toHaveBeenCalledWith('id', undefinedVar, undefinedVar);
           done();
         })
         .catch(catchErrors(done));

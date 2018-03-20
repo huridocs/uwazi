@@ -30,6 +30,19 @@ describe('thesauris', () => {
       .catch(catchErrors(done));
     });
 
+    it('should return all thesauris including unpublished documents if user', (done) => {
+      thesauris.get(null, 'es', 'user')
+      .then((dictionaties) => {
+        expect(dictionaties.length).toBe(5);
+        expect(dictionaties[3].values).toEqual([
+          {id: 'sharedId', label: 'spanish entity', icon: 'Icon'},
+          {id: 'other', label: 'unpublished entity'}
+        ]);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
     describe('when passing id', () => {
       it('should return matching thesauri', (done) => {
         thesauris.get(dictionaryId)

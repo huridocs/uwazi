@@ -256,8 +256,9 @@ export default {
     return model.count({template});
   },
 
-  getByTemplate(template, language, published = true) {
-    return model.get({template, language, published});
+  getByTemplate(template, language, onlyPublished = true) {
+    const query = Object.assign({template, language}, onlyPublished ? {published: true} : {});
+    return model.get(query);
   },
 
   updateMetdataFromRelationships(entities, language) {

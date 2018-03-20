@@ -16,7 +16,7 @@ export default app => {
     if (req.query) {
       id = req.query._id;
     }
-    thesauris.get(id, req.language)
+    thesauris.get(id, req.language, req.user)
     .then((response) => res.json({rows: response}))
     .catch((error) => res.json({error}));
   });
