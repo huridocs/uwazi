@@ -15,6 +15,10 @@ describe('documents', () => {
     routes = instrumentRoutes(documentRoutes);
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('POST', () => {
     let req;
 
