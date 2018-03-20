@@ -1,7 +1,7 @@
 let executeRoute = (method, routePath, req = {}, res, app) => {
   let args = app[method].calls.allArgs().find((a) => a[0] === routePath);
   if (!args) {
-    throw 'Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined';
+    throw new Error('Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined');
   }
   let result = new Promise((resolve, reject) => {
     let statusCode;

@@ -86,7 +86,10 @@ describe('settings', () => {
       });
 
       it('should update them', (done) => {
-        let config = {site_name: 'My collection', filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Documents', items: []}, {id: '3', name: 'Files', items: []}]};
+        let config = {
+          site_name: 'My collection',
+          filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Documents', items: []}, {id: '3', name: 'Files', items: []}]
+        };
         settings.save(config)
         .then(() => {
           config = {site_name: 'My collection', filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Important Documents', items: []}]};
