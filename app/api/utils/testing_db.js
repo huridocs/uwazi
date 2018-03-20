@@ -1,4 +1,4 @@
-import pow from 'pow-mongodb-fixtures';
+import pow from 'mongodb_fixtures';
 import mongoose from 'mongoose';
 import MongodbMemoryServer from 'mongodb-memory-server';
 
