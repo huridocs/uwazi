@@ -1,6 +1,4 @@
 import templateRoutes from 'api/templates/routes.js';
-import database from 'api/utils/database.js';
-import fixtures from './fixtures.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import templates from 'api/templates/templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
