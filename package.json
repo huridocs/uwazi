@@ -15,7 +15,13 @@
   "bugs": {
     "url": "https://github.com/huridocs/uwazidocs/issues"
   },
-  "homepage": "",
+  "homepage": "https://www.uwazi.io/",
+  "jest": {
+    "projects": [
+      "app/jest.client.config.js",
+      "app/jest.server.config.js"
+    ]
+  },
   "scripts": {
     "server": "nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared'",
     "webpack-server": "node ./webpack/webpack.server.js",
