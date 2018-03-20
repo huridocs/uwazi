@@ -395,7 +395,7 @@ describe('Relationships actions', () => {
     describe('immidiateSearch', () => {
       it('should search for connectable entities', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title']});
+        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title'], includeUnpublished: true});
         expect(store.getActions()).toContainEqual({type: 'SEARCHING_RELATIONSHIPS'});
       });
 
@@ -419,7 +419,7 @@ describe('Relationships actions', () => {
 
         jasmine.clock().tick(400);
 
-        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title']});
+        expect(api.get).toHaveBeenCalledWith('search', {searchTerm: 'term', fields: ['title'], includeUnpublished: true});
         jasmine.clock().uninstall();
       });
     });

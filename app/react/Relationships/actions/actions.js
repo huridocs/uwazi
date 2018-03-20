@@ -151,7 +151,7 @@ export function saveRelationships() {
 export function immidiateSearch(dispatch, searchTerm) {
   dispatch(uiActions.searching());
 
-  let query = {searchTerm, fields: ['title']};
+  let query = {searchTerm, fields: ['title'], includeUnpublished: true};
 
   return api.get('search', query)
   .then((response) => {
