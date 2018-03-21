@@ -16,6 +16,10 @@ describe('entities', () => {
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('POST', () => {
     let req;
     beforeEach(() => {
