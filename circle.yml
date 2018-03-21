@@ -22,6 +22,5 @@ dependencies:
 
 test:
   override:
-    - ./node_modules/eslint/bin/eslint.js app
-    - ./node_modules/karma/bin/karma start --single-run
-    - node api_test.js
+    - ./node_modules/.bin/eslint app
+    - ./node_modules/.bin/jest
