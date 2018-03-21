@@ -202,13 +202,13 @@ describe('Metadata Actions', () => {
       }
       //
 
+      jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve());
+      jest.spyOn(routeActions, 'setViewerState').mockImplementation(() => ({type: 'setViewerState'}));
       store = mockStore({locale: 'es', templates: 'immutableTemplates'});
       store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
     });
 
     it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
-      spyOn(routeActions, 'requestViewerState').and.returnValue(Promise.resolve());
-      spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
       const expectedActions = [
         {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
@@ -229,8 +229,7 @@ describe('Metadata Actions', () => {
       let state = {};
 
       beforeEach(() => {
-        spyOn(routeActions, 'requestViewerState').and.returnValue({then: (cb) => cb(state)});
-        spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
+        jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve(state));
         mockUpload.emit('response');
       });
 

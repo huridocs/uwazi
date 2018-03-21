@@ -1,6 +1,6 @@
 import scroller from '../Scroller.js';
 
-fdescribe('scroller', () => {
+describe('scroller', () => {
   let container;
   let ul;
   let firstLi;
