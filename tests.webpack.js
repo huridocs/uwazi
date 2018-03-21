@@ -5,10 +5,7 @@ require('isomorphic-fetch');
 var error = console.error.bind(console);
 console.error = function(message){
   if (message.match('/api/i18n/systemKeys')) {
-    return 
-  }
-  if (message.match('Unhandled promise rejection')) {
-    return
+    return;
   }
   error(message);
 };
