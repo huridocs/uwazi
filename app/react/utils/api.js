@@ -37,6 +37,7 @@ let handleError = (error) => {
     return Promise.reject(error);
   }
 
+  console.log(error);
   store.dispatch(notify(error.json.error, 'danger'));
   return Promise.reject(error);
 };

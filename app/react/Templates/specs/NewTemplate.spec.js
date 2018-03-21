@@ -1,11 +1,13 @@
 import React from 'react';
 import {actions as formActions} from 'react-redux-form';
 import {shallow} from 'enzyme';
-import backend from 'fetch-mock';
 
-import {APIURL} from 'app/config.js';
 import NewTemplate from 'app/Templates/NewTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
+
+import templatesAPI from 'app/Templates/TemplatesAPI';
+import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 
 describe('NewTemplate', () => {
   let component;
@@ -17,16 +19,12 @@ describe('NewTemplate', () => {
 
   beforeEach(() => {
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    spyOn(templatesAPI, 'get').and.returnValue(templates);
+    spyOn(thesaurisAPI, 'get').and.returnValue(thesauris);
+    spyOn(relationTypesAPI, 'get').and.returnValue(relationTypes);
     component = shallow(<NewTemplate />, {context});
     instance = component.instance();
-    backend.restore();
-    backend
-    .get(APIURL + 'thesauris', {body: JSON.stringify({rows: thesauris})})
-    .get(APIURL + 'relationtypes', {body: JSON.stringify({rows: relationTypes})})
-    .get(APIURL + 'templates', {body: JSON.stringify({rows: templates})});
   });
-
-  afterEach(() => backend.restore());
 
   it('should render a TemplateCreator', () => {
     expect(component.find(TemplateCreator).length).toBe(1);
