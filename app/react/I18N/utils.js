@@ -1,5 +1,5 @@
 import {isClient} from 'app/utils';
-import Cookie from 'tiny-cookie';
+import * as Cookie from 'tiny-cookie';
 
 let I18NUtils = {
   getUrlLocale: (path, languages) => {
