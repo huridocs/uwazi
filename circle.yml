@@ -19,7 +19,7 @@ dependencies:
 
   cache_directories:
     - elasticsearch-5.5.1 # relative to the build directory
-    - .mongodb-binaries # relative to the build directory
+    - ../.mongodb-binaries # relative to the build directory
 
 test:
   override:
