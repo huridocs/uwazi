@@ -4,7 +4,7 @@ import backend from 'fetch-mock';
 import {APIURL} from '../../config.js';
 import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
-import Cookie from 'tiny-cookie';
+import * as Cookie from 'tiny-cookie';
 import Immutable from 'immutable';
 
 class TestController extends RouteHandler {

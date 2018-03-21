@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import ReactModal from 'react-modal';
-
 export default class Modal extends Component {
   render() {
     let style = {overlay: {zIndex: 100, backgroundColor: 'rgba(0, 0, 0, 0.75)'}};
