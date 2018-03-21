@@ -13,12 +13,11 @@ describe('entities', () => {
 
   beforeEach((done) => {
     routes = instrumentRoutes(documentRoutes);
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('POST', () => {
@@ -37,13 +36,13 @@ describe('entities', () => {
     });
 
     it('should create a new document with current user', (done) => {
-      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
 
       routes.post('/api/entities', req)
       .then((document) => {
-        expect(document).toBe('document');
+        expect(document).toBe('entity');
         expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
         done();
       });
@@ -66,7 +65,8 @@ describe('entities', () => {
         }
       };
 
-      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve({_id: 'id'}));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(['entityWithRelationShips']));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve('template')));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('templateTransformed')));
       routes.post('/api/entities', req)
@@ -106,16 +106,16 @@ describe('entities', () => {
 
   describe('GET', () => {
     it('should return matching document', (done) => {
-      spyOn(entities, 'getById').and.returnValue(Promise.resolve('result'));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve('result'));
       let req = {
-        query: {_id: 'id'},
+        query: {_id: 'sharedId'},
         language: 'lang'
       };
 
       routes.get('/api/entities', req)
       .then((response) => {
-        expect(entities.getById).toHaveBeenCalledWith('id', 'lang');
-        expect(response).toEqual({rows: ['result']});
+        expect(entities.getWithRelationships).toHaveBeenCalledWith({sharedId: 'sharedId', language: 'lang'});
+        expect(response).toEqual({rows: 'result'});
         done();
       })
       .catch(catchErrors(done));

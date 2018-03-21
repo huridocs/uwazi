@@ -8,12 +8,11 @@ import db from 'api/utils/testing_db';
 describe('settings', () => {
   beforeEach((done) => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
-    db.clearAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('save()', () => {

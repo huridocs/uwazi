@@ -1,6 +1,7 @@
 import templateRoutes from 'api/templates/routes.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import templates from 'api/templates/templates';
+import settings from 'api/settings/settings';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('templates routes', () => {
@@ -39,6 +40,7 @@ describe('templates routes', () => {
   describe('DELETE', () => {
     it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
+      spyOn(settings, 'removeTemplateFromFilters').and.returnValue(Promise.resolve());
       routes.delete('/api/templates', {query: {_id: '123'}})
       .then((response) => {
         expect(templates.delete).toHaveBeenCalledWith({_id: '123'});
@@ -65,12 +67,12 @@ describe('templates routes', () => {
   describe('POST', () => {
     it('should create a template', (done) => {
       spyOn(templates, 'save').and.returnValue(new Promise((resolve) => resolve('response')));
-      let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}};
+      let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}, language: 'en'};
 
       routes.post('/api/templates', req)
       .then((response) => {
         expect(response).toBe('response');
-        expect(templates.save).toHaveBeenCalledWith(req.body);
+        expect(templates.save).toHaveBeenCalledWith(req.body, req.language);
         done();
       })
       .catch(catchErrors(done));

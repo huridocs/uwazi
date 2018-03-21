@@ -1,6 +1,7 @@
 import documentRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import search from '../search';
+import entities from 'api/entities';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 
 describe('search routes', () => {
@@ -12,12 +13,11 @@ describe('search routes', () => {
 
   describe('/api/search/count_by_template', () => {
     it('should return count of search using a specific template', (done) => {
-      spyOn(search, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
+      spyOn(entities, 'countByTemplate').and.returnValue(new Promise((resolve) => resolve(2)));
       let req = {query: {templateId: 'templateId'}};
 
       routes.get('/api/search/count_by_template', req)
       .then((response) => {
-        expect(search.countByTemplate).toHaveBeenCalledWith('templateId');
         expect(response).toEqual(2);
         done();
       })

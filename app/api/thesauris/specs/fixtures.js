@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 const entityTemplateId = '589af97080fc0b23471d67f3';
 const dictionaryId = '589af97080fc0b23471d67f4';
@@ -19,7 +20,8 @@ export default {
   ],
   entities: [
     {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'english entity', language: 'en', template: db.id(entityTemplateId), icon: 'Icon'},
-    {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon'}
+    {_id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon', published: true},
+    {_id: db.id(), sharedId: 'other', type: 'entity', title: 'unpublished entity', language: 'es', template: db.id(entityTemplateId), published: false}
   ]
 };
 

@@ -23,6 +23,9 @@ const resetMetadata = (metadata, template, options) => {
     if (assignProperty && property.type === 'multiselect') {
       metadata[property.name] = [];
     }
+    if (assignProperty && property.type === 'relationship') {
+      metadata[property.name] = [];
+    }
     if (assignProperty && property.type === 'nested') {
       metadata[property.name] = [];
     }
@@ -105,7 +108,7 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('response', () => {
       dispatch({type: types.REUPLOAD_COMPLETE, doc: docId, file, __reducerKey});
 
-      requestViewerState(docSharedId, getState().locale)
+      requestViewerState(docSharedId, getState().locale, {templates: getState().templates})
       .then(state => {
         dispatch(setViewerState(state));
       });

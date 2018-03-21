@@ -174,6 +174,8 @@ describe('SortButtons', () => {
   });
 
   describe('mapStateToProps', () => {
+    let templates;
+
     it('should send all templates from state', () => {
       const state = {templates: immutable(['item']), library: {search: {}}};
       const _props = {storeKey: 'library'};
@@ -181,10 +183,32 @@ describe('SortButtons', () => {
     });
 
     it('should only send selectedTemplates if array passed in ownProps', () => {
-      const templates = immutable([{_id: 'a'}, {_id: 'b'}]);
+      templates = immutable([{_id: 'a'}, {_id: 'b'}]);
       const state = {templates, library: {search: {}}};
       const _props = {selectedTemplates: immutable(['b']), storeKey: 'library'};
       expect(mapStateToProps(state, _props).templates.getIn([0, '_id'])).toBe('b');
+    });
+
+    describe('search', () => {
+      beforeEach(() => {
+        templates = immutable([{_id: 'a'}, {_id: 'b'}]);
+      });
+
+      it('should be selected from the state according to the store key', () => {
+        const state = {templates, library: {search: 'correct search'}};
+        const _props = {storeKey: 'library'};
+        expect(mapStateToProps(state, _props).search).toBe('correct search');
+      });
+
+      it('should be selected from the state according to the stateProperty (if passed)', () => {
+        let state = {templates, library: {search: 'incorrect search', sort: 'correct search'}};
+        let _props = {storeKey: 'library', stateProperty: 'library.sort'};
+        expect(mapStateToProps(state, _props).search).toBe('correct search');
+
+        state = {templates, library: {search: 'incorrect search', sort: 'incorrect search', nested: {dashed: 'correct search'}}};
+        _props = {storeKey: 'library', stateProperty: 'library/nested.dashed'};
+        expect(mapStateToProps(state, _props).search).toBe('correct search');
+      });
     });
   });
 });

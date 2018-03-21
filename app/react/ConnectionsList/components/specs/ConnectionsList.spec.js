@@ -1,8 +1,7 @@
 import {fromJS as Immutable} from 'immutable';
 import {mapStateToProps} from '../ConnectionsList';
 
-import ToggleStyleButtons from 'app/ConnectionsList/components/ToggleStyleButtons';
-import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraph';
+import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
 
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
@@ -11,10 +10,16 @@ describe('ConnectionsList', () => {
 
     beforeEach(() => {
       state = {
-        connectionsList: {
-          searchResults: Immutable({rows: [{connections: ['a', 'b']}, {connections: ['c']}]}),
-          sort: 'sort',
-          view: 'passedView'
+        relationships: {
+          list: {
+            entityId: 'id1',
+            searchResults: Immutable({rows: [
+              {sharedId: 'id2', connections: ['a', 'b']},
+              {sharedId: 'id1', connections: ['c']},
+              {sharedId: 'id2', connections: ['d']}
+            ]}),
+            sort: 'sort'
+          }
         }
       };
 
@@ -22,17 +27,16 @@ describe('ConnectionsList', () => {
     });
 
     it('should pass the documents and search from the state', () => {
-      expect(props.documents).toEqual(state.connectionsList.searchResults);
+      expect(props.documents).toEqual(state.relationships.list.searchResults);
       expect(props.search).toBe('sort');
     });
 
     it('should define the filters and sortButtonsStateProperty props', () => {
       expect(props.filters.toJS()).toEqual({documentTypes: []});
-      expect(props.sortButtonsStateProperty).toBe('connectionsList.sort');
+      expect(props.sortButtonsStateProperty).toBe('relationships/list.sort');
     });
 
-    it('should pass action buttons and graph view elements', () => {
-      expect(props.ActionButtons).toBe(ToggleStyleButtons);
+    it('should pass action graph view elements', () => {
       expect(props.GraphView).toBe(RelationshipsGraph);
     });
 
@@ -41,7 +45,7 @@ describe('ConnectionsList', () => {
     });
 
     it('should pass the view type', () => {
-      expect(props.view).toBe('passedView');
+      expect(props.view).toBe('graph');
     });
   });
 });

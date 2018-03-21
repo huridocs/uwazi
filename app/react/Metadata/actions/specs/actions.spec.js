@@ -21,10 +21,10 @@ describe('Metadata Actions', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
       let dispatch = jasmine.createSpy('dispatch');
       let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
-      let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}]}];
+      let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}, {name: 'testRelation', type: 'relationship'}]}];
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: ''}};
+      let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: '', testRelation: []}};
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
@@ -61,7 +61,7 @@ describe('Metadata Actions', () => {
         }];
       });
 
-      it('should should set the first template', () => {
+      it('should set the first template', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId1'};
@@ -71,7 +71,7 @@ describe('Metadata Actions', () => {
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should should set the first document template if document has type document', () => {
+      it('should set the first document template if document has type document', () => {
         doc = {title: 'test', type: 'document'};
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
@@ -80,7 +80,7 @@ describe('Metadata Actions', () => {
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should should set the first entity template if document has type entity', () => {
+      it('should set the first entity template if document has type entity', () => {
         doc = {title: 'test', type: 'entity'};
         templates[0].isEntity = false;
         templates[1].isEntity = true;
@@ -190,8 +190,8 @@ describe('Metadata Actions', () => {
 
     beforeEach(() => {
       mockUpload = superagent.post(APIURL + 'reupload');
-      spyOn(mockUpload, 'field').and.callThrough();
-      spyOn(mockUpload, 'attach').and.callThrough();
+      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
       spyOn(superagent, 'post').and.returnValue(mockUpload);
 
       // needed to work with firefox/chrome and phantomjs
@@ -202,11 +202,13 @@ describe('Metadata Actions', () => {
       }
       //
 
-      store = mockStore({locale: 'es'});
+      store = mockStore({locale: 'es', templates: 'immutableTemplates'});
       store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
     });
 
     it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
+      spyOn(routeActions, 'requestViewerState').and.returnValue(Promise.resolve());
+      spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
       const expectedActions = [
         {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
         {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
@@ -233,9 +235,9 @@ describe('Metadata Actions', () => {
       });
 
       it('should request and set viewer states', () => {
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es');
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es', {templates: 'immutableTemplates'});
         expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
-        expect(store.getActions()).toContain({type: 'setViewerState'});
+        expect(store.getActions()).toContainEqual({type: 'setViewerState'});
       });
     });
   });

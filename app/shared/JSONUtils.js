@@ -4,7 +4,7 @@ export default {
       try {
         object[index] = JSON.parse(object[index]);
       } catch (e) {
-        console.log(e);
+        return;
       }
     });
     return object;

@@ -21,7 +21,8 @@ describe('MetadataFormButtons', () => {
       templates: immutable([{test: 'test'}]),
       formName: 'FormName',
       formStatePath: 'form',
-      includeViewButton: true
+      includeViewButton: true,
+      exclusivelyViewButton: false
     };
   });
 
@@ -90,6 +91,22 @@ describe('MetadataFormButtons', () => {
     it('should reset the form', () => {
       component.find('.cancel-edit-metadata').simulate('click');
       expect(props.resetForm).toHaveBeenCalledWith(props.formStatePath);
+    });
+  });
+
+  describe('exclusivelyViewButton', () => {
+    beforeEach(() => {
+      props.exclusivelyViewButton = true;
+      render();
+    });
+
+    it('should only render a view button', () => {
+      const link = component.find(I18NLink);
+      expect(link.props().to).toBe('type/shId');
+      expect(component.find('.edit-metadata').length).toBe(1);
+      expect(component.find('.edit-metadata').at(0).find('.fa-file-text-o').length).toBe(1);
+      expect(component.find('.btn-success').length).toBe(0);
+      expect(component.find('.delete-metadata').length).toBe(0);
     });
   });
 });

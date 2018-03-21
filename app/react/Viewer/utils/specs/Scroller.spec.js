@@ -1,6 +1,6 @@
 import scroller from '../Scroller.js';
 
-describe('scroller', () => {
+fdescribe('scroller', () => {
   let container;
   let ul;
   let firstLi;
@@ -40,17 +40,26 @@ describe('scroller', () => {
 
   describe('isVisible()', () => {
     it('should return false when the element is hidden because scroll is up', () => {
-      firstLi.style.height	= '120px';
+      //firstLi.style.height	= '120px';
+
+      //jsdom mock
+      ul.getBoundingClientRect = () => ({top: 8});
+      secondLi.getBoundingClientRect = () => ({top: 128});
 
       expect(scroller.isVisible('li:nth-child(2)', 'ul')).toBe(false);
       cleanDom();
     });
 
     it('should return false when the element is hidden because scroll is down', () => {
-      firstLi.style.height	= '10px';
-      secondLi.style.height	= '10px';
-      thirdLi.style.height	= '100px';
-      ul.scrollTop = 50;
+      //firstLi.style.height	= '10px';
+      //secondLi.style.height	= '10px';
+      //thirdLi.style.height	= '100px';
+      //ul.scrollTop = 50;
+
+      //jsdom mock
+      ul.getBoundingClientRect = () => ({top: 8});
+      firstLi.getBoundingClientRect = () => ({top: -28});
+
       expect(scroller.isVisible('li:nth-child(1)', 'ul')).toBe(false);
       cleanDom();
     });

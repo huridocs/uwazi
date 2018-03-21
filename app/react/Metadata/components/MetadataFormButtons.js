@@ -12,18 +12,24 @@ import * as actions from '../actions/actions';
 
 export class MetadataFormButtons extends Component {
   render() {
-    const {entityBeingEdited} = this.props;
+    const {entityBeingEdited, exclusivelyViewButton} = this.props;
     const formName = this.props.formName || 'metadataForm';
     const data = this.props.data.toJS();
+
+    const ViewButton = <I18NLink to={`${data.type}/${data.sharedId}`}>
+                        <button className="edit-metadata btn btn-primary">
+                          <i className="fa fa-file-text-o"></i><span className="btn-label">{t('System', 'View')}</span>
+                        </button>
+                       </I18NLink>;
+
+    if (exclusivelyViewButton) {
+      return <span>{ViewButton}</span>;
+    }
 
     return (
       <span>
         <ShowIf if={this.props.includeViewButton}>
-          <I18NLink to={`${data.type}/${data.sharedId}`}>
-            <button className="edit-metadata btn btn-primary">
-              <i className="fa fa-file-text-o"></i><span className="btn-label">{t('System', 'View')}</span>
-            </button>
-          </I18NLink>
+          {ViewButton}
         </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!entityBeingEdited}>
@@ -71,7 +77,8 @@ MetadataFormButtons.propTypes = {
   entityBeingEdited: PropTypes.bool,
   formStatePath: PropTypes.string,
   formName: PropTypes.string,
-  includeViewButton: PropTypes.bool
+  includeViewButton: PropTypes.bool,
+  exclusivelyViewButton: PropTypes.bool
 };
 
 const mapStateToProps = ({templates}) => {

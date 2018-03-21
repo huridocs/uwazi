@@ -38,13 +38,10 @@ describe('metadata path', () => {
 
     it('should create a new dictionary with two values', (done) => {
       nightmare
-      .wait(selectors.settingsView.dictionaryNameForm)
       .write(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
       .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
-      .wait(selectors.settingsView.firstDictionaryValForm)
       .write(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
       .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
-      .wait(selectors.settingsView.secondDictionaryValForm)
       .write(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
@@ -57,7 +54,6 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .wait(selectors.settingsView.liElementsOfSection)
       .editItemFromList(selectors.settingsView.liElementsOfSection, 'test')
-      .wait(selectors.settingsView.dictionaryNameForm)
       .write(selectors.settingsView.dictionaryNameForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
@@ -97,13 +93,10 @@ describe('metadata path', () => {
 
     it('should create a new document template with no properties added', (done) => {
       nightmare
-      .wait(selectors.settingsView.documentTemplateNameForm)
       .write(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
       .waitToClick('.alert.alert-success')
-      .then(() => {
-        done();
-      })
+      .then(done)
       .catch(catchErrors(done));
     });
 
@@ -148,7 +141,6 @@ describe('metadata path', () => {
 
     it('should create a new connection', (done) => {
       nightmare
-      .wait(selectors.settingsView.connectionNameForm)
       .write(selectors.settingsView.connectionNameForm, 'test connection')
       .waitToClick(selectors.settingsView.saveConnectionButton)
       .waitToClick('.alert.alert-success')
@@ -201,7 +193,6 @@ describe('metadata path', () => {
 
     it('should create a new entity', (done) => {
       nightmare
-      .wait(selectors.settingsView.entityBodyForm)
       .write(selectors.settingsView.entityNameForm, 'e2e test entity')
       .click(selectors.settingsView.saveEntityButton)
       .waitToClick('.alert.alert-success')

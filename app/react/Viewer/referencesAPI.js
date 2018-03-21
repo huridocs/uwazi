@@ -33,8 +33,8 @@ export default {
   },
 
   delete(reference) {
-    const {_id, _rev} = reference;
-    return api.delete('references', {_id, _rev})
+    const {_id} = reference;
+    return api.delete('references', {_id})
     .then((response) => {
       return response.json;
     });

@@ -12,7 +12,7 @@ export default (app, server) => {
   //require('./auth/routes.js')(app);
 
   require('./socketio/middleware.js')(server, app);
-  require('./references/routes.js')(app);
+  require('./relationships/routes.js')(app);
   require('./users/routes.js')(app);
   require('./templates/routes.js')(app);
   require('./search/routes.js')(app);

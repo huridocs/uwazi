@@ -18,12 +18,15 @@ describe('metadata formater', () => {
         daterange: {from: 10, to: 1000000},
         multidaterange: [{from: 10, to: 1000000}, {from: 2000000, to: 3000000}],
         markdown: 'markdown content',
-        select: 'value3'
+        select: 'value3',
+        relationship1: ['value1', 'value2'],
+        relationship2: ['value1', 'value2', 'value4']
       }
     };
 
     templates = fromJS([
       {_id: 'template'},
+      {_id: 'template2'},
       {
         _id: 'templateID',
         name: 'Mecanismo',
@@ -36,7 +39,9 @@ describe('metadata formater', () => {
           {name: 'daterange', type: 'daterange', label: 'Date Range'},
           {name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range'},
           {name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true},
-          {name: 'select', content: 'thesauriId', type: 'select', label: 'Select'}
+          {name: 'select', content: 'thesauriId', type: 'select', label: 'Select'},
+          {name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1'},
+          {name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1'}
         ]
       }
     ]);
@@ -45,10 +50,19 @@ describe('metadata formater', () => {
       {
         _id: 'thesauriId',
         name: 'Multiselect',
+        type: 'template',
         values: [
           {label: 'Value 1', id: 'value1', _id: 'value1'},
           {label: 'Value 2', id: 'value2', _id: 'value2'},
           {label: 'Value 3', id: 'value3', _id: 'value3'}
+        ]
+      },
+      {
+        _id: 'thesauriId2',
+        name: 'Multiselect2',
+        type: 'template',
+        values: [
+          {label: 'Value 4', id: 'value4', _id: 'value4'}
         ]
       }
     ]);
@@ -66,11 +80,13 @@ describe('metadata formater', () => {
     let multidaterange;
     let markdown;
     let select;
+    let relationship1;
+    let relationship2;
 
     beforeEach(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
       metadata = data.metadata;
-      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select] = metadata;
+      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2] = metadata;
     });
 
     it('should maintain doc original data untouched', () => {
@@ -79,7 +95,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(8);
+      expect(data.metadata.length).toBe(10);
     });
 
     it('should process text type', () => {
@@ -132,6 +148,35 @@ describe('metadata formater', () => {
       expect(select.label).toBe('Select');
       expect(select.name).toBe('select');
       expect(select.value).toBe('Value 3');
+    });
+
+    it('should process bound relationship types', () => {
+      expect(relationship1.label).toBe('Relationship');
+      expect(relationship1.name).toBe('relationship1');
+      expect(relationship1.value.length).toBe(2);
+      expect(relationship1.value[0].value).toBe('Value 1');
+      expect(relationship1.value[0].url).toBe('/entity/value1');
+      expect(relationship1.value[1].value).toBe('Value 2');
+      expect(relationship1.value[1].url).toBe('/entity/value2');
+    });
+
+    it('should process free relationsip types', () => {
+      expect(relationship2.label).toBe('Relationship 2');
+      expect(relationship2.name).toBe('relationship2');
+      expect(relationship2.value.length).toBe(3);
+      expect(relationship2.value[0].value).toBe('Value 1');
+      expect(relationship2.value[0].url).toBe('/entity/value1');
+      expect(relationship2.value[1].value).toBe('Value 2');
+      expect(relationship2.value[1].url).toBe('/entity/value2');
+      expect(relationship2.value[2].value).toBe('Value 4');
+      expect(relationship2.value[2].url).toBe('/entity/value4');
+    });
+
+    it('should not fail when field do not exists on the document', () => {
+      doc.metadata.relationship1 = null;
+      doc.metadata.multiselect = null;
+      doc.metadata.select = null;
+      expect(formater.prepareMetadata.bind(formater, doc, templates, thesauris)).not.toThrow();
     });
   });
 

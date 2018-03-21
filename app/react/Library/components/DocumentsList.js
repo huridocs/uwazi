@@ -5,7 +5,8 @@ import {searchDocuments} from 'app/Library/actions/libraryActions';
 import {actions as actionCreators} from 'app/BasicReducer';
 
 import DocumentsList from 'app/Layout/DocumentsList';
-import {loadMoreDocuments, selectDocument, unselectDocument, unselectAllDocuments, selectDocuments} from 'app/Library/actions/libraryActions';
+import {loadMoreDocuments, selectDocument, unselectDocument,
+        unselectAllDocuments, selectDocuments} from 'app/Library/actions/libraryActions';
 
 export function clickOnDocument(e, doc, active) {
   const canSelectMultiple = this.props.authorized;

@@ -28,9 +28,9 @@ ResetSearch.propTypes = {
   resetSearch: PropTypes.func
 };
 
-function mapStateToProps({connectionsList}) {
+function mapStateToProps({relationships}) {
   return {
-    connectionsGroups: connectionsList.connectionsGroups
+    connectionsGroups: relationships.list.connectionsGroups
   };
 }
 

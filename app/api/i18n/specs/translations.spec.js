@@ -7,12 +7,11 @@ import fixtures, {entityTemplateId, documentTemplateId, englishTranslation} from
 
 describe('translations', () => {
   beforeEach((done) => {
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('process System context', () => {
@@ -109,7 +108,8 @@ describe('translations', () => {
       .then((result) => {
         expect(result._id).toBeDefined();
         done();
-      }).catch(catchErrors(done));
+      })
+      .catch(catchErrors(done));
     });
 
     it('should transform values from map to array if its a map', (done) => {
@@ -120,7 +120,8 @@ describe('translations', () => {
         expect(fr.contexts[0].values.test).toEqual('value');
         expect(fr.contexts[1].values.test2).toEqual('value2');
         done();
-      }).catch(catchErrors(done));
+      })
+      .catch(catchErrors(done));
     });
 
     it('should save partial translations', (done) => {
