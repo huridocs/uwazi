@@ -3,10 +3,13 @@ import {shallow} from 'enzyme';
 import {fromJS} from 'immutable';
 
 import {DocumentSidePanel, mapStateToProps} from '../DocumentSidePanel';
+import {ConnectionsGroups} from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import {Tabs} from 'react-tabs-redux';
 import Immutable from 'immutable';
+
+import * as viewerModule from 'app/Viewer';
 
 describe('DocumentSidePanel', () => {
   let component;
@@ -22,7 +25,11 @@ describe('DocumentSidePanel', () => {
       startNewConnection: jasmine.createSpy('startNewConnection'),
       references: Immutable.fromJS(['reference']),
       connections: Immutable.fromJS(['connections']),
-      formPath: 'formPath'
+      formPath: 'formPath',
+      connectionsGroups: Immutable.fromJS([
+        {templates: [{count: 1}, {count: 2}]},
+        {templates: [{count: 3}, {count: 4}]}
+      ])
     };
   });
 
@@ -57,9 +64,9 @@ describe('DocumentSidePanel', () => {
   });
 
   describe('connections', () => {
-    it('should render 2 connections list, for connections and references', () => {
+    it('should render 2 connections sections, for connections and references', () => {
       expect(component.find(Connections).at(0).props().references).toEqual(props.references);
-      expect(component.find(Connections).at(1).props().references).toEqual(props.connections);
+      expect(component.find(ConnectionsGroups).length).toBe(1);
     });
   });
 
@@ -120,27 +127,47 @@ describe('DocumentSidePanel', () => {
   });
 
   describe('mapStateToProps', () => {
-    it('should add filter selectors splitting references and connections', () => {
-      const ownProps = {
-        references: Immutable.fromJS([
-          {_id: 1, range: {start: 5}},
-          {_id: 2, range: {}},
-          {_id: 3, range: {}},
-          {_id: 4, range: {start: 10}}
-        ])
+    let state;
+
+    beforeEach(() => {
+      state = {
+        documentViewer: {targetDoc: Immutable.fromJS({_id: null})},
+        relationships: {list: {connectionsGroups: 'connectionsGroups'}},
+        relationTypes: Immutable.fromJS(['a', 'b'])
       };
+      spyOn(viewerModule.selectors, 'parseReferences').and.callFake((doc, refs) => `Parsed ${doc} refs: ${refs}`);
+      spyOn(viewerModule.selectors, 'selectReferences').and
+      .callFake(fakeState => `References selector used ${fakeState === state ? 'correctly' : 'incorrectly'}`);
+      spyOn(viewerModule.selectors, 'selectTargetReferences').and
+      .callFake(fakeState => `Target references selector used ${fakeState === state ? 'correctly' : 'incorrectly'}`);
+    });
 
-      const state = {
-        relationTypes: Immutable.fromJS([])
-      };
+    it('should map parsed references from ownProps if present and set the excludeConnectionsTab to true', () => {
+      const ownProps = {doc: 'fullDocData', references: 'allRefs'};
+      expect(mapStateToProps(state, ownProps).references).toBe('Parsed fullDocData refs: allRefs');
+      expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(true);
+    });
 
-      const references = mapStateToProps(state, ownProps).references;
-      const connections = mapStateToProps(state, ownProps).connections;
+    it('should map selected references from viewer when no ownProps and not targetDoc', () => {
+      const ownProps = {};
+      expect(mapStateToProps(state, ownProps).references).toBe('References selector used correctly');
+      expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(false);
+    });
 
-      expect(references.toJS()).toEqual([{_id: 1, range: {start: 5}}, {_id: 4, range: {start: 10}}]);
-      expect(mapStateToProps(state, ownProps).references).toBe(references);
-      expect(connections.toJS()).toEqual([{_id: 2, range: {}}, {_id: 3, range: {}}]);
-      expect(mapStateToProps(state, ownProps).connections).toBe(connections);
+    it('should map selected target references from viewer when no ownProps and targetDoc', () => {
+      const ownProps = {};
+      state.documentViewer.targetDoc = Immutable.fromJS({_id: 'targetDocId'});
+      expect(mapStateToProps(state, ownProps).references).toBe('Target references selector used correctly');
+      expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(false);
+    });
+
+    it('should map connectionsGroups and hasRelationTypes', () => {
+      const ownProps = {};
+      expect(mapStateToProps(state, ownProps).connectionsGroups).toBe('connectionsGroups');
+      expect(mapStateToProps(state, ownProps).hasRelationTypes).toBe(true);
+
+      state.relationTypes = Immutable.fromJS([]);
+      expect(mapStateToProps(state, ownProps).hasRelationTypes).toBe(false);
     });
   });
 });

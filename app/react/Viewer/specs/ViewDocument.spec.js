@@ -3,8 +3,9 @@ import {shallow} from 'enzyme';
 
 import Viewer from 'app/Viewer/components/Viewer';
 import ViewDocument from 'app/Viewer/ViewDocument';
-import referencesUtils from 'app/Viewer/utils/referencesUtils';
+
 import * as routeActions from '../actions/routeActions';
+import * as relationships from 'app/Relationships/utils/routeUtils';
 
 describe('ViewDocument', () => {
   let component;
@@ -25,9 +26,8 @@ describe('ViewDocument', () => {
     component = shallow(<ViewDocument {...props} renderedFromServer={true} />, {context});
     instance = component.instance();
 
-    spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
-    spyOn(routeActions, 'requestViewerState').and.callFake((documentId, lang) => {
-      return {documentId, lang};
+    spyOn(routeActions, 'requestViewerState').and.callFake((documentId, lang, globalResources) => {
+      return {documentId, lang, globalResources};
     });
 
     spyOn(routeActions, 'setViewerState').and.returnValue({type: 'setViewerState'});
@@ -39,7 +39,8 @@ describe('ViewDocument', () => {
 
   describe('static requestState', () => {
     it('should call on requestViewerState', () => {
-      expect(ViewDocument.requestState({documentId: 'documentId', lang: 'es'})).toEqual({documentId: 'documentId', lang: 'es'});
+      expect(ViewDocument.requestState({documentId: 'documentId', lang: 'es'}, null, 'globalResources'))
+      .toEqual({documentId: 'documentId', lang: 'es', globalResources: 'globalResources'});
     });
   });
 
@@ -61,6 +62,10 @@ describe('ViewDocument', () => {
   });
 
   describe('emptyState()', () => {
+    beforeEach(() => {
+      spyOn(relationships, 'emptyState').and.returnValue({type: 'relationshipsEmptyState'});
+    });
+
     it('should unset the state', () => {
       instance.emptyState();
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'SET_REFERENCES', references: []});
@@ -70,6 +75,7 @@ describe('ViewDocument', () => {
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/relationTypes/UNSET'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'rrf/reset', model: 'documentViewer.tocForm'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'viewer/targetDoc/UNSET'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'relationshipsEmptyState'});
     });
   });
 });

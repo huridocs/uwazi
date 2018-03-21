@@ -34,9 +34,9 @@ export class TimelineViewer extends Component {
 
   getRelatedReferences(references, template) {
     let promise = Promise.resolve([]);
-    let relatedEntity = references.find(r => r.connectedDocumentTemplate === template);
+    let relatedEntity = references.find(r => r.entityData.template === template);
     if (relatedEntity) {
-      promise = this.fetchReferences(relatedEntity.connectedDocument);
+      promise = this.fetchReferences(relatedEntity.entityData.sharedId);
     }
 
     return promise;
@@ -59,13 +59,13 @@ export class TimelineViewer extends Component {
       r.origin = isCase ? 'related' : 'main';
       return r;
     }))
-    .filter(r => desiredTemplates.indexOf(r.connectedDocumentTemplate) !== -1);
+    .filter(r => desiredTemplates.indexOf(r.entityData.template) !== -1);
   }
 
   fetchReferenceData(references) {
     const fetchPromises = references.map(reference => {
-      const get = reference.connectedDocumentType === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
-      return get(reference.connectedDocument);
+      const get = reference.entityData.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
+      return get(reference.entityData.sharedId);
     });
 
     return Promise.all(fetchPromises);
@@ -208,9 +208,9 @@ export class TimelineViewer extends Component {
   getRelatedEntity(references, isCase) {
     let fetchRelatedEntity = Promise.resolve(null);
 
-    const relatedEntity = references.find(r => r.connectedDocumentTemplate === (isCase ? matterTemplate : caseTemplate));
+    const relatedEntity = references.find(r => r.entityData.template === (isCase ? matterTemplate : caseTemplate));
     if (relatedEntity) {
-      fetchRelatedEntity = EntitiesAPI.get(relatedEntity.connectedDocument)
+      fetchRelatedEntity = EntitiesAPI.get(relatedEntity.entityData.sharedId)
                            .then(results => formater.prepareMetadata(results[0], this.props.templates, this.props.thesauris));
     }
 
@@ -289,8 +289,9 @@ export class TimelineViewer extends Component {
 
               {track.years[year].map((reference, index) => {
                 if (reference.reference) {
+                  const linkType = reference.reference.entityData.type === 'document' ? 'document' : 'entity';
                   return (
-                    <I18NLink to={`/${reference.reference.connectedDocumentType}/${reference.data.sharedId}`}
+                    <I18NLink to={`/${linkType}/${reference.data.sharedId}`}
                           key={index}
                           className={`timeline-item ${reference.additionalData.className}`}
                           data-toggle="tooltip"

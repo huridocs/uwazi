@@ -25,6 +25,15 @@ export default {
     });
   },
 
+  getEntities() {
+    let url = '/thesauris/entities';
+
+    return api.get(url)
+    .then((response) => {
+      return response.json.rows;
+    });
+  },
+
   save(thesauri) {
     return api.post('thesauris', thesauri)
     .then((response) => {

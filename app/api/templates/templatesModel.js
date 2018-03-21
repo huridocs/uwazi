@@ -5,6 +5,7 @@ const propertiesSchema = new mongoose.Schema({
   label: String,
   type: String,
   content: String,
+  relationType: String,
   name: String,
   filter: Boolean,
   defaultfilter: Boolean,

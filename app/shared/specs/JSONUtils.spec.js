@@ -1,10 +1,12 @@
 import JSONUtils from '../JSONUtils';
 
 describe('JSONUtils', () => {
-  beforeEach(() => {
-  });
-
   describe('parseNested', () => {
+    it('should parse a basic json to object', () => {
+      const object = 'this is not a json';
+      expect(JSONUtils.parseNested(object)).toEqual('this is not a json');
+    });
+
     it('should parse a basic json to object', () => {
       const object = {test: 'test'};
       expect(JSONUtils.parseNested(object)).toEqual({test: 'test'});

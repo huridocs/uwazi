@@ -2,64 +2,61 @@ import {generateNamesAndIds} from 'api/templates/utils';
 import date from 'api/utils/date.js';
 import search from 'api/search/search';
 import settings from '../settings';
-import references from '../references/references';
-import templates from '../templates';
+import relationships from 'api/relationships/relationships';
+import templates from 'api/templates/templates';
 import ID from 'shared/uniqueID';
 import {deleteFiles} from '../utils/files.js';
 
 import model from './entitiesModel';
 
-function updateEntity(doc) {
-  return Promise.all([
-    this.getAllLanguages(doc.sharedId),
-    templates.getById(doc.template)
-  ])
-  .then(([docLanguages, templateResult]) => {
-    if (docLanguages[0].template && doc.template && docLanguages[0].template.toString() !== doc.template.toString()) {
+function updateEntity(entity, _template) {
+  return this.getAllLanguages(entity.sharedId)
+  .then((docLanguages) => {
+    if (docLanguages[0].template && entity.template && docLanguages[0].template.toString() !== entity.template.toString()) {
       return Promise.all([
         this.deleteEntityFromMetadata(docLanguages[0]),
-        references.delete({sourceType: 'metadata', $or: [{targetDocument: doc.sharedId}, {sourceDocument: doc.sharedId}]})
+        relationships.delete({entity: entity.sharedId}, null, false)
       ])
-      .then(() => [docLanguages, templateResult]);
+      .then(() => docLanguages);
     }
-    return [docLanguages, templateResult];
+    return docLanguages;
   })
-  .then(([docLanguages, templateResult]) => {
-    const template = templateResult || {properties: []};
+  .then((docLanguages) => {
+    const template = _template || {properties: []};
     const toSyncProperties = template.properties
-    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
+    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship'))
     .map(p => p.name);
-    const currentDoc = docLanguages.find((d) => d._id.toString() === doc._id.toString());
+    const currentDoc = docLanguages.find((d) => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
-      if (d._id.equals(doc._id)) {
-        return doc;
+      if (d._id.toString() === entity._id.toString()) {
+        return entity;
       }
       if (!d.metadata) {
-        d.metadata = doc.metadata;
-      }
-      toSyncProperties.forEach((p) => {
-        d.metadata[p] = doc.metadata[p];
-      });
-
-      if (typeof doc.published !== 'undefined') {
-        d.published = doc.published;
+        d.metadata = entity.metadata;
       }
 
-      if (doc.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
-        d.toc = doc.toc;
+      if (entity.metadata) {
+        toSyncProperties.forEach((p) => {
+          d.metadata[p] = entity.metadata[p];
+        });
       }
 
-      if (typeof doc.template !== 'undefined') {
-        d.template = doc.template;
+      if (typeof entity.published !== 'undefined') {
+        d.published = entity.published;
+      }
+
+      if (entity.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
+        d.toc = entity.toc;
+      }
+
+      if (typeof entity.template !== 'undefined') {
+        d.template = entity.template;
       }
       return d;
     });
 
     return Promise.all(docs.map(d => {
-      return model.save(d)
-      .then((_d) => {
-        return search.index(_d);
-      });
+      return model.save(d);
     }));
   });
 }
@@ -72,7 +69,7 @@ function createEntity(doc, languages, sharedId) {
     return langDoc;
   });
 
-  return model.save(docs).then((savedDocs) => Promise.all(savedDocs.map((d) => search.index(d))));
+  return model.save(docs);
 }
 
 function getEntityTemplate(doc, language) {
@@ -101,14 +98,25 @@ function sanitize(doc, template) {
     return doc;
   }
 
+  if (!doc.metadata) {
+    return doc;
+  }
+
   return template.properties.reduce((sanitizedDoc, property) => {
-    if (property.type === 'multidate' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+    const type = property.type;
+    if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedDoc.metadata[property.name])) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+    }
+    if (type === 'relationship' && Array.isArray(sanitizedDoc.metadata[property.name])) {
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+    }
+    if (type === 'multidate' && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value);
     }
-    if (property.type === 'multidaterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+    if (type === 'multidaterange' && sanitizedDoc.metadata[property.name]) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value.from || value.to);
     }
-    if (property.type === 'daterange' && sanitizedDoc.metadata && sanitizedDoc.metadata[property.name]) {
+    if (type === 'daterange' && sanitizedDoc.metadata[property.name]) {
       const value = sanitizedDoc.metadata[property.name];
       if (!value.to && !value.from) {
         delete sanitizedDoc.metadata[property.name];
@@ -123,7 +131,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(doc, {user, language}) {
+  save(doc, {user, language}, updateRelationships = true) {
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -141,22 +149,71 @@ export default {
     ])
     .then(([{languages}, template]) => {
       if (doc.sharedId) {
-        return this.updateEntity(this.sanitize(doc, template));
+        return this.updateEntity(this.sanitize(doc, template), template);
       }
 
       return this.createEntity(this.sanitize(doc, template), languages, sharedId);
     })
     .then(() => this.getById(sharedId, language))
-    .then(response => {
-      return Promise.all([response, references.saveEntityBasedReferences(response, language)]);
+    .then(entity => {
+      if (updateRelationships) {
+        return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
+      }
+
+      return [entity];
     })
     .then(([entity]) => {
-      return entity;
+      return this.indexEntities({sharedId}, '+fullText').then(() => entity);
+    });
+  },
+
+  bulkProcessMetadataFromRelationships(query, language, limit = 200) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get(query, 'sharedId', {skip: offset, limit})
+      .then((entities) => this.updateMetdataFromRelationships(entities.map((entity) => entity.sharedId), language))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return this.count(query)
+    .then((totalRows) => {
+      return index(0, totalRows);
+    });
+  },
+
+  indexEntities(query, select, limit = 200) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get(query, select, {skip: offset, limit})
+      .then((docs) => search.bulkIndex(docs))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return this.count(query)
+    .then((totalRows) => {
+      return index(0, totalRows);
     });
   },
 
   get(query, select, pagination) {
     return model.get(query, select, pagination);
+  },
+
+  getWithRelationships(query, select, pagination) {
+    return model.get(query, select, pagination)
+    .then((entities) => {
+      return Promise.all(entities.map((entity) => {
+        return relationships.getByDocument(entity.sharedId, entity.language)
+        .then((relations) => {
+          entity.relationships = relations;
+          return entity;
+        });
+      }));
+    });
   },
 
   getById(sharedId, language) {
@@ -170,7 +227,7 @@ export default {
   saveMultiple(docs) {
     return model.save(docs)
     .then((response) => {
-      return Promise.all(response, search.indexEntities({_id: {$in: response.map(d => d._id)}}, '+fullText'));
+      return Promise.all(response, this.indexEntities({_id: {$in: response.map(d => d._id)}}, '+fullText'));
     })
     .then(response => response);
   },
@@ -199,11 +256,39 @@ export default {
     return model.count({template});
   },
 
-  getByTemplate(template, language) {
-    return model.get({template, language});
+  getByTemplate(template, language, onlyPublished = true) {
+    const query = Object.assign({template, language}, onlyPublished ? {published: true} : {});
+    return model.get(query);
   },
 
-  updateMetadataProperties(template) {
+  updateMetdataFromRelationships(entities, language) {
+    const entitiesToReindex = [];
+    return templates.get()
+    .then((_templates) => {
+      return Promise.all(entities.map((entityId) => {
+        return Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
+        .then(([entity, relations]) => {
+          const template = _templates.find((t) => t._id.toString() === entity.template.toString());
+          const relationshipProperties = template.properties.filter((p) => p.type === 'relationship');
+          relationshipProperties.forEach((property) => {
+            const relationshipsGoingToThisProperty = relations.filter((r) => {
+              return r.template && r.template.toString() === property.relationType &&
+                (!property.content || r.entityData.template.toString() === property.content);
+            });
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
+          });
+          if (relationshipProperties.length) {
+            entitiesToReindex.push(entity.sharedId);
+            return this.updateEntity(this.sanitize(entity, template), template);
+          }
+          return Promise.resolve(entity);
+        });
+      }));
+    })
+    .then(() => this.indexEntities({sharedId: {$in: entitiesToReindex}}));
+  },
+
+  updateMetadataProperties(template, language) {
     let actions = {};
     actions.$rename = {};
     actions.$unset = {};
@@ -232,12 +317,20 @@ export default {
         delete actions.$rename;
       }
 
-      if (noneToRename && noneToUnset) {
-        return Promise.resolve();
+      let dbUpdate = Promise.resolve();
+      if (actions.$unset || actions.$rename) {
+        dbUpdate = model.db.updateMany({template}, actions);
       }
 
-      return model.db.updateMany({template}, actions)
-      .then(() => search.indexEntities({template: template._id}, null, 1000));
+      return dbUpdate
+      .then(() => {
+        if (!template.properties.find(p => p.type === 'relationship')) {
+          return this.indexEntities({template: template._id}, null, 1000);
+        }
+
+        let asd = this.bulkProcessMetadataFromRelationships({template: template._id, language}, language);
+        return asd;
+      });
     });
   },
 
@@ -272,12 +365,12 @@ export default {
       return model.delete({sharedId})
       .then(() => docs)
       .catch((e) => {
-        return search.indexEntities({sharedId}, '+fullText').then(() => Promise.reject(e));
+        return this.indexEntities({sharedId}, '+fullText').then(() => Promise.reject(e));
       });
     })
     .then((docs) => {
       return Promise.all([
-        references.delete({$or: [{targetDocument: sharedId}, {sourceDocument: sharedId}]}),
+        relationships.delete({entity: sharedId}, null, false),
         this.deleteFiles(docs),
         this.deleteEntityFromMetadata(docs[0])
       ])
@@ -301,7 +394,7 @@ export default {
       model.db.updateMany(query, {$set: changes})
     ])
     .then(([entitiesToReindex]) => {
-      return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
+      return this.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
     });
   },
 
@@ -343,7 +436,7 @@ export default {
       ])
       .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
         let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-        return search.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
+        return this.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
       });
     });
   },

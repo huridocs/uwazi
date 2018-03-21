@@ -13,8 +13,8 @@ import ActionButton from './ActionButton';
 import ShowIf from 'app/App/ShowIf';
 
 export class CreateConnectionPanel extends Component {
-  renderCheckType(relationType) {
-    if (this.props.connection.get('relationType') === relationType.get('_id')) {
+  renderCheckType(template) {
+    if (this.props.connection.get('template') === template.get('_id')) {
       return <i className="fa fa-check"></i>;
     }
 
@@ -27,18 +27,19 @@ export class CreateConnectionPanel extends Component {
     const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
     const open = Boolean(this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument);
     const pdfInfo = this.props.pdfInfo ? this.props.pdfInfo.toJS() : null;
+    const className = `${this.props.className} create-reference`;
 
     return (
-      <SidePanel open={open} className="create-reference">
+      <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
           <h1>Create {typeLabel}</h1>
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
 
           <ul className="connections-list">
-            {this.props.relationTypes.map((relationType) => {
-              return <li onClick={() => this.props.setRelationType(relationType.get('_id'))} key={relationType.get('_id')}>
-                {this.renderCheckType(relationType)}
-                {relationType.get('name')}
+            {this.props.relationTypes.map((template) => {
+              return <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
+                {this.renderCheckType(template)}
+                {template.get('name')}
               </li>;
             })}
           </ul>
@@ -49,6 +50,9 @@ export class CreateConnectionPanel extends Component {
         </div>
 
         <div className="sidepanel-footer">
+          <button className="btn btn-primary" onClick={this.props.closePanel}>
+            <i className="fa fa-close"></i>
+          </button>
           <ShowIf if={connection.type !== 'targetRanged'}>
             <ActionButton action="save" onCreate={(reference) => {
               this.props.onCreate(reference, pdfInfo);
@@ -74,6 +78,7 @@ export class CreateConnectionPanel extends Component {
 CreateConnectionPanel.propTypes = {
   uiState: PropTypes.object,
   containerId: PropTypes.string,
+  className: PropTypes.string,
   connection: PropTypes.object,
   pdfInfo: PropTypes.object,
   relationTypes: PropTypes.object,

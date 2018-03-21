@@ -20,9 +20,15 @@ describe('SourceDocument', function () {
         reference: {sourceRange: {selection: 'selection'}},
         highlightedReference: 'highlightedReference'
       }),
-      doc: {name: 'document'},
+      doc: Immutable.fromJS({sharedId: 'docSharedId', name: 'document'}),
       targetDoc: Immutable.fromJS({}),
-      references: Immutable.fromJS([{reference: 'reference'}])
+      references: Immutable.fromJS([
+        {_id: 'r1', entity: 'docSharedId', range: {start: 0}, reference: 'reference', hub: 'hub1'},
+        {_id: 'r2', entity: 'docSharedId', reference: 'should not generate a reference, its not text based', hub: 'hub2'},
+        {_id: 'r3', entity: 'id1', reference: 'should be excluded', hub: 'hub2'},
+        {_id: 'r4', entity: 'id2', reference: 'should be associated', hub: 'hub1'},
+        {_id: 'r5', entity: 'id3', reference: 'should also be associated', hub: 'hub1'}
+      ])
     }
   };
 
@@ -35,8 +41,15 @@ describe('SourceDocument', function () {
     render();
     let props = component.props();
     expect(props.selection).toEqual({selection: 'selection'});
-    expect(props.doc.name).toBe('document');
-    expect(props.references).toEqual([{reference: 'reference'}]);
+    expect(props.doc.get('name')).toBe('document');
+    expect(props.references.toJS()).toEqual([
+      {_id: 'r1', entity: 'docSharedId', range: {start: 0}, reference: 'reference', hub: 'hub1',
+       associatedRelationship: {_id: 'r4', entity: 'id2', reference: 'should be associated', hub: 'hub1'}
+      },
+      {_id: 'r1', entity: 'docSharedId', range: {start: 0}, reference: 'reference', hub: 'hub1',
+       associatedRelationship: {_id: 'r5', entity: 'id3', reference: 'should also be associated', hub: 'hub1'}
+      }
+    ]);
     expect(props.className).toBe('sourceDocument');
     expect(props.executeOnClickHandler).toBe(false);
     expect(props.highlightedReference).toBe('highlightedReference');

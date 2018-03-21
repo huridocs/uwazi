@@ -11,16 +11,19 @@ selectors.doc = {
     title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
     type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
     company: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
-    nemesis: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > select',
     superPowersSearch: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(1) > div > input',
     suporPowers: {
       regeneration: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li.multiselectItem > label'
+    },
+    nemesis: {
+      daneryl: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(2) > label',
+      joker: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(3) > label'
     }
   },
   viewer: {
     title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
     company: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
-    nemesis: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(3) > dd > a',
+    nemesis: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(3) > dd > ul > li:nth-child(1) > a',
     superpowers: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(4) > dd > ul'
   }
 };
@@ -51,7 +54,7 @@ describe('PublishDocument', () => {
     .write(selectors.doc.form.title, 'Wolverine')
     .select(selectors.doc.form.type, comicCharacter)
     .write(selectors.doc.form.company, 'Marvel Comics')
-    .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
+    .waitToClick(selectors.doc.form.nemesis.daneryl)
     .write(selectors.doc.form.superPowersSearch, 'regen')
     .waitToClick(selectors.doc.form.suporPowers.regeneration)
     .click(selectors.libraryView.saveButton)
@@ -89,7 +92,7 @@ describe('PublishDocument', () => {
       .write(selectors.doc.form.title, ' (Logan)')
       .clearInput(selectors.doc.form.company)
       .write(selectors.doc.form.company, 'Marvel')
-      .select(selectors.doc.form.nemesis, '86raxe05i4uf2yb9')
+      .waitToClick(selectors.doc.form.nemesis.joker)
       .saveFromDocumentViewer()
       .refresh()
       .wait(selectors.documentView.sidePanelTitle)
@@ -109,7 +112,8 @@ describe('PublishDocument', () => {
       .then(text => {
         expect(text).toBe('regeneration\n');
       })
-      .then(done);
+      .then(done)
+      .catch(catchErrors(done));
     }, 20000);
   });
 

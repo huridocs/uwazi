@@ -4,9 +4,9 @@ import {connect} from 'react-redux';
 import {Form, Field} from 'react-redux-form';
 
 import validator from '../helpers/validator';
+import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import {Select as SimpleSelect} from 'app/Forms';
 import MetadataFormFields from './MetadataFormFields';
-import {FormGroup, IconSelector} from 'app/ReactReduxForms';
 import {createSelector} from 'reselect';
 import {filterBaseProperties} from 'app/Entities/utils/filterBaseProperties';
 import t from 'app/I18N/t';

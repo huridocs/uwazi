@@ -16,7 +16,7 @@ describe('CreateConnectionPanel', () => {
   beforeEach(() => {
     props = {
       connection: Immutable({
-        relationType: 'rt3',
+        template: 'rt3',
         type: 'basic',
         sourceDocument: 'sourceId',
         targetDocument: 'targetId'
@@ -52,7 +52,7 @@ describe('CreateConnectionPanel', () => {
 
   it('should mark the connnection type passed', () => {
     props.connection = Immutable({
-      relationType: 'rt1',
+      template: 'rt1',
       type: 'basic',
       sourceDocument: 'sourceId',
       targetDocument: 'targetId'
@@ -64,7 +64,7 @@ describe('CreateConnectionPanel', () => {
     expect(options.at(1).find('i').props().className).not.toBe('fa fa-check');
 
     props.connection = Immutable({
-      relationType: 'rt2',
+      template: 'rt2',
       type: 'basic',
       sourceDocument: 'sourceId',
       targetDocument: 'targetId'

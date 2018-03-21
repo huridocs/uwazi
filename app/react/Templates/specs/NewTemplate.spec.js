@@ -13,15 +13,16 @@ describe('NewTemplate', () => {
   let context;
   let thesauris = [{label: '1'}, {label: '2'}];
   let templates = [{name: 'Comic'}, {name: 'Newspaper'}];
+  let relationTypes = [{name: 'Friend'}, {name: 'Family'}];
 
   beforeEach(() => {
-    // RouteHandler.renderedFromServer = true;
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
     component = shallow(<NewTemplate />, {context});
     instance = component.instance();
     backend.restore();
     backend
     .get(APIURL + 'thesauris', {body: JSON.stringify({rows: thesauris})})
+    .get(APIURL + 'relationtypes', {body: JSON.stringify({rows: relationTypes})})
     .get(APIURL + 'templates', {body: JSON.stringify({rows: templates})});
   });
 
@@ -37,6 +38,7 @@ describe('NewTemplate', () => {
       .then((response) => {
         expect(response.thesauris).toEqual(thesauris);
         expect(response.templates).toEqual(templates);
+        expect(response.relationTypes).toEqual(relationTypes);
         done();
       })
       .catch(done.fail);
@@ -46,10 +48,11 @@ describe('NewTemplate', () => {
   describe('setReduxState()', () => {
     it('should call setThesauri with thesauri passed', () => {
       spyOn(formActions, 'reset').and.returnValue('reset');
-      instance.setReduxState({thesauris: 'thesauris', templates: 'templates'});
+      instance.setReduxState({thesauris: 'thesauris', templates: 'templates', relationTypes: 'relationTypes'});
       expect(context.store.dispatch).toHaveBeenCalledWith('reset');
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: 'templates'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'relationTypes/SET', value: 'relationTypes'});
     });
   });
 });

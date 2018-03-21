@@ -7,7 +7,7 @@ export function generateNames(properties) {
   });
 }
 
-export function generateIds(properties) {
+export function generateIds(properties = []) {
   return properties.map((property) => {
     if (!property.id) {
       property.id = uuid.v4();
@@ -16,7 +16,7 @@ export function generateIds(properties) {
   });
 }
 
-export function generateNamesAndIds(_properties) {
+export function generateNamesAndIds(_properties = []) {
   let properties = generateNames(_properties);
   return generateIds(properties);
 }

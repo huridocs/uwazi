@@ -1,12 +1,13 @@
-import * as actions from 'app/Library/actions/filterActions';
-import * as types from 'app/Library/actions/actionTypes';
-import * as libraryActions from 'app/Library/actions/libraryActions';
+import {browserHistory} from 'react-router';
 import {actions as formActions} from 'react-redux-form';
 import Immutable from 'immutable';
 
-import libraryHelper from 'app/Library/helpers/libraryFilters';
+import * as actions from 'app/Library/actions/filterActions';
 import comonPropertiesHelper from 'shared/comonProperties';
+import * as libraryActions from 'app/Library/actions/libraryActions';
+import libraryHelper from 'app/Library/helpers/libraryFilters';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import * as types from 'app/Library/actions/actionTypes';
 
 describe('filterActions', () => {
   let templates = ['templates'];
@@ -79,6 +80,7 @@ describe('filterActions', () => {
 
   describe('resetFilters', () => {
     it('should deactivate all the properties and documentTypes', () => {
+      spyOn(browserHistory, 'push');
       actions.resetFilters('library')(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_FILTERS,

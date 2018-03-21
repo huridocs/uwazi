@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 
+const generateID = mongoose.Types.ObjectId;
+export {generateID};
+
 export default (MongooseModel) => {
   return {
     db: MongooseModel,

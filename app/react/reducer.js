@@ -9,8 +9,9 @@ import thesauri from 'app/Thesauris/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
-import connections from 'app/Connections';
-import ConnectionsList from 'app/ConnectionsList';
+import {reducer as connections} from 'app/Connections';
+import relationships from 'app/Relationships';
+import {reducer as ConnectionsList} from 'app/ConnectionsList';
 import {reducer as attachments} from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';
@@ -47,8 +48,9 @@ export default combineReducers({
   users: createReducer('users', []),
   documentViewer,
   contextMenu,
-  connections: connections.reducer,
-  connectionsList: ConnectionsList.reducer,
+  connections: connections,
+  connectionsList: ConnectionsList,
+  relationships: relationships.reducer,
   attachments,
   modals,
   user,

@@ -5,7 +5,7 @@ export default function () {
       include: [
         'title', 'icon', 'processed', 'creationDate', 'template',
         'metadata', 'type', 'sharedId', 'toc', 'attachments',
-        'language', 'file', 'uploaded', 'published'
+        'language', 'file', 'uploaded', 'published', 'relationships'
       ]
     },
     from: 0,
@@ -367,7 +367,7 @@ export default function () {
           match = this.rangeFilter(filter);
         }
 
-        if (filter.type === 'multiselect') {
+        if (filter.type === 'multiselect' || filters.type === 'relationship') {
           match = this.multiselectFilter(filter);
         }
 
@@ -409,7 +409,7 @@ export default function () {
       };
     },
 
-    nestedAggregation(property, readOnlyFilters) {
+    nestedAggregation(property, should, readOnlyFilters) {
       let nestedAggregation = baseQuery.aggregations[property.name] = {
         nested: {
           path: `metadata.${property.name}`
@@ -426,7 +426,7 @@ export default function () {
 
         let path = `metadata.${property.name}.${prop}.raw`;
         let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
-          if (match.bool && match.bool.must && match.bool.must[0].nested) {
+          if (match.bool && match.bool.must && match.bool.must[0] && match.bool.must[0].nested) {
             match.bool.must = match.bool.must.filter((nestedMatcher) => {
               return !nestedMatcher.nested ||
               !nestedMatcher.nested.query.bool.must[0].terms ||
@@ -459,6 +459,7 @@ export default function () {
                     filtered: {
                       filter: {
                         bool: {
+                          should: should,
                           must: filters
                         }
                       }
@@ -477,13 +478,12 @@ export default function () {
     aggregations(properties) {
       properties.forEach((property) => {
         let path = `metadata.${property.name}.raw`;
-        let should = baseQuery.query.bool.should[0].bool.should.filter((match) => {
+        let filters = baseQuery.query.bool.filter.filter((match) => {
           return match && (!match.terms || match.terms && !match.terms[path]);
         });
+        filters = filters.concat(baseQuery.query.bool.must);
 
-        let filters = baseQuery.query.bool.must;
-        filters = filters.concat(baseQuery.query.bool.filter);
-
+        let should = baseQuery.query.bool.should;
         if (property.nested) {
           baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, should, filters);
           return;

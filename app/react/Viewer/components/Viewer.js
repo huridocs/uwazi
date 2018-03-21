@@ -5,10 +5,12 @@ import Helmet from 'react-helmet';
 import {bindActionCreators} from 'redux';
 
 import ContextMenu from 'app/ContextMenu';
+import {actions} from 'app/BasicReducer';
 
 import {loadDefaultViewerMenu, loadTargetDocument} from '../actions/documentActions';
 import {openPanel} from '../actions/uiActions';
 import {addReference} from '../actions/referencesActions';
+import {selectDoc} from '../selectors';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import {CreateConnectionPanel} from 'app/Connections';
@@ -22,10 +24,19 @@ import ShowIf from 'app/App/ShowIf';
 import {TemplateLabel, Icon} from 'app/Layout';
 import Marker from 'app/Viewer/utils/Marker';
 
+import {ConnectionsList} from 'app/ConnectionsList';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+import {RelationshipsFormButtons} from 'app/Relationships';
+import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
+
 export class Viewer extends Component {
 
   componentWillMount() {
     this.context.store.dispatch(openPanel('viewMetadataPanel'));
+    // TEST!!!
+    if (this.props.sidepanelTab === 'connections') {
+      this.context.store.dispatch(actions.set('viewer.sidepanel.tab', ''));
+    }
   }
 
   componentDidMount() {
@@ -34,7 +45,7 @@ export class Viewer extends Component {
   }
 
   render() {
-    const {doc} = this.props;
+    const {doc, sidepanelTab} = this.props;
 
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
@@ -61,8 +72,11 @@ export class Viewer extends Component {
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
-            <ShowIf if={!this.props.targetDoc}>
+            <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
+            </ShowIf>
+            <ShowIf if={sidepanelTab === 'connections'}>
+              <ConnectionsList hideFooter={true} searchCentered={true} />
             </ShowIf>
             <TargetDocument />
             <Footer/>
@@ -74,6 +88,20 @@ export class Viewer extends Component {
         <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
                                onCreate={this.props.addReference}
                                onRangedConnect={this.props.loadTargetDocument} />
+
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <RelationshipMetadata />
+        </ShowIf>
+
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <AddEntitiesPanel />
+        </ShowIf>
+
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <div className="sidepanel-footer">
+            <RelationshipsFormButtons />
+          </div>
+        </ShowIf>
 
         <ContextMenu align="bottom" overrideShow={true} show={!this.props.panelIsOpen}>
           <ViewerDefaultMenu/>
@@ -93,21 +121,29 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
+  // TEST!!!
+  sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
-  showTextSelectMenu: PropTypes.bool
+  showTextSelectMenu: PropTypes.bool,
+  selectedConnection: PropTypes.bool,
+  selectedConnectionMetadata: PropTypes.object
 };
 
 Viewer.contextTypes = {
   store: PropTypes.object
 };
 
-const mapStateToProps = ({documentViewer}) => {
+
+const mapStateToProps = (state) => {
+  const {documentViewer} = state;
   let uiState = documentViewer.uiState.toJS();
   return {
-    doc: documentViewer.doc,
+    doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
+    // TEST!!!
+    sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
   };

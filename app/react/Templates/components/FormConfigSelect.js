@@ -18,25 +18,15 @@ export class FormConfigSelect extends Component {
     const thesauris = this.props.thesauris.toJS();
     const property = data.properties[index];
 
-    let optionGroups = [
-      {label: 'Thesaurus', options: []},
-      {label: 'Entities', options: []}
-    ];
-
-    thesauris.filter((thesauri) => {
-      return thesauri._id !== data._id;
-    }).forEach((thesauri) => {
-      if (thesauri.type === 'template') {
-        optionGroups[1].options.push(thesauri);
-        return;
-      }
-      optionGroups[0].options.push(thesauri);
+    const options = thesauris.filter((thesauri) => {
+      return thesauri._id !== data._id && thesauri.type !== 'template';
     });
 
     let labelClass = 'form-group';
     let labelKey = `properties.${index}.label`;
     let requiredLabel = formState.$form.errors[labelKey + '.required'];
     let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
+    let contentRequiredError = formState.$form.errors[`properties.${index}.content.required`] && formState.$form.submitFailed;
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -50,10 +40,10 @@ export class FormConfigSelect extends Component {
           </Field>
         </div>
 
-        <div className="form-group">
-          <label>{t('System', 'Select list')}</label>
+        <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
+          <label>{t('System', 'Select list')}<span className="required">*</span></label>
           <Select model={`template.data.properties[${index}].content`}
-                  options={optionGroups}
+                  options={options}
                   optionsLabel="name"
                   optionsValue="_id" />
         </div>
@@ -129,11 +119,11 @@ FormConfigSelect.propTypes = {
   formKey: PropTypes.string
 };
 
-export function mapStateToProps({template, thesauris}) {
+export function mapStateToProps(state) {
   return {
-    data: template.data,
-    thesauris,
-    formState: template.formState
+    data: state.template.data,
+    thesauris: state.thesauris,
+    formState: state.template.formState
   };
 }
 

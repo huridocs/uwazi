@@ -70,6 +70,7 @@ export class Doc extends Component {
   }
 
   render() {
+    const {className, additionalText} = this.props;
     const doc = this.props.doc.toJS();
     const {sharedId, type, template} = doc;
     const isEntity = type === 'entity';
@@ -94,16 +95,17 @@ export class Doc extends Component {
                       }
                     </div>;
 
-
     return <Item onClick={this.onClick.bind(this)}
                  onSnippetClick={this.props.onSnippetClick}
                  active={this.props.active}
                  doc={this.props.doc}
+                 additionalText={additionalText}
                  searchParams={this.props.searchParams}
                  deleteConnection={this.props.deleteConnection}
                  itemHeader={itemConnections}
                  buttons={buttons}
-                 labels={<UploadEntityStatus doc={this.props.doc} />}
+                 labels={<UploadEntityStatus doc={this.props.doc}/>}
+                 className={className}
             />;
   }
 }
@@ -116,7 +118,9 @@ Doc.propTypes = {
   deleteConnection: PropTypes.func,
   publish: PropTypes.func,
   onSnippetClick: PropTypes.func,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+  additionalText: PropTypes.string
 };
 
 Doc.contextTypes = {

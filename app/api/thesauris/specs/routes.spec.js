@@ -1,7 +1,4 @@
 import thesaurisRoute from '../routes.js';
-import database from '../../utils/database.js';
-import {db_url as dbUrl} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import thesauris from '../thesauris';
 import translations from 'api/i18n/translations';
@@ -15,20 +12,20 @@ describe('thesauris routes', () => {
 
   beforeEach((done) => {
     routes = instrumentRoutes(thesaurisRoute);
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('GET', () => {
-    it('should return all thesauris by default', (done) => {
+    it('should return all thesauris by default, passing user', (done) => {
       spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
-      routes.get('/api/thesauris', {language: 'es'})
+      routes.get('/api/thesauris', {language: 'es', user: 'user'})
       .then((response) => {
-        expect(thesauris.get).toHaveBeenCalledWith(undefined, 'es');
+        let undefinedVar;
+        expect(thesauris.get).toHaveBeenCalledWith(undefinedVar, 'es', 'user');
         expect(response).toEqual({rows: 'response'});
         done();
       })
@@ -42,7 +39,8 @@ describe('thesauris routes', () => {
 
         routes.get('/api/thesauris', req)
         .then(() => {
-          expect(thesauris.get).toHaveBeenCalledWith('id', undefined);
+          let undefinedVar;
+          expect(thesauris.get).toHaveBeenCalledWith('id', undefinedVar, undefinedVar);
           done();
         })
         .catch(catchErrors(done));

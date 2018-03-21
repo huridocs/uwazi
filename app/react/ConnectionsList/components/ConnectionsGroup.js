@@ -70,7 +70,7 @@ export class ConnectionsGroup extends Component {
 
   render() {
     const group = this.props.group.toJS();
-    const {connectionType, connectionLabel, templates} = group;
+    const {connectionLabel, templates} = group;
 
     return (
       <li>
@@ -87,9 +87,8 @@ export class ConnectionsGroup extends Component {
             <i className="multiselectItem-icon fa fa-square-o"></i>
             <i className="multiselectItem-icon fa fa-check"></i>
             <span className="multiselectItem-name">
-              <b>{connectionType === 'metadata' ?
-                  t(group.context, connectionLabel) + ' ' + t('System', 'in') + '...' :
-                  t(group.context, connectionLabel)}</b>
+              <b>{group.key ?
+                  t(group.context, connectionLabel) : t('System', 'No Label')}</b>
             </span>
           </label>
           <span className="multiselectItem-results">
@@ -137,8 +136,8 @@ ConnectionsGroup.propTypes = {
   filters: PropTypes.object
 };
 
-export const mapStateToProps = ({connectionsList}) => {
-  return {filters: connectionsList.filters};
+export const mapStateToProps = ({relationships}) => {
+  return {filters: relationships.list.filters};
 };
 
 export const mapDispatchToProps = (dispatch) => {

@@ -139,9 +139,9 @@ describe('ConnectionsGroup', () => {
   });
 
   describe('mapStateToProps', () => {
-    it('should map connectionsList.filters', () => {
-      const state = {connectionsList: {filters: {a: 'b'}}};
-      expect(mapStateToProps(state).filters).toBe(state.connectionsList.filters);
+    it('should map relationships.list.filters', () => {
+      const state = {relationships: {list: {filters: {a: 'b'}}}};
+      expect(mapStateToProps(state).filters).toBe(state.relationships.list.filters);
     });
   });
 });

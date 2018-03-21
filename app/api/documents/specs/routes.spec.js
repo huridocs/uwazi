@@ -11,13 +11,12 @@ describe('documents', () => {
   let routes;
 
   beforeEach((done) => {
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
     routes = instrumentRoutes(documentRoutes);
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('POST', () => {

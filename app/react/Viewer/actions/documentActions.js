@@ -10,10 +10,10 @@ import {actions as formActions} from 'react-redux-form';
 import documents from 'app/Documents';
 import {notify} from 'app/Notifications';
 import {removeDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
-import referencesUtils from '../utils/referencesUtils';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import {isClient} from 'app/utils';
+import {actions as relationshipActions} from 'app/Relationships';
 
 export function setDocument(document, html) {
   return {
@@ -50,6 +50,7 @@ export function saveDocument(doc) {
       dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', updatedDoc));
+      dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
     });
   };
 }
@@ -76,7 +77,7 @@ export function deleteDocument(doc) {
 }
 
 export function getDocument(id) {
-  return api.get('documents?_id=' + id)
+  return api.get('entities?_id=' + id)
   .then((response) => {
     let doc = response.json.rows[0];
     if (!isClient) {
@@ -97,14 +98,14 @@ export function getDocument(id) {
 }
 
 export function loadTargetDocument(id) {
-  return function (dispatch, getState) {
+  return function (dispatch) {
     return Promise.all([
       getDocument(id),
       referencesAPI.get(id)
     ])
     .then(([targetDoc, references]) => {
       dispatch(actions.set('viewer/targetDoc', targetDoc));
-      dispatch(actions.set('viewer/targetDocReferences', referencesUtils.filterRelevant(references, getState().locale)));
+      dispatch(actions.set('viewer/targetDocReferences', references));
     });
   };
 }
