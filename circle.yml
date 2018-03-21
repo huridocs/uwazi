@@ -23,4 +23,4 @@ dependencies:
 test:
   override:
     - ./node_modules/.bin/eslint app
-    - ./node_modules/.bin/jest
+    - ./node_modules/.bin/jest -i
