@@ -3,7 +3,7 @@ import {shallow} from 'enzyme';
 
 import {I18NMenu} from '../I18NMenu';
 import Immutable from 'immutable';
-import Cookie from 'tiny-cookie';
+import * as Cookie from 'tiny-cookie';
 
 describe('I18NMenu', () => {
   let component;
