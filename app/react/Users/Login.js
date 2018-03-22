@@ -4,11 +4,13 @@ import {browserHistory} from 'react-router';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
-import RouteHandler from 'app/App/RouteHandler';
-import {t} from 'app/I18N';
 import {actions as formActions} from 'react-redux-form';
-import ShowIf from 'app/App/ShowIf';
+
+import {t} from 'app/I18N';
 import {reconnectSocket} from 'app/socket';
+import RouteHandler from 'app/App/RouteHandler';
+import ShowIf from 'app/App/ShowIf';
+import {reloadThesauris} from 'app/Thesauris/actions/thesaurisActions';
 
 import auth from 'app/Auth';
 
@@ -50,6 +52,7 @@ export class Login extends RouteHandler {
         return;
       }
       reconnectSocket();
+      this.props.reloadThesauris();
       browserHistory.push('/');
     })
     .catch(() => {
@@ -104,8 +107,8 @@ export class Login extends RouteHandler {
             <ShowIf if={this.state.recoverPassword}>
               <div className="form-text">
                 <a title={t('System', 'Cancel')}
-                  onClick={this.setLogin.bind(this)} >
-                  {t('System', 'Cancel')}
+                   onClick={this.setLogin.bind(this)} >
+                   {t('System', 'Cancel')}
                 </a>
               </div>
             </ShowIf>
@@ -118,7 +121,8 @@ export class Login extends RouteHandler {
 
 Login.propTypes = {
   login: PropTypes.func,
-  recoverPassword: PropTypes.func
+  recoverPassword: PropTypes.func,
+  reloadThesauris: PropTypes.func
 };
 
 export function mapStateToProps({settings}) {
@@ -131,7 +135,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     login: auth.actions.login,
     recoverPassword: auth.actions.recoverPassword,
-    reset: formActions.reset
+    reset: formActions.reset,
+    reloadThesauris
   }, dispatch);
 }
 
