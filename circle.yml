@@ -1,0 +1,27 @@
+machine:
+  node:
+    version: 6.13.1
+
+dependencies:
+  pre:
+    - |
+      if [[ ! -e elasticsearch-5.5.1 ]]; then
+        wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.tar.gz
+        tar -xvf elasticsearch-5.5.1.tar.gz
+      fi
+    - |
+    - elasticsearch-5.5.1/bin/elasticsearch: {background: true}
+    # Make sure that Elasticsearch is up before running tests:
+    - sleep 10 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/
+
+  override:
+    - yarn install
+
+  cache_directories:
+    - elasticsearch-5.5.1 # relative to the build directory
+    - ../.mongodb-binaries # relative to the build directory
+
+test:
+  override:
+    - ./node_modules/.bin/eslint app
+    - ./node_modules/.bin/jest -i

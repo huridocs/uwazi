@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import templates from 'api/templates/templates.js';
 import entities from 'api/entities/entities.js';
-import references from 'api/references/references';
 import documents from 'api/documents/documents.js';
 import {catchErrors} from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
@@ -11,12 +10,11 @@ import fixtures, {templateToBeEditedId, templateToBeDeleted, templateWithContent
 describe('templates', () => {
   beforeEach((done) => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('save', () => {
@@ -61,33 +59,6 @@ describe('templates', () => {
         templates.save(changedTemplate)
         .then(() => {
           expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({select: '', multiselect: []}, templateWithContents);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should update metadata connections', (done) => {
-        spyOn(translations, 'updateContext');
-        spyOn(entities, 'removeValuesFromEntities');
-        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
-        spyOn(references, 'updateMetadataConnections').and.returnValue(Promise.resolve());
-        const changedTemplate = {
-          _id: templateWithContents, name: 'changed', properties: [
-            {id: '1', type: 'select', content: 'new_thesauri', label: 'the select'},
-            {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'the multiselect'}
-          ]
-        };
-
-        const sanitizedTemplate = {
-          _id: templateWithContents, name: 'changed', properties: [
-            {id: '1', type: 'select', content: 'new_thesauri', label: 'the select', name: 'the_select'},
-            {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'the multiselect', name: 'the_multiselect'}
-          ]
-        };
-
-        templates.save(changedTemplate)
-        .then(() => {
-          expect(references.updateMetadataConnections).toHaveBeenCalledWith(sanitizedTemplate);
           done();
         })
         .catch(catchErrors(done));
@@ -193,15 +164,15 @@ describe('templates', () => {
 
     describe('when passing _id', () => {
       beforeEach(() => {
-        spyOn(entities, 'updateMetadataProperties');
+        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
       });
 
       it('should updateMetadataProperties', (done) => {
         spyOn(translations, 'updateContext');
         let toSave = {_id: templateToBeEditedId, name: 'changed name'};
-        templates.save(toSave)
+        templates.save(toSave, 'en')
         .then(() => {
-          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave);
+          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, 'en');
           done();
         })
         .catch(catchErrors(done));

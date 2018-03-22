@@ -143,7 +143,7 @@ mark, .mark {
   li {
     cursor: pointer;
   }
-  
+
   .fa {
     width: 20px;
     color: $c-grey-light;
@@ -188,14 +188,23 @@ mark, .mark {
     -webkit-flex-direction: row;
     flex-direction: row;
     min-height: auto;
-    padding: 5px 15px 5px 35px;
+    padding: 5px 15px 5px 15px;
     border-color: $c-grey-light !important;
+
+    &:hover {
+      background-color: transparentize($c-primary-light, 0.7);
+    }
+
+    &:active, &.is-selected {
+      box-shadow: inset 0 0 0 1px transparentize($c-primary, 0.7);
+      background-color: transparentize($c-primary-light, 0.7);
+    }
 
     .item-name {
       font-family: $f-regular;
       color: $c-grey-dark;
     }
-
+    /*
     &::after {
       content: '\F096';
       font-family: FontAwesome;
@@ -209,6 +218,7 @@ mark, .mark {
       transform: translateY(-50%);
     }
 
+
     &.is-selected {
       box-shadow: none;
       font-weight: bold;
@@ -221,7 +231,8 @@ mark, .mark {
         color: $c-black;
       }
     }
-    
+    */
+
     .search-form {
       margin: 0 -15px;
     }
@@ -235,7 +246,7 @@ mark, .mark {
     padding: 0;
     margin-left: 15px;
   }
-  .item-type {
+  .btn-color {
     width: auto;
     max-width: 75px;
   }

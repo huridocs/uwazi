@@ -1,6 +1,4 @@
 import PropTypes from 'prop-types';
-// ENTIRE COMPONENT IS UNTESTED!!!!
-// There is partial testing of added functionality, but this requires a full test.
 import React, {Component} from 'react';
 import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
@@ -10,24 +8,31 @@ import {t} from 'app/I18N';
 
 import {formater, ShowMetadata} from 'app/Metadata';
 import ShowIf from 'app/App/ShowIf';
-import {NeedAuthorization} from 'app/Auth';
 import {browserHistory} from 'react-router';
 import {deleteEntity} from '../actions/actions';
 import {showTab} from '../actions/uiActions';
 import {CreateConnectionPanel} from 'app/Connections';
+import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import {actions as connectionsActions} from 'app/Connections';
 import {ConnectionsGroups, ConnectionsList, ResetSearch} from 'app/ConnectionsList';
 import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/actions';
 import EntityForm from '../containers/EntityForm';
 import {MetadataFormButtons} from 'app/Metadata';
+import {RelationshipsFormButtons} from 'app/Relationships';
 import {TemplateLabel, Icon} from 'app/Layout';
 import SidePanel from 'app/Layout/SidePanel';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 
 import {createSelector} from 'reselect';
 import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
 import {AttachmentsList} from 'app/Attachments';
 
 export class EntityViewer extends Component {
+
+  constructor(props, context) {
+    super(props, context);
+    this.deleteEntity = this.deleteEntity.bind(this);
+  }
 
   deleteEntity() {
     this.context.confirm({
@@ -42,7 +47,6 @@ export class EntityViewer extends Component {
     });
   }
 
-  // TESTED -----
   deleteConnection(reference) {
     if (reference.sourceType !== 'metadata') {
       this.context.confirm({
@@ -54,6 +58,7 @@ export class EntityViewer extends Component {
       });
     }
   }
+
 
   render() {
     const {entity, entityBeingEdited, tab, connectionsGroups} = this.props;
@@ -118,7 +123,7 @@ export class EntityViewer extends Component {
               </div>
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} />
+              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered={true} />
             </TabContent>
           </Tabs>
         </main>
@@ -133,19 +138,16 @@ export class EntityViewer extends Component {
           </div>
         </ShowIf>
 
-        <SidePanel className={'entity-connections entity-' + this.props.tab} open={this.props.sidepanelOpen}>
+        <ShowIf if={selectedTab === 'connections'}>
+          <div className="sidepanel-footer">
+            <RelationshipsFormButtons />
+          </div>
+        </ShowIf>
+
+        <SidePanel className={'entity-connections entity-' + this.props.tab} open={true}>
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
-              <ShowIf if={!!this.props.relationTypes.length}>
-                <NeedAuthorization roles={['admin', 'editor']}>
-                  <button onClick={this.props.startNewConnection.bind(null, 'basic', entity.sharedId)}
-                          className="create-connection btn btn-success">
-                    <i className="fa fa-plus"></i>
-                    <span className="btn-label">New</span>
-                  </button>
-                </NeedAuthorization>
-              </ShowIf>
             </div>
           </ShowIf>
 
@@ -156,11 +158,11 @@ export class EntityViewer extends Component {
               </TabContent>
             </Tabs>
           </div>
-
         </SidePanel>
 
-        <CreateConnectionPanel containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
-
+        <CreateConnectionPanel className="entity-create-connection-panel" containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
+        <AddEntitiesPanel />
+        <RelationshipMetadata />
       </div>
     );
   }
@@ -206,12 +208,10 @@ const mapStateToProps = (state) => {
     rawEntity: state.entityView.entity,
     relationTypes: selectRelationTypes(state),
     entity: prepareMetadata(state),
-    connectionsGroups: state.connectionsList.connectionsGroups,
+    connectionsGroups: state.relationships.list.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
-    library: state.library,
-    sidepanelOpen: state.entityView.uiState.get('tab') === 'attachments'
-    || state.entityView.uiState.get('showFilters') && state.entityView.uiState.get('tab') === 'connections'
+    library: state.library
   };
 };
 

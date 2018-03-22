@@ -1,7 +1,6 @@
 import {actions} from 'app/BasicReducer';
 import {notify} from 'app/Notifications';
 import api from 'app/utils/api';
-import referencesAPI from 'app/Viewer/referencesAPI';
 import debounce from 'app/utils/debounce';
 
 import * as types from './actionTypes';
@@ -41,10 +40,10 @@ export function startNewConnection(connectionType, sourceDocument) {
   };
 }
 
-export function setRelationType(relationType) {
+export function setRelationType(template) {
   return {
     type: types.SET_RELATION_TYPE,
-    relationType
+    template
   };
 }
 
@@ -55,7 +54,7 @@ export function setTargetDocument(id) {
   };
 }
 
-export function saveConnection(connection, callback) {
+export function saveConnection(connection, callback = () => {}) {
   return function (dispatch, getState) {
     dispatch({type: types.CREATING_CONNECTION});
     if (connection.type !== 'basic') {
@@ -64,10 +63,22 @@ export function saveConnection(connection, callback) {
 
     delete connection.type;
 
-    return referencesAPI.save(connection)
-    .then((referenceCreated) => {
-      dispatch({type: types.CONNECTION_CREATED, connection: referenceCreated});
-      callback(referenceCreated);
+    const sourceRelationship = {entity: connection.sourceDocument, template: null, range: connection.sourceRange};
+
+    let targetRelationship = {entity: connection.targetDocument, template: connection.template};
+    if (connection.targetRange && typeof connection.targetRange.start !== 'undefined') {
+      targetRelationship.range = connection.targetRange;
+    }
+
+    const apiCall = {
+      delete: [],
+      save: [[sourceRelationship, targetRelationship]]
+    };
+
+    return api.post('relationships/bulk', apiCall)
+    .then(response => {
+      dispatch({type: types.CONNECTION_CREATED});
+      callback(response.json);
       dispatch(notify('saved successfully !', 'success'));
     });
   };

@@ -1,8 +1,10 @@
+import Immutable from 'immutable';
 import moment from 'moment';
-import t from 'app/I18N/t';
+
 import {advancedSort} from 'app/utils/advancedSort';
-import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import {store} from 'app/store';
+import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
+import t from 'app/I18N/t';
 
 export default {
 
@@ -85,6 +87,37 @@ export default {
     return {label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard};
   },
 
+  relationship(property, thesauriValues, thesauris, showInCard) {
+    let allEntitiesThesauriValues = thesauris
+    .filter((_thesauri) => {
+      return _thesauri.get('type') === 'template';
+    })
+    .reduce((result, _thesauri) => {
+      if (result) {
+        return result.concat(_thesauri.get('values'));
+      }
+
+      return _thesauri.get('values');
+    }, null);
+
+    let thesauri = Immutable.fromJS({
+      values: allEntitiesThesauriValues,
+      type: 'template'
+    });
+
+    let values = thesauriValues.map((thesauriValue) => {
+      let option = thesauri.get('values').find(v => {
+        return v.get('id').toString() === thesauriValue.toString();
+      });
+
+      return this.getSelectOptions(option, thesauri);
+    });
+
+    const sortedValues = advancedSort(values, {property: 'value'});
+
+    return {label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard};
+  },
+
   nested(property, rows, showInCard) {
     if (!rows[0]) {
       return {label: property.get('label'), value: '', showInCard};
@@ -134,6 +167,10 @@ export default {
 
       if (type === 'multiselect' && value) {
         return Object.assign(this.multiselect(property, value, thesauris, showInCard), {type});
+      }
+
+      if (type === 'relationship' && value) {
+        return Object.assign(this.relationship(property, value, thesauris, showInCard), {type});
       }
 
       if (type === 'date' && value) {

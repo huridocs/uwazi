@@ -1,12 +1,13 @@
-import {index as elasticIndex} from 'api/config/elasticIndexes';
-import elastic from './elastic';
-import documentQueryBuilder from './documentQueryBuilder';
-import entities from 'api/entities';
-import dictionaries from 'api/thesauris/dictionariesModel';
-import templatesModel from '../templates';
 import {comonProperties, defaultFilters, allUniqueProperties, textFields} from 'shared/comonProperties';
-import languages from 'shared/languagesList';
 import {detect as detectLanguage} from 'shared/languages';
+import {index as elasticIndex} from 'api/config/elasticIndexes';
+import languages from 'shared/languagesList';
+import dictionaries from 'api/thesauris/dictionariesModel';
+
+import documentQueryBuilder from './documentQueryBuilder';
+import elastic from './elastic';
+import entities from '../entities';
+import templatesModel from '../templates';
 
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
@@ -15,7 +16,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
-    if (property.type === 'select' || property.type === 'multiselect') {
+    if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
     }
     if (property.type === 'nested') {
@@ -43,7 +44,10 @@ function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionari
 
 function agregationProperties(properties) {
   return properties
-  .filter((property) => property.type === 'select' || property.type === 'multiselect' || property.type === 'nested')
+  .filter((property) => property.type === 'select' ||
+    property.type === 'multiselect' ||
+    property.type === 'relationship' ||
+    property.type === 'nested')
   .map((property) => {
     if (property.type === 'nested') {
       return {name: property.name, nested: true, nestedProperties: property.nestedProperties};
@@ -68,7 +72,7 @@ const search = {
 
     return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle])
     .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel]) => {
-      let textFieldsToSearch = textFields(templates).map((prop) => 'metadata.' + prop.name).concat(['title', 'fullText']);
+      let textFieldsToSearch = query.fields || textFields(templates).map((prop) => 'metadata.' + prop.name).concat(['title', 'fullText']);
       let documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
       .filterByTemplate(query.types)
@@ -87,7 +91,7 @@ const search = {
         documentsQuery.limit(query.limit);
       }
 
-      if (query.includeUnpublished) {
+      if (query.includeUnpublished && user) {
         documentsQuery.includeUnpublished();
       }
 
@@ -170,10 +174,6 @@ const search = {
     });
   },
 
-  countByTemplate(templateId) {
-    return entities.countByTemplate(templateId);
-  },
-
   index(_entity) {
     const entity = Object.assign({}, _entity);
     const id = entity._id.toString();
@@ -251,22 +251,6 @@ const search = {
         });
       }
       return res;
-    });
-  },
-
-  indexEntities(query, select, limit = 200) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return entities.get(query, select, {skip: offset, limit})
-      .then((docs) => this.bulkIndex(docs))
-      .then(() => index(offset + limit, totalRows));
-    };
-    return entities.count(query)
-    .then((totalRows) => {
-      return index(0, totalRows);
     });
   },
 

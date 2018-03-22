@@ -13,12 +13,11 @@ describe('entities', () => {
 
   beforeEach((done) => {
     routes = instrumentRoutes(documentRoutes);
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('POST', () => {
@@ -37,36 +36,42 @@ describe('entities', () => {
     });
 
     it('should create a new document with current user', (done) => {
-      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve({values: []})));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('document')));
 
       routes.post('/api/entities', req)
       .then((document) => {
-        expect(document).toBe('document');
+        expect(document).toBe('entity');
         expect(entities.save).toHaveBeenCalledWith(req.body, {user: req.user, language: 'lang'});
         done();
       });
     });
 
     it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
+      const user = {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'};
       req = {
         body: {title: 'Batman begins', template: 'template'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        user,
         language: 'lang',
         io: {
           sockets: {
-            emit: jasmine.createSpy('emit').and.callFake((event, thesauri) => {
-              expect(event).toBe('thesauriChange');
-              expect(thesauri).toBe('templateTransformed');
-              expect(thesauris.templateToThesauri).toHaveBeenCalledWith('template', 'lang');
-              done();
+            emit: jest.fn((event, thesauri) => {
+              try {
+                expect(event).toBe('thesauriChange');
+                expect(thesauri).toBe('templateTransformed');
+                expect(thesauris.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
+                done();
+              } catch (err) {
+                done.fail(err);
+              }
             })
           }
         }
       };
 
-      spyOn(entities, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(entities, 'save').and.returnValue(Promise.resolve({_id: 'id'}));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(['entityWithRelationShips']));
       spyOn(templates, 'getById').and.returnValue(new Promise((resolve) => resolve('template')));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise((resolve) => resolve('templateTransformed')));
       routes.post('/api/entities', req)
@@ -90,7 +95,12 @@ describe('entities', () => {
         spyOn(entities, 'multipleUpdate').and.returnValue(new Promise((resolve) => resolve([{sharedId: '1'}, {sharedId: '2'}])));
         routes.post('/api/entities/multipleupdate', req)
         .then((response) => {
-          expect(entities.multipleUpdate).toHaveBeenCalledWith(['1', '2'], {metadata: {text: 'new text'}}, {user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}, language: 'lang'});
+          expect(entities.multipleUpdate)
+          .toHaveBeenCalledWith(
+            ['1', '2'],
+            {metadata: {text: 'new text'}},
+            {user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'}, language: 'lang'}
+          );
           expect(response).toEqual(['1', '2']);
           done();
         })
@@ -101,16 +111,16 @@ describe('entities', () => {
 
   describe('GET', () => {
     it('should return matching document', (done) => {
-      spyOn(entities, 'getById').and.returnValue(Promise.resolve('result'));
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve('result'));
       let req = {
-        query: {_id: 'id'},
+        query: {_id: 'sharedId'},
         language: 'lang'
       };
 
       routes.get('/api/entities', req)
       .then((response) => {
-        expect(entities.getById).toHaveBeenCalledWith('id', 'lang');
-        expect(response).toEqual({rows: ['result']});
+        expect(entities.getWithRelationships).toHaveBeenCalledWith({sharedId: 'sharedId', language: 'lang'});
+        expect(response).toEqual({rows: 'result'});
         done();
       })
       .catch(catchErrors(done));

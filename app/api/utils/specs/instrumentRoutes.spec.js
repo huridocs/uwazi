@@ -117,7 +117,7 @@ describe('routesMock', () => {
 
   describe('when routepath do not match', () => {
     it('should throw an error', () => {
-      expect(route.get.bind(route, '/unexistent/route')).toThrow('Route GET /unexistent/route is not defined');
+      expect(route.get.bind(route, '/unexistent/route')).toThrow(new Error('Route GET /unexistent/route is not defined'));
     });
   });
 

@@ -5,7 +5,6 @@ import validateTemplate from 'api/templates/validateTemplate';
 import translations from 'api/i18n/translations';
 import instanceModel from 'api/odm';
 import templatesModel from './templatesModel.js';
-import references from 'api/references/references';
 import entities from 'api/entities';
 
 const model = instanceModel(templatesModel);
@@ -63,7 +62,7 @@ let save = (template) => {
 };
 
 export default {
-  save(template) {
+  save(template, language) {
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
 
@@ -86,9 +85,11 @@ export default {
         }
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
-      .then(() => entities.updateMetadataProperties(template))
-      .then(() => references.updateMetadataConnections(template))
-      .then(() => save(template));
+      .then(() => save(template))
+      .then((savedTemplate) => {
+        return entities.updateMetadataProperties(template, language)
+        .then(() => savedTemplate);
+      });
     }
 
     return save(template)

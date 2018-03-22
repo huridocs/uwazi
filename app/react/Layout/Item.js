@@ -55,7 +55,9 @@ export class Item extends Component {
           <dl className={dlClassName} key={index}>
             <dt>{t(property.context || translationContext, property.label)}</dt>
             <dd className={isSortingProperty ? 'item-current-sort' : ''}>
-              <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+              <div className={value.length > 128 ? 'item-metadata-crop' : ''}>
+                <Icon className="item-icon item-icon-center" data={property.icon} />{value}
+              </div>
             </dd>
           </dl>
         );
@@ -138,11 +140,11 @@ export class Item extends Component {
   }
 
   render() {
-    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon, additionalText,
-      templateClassName, buttons, evalPublished} = this.props;
+    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
+           additionalText, buttons, evalPublished} = this.props;
 
     const doc = this.props.doc.toJS();
-    const snippet = additionalText ? <div className="item-snippet">{additionalText}</div> : '';
+    const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
     const metadataElements = this.getMetadata(doc);
     const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
 
@@ -152,7 +154,8 @@ export class Item extends Component {
         onClick={onClick || function () {}}
         onMouseEnter={onMouseEnter || function () {}}
         onMouseLeave={onMouseLeave || function () {}}
-        active={active}>
+        active={active}
+        tabIndex="1">
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
@@ -161,16 +164,14 @@ export class Item extends Component {
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc[this.props.titleProperty]}</span>
             <DocumentLanguage doc={this.props.doc} />
-            {snippet}
           </div>
+          {Snippet}
           {this.getSearchSnipett(doc)}
         </div>
         {metadata}
         <ItemFooter>
-          <div className={`item-label-group ${templateClassName || ''}`}>
-            {doc.template ? <TemplateLabel template={doc.template}/> : false}
-            {this.props.labels}
-          </div>
+          {doc.template ? <TemplateLabel template={doc.template}/> : false}
+          {this.props.labels}
           {buttons}
         </ItemFooter>
       </RowList.Item>
@@ -196,7 +197,6 @@ Item.propTypes = {
   labels: PropTypes.object,
   className: PropTypes.string,
   titleProperty: PropTypes.string,
-  templateClassName: PropTypes.string,
   evalPublished: PropTypes.bool
 };
 

@@ -53,6 +53,10 @@ export default class NestedMultiselect extends Component {
   }
 
   getOptions(prop, aggregations) {
+    if (this.props.options) {
+      return this.props.options;
+    }
+
     if (!aggregations[this.props.property.name]) {
       return [];
     }
@@ -65,7 +69,7 @@ export default class NestedMultiselect extends Component {
   render() {
     let property = this.props.property;
 
-    let aggregations = this.props.aggregations.toJS();
+    let aggregations = this.props.aggregations ? this.props.aggregations.toJS() : {};
 
     return <ul className="multiselect is-active">
             <li className="multiselectActions">
@@ -135,5 +139,6 @@ NestedMultiselect.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.object,
   property: PropTypes.object,
+  options: PropTypes.array,
   aggregations: PropTypes.object
 };

@@ -70,6 +70,7 @@ export class Doc extends Component {
   }
 
   render() {
+    const {className, additionalText} = this.props;
     const doc = this.props.doc.toJS();
     const {sharedId, type, template} = doc;
     const isEntity = type === 'entity';
@@ -83,27 +84,28 @@ export class Doc extends Component {
 
     const buttons = <div>
                       {doc.processed || isEntity ?
-                        <I18NLink to={documentViewUrl} className="item-shortcut btn btn-default" onClick={(e) => e.stopPropagation()}>
-                          <i className="fa fa-file-text-o"></i>
+                        <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={(e) => e.stopPropagation()}>
+                          <i className="fa fa-angle-right"></i> { t('System', 'View') }
                         </I18NLink> : false
                       }
                       {(doc.processed || isEntity) && !doc.published && hasTemplate ?
-                        <button className="item-shortcut btn btn-default btn-hover-success" onClick={this.publish.bind(this)}>
-                          <i className="fa fa-paper-plane"></i>
+                        <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
+                          <i className="fa fa-paper-plane"></i> { t('System', 'Publish') }
                         </button> : false
                       }
                     </div>;
-
 
     return <Item onClick={this.onClick.bind(this)}
                  onSnippetClick={this.props.onSnippetClick}
                  active={this.props.active}
                  doc={this.props.doc}
+                 additionalText={additionalText}
                  searchParams={this.props.searchParams}
                  deleteConnection={this.props.deleteConnection}
                  itemHeader={itemConnections}
                  buttons={buttons}
-                 labels={<UploadEntityStatus doc={this.props.doc} />}
+                 labels={<UploadEntityStatus doc={this.props.doc}/>}
+                 className={className}
             />;
   }
 }
@@ -116,7 +118,9 @@ Doc.propTypes = {
   deleteConnection: PropTypes.func,
   publish: PropTypes.func,
   onSnippetClick: PropTypes.func,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+  additionalText: PropTypes.string
 };
 
 Doc.contextTypes = {

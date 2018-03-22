@@ -5,16 +5,13 @@ require('isomorphic-fetch');
 var error = console.error.bind(console);
 console.error = function(message){
   if (message.match('/api/i18n/systemKeys')) {
-    return 
-  }
-  if (message.match('Unhandled promise rejection')) {
-    return
+    return;
   }
   error(message);
 };
 //console.error = () => {};
 import Enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-15';
+import Adapter from 'enzyme-adapter-react-16';
 Enzyme.configure({adapter: new Adapter()});
 
 // This gets replaced by karma webpack with the updated files on rebuild

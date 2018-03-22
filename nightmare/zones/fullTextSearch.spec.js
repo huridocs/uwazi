@@ -16,7 +16,7 @@ describe('FullTextSearch zone', () => {
 
   it('should show text snippets when performing a text search', (done) => {
     nightmare
-    .librarySearch('batman')
+    .librarySearch('batman and robin')
     .wait(selectors.libraryView.libraryFirstDocumentSnippet)
     .getInnerText(selectors.libraryView.libraryFirstDocumentSnippet)
     .then(snippet => {
@@ -63,7 +63,7 @@ describe('FullTextSearch zone', () => {
       done();
     })
     .catch(catchErrors(done));
-  });
+  }, 10000);
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {

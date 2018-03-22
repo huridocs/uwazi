@@ -3,6 +3,7 @@ import {APIURL} from 'app/config.js';
 
 import * as actions from 'app/Thesauris/actions/thesaurisActions';
 import {actions as formActions} from 'react-redux-form';
+import api from 'app/Thesauris/ThesaurisAPI';
 
 describe('thesaurisActions', () => {
   describe('editThesauri', () => {
@@ -64,6 +65,17 @@ describe('thesaurisActions', () => {
           done();
         })
         .catch(() => {
+          done();
+        });
+      });
+    });
+
+    describe('reloadThesauris', () => {
+      it('should set thesauris to new values', (done) => {
+        spyOn(api, 'get').and.returnValue(Promise.resolve('thesaurisResponse'));
+        actions.reloadThesauris()(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesaurisResponse'});
           done();
         });
       });

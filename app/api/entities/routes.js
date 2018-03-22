@@ -11,7 +11,7 @@ export default (app) => {
       return templates.getById(response.template);
     })
     .then(template => {
-      return thesauris.templateToThesauri(template, req.language);
+      return thesauris.templateToThesauri(template, req.language, req.user);
     })
     .then((templateTransformed) => {
       req.io.sockets.emit('thesauriChange', templateTransformed);
@@ -40,13 +40,13 @@ export default (app) => {
   });
 
   app.get('/api/entities', (req, res) => {
-    entities.getById(req.query._id, req.language)
+    entities.getWithRelationships({sharedId: req.query._id, language: req.language})
     .then((response) => {
       if (!response) {
         res.json({}, 404);
         return;
       }
-      res.json({rows: [response]});
+      res.json({rows: response});
     })
     .catch(res.error);
   });

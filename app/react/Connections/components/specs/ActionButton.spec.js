@@ -11,14 +11,14 @@ describe('ActionButton', () => {
     basic: Immutable({
       sourceDocument: 'sourceId',
       targetDocument: 'targetId',
-      relationType: 'relationType',
+      template: 'template',
       type: 'basic'
     }),
     ranged: Immutable({
       sourceDocument: 'sourceId',
       sourceRange: 'sourceRange',
       targetDocument: 'targetId',
-      relationType: 'relationType',
+      template: 'template',
       type: 'ranged'
     })
   };
@@ -96,7 +96,7 @@ describe('ActionButton', () => {
         unsetRequiredProperty('targetDocument');
         expectDisabledSave();
 
-        unsetRequiredProperty('relationType');
+        unsetRequiredProperty('template');
         expectDisabledSave();
 
         unsetRequiredProperty('sourceRange', 'ranged');

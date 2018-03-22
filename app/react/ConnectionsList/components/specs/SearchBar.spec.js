@@ -33,10 +33,10 @@ describe('SearchBar (Entities)', () => {
   it('should render a form with the input linked to the state values, which searches references on change (debounced)', () => {
     render();
 
-    expect(component.find(Form).props().model).toBe('connectionsList/search');
+    expect(component.find(Form).props().model).toBe('relationships/list/search');
     expect(component.find(Form).props().onSubmit).toBe(props.searchReferences);
 
-    expect(component.find(Field).props().model).toBe('connectionsList/search.searchTerm');
+    expect(component.find(Field).props().model).toBe('relationships/list/search.searchTerm');
     expect(component.find('input').props().value).toBe('');
 
     component.find('input').simulate('change');
@@ -49,7 +49,7 @@ describe('SearchBar (Entities)', () => {
     render();
 
     component.find('.fa.fa-close').simulate('click');
-    expect(formActions.change).toHaveBeenCalledWith('connectionsList/search.searchTerm', '');
+    expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     expect(props.searchReferences).toHaveBeenCalled();
   });
 
@@ -62,7 +62,7 @@ describe('SearchBar (Entities)', () => {
       instance.componentWillReceiveProps({entityId: 'id1'});
       expect(props.searchReferences).not.toHaveBeenCalled();
       instance.componentWillReceiveProps({entityId: 'id2'});
-      expect(formActions.change).toHaveBeenCalledWith('connectionsList/search.searchTerm', '');
+      expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     });
   });
 
@@ -73,13 +73,13 @@ describe('SearchBar (Entities)', () => {
 
     it('should reset search term', () => {
       instance.componentWillUnmount();
-      expect(formActions.change).toHaveBeenCalledWith('connectionsList/search.searchTerm', '');
+      expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     });
   });
 
   describe('mapStateToProps', () => {
     it('should map entityId and search from connectionsList', () => {
-      const state = {connectionsList: {entityId: 'sid', search: 'search'}};
+      const state = {relationships: {list: {entityId: 'sid', search: 'search'}}};
       expect(mapStateToProps(state).entityId).toBe('sid');
       expect(mapStateToProps(state).search).toBe('search');
     });

@@ -1,7 +1,5 @@
-export default function mockRangeSelection(selectedText = '', start = 1, end = 3) {
-  let range = document.createRange();
-  range.setStart(document.body, start);
-  range.setEnd(document.body, end);
+export default function mockRangeSelection(selectedText = '') {
+  let range = {};
 
   range.range = 'range';
   range.getClientRects = () => {

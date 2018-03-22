@@ -4,7 +4,7 @@ import backend from 'fetch-mock';
 import {APIURL} from '../../config.js';
 import 'jasmine-immutablejs-matchers';
 import {shallow} from 'enzyme';
-import Cookie from 'tiny-cookie';
+import * as Cookie from 'tiny-cookie';
 import Immutable from 'immutable';
 
 class TestController extends RouteHandler {
@@ -66,9 +66,9 @@ describe('RouteHandler', () => {
   });
 
   describe('on instance', () => {
-    it('should request for initialState and setReduxState, with globalResources', (done) => {
+    it('should request for initialState and setReduxState, with the state', (done) => {
       setTimeout(() => {
-        expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query, {templates: 'templates', thesauris: 'thesauris'});
+        expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query, state);
         expect(instance.setReduxStateCalledWith).toEqual({initialData: '123'});
         done();
       });

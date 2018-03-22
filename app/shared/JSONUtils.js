@@ -3,7 +3,9 @@ export default {
     Object.keys(object).forEach((index) => {
       try {
         object[index] = JSON.parse(object[index]);
-      } catch (e) {}
+      } catch (e) {
+        return;
+      }
     });
     return object;
   }

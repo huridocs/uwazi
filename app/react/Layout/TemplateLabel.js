@@ -11,7 +11,7 @@ const getTemplateInfo = createSelector(
     let typeIndex;
     let name = templates.reduce((result, template, index) => {
       if (template.get('_id') === currentTemplate) {
-        typeIndex = 'item-type item-type-' + index;
+        typeIndex = 'btn-color btn-color-' + index;
         return template.get('name');
       }
       return result;
@@ -25,7 +25,7 @@ export class TemplateLabel extends Component {
   render() {
     return (
       <span className={this.props.typeIndex}>
-        <span className="item-type__name">{t(this.props.template, this.props.name)}</span>
+        {t(this.props.template, this.props.name)}
       </span>
     );
   }

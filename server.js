@@ -50,6 +50,7 @@ mongoose.connect(dbConfig[app.get('env')], {useMongoClient: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
+  console.info('==> Processing system keys...')
   translations.processSystemKeys(systemKeys)
   .then(function() {
     http.listen(port, '0.0.0.0', function onStart(err) {
@@ -59,7 +60,8 @@ db.once('open', function () {
       console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
       if (process.env.HOT) {
         console.info('');
-        console.info('webpack building...');
+        console.info('webpack is watching...');
+        console.info(require('./message'));
       }
     });
   })

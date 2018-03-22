@@ -39,10 +39,10 @@ describe('GoogleAnalytics', () => {
     });
 
     it('should not define ga', () => {
-      delete window.ga;
+      let undefinedValue;
+      window.ga = undefinedValue;
       render();
-      let notDefined;
-      expect(window.ga).toBe(notDefined);
+      expect(window.ga).not.toBeDefined();
     });
   });
 

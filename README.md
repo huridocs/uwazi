@@ -1,5 +1,6 @@
 [![devDependency Status](https://david-dm.org/huridocs/uwazidocs/dev-status.svg)](https://david-dm.org/huridocs/uwazi#info=devDependencies)
 [![dependency Status](https://david-dm.org/huridocs/uwazidocs/status.svg)](https://david-dm.org/huridocs/uwazi#info=dependencies)
+[![CircleCI](https://circleci.com/gh/huridocs/uwazi.svg?style=shield)](https://circleci.com/gh/huridocs/uwazi)
 
 #Global dependencies
 
@@ -39,7 +40,7 @@
   ```
 
 - launch application: 
-    - `npm run start`, for hot reloading build dev app and nodemon server
+    - `npm run hot`, for hot reloading build dev app and nodemon server
     - `webpack --watch` and `npm run server`, for development build with nodemon server
     - `webpack --config webpack.production.config.js;export NODE_ENV=production;node server.js`, for production env bundle
 - test server: `node test_api.js`

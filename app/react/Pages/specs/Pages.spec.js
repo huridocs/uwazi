@@ -8,20 +8,18 @@ describe('Pages', () => {
   let component;
   let instance;
   let context;
+  let pages = [{_id: 1, name: 'Page 1'}];
 
   beforeEach(() => {
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+
+    spyOn(PagesAPI, 'list').and.returnValue(Promise.resolve(pages));
     component = shallow(<Pages />, {context});
+
     instance = component.instance();
   });
 
   describe('requestState', () => {
-    let pages = [{_id: 1, name: 'Page 1'}];
-
-    beforeEach(() => {
-      spyOn(PagesAPI, 'list').and.returnValue(Promise.resolve(pages));
-    });
-
     it('should get the current user, and metadata', (done) => {
       Pages.requestState()
       .then((state) => {

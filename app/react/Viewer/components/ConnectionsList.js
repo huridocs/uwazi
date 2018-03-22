@@ -92,7 +92,9 @@ export class ConnectionsList extends Component {
           return references.map((reference, index) => {
             let itemClass = '';
             let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
-            let referenceIcon = reference.inbound ? 'fa-sign-in' : 'fa-sign-out';
+            // This is no longer possible to determine?
+            // let referenceIcon = reference.template ? 'fa-sign-in' : 'fa-sign-out';
+            const referenceIcon = 'fa-sign-out';
 
             if (uiState.highlightedReference === reference._id && !this.props.readOnly) {
               itemClass = 'relationship-hover';
@@ -105,18 +107,7 @@ export class ConnectionsList extends Component {
               }
             }
 
-            const doc = Immutable({
-              sharedId: reference.connectedDocument,
-              type: reference.connectedDocumentType,
-              title: reference.connectedDocumentTitle,
-              icon: reference.connectedDocumentIcon,
-              template: reference.connectedDocumentTemplate,
-              metadata: reference.connectedDocumentMetadata,
-              creationDate: reference.connectedDocumentCreationDate,
-              published: reference.connectedDocumentPublished,
-              file: reference.connectedDocumentFile
-            });
-
+            const doc = Immutable(reference.associatedRelationship.entityData);
 
             return (
               <Item
@@ -130,9 +121,9 @@ export class ConnectionsList extends Component {
                 additionalIcon={<ShowIf if={useSourceTargetIcons}>
                                   <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
                                 </ShowIf>}
-                additionalText={reference.text}
+                additionalText={reference.associatedRelationship.range ? reference.associatedRelationship.range.text : null}
                 additionalMetadata={[
-                  {label: 'Connection type', value: this.relationType(reference.relationType, relationTypes)}
+                  {label: 'Connection type', value: this.relationType(reference.template, relationTypes)}
                 ]}
                 evalPublished={true}
                 buttons={

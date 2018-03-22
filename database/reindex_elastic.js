@@ -1,18 +1,4 @@
-require('babel-core/register')({
-  "presets": ["es2015", "react"],
-  "retainLines": "true",
-  "plugins": [
-    "transform-class-properties",
-    "add-module-exports",
-    ['module-resolver', {
-      alias: {
-        app: '../app/react',
-        shared: '../app/shared',
-        api: '../app/api'
-      }
-    }]
-  ]
-});
+require('babel-core/register')
 
 var dbConfig = require('../app/api/config/database.js');
 

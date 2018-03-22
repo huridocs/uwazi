@@ -52,6 +52,7 @@ describe('Document', () => {
         expect(props.onClick).toHaveBeenCalled();
       });
     });
+
     describe('when executeOnClickHandler = false', () => {
       it('should not execute onClick', () => {
         props.executeOnClickHandler = false;
@@ -64,17 +65,17 @@ describe('Document', () => {
 
     describe('when the target is a reference', () => {
       beforeEach(() => {
-        props.references = [{reference: 'reference'}];
+        props.references = Immutable.fromJS([{reference: 'reference'}]);
       });
 
       it('should activate the reference', () => {
         props.executeOnClickHandler = true;
-        props.references = [{_id: 'referenceId', test: 'test'}];
+        props.references = Immutable.fromJS([{_id: 'referenceId', test: 'test'}]);
         props.activateReference = jasmine.createSpy('activateReference');
         render();
         instance.text = {selected: jasmine.createSpy('selected').and.returnValue(false)};
         component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-        expect(props.activateReference).toHaveBeenCalledWith(props.references[0], props.doc.toJS().pdfInfo, props.references);
+        expect(props.activateReference).toHaveBeenCalledWith(props.references.get(0).toJS(), props.doc.toJS().pdfInfo, props.references.toJS());
         expect(props.onClick).not.toHaveBeenCalled();
       });
 
@@ -82,11 +83,11 @@ describe('Document', () => {
         it('should not active the reference', () => {
           props.executeOnClickHandler = true;
           props.activateReference = jasmine.createSpy('activateReference');
-          props.references = [{_id: 'referenceId', test: 'test'}];
+          props.references = Immutable.fromJS([{_id: 'referenceId', test: 'test'}]);
           render();
           instance.text = {selected: jasmine.createSpy('selected').and.returnValue(true)};
           component.find('.pages').simulate('click', {target: {className: 'reference', getAttribute: () => 'referenceId'}});
-          expect(props.activateReference).not.toHaveBeenCalledWith(props.references[0], props.doc.toJS().pdfInfo);
+          expect(props.activateReference).not.toHaveBeenCalledWith(props.references.get(0).toJS(), props.doc.toJS().pdfInfo);
           expect(props.onClick).toHaveBeenCalled();
         });
       });
@@ -202,7 +203,7 @@ describe('Document', () => {
     beforeEach(() => {
       props.selection = {selection: 'selection'};
       props.highlightedReference = 'highlightedReference';
-      props.references = [{reference: 'reference'}];
+      props.references = Immutable.fromJS([{reference: 'reference'}]);
       props.forceSimulateSelection = true;
       props.pdfIsRdy = true;
       props.searchTerm = 'searchTerm';

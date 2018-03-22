@@ -7,12 +7,11 @@ import fixtures, {canNotBeDeleted, against} from './fixtures.js';
 
 describe('relationtypes', () => {
   beforeEach((done) => {
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('get()', () => {

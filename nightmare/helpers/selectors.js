@@ -46,7 +46,8 @@ export default {
   },
   libraryView: {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',
-    libraryFirstDocumentSnippet: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div',
+    libraryFirstDocumentLink: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
+    libraryFirstDocumentSnippet: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div.item-snippet-wrapper > div.item-snippet',
     librarySidePanelFirstSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(1)',
     librarySidePanelSecondSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(2)',
     libraryFirstDocumentTitle: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-info > div',
@@ -79,7 +80,7 @@ export default {
     minorVillianType: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label > span',
     resetFilters: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > span',
     sidePanelCloseButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > i',
-    sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > span > span'
+    sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > span'
   },
   documentView: {
     searchTextTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(1) > div',
@@ -97,7 +98,7 @@ export default {
     createReferenceSidePanelSelectFirstType: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > ul > li:nth-child(1)',
     createReferenceSidePanelInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
     createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div',
-    createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-footer > button',
+    createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.undefined.create-reference.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-success',
     targetDocument: '.document-viewer.show-target-document',
     saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div:nth-child(1) > div.ContextMenu.ContextMenu-center > button',
     activeConnection: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div',
@@ -130,7 +131,7 @@ export default {
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > a.item-shortcut.btn.btn-success',
     conectionsTabLink: '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div',
-    connectionsListView: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list > div.search-list-actions > div > button.btn.btn-default'
+    connectionsListView: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-tabs > ul > li:nth-child(2) > div'
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div.upload-box',
@@ -151,6 +152,27 @@ export default {
     spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(1) > a',
     english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a'
   },
+  connections: {
+    editButton: '#app > div.content > div > div > div.sidepanel-footer > span > button',
+    saveButton: '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
+    newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div > div > div > button',
+
+    sortMenu: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div > ul > li.Dropdown-option.is-active > a:nth-child(1)',
+    searchInput: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list.centered > div > form > div > div > input',
+
+    documentViewerConnectionsTab: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > div > ul > li:nth-child(6) > div',
+
+    rightHandRelationships: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div:nth-child(2) > div:nth-child(1) > div.rightRelationships div.rightRelationshipsTypeGroup',
+
+    rightHandPerpetratorOption: 'li:nth-child(2)',
+    rightHandHerosOption: 'li:nth-child(4)',
+    eventOption: 'li:nth-child(5)',
+    interpretationOption: 'li:nth-child(6)',
+
+    sidePanelViewEntityButton : '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a > button',
+    sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
+    sidePanelDocuments: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div .item-name'
+  },
   datePicker: {
     today: 'body div.react-datepicker__month div.react-datepicker__day.react-datepicker__day--today'
   },
@@ -160,7 +182,9 @@ export default {
       type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
       realName: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
       age: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > input',
-      knownAccomplices: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > select',
+      knownAccomplices: {
+        joker: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label'
+      },
       mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
       suporPowers: {
         fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
@@ -173,11 +197,11 @@ export default {
       title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
       realName: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(2) > dd',
       age: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(3) > dd',
-      knownAccomplices: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(4) > dd > a',
+      knownAccomplices: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(4) > dd > ul > li > a',
       mainSuperpower: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(5) > dd',
       superpowers: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(6) > dd > ul',
       firstSight: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
-      whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > div > p'
+      whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(8) > dd > div > div > p'
     }
   }
 };

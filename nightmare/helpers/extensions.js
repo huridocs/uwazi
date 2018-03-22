@@ -17,20 +17,32 @@ Nightmare.action('typeEnter', function (selector, done) {
   .then(done);
 });
 
+Nightmare.action('waitFirstDocumentToMatch', function (term, done) {
+  this.wait((termToMatch, selector) => {
+    const element = document.querySelector(selector);
+    if (!element) {
+      throw new Error('Selector not Found! -> ' + selector);
+    }
+    return element.innerText.match(termToMatch);
+  }, term, selectors.libraryView.libraryFirstDocument)
+  .then(done)
+  .catch(done);
+});
+
 Nightmare.action('librarySearch', function (searchTerm, done) {
-  this.write(selectors.libraryView.searchInput, 'batman')
+  this.write(selectors.libraryView.searchInput, searchTerm)
   .type(selectors.libraryView.searchInput, '\u000d')
   .wait('.item-snippet')
   .then(done);
 });
 
 Nightmare.action('write', function (selector, text, done) {
-  this.wait(300)
-  .wait(selector)
+  this.wait(selector)
+  // to prevet fails from multiple renders :(
+  .wait(300)
+  // to prevet fails from multiple renders :(
   .insert(selector, text)
-  .wait(5)
-  .then(done)
-  .catch(done);
+  .then(done);
 });
 
 Nightmare.action('gotoLibrary', function (done) {
@@ -73,7 +85,8 @@ Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
 Nightmare.action('waitToClick', function (selector, done) {
   this.wait(selector)
   .click(selector)
-  .then(done);
+  .then(done)
+  .catch(done);
 });
 
 Nightmare.action('ctrlClick', function (selector, done) {
@@ -223,7 +236,8 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 Nightmare.action('getInnerText', function (selector, done) {
   this.wait(selector)
   .evaluate_now((elementToSelect) => {
-    return document.querySelector(elementToSelect).innerText;
+    const helpers = document.__helpers;
+    return helpers.querySelector(elementToSelect).innerText;
   }, done, selector);
 });
 
@@ -339,7 +353,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
     });
 
     if (found) {
-      found.querySelector('a.item-shortcut').click();
+      found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
   .wait(elementToSelect => {
@@ -387,3 +401,4 @@ Nightmare.action('pickToday', function (input, done) {
   }, input)
   .then(done);
 });
+

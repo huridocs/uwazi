@@ -2,21 +2,18 @@
 
 import P from 'bluebird';
 import entities from '../entities/entitiesModel';
-import references from '../references/references';
-import referencesModel from '../references/connectionsModel';
+import relationships from '../relationships/relationships';
+import relationshipsModel from '../relationships/relationshipsModel';
 import mongoose from 'mongoose';
 
-referencesModel.delete({sourceType: 'metadata'})
+relationshipsModel.delete({sourceType: 'metadata'})
 .then(() => {
   return entities.get({}, {_id: 1})
   .then(documents => {
     return P.resolve(documents).map(({_id}) => {
       return entities.get({_id})
       .then(([doc]) => {
-        return references.saveEntityBasedReferences(doc, doc.language)
-        .then(() => {
-          console.log(doc.title);
-        });
+        return relationships.saveEntityBasedReferences(doc, doc.language);
       });
     }, {concurrency: 1});
   });

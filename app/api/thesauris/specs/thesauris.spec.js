@@ -1,7 +1,4 @@
 import thesauris from '../thesauris.js';
-import database from '../../utils/database.js';
-import {db_url as dbUrl} from '../../config/database.js';
-import request from '../../../shared/JSONRequest';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import {catchErrors} from 'api/utils/jasmineHelpers';
@@ -11,28 +8,36 @@ import fixtures, {dictionaryId, dictionaryIdToTranslate, dictionaryValueId} from
 
 describe('thesauris', () => {
   beforeEach((done) => {
-    db.clearAllAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
-  afterEach((done) => {
-    db.clear(done);
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('get()', () => {
     it('should return all thesauris including entity templates as options', (done) => {
       thesauris.get(null, 'es')
       .then((dictionaties) => {
-        expect(dictionaties.length).toBe(4);
+        expect(dictionaties.length).toBe(5);
         expect(dictionaties[0].name).toBe('dictionary');
         expect(dictionaties[1].name).toBe('dictionary 2');
         expect(dictionaties[3].name).toBe('entityTemplate');
         expect(dictionaties[3].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
         expect(dictionaties[3].type).toBe('template');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should return all thesauris including unpublished documents if user', (done) => {
+      thesauris.get(null, 'es', 'user')
+      .then((dictionaties) => {
+        expect(dictionaties.length).toBe(5);
+        expect(dictionaties[3].values).toEqual([
+          {id: 'sharedId', label: 'spanish entity', icon: 'Icon'},
+          {id: 'other', label: 'unpublished entity'}
+        ]);
         done();
       })
       .catch(catchErrors(done));
@@ -164,7 +169,7 @@ describe('thesauris', () => {
       let data = {name: 'Scarecrow nightmares'};
 
       thesauris.save(data)
-      .then((response) => {
+      .then(() => {
         return thesauris.get();
       })
       .then((response) => {

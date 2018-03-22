@@ -25,8 +25,8 @@ describe('Attachments actions', () => {
 
     beforeEach(() => {
       mockUpload = superagent.post(APIURL + 'attachments/upload');
-      spyOn(mockUpload, 'field').and.callThrough();
-      spyOn(mockUpload, 'attach').and.callThrough();
+      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
       spyOn(superagent, 'post').and.returnValue(mockUpload);
 
       // needed to work with firefox/chrome and phantomjs

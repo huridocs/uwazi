@@ -9,11 +9,11 @@ import {PDFUtils} from '../../../PDF/';
 import {mockID} from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import {APIURL} from 'app/config.js';
-import referencesUtils from '../../utils/referencesUtils';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
 import {actions as formActions} from 'react-redux-form';
+import {actions as relationshipActions} from 'app/Relationships';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -153,9 +153,9 @@ describe('documentActions', () => {
       backend.restore();
       backend
       .get(APIURL + 'documents/search?searchTerm=term&fields=%5B%22field%22%5D', {body: JSON.stringify('documents')})
-      .get(APIURL + 'documents?_id=targetId', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
-      .get(APIURL + 'documents?_id=docWithPDFRdy', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
-      .get(APIURL + 'documents?_id=docWithPDFNotRdy', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
+      .get(APIURL + 'entities?_id=targetId', {body: JSON.stringify({rows: [{target: 'document', pdfInfo: 'test'}]})})
+      .get(APIURL + 'entities?_id=docWithPDFRdy', {body: JSON.stringify({rows: [{pdfInfo: 'processed pdf', _id: 'pdfReady'}]})})
+      .get(APIURL + 'entities?_id=docWithPDFNotRdy', {body: JSON.stringify({rows: [{_id: 'pdfNotReady'}]})})
       .get(APIURL + 'references/by_document/targetId', {body: JSON.stringify([{connectedDocument: '1'}])});
     });
 
@@ -163,14 +163,16 @@ describe('documentActions', () => {
 
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
-        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(documents.api, 'save').and.returnValue(Promise.resolve({sharedId: 'responseId'}));
         let doc = {name: 'doc', fullText: 'fullText'};
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({type: 'reloadRelationships'});
 
         const expectedActions = [
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {name: 'doc', fullText: 'fullText'}},
           {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
-          {type: 'viewer/doc/SET', value: 'response'}
+          {type: 'viewer/doc/SET', value: {sharedId: 'responseId'}},
+          {type: 'reloadRelationships'}
         ];
         const store = mockStore({});
 
@@ -212,6 +214,7 @@ describe('documentActions', () => {
     describe('saveToc', () => {
       it('should save the document with the new toc and dispatch a notification on success', (done) => {
         spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(relationshipActions, 'reloadRelationships').and.returnValue({type: 'reloadRelationships'});
         let doc = {name: 'doc', _id: 'id', _rev: 'rev', sharedId: 'sharedId', file: {fileName: '123.pdf'}};
         let toc = [
           {range: {start: 12, end: 23}, label: 'Chapter 1', indentation: 0},
@@ -224,7 +227,8 @@ describe('documentActions', () => {
           {type: notificationsTypes.NOTIFY, notification: {message: 'Document updated', type: 'success', id: 'unique_id'}},
           {type: types.VIEWER_UPDATE_DOCUMENT, doc: {_id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: {fileName: '123.pdf'}}},
           {type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata'},
-          {type: 'viewer/doc/SET', value: 'response'}
+          {type: 'viewer/doc/SET', value: 'response'},
+          {type: 'reloadRelationships'}
         ];
         const store = mockStore({
           documentViewer: {
@@ -266,22 +270,17 @@ describe('documentActions', () => {
     });
 
     describe('loadTargetDocument', () => {
-      beforeEach(() => {
-        spyOn(referencesUtils, 'filterRelevant').and.returnValue(['filteredReferences']);
-      });
-
       it('should loadTargetDocument with id passed', (done) => {
         let targetId = 'targetId';
 
         const expectedActions = [
           {type: 'viewer/targetDoc/SET', value: {target: 'document', pdfInfo: 'test'}},
-          {type: 'viewer/targetDocReferences/SET', value: ['filteredReferences']}
+          {type: 'viewer/targetDocReferences/SET', value: [{connectedDocument: '1'}]}
         ];
         const store = mockStore({locale: 'es'});
 
         store.dispatch(actions.loadTargetDocument(targetId))
         .then(() => {
-          expect(referencesUtils.filterRelevant).toHaveBeenCalledWith([{connectedDocument: '1'}], 'es');
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

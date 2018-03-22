@@ -115,6 +115,7 @@ describe('SearchText', () => {
   describe('submit', () => {
     it('should searchSnippets with value, doc id and storeKey', (done) => {
       props.doc = Immutable.fromJS({_id: 'id', sharedId: 'sharedId'});
+      spyOn(browserHistory, 'push');
       render();
 
       instance.submit({searchTerm: 'value'})

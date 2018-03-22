@@ -43,7 +43,8 @@
   border: 1px solid $c-grey-light !important;
 
   .attachment-link:hover & {
-    border-color: $c-grey !important;
+    border-color: $c-primary-light !important;
+    box-shadow: 0 0 0 2px $c-primary-light;
   }
 
   .fa {
@@ -61,12 +62,12 @@
   width: 0; // flex overflow-hidden hack
   span {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 90%;
-    color: $c-black;
-    border-bottom: 1px dotted $c-grey;
+    font-size: $f-size-sm;
+    color: $c-primary;
+    border-bottom: 1px solid $c-primary-light;
 
     .attachment-link:hover & {
-      border-color: $c-grey-dark;
+      border-color: $c-primary;
     }
 
     &.attachment-size {

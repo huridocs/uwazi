@@ -32,7 +32,8 @@ describe('Entity zone', () => {
         expect(headerText).toContain('Man-bat (Dr. Langstrom)');
         expect(headerText).toContain('Super Villian');
         done();
-      });
+      })
+      .catch(catchErrors(done));
     });
 
     it('should allow changing the different template\'s properties', (done) => {
@@ -40,7 +41,9 @@ describe('Entity zone', () => {
         form: {
           realName: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
           age: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > input',
-          knownAccomplices: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > select',
+          knownAccomplices: {
+            joker: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label'
+          },
           mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
           suporPowers: {
             fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
@@ -52,7 +55,7 @@ describe('Entity zone', () => {
         viewer: {
           realName: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
           age: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(2) > dd',
-          knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(3) > dd > a',
+          knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl > dd > ul > li > a',
           mainSuperpower: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(4) > dd',
           superpowers: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(5) > dd > ul',
           firstSight: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(6) > dd',
@@ -66,7 +69,7 @@ describe('Entity zone', () => {
       .wait(selectors.manBatEntity.form.realName)
       .write(selectors.manBatEntity.form.realName, 'Dr. Kirk Langstrom')
       .write(selectors.manBatEntity.form.age, '39')
-      .select(selectors.manBatEntity.form.knownAccomplices, 'o184buh2w179o1or')
+      .waitToClick(selectors.manBatEntity.form.knownAccomplices.joker)
       .select(selectors.manBatEntity.form.mainSuperpower, 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb')
       .waitToClick(selectors.manBatEntity.form.suporPowers.fly)
       .wait(selectors.manBatEntity.form.suporPowers.laserBeam)
@@ -99,13 +102,14 @@ describe('Entity zone', () => {
         return nightmare.getInnerText(selectors.manBatEntity.viewer.superpowers);
       })
       .then(text => {
-        expect(text).toBe('flylaser beam');
+        expect(text).toBe('fly\nlaser beam\n');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
       })
       .then(text => {
         expect(text.match('Jekyll and Hyde story')).not.toBe(null);
       })
-      .then(done);
+      .then(done)
+      .catch(catchErrors(done));
     }, 20000);
   });
 
