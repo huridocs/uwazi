@@ -11,7 +11,7 @@ export default (app) => {
       return templates.getById(response.template);
     })
     .then(template => {
-      return thesauris.templateToThesauri(template, req.language);
+      return thesauris.templateToThesauri(template, req.language, req.user);
     })
     .then((templateTransformed) => {
       req.io.sockets.emit('thesauriChange', templateTransformed);
