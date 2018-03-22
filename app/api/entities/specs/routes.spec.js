@@ -49,17 +49,22 @@ describe('entities', () => {
     });
 
     it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
+      const user = {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'};
       req = {
         body: {title: 'Batman begins', template: 'template'},
-        user: {_id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin'},
+        user,
         language: 'lang',
         io: {
           sockets: {
-            emit: jasmine.createSpy('emit').and.callFake((event, thesauri) => {
-              expect(event).toBe('thesauriChange');
-              expect(thesauri).toBe('templateTransformed');
-              expect(thesauris.templateToThesauri).toHaveBeenCalledWith('template', 'lang');
-              done();
+            emit: jest.fn((event, thesauri) => {
+              try {
+                expect(event).toBe('thesauriChange');
+                expect(thesauri).toBe('templateTransformed');
+                expect(thesauris.templateToThesauri).toHaveBeenCalledWith('template', 'lang', user);
+                done();
+              } catch (err) {
+                done.fail(err);
+              }
             })
           }
         }
