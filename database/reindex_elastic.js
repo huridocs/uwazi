@@ -1,7 +1,20 @@
-require('babel-core/register')
+require('babel-core/register')({
+  "presets": ["es2015", "react"],
+  "retainLines": "true",
+  "plugins": [
+    "transform-class-properties",
+    "add-module-exports",
+    ['module-resolver', {
+      alias: {
+        app: '../app/react',
+        shared: '../app/shared',
+        api: '../app/api'
+      }
+    }]
+  ]
+});
 
 var dbConfig = require('../app/api/config/database.js');
-
 
 var indexConfig = require('../app/api/config/elasticIndexes.js');
 var index = process.argv[2] || 'development';
