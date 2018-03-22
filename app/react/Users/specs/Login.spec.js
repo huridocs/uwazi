@@ -19,7 +19,8 @@ describe('Login', () => {
       login: jasmine.createSpy('login').and.returnValue(Promise.resolve()),
       recoverPassword: jasmine.createSpy('recoverPassword').and.returnValue(Promise.resolve()),
       notify: jasmine.createSpy('notify'),
-      reset: jasmine.createSpy('reset')
+      reset: jasmine.createSpy('reset'),
+      reloadThesauris: jasmine.createSpy('reloadThesauris')
     };
     render();
   });
@@ -53,10 +54,12 @@ describe('Login', () => {
     });
 
     describe('on response success', () => {
-      it('should go to home', (done) => {
+      it('should reload thesauris and go to home', (done) => {
         spyOn(browserHistory, 'push');
+        expect(props.reloadThesauris).not.toHaveBeenCalled();
         instance.submit('credentials')
         .then(() => {
+          expect(props.reloadThesauris).toHaveBeenCalled();
           expect(browserHistory.push).toHaveBeenCalledWith('/');
           done();
         })
