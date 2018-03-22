@@ -31,6 +31,6 @@ test:
     - ./cc-test-reporter before-build
   override:
     - ./node_modules/.bin/eslint app
-    - ./node_modules/.bin/jest
+    - ./node_modules/.bin/jest -i
   post:
     - ./cc-test-reporter after-build --exit-code $EXIT_CODE
