@@ -11,17 +11,15 @@ describe('AccountSettings', () => {
   beforeEach(() => {
     props = {
       user: {name: 'doe'},
-      notify: jasmine.createSpy('notify')
+      notify: jasmine.createSpy('notify'),
+      setUser: jasmine.createSpy('setUser')
     };
+    spyOn(UsersAPI, 'save').and.returnValue(Promise.resolve({rev: 'rev'}));
     component = shallow(<AccountSettings {...props} />);
   });
 
   describe('change email', () => {
-    beforeEach(() => {
-      spyOn(UsersAPI, 'save').and.returnValue(Promise.resolve());
-    });
-
-    it('should save the user with the new email', () => {
+    it('should save the user with the new email and update the user.rev', () => {
       component.setState({email: 'newemail@uwazi.com'});
       component.childAt(0).find('form').at(0).simulate('submit', {preventDefault: () => {}});
       expect(UsersAPI.save).toHaveBeenCalledWith({name: 'doe', email: 'newemail@uwazi.com'});
@@ -29,10 +27,6 @@ describe('AccountSettings', () => {
   });
 
   describe('change password', () => {
-    beforeEach(() => {
-      spyOn(UsersAPI, 'save').and.returnValue(Promise.resolve());
-    });
-
     it('should save the user with the new password', () => {
       component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
       component.find('form').at(1).simulate('submit', {preventDefault: () => {}});

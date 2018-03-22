@@ -10,17 +10,17 @@
   height: calc(100% - 100px);
   padding: 15px;
   background: $c-white;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  //overflow-x: hidden;
+  //overflow-y: scroll;
+  overflow: auto;
 
   @media(min-width: 1024px) {
     height: calc(100% - 51px);
     width: calc(100% - 400px) !important;
   }
 
-  .item {
-    border-color: $c-grey-light !important;
-    cursor: default !important;
+  .connection-data {
+    cursor: default;
   }
 
   .protip {
@@ -34,16 +34,11 @@
   padding-bottom: 120px;
 }
 
-.entity-connections {
+.entity-connections, .connections-metadata, .entity-create-connection-panel {
   z-index: 6;
   top: 0;
-  @media (min-width: 1023px) {
-    right: 0 !important;
+  @media (min-width: 1024px) {
     top: $header-height * 2 + 1 !important;
-    //position: relative !important;
-    //width: 100% !important;
-    //max-width: 999px !important;
-    //top: 50px !important;
   }
 }
 
@@ -56,10 +51,10 @@
   max-width: 9999px;
 
   .side-panel {
-    // top: $header-height * 2 + 1;
-    // @media (max-width: 1023px) {
-    //   top: $header-height * 3;
-    // }
+    top: $header-height;
+    @media (min-width: 1024px) {
+      top: $header-height * 2 + 1;
+    }
   }
 }
 

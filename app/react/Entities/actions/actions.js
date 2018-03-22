@@ -3,6 +3,7 @@ import {notify} from 'app/Notifications';
 import {actions as formActions} from 'react-redux-form';
 import {actions} from 'app/BasicReducer';
 import {removeDocument, removeDocuments, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import {actions as relationshipActions} from 'app/Relationships';
 
 export function saveEntity(entity) {
   return function (dispatch) {
@@ -11,6 +12,7 @@ export function saveEntity(entity) {
       dispatch(notify('Entity saved', 'success'));
       dispatch(formActions.reset('entityView.entityForm'));
       dispatch(actions.set('entityView/entity', response));
+      dispatch(relationshipActions.reloadRelationships(response.sharedId));
     });
   };
 }

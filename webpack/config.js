@@ -37,6 +37,12 @@ module.exports = function(production) {
       publicPath: '/',
       filename: '[name]'+jsChunkHashName+'.js'
     },
+    //resolve: {
+      //alias: {
+        //app: path.resolve(__dirname, '../app/react/'),
+        //api: path.resolve(__dirname, '../app/api/')
+      //}
+    //},
     resolveLoader: {
       modules: ['node_modules', __dirname + '/webpackLoaders'],
       extensions: ['.js', '.json'],

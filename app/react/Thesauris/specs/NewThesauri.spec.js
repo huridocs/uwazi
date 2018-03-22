@@ -1,10 +1,9 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import backend from 'fetch-mock';
 
 import NewThesauri from 'app/Thesauris/NewThesauri';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
-import {APIURL} from 'app/config.js';
+import api from 'app/Thesauris/ThesaurisAPI';
 
 describe('NewThesauri', () => {
   let component;
@@ -13,14 +12,11 @@ describe('NewThesauri', () => {
   let thesauris = [{name: 'Countries', values: [{id: '1', label: 'label1'}, {id: '2', label: 'label2'}]}];
 
   beforeEach(() => {
-    backend.restore();
-    backend.get(APIURL + 'thesauris', {body: JSON.stringify({rows: thesauris})});
     context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    spyOn(api, 'get').and.returnValue(Promise.resolve(thesauris));
     component = shallow(<NewThesauri />, {context});
     instance = component.instance();
   });
-
-  afterEach(() => backend.restore());
 
   it('should render a ThesauriForm with new=true', () => {
     expect(component.find(ThesauriForm).length).toBe(1);

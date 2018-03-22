@@ -17,5 +17,5 @@ mongoose.connect(dbConfig.development, {useMongoClient: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {
-  require(migrationFile || './app/api/migrations/users_role_index.js');
+  require(migrationFile || './app/api/migrations/relationships_with_hubs.js');
 });

@@ -17,9 +17,12 @@ export default function referencesReducer(state = initialState, action = {}) {
   }
 
   if (action.type === types.REMOVE_REFERENCE) {
-    return state.filter((reference) => {
-      return reference.get('_id') !== action.reference._id;
-    });
+    const hubRelationships = state.filter(r => r.get('hub') === action.reference.hub);
+    if (hubRelationships.size <= 2) {
+      return state.filter(r => r.get('hub') !== action.reference.hub);
+    }
+
+    return state.filter(r => r.get('_id') !== action.reference.associatedRelationship._id);
   }
 
   return Immutable.fromJS(state);

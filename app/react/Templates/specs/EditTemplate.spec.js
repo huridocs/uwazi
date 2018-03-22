@@ -16,6 +16,7 @@ describe('EditTemplate', () => {
     {_id: 'abc3', properties: [{label: 'label3'}, {label: 'label4'}], commonProperties: []}
   ];
   let thesauris = [{label: '1'}, {label: '2'}];
+  let relationTypes = [{name: 'Friend'}, {name: 'Family'}];
   let component;
   let instance;
   let props;
@@ -31,6 +32,7 @@ describe('EditTemplate', () => {
     backend.restore();
     backend
     .get(APIURL + 'templates', {body: JSON.stringify({rows: templates})})
+    .get(APIURL + 'relationtypes', {body: JSON.stringify({rows: relationTypes})})
     .get(APIURL + 'thesauris', {body: JSON.stringify({rows: thesauris})});
   });
 
@@ -47,6 +49,7 @@ describe('EditTemplate', () => {
         expect(response.template.data._id).toEqual('abc2');
         expect(response.thesauris).toEqual(thesauris);
         expect(response.templates.length).toBe(3);
+        expect(response.relationTypes).toEqual(relationTypes);
         done();
       })
       .catch(done.fail);
@@ -95,12 +98,13 @@ describe('EditTemplate', () => {
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
       spyOn(formActions, 'load').and.returnValue('TEMPLATE MODEL LOADED');
-      instance.setReduxState({template: {data: 'template_data'}, thesauris: 'thesauris', templates: 'templates'});
+      instance.setReduxState({template: {data: 'template_data'}, thesauris: 'thesauris', templates: 'templates', relationTypes: 'relationTypes'});
       expect(formActions.load).toHaveBeenCalledWith('template.data', 'template_data');
       expect(context.store.dispatch).toHaveBeenCalledWith('TEMPLATE MODEL LOADED');
 
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesauris'});
       expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: 'templates'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'relationTypes/SET', value: 'relationTypes'});
     });
   });
 });

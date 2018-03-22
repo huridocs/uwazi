@@ -40,6 +40,22 @@ export default function (properties, templates, id) {
       let prop = template.properties[index];
       return validateDuplicatedLabel(prop, template.properties);
     };
+
+    validator[''][`properties.${index}.content.required`] = (template) => {
+      if (!template.properties[index] || template.properties[index].type !== 'select' || template.properties[index].type !== 'multiselect') {
+        return true;
+      }
+      let content = template.properties[index].content;
+      return content && content.trim() !== '';
+    };
+
+    validator[''][`properties.${index}.relationType.required`] = (template) => {
+      if (!template.properties[index] || template.properties[index].type !== 'relationship') {
+        return true;
+      }
+      let relationType = template.properties[index].relationType;
+      return relationType && relationType.trim() !== '';
+    };
   });
 
   return validator;

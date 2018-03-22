@@ -5,10 +5,12 @@ import Immutable from 'immutable';
 
 import {mockID} from 'shared/uniqueID.js';
 import {APIURL} from 'app/config.js';
-import {actions as connectionsActions} from 'app/Connections';
+import * as connectionsActions from 'app/Connections/actions/actions';
+import {actions as relationshipsActions} from 'app/Relationships';
 import * as actions from 'app/Viewer/actions/referencesActions';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+import referencesAPI from 'app/Viewer/referencesAPI';
 import scroller from 'app/Viewer/utils/Scroller';
 
 const middlewares = [thunk];
@@ -27,49 +29,79 @@ describe('Viewer referencesActions', () => {
       mockID();
       spyOn(scroller, 'to');
       backend.restore();
-      backend.delete(APIURL + 'references?_id=abc', {body: JSON.stringify({_id: 'reference'})});
+      backend.delete(APIURL + 'references?_id=bcd', {body: JSON.stringify({_id: 'reference'})});
+      spyOn(relationshipsActions, 'reloadRelationships').and.callFake((entityId) => {
+        return {type: 'reloadRelationships', entityId};
+      });
     });
 
     afterEach(() => backend.restore());
 
+    describe('loadReferences', () => {
+      beforeEach(() => {
+        spyOn(referencesAPI, 'get').and.callFake(docId => Promise.resolve(`${docId}References`));
+      });
+
+      it('should fetch document references and dispatch SET_REFERENCES with result', (done) => {
+        const store = mockStore({});
+        actions.loadReferences('document1')(store.dispatch)
+        .then(() => {
+          expect(store.getActions()).toEqual([{type: 'SET_REFERENCES', references: 'document1References'}]);
+          done();
+        });
+      });
+    });
+
     describe('addReference', () => {
       let getState;
       let store;
-      let reference;
+      let references;
 
       beforeEach(() => {
         store = mockStore({});
         getState = jasmine.createSpy('getState').and.returnValue({
-          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
+          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])},
+          relationships: {list: {entityId: 'docId'}}
         });
-        reference = {
-          _id: 'addedRefernce',
-          reference: 'reference',
-          sourceRange: {text: 'Text'},
-          targetDocument: 2
-        };
+        references = [[
+          {_id: 'addedReference1', reference: 'reference', sourceRange: {text: 'Text'}},
+          {_id: 'addedReference2', reference: 'reference'}
+        ]];
       });
 
-      it('should add the reference', () => {
-        const expectedActions = [
-          {type: types.ADD_REFERENCE, reference: reference},
+      it('should add the reference and reload relationships', () => {
+        let expectedActions = [
+          {type: types.ADD_REFERENCE, reference: references[0][1]},
+          {type: types.ADD_REFERENCE, reference: references[0][0]},
           {type: 'viewer/targetDoc/UNSET'},
           {type: 'viewer/targetDocHTML/UNSET'},
           {type: 'viewer/targetDocReferences/UNSET'},
-          {type: 'ACTIVE_REFERENCE', reference: 'addedRefernce'},
+          {type: 'reloadRelationships', entityId: 'docId'},
+          {type: types.ACTIVE_REFERENCE, reference: 'addedReference1'},
           {type: 'GO_TO_ACTIVE', value: true},
-          {type: 'OPEN_PANEL', panel: 'viewMetadataPanel'},
+          {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
           {type: 'viewer.sidepanel.tab/SET', value: 'references'}
         ];
 
-        actions.addReference(reference, {}, true)(store.dispatch, getState);
+        actions.addReference(references, {}, true)(store.dispatch, getState);
         expect(store.getActions()).toEqual(expectedActions);
-      });
 
-      it('should open the connections tab if sourceRange text is empty', () => {
-        reference.sourceRange.text = '';
-        actions.addReference(reference, {})(store.dispatch, getState);
-        expect(store.getActions()).toContain({type: 'viewer.sidepanel.tab/SET', value: 'connections'});
+        store.clearActions();
+
+        expectedActions = [
+          {type: types.ADD_REFERENCE, reference: references[0][1]},
+          {type: types.ADD_REFERENCE, reference: references[0][0]},
+          {type: 'viewer/targetDoc/UNSET'},
+          {type: 'viewer/targetDocHTML/UNSET'},
+          {type: 'viewer/targetDocReferences/UNSET'},
+          {type: 'reloadRelationships', entityId: 'docId'},
+          {type: types.ACTIVE_REFERENCE, reference: 'addedReference1'},
+          {type: types.OPEN_PANEL, panel: 'viewMetadataPanel'},
+          {type: 'viewer.sidepanel.tab/SET', value: 'references'}
+        ];
+
+        actions.addReference(references, {}, false)(store.dispatch, getState);
+        expect(store.getActions()).toEqual(expectedActions);
       });
     });
 
@@ -92,7 +124,7 @@ describe('Viewer referencesActions', () => {
 
       it('should unset the targetDocReferences', () => {
         const returnValue = actions.saveTargetRangedReference(connection, targetRange, onCreate)(store.dispatch, getState);
-        expect(store.getActions()).toContain({type: 'viewer/targetDocReferences/UNSET'});
+        expect(store.getActions()).toContainEqual({type: 'viewer/targetDocReferences/UNSET'});
         expect(connectionsActions.saveConnection).toHaveBeenCalledWith({sourceDocument: 'sourceId', targetRange: {text: 'target text'}}, onCreate);
         expect(saveConnectionDispatch).toHaveBeenCalledWith(store.dispatch, getState);
         expect(returnValue).toBe('returnValue');
@@ -107,18 +139,21 @@ describe('Viewer referencesActions', () => {
     });
 
     describe('deleteReference', () => {
-      it('should delete the reference and dispatch a success notification', (done) => {
-        let reference = {_id: 'abc'};
+      it('should delete the reference\'s associated relationship and reload relationships', (done) => {
+        let reference = {_id: 'abc', associatedRelationship: {_id: 'bcd'}};
 
         const expectedActions = [
+          {type: 'reloadRelationships', entityId: 'docId'},
           {type: types.REMOVE_REFERENCE, reference},
           {type: notificationsTypes.NOTIFY, notification: {message: 'Connection deleted', type: 'success', id: 'unique_id'}}
         ];
 
         const store = mockStore({});
         let getState = jasmine.createSpy('getState').and.returnValue({
-          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])}
+          documentViewer: {referencedDocuments: Immutable.fromJS([{_id: '1'}])},
+          relationships: {list: {entityId: 'docId'}}
         });
+
         actions.deleteReference(reference)(store.dispatch, getState)
         .then(() => {
           expect(store.getActions()).toEqual(expectedActions);

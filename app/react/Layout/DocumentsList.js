@@ -11,8 +11,6 @@ import Footer from 'app/App/Footer';
 import {NeedAuthorization} from 'app/Auth';
 import {t} from 'app/I18N';
 
-const loadMoreAmmount = 30;
-
 export default class DocumentsList extends Component {
 
   constructor(props, context) {
@@ -24,7 +22,7 @@ export default class DocumentsList extends Component {
 
   loadMoreDocuments() {
     this.setState({loading: true});
-    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + loadMoreAmmount);
+    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + this.props.loadMoreAmmount);
   }
 
   componentWillReceiveProps() {
@@ -38,25 +36,33 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections, GraphView, view} = this.props;
+    const {documents, connections, GraphView, view, searchCentered, hideFooter,
+           connectionsGroups, LoadMoreButton, loadMoreAmmount} = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
     if (connections) {
+      const summary = connectionsGroups.reduce((summaryData, g) => {
+        g.get('templates').forEach(template => {
+          summaryData.totalConnections += template.get('count');
+        });
+        return summaryData;
+      }, {totalConnections: 0});
       counter = <span>
-                  <b>{connections.totalRows}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+                  <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
                 </span>;
     }
 
     const Search = this.props.SearchBar;
     const ActionButtons = this.props.ActionButtons ? <div className="search-list-actions"><this.props.ActionButtons /></div> : null;
+    const FooterComponent = !hideFooter ? <Footer /> : null;
 
     return (
       <div className="documents-list">
         <div className="main-wrapper">
-          <div className="search-list">
+          <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
             {ActionButtons}
             <Search storeKey={this.props.storeKey}/>
           </div>
-          <div className="sort-by">
+          <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
               <div className="documents-counter">
                 <span className="documents-counter-label">{counter}</span>
                 <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
@@ -83,17 +89,25 @@ export default class DocumentsList extends Component {
             }
 
             if (view === 'graph') {
-              return <GraphView />;
+              return <GraphView clickOnDocument={this.clickOnDocument}/>;
             }
           })()}
           <div className="row">
-            <p className="col-sm-12 text-center documents-counter">
-                <b>{documents.get('rows').size}</b>
-                {` ${t('System', 'of')} `}
-                <b>{documents.get('totalRows')}</b>
-                {` ${t('System', 'documents')}`}
-            </p>
             {(() => {
+              if (view !== 'graph') {
+                return <p className="col-sm-12 text-center documents-counter">
+                        <b>{documents.get('rows').size}</b>
+                        {` ${t('System', 'of')} `}
+                        <b>{documents.get('totalRows')}</b>
+                        {` ${t('System', 'documents')}`}
+                       </p>;
+              }
+            })()}
+            {(() => {
+              if (LoadMoreButton) {
+                return <LoadMoreButton />;
+              }
+
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
@@ -118,7 +132,7 @@ export default class DocumentsList extends Component {
               </div>
             </NeedAuthorization>
           </div>
-          <Footer/>
+          {FooterComponent}
         </div>
       </div>
     );
@@ -126,7 +140,8 @@ export default class DocumentsList extends Component {
 }
 
 DocumentsList.defaultProps = {
-  SearchBar
+  SearchBar,
+  loadMoreAmmount: 30
 };
 
 DocumentsList.propTypes = {
@@ -143,10 +158,16 @@ DocumentsList.propTypes = {
   deleteConnection: PropTypes.func,
   sortButtonsStateProperty: PropTypes.string,
   storeKey: PropTypes.string,
+  LoadMoreButton: PropTypes.func,
   onSnippetClick: PropTypes.func,
   clickOnDocument: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object
   ]),
+  // TEST!!!
+  connectionsGroups: PropTypes.object,
+  searchCentered: PropTypes.bool,
+  hideFooter: PropTypes.bool,
+  loadMoreAmmount: PropTypes.number,
   view: PropTypes.string
 };

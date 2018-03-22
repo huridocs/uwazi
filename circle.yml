@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 8.0.0
+    version: 6.13.1
 
 dependencies:
   pre:
@@ -19,8 +19,9 @@ dependencies:
 
   cache_directories:
     - elasticsearch-5.5.1 # relative to the build directory
+    - ../.mongodb-binaries # relative to the build directory
 
 test:
   override:
-    - ./node_modules/karma/bin/karma start --single-run
-    - node api_test.js
+    - ./node_modules/.bin/eslint app
+    - ./node_modules/.bin/jest -i

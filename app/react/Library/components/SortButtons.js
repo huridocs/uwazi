@@ -152,7 +152,7 @@ export function mapStateToProps(state, ownProps) {
     templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
   }
 
-  const search = stateProperty.split('.').reduce((memo, property) => {
+  const search = stateProperty.split(/[.,\/]/).reduce((memo, property) => {
     return Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null;
   }, state);
 

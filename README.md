@@ -40,7 +40,7 @@
   ```
 
 - launch application: 
-    - `npm run start`, for hot reloading build dev app and nodemon server
+    - `npm run hot`, for hot reloading build dev app and nodemon server
     - `webpack --watch` and `npm run server`, for development build with nodemon server
     - `webpack --config webpack.production.config.js;export NODE_ENV=production;node server.js`, for production env bundle
 - test server: `node test_api.js`

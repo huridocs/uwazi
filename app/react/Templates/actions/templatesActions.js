@@ -1,5 +1,5 @@
 import api from 'app/Templates/TemplatesAPI';
-import documentsAPI from 'app/Library/DocumentsAPI';
+import documentsAPI from 'app/Documents/DocumentsAPI';
 import {actions} from 'app/BasicReducer';
 
 export function deleteTemplate(template) {

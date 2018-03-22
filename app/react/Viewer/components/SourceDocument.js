@@ -1,23 +1,25 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
+import {selectDoc, selectReferences} from '../selectors';
+
 import {setSelection, unsetSelection} from 'app/Viewer/actions/selectionActions';
 import {resetReferenceCreation, highlightReference, activateReference, scrollToActive} from 'app/Viewer/actions/uiActions';
 import Document from 'app/Viewer/components/Document';
 import {createSelector} from 'reselect';
 
-const selectConnections = createSelector(s => s.references, r => r.toJS());
 const selectSourceRange = createSelector(s => s.uiState, u => u.toJS().reference.sourceRange);
 const selectHighlightedRef = createSelector(s => s.uiState, u => u.toJS().highlightedReference);
 const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeReference);
 
-const mapStateToProps = ({user, documentViewer}) => {
+const mapStateToProps = (state) => {
+  const {user, documentViewer} = state;
   return {
     snippets: documentViewer.sidepanel.snippets,
     selection: selectSourceRange(documentViewer),
     doScrollToActive: documentViewer.uiState.get('goToActive'),
-    doc: documentViewer.doc,
-    references: selectConnections(documentViewer),
+    doc: selectDoc(state),
+    references: selectReferences(state),
     className: 'sourceDocument',
     highlightedReference: selectHighlightedRef(documentViewer),
     activeReference: selectActiveRef(documentViewer),
@@ -25,7 +27,7 @@ const mapStateToProps = ({user, documentViewer}) => {
     disableTextSelection: !user.get('_id'),
     panelIsOpen: !!documentViewer.uiState.get('panel'),
     forceSimulateSelection: documentViewer.uiState.get('panel') === 'targetReferencePanel'
-      || documentViewer.uiState.get('panel') === 'referencePanel'
+                            || documentViewer.uiState.get('panel') === 'referencePanel'
   };
 };
 

@@ -11,11 +11,18 @@ const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
 
+const hub1 = db.id();
+const hub2 = db.id();
+const hub3 = db.id();
+const hub4 = db.id();
+const hub5 = db.id();
+
 export default {
   entities: [
     {_id: batmanFinishesId, sharedId: 'shared', type: 'entity', template: templateId, language: 'en', title: 'Batman finishes', published: true, metadata: {property1: 'value1'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
     {_id: db.id(), sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: {filename: '8202c463d6158af8065022d9b5014ccb.pdf'}},
     {_id: db.id(), sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: {text: 'test'}, file: {filename: '8202c463d6158af8065022d9b5014cc1.pdf'}},
+    {_id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: {property1: 'value1'}},
     //select/multiselect/date sync
     {_id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: {property1: 'text'}, file: {filename: 'nonexistent.pdf'}},
     {_id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: {property1: 'text'}, file: {filename: 'nonexistent.pdf'}},
@@ -43,7 +50,8 @@ export default {
       {type: 'date', name: 'date'},
       {type: 'multidate', name: 'multidate'},
       {type: 'multidaterange', name: 'multidaterange'},
-      {type: 'daterange', name: 'daterange'}
+      {type: 'daterange', name: 'daterange'},
+      {type: 'relationship', name: 'friends', relationType: 'relation1'}
     ]},
     {_id: templateWithOnlyMultiselect, name: 'templateWithOnlyMultiSelectSelect', properties: [
       {type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString()}
@@ -66,11 +74,16 @@ export default {
     ]}
   ],
   connections: [
-    {_id: referenceId, title: 'reference1', sourceDocument: 'shared', relationtype: 'relation1'},
-    {_id: db.id(), title: 'reference2', sourceDocument: 'source2', relationtype: 'relation2', targetDocument: 'shared'},
-    {_id: db.id(), title: 'reference3', sourceDocument: 'another', relationtype: 'relation3', targetDocument: 'document'},
-    {_id: db.id(), title: 'reference4', sourceDocument: 'shared', relationtype: 'relation2', targetDocument: 'shared1', sourceType: 'metadata'},
-    {_id: db.id(), title: 'reference5', sourceDocument: 'shared1', relationtype: 'relation2', targetDocument: 'shared', sourceType: 'metadata'}
+    {_id: referenceId, entity: 'shared', template: null, hub: hub1, language: 'en'},
+    {entity: 'shared2', template: 'relation1', hub: hub1, language: 'en'},
+    {entity: 'shared', template: null, hub: hub2, language: 'en'},
+    {entity: 'source2', template: 'relation2', hub: hub2, language: 'en'},
+    {entity: 'another', template: 'relation3', hub: hub3, language: 'en'},
+    {entity: 'document', template: 'relation3', hub: hub3, language: 'en'},
+    {entity: 'shared', template: 'relation2', hub: hub4, language: 'en'},
+    {entity: 'shared1', template: 'relation2', hub: hub4, language: 'en'},
+    {entity: 'shared1', template: 'relation2', hub: hub5, language: 'en'},
+    {entity: 'shared', template: 'relation2', hub: hub5, language: 'en'}
   ]
 };
 

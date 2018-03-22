@@ -8,12 +8,11 @@ import db from 'api/utils/testing_db';
 describe('settings', () => {
   beforeEach((done) => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
-    db.clearAndLoad(fixtures, (err) => {
-      if (err) {
-        done.fail(err);
-      }
-      done();
-    });
+    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('save()', () => {
@@ -86,7 +85,10 @@ describe('settings', () => {
       });
 
       it('should update them', (done) => {
-        let config = {site_name: 'My collection', filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Documents', items: []}, {id: '3', name: 'Files', items: []}]};
+        let config = {
+          site_name: 'My collection',
+          filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Documents', items: []}, {id: '3', name: 'Files', items: []}]
+        };
         settings.save(config)
         .then(() => {
           config = {site_name: 'My collection', filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Important Documents', items: []}]};

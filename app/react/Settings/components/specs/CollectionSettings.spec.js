@@ -11,7 +11,9 @@ describe('CollectionSettings', () => {
   beforeEach(() => {
     props = {
       settings: {_id: 'id', links: ['123']},
-      notify: jasmine.createSpy('notify')
+      notify: jasmine.createSpy('notify'),
+      //test this shit
+      setSettings: jasmine.createSpy('setSettings')
     };
     component = shallow(<CollectionSettings {...props} />);
   });

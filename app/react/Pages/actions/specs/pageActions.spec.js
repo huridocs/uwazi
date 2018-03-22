@@ -16,6 +16,7 @@ describe('Page actions', () => {
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
     spyOn(basicActions, 'remove').and.returnValue('PAGE REMOVED');
     spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
+    spyOn(browserHistory, 'push');
   });
 
   describe('resetPage', () => {
@@ -36,7 +37,6 @@ describe('Page actions', () => {
 
     describe('upon success', () => {
       beforeEach((done) => {
-        spyOn(browserHistory, 'push');
         actions.savePage('data')(dispatch)
         .then(() => {
           done();

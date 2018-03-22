@@ -7,13 +7,14 @@ import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import elasticFixtures, {ids} from './fixtures_elastic';
 import db from 'api/utils/testing_db';
-import elasticTesting from 'api/utils/elastic_testing';
+import instanceElasticTesting from 'api/utils/elastic_testing';
 import languages from 'shared/languages';
 
 describe('search', () => {
   let result;
-  let fixturesLoaded = false;
-  beforeEach((done) => {
+  const elasticTesting = instanceElasticTesting('search_index_test');
+
+  beforeAll((done) => {
     result = elasticResult().withDocs([
       {title: 'doc1', _id: 'id1', snippets: {
         hits: {
@@ -25,50 +26,23 @@ describe('search', () => {
             }
           ]
         }
-      }},
-      {title: 'doc2', _id: 'id2', snippets: {
-        hits: {
-          hits: [
-            {
-              highlight: {
-                fullText: []
-              }
-            }
-          ]
-        }
-      }},
-      {title: 'doc3', _id: 'id3'},
-      {title: 'doc4', _id: 'id4', snippets: {
-        hits: {
-          hits: []
-        }
       }}
     ])
     .toObject();
 
-    if (!fixturesLoaded) {
-      db.clearAllAndLoad(elasticFixtures, () => {
-        elasticTesting.reindex()
-        .then(() => {
-          return mongoose.model('entities').collection.createIndex({title: 'text'});
-        })
-        .then(done);
-      });
-      fixturesLoaded = true;
-      return;
-    }
-    done();
+    db.clearAllAndLoad(elasticFixtures)
+    .then(() => {
+      return mongoose.model('entities').collection.createIndex({title: 'text'});
+    })
+    .then(() => {
+      return elasticTesting.reindex();
+    })
+    .then(done)
+    .catch(catchErrors(done));
   });
 
-  describe('countByTemplate', () => {
-    it('should return how many entities or documents are using the template passed', (done) => {
-      search.countByTemplate(ids.template1)
-      .then((count) => {
-        expect(count).toBe(4);
-        done();
-      })
-      .catch(done.fail);
-    });
+  afterAll((done) => {
+    db.disconnect().then(done);
   });
 
   describe('getUploadsByUser', () => {
@@ -128,6 +102,19 @@ describe('search', () => {
           .catch(catchErrors(done));
         });
       });
+    });
+
+    it('should perform a fullTextSearch on passed fields', (done) => {
+      Promise.all([
+        search.search({searchTerm: 'spanish', fields: ['title']}, 'es'),
+        search.search({searchTerm: 'Batman', fields: ['title']}, 'es')
+      ])
+      .then(([resultsNotFound, resultsFound]) => {
+        expect(resultsNotFound.rows.length).toBe(0);
+        expect(resultsFound.rows.length).toBe(2);
+        done();
+      })
+      .catch(catchErrors(done));
     });
 
     it('should perform a fullTextSearch on fullText and title', (done) => {
@@ -297,7 +284,7 @@ describe('search', () => {
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
           const templateAggs = filtered.aggregations.all.types.buckets;
-          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(1);
+          expect(filteredAggs.find((a) => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(filteredAggs.find((a) => a.key === 'multiValue2').filtered.doc_count).toBe(3);
           expect(templateAggs.find((a) => a.key === ids.template1).filtered.doc_count).toBe(0);
           expect(templateAggs.find((a) => a.key === ids.template2).filtered.doc_count).toBe(0);
@@ -336,7 +323,7 @@ describe('search', () => {
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
             const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
             expect(template2NestedAggs.rows.length).toBe(2);
-            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(2);
+            expect(nestedAggs.find((a) => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find((a) => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
@@ -431,7 +418,25 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    it('should allow including unpublished documents', (done) => {
+    it('should allow including unpublished documents if user', (done) => {
+      spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
+      search.search({
+        searchTerm: 'searchTerm',
+        includeUnpublished: true
+      }, 'es', 'user')
+      .then(() => {
+        let expectedQuery = documentQueryBuilder()
+        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
+        .includeUnpublished()
+        .language('es')
+        .query();
+
+        expect(elastic.search).toHaveBeenCalledWith({index: elasticIndex, body: expectedQuery});
+        done();
+      });
+    });
+
+    it('should not include unpublished documents if no user', (done) => {
       spyOn(elastic, 'search').and.returnValue(new Promise((resolve) => resolve(result)));
       search.search({
         searchTerm: 'searchTerm',
@@ -440,7 +445,6 @@ describe('search', () => {
       .then(() => {
         let expectedQuery = documentQueryBuilder()
         .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
-        .includeUnpublished()
         .language('es')
         .query();
 
@@ -583,22 +587,6 @@ describe('search', () => {
         })
         .catch(catchErrors(done));
       });
-    });
-  });
-
-  describe('indexEntities', () => {
-    it('should index entities based on query params passed', (done) => {
-      spyOn(search, 'bulkIndex');
-      search.indexEntities({sharedId: ids.batmanBegins}, {title: 1})
-      .then(() => {
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].title).toBeDefined();
-        expect(documentsToIndex[0].metadata).not.toBeDefined();
-        expect(documentsToIndex[1].title).toBeDefined();
-        expect(documentsToIndex[1].metadata).not.toBeDefined();
-        done();
-      })
-      .catch(catchErrors(done));
     });
   });
 

@@ -18,12 +18,14 @@ jasmine.loadConfig({
   spec_dir: '/',
   spec_files: [
     'nightmare/helpers/extensions.js',
+    'nightmare/helpers/connectionsDSL.js',
     'nightmare/**/*.spec.js'
   ]
 });
 
+jasmine.clearReporters();
 jasmine.addReporter(new reporters.TerminalReporter({
-  verbosity: 2,
+  verbosity: 3,
   color: true,
   showStack: true
 }));

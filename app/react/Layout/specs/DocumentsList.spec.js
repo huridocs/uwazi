@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 import DocumentsList from 'app/Layout/DocumentsList';
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
+import Footer from 'app/App/Footer';
 
 describe('DocumentsList', () => {
   let component;
@@ -90,5 +91,36 @@ describe('DocumentsList', () => {
     render();
     expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
     expect(component.find(SortButtons).props().selectedTemplates).toBe(props.filters.get('documentTypes'));
+  });
+
+  describe('Load More button', () => {
+    it('should render by default a load more button', () => {
+      props.documents = props.documents.set('totalRows', 3);
+      render();
+
+      expect(component.find('.btn-load-more').length).toBe(1);
+    });
+
+    it('should render a custom passed load more', () => {
+      props.documents = props.documents.set('totalRows', 3);
+      props.LoadMoreButton = () => <div className="customLoadMoreButton"/>;
+      render();
+
+      expect(component.find('.btn-load-more').length).toBe(0);
+      expect(component.find(props.LoadMoreButton).length).toBe(1);
+    });
+  });
+
+  describe('Footer', () => {
+    it('should render by default', () => {
+      render();
+      expect(component.find(Footer).length).toBe(1);
+    });
+
+    it('should hide the footer if prop passed', () => {
+      props.hideFooter = true;
+      render();
+      expect(component.find(Footer).length).toBe(0);
+    });
   });
 });

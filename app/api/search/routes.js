@@ -1,8 +1,9 @@
 import search from './search';
+import entities from 'api/entities';
 import needsAuthorization from '../auth/authMiddleware';
 export default (app) => {
   app.get('/api/search/count_by_template', (req, res) => {
-    return search.countByTemplate(req.query.templateId)
+    return entities.countByTemplate(req.query.templateId)
     .then(results => res.json(results))
     .catch(res.error);
   });
