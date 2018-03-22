@@ -60,7 +60,8 @@ db.once('open', function () {
       console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
       if (process.env.HOT) {
         console.info('');
-        console.info('webpack building...');
+        console.info('webpack is watching...');
+        console.info(require('./message'));
       }
     });
   })
