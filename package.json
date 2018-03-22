@@ -23,10 +23,10 @@
     ]
   },
   "scripts": {
-    "server": "nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared'",
+    "dev-server": "./node_modules/.bin/nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared'",
     "webpack-server": "node ./webpack/webpack.server.js",
-    "hot": "export HOT=true;npm run server & npm run webpack-server",
-    "build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
+    "hot": "export HOT=true;npm run dev-server & npm run webpack-server",
+    "production-build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
     "analyze": "webpack --profile --json > stats.json;./node_modules/.bin/webpack-bundle-analyzer stats.json",
     "download-mongo-prebuilt": "node ./database/download_mongo_prebuilt.js",
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt"
@@ -75,6 +75,7 @@
     "marked": "0.3.17",
     "moment": "2.21.0",
     "moment-timezone": "^0.5.5",
+    "mongodb_fixtures": "1.0.3",
     "mongoose": "4.9.8",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",
@@ -83,7 +84,6 @@
     "passport": "0.4.0",
     "passport-local": "^1.0.0",
     "pdfjs-dist": "1.6.304",
-    "mongodb_fixtures": "1.0.3",
     "prop-types": "15.5.7",
     "query-string": "4.3.1",
     "react": "16.2.0",
@@ -165,6 +165,7 @@
     "nightmare-real-mouse": "^1.0.0",
     "nightmare-upload": "^0.1.1",
     "node-sass": "4.7.2",
+    "nodemon": "^1.17.2",
     "null-loader": "^0.1.1",
     "optimize-css-assets-webpack-plugin": "4.0.0",
     "phantomjs-prebuilt": "^2.1.6",
