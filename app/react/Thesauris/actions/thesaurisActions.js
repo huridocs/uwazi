@@ -29,3 +29,12 @@ export function checkThesauriCanBeDeleted(thesauri) {
     });
   };
 }
+
+export function reloadThesauris() {
+  return function (dispatch) {
+    return api.get()
+    .then(response => {
+      dispatch(actions.set('thesauris', response));
+    });
+  };
+}

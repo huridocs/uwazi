@@ -1,6 +1,8 @@
 machine:
   node:
     version: 6.13.1
+  environment:
+    CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358
 
 dependencies:
   pre:
@@ -13,6 +15,9 @@ dependencies:
     - elasticsearch-5.5.1/bin/elasticsearch: {background: true}
     # Make sure that Elasticsearch is up before running tests:
     - sleep 10 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/
+  post:
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
 
   override:
     - yarn install
@@ -22,6 +27,10 @@ dependencies:
     - ../.mongodb-binaries # relative to the build directory
 
 test:
+  pre:
+    - ./cc-test-reporter before-build
   override:
     - ./node_modules/.bin/eslint app
-    - ./node_modules/.bin/jest -i
+    - ./node_modules/.bin/jest -i --coverage
+  post:
+    - ./cc-test-reporter after-build --exit-code $EXIT_CODE
