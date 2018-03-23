@@ -22,6 +22,7 @@ Table of contents
     * [Production Build](#production-build)
     * [Initial State](#initial-state)
     * [Production Run](#production-run)
+    * [Upgrading Uwazi](#upgrading-uwazi-migrations)
   * [Development](#development)
     * [Development Run](#development-run)
     * [Testing](#testing)
@@ -73,6 +74,10 @@ Do no run this command for existing projects, as this will erase the entire data
 ```
 $ yarn run-production
 ```
+
+### Upgrading Uwazi (migrations)
+
+We are working on a migration system that will allow seamless transitions from one version to the next of Uwazi.  For the time being, please, check the release notes for each version as to what is required in order to have the data properly migrated. 
 
 # Development
 
