@@ -18,7 +18,7 @@ Table of contents
 
   * [Dependencies](#dependencies)
   * [Production](#production)
-    * [Production Configuration](#production_configuration)
+    * [Production Configuration](#production-configuration-advanced)
     * [Production Build](#production_build)
     * [Initial State](#initial_state)
     * [Production Run](#production_run)
