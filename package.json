@@ -23,6 +23,7 @@
     ]
   },
   "scripts": {
+    "run-production": "export NODE_ENV=production; node server.js",
     "dev-server": "./node_modules/.bin/nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared'",
     "webpack-server": "node ./webpack/webpack.server.js",
     "hot": "export HOT=true;npm run dev-server & npm run webpack-server",
@@ -31,7 +32,9 @@
     "download-mongo-prebuilt": "node ./database/download_mongo_prebuilt.js",
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
     "reindex": "node run.js ./database/reindex_elastic.js",
-    "install_fixtures": "./install_fixtures.sh; npm run reindex"
+    "blank-state": "./database/blank_state.sh",
+    "install-fixtures": "./install_fixtures.sh; npm run reindex",
+    "e2e": "node nightmare_tests.js"
   },
   "dependencies": {
     "@vimeo/player": "^2.2.1",
