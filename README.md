@@ -7,9 +7,9 @@
 Table of contents
 =================
 
- * [Dependencies](#dependencies)
- * [Production](#production)
-  * [Production Build](#production_build)
+  * [Dependencies](#dependencies)
+  * [Production](#production)
+    * [Production Build](#production_build)
 
 # Dependencies
 
