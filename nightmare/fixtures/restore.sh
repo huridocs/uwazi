@@ -10,5 +10,5 @@ cp ./uploaded_documents/*.pdf ../../uploaded_documents/
 cp ./uploaded_documents/*.jpg ../../uploaded_documents/
 
 echo "Indexing into ElasticSearch..."
-cd ../../database
-node reindex_elastic.js
+cd ../../
+npm run reindex
