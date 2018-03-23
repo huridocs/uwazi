@@ -40,10 +40,27 @@ $ yarn production-build
 
 ### Production Configuration (advanced)
 
-Uwazi is configured to run correctly with its default values.  If you require different database names and elastic indexes, please follow the following instructions:
+Uwazi is configured to run correctly with its default values. There is no need to change or reconfigure these values.
 
+However, if you require different database names and elastic indexes, etc. you can override those defaults by exporting one or more of the following environment variables:
+
+```
+$ export DBHOST=localhost
+$ export NODE_ENV=production
+$ export DATABASE_NAME=uwazi_development
+$ export ELASTICSEARCH_URL=http://localhost:9200
+$ export INDEX_NAME=uwazi_development
+$ export API_URL=/api/
+$ export PORT=3000
+```
+
+Again, please be adviced that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overriden, Uwazi will fail to run properly.
 
 ### Production Run
+
+```
+$ yarn start
+```
 
 #Development
 
