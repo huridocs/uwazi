@@ -19,14 +19,14 @@ Table of contents
   * [Dependencies](#dependencies)
   * [Production](#production)
     * [Production Configuration](#production-configuration-advanced)
-    * [Production Build](#production_build)
-    * [Initial State](#initial_state)
-    * [Production Run](#production_run)
+    * [Production Build](#production-build)
+    * [Initial State](#initial-state)
+    * [Production Run](#production-run)
   * [Development](#development)
-    * [Development Run](#development_run)
+    * [Development Run](#development-run)
     * [Testing](#testing)
-      * [Unit and Integration tests](#unit_and_integration_tests)
-      * [End to End (e2e)](#end_to_end_e2e)
+      * [Unit and Integration tests](#unit-and-integration-tests)
+      * [End to End (e2e)](#end-to-end-e2e)
 
 # Dependencies
 
