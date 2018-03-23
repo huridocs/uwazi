@@ -33,7 +33,8 @@
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
     "reindex": "node run.js ./database/reindex_elastic.js",
     "blank-state": "./database/blank_state.sh",
-    "install_fixtures": "./install_fixtures.sh; npm run reindex"
+    "install_fixtures": "./install_fixtures.sh; npm run reindex",
+    "e2e": "node nightmare_tests.js"
   },
   "dependencies": {
     "@vimeo/player": "^2.2.1",
