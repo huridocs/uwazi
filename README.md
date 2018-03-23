@@ -4,20 +4,11 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/maintainability)](https://codeclimate.com/github/huridocs/uwazi/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/test_coverage)](https://codeclimate.com/github/huridocs/uwazi/test_coverage)
 
-#Global dependencies
+# Dependencies
 
-- **NodeJs 6.9.5**
-    - Ubuntu
-      ```
-      $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-      $ sudo apt-get install -y nodejs
-      ```
-- **Elasticsearch** (5.5.x)
-   - https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html
-    
-- **MongoDB**
-    - Ubuntu
-      https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+- **NodeJs 6.13.x** For ease of update, use nvm: https://github.com/creationix/nvm
+- **Elasticsearch 5.5.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.5, some sections of the instructions use 5.x which would install a different version)
+- **MongoDB** 3.4.x https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
 
 #Development
 
@@ -41,7 +32,7 @@
   $ ./database/blank_state.sh
   ```
 
-- launch application: 
+- launch application:
     - `npm run hot`, for hot reloading build dev app and nodemon server
     - `webpack --watch` and `npm run server`, for development build with nodemon server
     - `webpack --config webpack.production.config.js;export NODE_ENV=production;node server.js`, for production env bundle
