@@ -21,6 +21,7 @@ Table of contents
     * [Production Build](#production_build)
     * [Production Configuration](#production_configuration)
     * [Production Run](#production_run)
+  * [Development](#development)
 
 # Dependencies
 
@@ -45,7 +46,6 @@ However, if you require different database names and elastic indexes, etc. you c
 
 ```
 $ export DBHOST=localhost
-$ export NODE_ENV=production
 $ export DATABASE_NAME=uwazi_development
 $ export ELASTICSEARCH_URL=http://localhost:9200
 $ export INDEX_NAME=uwazi_development
@@ -58,10 +58,10 @@ Again, please be adviced that there is no need to export any value for a normal 
 ### Production Run
 
 ```
-$ yarn start
+$ yarn run-production
 ```
 
-#Development
+# Development
 
 - **Dependencies**
 
