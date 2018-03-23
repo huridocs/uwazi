@@ -4,12 +4,24 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/maintainability)](https://codeclimate.com/github/huridocs/uwazi/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/test_coverage)](https://codeclimate.com/github/huridocs/uwazi/test_coverage)
 
+![Uwazi Logo](https://www.uwazi.io/wp-content/uploads/2017/09/cropped-uwazi-color-logo-300x68.png)
+
+There are important stories within your documents. Uwazi helps you tell them.
+
+Uwazi is a free, open-source solution for organising, analysing and publishing your documents.
+
+[Uwazi](https://www.uwazi.io/) | [Huridocs](https://huridocs.org/)
+
+
+
 Table of contents
 =================
 
   * [Dependencies](#dependencies)
   * [Production](#production)
     * [Production Build](#production_build)
+    * [Production Configuration](#production_configuration)
+    * [Production Run](#production_run)
 
 # Dependencies
 
@@ -20,11 +32,18 @@ Table of contents
 
 # Production
 
-## Production Build
+### Production Build
 
 ```
 $ yarn production-build
 ```
+
+### Production Configuration (advanced)
+
+Uwazi is configured to run correctly with its default values.  If you require different database names and elastic indexes, please follow the following instructions:
+
+
+### Production Run
 
 #Development
 
