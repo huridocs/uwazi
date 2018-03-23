@@ -1,10 +1,7 @@
-require('babel-core/register')
-
 var dbConfig = require('../app/api/config/database.js');
 
-
 var indexConfig = require('../app/api/config/elasticIndexes.js');
-var index = process.argv[2] || 'development';
+var index = 'development';
 indexConfig.index = indexConfig[index];
 
 var mongoose = require('mongoose');

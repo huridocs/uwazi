@@ -29,7 +29,9 @@
     "production-build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
     "analyze": "webpack --profile --json > stats.json;./node_modules/.bin/webpack-bundle-analyzer stats.json",
     "download-mongo-prebuilt": "node ./database/download_mongo_prebuilt.js",
-    "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt"
+    "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
+    "reindex": "node run.js ./database/reindex_elastic.js",
+    "install_fixtures": "./install_fixtures.sh; npm run reindex"
   },
   "dependencies": {
     "@vimeo/player": "^2.2.1",
