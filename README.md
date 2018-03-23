@@ -7,9 +7,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/test_coverage)](https://codeclimate.com/github/huridocs/uwazi/test_coverage)
 
 
-There are important stories within your documents. Uwazi helps you tell them.
-
-Uwazi is a free, open-source solution for organising, analysing and publishing your documents.
+There are important stories within your documents. Uwazi helps you tell them.  Uwazi is a free, open-source solution for organising, analysing and publishing your documents.
 
 [Uwazi](https://www.uwazi.io/) | [Huridocs](https://huridocs.org/)
 
