@@ -18,10 +18,15 @@ Table of contents
 
   * [Dependencies](#dependencies)
   * [Production](#production)
-    * [Production Build](#production_build)
     * [Production Configuration](#production_configuration)
+    * [Production Build](#production_build)
+    * [Initial State](#initial_state)
     * [Production Run](#production_run)
   * [Development](#development)
+    * [Development Run](#development_run)
+    * [Testing](#testing)
+      * [Unit and Integration tests](#unit_and_integration_tests)
+      * [End to End (e2e)](#end_to_end_e2e)
 
 # Dependencies
 
@@ -32,17 +37,11 @@ Table of contents
 
 # Production
 
-### Production Build
-
-```
-$ yarn production-build
-```
-
 ### Production Configuration (advanced)
 
 Uwazi is configured to run correctly with its default values. There is no need to change or reconfigure these values.
 
-However, if you require different database names and elastic indexes, etc. you can override those defaults by exporting one or more of the following environment variables:
+However, if you require different database names, elastic indexes, etc. you can override those defaults by exporting one or more of the following environment variables:
 
 ```
 $ export DBHOST=localhost
@@ -55,6 +54,20 @@ $ export PORT=3000
 
 Again, please be adviced that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overriden, Uwazi will fail to run properly.
 
+### Production Build
+
+```
+$ yarn production-build
+```
+
+### Initial State
+
+The first time you run Uwazi, you will need to initialize the database with its default blank values.  To do so:
+```
+$ yarn blank-state
+```
+Do no run this command for existing projects, as this will erase the entire database.
+
 ### Production Run
 
 ```
@@ -63,32 +76,42 @@ $ yarn run-production
 
 # Development
 
-- **Dependencies**
+### Development Run
 
-  install [yarn](https://yarnpkg.com/en/) and execute:
+```
+$ yarn hot
+```
+This will launch a webpack server and nodemon app server for hot reloading any changes you make.
 
-  `$ yarn install`.
+### Testing
 
-  Several globally accessible gems and npm modules are required:
+#### Unit and Integration tests
 
-  ```
-  $ sudo npm install -g webpack
-  $ sudo npm install -g nodemon
-  $ sudo npm install -g karma-cli
-  ```
+We test using the JEST framework (built on top of Jasmine).  To run the unit and integration tests, execute
 
-- **Fixtures**
+```
+$ ./node_modules/.bin/jest
+```
 
-  ```
-  $ ./database/blank_state.sh
-  ```
+This will run the entire battery of tests, both on server and client apps.
 
-- launch application:
-    - `npm run hot`, for hot reloading build dev app and nodemon server
-    - `webpack --watch` and `npm run server`, for development build with nodemon server
-    - `webpack --config webpack.production.config.js;export NODE_ENV=production;node server.js`, for production env bundle
-- test server: `node test_api.js`
-- test client: `karma start`
+#### End to End (e2e)
+
+For End-to-End testing, we have a full set of fixtures that test the overall functionality.  Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any exisitng data and replace it with the testing fixtures.  DO NOT RUN ON PRODUCTION ENVIROMENTS!
+
+Running end to end tests require a runnig uwazi app.
+
+```
+$ yarn hot
+```
+
+On a different console tab, run
+```
+$ yarn e2e
+```
+
+Note that if you already have an instance running, this will likely throw an error of ports already been used.  Only one instance of uwazi may be run in a the same port at the same time.
+
 
 #Suggestions
 
