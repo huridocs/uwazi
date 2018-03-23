@@ -1,15 +1,9 @@
 export default function (obj, keys = []) {
-  const target = {};
-  for (let property in obj) {
-    if (keys.indexOf(property) >= 0) {
-      continue;
-    }
+  const target = Object.assign({}, obj);
 
-    if (!Object.hasOwnProperty.call(obj, property)) {
-      continue;
-    }
+  keys.forEach((key) => {
+    delete target[key];
+  });
 
-    target[property] = obj[property];
-  }
   return target;
 }

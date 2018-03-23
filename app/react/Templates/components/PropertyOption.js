@@ -1,24 +1,24 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {DragSource} from 'react-dnd';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { DragSource } from 'react-dnd';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import {removeProperty} from 'app/Templates/actions/templateActions';
+import { removeProperty } from 'app/Templates/actions/templateActions';
 import Icons from './Icons';
 
 export class PropertyOption extends Component {
   render() {
-    const {connectDragSource} = this.props;
-    const {label} = this.props;
+    const { connectDragSource } = this.props;
+    const { label } = this.props;
     const iconClass = Icons[this.props.type] || 'fa fa-font';
-    const liClass = 'list-group-item' + (this.props.disabled ? ' disabled' : '');
+    const liClass = `list-group-item${this.props.disabled ? ' disabled' : ''}`;
     return (
       connectDragSource(
         <li className={liClass}>
           <span>
-            <i className="fa fa-clone"></i>
-            <i className={iconClass}></i>&nbsp;{label}
+            <i className="fa fa-clone" />
+            <i className={iconClass} />&nbsp;{label}
           </span>
         </li>
       )
@@ -51,14 +51,14 @@ const optionSource = {
   }
 };
 
-let dragSource = DragSource('METADATA_OPTION', optionSource, (connector) => ({
+const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
   connectDragSource: connector.dragSource()
 }))(PropertyOption);
 
-export {dragSource as dragSource};
+export { dragSource };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({removeProperty}, dispatch);
+  return bindActionCreators({ removeProperty }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps, null, {withRef: true})(dragSource);
+export default connect(null, mapDispatchToProps, null, { withRef: true })(dragSource);

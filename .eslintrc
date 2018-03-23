@@ -32,7 +32,7 @@
       "newline-per-chained-call": "off",
       "no-prototype-builtins": "off",
 
-      "object-curly-spacing": ["error", "never"],
+      "object-curly-spacing": ["warn", "always"],
       "max-len": ["error", 150],
 
       //all warns are activated by default if removed
@@ -60,6 +60,7 @@
       "no-useless-escape": ["warn"],
       "arrow-spacing": ["warn"],
       "no-empty": ["warn"],
+      "no-cond-assign": ["warn"],
 
       //import
       "import/no-duplicates": ["warn"],
@@ -97,6 +98,8 @@
       "jsx-a11y/anchor-is-valid": ["warn"],
       "jsx-a11y/label-has-for": ["warn"],
       "jsx-a11y/iframe-has-title": ["warn"],
+      "jsx-a11y/tabindex-no-positive": ["warn"],
+      "jsx-a11y/no-noninteractive-element-interactions": ["warn"],
       "jsx-a11y/no-static-element-interactions": "off",
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/mouse-events-have-key-events": "off"

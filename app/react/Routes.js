@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, IndexRoute} from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 
 import App from 'app/App/App';
 import NoMatch from 'app/App/NoMatch';
@@ -25,7 +25,7 @@ import NewPage from 'app/Pages/NewPage';
 import EditPage from 'app/Pages/EditPage';
 import PageView from 'app/Pages/PageView';
 
-import {Users, NewUser, EditUser} from 'app/Users';
+import { Users, NewUser, EditUser } from 'app/Users';
 
 import ViewDocument from 'app/Viewer/ViewDocument';
 import EntityView from 'app/Entities/EntityView';
@@ -46,18 +46,18 @@ import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
 
-import {store} from './store';
-import {trackPage} from 'app/App/GoogleAnalytics';
+import { store } from './store';
+import { trackPage } from 'app/App/GoogleAnalytics';
 
 function onEnter() {
   trackPage();
 }
 
 function getIndexRoute(nextState, callBack) {
-  let indexRoute = {
+  const indexRoute = {
     component: Library,
     onEnter: (nxtState, replace) => {
-      let collectionSettings = store.getState().settings.collection.toJS();
+      const collectionSettings = store.getState().settings.collection.toJS();
       if (collectionSettings.home_page) {
         replace(collectionSettings.home_page);
       }
@@ -67,62 +67,60 @@ function getIndexRoute(nextState, callBack) {
 }
 
 const routes =
-  <Route getIndexRoute={getIndexRoute}>
-    <Route path='settings' component={Settings}>
-      <Route path='account' component={AccountSettings} />
-      <Route path='collection' component={CollectionSettings} />
-      <Route path='navlinks' component={NavlinksSettings} />
-      <Route path='users'>
+  (<Route getIndexRoute={getIndexRoute}>
+    <Route path="settings" component={Settings}>
+      <Route path="account" component={AccountSettings} />
+      <Route path="collection" component={CollectionSettings} />
+      <Route path="navlinks" component={NavlinksSettings} />
+      <Route path="users">
         <IndexRoute component={Users} />
-        <Route path='new' component={NewUser} />
-        <Route path='edit/:userId' component={EditUser} />
+        <Route path="new" component={NewUser} />
+        <Route path="edit/:userId" component={EditUser} />
       </Route>
-      <Route path='pages'>
+      <Route path="pages">
         <IndexRoute component={Pages} />
-        <Route path='new' component={NewPage} />
-        <Route path='edit/:pageId' component={EditPage} />
+        <Route path="new" component={NewPage} />
+        <Route path="edit/:pageId" component={EditPage} />
       </Route>
-      <Route path='documents'>
+      <Route path="documents">
         <IndexRoute component={DocumentTypesList} />
-        <Route path='new' component={NewTemplate} />
-        <Route path='edit/:templateId' component={EditTemplate} />
+        <Route path="new" component={NewTemplate} />
+        <Route path="edit/:templateId" component={EditTemplate} />
       </Route>
-      <Route path='entities'>
+      <Route path="entities">
         <IndexRoute component={EntityTypesList} />
-        <Route path='new' component={NewEntity} />
-        <Route path='edit/:templateId' component={EditEntity} />
+        <Route path="new" component={NewEntity} />
+        <Route path="edit/:templateId" component={EditEntity} />
       </Route>
-      <Route path='connections'>
+      <Route path="connections">
         <IndexRoute component={RelationTypesList} />
-        <Route path='new' component={NewRelationType} />
-        <Route path='edit/:relationTypeId' component={EditRelationType} />
+        <Route path="new" component={NewRelationType} />
+        <Route path="edit/:relationTypeId" component={EditRelationType} />
       </Route>
-      <Route path='dictionaries'>
+      <Route path="dictionaries">
         <IndexRoute component={ThesaurisList} />
-        <Route path='new' component={NewThesauri} />
-        <Route path='edit/:thesauriId' component={EditThesauri} />
+        <Route path="new" component={NewThesauri} />
+        <Route path="edit/:thesauriId" component={EditThesauri} />
       </Route>
-      <Route path='translations'>
+      <Route path="translations">
         <IndexRoute component={TranslationsList} />
-        <Route path='edit/:context' component={EditTranslations} />
+        <Route path="edit/:context" component={EditTranslations} />
       </Route>
-      <Route path='filters' component={FiltersForm} />
+      <Route path="filters" component={FiltersForm} />
     </Route>
-    <Route path='library' component={Library} onEnter={onEnter}/>
-    <Route path='uploads' component={Uploads} />
-    <Route path='login' component={Login} />
-    <Route path='setpassword/:key' component={ResetPassword} />
-    <Route path='document/:documentId' component={ViewDocument} onEnter={onEnter}/>
-    <Route path='entity/:entityId' component={EntityView} onEnter={onEnter}/>
-    <Route path='page/:pageId' component={PageView} onEnter={onEnter}/>
-    <Route path='404' component={NoMatch} />
-  </Route>
-;
-
+    <Route path="library" component={Library} onEnter={onEnter}/>
+    <Route path="uploads" component={Uploads} />
+    <Route path="login" component={Login} />
+    <Route path="setpassword/:key" component={ResetPassword} />
+    <Route path="document/:documentId" component={ViewDocument} onEnter={onEnter}/>
+    <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
+    <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>
+    <Route path="404" component={NoMatch} />
+   </Route>);
 export default (
-  <Route path='/' component={App}>
+  <Route path="/" component={App}>
     {routes}
-    <Route path=':lang'>
+    <Route path=":lang">
       {routes}
       <Route path="*" component={NoMatch} />
     </Route>

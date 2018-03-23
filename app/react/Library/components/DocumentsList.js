@@ -1,12 +1,17 @@
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {wrapDispatch} from 'app/Multireducer';
-import {searchDocuments} from 'app/Library/actions/libraryActions';
-import {actions as actionCreators} from 'app/BasicReducer';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
+import { actions as actionCreators } from 'app/BasicReducer';
 
 import DocumentsList from 'app/Layout/DocumentsList';
-import {loadMoreDocuments, selectDocument, unselectDocument,
-        unselectAllDocuments, selectDocuments} from 'app/Library/actions/libraryActions';
+import {
+  searchDocuments
+  loadMoreDocuments,
+  selectDocument,
+  unselectDocument,
+  unselectAllDocuments,
+  selectDocuments
+} from 'app/Library/actions/libraryActions';
 
 export function clickOnDocument(e, doc, active) {
   const canSelectMultiple = this.props.authorized;
@@ -24,7 +29,7 @@ export function clickOnDocument(e, doc, active) {
     return this.props.unselectDocument(doc.get('_id'));
   }
 
-  if (!active & e.shiftKey & canSelectMultiple) {
+  if (!active && e.shiftKey && canSelectMultiple) {
     const lastSelectedDocument = this.props.selectedDocuments.last();
     const docs = this.props.documents.get('rows');
     const startIndex = docs.reduce((result, _doc, index) => {
@@ -72,7 +77,7 @@ function mapDispatchToProps(dispatch, props) {
     selectDocuments,
     unselectDocument,
     unselectAllDocuments,
-    onSnippetClick: () => actionCreators.set(props.storeKey + '.sidepanel.tab', 'text-search')
+    onSnippetClick: () => actionCreators.set(`${props.storeKey}.sidepanel.tab`, 'text-search')
   }, wrapDispatch(dispatch, props.storeKey));
 }
 

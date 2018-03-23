@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Player from '@vimeo/player';
 
 export class MarkdownVimeo extends Component {
-
   propsToConfig(props) {
     let options = props.config.replace(/\(|\)/g, '').split(',');
     const videoUrl = options.shift();
@@ -15,7 +14,7 @@ export class MarkdownVimeo extends Component {
     } catch (error) {
       options = {};
     }
-    return {videoId, options};
+    return { videoId, options };
   }
 
   componentDidMount() {
@@ -29,30 +28,30 @@ export class MarkdownVimeo extends Component {
   timeLinks(config) {
     config.options.timelinks = config.options.timelinks || {};
     return Object.keys(config.options.timelinks).map((timeKey, index) => {
-      let seconds = timeKey.split(':').reverse().reduce((_seconds, n, _index) => {
-        return _seconds + parseInt(n, 10) * Math.pow(60, _index);
-      }, 0);
-      return <div className="timelink" key={index} onClick={this.setTime.bind(this, seconds)} className="timelink">
-                <b><i className="fa fa-play"></i> {timeKey}</b>
-                <span>{config.options.timelinks[timeKey]}</span>
-              </div>;
+      const seconds = timeKey.split(':').reverse().reduce((_seconds, n, _index) => _seconds + parseInt(n, 10) * Math.pow(60, _index), 0);
+      return (<div className="timelink" key={index} onClick={this.setTime.bind(this, seconds)} >
+        <b><i className="fa fa-play" /> {timeKey}</b>
+        <span>{config.options.timelinks[timeKey]}</span>
+      </div>);
     });
   }
 
   render() {
     const config = this.propsToConfig(this.props);
-    let title = config.options.title ? '1' : '0';
-    let byline = config.options.byline ? '1' : '0';
-    let portrait = config.options.portrait ? '1' : '0';
+    const title = config.options.title ? '1' : '0';
+    const byline = config.options.byline ? '1' : '0';
+    const portrait = config.options.portrait ? '1' : '0';
     const src = `https://player.vimeo.com/video/${config.videoId}?title=${title}&byline=${byline}&portrait=${portrait}`;
 
     return (
       <div className="video-container">
         <div>
           <iframe
-            ref={(iframe) => this.iframe = iframe}
+            ref={iframe => this.iframe = iframe}
             src={src}
-            frameBorder="0" allowFullScreen />
+            frameBorder="0"
+            allowFullScreen
+          />
         </div>
         <div>
           {this.timeLinks(config)}

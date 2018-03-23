@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {FilterSuggestions} from '../FilterSuggestions';
+import { FilterSuggestions } from '../FilterSuggestions';
 
 describe('FilterSuggestions', () => {
   let component;
@@ -12,24 +12,29 @@ describe('FilterSuggestions', () => {
 
   function renderComponent(label = 'test', type = 'text', content) {
     templates = [
-      {_id: 'template1', properties: [
-        {localID: 1, label: label, filter: true, type},
-        {localID: 2, label: 'something else'}
-      ]},
-      {_id: 'template2', name: 'Template 2', properties: [
-        {label: 'Date', type: 'date', filter: true},
-        {label: 'Author', type: 'text', filter: true},
-        {label: 'Authors', type: 'select', filter: true, content: 'abc1'}
-      ]},
-      {_id: 'template3', name: 'Template 3', properties: [
-        {label: 'Date', type: 'date', filter: true},
-        {label: 'Keywords', type: 'text', filter: true}
-      ]}
+      { _id: 'template1',
+        properties: [
+          { localID: 1, label, filter: true, type },
+          { localID: 2, label: 'something else' }
+        ] },
+      { _id: 'template2',
+        name: 'Template 2',
+        properties: [
+          { label: 'Date', type: 'date', filter: true },
+          { label: 'Author', type: 'text', filter: true },
+          { label: 'Authors', type: 'select', filter: true, content: 'abc1' }
+        ] },
+      { _id: 'template3',
+        name: 'Template 3',
+        properties: [
+          { label: 'Date', type: 'date', filter: true },
+          { label: 'Keywords', type: 'text', filter: true }
+        ] }
     ];
 
     thesauris = [
-      {_id: 'abc1', name: 'Best SCI FI Authors'},
-      {_id: 'abc2', name: 'Favourite dessert recipes'}
+      { _id: 'abc1', name: 'Best SCI FI Authors' },
+      { _id: 'abc2', name: 'Favourite dessert recipes' }
     ];
 
     props = {
@@ -37,7 +42,7 @@ describe('FilterSuggestions', () => {
       type,
       filter: true,
       content,
-      data: {name: 'Current template', _id: 'template1'},
+      data: { name: 'Current template', _id: 'template1' },
       templates: Immutable.fromJS(templates),
       thesauris: Immutable.fromJS(thesauris)
     };
@@ -55,7 +60,7 @@ describe('FilterSuggestions', () => {
   describe('when matches type and label as other template property', () => {
     it('should show a message', () => {
       renderComponent('author', 'text');
-      let suggestion = component.find('tbody > tr').at(1);
+      const suggestion = component.find('tbody > tr').at(1);
       expect(suggestion.text().trim())
       .toBe('Template 2 Text');
     });
@@ -64,7 +69,7 @@ describe('FilterSuggestions', () => {
   describe('when label is the same but different type', () => {
     it('should mark it as conflict', () => {
       renderComponent('author', 'date');
-      let suggestion = component.find('.conflict');
+      const suggestion = component.find('.conflict');
       expect(suggestion.text().trim())
       .toBe('Text');
     });
@@ -73,7 +78,7 @@ describe('FilterSuggestions', () => {
   describe('when label is the same but different content', () => {
     it('should mark it as conflict', () => {
       renderComponent('authors', 'select', 'abc2');
-      let suggestion = component.find('.conflict');
+      const suggestion = component.find('.conflict');
       expect(suggestion.text().trim())
       .toBe('Best SCI FI Authors');
     });
@@ -82,7 +87,7 @@ describe('FilterSuggestions', () => {
   describe('when content does not match with a thesauri (happening when opening property and the dictionary has been deleted)', () => {
     it('should not show anything', () => {
       renderComponent('authors', 'select', 'non existent thesauri');
-      let suggestion = component.find('tbody > tr').at(1);
+      const suggestion = component.find('tbody > tr').at(1);
       expect(suggestion.text().trim())
       .toBe('Template 2 Select Best SCI FI Authors');
     });
