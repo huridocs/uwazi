@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 import P from 'bluebird';
-import templates from '../templates/templates';
 import mongoose from 'mongoose';
-import translationsModel from '../i18n/translations';
+
+import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
+import translationsModel from '../i18n/translations';
 
 translationsModel.get()
 .then((translations) => {
-  let contextsWithoutTypes = [];
+  const contextsWithoutTypes = [];
   translations.forEach((translation) => {
     translation.contexts.forEach((context) => {
       if (!context.type) {
@@ -16,31 +17,24 @@ translationsModel.get()
     });
   });
 
-  return P.resolve(contextsWithoutTypes).map((context) => {
-    return thesauris.getById(context.id)
-    .then((thesauri) => {
-      if (thesauri) {
-        context.type = 'Dictionary';
-        return;
-      }
-      return templates.getById({_id: context.id});
-    })
-    .then((result) => {
-      if (result && result.isEntity) {
-        context.type = 'Entity';
-        return;
-      }
-      if (result) {
-        context.type = 'Document';
-        return;
-      }
-    });
-  }, {concurrency: 1})
-  .then(() => {
-    return P.resolve(translations).map((translation) => {
-      return translationsModel.save(translation);
-    }, {concurrency: 1});
-  });
+  return P.resolve(contextsWithoutTypes).map(context => thesauris.getById(context.id)
+  .then((thesauri) => {
+    if (thesauri) {
+      context.type = 'Dictionary';
+      return;
+    }
+    return templates.getById({ _id: context.id });
+  })
+  .then((result) => {
+    if (result && result.isEntity) {
+      context.type = 'Entity';
+      return;
+    }
+    if (result) {
+      context.type = 'Document';
+    }
+  }), { concurrency: 1 })
+  .then(() => P.resolve(translations).map(translation => translationsModel.save(translation), { concurrency: 1 }));
 })
 .then(() => {
   mongoose.disconnect();

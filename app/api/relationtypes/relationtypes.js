@@ -1,47 +1,43 @@
 import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
-import model from './model';
-import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from '../templates/utils';
-let checkDuplicated = (relationtype) => {
-  return model.get()
-  .then((response) => {
-    let duplicated = response.find((entry) => {
-      let sameEntity = entry._id.equals(relationtype._id);
-      let sameName = entry.name.trim().toLowerCase() === relationtype.name.trim().toLowerCase();
-      return sameName && !sameEntity;
-    });
 
-    if (duplicated) {
-      return Promise.reject('duplicated_entry');
-    }
+import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from '../templates/utils';
+import model from './model';
+
+const checkDuplicated = relationtype => model.get()
+.then((response) => {
+  const duplicated = response.find((entry) => {
+    const sameEntity = entry._id.equals(relationtype._id);
+    const sameName = entry.name.trim().toLowerCase() === relationtype.name.trim().toLowerCase();
+    return sameName && !sameEntity;
   });
-};
+
+  if (duplicated) {
+    return Promise.reject('duplicated_entry');
+  }
+});
 
 function _save(relationtype) {
-  let values = {};
+  const values = {};
   values[relationtype.name] = relationtype.name;
   relationtype.properties.forEach((property) => {
     values[property.label] = property.label;
   });
   return model.save(relationtype)
-  .then((response) => {
-    return translations.addContext(response._id, relationtype.name, values, 'Connection')
-    .then(() => {
-      return response;
-    });
-  });
+  .then(response => translations.addContext(response._id, relationtype.name, values, 'Connection')
+  .then(() => response));
 }
 
-let updateTranslation = (currentTemplate, template) => {
-  let currentProperties = currentTemplate.properties;
-  let newProperties = template.properties;
+const updateTranslation = (currentTemplate, template) => {
+  const currentProperties = currentTemplate.properties;
+  const newProperties = template.properties;
 
-  let updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
-  let deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
-  let context = template.properties.reduce((ctx, prop) => {
+  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const context = template.properties.reduce((ctx, prop) => {
     ctx[prop.label] = prop.label;
     return ctx;
   }, {});
@@ -52,7 +48,7 @@ let updateTranslation = (currentTemplate, template) => {
 };
 
 function _update(newTemplate) {
-  return model.getById({_id: newTemplate._id})
+  return model.getById({ _id: newTemplate._id })
   .then((currentTemplate) => {
     updateTranslation(currentTemplate, newTemplate);
     relationships.updateMetadataProperties(newTemplate, currentTemplate);

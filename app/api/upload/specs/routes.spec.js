@@ -1,14 +1,14 @@
 /* eslint-disable max-nested-callbacks */
-import uploadRoutes from '../routes.js';
-import instrumentRoutes from '../../utils/instrumentRoutes';
-import entities from 'api/entities';
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import db from 'api/utils/testing_db';
 import documents from 'api/documents';
+import entities from 'api/entities';
 import relationships from 'api/relationships';
-import {catchErrors} from 'api/utils/jasmineHelpers';
 import search from 'api/search/search';
 
-import db from 'api/utils/testing_db';
-import fixtures, {entityId} from './fixtures.js';
+import fixtures, { entityId } from './fixtures.js';
+import instrumentRoutes from '../../utils/instrumentRoutes';
+import uploadRoutes from '../routes.js';
 
 describe('upload routes', () => {
   let routes;
@@ -20,19 +20,17 @@ describe('upload routes', () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
     iosocket = jasmine.createSpyObj('socket', ['emit']);
-    let io = {getCurrentSessionSockets: () => {
-      return {sockets: [iosocket], emit: iosocket.emit};
-    }};
+    const io = { getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }) };
     routes = instrumentRoutes(uploadRoutes);
-    file = {fieldname: 'file',
+    file = { fieldname: 'file',
             originalname: 'gadgets-01.pdf',
             encoding: '7bit',
             mimetype: 'application/octet-stream',
-            destination: __dirname + '/uploads/',
+            destination: `${__dirname}/uploads/`,
             filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-            path: __dirname + '/uploads/f2082bf51b6ef839690485d7153e847a.pdf',
-            size: 171411271};
-    req = {language: 'es', user: 'admin', headers: {}, body: {document: 'id'}, files: [file], io};
+            path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
+            size: 171411271 };
+    req = { language: 'es', user: 'admin', headers: {}, body: { document: 'id' }, files: [file], io };
 
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
@@ -47,8 +45,8 @@ describe('upload routes', () => {
       iosocket.emit.and.callFake((eventName) => {
         if (eventName === 'documentProcessed') {
           return Promise.all([
-            documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
-            documents.get({sharedId: 'id', language: 'en'}, '+fullText')
+            documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
+            documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
           ])
           .then(([docES, docEN]) => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
@@ -72,13 +70,13 @@ describe('upload routes', () => {
     describe('Language detection', () => {
       it('should detect English documents and store the result', (done) => {
         file.filename = 'eng.pdf';
-        file.path = __dirname + '/uploads/eng.pdf';
+        file.path = `${__dirname}/uploads/eng.pdf`;
 
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'documentProcessed') {
             return Promise.all([
-              documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
-              documents.get({sharedId: 'id', language: 'en'}, '+fullText')
+              documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
+              documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
             ])
             .then(([docES, docEN]) => {
               expect(docEN[0].file.language).toBe('eng');
@@ -95,12 +93,12 @@ describe('upload routes', () => {
 
       it('should detect Spanish documents and store the result', (done) => {
         file.filename = 'spn.pdf';
-        file.path = __dirname + '/uploads/spn.pdf';
+        file.path = `${__dirname}/uploads/spn.pdf`;
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'documentProcessed') {
             return Promise.all([
-              documents.get({sharedId: 'id', language: 'es'}, '+fullText'),
-              documents.get({sharedId: 'id', language: 'en'}, '+fullText')
+              documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
+              documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
             ])
             .then(([docES, docEN]) => {
               expect(docEN[0].file.language).toBe('spa');
@@ -125,7 +123,7 @@ describe('upload routes', () => {
           if (eventName === 'conversionFailed') {
             setTimeout(() => {
               entities.getAllLanguages('id')
-              .then(docs => {
+              .then((docs) => {
                 expect(docs[0].processed).toBe(false);
                 expect(docs[1].processed).toBe(false);
                 done();
@@ -166,13 +164,13 @@ describe('upload routes', () => {
     it('should reupload a document', (done) => {
       req.body.document = entityId;
       routes.post('/api/reupload', req)
-      .then(response => {
+      .then((response) => {
         expect(relationships.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
         expect(response).toEqual(file);
 
         return documents.getById('id', 'es');
       })
-      .then(modifiedDoc => {
+      .then((modifiedDoc) => {
         expect(modifiedDoc.toc.length).toBe(0);
         done();
       })

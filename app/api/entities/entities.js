@@ -1,13 +1,13 @@
-import {generateNamesAndIds} from 'api/templates/utils';
-import date from 'api/utils/date.js';
-import search from 'api/search/search';
-import settings from '../settings';
-import relationships from 'api/relationships/relationships';
-import templates from 'api/templates/templates';
+import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
-import {deleteFiles} from '../utils/files.js';
+import date from 'api/utils/date.js';
+import relationships from 'api/relationships/relationships';
+import search from 'api/search/search';
+import templates from 'api/templates/templates';
 
+import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
+import settings from '../settings';
 
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
@@ -15,18 +15,18 @@ function updateEntity(entity, _template) {
     if (docLanguages[0].template && entity.template && docLanguages[0].template.toString() !== entity.template.toString()) {
       return Promise.all([
         this.deleteEntityFromMetadata(docLanguages[0]),
-        relationships.delete({entity: entity.sharedId}, null, false)
+        relationships.delete({ entity: entity.sharedId }, null, false)
       ])
       .then(() => docLanguages);
     }
     return docLanguages;
   })
   .then((docLanguages) => {
-    const template = _template || {properties: []};
+    const template = _template || { properties: [] };
     const toSyncProperties = template.properties
     .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship'))
     .map(p => p.name);
-    const currentDoc = docLanguages.find((d) => d._id.toString() === entity._id.toString());
+    const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
       if (d._id.toString() === entity._id.toString()) {
         return entity;
@@ -55,15 +55,13 @@ function updateEntity(entity, _template) {
       return d;
     });
 
-    return Promise.all(docs.map(d => {
-      return model.save(d);
-    }));
+    return Promise.all(docs.map(d => model.save(d)));
   });
 }
 
 function createEntity(doc, languages, sharedId) {
   const docs = languages.map((lang) => {
-    let langDoc = Object.assign({}, doc);
+    const langDoc = Object.assign({}, doc);
     langDoc.language = lang.key;
     langDoc.sharedId = sharedId;
     return langDoc;
@@ -111,10 +109,10 @@ function sanitize(doc, template) {
       sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
     }
     if (type === 'multidate' && sanitizedDoc.metadata[property.name]) {
-      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value);
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter(value => value);
     }
     if (type === 'multidaterange' && sanitizedDoc.metadata[property.name]) {
-      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((value) => value.from || value.to);
+      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter(value => value.from || value.to);
     }
     if (type === 'daterange' && sanitizedDoc.metadata[property.name]) {
       const value = sanitizedDoc.metadata[property.name];
@@ -131,7 +129,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(doc, {user, language}, updateRelationships = true) {
+  save(doc, { user, language }, updateRelationships = true) {
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -147,7 +145,7 @@ export default {
       settings.get(),
       this.getEntityTemplate(doc, language)
     ])
-    .then(([{languages}, template]) => {
+    .then(([{ languages }, template]) => {
       if (doc.sharedId) {
         return this.updateEntity(this.sanitize(doc, template), template);
       }
@@ -155,16 +153,14 @@ export default {
       return this.createEntity(this.sanitize(doc, template), languages, sharedId);
     })
     .then(() => this.getById(sharedId, language))
-    .then(entity => {
+    .then((entity) => {
       if (updateRelationships) {
         return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
       }
 
       return [entity];
     })
-    .then(([entity]) => {
-      return this.indexEntities({sharedId}, '+fullText').then(() => entity);
-    });
+    .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
   },
 
   bulkProcessMetadataFromRelationships(query, language, limit = 200) {
@@ -173,14 +169,12 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get(query, 'sharedId', {skip: offset, limit})
-      .then((entities) => this.updateMetdataFromRelationships(entities.map((entity) => entity.sharedId), language))
+      return this.get(query, 'sharedId', { skip: offset, limit })
+      .then(entities => this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language))
       .then(() => index(offset + limit, totalRows));
     };
     return this.count(query)
-    .then((totalRows) => {
-      return index(0, totalRows);
-    });
+    .then(totalRows => index(0, totalRows));
   },
 
   indexEntities(query, select, limit = 200) {
@@ -189,14 +183,12 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get(query, select, {skip: offset, limit})
-      .then((docs) => search.bulkIndex(docs))
+      return this.get(query, select, { skip: offset, limit })
+      .then(docs => search.bulkIndex(docs))
       .then(() => index(offset + limit, totalRows));
     };
     return this.count(query)
-    .then((totalRows) => {
-      return index(0, totalRows);
-    });
+    .then(totalRows => index(0, totalRows));
   },
 
   get(query, select, pagination) {
@@ -205,15 +197,11 @@ export default {
 
   getWithRelationships(query, select, pagination) {
     return model.get(query, select, pagination)
-    .then((entities) => {
-      return Promise.all(entities.map((entity) => {
-        return relationships.getByDocument(entity.sharedId, entity.language)
-        .then((relations) => {
-          entity.relationships = relations;
-          return entity;
-        });
-      }));
-    });
+    .then(entities => Promise.all(entities.map(entity => relationships.getByDocument(entity.sharedId, entity.language)
+    .then((relations) => {
+      entity.relationships = relations;
+      return entity;
+    }))));
   },
 
   getById(sharedId, language) {
@@ -221,94 +209,84 @@ export default {
       return model.getById(sharedId);
     }
 
-    return model.get({sharedId, language}).then((result) => result[0]);
+    return model.get({ sharedId, language }).then(result => result[0]);
   },
 
   saveMultiple(docs) {
     return model.save(docs)
-    .then((response) => {
-      return Promise.all(response, this.indexEntities({_id: {$in: response.map(d => d._id)}}, '+fullText'));
-    })
+    .then(response => Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText')))
     .then(response => response);
   },
 
   multipleUpdate(ids, values, params) {
-    return Promise.all(ids.map((id) => {
-      return this.getById(id, params.language)
-      .then((entity) => {
-        entity.metadata = Object.assign({}, entity.metadata, values.metadata);
-        if (values.icon) {
-          entity.icon = values.icon;
-        }
-        if (values.template) {
-          entity.template = values.template;
-        }
-        return this.save(entity, params);
-      });
-    }));
+    return Promise.all(ids.map(id => this.getById(id, params.language)
+    .then((entity) => {
+      entity.metadata = Object.assign({}, entity.metadata, values.metadata);
+      if (values.icon) {
+        entity.icon = values.icon;
+      }
+      if (values.template) {
+        entity.template = values.template;
+      }
+      return this.save(entity, params);
+    })));
   },
 
   getAllLanguages(sharedId) {
-    return model.get({sharedId});
+    return model.get({ sharedId });
   },
 
   countByTemplate(template) {
-    return model.count({template});
+    return model.count({ template });
   },
 
   getByTemplate(template, language, onlyPublished = true) {
-    const query = Object.assign({template, language}, onlyPublished ? {published: true} : {});
+    const query = Object.assign({ template, language }, onlyPublished ? { published: true } : {});
     return model.get(query);
   },
 
   updateMetdataFromRelationships(entities, language) {
     const entitiesToReindex = [];
     return templates.get()
-    .then((_templates) => {
-      return Promise.all(entities.map((entityId) => {
-        return Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
-        .then(([entity, relations]) => {
-          const template = _templates.find((t) => t._id.toString() === entity.template.toString());
-          const relationshipProperties = template.properties.filter((p) => p.type === 'relationship');
-          relationshipProperties.forEach((property) => {
-            const relationshipsGoingToThisProperty = relations.filter((r) => {
-              return r.template && r.template.toString() === property.relationType &&
-                (!property.content || r.entityData.template.toString() === property.content);
-            });
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => r.entity);
-          });
-          if (relationshipProperties.length) {
-            entitiesToReindex.push(entity.sharedId);
-            return this.updateEntity(this.sanitize(entity, template), template);
-          }
-          return Promise.resolve(entity);
-        });
-      }));
-    })
-    .then(() => this.indexEntities({sharedId: {$in: entitiesToReindex}}));
+    .then(_templates => Promise.all(entities.map(entityId => Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
+    .then(([entity, relations]) => {
+      const template = _templates.find(t => t._id.toString() === entity.template.toString());
+      const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+      relationshipProperties.forEach((property) => {
+        const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
+                (!property.content || r.entityData.template.toString() === property.content));
+        entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity);
+      });
+      if (relationshipProperties.length) {
+        entitiesToReindex.push(entity.sharedId);
+        return this.updateEntity(this.sanitize(entity, template), template);
+      }
+      return Promise.resolve(entity);
+    }))))
+    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
   },
 
   updateMetadataProperties(template, language) {
-    let actions = {};
+    const actions = {};
     actions.$rename = {};
     actions.$unset = {};
     return templates.getById(template._id)
     .then((currentTemplate) => {
       template.properties = generateNamesAndIds(template.properties);
       template.properties.forEach((property) => {
-        let currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+        const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
         if (currentProperty && currentProperty.name !== property.name) {
-          actions.$rename['metadata.' + currentProperty.name] = 'metadata.' + property.name;
+          actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
         }
       });
       currentTemplate.properties.forEach((property) => {
         if (!template.properties.find(p => p.id === property.id)) {
-          actions.$unset['metadata.' + property.name] = '';
+          actions.$unset[`metadata.${property.name}`] = '';
         }
       });
 
-      let noneToUnset = !Object.keys(actions.$unset).length;
-      let noneToRename = !Object.keys(actions.$rename).length;
+      const noneToUnset = !Object.keys(actions.$unset).length;
+      const noneToRename = !Object.keys(actions.$rename).length;
 
       if (noneToUnset) {
         delete actions.$unset;
@@ -319,16 +297,16 @@ export default {
 
       let dbUpdate = Promise.resolve();
       if (actions.$unset || actions.$rename) {
-        dbUpdate = model.db.updateMany({template}, actions);
+        dbUpdate = model.db.updateMany({ template }, actions);
       }
 
       return dbUpdate
       .then(() => {
         if (!template.properties.find(p => p.type === 'relationship')) {
-          return this.indexEntities({template: template._id}, null, 1000);
+          return this.indexEntities({ template: template._id }, null, 1000);
         }
 
-        let asd = this.bulkProcessMetadataFromRelationships({template: template._id, language}, language);
+        const asd = this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
         return asd;
       });
     });
@@ -337,9 +315,7 @@ export default {
   deleteFiles(deletedDocs) {
     let filesToDelete = deletedDocs
     .filter(d => d.file)
-    .map((doc) => {
-      return `./uploaded_documents/${doc.file.filename}`;
-    });
+    .map(doc => `./uploaded_documents/${doc.file.filename}`);
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
     return deleteFiles(filesToDelete)
     .catch((error) => {
@@ -353,72 +329,62 @@ export default {
   },
 
   deleteMultiple(sharedIds) {
-    return Promise.all(sharedIds.map((sharedId) => this.delete(sharedId)));
+    return Promise.all(sharedIds.map(sharedId => this.delete(sharedId)));
   },
 
   delete(sharedId) {
-    return this.get({sharedId})
-    .then((docs) => {
-      return Promise.all(docs.map((doc) => search.delete(doc))).then(() => docs);
-    })
-    .then((docs) => {
-      return model.delete({sharedId})
-      .then(() => docs)
-      .catch((e) => {
-        return this.indexEntities({sharedId}, '+fullText').then(() => Promise.reject(e));
-      });
-    })
-    .then((docs) => {
-      return Promise.all([
-        relationships.delete({entity: sharedId}, null, false),
+    return this.get({ sharedId })
+    .then(docs => Promise.all(docs.map(doc => search.delete(doc))).then(() => docs))
+    .then(docs => model.delete({ sharedId })
+    .then(() => docs)
+    .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
+    .then(docs => Promise.all([
+        relationships.delete({ entity: sharedId }, null, false),
         this.deleteFiles(docs),
         this.deleteEntityFromMetadata(docs[0])
-      ])
-      .then(() => docs);
-    });
+    ])
+    .then(() => docs));
   },
 
   removeValuesFromEntities(properties, template) {
-    let query = {template, $or: []};
-    let changes = {};
+    const query = { template, $or: [] };
+    const changes = {};
 
     Object.keys(properties).forEach((prop) => {
-      let propQuery = {};
-      propQuery['metadata.' + prop] = {$exists: true};
+      const propQuery = {};
+      propQuery[`metadata.${prop}`] = { $exists: true };
       query.$or.push(propQuery);
-      changes['metadata.' + prop] = properties[prop];
+      changes[`metadata.${prop}`] = properties[prop];
     });
 
     return Promise.all([
-      this.get(query, {_id: 1}),
-      model.db.updateMany(query, {$set: changes})
+      this.get(query, { _id: 1 }),
+      model.db.updateMany(query, { $set: changes })
     ])
-    .then(([entitiesToReindex]) => {
-      return this.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}});
-    });
+    .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
   deleteEntityFromMetadata(entity) {
-    return templates.get({'properties.content': entity.template})
+    return templates.get({ 'properties.content': entity.template })
     .then((allTemplates) => {
       const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
       const selectProperties = allProperties.filter(p => p.type === 'select');
       const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
-      let selectQuery = {$or: []};
-      let selectChanges = {};
+      const selectQuery = { $or: [] };
+      const selectChanges = {};
       selectQuery.$or = selectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
       .map((property) => {
-        let p = {};
+        const p = {};
         p[`metadata.${property.name}`] = entity.sharedId;
         selectChanges[`metadata.${property.name}`] = '';
         return p;
       });
 
-      let multiSelectQuery = {$or: []};
-      let multiSelectChanges = {};
+      const multiSelectQuery = { $or: [] };
+      const multiSelectChanges = {};
       multiSelectQuery.$or = multiselectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
       .map((property) => {
-        let p = {};
+        const p = {};
         p[`metadata.${property.name}`] = entity.sharedId;
         multiSelectChanges[`metadata.${property.name}`] = entity.sharedId;
         return p;
@@ -429,14 +395,14 @@ export default {
       }
 
       return Promise.all([
-        selectQuery.$or.length ? this.get(selectQuery, {_id: 1}) : [],
-        multiSelectQuery.$or.length ? this.get(multiSelectQuery, {_id: 1}) : [],
-        model.db.updateMany(selectQuery, {$set: selectChanges}),
-        model.db.updateMany(multiSelectQuery, {$pull: multiSelectChanges})
+        selectQuery.$or.length ? this.get(selectQuery, { _id: 1 }) : [],
+        multiSelectQuery.$or.length ? this.get(multiSelectQuery, { _id: 1 }) : [],
+        model.db.updateMany(selectQuery, { $set: selectChanges }),
+        model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges })
       ])
       .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
-        let entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-        return this.indexEntities({_id: {$in: entitiesToReindex.map(e => e._id.toString())}}, null, 1000);
+        const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
+        return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
       });
     });
   },

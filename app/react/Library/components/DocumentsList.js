@@ -5,7 +5,7 @@ import { actions as actionCreators } from 'app/BasicReducer';
 
 import DocumentsList from 'app/Layout/DocumentsList';
 import {
-  searchDocuments
+  searchDocuments,
   loadMoreDocuments,
   selectDocument,
   unselectDocument,
