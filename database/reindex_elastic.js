@@ -1,14 +1,64 @@
-var dbConfig = require('../app/api/config/database.js');
+import connect from './connect_to_mongo';
+import request from '../app/shared/JSONRequest';
+import search from '../app/api/search/search';
+import elasticMapping from './elastic_mapping';
 
-var indexConfig = require('../app/api/config/elasticIndexes.js');
-var index = 'development';
-indexConfig.index = indexConfig[index];
+import indexConfig from '../app/api/config/elasticIndexes';
+import entities from '../app/api/entities/entities';
+import mongoose from 'mongoose';
 
-var mongoose = require('mongoose');
-mongoose.Promise = Promise;
-mongoose.connect(dbConfig[index], {useMongoClient: true});
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-  require('./reset_elastic_index.js');
+connect()
+.then(() => {
+  const limit = 200;
+  let docsIndexed = 0;
+  let pos = 0;
+  let spinner = ['|', '/', '-', '\\'];
+
+  function migrate(offset, totalRows) {
+    return entities.get({}, '+fullText', {skip: offset, limit})
+    .then((docsResponse) => {
+      if (offset >= totalRows) {
+        return;
+      }
+
+      return search.bulkIndex(docsResponse, 'index')
+      .then(() => {
+        process.stdout.write(`Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`);
+        pos += 1;
+        if (pos > 3) {
+          pos = 0;
+        }
+        docsIndexed += docsResponse.length;
+        return migrate(offset + limit, totalRows);
+      })
+      .catch((err) => {
+        console.log('ERR:', err);
+      });
+    });
+  }
+
+  const start = Date.now();
+  process.stdout.write(`Deleting index... ${indexConfig.index}\n`);
+  let indexUrl = `http://localhost:9200/${indexConfig.index}`;
+  request.delete(indexUrl)
+  .catch(console.log)
+  .then(() => {
+    process.stdout.write(`Creating index... ${indexConfig.index}\n`);
+    return request.put(indexUrl, elasticMapping).catch(console.log);
+  })
+  .then(() => {
+    return entities.count()
+    .then((total_rows) => {
+      return migrate(0, total_rows)
+      .catch((error) => {
+        console.log('Migration error: ', error);
+      });
+    });
+  })
+  .then(() => {
+    const end = Date.now();
+    process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
+    process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
+    mongoose.disconnect();
+  });
 });
