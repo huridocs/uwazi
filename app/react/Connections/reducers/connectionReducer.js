@@ -1,13 +1,15 @@
-import * as types from '../actions/actionTypes';
-import * as viewerTypes from 'app/Viewer/actions/actionTypes';
-import {fromJS} from 'immutable';
+import { fromJS } from 'immutable';
 
-const initialState = {template: '', targetDocument: '', sourceDocument: ''};
+import * as viewerTypes from 'app/Viewer/actions/actionTypes';
+
+import * as types from '../actions/actionTypes';
+
+const initialState = { template: '', targetDocument: '', sourceDocument: '' };
 
 const resetState = (state) => {
   const propertiesToReset = ['template', 'targetDocument', 'sourceDocument'];
   const newState = state.toJS();
-  propertiesToReset.forEach(key => {
+  propertiesToReset.forEach((key) => {
     newState[key] = '';
   });
   return fromJS(newState);
@@ -28,8 +30,7 @@ export default function (state = initialState, action = {}) {
     return state.set('targetDocument', action.id);
 
   case 'connections/searchResults/SET':
-    const targetInResults = action.value.find(v => v.sharedId === state.get('targetDocument'));
-    if (!targetInResults) {
+    if (!action.value.find(v => v.sharedId === state.get('targetDocument'))) {
       return state.delete('targetDocument');
     }
     return state;

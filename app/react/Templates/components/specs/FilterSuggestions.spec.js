@@ -22,6 +22,7 @@ describe('FilterSuggestions', () => {
         properties: [
           { label: 'Date', type: 'date', filter: true },
           { label: 'Author', type: 'text', filter: true },
+          { label: 'filterFalse', type: 'text', filter: false },
           { label: 'Authors', type: 'select', filter: true, content: 'abc1' }
         ] },
       { _id: 'template3',
@@ -90,6 +91,15 @@ describe('FilterSuggestions', () => {
       const suggestion = component.find('tbody > tr').at(1);
       expect(suggestion.text().trim())
       .toBe('Template 2 Select Best SCI FI Authors');
+    });
+  });
+
+  describe('when props.filter = flase', () => {
+    it('should now show the preoperty with same name', () => {
+      renderComponent('filterFalse', 'text');
+      const suggestion = component.find('tbody > tr').at(1);
+      expect(suggestion.text().trim())
+      .toBe('');
     });
   });
 });

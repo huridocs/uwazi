@@ -1,18 +1,17 @@
 import React from 'react';
 
+import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
-import entitiesAPI from './EntitiesAPI';
-import {actions} from 'app/BasicReducer';
-import EntityViewer from './components/EntityViewer';
-import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import * as uiActions from './actions/uiActions';
-
 import SearchButton from 'app/Entities/components/SearchButton';
-
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
+import EntityViewer from './components/EntityViewer';
+import entitiesAPI from './EntitiesAPI';
+import * as uiActions from './actions/uiActions';
+
 export default class Entity extends RouteHandler {
-  static requestState({entityId, lang}, query, state) {
+  static requestState({ entityId }, query, state) {
     return Promise.all([
       entitiesAPI.get(entityId),
       relationTypesAPI.get(),

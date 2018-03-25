@@ -1,9 +1,10 @@
+import { fromJS as Immutable } from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
 
-import {ConnectionsGroup, mapStateToProps} from '../ConnectionsGroup';
+import { shallow } from 'enzyme';
 import ShowIf from 'app/App/ShowIf';
+
+import { ConnectionsGroup, mapStateToProps } from '../ConnectionsGroup';
 
 describe('ConnectionsGroup', () => {
   let component;
@@ -15,8 +16,8 @@ describe('ConnectionsGroup', () => {
     group = {
       key: 'g1',
       templates: [
-        {_id: 't1', label: 'template 1', count: 1},
-        {_id: 't2', label: 'template 2', count: 2}
+        { _id: 't1', label: 'template 1', count: 1 },
+        { _id: 't2', label: 'template 2', count: 2 }
       ]
     };
 
@@ -26,7 +27,7 @@ describe('ConnectionsGroup', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ConnectionsGroup {...props} />);
     instance = component.instance();
   };
@@ -127,20 +128,20 @@ describe('ConnectionsGroup', () => {
     });
 
     it('should unselect all options if filters is empty', () => {
-      instance.componentWillReceiveProps({filters: Immutable({}), group: Immutable({templates: []})});
+      instance.componentWillReceiveProps({ filters: Immutable({}), group: Immutable({ templates: [] }) });
       expect(instance.setState.calls.mostRecent().args[0].selected).toBe(false);
       expect(instance.setState.calls.mostRecent().args[0].selectedItems.toJS()).toEqual([]);
     });
 
     it('should set selected False if there is more templates in new props', () => {
-      instance.componentWillReceiveProps({filters: Immutable({a: 3}), group: Immutable({templates: [1, 2, 3]})});
+      instance.componentWillReceiveProps({ filters: Immutable({ a: 3 }), group: Immutable({ templates: [1, 2, 3] }) });
       expect(instance.setState.calls.mostRecent().args[0].selected).toBe(false);
     });
   });
 
   describe('mapStateToProps', () => {
     it('should map relationships.list.filters', () => {
-      const state = {relationships: {list: {filters: {a: 'b'}}}};
+      const state = { relationships: { list: { filters: { a: 'b' } } } };
       expect(mapStateToProps(state).filters).toBe(state.relationships.list.filters);
     });
   });

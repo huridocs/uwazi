@@ -74,6 +74,7 @@
 
       //react
       "react/self-closing-comp": ["warn"],
+      "react/no-multi-comp": ["warn"],
       "react/jsx-closing-bracket-location": ["warn"],
       "react/jsx-boolean-value": ["warn"],
       "react/jsx-indent": ["warn"],
@@ -98,6 +99,7 @@
       //jsx-a11y
       "jsx-a11y/anchor-is-valid": ["warn"],
       "jsx-a11y/label-has-for": ["warn"],
+      "jsx-a11y/html-has-lang": ["warn"],
       "jsx-a11y/iframe-has-title": ["warn"],
       "jsx-a11y/tabindex-no-positive": ["warn"],
       "jsx-a11y/no-noninteractive-element-interactions": ["warn"],

@@ -1,6 +1,7 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+
 import Icons from './Icons';
 
 export class FilterSuggestions extends Component {
@@ -8,7 +9,7 @@ export class FilterSuggestions extends Component {
     return templates
     .filter(template => template._id !== this.props.data._id)
     .map((template) => {
-      const property = template.properties.find(prop => prop.label.toLowerCase() === label.toLowerCase() & prop.filter);
+      const property = template.properties.find(prop => prop.label.toLowerCase() === label.toLowerCase() && prop.filter);
 
       if (property) {
         return { template: template.name, property };
@@ -77,32 +78,33 @@ export class FilterSuggestions extends Component {
     const icon = this.getTypeIcon(type);
 
 
-    return (<table className="table">
-      <thead>
-        <tr>
-          <th>Document or entity</th>
-          <th>Type</th>
-          {(() => {
-                    if (hasThesauri) {
-                      return <th>Thesauri</th>;
-                    }
-                  })()}
-        </tr>
-      </thead>
-      <tbody>
-        <tr className={activeClass} title={title}>
-          <td><i className="fa fa-file-o" /> {this.props.data.name}</td>
-          <td><i className={icon} /> {type[0].toUpperCase() + type.slice(1)}</td>
-          {(() => {
-                  if (hasThesauri) {
-                    const thesauri = this.getThesauriName(content);
-                    return <td><i className="fa fa-book" /> {thesauri}</td>;
-                  }
-                })()}
-        </tr>
-        {this.filterSuggestions(label, type, content, hasThesauri)}
-      </tbody>
-            </table>);
+    return (
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Document or entity</th>
+            <th>Type</th>
+            {(() => {
+              if (hasThesauri) {
+                return <th>Thesauri</th>;
+              }
+            })()}
+          </tr>
+        </thead>
+        <tbody>
+          <tr className={activeClass} title={title}>
+            <td><i className="fa fa-file-o" /> {this.props.data.name}</td>
+            <td><i className={icon} /> {type[0].toUpperCase() + type.slice(1)}</td>
+            {(() => {
+              if (hasThesauri) {
+                const thesauri = this.getThesauriName(content);
+                return <td><i className="fa fa-book" /> {thesauri}</td>;
+              }
+            })()}
+          </tr>
+          {this.filterSuggestions(label, type, content, hasThesauri)}
+        </tbody>
+      </table>);
   }
 }
 
