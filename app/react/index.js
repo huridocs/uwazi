@@ -1,12 +1,9 @@
-import './sockets';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { AppContainer } from 'react-hot-loader';
 
 import App from './App.js';
-import document from './Viewer/components/Document';
 
 const render = (Component) => {
   ReactDOM.render(
@@ -25,3 +22,5 @@ if (module.hot) {
     render(nextApp);
   });
 }
+
+import './sockets';

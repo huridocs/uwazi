@@ -28,7 +28,7 @@ export class MarkdownVimeo extends Component {
   timeLinks(config) {
     config.options.timelinks = config.options.timelinks || {};
     return Object.keys(config.options.timelinks).map((timeKey, index) => {
-      const seconds = timeKey.split(':').reverse().reduce((_seconds, n, _index) => _seconds + parseInt(n, 10) * Math.pow(60, _index), 0);
+      const seconds = timeKey.split(':').reverse().reduce((_seconds, n, _index) => _seconds + parseInt(n, 10) * (60 ** _index), 0);
       return (<div className="timelink" key={index} onClick={this.setTime.bind(this, seconds)} >
         <b><i className="fa fa-play" /> {timeKey}</b>
         <span>{config.options.timelinks[timeKey]}</span>

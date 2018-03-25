@@ -1,12 +1,16 @@
 export default {
   parseNested(object) {
+    if (typeof object !== 'object') {
+      return object;
+    }
+    const result = Object.assign({}, object);
     Object.keys(object).forEach((index) => {
       try {
-        object[index] = JSON.parse(object[index]);
+        result[index] = JSON.parse(object[index]);
       } catch (e) {
-        return;
+        result[index] = object[index];
       }
     });
-    return object;
+    return result;
   }
 };

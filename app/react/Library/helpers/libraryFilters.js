@@ -1,10 +1,8 @@
+import { comonProperties, defaultFilters } from 'shared/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import {comonProperties, defaultFilters} from 'shared/comonProperties';
 
 function getOptions(property, thesauris) {
-  let matchingTHesauri = thesauris.find((thesauri) => {
-    return thesauri._id === property.content;
-  });
+  const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);
 
   if (matchingTHesauri) {
     return matchingTHesauri.values;
@@ -18,7 +16,7 @@ export function populateOptions(filters, thesauris) {
     }
 
     if (!property.content && property.type === 'relationship') {
-      property.options = Array.prototype.concat(...thesauris.filter((thesauri) => thesauri.type === 'template'));
+      property.options = Array.prototype.concat(...thesauris.filter(thesauri => thesauri.type === 'template'));
     }
 
     return property;
@@ -27,15 +25,15 @@ export function populateOptions(filters, thesauris) {
   return filters;
 }
 
-export function URLQueryToState(query, templates, thesauris) {
+function URLQueryToState(query, templates, thesauris) {
   let properties = comonProperties(templates, query.types)
-  .filter((prop) => prop.filter);
+  .filter(prop => prop.filter);
 
   if (!query.types || !query.types.length) {
     properties = defaultFilters(templates);
   }
 
-  let {
+  const {
     searchTerm = '',
     filters = {},
     sort = prioritySortingCriteria.get().sort,
@@ -52,19 +50,19 @@ export function URLQueryToState(query, templates, thesauris) {
     filters[property.name] = filters[property.name] ? filters[property.name] : defaultValue;
     return property;
   });
-  return {properties, search: {searchTerm, filters, order, sort, userSelectedSorting}};
+  return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
 }
 
 export function parseWithAggregations(filters, aggregations) {
   return filters.map((_property) => {
-    let property = Object.assign({}, _property);
+    const property = Object.assign({}, _property);
     if (property.options && property.options.length) {
       property.options = property.options.map((option) => {
         option.results = 0;
         let aggregation;
         if (aggregations.all && aggregations.all[property.name]) {
           aggregation = aggregations.all[property.name].buckets
-          .find((bucket) => bucket.key.toString() === option.id.toString());
+          .find(bucket => bucket.key.toString() === option.id.toString());
         }
 
         if (aggregation) {
