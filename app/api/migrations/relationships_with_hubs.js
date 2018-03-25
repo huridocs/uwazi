@@ -150,8 +150,11 @@ function migrateRelationships() {
 
       return Promise.all([
         relationshipsModel.delete(relationship),
-        relationships.save({entity: relationship.sourceDocument, hub, template: null}, language, false),
-        relationships.save({entity: relationship.targetDocument, hub, template: relationship.relationType}, language, false)
+        relationships.save({entity: relationship.sourceDocument, hub, range: relationship.sourceRange, template: null}, language, false),
+        relationships.save({
+          entity: relationship.targetDocument, hub, range: relationship.targetRange,
+          template: relationship.relationType
+        }, language, false)
       ]);
     }, {concurrency: 1});
   });
