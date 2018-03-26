@@ -1,11 +1,12 @@
 /* eslint-disable max-nested-callbacks */
-import templates from 'api/templates/templates.js';
-import entities from 'api/entities/entities.js';
-import documents from 'api/documents/documents.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
-import translations from 'api/i18n/translations';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
-import fixtures, {templateToBeEditedId, templateToBeDeleted, templateWithContents} from './fixtures.js';
+import documents from 'api/documents/documents.js';
+import entities from 'api/entities/entities.js';
+import templates from 'api/templates/templates.js';
+import translations from 'api/i18n/translations';
+
+import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents } from './fixtures.js';
 
 describe('templates', () => {
   beforeEach((done) => {
@@ -19,7 +20,7 @@ describe('templates', () => {
 
   describe('save', () => {
     it('should return the saved template', (done) => {
-      let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
+      const newTemplate = { name: 'created_template', properties: [{ label: 'fieldLabel' }] };
 
       templates.save(newTemplate)
       .then((template) => {
@@ -31,14 +32,12 @@ describe('templates', () => {
     });
 
     it('should create a template', (done) => {
-      let newTemplate = {name: 'created_template', properties: [{label: 'fieldLabel'}]};
+      const newTemplate = { name: 'created_template', properties: [{ label: 'fieldLabel' }] };
 
       templates.save(newTemplate)
       .then(() => templates.get())
       .then((allTemplates) => {
-        let newDoc = allTemplates.find((template) => {
-          return template.name === 'created_template';
-        });
+        const newDoc = allTemplates.find(template => template.name === 'created_template');
 
         expect(newDoc.name).toBe('created_template');
         expect(newDoc.properties[0].label).toEqual('fieldLabel');
@@ -52,13 +51,15 @@ describe('templates', () => {
         spyOn(translations, 'updateContext');
         spyOn(entities, 'removeValuesFromEntities');
         spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
-        let changedTemplate = {_id: templateWithContents, name: 'changed', properties:
-          [{id: '1', type: 'select', content: 'new_thesauri', label: 'select'},
-          {id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect'}]};
+        const changedTemplate = { _id: templateWithContents,
+name: 'changed',
+properties:
+          [{ id: '1', type: 'select', content: 'new_thesauri', label: 'select' },
+          { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' }] };
 
         templates.save(changedTemplate)
         .then(() => {
-          expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({select: '', multiselect: []}, templateWithContents);
+          expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({ select: '', multiselect: [] }, templateWithContents);
           done();
         })
         .catch(catchErrors(done));
@@ -66,13 +67,14 @@ describe('templates', () => {
     });
 
     it('should validate properties not having repeated names and return an error', (done) => {
-      let newTemplate = {name: 'created_template', properties: [
-        {label: 'label 1'},
-        {label: 'label 1'},
-        {label: 'Label 2'},
-        {label: 'label 2'},
-        {label: 'label 3'}
-      ]};
+      const newTemplate = { name: 'created_template',
+properties: [
+        { label: 'label 1' },
+        { label: 'label 1' },
+        { label: 'Label 2' },
+        { label: 'label 2' },
+        { label: 'label 3' }
+        ] };
 
       templates.save(newTemplate)
       .then(() => done.fail('properties have repeated names, should have failed with an error'))
@@ -84,14 +86,15 @@ describe('templates', () => {
     });
 
     it('should add it to the translations with Document type', (done) => {
-      let newTemplate = {name: 'created template', properties: [
-        {label: 'label 1'},
-        {label: 'label 2'}
-      ]};
+      const newTemplate = { name: 'created template',
+        properties: [
+          { label: 'label 1' },
+          { label: 'label 2' }
+        ] };
 
       templates.save(newTemplate)
       .then((response) => {
-        let expectedValues = {
+        const expectedValues = {
           'created template': 'created template',
           'label 1': 'label 1',
           'label 2': 'label 2'
@@ -104,14 +107,16 @@ describe('templates', () => {
 
     describe('when isEntity', () => {
       it('should add it to translations with Entity type', (done) => {
-        let newTemplate = {name: 'created template', isEntity: true, properties: [
-          {label: 'label 1'},
-          {label: 'label 2'}
-        ]};
+        const newTemplate = { name: 'created template',
+          isEntity: true,
+          properties: [
+            { label: 'label 1' },
+            { label: 'label 2' }
+          ] };
 
         templates.save(newTemplate)
         .then((response) => {
-          let expectedValues = {
+          const expectedValues = {
             'created template': 'created template',
             'label 1': 'label 1',
             'label 2': 'label 2'
@@ -124,19 +129,18 @@ describe('templates', () => {
     });
 
     it('should assign a safe property name based on the label ', (done) => {
-      let newTemplate = {name: 'created_template', properties: [
-        {label: 'label 1'},
-        {label: 'label 2'},
-        {label: 'label 3'},
-        {label: 'label 4', name: 'name'}
-      ]};
+      const newTemplate = { name: 'created_template',
+        properties: [
+          { label: 'label 1' },
+          { label: 'label 2' },
+          { label: 'label 3' },
+          { label: 'label 4', name: 'name' }
+        ] };
 
       templates.save(newTemplate)
       .then(() => templates.get())
       .then((allTemplates) => {
-        let newDoc = allTemplates.find((template) => {
-          return template.name === 'created_template';
-        });
+        const newDoc = allTemplates.find(template => template.name === 'created_template');
 
         expect(newDoc.properties[0].name).toEqual('label_1');
         expect(newDoc.properties[1].name).toEqual('label_2');
@@ -148,13 +152,11 @@ describe('templates', () => {
     });
 
     it('should set a default value of [] to properties', (done) => {
-      let newTemplate = {name: 'created_template'};
+      const newTemplate = { name: 'created_template' };
       templates.save(newTemplate)
       .then(templates.get)
       .then((allTemplates) => {
-        let newDoc = allTemplates.find((template) => {
-          return template.name === 'created_template';
-        });
+        const newDoc = allTemplates.find(template => template.name === 'created_template');
 
         expect(newDoc.properties).toEqual([]);
         done();
@@ -169,7 +171,7 @@ describe('templates', () => {
 
       it('should updateMetadataProperties', (done) => {
         spyOn(translations, 'updateContext');
-        let toSave = {_id: templateToBeEditedId, name: 'changed name'};
+        const toSave = { _id: templateToBeEditedId, name: 'changed name' };
         templates.save(toSave, 'en')
         .then(() => {
           expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, 'en');
@@ -180,11 +182,11 @@ describe('templates', () => {
 
       it('should edit an existing one', (done) => {
         spyOn(translations, 'updateContext');
-        let toSave = {_id: templateToBeEditedId, name: 'changed name'};
+        const toSave = { _id: templateToBeEditedId, name: 'changed name' };
         templates.save(toSave)
         .then(templates.get)
         .then((allTemplates) => {
-          const edited = allTemplates.find((template) => template._id.toString() === templateToBeEditedId);
+          const edited = allTemplates.find(template => template._id.toString() === templateToBeEditedId);
           expect(edited.name).toBe('changed name');
           done();
         })
@@ -192,7 +194,7 @@ describe('templates', () => {
       });
 
       it('should update the translation context for it', (done) => {
-        let newTemplate = {name: 'created template', properties: [ {label: 'label 1'}, {label: 'label 2'}]};
+        const newTemplate = { name: 'created template', properties: [{ label: 'label 1' }, { label: 'label 2' }] };
         spyOn(translations, 'updateContext');
         templates.save(newTemplate)
         .then((template) => {
@@ -200,7 +202,7 @@ describe('templates', () => {
           template.isEntity = true;
           template.properties[0].label = 'new label 1';
           template.properties.pop();
-          template.properties.push({label: 'label 3'});
+          template.properties.push({ label: 'label 3' });
           translations.addContext.calls.reset();
           return templates.save(template);
         })
@@ -214,7 +216,7 @@ describe('templates', () => {
               'created template': 'new title'
             },
             ['label 2'],
-            {'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title'}
+            { 'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title' }
           );
           done();
         })
@@ -223,8 +225,8 @@ describe('templates', () => {
 
       it('should return the saved template', (done) => {
         spyOn(translations, 'updateContext');
-        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise((resolve) => resolve()));
-        let edited = {_id: templateToBeEditedId, name: 'changed name'};
+        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise(resolve => resolve()));
+        const edited = { _id: templateToBeEditedId, name: 'changed name' };
         return templates.save(edited)
         .then((template) => {
           expect(template.name).toBe('changed name');
@@ -236,7 +238,7 @@ describe('templates', () => {
 
     describe('when the template name exists', () => {
       it('should return the error', (done) => {
-        let template = {name: 'duplicated name'};
+        const template = { name: 'duplicated name' };
         templates.save(template)
         .then(() => {
           done.fail('should return an error');
@@ -252,13 +254,13 @@ describe('templates', () => {
   describe('delete', () => {
     it('should delete a template when no document is using it', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
-      return templates.delete({_id: templateToBeDeleted})
+      return templates.delete({ _id: templateToBeDeleted })
       .then((response) => {
-        expect(response).toEqual({_id: templateToBeDeleted});
+        expect(response).toEqual({ _id: templateToBeDeleted });
         return templates.get();
       })
       .then((allTemplates) => {
-        const deleted = allTemplates.find((template) => template.name === 'to be deleted');
+        const deleted = allTemplates.find(template => template.name === 'to be deleted');
         expect(deleted).not.toBeDefined();
         done();
       })
@@ -269,7 +271,7 @@ describe('templates', () => {
       spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(0));
       spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
 
-      return templates.delete({_id: templateToBeDeleted})
+      return templates.delete({ _id: templateToBeDeleted })
       .then(() => {
         expect(translations.deleteContext).toHaveBeenCalledWith(templateToBeDeleted);
         done();
@@ -279,7 +281,7 @@ describe('templates', () => {
 
     it('should throw an error when there is documents using it', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(1));
-      return templates.delete({_id: templateToBeDeleted})
+      return templates.delete({ _id: templateToBeDeleted })
       .then(() => {
         done.fail('should not delete the template and throw an error because there is some documents associated with the template');
       })

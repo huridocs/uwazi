@@ -1,8 +1,8 @@
-import templateRoutes from 'api/templates/routes.js';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
-import templates from 'api/templates/templates';
 import settings from 'api/settings/settings';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import templateRoutes from 'api/templates/routes.js';
+import templates from 'api/templates/templates';
 
 describe('templates routes', () => {
   let routes;
@@ -16,7 +16,7 @@ describe('templates routes', () => {
       spyOn(templates, 'get').and.returnValue(Promise.resolve('templates'));
       routes.get('/api/templates')
       .then((response) => {
-        let docs = response.rows;
+        const docs = response.rows;
         expect(docs).toBe('templates');
         done();
       })
@@ -25,11 +25,11 @@ describe('templates routes', () => {
 
     describe('when there is an error', () => {
       it('should return the error in the response', (done) => {
-        spyOn(templates, 'get').and.returnValue(Promise.reject('error'));
+        spyOn(templates, 'get').and.returnValue(Promise.reject(new Error('error')));
 
         routes.get('/api/templates', {})
         .then((response) => {
-          expect(response.error).toBe('error');
+          expect(response.error.message).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -41,10 +41,10 @@ describe('templates routes', () => {
     it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
       spyOn(settings, 'removeTemplateFromFilters').and.returnValue(Promise.resolve());
-      routes.delete('/api/templates', {query: {_id: '123'}})
+      routes.delete('/api/templates', { query: { _id: '123' } })
       .then((response) => {
-        expect(templates.delete).toHaveBeenCalledWith({_id: '123'});
-        expect(response).toEqual({_id: '123'});
+        expect(templates.delete).toHaveBeenCalledWith({ _id: '123' });
+        expect(response).toEqual({ _id: '123' });
         done();
       })
       .catch(catchErrors(done));
@@ -52,11 +52,11 @@ describe('templates routes', () => {
 
     describe('when there is an error', () => {
       it('should return the error in the response', (done) => {
-        spyOn(templates, 'delete').and.returnValue(Promise.reject('error'));
+        spyOn(templates, 'delete').and.returnValue(Promise.reject(new Error('error')));
 
-        routes.delete('/api/templates', {query: {}})
+        routes.delete('/api/templates', { query: {} })
         .then((response) => {
-          expect(response.error).toBe('error');
+          expect(response.error.message).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -66,8 +66,8 @@ describe('templates routes', () => {
 
   describe('POST', () => {
     it('should create a template', (done) => {
-      spyOn(templates, 'save').and.returnValue(new Promise((resolve) => resolve('response')));
-      let req = {body: {name: 'created_template', properties: [{label: 'fieldLabel'}]}, language: 'en'};
+      spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve('response')));
+      const req = { body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] }, language: 'en' };
 
       routes.post('/api/templates', req)
       .then((response) => {
@@ -80,10 +80,10 @@ describe('templates routes', () => {
 
     describe('when there is an error', () => {
       it('should return the error in the response', (done) => {
-        spyOn(templates, 'save').and.returnValue(Promise.reject('error'));
+        spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));
         routes.post('/api/templates', {})
         .then((response) => {
-          expect(response.error).toBe('error');
+          expect(response.error.message).toBe('error');
           done();
         })
         .catch(catchErrors(done));
@@ -94,7 +94,7 @@ describe('templates routes', () => {
   describe('/templates/count_by_thesauri', () => {
     it('should return the number of templates using a thesauri', (done) => {
       spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(2));
-      let req = {query: {_id: 'abc1'}};
+      const req = { query: { _id: 'abc1' } };
       routes.get('/api/templates/count_by_thesauri', req)
       .then((result) => {
         expect(result).toBe(2);

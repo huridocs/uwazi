@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+
 import Modal from 'app/Layout/Modal';
 
 export class Confirm extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -12,14 +12,14 @@ export class Confirm extends Component {
   }
 
   accept() {
-    this.setState({isOpen: false});
+    this.setState({ isOpen: false });
     if (this.props.accept) {
       this.props.accept();
     }
   }
 
   cancel() {
-    this.setState({isOpen: false});
+    this.setState({ isOpen: false });
     if (this.props.cancel) {
       this.props.cancel();
     }
@@ -27,12 +27,12 @@ export class Confirm extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.accept !== this.props.accept) {
-      this.setState({isOpen: true});
+      this.setState({ isOpen: true });
     }
   }
 
   render() {
-    let type = this.props.type || 'danger';
+    const type = this.props.type || 'danger';
     return (
       <Modal isOpen={this.state.isOpen || false} type={type}>
 
@@ -44,10 +44,10 @@ export class Confirm extends Component {
         <Modal.Footer>
           {(() => {
             if (!this.props.noCancel) {
-              return <button type="button" className="btn btn-default cancel-button" onClick={this.cancel.bind(this) }>Cancel</button>;
+              return <button type="button" className="btn btn-default cancel-button" onClick={this.cancel.bind(this)}>Cancel</button>;
             }
           })()}
-          <button type="button" className={'btn confirm-button btn-' + type} onClick={this.accept.bind(this)}>Accept</button>
+          <button type="button" className={`btn confirm-button btn-${type}`} onClick={this.accept.bind(this)}>Accept</button>
         </Modal.Footer>
 
       </Modal>

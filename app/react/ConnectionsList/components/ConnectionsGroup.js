@@ -1,26 +1,25 @@
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { is, fromJS as Immutable } from 'immutable';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {is, fromJS as Immutable} from 'immutable';
+import React, { Component } from 'react';
 
+import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
-import {t} from 'app/I18N';
 
-import {setFilter} from '../actions/actions';
+import { setFilter } from '../actions/actions';
 
 export class ConnectionsGroup extends Component {
-
   toggleExpandGroup() {
-    this.setState({expanded: !this.state.expanded});
+    this.setState({ expanded: !this.state.expanded });
   }
 
   toggleSelectGroup() {
-    const {group} = this.props;
+    const { group } = this.props;
     const selectedItems = !this.state.selected ? group.get('templates').map(i => group.get('key') + i.get('_id')) : Immutable([]);
 
     this.setGroupFilter(selectedItems);
-    this.setState({selected: !this.state.selected, selectedItems});
+    this.setState({ selected: !this.state.selected, selectedItems });
   }
 
   toggleSelectItem(item) {
@@ -38,7 +37,7 @@ export class ConnectionsGroup extends Component {
     }
 
     this.setGroupFilter(selectedItems);
-    this.setState({selectedItems, selected: groupSelected});
+    this.setState({ selectedItems, selected: groupSelected });
   }
 
   setGroupFilter(selectedItems) {
@@ -48,7 +47,7 @@ export class ConnectionsGroup extends Component {
   }
 
   componentWillMount() {
-    this.setState({expanded: true, selected: false, selectedItems: Immutable([])});
+    this.setState({ expanded: true, selected: false, selectedItems: Immutable([]) });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -60,69 +59,68 @@ export class ConnectionsGroup extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (!nextProps.filters.size) {
-      this.setState({selected: false, selectedItems: Immutable([])});
+      this.setState({ selected: false, selectedItems: Immutable([]) });
     }
 
     if (nextProps.group.get('templates').size > this.props.group.get('templates').size) {
-      this.setState({selected: false});
+      this.setState({ selected: false });
     }
   }
 
   render() {
     const group = this.props.group.toJS();
-    const {connectionLabel, templates} = group;
+    const { connectionLabel, templates } = group;
 
     return (
       <li>
         <div className="multiselectItem">
           <input
-            type='checkbox'
-            className="form-control"
-            id={'group' + group.key}
-            className="multiselectItem-input"
+            type="checkbox"
+            className="form-control multiselectItem-input"
+            id={`group${group.key}`}
             onChange={this.toggleSelectGroup.bind(this)}
             checked={this.state.selected}
           />
-          <label htmlFor={'group' + group.key} className="multiselectItem-label">
-            <i className="multiselectItem-icon fa fa-square-o"></i>
-            <i className="multiselectItem-icon fa fa-check"></i>
+          <label htmlFor={`group${group.key}`} className="multiselectItem-label">
+            <i className="multiselectItem-icon fa fa-square-o" />
+            <i className="multiselectItem-icon fa fa-check" />
             <span className="multiselectItem-name">
               <b>{group.key ?
-                  t(group.context, connectionLabel) : t('System', 'No Label')}</b>
+                  t(group.context, connectionLabel) : t('System', 'No Label')}
+              </b>
             </span>
           </label>
           <span className="multiselectItem-results">
             <span>{group.templates.reduce((size, i) => size + i.count, 0)}</span>
             <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
-              <i className={this.state.expanded ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+              <i className={this.state.expanded ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
             </span>
           </span>
         </div>
         <ShowIf if={this.state.expanded}>
           <ul className="multiselectChild is-active">
-            {templates.map((template, index) => {
-              return (
-                <li className="multiselectItem" key={index} title={template.label}>
-                  <input
-                    type='checkbox'
-                    className="multiselectItem-input"
-                    id={group.key + template._id}
-                    onChange={this.toggleSelectItem.bind(this, group.key + template._id)}
-                    checked={this.state.selectedItems.includes(group.key + template._id)}
-                  />
-                  <label
-                    className="multiselectItem-label"
-                    htmlFor={group.key + template._id}>
-                      <i className="multiselectItem-icon fa fa-square-o"></i>
-                      <i className="multiselectItem-icon fa fa-check"></i>
-                      <span className="multiselectItem-name">{t(template._id, template.label)}</span>
-                  </label>
-                  <span className="multiselectItem-results">
-                    {template.count}
-                  </span>
-                </li>
-              );
-            })}
+            {templates.map((template, index) => (
+              <li className="multiselectItem" key={index} title={template.label}>
+                <input
+                  type="checkbox"
+                  className="multiselectItem-input"
+                  id={group.key + template._id}
+                  onChange={this.toggleSelectItem.bind(this, group.key + template._id)}
+                  checked={this.state.selectedItems.includes(group.key + template._id)}
+                />
+                <label
+                  className="multiselectItem-label"
+                  htmlFor={group.key + template._id}
+                >
+                  <i className="multiselectItem-icon fa fa-square-o" />
+                  <i className="multiselectItem-icon fa fa-check" />
+                  <span className="multiselectItem-name">{t(template._id, template.label)}</span>
+                </label>
+                <span className="multiselectItem-results">
+                  {template.count}
+                </span>
+              </li>
+              ))}
           </ul>
         </ShowIf>
       </li>
@@ -136,14 +134,10 @@ ConnectionsGroup.propTypes = {
   filters: PropTypes.object
 };
 
-export const mapStateToProps = ({relationships}) => {
-  return {filters: relationships.list.filters};
-};
+export const mapStateToProps = ({ relationships }) => ({ filters: relationships.list.filters });
 
-export const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({
+export const mapDispatchToProps = dispatch => bindActionCreators({
     setFilter
-  }, dispatch);
-};
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsGroup);

@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 class Root extends Component {
-
   renderInitialData() {
     let innerHtml = '';
     if (this.props.initialData) {
@@ -17,7 +16,7 @@ class Root extends Component {
     }
 
     return (
-      <script dangerouslySetInnerHTML={{__html: innerHtml}} />
+      <script dangerouslySetInnerHTML={{ __html: innerHtml }} />
     );
   }
 
@@ -59,22 +58,19 @@ class Root extends Component {
           {head.meta.toComponent()}
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          {CSS.map((style, key) => {
-            return <link key={key} href={style} rel="stylesheet" type="text/css" />;
-          })}
-          <link rel="stylesheet"
+          {CSS.map((style, key) => <link key={key} href={style} rel="stylesheet" type="text/css" />)}
+          <link
+            rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
           />
           <link rel="shortcut icon" href="/public/favicon.ico"/>
         </head>
         <body>
-          <div id="root" dangerouslySetInnerHTML={{__html: this.props.content}} />
+          <div id="root" dangerouslySetInnerHTML={{ __html: this.props.content }} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script dangerouslySetInnerHTML={{__html: pdfWorkerPathScript}} />
-          {JS.map((file, index) => {
-            return <script key={index} src={file} />;
-          })}
+          <script dangerouslySetInnerHTML={{ __html: pdfWorkerPathScript }} />
+          {JS.map((file, index) => <script key={index} src={file} />)}
         </body>
       </html>
     );

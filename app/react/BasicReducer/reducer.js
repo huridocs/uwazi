@@ -1,4 +1,4 @@
-import {fromJS as Immutable} from 'immutable';
+import Immutable from 'immutable';
 
 const SET = 'SET';
 const UPDATE = 'UPDATE';
@@ -8,29 +8,30 @@ const PUSH = 'PUSH';
 
 export default function createReducer(namespace, defaultValue) {
   return (currentState = defaultValue, action = {}) => {
+    let index;
+
     switch (action.type) {
     case `${namespace}/${SET}`:
-      return Immutable(action.value);
+      return Immutable.fromJS(action.value);
 
     case `${namespace}/${UNSET}`:
-      return Immutable(defaultValue);
+      return Immutable.fromJS(defaultValue);
 
     case `${namespace}/${PUSH}`:
-      return currentState.push(Immutable(action.value));
+      return currentState.push(Immutable.fromJS(action.value));
 
     case `${namespace}/${REMOVE}`:
-      return Immutable(currentState).filter((object) => {
-        return object.get('_id') !== action.value._id;
-      });
+      return Immutable.fromJS(currentState).filter(object => object.get('_id') !== action.value._id);
+
     case `${namespace}/${UPDATE}`:
-      const index = currentState.findIndex(o => o.get('_id') === action.value._id);
+      index = currentState.findIndex(o => o.get('_id') === action.value._id);
       if (index === -1) {
-        return currentState.push(Immutable(action.value));
+        return currentState.push(Immutable.fromJS(action.value));
       }
-      return currentState.set(index, Immutable(action.value));
+      return currentState.set(index, Immutable.fromJS(action.value));
 
     default:
-      return Immutable(currentState);
+      return Immutable.fromJS(currentState);
     }
   };
 }

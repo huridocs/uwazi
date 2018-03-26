@@ -1,10 +1,10 @@
 import PDFObject from '../PDF.js';
 
-describe('PDF', function () {
+describe('PDF', () => {
   let pdf;
 
   describe('extractText', () => {
-    let filepath = __dirname + '/12345.test.pdf';
+    const filepath = `${__dirname}/12345.test.pdf`;
     beforeEach(() => {
       pdf = new PDFObject(filepath);
     });
@@ -12,7 +12,7 @@ describe('PDF', function () {
     it('should extract the text of the pdf by page, every word on every page should have appended the page number in between [[]]', (done) => {
       pdf.extractText()
       .then((text) => {
-        let lines = text.split(/\f/);
+        const lines = text.split(/\f/);
         expect(lines[0]).toBe('Page[[1]] 1[[1]]');
         expect(lines[1]).toBe('Page[[2]] 2[[2]]');
         expect(lines[2]).toBe('Page[[3]] 3[[3]]');
@@ -23,7 +23,7 @@ describe('PDF', function () {
   });
 
   describe('convert', () => {
-    let filepath = __dirname + '/12345.test.pdf';
+    const filepath = `${__dirname}/12345.test.pdf`;
     beforeEach(() => {
       pdf = new PDFObject(filepath);
     });
@@ -31,7 +31,7 @@ describe('PDF', function () {
     it('should optimize and extract html and text', (done) => {
       pdf.convert()
       .then((conversion) => {
-        let lines = conversion.fullText.split(/\f/);
+        const lines = conversion.fullText.split(/\f/);
 
         expect(lines[0]).toBe('Page[[1]] 1[[1]]');
         //expect(conversion.fullText).toMatch('Page\[\[1\]\] 1');
@@ -47,8 +47,8 @@ describe('PDF', function () {
         .then(() => {
           done.fail('should have thrown a conversion_error');
         })
-        .catch(error => {
-          expect(error).toEqual({error: 'conversion_error'});
+        .catch((error) => {
+          expect(error).toEqual({ error: 'conversion_error' });
           done();
         });
       });
