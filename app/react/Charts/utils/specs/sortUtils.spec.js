@@ -1,7 +1,7 @@
-import { sortValues } from '../cejilUtils';
+import { sortValues } from '../sortUtils';
 
-describe('CEJIL Utils', () => {
-  describe('sortCountries', () => {
+describe('Sort Utils', () => {
+  describe('sortValues', () => {
     it('should sort the passed values, ordering similar results by label', () => {
       const unsortedValues = [
         { label: 'b', results: 2 },

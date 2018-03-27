@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import { StackedDualBarChart } from 'app/Charts';
+import { StackedDualBarChart, sortUtils } from 'app/Charts';
 import Loader from 'app/components/Elements/Loader';
-
-import { sortValues } from '../utils/cejilUtils';
 
 export const countriesTemplate = '58b2f3a35d59f31e1345b480';
 export const countryKey = 'pa_s';
@@ -22,7 +20,7 @@ class CejilChart extends Component {
       const { aggregations } = this.state.groupedResults;
       const countriesData = this.props.thesauris.find(thesaury => thesaury.get('_id') === countriesTemplate);
 
-      let data = sortValues(aggregations.all[countryKey].buckets
+      let data = sortUtils.sortValues(aggregations.all[countryKey].buckets
       .filter(country => country.filtered.doc_count)
       .map((_country) => {
         const country = _country;

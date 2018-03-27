@@ -10,11 +10,11 @@ import { countriesTemplate, countryKey } from '../CejilChart';
 describe('CejilChart002', () => {
   let props;
 
-  function conformAggregations(countA, countB) {
+  function conformAggregations(count) {
     const response = { aggregations: { all: { } } };
     response.aggregations.all[countryKey] = { buckets: [
-      { key: 'keyA', filtered: { doc_count: countA } },
-      { key: 'keyB', filtered: { doc_count: countB } },
+      { key: 'keyA', filtered: { doc_count: count.a } },
+      { key: 'keyB', filtered: { doc_count: count.b } },
     ] };
     return response;
   }
@@ -22,6 +22,10 @@ describe('CejilChart002', () => {
   function testSnapshot() {
     const tree = shallow(<CejilChart.WrappedComponent {...props} />);
     expect(tree).toMatchSnapshot();
+  }
+
+  function testQuery(args, sex) {
+    return args.types[0] === template && args.filters.sexo && args.filters.sexo.values[0] === sex;
   }
 
   beforeEach(() => {
@@ -44,22 +48,28 @@ describe('CejilChart002', () => {
     beforeEach(() => {
       spyOn(api, 'search').and.callFake((args) => {
         const combinedQuery = args.types[0] === template && !args.filters.sexo;
-        const maleQuery = args.types[0] === template && args.filters.sexo && args.filters.sexo.values[0] === male;
-        const femaleQuery = args.types[0] === template && args.filters.sexo && args.filters.sexo.values[0] === female;
+        const maleQuery = testQuery(args, male);
+        const femaleQuery = testQuery(args, female);
+
+        let count = {};
 
         if (combinedQuery) {
-          if (Object.keys(args.filters).indexOf('mandatos_de_la_corte') !== -1) {
-            return Promise.resolve(conformAggregations(5, 8));
+          count = { a: 5, b: 8 };
+          if (Object.keys(args.filters).indexOf('mandatos_de_la_corte') !== 0) {
+            count = { a: 6, b: 9 };
           }
-          return Promise.resolve(conformAggregations(6, 9));
         }
 
         if (maleQuery) {
-          return Promise.resolve(conformAggregations(3, 1));
+          count = { a: 3, b: 1 };
         }
 
         if (femaleQuery) {
-          return Promise.resolve(conformAggregations(2, 7));
+          count = { a: 2, b: 7 };
+        }
+
+        if (combinedQuery || maleQuery || femaleQuery) {
+          return conformAggregations(count);
         }
 
         fail(`Unexpected call: ${JSON.stringify(args)}`);

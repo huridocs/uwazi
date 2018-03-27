@@ -4,6 +4,7 @@ import api from 'app/Search/SearchAPI';
 import { t } from 'app/I18N';
 
 import CejilChart from './CejilChart';
+import { findBucketsByCountry } from '../utils/parsingUtils';
 
 const casesTemplate = '58b2f3a35d59f31e1345b48a';
 const provisionalMeasuresTemplate = '58b2f3a35d59f31e1345b4a4';
@@ -29,10 +30,8 @@ function prepareData(countries) {
 
   return countries.map((_country) => {
     const country = _country;
-    const caseResults = this.state.setA.aggregations.all[countryKey].buckets
-    .find(caseCountry => caseCountry.key === country.key);
-    const provisionalMeasureResults = this.state.setB.aggregations.all[countryKey].buckets
-    .find(caseCountry => caseCountry.key === country.key);
+    const caseResults = findBucketsByCountry(this.state.setA, countryKey, country.key);
+    const provisionalMeasureResults = findBucketsByCountry(this.state.setB, countryKey, country.key);
 
     country.name = country.label;
 

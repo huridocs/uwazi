@@ -1,4 +1,4 @@
-export function sortValues(values) {
+function sortValues(values) {
   values.sort((a, b) => {
     if (a.results === b.results) {
       return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
@@ -9,3 +9,7 @@ export function sortValues(values) {
 
   return values;
 }
+
+export default {
+  sortValues
+};
