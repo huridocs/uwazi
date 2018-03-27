@@ -33,20 +33,15 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.get('/api/entities/uploads', needsAuthorization(['admin', 'editor']), (req, res) => {
-    entities.getUploadsByUser(req.user)
-    .then(response => res.json(response))
-    .catch(res.error);
-  });
-
   app.get('/api/entities', (req, res) => {
     entities.getWithRelationships({sharedId: req.query._id, language: req.language})
-    .then((response) => {
-      if (!response) {
-        res.json({}, 404);
+    .then((entity) => {
+      if (!entity || !entity.published && !req.user) {
+        res.status(404);
+        res.json({});
         return;
       }
-      res.json({rows: response});
+      res.json({rows: entity});
     })
     .catch(res.error);
   });

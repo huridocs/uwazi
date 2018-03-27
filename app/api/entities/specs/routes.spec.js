@@ -111,7 +111,8 @@ describe('entities', () => {
 
   describe('GET', () => {
     it('should return matching document', (done) => {
-      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve('result'));
+      let expectedEntity = {sharedId: 'sharedId', published: true};
+      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
       let req = {
         query: {_id: 'sharedId'},
         language: 'lang'
@@ -120,10 +121,44 @@ describe('entities', () => {
       routes.get('/api/entities', req)
       .then((response) => {
         expect(entities.getWithRelationships).toHaveBeenCalledWith({sharedId: 'sharedId', language: 'lang'});
-        expect(response).toEqual({rows: 'result'});
+        expect(response).toEqual({rows: expectedEntity});
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    describe('when the document does not exist', () => {
+      it('should retunr a 404', (done) => {
+        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve());
+        let req = {
+          query: {_id: 'idontexist'},
+          language: 'en'
+        };
+
+        routes.get('/api/entities', req)
+        .then((response) => {
+          expect(response.status).toBe(404);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
+    describe('when the document is unpublished and not loged in', () => {
+      it('should return a 404', (done) => {
+        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve({published: false}));
+        let req = {
+          query: {_id: 'unpublished'},
+          language: 'en'
+        };
+
+        routes.get('/api/entities', req)
+        .then((response) => {
+          expect(response.status).toBe(404);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 
@@ -142,7 +177,7 @@ describe('entities', () => {
     });
   });
 
-  describe('DELETE', () => {
+  describe('DELETE /api/entities', () => {
     beforeEach(() => {
       spyOn(entities, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
     });
@@ -152,6 +187,22 @@ describe('entities', () => {
       return routes.delete('/api/entities', req)
       .then(() => {
         expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('DELETE /api/entities/multiple', () => {
+    beforeEach(() => {
+      spyOn(entities, 'deleteMultiple').and.returnValue(Promise.resolve({json: 'ok'}));
+    });
+
+    it('should use entities to delete it', (done) => {
+      let req = {query: {sharedIds: '[123, 456]'}};
+      return routes.delete('/api/entities/multiple', req)
+      .then(() => {
+        expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
         done();
       })
       .catch(catchErrors(done));
