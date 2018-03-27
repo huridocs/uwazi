@@ -1,13 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
 
 import api from 'app/Search/SearchAPI';
-import {t} from 'app/I18N';
+import { t } from 'app/I18N';
 
+import { StackedDualBarChart } from 'app/Charts';
 import Loader from 'app/components/Elements/Loader';
-import Bars from './cejilChart002Bars';
-import {sortValues} from '../utils/cejilUtils';
+
+import { sortValues } from '../utils/cejilUtils';
 
 const judgesCommisionersTemplate = '58b2f3a35d59f31e1345b4b6';
 const countriesId = '58b2f3a35d59f31e1345b480';
@@ -18,84 +20,90 @@ const female = 'f2457229-e142-4b74-b595-2ac2f9b5f64e';
 const sexTranslationsContext = '58b2f3a35d59f31e1345b52d';
 
 export class cejilChart002 extends Component {
+  componentDidMount() {
+    this.getData();
+  }
 
   getData() {
     const filters = {};
-    filters[filterProperty] = {from: 1515456000};
+    filters[filterProperty] = { from: -2208988800 };
 
-    const maleFilters = Object.assign({}, filters, {sexo: {values: [male]}});
-    const femaleFilters = Object.assign({}, filters, {sexo: {values: [female]}});
+    const maleFilters = Object.assign({}, filters, { sexo: { values: [male] } });
+    const femaleFilters = Object.assign({}, filters, { sexo: { values: [female] } });
 
     Promise.all([
-      api.search({types: [judgesCommisionersTemplate], filters, limit: 0}),
-      api.search({types: [judgesCommisionersTemplate], filters: maleFilters, limit: 0}),
-      api.search({types: [judgesCommisionersTemplate], filters: femaleFilters, limit: 0})
+      api.search({ types: [judgesCommisionersTemplate], filters, limit: 0 }),
+      api.search({ types: [judgesCommisionersTemplate], filters: maleFilters, limit: 0 }),
+      api.search({ types: [judgesCommisionersTemplate], filters: femaleFilters, limit: 0 })
     ])
     .then(([groupedResults, maleJudges, femaleJudges]) => {
-      this.setState({groupedResults, maleJudges, femaleJudges});
+      this.setState({ groupedResults, maleJudges, femaleJudges });
     });
   }
 
   prepareCountriesData(countries) {
-    return countries.map(country => {
+    return countries.map((_country) => {
+      const country = _country;
       const maleResults = this.state.maleJudges.aggregations.all[countryKey].buckets
-                          .find(caseCountry => caseCountry.key === country.key);
+      .find(caseCountry => caseCountry.key === country.key);
       const femaleResults = this.state.femaleJudges.aggregations.all[countryKey].buckets
-                            .find(caseCountry => caseCountry.key === country.key);
+      .find(caseCountry => caseCountry.key === country.key);
 
-      country.maleLabel = t(sexTranslationsContext, 'Hombre');
-      country.maleResults = maleResults ? maleResults.filtered.doc_count : 0;
+      country.name = country.label;
 
-      country.femaleLabel = t(sexTranslationsContext, 'Mujer');
-      country.femaleResults = femaleResults ? femaleResults.filtered.doc_count : 0;
+      country.setALabel = t(sexTranslationsContext, 'Hombre');
+      country.setAValue = maleResults ? maleResults.filtered.doc_count : 0;
+
+      country.setBLabel = t(sexTranslationsContext, 'Mujer');
+      country.setBValue = femaleResults ? femaleResults.filtered.doc_count : 0;
 
       return country;
     });
-  }
-
-  componentDidMount() {
-    this.getData();
   }
 
   render() {
     let output = <Loader/>;
 
     if (this.state && this.state.groupedResults) {
-      const aggregations = this.state.groupedResults.aggregations;
+      const { aggregations } = this.state.groupedResults;
       const countriesData = this.props.thesauris.find(thesaury => thesaury.get('_id') === countriesId);
 
       let countries = sortValues(aggregations.all[countryKey].buckets
-                      .filter(country => country.filtered.doc_count)
-                      .map(country => {
-                        country.label = countriesData.get('values').find(v => v.get('id') === country.key).get('label');
-                        country.results = country.filtered.doc_count;
-                        return country;
-                      }));
+      .filter(country => country.filtered.doc_count)
+      .map((_country) => {
+        const country = _country;
+        country.label = countriesData.get('values').find(v => v.get('id') === country.key).get('label');
+        country.results = country.filtered.doc_count;
+        return country;
+      }));
 
       countries = this.prepareCountriesData(countries);
 
-      console.log('Final countries:', countries);
-
-      output = <div className="item item-chart">
-                <p>{this.props.label}</p>
-                <Bars data={countries} chartLabel={this.props.label} setA="male" setB="female" />
-               </div>;
+      output = (
+        <div className="item item-chart">
+          <p>{this.props.label}</p>
+          <StackedDualBarChart data={countries} chartLabel={this.props.label} setA="male" setB="female" />
+        </div>
+      );
     }
 
     return (
-      <div className="item-group-charts" style={{paddingTop: '15px'}}>{output}</div>
+      <div className="item-group-charts" style={{ paddingTop: '15px', paddingRight: '15px' }}>{output}</div>
     );
   }
 }
 
+cejilChart002.defaultProps = {
+  label: null,
+};
+
 cejilChart002.propTypes = {
-  templates: PropTypes.object,
-  thesauris: PropTypes.object,
+  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   label: PropTypes.string
 };
 
-export function mapStateToProps({templates, thesauris}) {
-  return {templates, thesauris};
+export function mapStateToProps({ thesauris }) {
+  return { thesauris };
 }
 
 export default connect(mapStateToProps)(cejilChart002);
