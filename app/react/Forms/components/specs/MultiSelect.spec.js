@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import MultiSelect from '../MultiSelect';
 
@@ -12,20 +12,20 @@ describe('MultiSelect', () => {
       label: 'input label',
       value: [],
       options: [
-        {label: 'Option1', value: 'option1', results: 4},
-        {label: 'Option2', value: 'option2', results: 2}
+        { label: 'Option1', value: 'option1', results: 4 },
+        { label: 'Option2', value: 'option2', results: 2 }
       ],
       onChange: jasmine.createSpy('onChange')
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<MultiSelect {...props}/>);
   };
 
   it('should render the checkboxes', () => {
     render();
-    let optionElements = component.find('input[type="checkbox"]');
+    const optionElements = component.find('input[type="checkbox"]');
 
     expect(optionElements.length).toBe(2);
     expect(optionElements.first().props().value).toBe('option1');
@@ -57,8 +57,8 @@ describe('MultiSelect', () => {
   describe('filtering', () => {
     it('should render only options matching the filter', () => {
       render();
-      component.setState({filter: '1'});
-      let optionElements = component.find('input[type="checkbox"]');
+      component.setState({ filter: '1' });
+      const optionElements = component.find('input[type="checkbox"]');
       expect(optionElements.length).toBe(1);
       expect(optionElements.first().props().value).toBe('option1');
     });
@@ -70,9 +70,9 @@ describe('MultiSelect', () => {
         label: 'input label',
         value: [],
         options: [
-          {name: 'Option1', id: 'option1', results: 4},
-          {name: 'Option3', id: 'option3', results: 2},
-          {name: 'Option2', id: 'option2', results: 2}
+          { name: 'Option1', id: 'option1', results: 4 },
+          { name: 'Option3', id: 'option3', results: 2 },
+          { name: 'Option2', id: 'option2', results: 2 }
         ],
         optionsValue: 'id',
         optionsLabel: 'name'
@@ -81,7 +81,7 @@ describe('MultiSelect', () => {
     });
 
     it('should render the options by results and then by label', () => {
-      let optionElements = component.find('input[type="checkbox"]');
+      const optionElements = component.find('input[type="checkbox"]');
 
       expect(optionElements.length).toBe(3);
       expect(optionElements.first().props().value).toBe('option1');

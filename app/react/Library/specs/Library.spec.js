@@ -1,42 +1,42 @@
+import { fromJS as Immutable } from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
 import rison from 'rison';
 
-import searchAPI from 'app/Search/SearchAPI';
-import libraryHelpers from '../helpers/libraryFilters';
+import { shallow } from 'enzyme';
 import Library from 'app/Library/Library';
-import DocumentsList from 'app/Library/components/DocumentsList';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes';
-import * as libraryActions from '../actions/libraryActions';
 import createStore from 'app/store';
-import {fromJS as Immutable} from 'immutable';
-
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import searchAPI from 'app/Search/SearchAPI';
+import DocumentsList from 'app/Library/components/DocumentsList';
+
+import * as libraryActions from '../actions/libraryActions';
+import libraryHelpers from '../helpers/libraryFilters';
 
 describe('Library', () => {
-  let aggregations = {buckets: []};
-  let documents = {rows: [{title: 'Something to publish'}, {title: 'My best recipes'}], totalRows: 2, aggregations};
-  let templates = [
-    {name: 'Decision', _id: 'abc1', properties: [{name: 'p', filter: true, type: 'text', prioritySorting: true}]},
-    {name: 'Ruling', _id: 'abc2', properties: []}
+  const aggregations = { buckets: [] };
+  const documents = { rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }], totalRows: 2, aggregations };
+  const templates = [
+    { name: 'Decision', _id: 'abc1', properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }] },
+    { name: 'Ruling', _id: 'abc2', properties: [] }
   ];
-  let thesauris = [{name: 'countries', _id: '1', values: []}];
-  let globalResources = {templates: Immutable(templates), thesauris: Immutable(thesauris)};
-  createStore({templates, thesauris});
+  const thesauris = [{ name: 'countries', _id: '1', values: [] }];
+  const globalResources = { templates: Immutable(templates), thesauris: Immutable(thesauris) };
+  createStore({ templates, thesauris });
   let component;
   let instance;
   let context;
-  let props = {location: {query: {q: '(a:1)'}}};
+  const props = { location: { query: { q: '(a:1)' } } };
   let dispatchCallsOrder = [];
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     dispatchCallsOrder = [];
-    context = {store: {dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
+    context = { store: { dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
       dispatchCallsOrder.push(action.type);
-    })}};
-    component = shallow(<Library {...props}/>, {context});
+    }) } };
+    component = shallow(<Library {...props}/>, { context });
     instance = component.instance();
 
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
@@ -60,11 +60,11 @@ describe('Library', () => {
 
   describe('static requestState()', () => {
     it('should request the documents passing search object on the store', (done) => {
-      const query = {q: rison.encode({filters: {something: 1}, types: []})};
+      const query = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
       const expectedSearch = {
-        sort: prioritySortingCriteria.get({templates: Immutable(templates)}).sort,
-        order: prioritySortingCriteria.get({templates: Immutable(templates)}).order,
-        filters: {something: 1},
+        sort: prioritySortingCriteria.get({ templates: Immutable(templates) }).sort,
+        order: prioritySortingCriteria.get({ templates: Immutable(templates) }).order,
+        filters: { something: 1 },
         types: []
       };
 
@@ -80,9 +80,9 @@ describe('Library', () => {
     });
 
     it('should process the query url params and transform it to state', (done) => {
-      spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({properties: 'properties', search: 'search'});
-      const q = {filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate'};
-      const query = {q: rison.encode(q)};
+      spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({ properties: 'properties', search: 'search' });
+      const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
+      const query = { q: rison.encode(q) };
       Library.requestState({}, query, globalResources)
       .then((state) => {
         expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris);
@@ -98,13 +98,13 @@ describe('Library', () => {
   describe('setReduxState()', () => {
     beforeEach(() => {
       spyOn(libraryActions, 'setTemplates');
-      instance.setReduxState({library: {documents, aggregations, filters: {documentTypes: 'types', properties: 'properties'}}});
+      instance.setReduxState({ library: { documents, aggregations, filters: { documentTypes: 'types', properties: 'properties' } } });
     });
 
     it('should set the documents and aggregations and Unset the documents as first action', () => {
       expect(dispatchCallsOrder[1]).toBe(actionTypes.UNSET_DOCUMENTS);
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.UNSET_DOCUMENTS, __reducerKey: 'library'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: actionTypes.UNSET_DOCUMENTS, __reducerKey: 'library' });
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'library' });
       expect(context.store.dispatch).toHaveBeenCalledWith({
         type: actionTypes.INITIALIZE_FILTERS_FORM,
         documentTypes: 'types',
@@ -121,13 +121,13 @@ describe('Library', () => {
     });
 
     it('should update if "q" has changed', () => {
-      const nextProps = {location: {query: {q: '(a:2)'}}};
+      const nextProps = { location: { query: { q: '(a:2)' } } };
       instance.componentWillReceiveProps(nextProps);
       expect(instance.superComponentWillReceiveProps).toHaveBeenCalledWith(nextProps);
     });
 
     it('should not update if "q" is the same', () => {
-      const nextProps = {location: {query: {q: '(a:1)'}}};
+      const nextProps = { location: { query: { q: '(a:1)' } } };
       instance.componentWillReceiveProps(nextProps);
       expect(instance.superComponentWillReceiveProps).not.toHaveBeenCalled();
     });

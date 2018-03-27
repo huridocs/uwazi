@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import DatePickerComponent from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+import DatePickerComponent from 'react-datepicker';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import moment from 'moment';
 
 export default class DatePicker extends Component {
-
   constructor(props) {
     super(props);
     this.state = {};
@@ -16,13 +16,12 @@ export default class DatePicker extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.value) {
-      this.setState({value: moment.utc(newProps.value, 'X')});
-      return;
+      this.setState({ value: moment.utc(newProps.value, 'X') });
     }
   }
 
   onChange(value) {
-    this.setState({value});
+    this.setState({ value });
     if (!value) {
       return this.props.onChange(null);
     }
@@ -39,20 +38,19 @@ export default class DatePicker extends Component {
     const format = this.props.format || 'DD/MM/YYYY';
 
     return (
-        <DatePickerComponent
-          dateFormat={format}
-          className="form-control"
-          onChange={this.onChange.bind(this)}
-          selected={this.state.value}
-          locale={locale}
-          placeholderText={format}
-          isClearable={true}
-          fixedHeight
-          showYearDropdown
-        />
+      <DatePickerComponent
+        dateFormat={format}
+        className="form-control"
+        onChange={this.onChange.bind(this)}
+        selected={this.state.value}
+        locale={locale}
+        placeholderText={format}
+        isClearable
+        fixedHeight
+        showYearDropdown
+      />
     );
   }
-
 }
 
 DatePicker.propTypes = {

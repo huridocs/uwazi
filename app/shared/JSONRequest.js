@@ -3,25 +3,24 @@ import rison from 'rison';
 
 const attemptRisonDecode = (string) => {
   const errcb = function (e) {
-    throw Error('rison decoder error: ' + e);
+    throw Error(`rison decoder error: ${e}`);
   };
 
   const risonParser = new rison.parser(errcb); // eslint-disable-line new-cap
   risonParser.error = function (message) {
     this.message = message;
-    return;
   };
 
   risonParser.parse(string);
 };
 
 export function toUrlParams(_data) {
-  let data = Object.assign({}, _data);
+  const data = Object.assign({}, _data);
   if (!data || Object.keys(data).length === 0) {
     return '';
   }
 
-  return '?' + Object.keys(data).map((key) => {
+  return `?${Object.keys(data).map((key) => {
     if (typeof data[key] === 'undefined' || data[key] === null) {
       return;
     }
@@ -40,16 +39,16 @@ export function toUrlParams(_data) {
         encodedValue = encodeURIComponent(data[key]);
       }
     }
-    return encodeURIComponent(key) + '=' + encodedValue;
-  }).filter((param) => param).join('&');
+    return `${encodeURIComponent(key)}=${encodedValue}`;
+  }).filter(param => param).join('&')}`;
 }
 
-let _fetch = (url, data, method, _headers) => {
+const _fetch = (url, data, method, _headers) => {
   let response;
   let params = '';
   let body;
 
-  let headers = Object.assign({
+  const headers = Object.assign({
     Accept: 'application/json',
     'Content-Type': 'application/json'
   }, _headers);
@@ -63,18 +62,18 @@ let _fetch = (url, data, method, _headers) => {
   }
 
   return fetch(url + params, {
-    method: method,
-    headers: headers,
+    method,
+    headers,
     credentials: 'same-origin',
-    body: body
+    body
   })
   .then((res) => {
     response = res;
     return res.json();
   })
   .then((json) => {
-    let procesedResponse = {
-      json: json,
+    const procesedResponse = {
+      json,
       status: response.status
     };
 
@@ -87,19 +86,11 @@ let _fetch = (url, data, method, _headers) => {
 };
 
 export default {
-  post: (url, data, headers) => {
-    return _fetch(url, data, 'POST', headers);
-  },
+  post: (url, data, headers) => _fetch(url, data, 'POST', headers),
 
-  put: (url, data, headers) => {
-    return _fetch(url, data, 'PUT', headers);
-  },
+  put: (url, data, headers) => _fetch(url, data, 'PUT', headers),
 
-  get: (url, data, headers) => {
-    return _fetch(url, data, 'GET', headers);
-  },
+  get: (url, data, headers) => _fetch(url, data, 'GET', headers),
 
-  delete: (url, data) => {
-    return _fetch(url, data, 'DELETE');
-  }
+  delete: (url, data) => _fetch(url, data, 'DELETE')
 };
