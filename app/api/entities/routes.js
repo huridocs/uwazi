@@ -35,13 +35,13 @@ export default (app) => {
 
   app.get('/api/entities', (req, res) => {
     entities.getWithRelationships({sharedId: req.query._id, language: req.language})
-    .then((entity) => {
-      if (!entity || !entity.published && !req.user) {
+    .then((_entities) => {
+      if (!_entities.length || (!_entities[0].published && !req.user)) {
         res.status(404);
         res.json({});
         return;
       }
-      res.json({rows: entity});
+      res.json({rows: _entities});
     })
     .catch(res.error);
   });

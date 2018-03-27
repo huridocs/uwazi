@@ -111,7 +111,7 @@ describe('entities', () => {
 
   describe('GET', () => {
     it('should return matching document', (done) => {
-      let expectedEntity = {sharedId: 'sharedId', published: true};
+      let expectedEntity = [{sharedId: 'sharedId', published: true}];
       spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
       let req = {
         query: {_id: 'sharedId'},
@@ -129,7 +129,7 @@ describe('entities', () => {
 
     describe('when the document does not exist', () => {
       it('should retunr a 404', (done) => {
-        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve());
+        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([]));
         let req = {
           query: {_id: 'idontexist'},
           language: 'en'
@@ -146,7 +146,7 @@ describe('entities', () => {
 
     describe('when the document is unpublished and not loged in', () => {
       it('should return a 404', (done) => {
-        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve({published: false}));
+        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([{published: false}]));
         let req = {
           query: {_id: 'unpublished'},
           language: 'en'
