@@ -1,6 +1,8 @@
 engines:
   eslint:
     enabled: true
+    config:
+      config: .eslintrc
   duplication:
     enabled: true
     config:
@@ -10,3 +12,7 @@ engines:
 ratings:
   paths:
   - app/**
+exclude_patterns:
+  - **/specs/
+  - database/
+  - **/index.js
