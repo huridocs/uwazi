@@ -276,7 +276,8 @@ describe('search', () => {
           search.search({ types: [ids.templateMetadata1] }, 'en'),
           search.search({ types: [ids.templateMetadata2] }, 'en'),
           search.search({ types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en'),
-          search.search({ filters: { multiselect1: { values: ['multiValue2'], and: false } }, types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en')
+          search.search({ filters: { multiselect1: { values: ['multiValue2'], and: false } },
+          types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en')
         ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
@@ -327,7 +328,8 @@ describe('search', () => {
         it('should search by nested and calculate nested aggregations of fields when filtering by types', (done) => {
           Promise.all([
             search.search({ types: [ids.templateMetadata2] }, 'en'),
-            search.search({ types: [ids.templateMetadata1, ids.templateMetadata2], filters: { nestedField: { properties: { nested1: { any: true } } } } }, 'en')
+            search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
+              filters: { nestedField: { properties: { nested1: { any: true } } } } }, 'en')
           ])
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
             const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
@@ -355,20 +357,20 @@ describe('search', () => {
         it('should search second level of nested field', (done) => {
           Promise.all([
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-filters: {
-              nestedField: { properties: { nested1: { values: ['1'] } } }
+              filters: {
+                nestedField: { properties: { nested1: { values: ['1'] } } }
               } }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-filters: {
-              nestedField: { properties: { nested1: { values: ['2'] } } }
+              filters: {
+                nestedField: { properties: { nested1: { values: ['2'] } } }
               } }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-filters: {
-              nestedField: { properties: { nested1: { values: ['3'] } } }
+              filters: {
+                nestedField: { properties: { nested1: { values: ['3'] } } }
               } }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-filters: {
-              nestedField: { properties: { nested1: { values: ['3', '5'] } } }
+              filters: {
+                nestedField: { properties: { nested1: { values: ['3', '5'] } } }
               } }, 'en')
           ])
           .then(([value1, value2, value3, value35]) => {
@@ -394,12 +396,12 @@ filters: {
           it('should return only results with values selected in the same key', (done) => {
             Promise.all([
               search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-filters: {
-                nestedField: { properties: { nested1: { values: ['1', '5'] } }, strict: true }
+                filters: {
+                  nestedField: { properties: { nested1: { values: ['1', '5'] } }, strict: true }
                 } }, 'en'),
               search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-filters: {
-                nestedField: { properties: { nested1: { values: ['1', '2'] } }, strict: true }
+                filters: {
+                  nestedField: { properties: { nested1: { values: ['1', '2'] } }, strict: true }
                 } }, 'en')
             ])
             .then(([strict15, strict12]) => {
@@ -544,7 +546,6 @@ filters: {
             done();
           })
           .catch((e) => {
-            console.log(e);
             done.fail(e);
           });
         });
