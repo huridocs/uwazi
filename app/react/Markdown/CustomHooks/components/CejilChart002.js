@@ -16,6 +16,10 @@ function assignFilter(filters, sex) {
   return Object.assign({}, filters, { sexo: { values: [sex] } });
 }
 
+function conformSearchQuery(filters) {
+  return api.search({ types: [judgesCommisionersTemplate], filters, limit: 0 });
+}
+
 function getData() {
   const filters = {};
   filters[this.props.filterProperty] = { from: -2208988800 };
@@ -23,11 +27,7 @@ function getData() {
   const maleFilters = assignFilter(filters, male);
   const femaleFilters = assignFilter(filters, female);
 
-  Promise.all([
-    api.search({ types: [judgesCommisionersTemplate], filters, limit: 0 }),
-    api.search({ types: [judgesCommisionersTemplate], filters: maleFilters, limit: 0 }),
-    api.search({ types: [judgesCommisionersTemplate], filters: femaleFilters, limit: 0 })
-  ])
+  Promise.all([filters, maleFilters, femaleFilters].map(conformSearchQuery))
   .then(([groupedResults, setA, setB]) => {
     this.setState({ groupedResults, setA, setB });
   });
