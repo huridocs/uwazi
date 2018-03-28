@@ -112,12 +112,13 @@ class PDF extends Component {
 
 PDF.defaultProps = {
   scrollToPage,
-  page: null
+  page: null,
+  filename: null
 };
 
 PDF.propTypes = {
   file: PropTypes.string.isRequired,
-  filename: PropTypes.string.isRequired,
+  filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,
   pdfInfo: PropTypes.object,
   page: PropTypes.number,
