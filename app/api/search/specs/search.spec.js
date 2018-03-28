@@ -140,10 +140,9 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should return aggregations when searching by 2 terms', (done) => {
+    it('should return aggregations when searching by 2 terms', (done) => {
       search.search({ searchTerm: 'english document' }, 'es')
       .then((response) => {
-        console.log(response.rows.length);
         const aggregation = response.aggregations.all.types.buckets.find(bucket => bucket.key === ids.template1.toString());
         expect(aggregation.filtered.doc_count).toBe(1);
         done();
