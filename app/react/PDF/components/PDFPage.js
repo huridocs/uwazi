@@ -7,7 +7,7 @@ class PDFPage extends Component {
   componentDidMount() {
     this.scrollCallback = this.scroll.bind(this);
 
-    if (this.pageShouldRender()) {
+    if (this.pageContainer && this.pageShouldRender()) {
       this.renderPage();
     }
 
