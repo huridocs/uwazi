@@ -1,14 +1,14 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {browserHistory} from 'react-router';
+import { shallow } from 'enzyme';
+import { browserHistory } from 'react-router';
 
-import {ListChartToggleButtons} from '../ListChartToggleButtons';
+import { ListChartToggleButtons } from '../ListChartToggleButtons';
 
 describe('ListChartToggleButtons', () => {
   let component;
   let props;
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ListChartToggleButtons {...props} />);
   };
 
@@ -16,7 +16,7 @@ describe('ListChartToggleButtons', () => {
     beforeEach(() => {
       props = {};
 
-      spyOn(browserHistory, 'getCurrentLocation').and.returnValue({pathname: '/location', query: {q: '(a:1)'}});
+      spyOn(browserHistory, 'getCurrentLocation').and.returnValue({ pathname: '/location', query: { q: '(a:1)' } });
       spyOn(browserHistory, 'push');
     });
 
