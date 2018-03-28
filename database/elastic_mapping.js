@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import languages from '../app/shared/languages';
 
-let config = {
+const config = {
   settings: {
     analysis: {
       char_filter: {
@@ -37,13 +37,13 @@ let config = {
       }
     },
     _default_: {
-      _all: {enabled: true, omit_norms: true},
-      dynamic_templates: [ {
+      _all: { enabled: true, omit_norms: true },
+      dynamic_templates: [{
         message_field: {
           match: 'message',
           match_mapping_type: 'string',
           mapping: {
-            type: 'string', index: 'analyzed', omit_norms: true, fielddata: {format: 'disabled'}
+            type: 'string', index: 'analyzed', omit_norms: true, fielddata: { format: 'disabled' }
           }
         }
       }, {
@@ -68,8 +68,8 @@ let config = {
             omit_norms: true,
             analyzer: 'tokenizer',
             fields: {
-              raw: {type: 'keyword'},
-              sort: {type: 'text', fielddata: true, analyzer: 'string_sorter'}
+              raw: { type: 'keyword' },
+              sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' }
             }
           }
         }
@@ -77,7 +77,7 @@ let config = {
         float_fields: {
           match: '*',
           match_mapping_type: 'float',
-          mapping: {type: 'float', doc_values: true}
+          mapping: { type: 'float', doc_values: true }
         }
       }, {
         double_fields: {
@@ -87,7 +87,7 @@ let config = {
             type: 'double',
             doc_values: true,
             fields: {
-              sort: {type: 'double'}
+              sort: { type: 'double' }
             }
           }
         }
@@ -95,19 +95,19 @@ let config = {
         byte_fields: {
           match: '*',
           match_mapping_type: 'byte',
-          mapping: {type: 'byte', doc_values: true}
+          mapping: { type: 'byte', doc_values: true }
         }
       }, {
         short_fields: {
           match: '*',
           match_mapping_type: 'short',
-          mapping: {type: 'short', doc_values: true}
+          mapping: { type: 'short', doc_values: true }
         }
       }, {
         integer_fields: {
           match: '*',
           match_mapping_type: 'integer',
-          mapping: {type: 'integer', doc_values: true}
+          mapping: { type: 'integer', doc_values: true }
         }
       }, {
         long_fields: {
@@ -117,8 +117,8 @@ let config = {
             type: 'double',
             doc_values: true,
             fields: {
-              raw: {type: 'double', index: 'not_analyzed'},
-              sort: {type: 'double'}
+              raw: { type: 'double', index: 'not_analyzed' },
+              sort: { type: 'double' }
             }
           }
         }
@@ -126,41 +126,41 @@ let config = {
         date_fields: {
           match: '*',
           match_mapping_type: 'date',
-          mapping: {type: 'date', doc_values: true}
+          mapping: { type: 'date', doc_values: true }
         }
       }, {
         geo_point_fields: {
           match: '*',
           match_mapping_type: 'geo_point',
-          mapping: {type: 'geo_point', doc_values: true}
+          mapping: { type: 'geo_point', doc_values: true }
         }
       }, {
         nested_fields: {
           match_mapping_type: 'object',
           path_match: 'metadata.*',
           path_unmatch: 'metadata.*.*',
-          mapping: {type: 'nested'}
+          mapping: { type: 'nested' }
         }
       }],
       properties: {
-        '@timestamp': {type: 'date', doc_values: true},
-        '@version': {type: 'string', index: 'not_analyzed', doc_values: true},
+        '@timestamp': { type: 'date', doc_values: true },
+        '@version': { type: 'string', index: 'not_analyzed', doc_values: true },
         creationDate: {
           type: 'long',
           doc_values: true,
           fields: {
-            raw: {type: 'long', index: 'not_analyzed'},
-            sort: {type: 'long'}
+            raw: { type: 'long', index: 'not_analyzed' },
+            sort: { type: 'long' }
           }
         },
         geoip: {
           type: 'object',
           dynamic: true,
           properties: {
-            ip: {type: 'ip', doc_values: true},
-            location: {type: 'geo_point', doc_values: true},
-            latitude: {type: 'float', doc_values: true},
-            longitude: {type: 'float', doc_values: true}
+            ip: { type: 'ip', doc_values: true },
+            location: { type: 'geo_point', doc_values: true },
+            latitude: { type: 'float', doc_values: true },
+            longitude: { type: 'float', doc_values: true }
           }
         }
       }
@@ -170,12 +170,12 @@ let config = {
 
 
 languages.getAll().forEach((language) => {
-  config.settings.analysis.filter[language + '_stop'] = {
+  config.settings.analysis.filter[`${language}_stop`] = {
     type: 'stop',
     stopwords: `_${language}_`
   };
 
-  let filters = [];
+  const filters = [];
   if (language === 'arabic') {
     filters.push('arabic_normalization');
   }
@@ -184,7 +184,7 @@ languages.getAll().forEach((language) => {
     filters.push('persian_normalization');
   }
   if (language !== 'persian') {
-    config.settings.analysis.filter[language + '_stemmer'] = {
+    config.settings.analysis.filter[`${language}_stemmer`] = {
       type: 'stemmer',
       language
     };
@@ -198,7 +198,7 @@ languages.getAll().forEach((language) => {
     char_filter: ['remove_annotation']
   };
 
-  let mapping = {};
+  const mapping = {};
   mapping[`fullText_${language}`] = {
     match: `fullText_${language}`,
     match_mapping_type: 'string',

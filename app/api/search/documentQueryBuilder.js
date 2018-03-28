@@ -12,18 +12,10 @@ export default function () {
     size: 30,
     query: {
       bool: {
-        minimum_should_match: 1,
-        must: [],
+        must: [{ bool: { should: [] } }],
         must_not: [],
         filter: [
           { term: { published: true } }
-        ],
-        should: [
-          {
-            bool: {
-              should: []
-            }
-          }
         ]
       }
     },
@@ -42,15 +34,9 @@ export default function () {
               filtered: {
                 filter: {
                   bool: {
-                    minimum_should_match: 1,
-                    must: [{ match: { published: true } }],
-                    filter: [],
-                    should: [
-                      {
-                        bool: {
-                          should: []
-                        }
-                      }
+                    must: [{ bool: { should: [] } }],
+                    filter: [
+                      { match: { published: true } }
                     ]
                   }
                 }
@@ -62,11 +48,12 @@ export default function () {
     }
   };
 
-  const aggregations = baseQuery.aggregations.all.aggregations;
-
+  const { aggregations } = baseQuery.aggregations.all;
+  const fullTextBool = baseQuery.query.bool.must[0];
+  const aggregationsFullTextBool = aggregations.types.aggregations.filtered.filter.bool.must[0];
   function addFullTextFilter(filter) {
-    baseQuery.query.bool.should[0].bool.should.push(filter);
-    baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.should[0].bool.should.push(filter);
+    fullTextBool.bool.should.push(filter);
+    aggregationsFullTextBool.bool.should.push(filter);
   }
 
   function addFilter(filter) {
@@ -76,13 +63,6 @@ export default function () {
 
   return {
     query() {
-      let minimumShouldMatch = 1;
-      if (baseQuery.query.bool.should[0].bool.should.length > 1) {
-        minimumShouldMatch = baseQuery.query.bool.should[0].bool.should.length - 1;
-      }
-      baseQuery.query.bool.should[0].bool.minimum_should_match = minimumShouldMatch;
-      baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.should[0].bool.minimum_should_match = minimumShouldMatch;
-
       return baseQuery;
     },
 
@@ -131,22 +111,24 @@ export default function () {
                 },
                 query: {
                   bool: {
-                    must: {
-                      multi_match: {
-                        query: term,
-                        type: 'best_fields',
-                        fuzziness: 0,
-                        fields: ['fullText*']
+                    should: [
+                      {
+                        multi_match: {
+                          query: term,
+                          type: 'best_fields',
+                          fuzziness: 0,
+                          fields: ['fullText*']
+                        }
+                      },
+                      {
+                        multi_match: {
+                          query: term,
+                          type: 'phrase_prefix',
+                          fields: ['fullText*'],
+                          boost: 3
+                        }
                       }
-                    },
-                    should: {
-                      multi_match: {
-                        query: term,
-                        type: 'phrase',
-                        fields: ['fullText*'],
-                        boost: 3
-                      }
-                    }
+                    ]
                   }
                 }
               }
@@ -168,7 +150,7 @@ export default function () {
 
     unpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
-      aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
+      aggregations.types.aggregations.filtered.filter.bool.filter[0].match.published = false;
       return this;
     },
 
@@ -251,8 +233,7 @@ export default function () {
         }
       };
 
-      const value = filter.value;
-      const properties = value.properties;
+      const { properties } = filter.value;
       if (!properties) {
         return;
       }
@@ -281,8 +262,8 @@ export default function () {
           must: []
         }
       };
-      const value = filter.value;
-      const properties = value.properties;
+
+      const { properties } = filter.value;
 
       const keys = Object.keys(properties).filter(key => properties[key].any ||
           properties[key].values && properties[key].values.length);
@@ -474,7 +455,7 @@ export default function () {
         let filters = baseQuery.query.bool.filter.filter(match => match && (!match.terms || match.terms && !match.terms[path]));
         filters = filters.concat(baseQuery.query.bool.must);
 
-        const should = baseQuery.query.bool.should;
+        const { should } = baseQuery.query.bool;
         if (property.nested) {
           baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, should, filters);
           return;
