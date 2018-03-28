@@ -40,7 +40,6 @@ export class LibraryChartComponent extends Component {
   }
 
   typeButton(type) {
-    console.log('Type:', type);
     const className = `btn btn-sm ${this.state.type === type ? 'btn-success' : 'btn-default'}`;
     return (
       <button className={className} onClick={this.assignType(type)}>
