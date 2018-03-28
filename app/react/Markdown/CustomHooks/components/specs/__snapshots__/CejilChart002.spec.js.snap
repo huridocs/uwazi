@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CejilChart002 When data loaded should allow changing the filter property 1`] = `
+<div
+  className="item-group-charts"
+  style={
+    Object {
+      "paddingRight": "15px",
+      "paddingTop": "15px",
+    }
+  }
+>
+  <div
+    className="item item-chart"
+  >
+    <p />
+    <StackedDualBarChart
+      chartLabel={null}
+      data={
+        Array [
+          Object {
+            "filtered": Object {
+              "doc_count": 9,
+            },
+            "key": "keyB",
+            "label": "labelB",
+            "name": "labelB",
+            "results": 9,
+            "setALabel": "Hombre",
+            "setAValue": 1,
+            "setBLabel": "Mujer",
+            "setBValue": 7,
+          },
+          Object {
+            "filtered": Object {
+              "doc_count": 6,
+            },
+            "key": "keyA",
+            "label": "labelA",
+            "name": "labelA",
+            "results": 6,
+            "setALabel": "Hombre",
+            "setAValue": 3,
+            "setBLabel": "Mujer",
+            "setBValue": 2,
+          },
+        ]
+      }
+    />
+  </div>
+</div>
+`;
+
+exports[`CejilChart002 When data loaded should sort and format the results appropriately 1`] = `
+<div
+  className="item-group-charts"
+  style={
+    Object {
+      "paddingRight": "15px",
+      "paddingTop": "15px",
+    }
+  }
+>
+  <div
+    className="item item-chart"
+  >
+    <p />
+    <StackedDualBarChart
+      chartLabel={null}
+      data={
+        Array [
+          Object {
+            "filtered": Object {
+              "doc_count": 8,
+            },
+            "key": "keyB",
+            "label": "labelB",
+            "name": "labelB",
+            "results": 8,
+            "setALabel": "Hombre",
+            "setAValue": 1,
+            "setBLabel": "Mujer",
+            "setBValue": 7,
+          },
+          Object {
+            "filtered": Object {
+              "doc_count": 5,
+            },
+            "key": "keyA",
+            "label": "labelA",
+            "name": "labelA",
+            "results": 5,
+            "setALabel": "Hombre",
+            "setAValue": 3,
+            "setBLabel": "Mujer",
+            "setBValue": 2,
+          },
+        ]
+      }
+    />
+  </div>
+</div>
+`;
+
+exports[`CejilChart002 When no data loaded should output only the loader before loading data 1`] = `
+<div
+  className="item-group-charts"
+  style={
+    Object {
+      "paddingRight": "15px",
+      "paddingTop": "15px",
+    }
+  }
+>
+  <Loader />
+</div>
+`;

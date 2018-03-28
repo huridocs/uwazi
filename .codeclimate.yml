@@ -13,6 +13,4 @@ ratings:
   paths:
   - app/**
 exclude_patterns:
-  - "**/specs/"
-  - "database/"
   - "**/index.js"

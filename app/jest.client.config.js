@@ -8,5 +8,6 @@ module.exports = {
   setupTestFrameworkScriptFile: '<rootDir>/setUpJestClient.js',
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy'
-  }
+  },
+  snapshotSerializers: ['enzyme-to-json/serializer']
 };
