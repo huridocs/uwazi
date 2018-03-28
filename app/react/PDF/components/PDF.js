@@ -1,18 +1,12 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
-import PDFPage from './PDFPage.js';
+import {advancedSort} from 'app/utils/advancedSort';
 import {scrollToPage} from 'app/Viewer/actions/uiActions';
 
-import {isClient} from 'app/utils';
-import {advancedSort} from 'app/utils/advancedSort';
-
-let PDFJS;
-if (isClient) {
-  require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.css');
-  PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
-  PDFJS.workerSrc = '/pdf.worker.bundle.js';
-}
+import { isClient } from '../../utils';
+import PDFJS from '../PDFJS';
+import PDFPage from './PDFPage.js';
 
 export class PDF extends Component {
 

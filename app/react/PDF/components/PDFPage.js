@@ -1,32 +1,26 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {isClient} from 'app/utils';
+import React, { Component } from 'react';
 
-let PDFJS;
-if (isClient) {
-  PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
-  PDFJS.workerSrc = window.pdfWorkerPath;
-}
+import PDFJS from '../PDFJS';
 
 export class PDFPage extends Component {
-
   renderPage() {
     if (!this.rendered && this.pdfPageView) {
       this.props.onLoading(this.props.page);
       this.pdfPageView.draw()
-      .catch((e) => e);
+      .catch(e => e);
       this.rendered = true;
     }
     if (!this.rendered) {
       this.props.onLoading(this.props.page);
       this.rendered = true;
-      this.props.pdf.getPage(this.props.page).then(page => {
+      this.props.pdf.getPage(this.props.page).then((page) => {
         const scale = 1;
 
         this.pdfPageView = new PDFJS.PDFPageView({
           container: this.refs.pageContainer,
           id: this.props.page,
-          scale: scale,
+          scale,
           defaultViewport: page.getViewport(scale),
           enhanceTextSelection: true,
           textLayerFactory: new PDFJS.DefaultTextLayerFactory()
@@ -35,9 +29,9 @@ export class PDFPage extends Component {
         this.pdfPageView.setPdfPage(page);
         this.pdfPageView.draw()
         .then(() => {
-          this.setState({height: this.pdfPageView.viewport.height});
+          this.setState({ height: this.pdfPageView.viewport.height });
         })
-        .catch((e) => e);
+        .catch(e => e);
       });
     }
   }
@@ -86,11 +80,11 @@ export class PDFPage extends Component {
   }
 
   render() {
-    let style = {height: 1100};
+    const style = { height: 1100 };
     if (this.state && this.state.height) {
       style.height = this.state.height + 20;
     }
-    return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={style}/>;
+    return <div id={`page-${this.props.page}`} className="doc-page" ref="pageContainer" style={style}/>;
   }
 }
 
