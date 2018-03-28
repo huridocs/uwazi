@@ -11,10 +11,14 @@ export class LibraryChartComponent extends Component {
     super(props);
     this.state = { type: 'pie' };
     this.maxPieItems = 14;
+    this.assignType = this.assignType.bind(this);
+    this.typeButton = this.typeButton.bind(this);
   }
 
   assignType(type) {
-    this.setState({ type });
+    return () => {
+      this.setState({ type });
+    };
   }
 
   clusterResults(options) {
@@ -35,6 +39,16 @@ export class LibraryChartComponent extends Component {
     }, []);
   }
 
+  typeButton(type) {
+    console.log('Type:', type);
+    const className = `btn btn-sm ${this.state.type === type ? 'btn-success' : 'btn-default'}`;
+    return (
+      <button className={className} onClick={this.assignType(type)}>
+        <i className={`fa fa-${type}-chart`} />
+      </button>
+    );
+  }
+
   render() {
     if (!this.props.options) {
       return null;
@@ -48,18 +62,8 @@ export class LibraryChartComponent extends Component {
       <div className="item item-chart">
         <div>
           <div className="item-chart-type">
-            <button
-              className={`btn btn-sm ${this.state.type === 'pie' ? 'btn-success' : 'btn-default'}`}
-              onClick={this.assignType.bind(this, 'pie')}
-            >
-              <i className="fa fa-pie-chart" />
-            </button>
-            <button
-              className={`btn btn-sm ${this.state.type === 'bar' ? 'btn-success' : 'btn-default'}`}
-              onClick={this.assignType.bind(this, 'bar')}
-            >
-              <i className="fa fa-bar-chart" />
-            </button>
+            {this.typeButton('pie')}
+            {this.typeButton('bar')}
           </div>
           <p>{this.props.label}</p>
           {chart}

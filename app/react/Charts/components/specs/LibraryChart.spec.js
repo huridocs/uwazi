@@ -30,7 +30,7 @@ describe('LibraryChart', () => {
     });
 
     describe('type toggle buttons', () => {
-      it('should switch between Pie and Bar', () => {
+      fit('should switch between Pie and Bar', () => {
         render();
         const toPieButton = component.find('button').at(0);
         const toBarButton = component.find('button').at(1);
