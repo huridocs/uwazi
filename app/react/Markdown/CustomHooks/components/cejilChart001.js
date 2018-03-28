@@ -10,12 +10,13 @@ const casesTemplate = '58b2f3a35d59f31e1345b48a';
 const provisionalMeasuresTemplate = '58b2f3a35d59f31e1345b4a4';
 const countryKey = 'pa_s';
 
+function conformSearchQuery(types) {
+  return api.search({ types, limit: 0 });
+}
+
 function getData() {
-  Promise.all([
-    api.search({ types: [casesTemplate, provisionalMeasuresTemplate], limit: 0 }),
-    api.search({ types: [casesTemplate], limit: 0 }),
-    api.search({ types: [provisionalMeasuresTemplate], limit: 0 })
-  ])
+  const types = [[casesTemplate, provisionalMeasuresTemplate], [casesTemplate], [provisionalMeasuresTemplate]];
+  Promise.all(types.map(conformSearchQuery))
   .then(([groupedResults, setA, setB]) => {
     this.setState({ groupedResults, setA, setB });
   });
