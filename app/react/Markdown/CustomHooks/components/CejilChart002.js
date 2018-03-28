@@ -27,17 +27,14 @@ function getData() {
   const maleFilters = assignFilter(filters, male);
   const femaleFilters = assignFilter(filters, female);
 
-  Promise.all([filters, maleFilters, femaleFilters].map(conformSearchQuery))
-  .then(([groupedResults, setA, setB]) => {
-    this.setState({ groupedResults, setA, setB });
-  });
+  return Promise.all([filters, maleFilters, femaleFilters].map(conformSearchQuery));
 }
 
-function prepareData(countries) {
+function prepareData(countries, setA, setB) {
   return countries.map((_country) => {
     const country = _country;
-    const maleResults = findBucketsByCountry(this.state.setA, countryKey, country.key);
-    const femaleResults = findBucketsByCountry(this.state.setB, countryKey, country.key);
+    const maleResults = findBucketsByCountry(setA, countryKey, country.key);
+    const femaleResults = findBucketsByCountry(setB, countryKey, country.key);
 
     country.name = country.label;
 

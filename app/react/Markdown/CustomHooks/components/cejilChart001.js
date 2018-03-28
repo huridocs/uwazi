@@ -16,13 +16,10 @@ function conformSearchQuery(types) {
 
 function getData() {
   const types = [[casesTemplate, provisionalMeasuresTemplate], [casesTemplate], [provisionalMeasuresTemplate]];
-  Promise.all(types.map(conformSearchQuery))
-  .then(([groupedResults, setA, setB]) => {
-    this.setState({ groupedResults, setA, setB });
-  });
+  return Promise.all(types.map(conformSearchQuery));
 }
 
-function prepareData(countries) {
+function prepareData(countries, setA, setB) {
   const caseTemptale = this.props.templates.find(template => template.get('_id') === casesTemplate);
   const caseLabel = t(casesTemplate, caseTemptale.get('name'));
 
@@ -31,8 +28,8 @@ function prepareData(countries) {
 
   return countries.map((_country) => {
     const country = _country;
-    const caseResults = findBucketsByCountry(this.state.setA, countryKey, country.key);
-    const provisionalMeasureResults = findBucketsByCountry(this.state.setB, countryKey, country.key);
+    const caseResults = findBucketsByCountry(setA, countryKey, country.key);
+    const provisionalMeasureResults = findBucketsByCountry(setB, countryKey, country.key);
 
     country.name = country.label;
 

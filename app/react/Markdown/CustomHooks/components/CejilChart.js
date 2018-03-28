@@ -10,7 +10,10 @@ export const countryKey = 'pa_s';
 
 class CejilChart extends Component {
   componentDidMount() {
-    this.props.getData.call(this);
+    this.props.getData.call(this)
+    .then(([groupedResults, setA, setB]) => {
+      this.setState({ groupedResults, setA, setB });
+    });
   }
 
   render() {
@@ -29,7 +32,7 @@ class CejilChart extends Component {
         return country;
       }));
 
-      data = this.props.prepareData.call(this, data);
+      data = this.props.prepareData.call(this, data, this.state.setA, this.state.setB);
 
       output = (
         <div className="item item-chart">
