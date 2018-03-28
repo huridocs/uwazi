@@ -5,35 +5,40 @@ import React, { Component } from 'react';
 
 import { toUrlParams } from 'shared/JSONRequest';
 
-export class ListChartToggleButtons extends Component {
-  changeView(type) {
+function changeView(type) {
+  return () => {
     const path = browserHistory.getCurrentLocation().pathname;
-    const query = browserHistory.getCurrentLocation().query;
+    const { query } = browserHistory.getCurrentLocation();
     query.view = type;
 
     browserHistory.push(path + toUrlParams(query));
-  }
+  };
+}
 
+function toggleButton(active, type, icon) {
+  return (
+    <button className={`btn ${active ? 'btn-success' : 'btn-default'}`} onClick={changeView(type)}>
+      <i className={`fa fa-${icon}`} />
+    </button>
+  );
+}
+
+export class ListChartToggleButtons extends Component {
   render() {
     return (
       <div className={`search-list listChart-toggleButtons ${this.props.active === 'chart' ? 'is-chart' : 'is-list'}`}>
         <div className="buttons-group">
-          <button
-            className={`btn ${this.props.active !== 'chart' ? 'btn-success' : 'btn-default'}`}
-            onClick={this.changeView.bind(this, 'list')}
-          >
-            <i className="fa fa-th-large" />
-          </button>
-          <button
-            className={`btn ${this.props.active === 'chart' ? 'btn-success' : 'btn-default'}`}
-            onClick={this.changeView.bind(this, 'chart')}
-          ><i className="fa fa-area-chart" />
-          </button>
+          { toggleButton(this.props.active !== 'chart', 'list', 'th-large') }
+          { toggleButton(this.props.active === 'chart', 'chart', 'area-chart') }
         </div>
       </div>
     );
   }
 }
+
+ListChartToggleButtons.defaultProps = {
+  active: 'list'
+};
 
 ListChartToggleButtons.propTypes = {
   active: PropTypes.string
