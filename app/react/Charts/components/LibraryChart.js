@@ -22,7 +22,8 @@ export class LibraryChartComponent extends Component {
   }
 
   clusterResults(options) {
-    return options.reduce((clusteredResults, option, optionIndex) => {
+    return options.reduce((_clusteredResults, option, optionIndex) => {
+      const clusteredResults = _clusteredResults;
       if (optionIndex < this.maxPieItems) {
         clusteredResults.push(option);
       }
@@ -72,8 +73,13 @@ export class LibraryChartComponent extends Component {
   }
 }
 
+LibraryChartComponent.defaultProps = {
+  options: [],
+  label: null
+};
+
 LibraryChartComponent.propTypes = {
-  options: PropTypes.array,
+  options: PropTypes.arrayOf(PropTypes.object),
   label: PropTypes.string
 };
 
