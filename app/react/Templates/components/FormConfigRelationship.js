@@ -7,6 +7,9 @@ import { Select } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 
+import PropertyConfigOption from './PropertyConfigOption';
+import Tip from '../../Layout/Tip';
+
 export class FormConfigRelationship extends Component {
   static contentValidation() {
     return { required: val => val && val.trim() !== '' };
@@ -60,60 +63,28 @@ export class FormConfigRelationship extends Component {
           />
         </div>
 
-        <Field model={`template.data.properties[${index}].required`}>
-          <input id={`required${this.props.index}`} type="checkbox"/>
-          &nbsp;
-          <label className="property-label" htmlFor={`required${this.props.index}`}>
-            Required property
-            <i className="property-help fa fa-question-circle">
-              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
-            </i>
-          </label>
-        </Field>
+        <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
+          <Tip>You won't be able to publish a document if this property is empty.</Tip>
+        </PropertyConfigOption>
 
-        <Field model={`template.data.properties[${index}].showInCard`}>
-          <input id={`showInCard${this.props.index}`} type="checkbox"/>
-          &nbsp;
-          <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
-            Show in cards
-            <i className="property-help fa fa-question-circle">
-              <div className="property-description">This property will appear in the library cards as part of the basic info.</div>
-            </i>
-          </label>
-        </Field>
+        <PropertyConfigOption label="Show in cards" model={`template.data.properties[${index}].showInCard`}>
+          <Tip>This property will appear in the library cards as part of the basic info.</Tip>
+        </PropertyConfigOption>
 
         <div>
-          <Field model={`template.data.properties[${index}].filter`}>
-            <input id={`filter${this.props.index}`} type="checkbox"/>
-            &nbsp;
-            <label className="property-label" htmlFor={`filter${this.props.index}`}>
-              Use as filter
-              <i className="property-help fa fa-question-circle">
-                <div className="property-description">
-                  This property will be used for filtering the library results.
-                  When properties match in equal name and field type with other document types, they will be combined for filtering.
-                </div>
-              </i>
-            </label>
-          </Field>
+          <PropertyConfigOption label="Use as filter" model={`template.data.properties[${index}].filter`}>
+            <Tip>
+              This property will be used for filtering the library results.
+              When properties match in equal name and field type with other document types, they will be combined for filtering.
+            </Tip>
+          </PropertyConfigOption>
           {property.filter && (
-            <Field className="filter" model={`template.data.properties[${index}].defaultfilter`}>
-              <input
-                id={`defaultfilter${this.props.index}`}
-                type="checkbox"
-                disabled={!property.filter}
-              />
-              &nbsp;
-              <label className="property-label" htmlFor={`defaultfilter${this.props.index}`}>
-                Default filter
-                <i className="property-help fa fa-question-circle">
-                  <div className="property-description">
-                    Use this property as a default filter in the library.
-                    When there are no document types selected, this property will show as a default filter for your collection.
-                  </div>
-                </i>
-              </label>
-            </Field>
+            <PropertyConfigOption label="Default filter" model={`template.data.properties[${index}].defaultfilter`}>
+              <Tip>
+                Use this property as a default filter in the library.
+                When there are no document types selected, this property will show as a default filter for your collection.
+              </Tip>
+            </PropertyConfigOption>
           )
           }
           <FilterSuggestions {...property} />
@@ -124,11 +95,11 @@ export class FormConfigRelationship extends Component {
 }
 
 FormConfigRelationship.propTypes = {
-  thesauris: PropTypes.object,
-  relationTypes: PropTypes.object,
-  data: PropTypes.object,
-  index: PropTypes.number,
-  formState: PropTypes.object
+  thesauris: PropTypes.arrayOf(PropTypes.object).isRequired,
+  relationTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.object.isRequired,
+  index: PropTypes.number.isRequired,
+  formState: PropTypes.object.isRequired
 };
 
 export function mapStateToProps(state) {

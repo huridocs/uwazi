@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tip should render children inside tooltip classed containers 1`] = `
+<i
+  className="property-help fa fa-question-circle"
+>
+  <div
+    className="property-description"
+  >
+    this is  a tip !!
+  </div>
+</i>
+`;
