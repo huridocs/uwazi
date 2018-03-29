@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Map, List } from 'immutable';
+
 import { t } from 'app/I18N';
+import formater from 'app/Metadata/helpers/formater';
 
 function conformQuote(text) {
   return (
@@ -13,26 +16,36 @@ function conformQuote(text) {
   );
 }
 
-function conformDl([key, value]) {
-  return (
-    <dl className="item-property-default" key={key}>
-      <dt>{key}</dt>
-      <dd>{value}</dd>
-    </dl>
-  );
-}
+const conformDl = ({ label, name, value }) => (
+  <dl className="item-property-default" key={name}>
+    <dt>{label}</dt>
+    <dd>{value}</dd>
+  </dl>
+);
+
+conformDl.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired
+};
 
 const HubRelationshipMetadata = (props) => {
-  const { relationship } = props;
+  const { relationship, relationTypes, thesauris } = props;
   const text = relationship.getIn(['range', 'text']);
   const metadata = relationship.get('metadata');
 
   if (metadata && metadata.size) {
+    const formattedMetadata = formater.prepareMetadata(relationship.toJS(), relationTypes, thesauris).metadata;
+
     return (
       <div className="relationship-metadata">
         <div className="item-metadata">
-          {List(metadata).map(conformDl)}
-          {text && conformDl([t('System', 'Text'), conformQuote(relationship.getIn(['range', 'text']))])}
+          {formattedMetadata.map(conformDl)}
+          {text && conformDl({
+            label: t('System', 'Text'),
+            name: 'text',
+            value: conformQuote(relationship.getIn(['range', 'text']))
+          })}
         </div>
       </div>
     );
@@ -54,7 +67,13 @@ HubRelationshipMetadata.defaultProps = {
 };
 
 HubRelationshipMetadata.propTypes = {
-  relationship: PropTypes.instanceOf(Map)
+  relationship: PropTypes.instanceOf(Map),
+  relationTypes: PropTypes.instanceOf(List).isRequired,
+  thesauris: PropTypes.instanceOf(List).isRequired
 };
 
-export default HubRelationshipMetadata;
+export function mapStateToProps({ relationTypes, thesauris }) {
+  return { relationTypes, thesauris };
+}
+
+export default connect(mapStateToProps)(HubRelationshipMetadata);
