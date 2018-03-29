@@ -72,79 +72,31 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
       }
     />
   </div>
-  <Modeled(Connect(Field))
+  <PropertyConfigOption
+    label="Required property"
     model="template.data.properties[0].required"
   >
-    <input
-      id="required0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="required0"
-    >
-      Required property
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          You won't be able to publish a document if this property is empty.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
-  <Modeled(Connect(Field))
+    <Tip>
+      You won't be able to publish a document if this property is empty.
+    </Tip>
+  </PropertyConfigOption>
+  <PropertyConfigOption
+    label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <input
-      id="showInCard0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="showInCard0"
-    >
-      Show in cards
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          This property will appear in the library cards as part of the basic info.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
+    <Tip>
+      This property will appear in the library cards as part of the basic info.
+    </Tip>
+  </PropertyConfigOption>
   <div>
-    <Modeled(Connect(Field))
+    <PropertyConfigOption
+      label="Use as filter"
       model="template.data.properties[0].filter"
     >
-      <input
-        id="filter0"
-        type="checkbox"
-      />
-       
-      <label
-        className="property-label"
-        htmlFor="filter0"
-      >
-        Use as filter
-        <i
-          className="property-help fa fa-question-circle"
-        >
-          <div
-            className="property-description"
-          >
-            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-          </div>
-        </i>
-      </label>
-    </Modeled(Connect(Field))>
+      <Tip>
+        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={false}
     />
@@ -224,79 +176,31 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       }
     />
   </div>
-  <Modeled(Connect(Field))
+  <PropertyConfigOption
+    label="Required property"
     model="template.data.properties[0].required"
   >
-    <input
-      id="required0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="required0"
-    >
-      Required property
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          You won't be able to publish a document if this property is empty.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
-  <Modeled(Connect(Field))
+    <Tip>
+      You won't be able to publish a document if this property is empty.
+    </Tip>
+  </PropertyConfigOption>
+  <PropertyConfigOption
+    label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <input
-      id="showInCard0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="showInCard0"
-    >
-      Show in cards
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          This property will appear in the library cards as part of the basic info.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
+    <Tip>
+      This property will appear in the library cards as part of the basic info.
+    </Tip>
+  </PropertyConfigOption>
   <div>
-    <Modeled(Connect(Field))
+    <PropertyConfigOption
+      label="Use as filter"
       model="template.data.properties[0].filter"
     >
-      <input
-        id="filter0"
-        type="checkbox"
-      />
-       
-      <label
-        className="property-label"
-        htmlFor="filter0"
-      >
-        Use as filter
-        <i
-          className="property-help fa fa-question-circle"
-        >
-          <div
-            className="property-description"
-          >
-            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-          </div>
-        </i>
-      </label>
-    </Modeled(Connect(Field))>
+      <Tip>
+        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={false}
     />
@@ -376,79 +280,31 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       }
     />
   </div>
-  <Modeled(Connect(Field))
+  <PropertyConfigOption
+    label="Required property"
     model="template.data.properties[0].required"
   >
-    <input
-      id="required0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="required0"
-    >
-      Required property
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          You won't be able to publish a document if this property is empty.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
-  <Modeled(Connect(Field))
+    <Tip>
+      You won't be able to publish a document if this property is empty.
+    </Tip>
+  </PropertyConfigOption>
+  <PropertyConfigOption
+    label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <input
-      id="showInCard0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="showInCard0"
-    >
-      Show in cards
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          This property will appear in the library cards as part of the basic info.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
+    <Tip>
+      This property will appear in the library cards as part of the basic info.
+    </Tip>
+  </PropertyConfigOption>
   <div>
-    <Modeled(Connect(Field))
+    <PropertyConfigOption
+      label="Use as filter"
       model="template.data.properties[0].filter"
     >
-      <input
-        id="filter0"
-        type="checkbox"
-      />
-       
-      <label
-        className="property-label"
-        htmlFor="filter0"
-      >
-        Use as filter
-        <i
-          className="property-help fa fa-question-circle"
-        >
-          <div
-            className="property-description"
-          >
-            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-          </div>
-        </i>
-      </label>
-    </Modeled(Connect(Field))>
+      <Tip>
+        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={false}
     />
@@ -528,105 +384,39 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
       }
     />
   </div>
-  <Modeled(Connect(Field))
+  <PropertyConfigOption
+    label="Required property"
     model="template.data.properties[0].required"
   >
-    <input
-      id="required0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="required0"
-    >
-      Required property
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          You won't be able to publish a document if this property is empty.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
-  <Modeled(Connect(Field))
+    <Tip>
+      You won't be able to publish a document if this property is empty.
+    </Tip>
+  </PropertyConfigOption>
+  <PropertyConfigOption
+    label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <input
-      id="showInCard0"
-      type="checkbox"
-    />
-     
-    <label
-      className="property-label"
-      htmlFor="showInCard0"
-    >
-      Show in cards
-      <i
-        className="property-help fa fa-question-circle"
-      >
-        <div
-          className="property-description"
-        >
-          This property will appear in the library cards as part of the basic info.
-        </div>
-      </i>
-    </label>
-  </Modeled(Connect(Field))>
+    <Tip>
+      This property will appear in the library cards as part of the basic info.
+    </Tip>
+  </PropertyConfigOption>
   <div>
-    <Modeled(Connect(Field))
+    <PropertyConfigOption
+      label="Use as filter"
       model="template.data.properties[0].filter"
     >
-      <input
-        id="filter0"
-        type="checkbox"
-      />
-       
-      <label
-        className="property-label"
-        htmlFor="filter0"
-      >
-        Use as filter
-        <i
-          className="property-help fa fa-question-circle"
-        >
-          <div
-            className="property-description"
-          >
-            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-          </div>
-        </i>
-      </label>
-    </Modeled(Connect(Field))>
-    <Modeled(Connect(Field))
-      className="filter"
+      <Tip>
+        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+      </Tip>
+    </PropertyConfigOption>
+    <PropertyConfigOption
+      label="Default filter"
       model="template.data.properties[0].defaultfilter"
     >
-      <input
-        disabled={false}
-        id="defaultfilter0"
-        type="checkbox"
-      />
-       
-      <label
-        className="property-label"
-        htmlFor="defaultfilter0"
-      >
-        Default filter
-        <i
-          className="property-help fa fa-question-circle"
-        >
-          <div
-            className="property-description"
-          >
-            Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-          </div>
-        </i>
-      </label>
-    </Modeled(Connect(Field))>
+      <Tip>
+        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+      </Tip>
+    </PropertyConfigOption>
     <Connect(FilterSuggestions)
       filter={true}
     />

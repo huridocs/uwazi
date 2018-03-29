@@ -1,5 +1,6 @@
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -95,8 +96,8 @@ export class FormConfigRelationship extends Component {
 }
 
 FormConfigRelationship.propTypes = {
-  thesauris: PropTypes.arrayOf(PropTypes.object).isRequired,
-  relationTypes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
+  relationTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   data: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
   formState: PropTypes.object.isRequired
