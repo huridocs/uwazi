@@ -1,45 +1,17 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {isClient} from 'app/utils';
+import React, { Component } from 'react';
 
-let PDFJS;
-if (isClient) {
-  PDFJS = require('../../../../node_modules/pdfjs-dist/web/pdf_viewer.js').PDFJS;
-  PDFJS.workerSrc = window.pdfWorkerPath;
-}
+import PDFJS from '../PDFJS';
 
-export class PDFPage extends Component {
+class PDFPage extends Component {
+  componentDidMount() {
+    this.scrollCallback = this.scroll.bind(this);
 
-  renderPage() {
-    if (!this.rendered && this.pdfPageView) {
-      this.props.onLoading(this.props.page);
-      this.pdfPageView.draw()
-      .catch((e) => e);
-      this.rendered = true;
+    if (this.pageContainer && this.pageShouldRender()) {
+      this.renderPage();
     }
-    if (!this.rendered) {
-      this.props.onLoading(this.props.page);
-      this.rendered = true;
-      this.props.pdf.getPage(this.props.page).then(page => {
-        const scale = 1;
 
-        this.pdfPageView = new PDFJS.PDFPageView({
-          container: this.refs.pageContainer,
-          id: this.props.page,
-          scale: scale,
-          defaultViewport: page.getViewport(scale),
-          enhanceTextSelection: true,
-          textLayerFactory: new PDFJS.DefaultTextLayerFactory()
-        });
-
-        this.pdfPageView.setPdfPage(page);
-        this.pdfPageView.draw()
-        .then(() => {
-          this.setState({height: this.pdfPageView.viewport.height});
-        })
-        .catch((e) => e);
-      });
-    }
+    document.querySelector('.document-viewer').addEventListener('scroll', this.scrollCallback);
   }
 
   componentWillUnmount() {
@@ -47,16 +19,6 @@ export class PDFPage extends Component {
       this.pdfPageView.destroy();
     }
     document.querySelector('.document-viewer').removeEventListener('scroll', this.scrollCallback);
-  }
-
-  componentDidMount() {
-    this.scrollCallback = this.scroll.bind(this);
-
-    if (this.pageShouldRender()) {
-      this.renderPage();
-    }
-
-    document.querySelector('.document-viewer').addEventListener('scroll', this.scrollCallback);
   }
 
   scroll() {
@@ -73,7 +35,7 @@ export class PDFPage extends Component {
   }
 
   pageShouldRender() {
-    const el = this.refs.pageContainer;
+    const el = this.pageContainer;
     const rect = el.getBoundingClientRect();
     const vWidth = window.innerWidth || document.documentElement.clientWidth;
     const vHeight = window.innerHeight || document.documentElement.clientHeight;
@@ -85,21 +47,52 @@ export class PDFPage extends Component {
     return true;
   }
 
+  renderPage() {
+    if (!this.rendered && this.pdfPageView) {
+      this.props.onLoading(this.props.page);
+      this.pdfPageView.draw()
+      .catch(e => e);
+      this.rendered = true;
+    }
+    if (!this.rendered) {
+      this.props.onLoading(this.props.page);
+      this.rendered = true;
+      this.props.pdf.getPage(this.props.page).then((page) => {
+        const scale = 1;
+
+        this.pdfPageView = new PDFJS.PDFPageView({
+          container: this.pageContainer,
+          id: this.props.page,
+          scale,
+          defaultViewport: page.getViewport(scale),
+          enhanceTextSelection: true,
+          textLayerFactory: new PDFJS.DefaultTextLayerFactory()
+        });
+
+        this.pdfPageView.setPdfPage(page);
+        this.pdfPageView.draw()
+        .then(() => {
+          this.setState({ height: this.pdfPageView.viewport.height });
+        })
+        .catch(e => e);
+      });
+    }
+  }
+
   render() {
-    let style = {height: 1100};
+    const style = { height: 1100 };
     if (this.state && this.state.height) {
       style.height = this.state.height + 20;
     }
-    return <div id={`page-${this.props.page}`} className="doc-page" ref='pageContainer' style={style}/>;
+    return <div id={`page-${this.props.page}`} className="doc-page" ref={(ref) => { this.pageContainer = ref; }}style={style}/>;
   }
 }
 
 PDFPage.propTypes = {
-  page: PropTypes.number,
-  pageHeight: PropTypes.number,
-  onLoading: PropTypes.func,
-  onUnload: PropTypes.func,
-  pdf: PropTypes.object
+  page: PropTypes.number.isRequired,
+  onLoading: PropTypes.func.isRequired,
+  onUnload: PropTypes.func.isRequired,
+  pdf: PropTypes.object.isRequired
 };
 
 export default PDFPage;
