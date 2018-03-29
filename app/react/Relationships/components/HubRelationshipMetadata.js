@@ -6,15 +6,13 @@ import { Map, List } from 'immutable';
 import { t } from 'app/I18N';
 import formater from 'app/Metadata/helpers/formater';
 
-function conformQuote(text) {
-  return (
-    <div className="relationship-quote">
-      <i className="quoteIconStart fa fa-quote-left" />
-      {text}
-      <i className="quoteIconEnd fa fa-quote-right" />
-    </div>
-  );
-}
+const conformQuote = text => (
+  <div className="relationship-quote">
+    <i className="quoteIconStart fa fa-quote-left" />
+    {text}
+    <i className="quoteIconEnd fa fa-quote-right" />
+  </div>
+);
 
 const conformDl = ({ label, name, value }) => (
   <dl className="item-property-default" key={name}>
@@ -29,34 +27,39 @@ conformDl.propTypes = {
   value: PropTypes.string.isRequired
 };
 
+const extendedMetadata = (relationship, text, relationTypes, thesauris) => {
+  const formattedMetadata = formater.prepareMetadata(relationship.toJS(), relationTypes, thesauris).metadata;
+  return (
+    <div className="relationship-metadata">
+      <div className="item-metadata">
+        {formattedMetadata.map(conformDl)}
+        {text && conformDl({
+          label: t('System', 'Text'),
+          name: 'text',
+          value: conformQuote(relationship.getIn(['range', 'text']))
+        })}
+      </div>
+    </div>
+  );
+};
+
+const justText = text => (
+  <div className="relationship-metadata">
+    {conformQuote(text)}
+  </div>
+);
+
 const HubRelationshipMetadata = (props) => {
   const { relationship, relationTypes, thesauris } = props;
   const text = relationship.getIn(['range', 'text']);
   const metadata = relationship.get('metadata');
 
   if (metadata && metadata.size) {
-    const formattedMetadata = formater.prepareMetadata(relationship.toJS(), relationTypes, thesauris).metadata;
-
-    return (
-      <div className="relationship-metadata">
-        <div className="item-metadata">
-          {formattedMetadata.map(conformDl)}
-          {text && conformDl({
-            label: t('System', 'Text'),
-            name: 'text',
-            value: conformQuote(relationship.getIn(['range', 'text']))
-          })}
-        </div>
-      </div>
-    );
+    return extendedMetadata(relationship, text, relationTypes, thesauris);
   }
 
   if (text) {
-    return (
-      <div className="relationship-metadata">
-        {conformQuote(relationship.getIn(['range', 'text']))}
-      </div>
-    );
+    return justText(text);
   }
 
   return null;
