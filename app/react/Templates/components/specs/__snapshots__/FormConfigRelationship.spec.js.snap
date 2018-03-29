@@ -1,0 +1,635 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormConfigRelationship should render fields with the correct datas 1`] = `
+<div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Label
+    </label>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].label"
+    >
+      <input
+        className="form-control"
+      />
+    </Modeled(Connect(Field))>
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Select list
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Relationship
+      <span
+        className="required"
+      >
+        *
+      </span>
+    </label>
+    <Select
+      model="template.data.properties[0].relationType"
+      options={
+        Array [
+          Object {
+            "_id": 1,
+            "name": "relationType1",
+          },
+          Object {
+            "_id": 2,
+            "name": "relationType2",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      validators={
+        Object {
+          "required": [Function],
+        }
+      }
+    />
+  </div>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].required"
+  >
+    <input
+      id="required0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="required0"
+    >
+      Required property
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          You won't be able to publish a document if this property is empty.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].showInCard"
+  >
+    <input
+      id="showInCard0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="showInCard0"
+    >
+      Show in cards
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          This property will appear in the library cards as part of the basic info.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <div>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].filter"
+    >
+      <input
+        id="filter0"
+        type="checkbox"
+      />
+       
+      <label
+        className="property-label"
+        htmlFor="filter0"
+      >
+        Use as filter
+        <i
+          className="property-help fa fa-question-circle"
+        >
+          <div
+            className="property-description"
+          >
+            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+          </div>
+        </i>
+      </label>
+    </Modeled(Connect(Field))>
+    <Connect(FilterSuggestions)
+      filter={false}
+    />
+  </div>
+</div>
+`;
+
+exports[`FormConfigRelationship when the fields are invalid and dirty or the form is submited should render the label with errors 1`] = `
+<div>
+  <div
+    className="form-group has-error"
+  >
+    <label>
+      Label
+    </label>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].label"
+    >
+      <input
+        className="form-control"
+      />
+    </Modeled(Connect(Field))>
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Select list
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Relationship
+      <span
+        className="required"
+      >
+        *
+      </span>
+    </label>
+    <Select
+      model="template.data.properties[0].relationType"
+      options={
+        Array [
+          Object {
+            "_id": 1,
+            "name": "relationType1",
+          },
+          Object {
+            "_id": 2,
+            "name": "relationType2",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      validators={
+        Object {
+          "required": [Function],
+        }
+      }
+    />
+  </div>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].required"
+  >
+    <input
+      id="required0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="required0"
+    >
+      Required property
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          You won't be able to publish a document if this property is empty.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].showInCard"
+  >
+    <input
+      id="showInCard0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="showInCard0"
+    >
+      Show in cards
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          This property will appear in the library cards as part of the basic info.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <div>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].filter"
+    >
+      <input
+        id="filter0"
+        type="checkbox"
+      />
+       
+      <label
+        className="property-label"
+        htmlFor="filter0"
+      >
+        Use as filter
+        <i
+          className="property-help fa fa-question-circle"
+        >
+          <div
+            className="property-description"
+          >
+            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+          </div>
+        </i>
+      </label>
+    </Modeled(Connect(Field))>
+    <Connect(FilterSuggestions)
+      filter={false}
+    />
+  </div>
+</div>
+`;
+
+exports[`FormConfigRelationship when the fields are invalid and dirty or the form is submited should render the label with errors when the form is submited 1`] = `
+<div>
+  <div
+    className="form-group has-error"
+  >
+    <label>
+      Label
+    </label>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].label"
+    >
+      <input
+        className="form-control"
+      />
+    </Modeled(Connect(Field))>
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Select list
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Relationship
+      <span
+        className="required"
+      >
+        *
+      </span>
+    </label>
+    <Select
+      model="template.data.properties[0].relationType"
+      options={
+        Array [
+          Object {
+            "_id": 1,
+            "name": "relationType1",
+          },
+          Object {
+            "_id": 2,
+            "name": "relationType2",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      validators={
+        Object {
+          "required": [Function],
+        }
+      }
+    />
+  </div>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].required"
+  >
+    <input
+      id="required0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="required0"
+    >
+      Required property
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          You won't be able to publish a document if this property is empty.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].showInCard"
+  >
+    <input
+      id="showInCard0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="showInCard0"
+    >
+      Show in cards
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          This property will appear in the library cards as part of the basic info.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <div>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].filter"
+    >
+      <input
+        id="filter0"
+        type="checkbox"
+      />
+       
+      <label
+        className="property-label"
+        htmlFor="filter0"
+      >
+        Use as filter
+        <i
+          className="property-help fa fa-question-circle"
+        >
+          <div
+            className="property-description"
+          >
+            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+          </div>
+        </i>
+      </label>
+    </Modeled(Connect(Field))>
+    <Connect(FilterSuggestions)
+      filter={false}
+    />
+  </div>
+</div>
+`;
+
+exports[`FormConfigRelationship when use as filter is selected should show the default filter option 1`] = `
+<div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Label
+    </label>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].label"
+    >
+      <input
+        className="form-control"
+      />
+    </Modeled(Connect(Field))>
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Select list
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      Relationship
+      <span
+        className="required"
+      >
+        *
+      </span>
+    </label>
+    <Select
+      model="template.data.properties[0].relationType"
+      options={
+        Array [
+          Object {
+            "_id": 1,
+            "name": "relationType1",
+          },
+          Object {
+            "_id": 2,
+            "name": "relationType2",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      validators={
+        Object {
+          "required": [Function],
+        }
+      }
+    />
+  </div>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].required"
+  >
+    <input
+      id="required0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="required0"
+    >
+      Required property
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          You won't be able to publish a document if this property is empty.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <Modeled(Connect(Field))
+    model="template.data.properties[0].showInCard"
+  >
+    <input
+      id="showInCard0"
+      type="checkbox"
+    />
+     
+    <label
+      className="property-label"
+      htmlFor="showInCard0"
+    >
+      Show in cards
+      <i
+        className="property-help fa fa-question-circle"
+      >
+        <div
+          className="property-description"
+        >
+          This property will appear in the library cards as part of the basic info.
+        </div>
+      </i>
+    </label>
+  </Modeled(Connect(Field))>
+  <div>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].filter"
+    >
+      <input
+        id="filter0"
+        type="checkbox"
+      />
+       
+      <label
+        className="property-label"
+        htmlFor="filter0"
+      >
+        Use as filter
+        <i
+          className="property-help fa fa-question-circle"
+        >
+          <div
+            className="property-description"
+          >
+            This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
+          </div>
+        </i>
+      </label>
+    </Modeled(Connect(Field))>
+    <Modeled(Connect(Field))
+      className="filter"
+      model="template.data.properties[0].defaultfilter"
+    >
+      <input
+        disabled={false}
+        id="defaultfilter0"
+        type="checkbox"
+      />
+       
+      <label
+        className="property-label"
+        htmlFor="defaultfilter0"
+      >
+        Default filter
+        <i
+          className="property-help fa fa-question-circle"
+        >
+          <div
+            className="property-description"
+          >
+            Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
+          </div>
+        </i>
+      </label>
+    </Modeled(Connect(Field))>
+    <Connect(FilterSuggestions)
+      filter={true}
+    />
+  </div>
+</div>
+`;
