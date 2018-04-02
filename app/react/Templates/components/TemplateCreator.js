@@ -1,19 +1,19 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {DragDropContext} from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-
-import {resetTemplate, saveTemplate, saveEntity} from 'app/Templates/actions/templateActions';
-import {saveRelationType} from 'app/RelationTypes/actions/relationTypeActions';
-import PropertyOption from 'app/Templates/components/PropertyOption';
-import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import 'app/Templates/scss/templates.scss';
+
+import { DragDropContext } from 'react-dnd';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import HTML5Backend from 'react-dnd-html5-backend';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+
+import { resetTemplate, saveTemplate, saveEntity } from 'app/Templates/actions/templateActions';
+import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
+import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
+import PropertyOption from 'app/Templates/components/PropertyOption';
 import ShowIf from 'app/App/ShowIf';
 
 export class TemplateCreator extends Component {
-
   componentWillUnmount() {
     this.props.resetTemplate();
   }
@@ -47,20 +47,20 @@ export class TemplateCreator extends Component {
                   <div className="metadataTemplate-constructor">
                     <div><i>Properties</i></div>
                     <ul className="list-group">
-                      <PropertyOption label='Text' type='text'/>
-                      <PropertyOption label='Numeric' type='numeric'/>
-                      <PropertyOption label='Select' type='select' disabled={this.props.noDictionaries} />
-                      <PropertyOption label='Multi Select' type='multiselect' disabled={this.props.noDictionaries} />
+                      <PropertyOption label="Text" type="text"/>
+                      <PropertyOption label="Numeric" type="numeric"/>
+                      <PropertyOption label="Select" type="select" disabled={this.props.noDictionaries} />
+                      <PropertyOption label="Multi Select" type="multiselect" disabled={this.props.noDictionaries} />
                       <ShowIf if={!this.props.relationType}>
-                        <PropertyOption label='Relationship' type='relationship' disabled={this.props.noRelationtypes} />
+                        <PropertyOption label="Relationship" type="relationship" disabled={this.props.noRelationtypes} />
                       </ShowIf>
-                      <PropertyOption label='Date' type='date'/>
-                      <PropertyOption label='Date Range' type='daterange'/>
-                      <PropertyOption label='Multi Date' type='multidate'/>
-                      <PropertyOption label='Multi Date Range' type='multidaterange'/>
-                      <PropertyOption label='Rich Text' type='markdown'/>
+                      <PropertyOption label="Date" type="date"/>
+                      <PropertyOption label="Date Range" type="daterange"/>
+                      <PropertyOption label="Multi Date" type="multidate"/>
+                      <PropertyOption label="Multi Date Range" type="multidaterange"/>
+                      <PropertyOption label="Rich Text" type="markdown"/>
                       <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
-                        <PropertyOption label='Violated articles' type='nested'/>
+                        <PropertyOption label="Violated articles" type="nested"/>
                       </ShowIf>
                     </ul>
                     <ShowIf if={this.props.noRelationtypes}>
@@ -96,16 +96,14 @@ TemplateCreator.contextTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({resetTemplate, saveTemplate, saveEntity, saveRelationType}, dispatch);
+  return bindActionCreators({ resetTemplate, saveTemplate, saveEntity, saveRelationType }, dispatch);
 }
 
-const mapStateToProps = ({settings, relationTypes, thesauris}) => {
-  return {
+const mapStateToProps = ({ settings, relationTypes, thesauris }) => ({
     settings,
     noRelationtypes: !relationTypes.size,
     noDictionaries: !thesauris.size
-  };
-};
+});
 
 export default DragDropContext(HTML5Backend)(
   connect(mapStateToProps, mapDispatchToProps)(TemplateCreator)
