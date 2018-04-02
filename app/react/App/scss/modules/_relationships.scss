@@ -515,24 +515,35 @@ $relationship-type-height: 32px;
   }
 }
 
-.leftRelationshipType .leftRelationshipQuote {
+.relationship-metadata {
   border: 1px dashed #ccc;
+  border-radius: 5px;
+  background-color: #fefefe;
   margin-top: 5px;
-  padding: 5px 25px 5px 25px;
   position: relative;
 
-  .quoteIconStart {
-    position: absolute;
-    top: 7px;
-    left: 7px;
-    color: #aaa;
+  .item-metadata {
+    display: flex;
+    flex-direction: column;
   }
 
-  .quoteIconEnd {
-    position: absolute;
-    bottom: 7px;
-    right: 7px;
-    color: #aaa;
+  .relationship-quote {
+    position: relative;
+    padding: 5px 25px 5px 25px;
+
+    .quoteIconStart {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      color: #aaa;
+    }
+
+    .quoteIconEnd {
+      position: absolute;
+      bottom: 7px;
+      right: 7px;
+      color: #aaa;
+    }
   }
 }
 
