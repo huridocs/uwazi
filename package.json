@@ -32,6 +32,7 @@
     "download-mongo-prebuilt": "node ./database/download_mongo_prebuilt.js",
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
     "reindex": "node run.js ./database/reindex_elastic.js",
+    "health-check": "node run.js ./database/health_check.js",
     "blank-state": "./database/blank_state.sh",
     "install-fixtures": "./install_fixtures.sh; npm run reindex",
     "e2e": "node nightmare_tests.js"

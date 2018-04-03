@@ -1,10 +1,11 @@
-import thesauris from '../thesauris.js';
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import entities from 'api/entities/entities';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
-import fixtures, {dictionaryId, dictionaryIdToTranslate, dictionaryValueId} from './fixtures.js';
+import thesauris from '../thesauris.js';
+import fixtures, { dictionaryId, dictionaryIdToTranslate, dictionaryValueId } from './fixtures.js';
 
 describe('thesauris', () => {
   beforeEach((done) => {
@@ -23,7 +24,7 @@ describe('thesauris', () => {
         expect(dictionaties[0].name).toBe('dictionary');
         expect(dictionaties[1].name).toBe('dictionary 2');
         expect(dictionaties[3].name).toBe('entityTemplate');
-        expect(dictionaties[3].values).toEqual([{id: 'sharedId', label: 'spanish entity', icon: 'Icon'}]);
+        expect(dictionaties[3].values).toEqual([{ id: 'sharedId', label: 'spanish entity', icon: 'Icon' }]);
         expect(dictionaties[3].type).toBe('template');
         done();
       })
@@ -35,8 +36,8 @@ describe('thesauris', () => {
       .then((dictionaties) => {
         expect(dictionaties.length).toBe(5);
         expect(dictionaties[3].values).toEqual([
-          {id: 'sharedId', label: 'spanish entity', icon: 'Icon'},
-          {id: 'other', label: 'unpublished entity'}
+          { id: 'sharedId', label: 'spanish entity', icon: 'Icon' },
+          { id: 'other', label: 'unpublished entity' }
         ]);
         done();
       })
@@ -72,7 +73,7 @@ describe('thesauris', () => {
 
     describe('when passing a query', () => {
       it('should return matching thesauri', (done) => {
-        thesauris.dictionaries({_id: dictionaryId})
+        thesauris.dictionaries({ _id: dictionaryId })
         .then((response) => {
           expect(response.length).toBe(1);
           expect(response[0].name).toBe('dictionary 2');
@@ -92,18 +93,16 @@ describe('thesauris', () => {
       spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
     });
 
-    it('should delete a thesauri', (done) => {
-      return thesauris.delete(dictionaryId)
-      .then((response) => {
-        expect(response.ok).toBe(true);
-        return thesauris.get({_id: dictionaryId});
-      })
-      .then((dictionaries) => {
-        expect(dictionaries.length).toBe(0);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
+    it('should delete a thesauri', done => thesauris.delete(dictionaryId)
+    .then((response) => {
+      expect(response.ok).toBe(true);
+      return thesauris.get({ _id: dictionaryId });
+    })
+    .then((dictionaries) => {
+      expect(dictionaries.length).toBe(0);
+      done();
+    })
+    .catch(catchErrors(done)));
 
     it('should delete the translation', (done) => {
       thesauris.delete(dictionaryId)
@@ -134,19 +133,19 @@ describe('thesauris', () => {
     });
 
     it('should create a thesauri', (done) => {
-      let _id = db.id();
-      let data = {name: 'Batman wish list', values: [{_id, id: '1', label: 'Joker BFF'}]};
+      const _id = db.id();
+      const data = { name: 'Batman wish list', values: [{ _id, id: '1', label: 'Joker BFF' }] };
 
       thesauris.save(data)
       .then((response) => {
-        expect(response.values).toEqual([{_id, id: '1', label: 'Joker BFF'}]);
+        expect(response.values).toEqual([{ _id, id: '1', label: 'Joker BFF' }]);
         done();
       })
-     .catch(catchErrors(done));
+      .catch(catchErrors(done));
     });
 
     it('should create a translation context', (done) => {
-      let data = {name: 'Batman wish list', values: [{id: '1', label: 'Joker BFF'}]};
+      const data = { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] };
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       thesauris.save(data)
       .then((response) => {
@@ -166,16 +165,12 @@ describe('thesauris', () => {
     });
 
     it('should set a default value of [] to values property if its missing', (done) => {
-      let data = {name: 'Scarecrow nightmares'};
+      const data = { name: 'Scarecrow nightmares' };
 
       thesauris.save(data)
-      .then(() => {
-        return thesauris.get();
-      })
+      .then(() => thesauris.get())
       .then((response) => {
-        let newThesauri = response.find((thesauri) => {
-          return thesauri.name === 'Scarecrow nightmares';
-        });
+        const newThesauri = response.find(thesauri => thesauri.name === 'Scarecrow nightmares');
 
         expect(newThesauri.name).toBe('Scarecrow nightmares');
         expect(newThesauri.values).toEqual([]);
@@ -187,7 +182,7 @@ describe('thesauris', () => {
     describe('when passing _id', () => {
       it('should edit an existing one', (done) => {
         spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-        let data = {_id: dictionaryId, name: 'changed name'};
+        const data = { _id: dictionaryId, name: 'changed name' };
         return thesauris.save(data)
         .then(() => thesauris.getById(dictionaryId))
         .then((edited) => {
@@ -202,7 +197,7 @@ describe('thesauris', () => {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
           values: [
-            {id: dictionaryValueId, label: 'Marios game'}
+            { id: dictionaryValueId, label: 'Marios game' }
           ]
         };
         return thesauris.save(data)
@@ -211,10 +206,27 @@ describe('thesauris', () => {
           .toHaveBeenCalledWith(
             response._id,
             'Top 1 games',
-            {'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games'},
+            { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
             ['Fundation'],
-            {'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game'}
+            { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
           );
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should remove delted values from entities', (done) => {
+        spyOn(entities, 'deleteEntityFromMetadata');
+        const data = {
+          _id: dictionaryIdToTranslate,
+          name: 'Top 1 games',
+          values: [
+            { id: dictionaryValueId, label: 'Marios game' }
+          ]
+        };
+        return thesauris.save(data)
+        .then(() => {
+          expect(entities.deleteEntityFromMetadata).toHaveBeenCalledWith('2', dictionaryIdToTranslate);
           done();
         })
         .catch(catchErrors(done));
@@ -223,7 +235,7 @@ describe('thesauris', () => {
 
     describe('when trying to save a duplicated thesauri', () => {
       it('should return an error', (done) => {
-        let data = {name: 'dictionary'};
+        const data = { name: 'dictionary' };
         thesauris.save(data)
         .then(catchErrors(done))
         .catch((response) => {

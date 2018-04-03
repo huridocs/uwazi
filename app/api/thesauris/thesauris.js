@@ -54,9 +54,17 @@ const updateTranslation = (current, thesauri) => {
   return translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
+const removeDeletedOptionsFromEntities = (current, thesauri) => {
+  const currentProperties = current.values;
+  const newProperties = thesauri.values;
+  const deletedPropertiesById = getDeletedProperties(currentProperties, newProperties, 'id');
+  return Promise.all(deletedPropertiesById.map(deletedId => entities.deleteEntityFromMetadata(deletedId, thesauri._id)));
+};
+
 function _update(thesauri) {
   return model.getById(thesauri._id)
   .then(currentThesauri => updateTranslation(currentThesauri, thesauri)
+  .then(() => removeDeletedOptionsFromEntities(currentThesauri, thesauri))
   .then(() => model.save(thesauri)));
 }
 
