@@ -44,7 +44,7 @@ function logProcess(type, processed, length) {
 
 function entityExists(sharedId) {
   return entitiesModel.get({ sharedId }, { _id: 1 })
-  .then(results => !results.length);
+  .then(results => results.length);
 }
 
 function dictionaryEntryExists(id) {
@@ -141,7 +141,7 @@ indexConfig.index = indexConfig.development;
 mongoose.Promise = Promise;
 mongoose.connect(dbConfig.development, { useMongoClient: true });
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
+db.on('error', console.error.bind(console, 'connection error:')); //eslint-disable-line
 db.once('open', () => {
   getTemplates()
   .then(getDicionaries)
@@ -150,7 +150,7 @@ db.once('open', () => {
     process.stdout.write(`Entities processed: ${entitiesProcessed} of ${totalEntities}\n`);
     process.stdout.write(`Entities with errors: ${entitiesNeedToBeFixed.length}\n`);
     process.stdout.write(`Entities fixed: ${fixed}\n`);
-    process.exit(1);
+    process.exit(0);
   })
-  .catch(console.log);
+  .catch(console.log); //eslint-disable-line
 });
