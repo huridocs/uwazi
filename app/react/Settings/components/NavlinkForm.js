@@ -1,16 +1,15 @@
+import { DragSource, DropTarget } from 'react-dnd';
+import { Field } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {findDOMNode} from 'react-dom';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {DragSource, DropTarget} from 'react-dnd';
-import {isClient} from 'app/utils';
+import React, { Component } from 'react';
 
-import {Field} from 'react-redux-form';
+import { editLink } from 'app/Settings/actions/uiActions';
+import { isClient } from 'app/utils';
+import { removeLink } from 'app/Settings/actions/navlinksActions';
 import ShowIf from 'app/App/ShowIf';
-
-import {removeLink} from 'app/Settings/actions/navlinksActions';
-import {editLink} from 'app/Settings/actions/uiActions';
 
 export const LinkSource = {
   beginDrag(props) {
@@ -32,7 +31,7 @@ export const LinkTarget = {
     }
 
     // Determine rectangle on screen
-    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect(); // eslint-disable-line react/no-find-dom-node
 
     // Get vertical middle
     const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
@@ -70,10 +69,10 @@ export const LinkTarget = {
 
 export class NavlinkForm extends Component {
   render() {
-    const {link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState} = this.props;
+    const { link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState } = this.props;
     const hostname = isClient ? window.location.origin : '';
 
-    let className = 'list-group-item' + (isDragging ? ' dragging' : '');
+    let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
 
     if (formState.$form.errors[`links.${index}.title.required`]) {
@@ -86,20 +85,24 @@ export class NavlinkForm extends Component {
 
         <div>
           <span className="property-name">
-            <i className="fa fa-reorder"></i>&nbsp;
-            <i className="fa fa-link"></i>&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
+            <i className="fa fa-reorder" />&nbsp;
+            <i className="fa fa-link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
           </span>
         </div>
         <div>
-          <button type="button"
-                  className="btn btn-default btn-xs property-edit"
-                  onClick={() => this.props.editLink(link.localID)}>
-            <i className="fa fa-pencil"></i> Edit
+          <button
+            type="button"
+            className="btn btn-default btn-xs property-edit"
+            onClick={() => this.props.editLink(link.localID)}
+          >
+            <i className="fa fa-pencil" /> Edit
           </button>
-          <button type="button"
-                  className="btn btn-danger btn-xs property-remove"
-                  onClick={() => this.props.removeLink(index)}>
-            <i className="fa fa-trash"></i> Delete
+          <button
+            type="button"
+            className="btn btn-danger btn-xs property-remove"
+            onClick={() => this.props.removeLink(index)}
+          >
+            <i className="fa fa-trash" /> Delete
           </button>
         </div>
 
@@ -160,12 +163,12 @@ const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
   isDragging: monitor.isDragging()
 }))(dropTarget);
 
-export function mapStateToProps({settings}) {
-  return {formState: settings.navlinksFormState, uiState: settings.uiState};
+export function mapStateToProps({ settings }) {
+  return { formState: settings.navlinksFormState, uiState: settings.uiState };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({editLink, removeLink}, dispatch);
+  return bindActionCreators({ editLink, removeLink }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(dragSource);

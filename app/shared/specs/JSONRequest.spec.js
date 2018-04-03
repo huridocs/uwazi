@@ -1,20 +1,21 @@
 import backend from 'fetch-mock';
+
 import request from '../JSONRequest';
 
 describe('JSONRequest', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .post('http://localhost:3000/api/test', JSON.stringify({response: 'post'}))
-    .put('http://localhost:3000/api/test', JSON.stringify({response: 'put'}))
-    .get('http://localhost:3000/api/test', JSON.stringify({response: 'get'}))
-    .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', JSON.stringify({response: 'get with params'}))
+    .post('http://localhost:3000/api/test', JSON.stringify({ response: 'post' }))
+    .put('http://localhost:3000/api/test', JSON.stringify({ response: 'put' }))
+    .get('http://localhost:3000/api/test', JSON.stringify({ response: 'get' }))
+    .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D', JSON.stringify({ response: 'get with params' }))
     .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D&q=(order:desc,sort:creationDate)',
-         JSON.stringify({response: 'get with params and rison "q"'}))
+         JSON.stringify({ response: 'get with params and rison "q"' }))
     .get('http://localhost:3000/api/withParams?param1=param1&param2=%7B%22value%22%3A2%7D&q=%7Bunable%3A%20%22to%20decode%22%7D',
-         JSON.stringify({response: 'get with params and undecodable q'}))
-    .delete('http://localhost:3000/api/test', JSON.stringify({response: 'delete'}))
-    .delete('http://localhost:3000/api/test?id=123', JSON.stringify({response: 'delete with params'}));
+         JSON.stringify({ response: 'get with params and undecodable q' }))
+    .delete('http://localhost:3000/api/test', JSON.stringify({ response: 'delete' }))
+    .delete('http://localhost:3000/api/test?id=123', JSON.stringify({ response: 'delete with params' }));
   });
 
   describe('post()', () => {
@@ -22,7 +23,7 @@ describe('JSONRequest', () => {
       request.post('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response: 'post'});
+        expect(response.json).toEqual({ response: 'post' });
         done();
       })
       .catch(done.fail);
@@ -30,7 +31,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.restore().post('http://localhost:3000/api/test', {status: 400, body: JSON.stringify({error: 'error!'})});
+        backend.restore().post('http://localhost:3000/api/test', { status: 400, body: JSON.stringify({ error: 'error!' }) });
 
         request.post('http://localhost:3000/api/test')
         .then(() => {
@@ -46,9 +47,9 @@ describe('JSONRequest', () => {
 
     describe('when passing headers', () => {
       it('should send them', (done) => {
-        request.post('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
+        request.post('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          let headers = backend.calls().matched[0][1].headers;
+          const headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -63,7 +64,7 @@ describe('JSONRequest', () => {
       request.put('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response: 'put'});
+        expect(response.json).toEqual({ response: 'put' });
         done();
       })
       .catch(done.fail);
@@ -71,7 +72,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.restore().put('http://localhost:3000/api/test', {status: 400, body: JSON.stringify({error: 'error!'})});
+        backend.restore().put('http://localhost:3000/api/test', { status: 400, body: JSON.stringify({ error: 'error!' }) });
 
         request.put('http://localhost:3000/api/test')
         .then(() => {
@@ -87,9 +88,9 @@ describe('JSONRequest', () => {
 
     describe('when passing headers', () => {
       it('should send them', (done) => {
-        request.put('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
+        request.put('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          let headers = backend.calls().matched[0][1].headers;
+          const headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -104,7 +105,7 @@ describe('JSONRequest', () => {
       request.get('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response: 'get'});
+        expect(response.json).toEqual({ response: 'get' });
         done();
       })
       .catch(done.fail);
@@ -112,10 +113,11 @@ describe('JSONRequest', () => {
 
     describe('when passing data', () => {
       it('should transform it to url params and not send a body', (done) => {
-        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: {value: 2}})
+        let undefinedVar;
+        request.get('http://localhost:3000/api/withParams', { param1: 'param1', param2: { value: 2 }, paramNull: null, paramUndefined: undefinedVar})
         .then((response) => {
           expect(response.status).toBe(200);
-          expect(response.json).toEqual({response: 'get with params'});
+          expect(response.json).toEqual({ response: 'get with params' });
           expect(backend.lastOptions().body).not.toBeDefined();
           done();
         })
@@ -125,10 +127,10 @@ describe('JSONRequest', () => {
 
     describe('when passing rison encoded data', () => {
       it('should transform only non rison (q) params and not send a body', (done) => {
-        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: {value: 2}, q: '(order:desc,sort:creationDate)'})
+        request.get('http://localhost:3000/api/withParams', { param1: 'param1', param2: { value: 2 }, q: '(order:desc,sort:creationDate)' })
         .then((response) => {
           expect(response.status).toBe(200);
-          expect(response.json).toEqual({response: 'get with params and rison "q"'});
+          expect(response.json).toEqual({ response: 'get with params and rison "q"' });
           expect(backend.lastOptions().body).not.toBeDefined();
           done();
         })
@@ -136,10 +138,10 @@ describe('JSONRequest', () => {
       });
 
       it('should transform q if its content is not able to be rison decoded', (done) => {
-        request.get('http://localhost:3000/api/withParams', {param1: 'param1', param2: {value: 2}, q: '{unable: "to decode"}'})
+        request.get('http://localhost:3000/api/withParams', { param1: 'param1', param2: { value: 2 }, q: '{unable: "to decode"}' })
         .then((response) => {
           expect(response.status).toBe(200);
-          expect(response.json).toEqual({response: 'get with params and undecodable q'});
+          expect(response.json).toEqual({ response: 'get with params and undecodable q' });
           expect(backend.lastOptions().body).not.toBeDefined();
           done();
         })
@@ -149,9 +151,9 @@ describe('JSONRequest', () => {
 
     describe('when passing headers', () => {
       it('should send them', (done) => {
-        request.get('http://localhost:3000/api/test', {}, {Cookie: 'cookie'})
+        request.get('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          let headers = backend.calls().matched[0][1].headers;
+          const headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -162,7 +164,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.restore().get('http://localhost:3000/api/test', {status: 500, body: JSON.stringify({error: 'error!'})});
+        backend.restore().get('http://localhost:3000/api/test', { status: 500, body: JSON.stringify({ error: 'error!' }) });
 
         request.get('http://localhost:3000/api/test')
         .then(() => {
@@ -182,7 +184,7 @@ describe('JSONRequest', () => {
       request.delete('http://localhost:3000/api/test')
       .then((response) => {
         expect(response.status).toBe(200);
-        expect(response.json).toEqual({response: 'delete'});
+        expect(response.json).toEqual({ response: 'delete' });
         done();
       })
       .catch(done.fail);
@@ -190,10 +192,10 @@ describe('JSONRequest', () => {
 
     describe('when passing data', () => {
       it('should send it in params', (done) => {
-        request.delete('http://localhost:3000/api/test', {id: '123'})
+        request.delete('http://localhost:3000/api/test', { id: '123' })
         .then((response) => {
           expect(response.status).toBe(200);
-          expect(response.json).toEqual({response: 'delete with params'});
+          expect(response.json).toEqual({ response: 'delete with params' });
           done();
         })
         .catch(done.fail);
@@ -202,7 +204,7 @@ describe('JSONRequest', () => {
 
     describe('when response is greater than 399', () => {
       it('should throw an error', (done) => {
-        backend.restore().delete('http://localhost:3000/api/test', {status: 404, body: JSON.stringify({error: 'error!'})});
+        backend.restore().delete('http://localhost:3000/api/test', { status: 404, body: JSON.stringify({ error: 'error!' }) });
 
         request.delete('http://localhost:3000/api/test')
         .then(() => {

@@ -1,9 +1,9 @@
-let executeRoute = (method, routePath, req = {}, res, app) => {
-  let args = app[method].calls.allArgs().find((a) => a[0] === routePath);
+const executeRoute = (method, routePath, req = {}, res, app) => {
+  const args = app[method].calls.allArgs().find(a => a[0] === routePath);
   if (!args) {
-    throw new Error('Route ' + method.toUpperCase() + ' ' + routePath + ' is not defined');
+    throw new Error(`Route ${method.toUpperCase()} ${routePath} is not defined`);
   }
-  let result = new Promise((resolve, reject) => {
+  const result = new Promise((resolve, reject) => {
     let statusCode;
 
     res.status = (code) => {
@@ -22,11 +22,11 @@ let executeRoute = (method, routePath, req = {}, res, app) => {
     });
 
     res.error = (error) => {
-      res.json({error});
+      res.json({ error });
     };
 
     if (!args[1]) {
-      return reject('route function has not been defined !');
+      return reject(new Error('route function has not been defined !'));
     }
 
     args[args.length - 1](req, res);
@@ -40,21 +40,15 @@ let executeRoute = (method, routePath, req = {}, res, app) => {
 };
 
 export default (route, io) => {
-  let app = jasmine.createSpyObj('app', ['get', 'post', 'delete']);
+  const app = jasmine.createSpyObj('app', ['get', 'post', 'delete']);
   route(app, io);
 
-  let instrumentedRoute = {
-    get: (routePath, req, res = {}) => {
-      return executeRoute('get', routePath, req, res, app);
-    },
+  const instrumentedRoute = {
+    get: (routePath, req, res = {}) => executeRoute('get', routePath, req, res, app),
 
-    delete: (routePath, req, res = {}) => {
-      return executeRoute('delete', routePath, req, res, app);
-    },
+    delete: (routePath, req, res = {}) => executeRoute('delete', routePath, req, res, app),
 
-    post: (routePath, req, res = {}) => {
-      return executeRoute('post', routePath, req, res, app);
-    }
+    post: (routePath, req, res = {}) => executeRoute('post', routePath, req, res, app)
   };
 
   return instrumentedRoute;

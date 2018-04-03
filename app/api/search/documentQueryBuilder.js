@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 export default function () {
-  let baseQuery = {
+  const baseQuery = {
     _source: {
       include: [
         'title', 'icon', 'processed', 'creationDate', 'template',
@@ -12,18 +12,10 @@ export default function () {
     size: 30,
     query: {
       bool: {
-        minimum_should_match: 1,
-        must: [],
+        must: [{ bool: { should: [] } }],
         must_not: [],
         filter: [
-          {term: {published: true}}
-        ],
-        should: [
-          {
-            bool: {
-              should: []
-            }
-          }
+          { term: { published: true } }
         ]
       }
     },
@@ -42,15 +34,9 @@ export default function () {
               filtered: {
                 filter: {
                   bool: {
-                    minimum_should_match: 1,
-                    must: [{match: {published: true}}],
-                    filter: [],
-                    should: [
-                      {
-                        bool: {
-                          should: []
-                        }
-                      }
+                    must: [{ bool: { should: [] } }],
+                    filter: [
+                      { match: { published: true } }
                     ]
                   }
                 }
@@ -62,11 +48,12 @@ export default function () {
     }
   };
 
-  const aggregations = baseQuery.aggregations.all.aggregations;
-
+  const { aggregations } = baseQuery.aggregations.all;
+  const fullTextBool = baseQuery.query.bool.must[0];
+  const aggregationsFullTextBool = aggregations.types.aggregations.filtered.filter.bool.must[0];
   function addFullTextFilter(filter) {
-    baseQuery.query.bool.should[0].bool.should.push(filter);
-    baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.should[0].bool.should.push(filter);
+    fullTextBool.bool.should.push(filter);
+    aggregationsFullTextBool.bool.should.push(filter);
   }
 
   function addFilter(filter) {
@@ -76,13 +63,6 @@ export default function () {
 
   return {
     query() {
-      let minimumShouldMatch = 1;
-      if (baseQuery.query.bool.should[0].bool.should.length > 1) {
-        minimumShouldMatch = baseQuery.query.bool.should[0].bool.should.length - 1;
-      }
-      baseQuery.query.bool.should[0].bool.minimum_should_match = minimumShouldMatch;
-      baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.should[0].bool.minimum_should_match = minimumShouldMatch;
-
       return baseQuery;
     },
 
@@ -96,10 +76,10 @@ export default function () {
 
     fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
       if (term) {
-        let should = [];
+        const should = [];
 
-        const includeFullText = fieldsToSearch.find((field) => field === 'fullText');
-        const fields = fieldsToSearch.filter((field) => field !== 'fullText');
+        const includeFullText = fieldsToSearch.find(field => field === 'fullText');
+        const fields = fieldsToSearch.filter(field => field !== 'fullText');
 
         if (fields.length) {
           should.push({
@@ -125,28 +105,30 @@ export default function () {
                     pre_tags: ['<b>'],
                     post_tags: ['</b>'],
                     fields: {
-                      'fullText_*': {number_of_fragments, type, fragment_size, fragmenter: 'span'}
+                      'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
                     }
                   }
                 },
                 query: {
                   bool: {
-                    must: {
-                      multi_match: {
-                        query: term,
-                        type: 'best_fields',
-                        fuzziness: 0,
-                        fields: ['fullText*']
+                    should: [
+                      {
+                        multi_match: {
+                          query: term,
+                          type: 'best_fields',
+                          fuzziness: 0,
+                          fields: ['fullText*']
+                        }
+                      },
+                      {
+                        multi_match: {
+                          query: term,
+                          type: 'phrase_prefix',
+                          fields: ['fullText*'],
+                          boost: 3
+                        }
                       }
-                    },
-                    should: {
-                      multi_match: {
-                        query: term,
-                        type: 'phrase',
-                        fields: ['fullText*'],
-                        boost: 3
-                      }
-                    }
+                    ]
                   }
                 }
               }
@@ -154,13 +136,13 @@ export default function () {
           );
         }
 
-        addFullTextFilter({bool: {should}});
+        addFullTextFilter({ bool: { should } });
       }
       return this;
     },
 
     language(language) {
-      let match = {term: {language: language}};
+      const match = { term: { language } };
       baseQuery.query.bool.filter.push(match);
       aggregations.types.aggregations.filtered.filter.bool.must.push(match);
       return this;
@@ -168,12 +150,12 @@ export default function () {
 
     unpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
-      aggregations.types.aggregations.filtered.filter.bool.must[0].match.published = false;
+      aggregations.types.aggregations.filtered.filter.bool.filter[0].match.published = false;
       return this;
     },
 
     owner(user) {
-      let match = {match: {user: user._id}};
+      const match = { match: { user: user._id } };
       baseQuery.query.bool.must.push(match);
       return this;
     },
@@ -182,34 +164,34 @@ export default function () {
       if (property === '_score') {
         return baseQuery.sort.push('_score');
       }
-      let sort = {};
-      sort[`${property}.sort`] = {order, unmapped_type: 'boolean'};
+      const sort = {};
+      sort[`${property}.sort`] = { order, unmapped_type: 'boolean' };
       baseQuery.sort.push(sort);
       return this;
     },
 
     textFilter(filter) {
-      let match = {match: {}};
+      const match = { match: {} };
       match.match[`metadata.${filter.name}`] = filter.value;
       return match;
     },
 
     rangeFilter(filter) {
-      let match = {range: {}};
-      match.range[`metadata.${filter.name}`] = {gte: filter.value.from, lte: filter.value.to};
+      const match = { range: {} };
+      match.range[`metadata.${filter.name}`] = { gte: filter.value.from, lte: filter.value.to };
       return match;
     },
 
     multiselectFilter(filter) {
       const filterValue = filter.value;
       const values = filterValue.values;
-      let match = {terms: {}};
+      let match = { terms: {} };
       match.terms[`metadata.${filter.name}.raw`] = values;
 
       if (filterValue.and) {
-        match = {bool: {must: []}};
+        match = { bool: { must: [] } };
         match.bool.must = values.map((value) => {
-          let m = {term: {}};
+          const m = { term: {} };
           m.term[`metadata.${filter.name}.raw`] = value;
           return m;
         });
@@ -219,7 +201,7 @@ export default function () {
     },
 
     nestedrangeFilter(filter) {
-      let match = {
+      const match = {
         nested: {
           path: `metadata.${filter.name}`,
           query: {
@@ -229,10 +211,10 @@ export default function () {
           }
         }
       };
-      let fromMatch = {range: {}};
-      fromMatch.range[`metadata.${filter.name}.from`] = {gte: filter.value.from, lte: filter.value.to};
-      let toMatch = {range: {}};
-      toMatch.range[`metadata.${filter.name}.to`] = {gte: filter.value.from, lte: filter.value.to};
+      const fromMatch = { range: {} };
+      fromMatch.range[`metadata.${filter.name}.from`] = { gte: filter.value.from, lte: filter.value.to };
+      const toMatch = { range: {} };
+      toMatch.range[`metadata.${filter.name}.to`] = { gte: filter.value.from, lte: filter.value.to };
 
       match.nested.query.bool.should.push(fromMatch);
       match.nested.query.bool.should.push(toMatch);
@@ -240,7 +222,7 @@ export default function () {
     },
 
     strictNestedFilter(filter) {
-      let match = {
+      const match = {
         nested: {
           path: `metadata.${filter.name}`,
           query: {
@@ -251,25 +233,22 @@ export default function () {
         }
       };
 
-      let value = filter.value;
-      let properties = value.properties;
+      const { properties } = filter.value;
       if (!properties) {
         return;
       }
-      let keys = Object.keys(properties).filter((key) => {
-        return properties[key].any ||
-          properties[key].values;
-      });
+      const keys = Object.keys(properties).filter(key => properties[key].any ||
+          properties[key].values);
 
       keys.forEach((key) => {
         if (properties[key].any) {
-          match.nested.query.bool.must.push({exists: {field: `metadata.${filter.name}.${key}`}});
+          match.nested.query.bool.must.push({ exists: { field: `metadata.${filter.name}.${key}` } });
           return;
         }
 
         properties[key].values.forEach((val) => {
-          let term = {term: {}};
-          term.term[`metadata.${filter.name}.${key}.raw`] = {value: val};
+          const term = { term: {} };
+          term.term[`metadata.${filter.name}.${key}.raw`] = { value: val };
           match.nested.query.bool.must.push(term);
         });
       });
@@ -278,18 +257,16 @@ export default function () {
     },
 
     nestedFilter(filter) {
-      let match = {
+      const match = {
         bool: {
           must: []
         }
       };
-      let value = filter.value;
-      let properties = value.properties;
 
-      let keys = Object.keys(properties).filter((key) => {
-        return properties[key].any ||
-          properties[key].values && properties[key].values.length;
-      });
+      const { properties } = filter.value;
+
+      const keys = Object.keys(properties).filter(key => properties[key].any ||
+          properties[key].values && properties[key].values.length);
 
       match.bool.must = keys.map((key) => {
         let nestedmatch;
@@ -306,21 +283,21 @@ export default function () {
             }
           };
 
-          nestedmatch.nested.query.bool.must[0] = {exists: {field: `metadata.${filter.name}.${key}`}};
+          nestedmatch.nested.query.bool.must[0] = { exists: { field: `metadata.${filter.name}.${key}` } };
           return nestedmatch;
         }
 
 
-        nestedmatch = {bool: {must: []}};
+        nestedmatch = { bool: { must: [] } };
 
         nestedmatch.bool.must = properties[key].values.map((val) => {
-          let _match = {
+          const _match = {
             nested: {
               path: `metadata.${filter.name}`,
               query: {
                 bool: {
                   must: [
-                    {term: {}}
+                    { term: {} }
                   ]
                 }
               }
@@ -336,7 +313,7 @@ export default function () {
     },
 
     filterMetadataByFullText(filters = []) {
-      let match = {
+      const match = {
         bool: {
           minimum_should_match: 1,
           should: [
@@ -400,7 +377,7 @@ export default function () {
           filtered: {
             filter: {
               bool: {
-                should: should,
+                should,
                 filter: filters
               }
             }
@@ -410,35 +387,32 @@ export default function () {
     },
 
     nestedAggregation(property, should, readOnlyFilters) {
-      let nestedAggregation = baseQuery.aggregations[property.name] = {
+      const nestedAggregation = {
         nested: {
           path: `metadata.${property.name}`
         },
         aggregations: {}
       };
+      baseQuery.aggregations[property.name] = nestedAggregation;
 
       property.nestedProperties.forEach((prop) => {
-        let nestedFilters = readOnlyFilters.filter((match) => match.nested)
-        .map((nestedFilter) => nestedFilter.nested.query.bool.must)
-        .reduce((result, propFilters) => {
-          return result.concat(propFilters);
-        }, []);
+        const nestedFilters = readOnlyFilters.filter(match => match.nested)
+        .map(nestedFilter => nestedFilter.nested.query.bool.must)
+        .reduce((result, propFilters) => result.concat(propFilters), []);
 
-        let path = `metadata.${property.name}.${prop}.raw`;
-        let filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
+        const path = `metadata.${property.name}.${prop}.raw`;
+        const filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must && match.bool.must[0] && match.bool.must[0].nested) {
-            match.bool.must = match.bool.must.filter((nestedMatcher) => {
-              return !nestedMatcher.nested ||
+            match.bool.must = match.bool.must.filter(nestedMatcher => !nestedMatcher.nested ||
               !nestedMatcher.nested.query.bool.must[0].terms ||
-              !nestedMatcher.nested.query.bool.must[0].terms[path];
-            });
+              !nestedMatcher.nested.query.bool.must[0].terms[path]);
 
             if (!match.bool.must.length) {
               return;
             }
           }
           return match;
-        }).filter((f) => f);
+        }).filter(f => f);
 
         nestedAggregation.aggregations[prop] = {
           terms: {
@@ -459,7 +433,7 @@ export default function () {
                     filtered: {
                       filter: {
                         bool: {
-                          should: should,
+                          should,
                           must: filters
                         }
                       }
@@ -477,13 +451,11 @@ export default function () {
 
     aggregations(properties) {
       properties.forEach((property) => {
-        let path = `metadata.${property.name}.raw`;
-        let filters = baseQuery.query.bool.filter.filter((match) => {
-          return match && (!match.terms || match.terms && !match.terms[path]);
-        });
+        const path = `metadata.${property.name}.raw`;
+        let filters = baseQuery.query.bool.filter.filter(match => match && (!match.terms || match.terms && !match.terms[path]));
         filters = filters.concat(baseQuery.query.bool.must);
 
-        let should = baseQuery.query.bool.should;
+        const { should } = baseQuery.query.bool;
         if (property.nested) {
           baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, should, filters);
           return;
@@ -496,8 +468,8 @@ export default function () {
 
     filterByTemplate(templates = []) {
       if (templates.includes('missing')) {
-        let _templates = templates.filter((t) => t !== 'missing');
-        let match = {
+        const _templates = templates.filter(t => t !== 'missing');
+        const match = {
           bool: {
             should: [
               {
@@ -524,7 +496,7 @@ export default function () {
       }
 
       if (templates.length) {
-        let match = {terms: {template: templates}};
+        const match = { terms: { template: templates } };
         baseQuery.query.bool.filter.push(match);
       }
       return this;
@@ -539,7 +511,7 @@ export default function () {
         _ids = ids;
       }
       if (_ids.length) {
-        let match = {terms: {'sharedId.raw': _ids}};
+        const match = { terms: { 'sharedId.raw': _ids } };
         baseQuery.query.bool.filter.push(match);
       }
       return this;

@@ -1,6 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {actions} from 'app/BasicReducer';
+import { shallow } from 'enzyme';
+import { actions } from 'app/BasicReducer';
 
 import PageView from '../PageView';
 import api from 'app/Search/SearchAPI';
@@ -11,27 +11,25 @@ import RouteHandler from 'app/App/RouteHandler';
 import pageItemLists from '../utils/pageItemLists';
 
 describe('PageView', () => {
-  let page = {_id: 'abc2', title: 'Page 1', metadata: {content: 'originalContent'}};
+  const page = { _id: 'abc2', title: 'Page 1', metadata: { content: 'originalContent' } };
   let component;
   let instance;
   let context;
 
   beforeEach(() => {
     let searchCalls = -1;
-    spyOn(api, 'search').and.callFake(() => {
-      return Promise.resolve({rows: ['resultsFor:' + (searchCalls += 1)]});
-    });
+    spyOn(api, 'search').and.callFake(() => Promise.resolve({ rows: [`resultsFor:${searchCalls += 1}`] }));
 
     spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(page));
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',
       params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number'],
-      options: [{}, {limit: 9}, {limit: 0}, {limit: 12}]
+      options: [{}, { limit: 9 }, { limit: 0 }, { limit: 12 }]
     });
 
     RouteHandler.renderedFromServer = true;
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
-    component = shallow(<PageView />, {context});
+    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    component = shallow(<PageView />, { context });
     instance = component.instance();
   });
 
@@ -41,23 +39,23 @@ describe('PageView', () => {
 
   describe('static requestState()', () => {
     it('should request page for view', (done) => {
-      PageView.requestState({pageId: 'abc2'})
+      PageView.requestState({ pageId: 'abc2' })
       .then((response) => {
         expect(PagesAPI.get).toHaveBeenCalledWith('abc2');
-        expect(response.page.pageView).toEqual({_id: 'abc2', title: 'Page 1', metadata: {content: 'originalContent'}});
+        expect(response.page.pageView).toEqual({ _id: 'abc2', title: 'Page 1', metadata: { content: 'originalContent' } });
         done();
       })
       .catch(done.fail);
     });
 
     it('should request each list inside the content limited to 6 items (default) or the passed value and set the state', (done) => {
-      PageView.requestState({pageId: 'abc2'})
+      PageView.requestState({ pageId: 'abc2' })
       .then((response) => {
         expect(api.search.calls.count()).toBe(4);
-        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({a: 1, b: 2, limit: '6'});
-        expect(api.search.calls.argsFor(1)[0]).toEqual({filters: {}, types: [], limit: '9'});
-        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({x: 1, y: ['array'], limit: '6'});
-        expect(api.search.calls.argsFor(3)[0]).toEqual({filters: {}, types: [], limit: '12'});
+        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({ a: 1, b: 2, limit: '6' });
+        expect(api.search.calls.argsFor(1)[0]).toEqual({ filters: {}, types: [], limit: '9' });
+        expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({ x: 1, y: ['array'], limit: '6' });
+        expect(api.search.calls.argsFor(3)[0]).toEqual({ filters: {}, types: [], limit: '12' });
 
         expect(response.page.itemLists.length).toBe(4);
 
@@ -69,7 +67,7 @@ describe('PageView', () => {
         expect(response.page.itemLists[2].items).toEqual(['resultsFor:2']);
         expect(response.page.itemLists[3].params).toBe('?order=metadata.form&treatAs=number');
         expect(response.page.itemLists[3].items).toEqual(['resultsFor:3']);
-        expect(response.page.itemLists[3].options).toEqual({limit: 12});
+        expect(response.page.itemLists[3].options).toEqual({ limit: 12 });
         done();
       })
       .catch(done.fail);
@@ -78,18 +76,17 @@ describe('PageView', () => {
 
   describe('setReduxState()', () => {
     it('should set pageView data', () => {
-      spyOn(actions, 'set').and.callFake(path => {
+      spyOn(actions, 'set').and.callFake((path) => {
         switch (path) {
         case 'page/pageView':
           return 'PAGE DATA SET';
         case 'page/itemLists':
           return 'ITEM LISTS DATA SET';
         default:
-          return;
         }
       });
 
-      instance.setReduxState({page: {pageView: 'data', itemLists: 'lists'}});
+      instance.setReduxState({ page: { pageView: 'data', itemLists: 'lists' } });
       expect(actions.set).toHaveBeenCalledWith('page/pageView', 'data');
       expect(actions.set).toHaveBeenCalledWith('page/itemLists', 'lists');
       expect(context.store.dispatch).toHaveBeenCalledWith('PAGE DATA SET');

@@ -1,35 +1,44 @@
-import React, {Component} from 'react';
+import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
 
-import {browserHistory} from 'react-router';
-import {toUrlParams} from 'shared/JSONRequest';
+import { toUrlParams } from 'shared/JSONRequest';
+
+function changeView(type) {
+  return () => {
+    const path = browserHistory.getCurrentLocation().pathname;
+    const { query } = browserHistory.getCurrentLocation();
+    query.view = type;
+
+    browserHistory.push(path + toUrlParams(query));
+  };
+}
+
+function toggleButton(active, type, icon) {
+  return (
+    <button className={`btn ${active ? 'btn-success' : 'btn-default'}`} onClick={changeView(type)}>
+      <i className={`fa fa-${icon}`} />
+    </button>
+  );
+}
 
 export class ListChartToggleButtons extends Component {
-
-  changeView(type) {
-    const path = browserHistory.getCurrentLocation().pathname;
-    const query = browserHistory.getCurrentLocation().query;
-    query.view = type;
-    
-    browserHistory.push(path + toUrlParams(query));
-  }
-
   render() {
     return (
       <div className={`search-list listChart-toggleButtons ${this.props.active === 'chart' ? 'is-chart' : 'is-list'}`}>
         <div className="buttons-group">
-          <button className={`btn ${this.props.active !== 'chart' ? 'btn-success' : 'btn-default'}`}
-                  onClick={this.changeView.bind(this, 'list')}>
-            <i className="fa fa-th-large" />
-          </button>
-          <button className={`btn ${this.props.active === 'chart' ? 'btn-success' : 'btn-default'}`}
-                  onClick={this.changeView.bind(this, 'chart')}><i className="fa fa-area-chart" /></button>
+          { toggleButton(this.props.active !== 'chart', 'list', 'th-large') }
+          { toggleButton(this.props.active === 'chart', 'chart', 'area-chart') }
         </div>
       </div>
     );
   }
 }
+
+ListChartToggleButtons.defaultProps = {
+  active: 'list'
+};
 
 ListChartToggleButtons.propTypes = {
   active: PropTypes.string

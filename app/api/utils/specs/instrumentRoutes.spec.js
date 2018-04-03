@@ -132,7 +132,7 @@ describe('routesMock', () => {
     it('should throw an error', (done) => {
       route.get('/test/route')
       .catch((error) => {
-        expect(error).toBe('route function has not been defined !');
+        expect(error).toEqual(new Error('route function has not been defined !'));
         done();
       });
     });

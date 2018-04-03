@@ -1,25 +1,25 @@
-import React from 'react';
-import RouteHandler from 'app/App/RouteHandler';
-import {renderToString} from 'react-dom/server';
-import {match, RouterContext} from 'react-router';
+import { fromJS as Immutable } from 'immutable';
+import { Provider } from 'react-redux';
+import { match, RouterContext } from 'react-router';
+import { renderToString } from 'react-dom/server';
 import Helmet from 'react-helmet';
-import Routes from './Routes';
-import t from 'app/I18N/t';
-import {Provider} from 'react-redux';
-import CustomProvider from './App/Provider';
-import Root from './App/Root';
-import NoMatch from './App/NoMatch';
-import store from './store';
-import api from 'app/utils/api';
-import {I18NUtils} from 'app/I18N';
-import JSONUtils from 'shared/JSONUtils';
-import {fromJS as Immutable} from 'immutable';
-import {getPropsFromRoute} from './utils';
-import translationsApi from '../api/i18n/translations';
-import settingsApi from '../api/settings/settings';
-import fs from 'fs';
+import React from 'react';
 
-//import assets from '../../dist/webpack-assets.json';
+import { I18NUtils } from 'app/I18N';
+import JSONUtils from 'shared/JSONUtils';
+import RouteHandler from 'app/App/RouteHandler';
+import api from 'app/utils/api';
+import fs from 'fs';
+import t from 'app/I18N/t';
+
+import { getPropsFromRoute } from './utils';
+import CustomProvider from './App/Provider';
+import NoMatch from './App/NoMatch';
+import Root from './App/Root';
+import Routes from './Routes';
+import settingsApi from '../api/settings/settings';
+import store from './store';
+import translationsApi from '../api/i18n/translations';
 
 let assets = {};
 
@@ -57,9 +57,9 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
     data = {};
   }
 
-  return '<!doctype html>\n' + renderToString(
+  return `<!doctype html>\n${renderToString(
     <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData} assets={assets}/>
-  );
+  )}`;
 }
 
 function handle404(res) {
@@ -77,16 +77,15 @@ function handleRedirect(res, redirectLocation) {
 
 function onlySystemTranslations(AllTranslations) {
   const rows = AllTranslations.map((translation) => {
-    const systemTranslation = translation.contexts.find((c) => c.id === 'System');
+    const systemTranslation = translation.contexts.find(c => c.id === 'System');
     translation.contexts = [systemTranslation];
     return translation;
   });
 
-  return {json: {rows}};
+  return { json: { rows } };
 }
 
 function handleRoute(res, renderProps, req) {
-  //const isDeveloping = process.env.NODE_ENV !== 'production';
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
@@ -100,7 +99,7 @@ function handleRoute(res, renderProps, req) {
 
   if (routeProps.requestState) {
     if (req.cookies) {
-      api.cookie('connect.sid=' + req.cookies['connect.sid']);
+      api.cookie(`connect.sid=${req.cookies['connect.sid']}`);
     }
 
     RouteHandler.renderedFromServer = true;
@@ -111,22 +110,22 @@ function handleRoute(res, renderProps, req) {
 
     let locale;
     return settingsApi.get()
-    .then(settings => {
-      let languages = settings.languages;
-      let path = req.url;
+    .then((settings) => {
+      const { languages } = settings;
+      const path = req.url;
       locale = I18NUtils.getLocale(path, languages, req.cookies);
       api.locale(locale);
 
       return settings;
     })
-    .then(settingsData => {
+    .then((settingsData) => {
       if (settingsData.private && !req.user) {
         return Promise.all([
-          Promise.resolve({json: {}}),
-          Promise.resolve({json: {languages: [], private: settingsData.private}}),
+          Promise.resolve({ json: {} }),
+          Promise.resolve({ json: { languages: [], private: settingsData.private } }),
           translationsApi.get().then(onlySystemTranslations),
-          Promise.resolve({json: {rows: []}}),
-          Promise.resolve({json: {rows: []}})
+          Promise.resolve({ json: { rows: [] } }),
+          Promise.resolve({ json: { rows: [] } })
         ]);
       }
 
@@ -141,7 +140,7 @@ function handleRoute(res, renderProps, req) {
     .then(([user, settings, translations, templates, thesauris]) => {
       const globalResources = {
         user: user.json,
-        settings: {collection: settings.json},
+        settings: { collection: settings.json },
         translations: translations.json.rows,
         templates: templates.json.rows,
         thesauris: thesauris.json.rows
@@ -169,6 +168,8 @@ function handleRoute(res, renderProps, req) {
         handleError(res, error);
         return Promise.reject(error);
       }
+
+      return Promise.reject(error);
     })
     .then(([initialData, globalResources]) => {
       initialData.user = globalResources.user;
@@ -180,7 +181,6 @@ function handleRoute(res, renderProps, req) {
       renderPage(initialData, true);
     })
     .catch((error) => {
-      console.log(JSON.stringify(error, null, 4)); // eslint-disable-line
       console.trace(error); // eslint-disable-line
     });
   }
@@ -188,15 +188,15 @@ function handleRoute(res, renderProps, req) {
   renderPage();
 }
 
-let allowedRoute = (user = {}, url) => {
+const allowedRoute = (user = {}, url) => {
   const isAdmin = user.role === 'admin';
   const isEditor = user.role === 'editor';
-  let authRoutes = [
+  const authRoutes = [
     '/uploads',
     '/settings/account'
   ];
 
-  let adminRoutes = [
+  const adminRoutes = [
     '/settings/users',
     '/settings/collection',
     '/settings/navlink',
@@ -209,13 +209,9 @@ let allowedRoute = (user = {}, url) => {
     '/settings/connections'
   ];
 
-  const isAdminRoute = adminRoutes.reduce((found, authRoute) => {
-    return found || url.indexOf(authRoute) !== -1;
-  }, false);
+  const isAdminRoute = adminRoutes.reduce((found, authRoute) => found || url.indexOf(authRoute) !== -1, false);
 
-  const isAuthRoute = authRoutes.reduce((found, authRoute) => {
-    return found || url.indexOf(authRoute) !== -1;
-  }, false);
+  const isAuthRoute = authRoutes.reduce((found, authRoute) => found || url.indexOf(authRoute) !== -1, false);
 
   return isAdminRoute && isAdmin ||
     isAuthRoute && (isAdmin || isEditor) ||
@@ -223,7 +219,7 @@ let allowedRoute = (user = {}, url) => {
 };
 
 function routeMatch(req, res, location) {
-  match({routes: Routes, location}, (error, redirectLocation, renderProps) => {
+  match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
     if (error) {
       return handleError(error);
     } else if (redirectLocation) {
@@ -242,9 +238,10 @@ function getAssets() {
   }
 
   return new Promise((resolve, reject) => {
-    fs.readFile(__dirname + '/../../dist/webpack-assets.json', (err, data) => {
+    fs.readFile(`${__dirname}/../../dist/webpack-assets.json`, (err, data) => {
       if (err) {
-        reject(err + '\nwebpack-assets.json do not exists or is malformed !, you probably need to build webpack with the production configuration');
+        reject(new Error(`${err}\nwebpack-assets.json do not exists or is malformed !,
+                          you probably need to build webpack with the production configuration`));
       }
       try {
         assets = JSON.parse(data);
@@ -259,11 +256,10 @@ function getAssets() {
 function ServerRouter(req, res) {
   if (!allowedRoute(req.user, req.url)) {
     const url = req.user ? '/' : '/login';
-    res.redirect(302, url);
-    return;
+    return res.redirect(302, url);
   }
 
-  const PORT = process.env.PORT;
+  const { PORT } = process.env;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
 
   let location = req.url;

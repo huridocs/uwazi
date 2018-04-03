@@ -12,7 +12,6 @@ import {RadioButtons} from 'app/Forms';
 import {t} from 'app/I18N';
 
 export class CollectionSettings extends Component {
-
   constructor(props, context) {
     super(props, context);
     const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
@@ -81,7 +80,7 @@ export class CollectionSettings extends Component {
 
   changeHomePage(e) {
     this.setState({homePage: e.target.value});
-    let settings = Object.assign(this.props.settings, {home_page: e.target.value});  // eslint-disable-line camelcase
+    let settings = Object.assign(this.props.settings, {home_page: e.target.value}); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
@@ -109,8 +108,8 @@ export class CollectionSettings extends Component {
   updateSettings(e) {
     e.preventDefault();
     let settings = Object.assign({}, this.props.settings);
-    settings.home_page = this.state.homePage;  // eslint-disable-line camelcase
-    settings.site_name = this.state.siteName;  // eslint-disable-line camelcase
+    settings.home_page = this.state.homePage; // eslint-disable-line camelcase
+    settings.site_name = this.state.siteName; // eslint-disable-line camelcase
     settings.mailerConfig = this.state.mailerConfig;
     settings.analyticsTrackingId = this.state.analyticsTrackingId;
     settings.private = this.state.private;

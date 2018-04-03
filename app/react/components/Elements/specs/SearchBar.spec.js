@@ -1,14 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import TestUtils from 'react-dom/test-utils';
+
+import { shallow } from 'enzyme';
+
+import { events } from '../../../utils/index';
 import SearchBar from '../SearchBar.js';
-import {events} from '../../../utils/index';
 
 describe('SearchBar', () => {
   let searchBar;
 
   beforeEach(() => {
-    searchBar = TestUtils.renderIntoDocument(<SearchBar/>);
+    searchBar = shallow(<SearchBar/>);
   });
 
   describe('onSubmit', () => {
@@ -17,9 +18,9 @@ describe('SearchBar', () => {
         expect(queryString).toBe('Do a barrel roll');
         done();
       });
-      searchBar.field.value = 'Do a barrel roll';
-      TestUtils.Simulate.change(searchBar.field);
-      TestUtils.Simulate.submit(ReactDOM.findDOMNode(searchBar));
+      searchBar.instance().setState({ search: 'Do a barrel roll' });
+      searchBar.simulate('change', { preventDefault: () => {} });
+      searchBar.simulate('submit', { preventDefault: () => {} });
     });
   });
 });

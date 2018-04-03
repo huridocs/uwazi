@@ -1,22 +1,20 @@
 import * as types from '../actions/actionTypes';
-import {fromJS} from 'immutable';
+import { fromJS } from 'immutable';
 
 const initialState = [];
 
-const emptyRigthRelationship = () => {
-  return {relationships: []};
-};
+const emptyRigthRelationship = () => ({ relationships: [] });
 
 const conformRelationships = (action) => {
   let order = -1;
   const hubsObject = action.results.get('rows')
   .reduce((hubs, row) => {
     let hubsImmutable = hubs;
-    row.get('connections').forEach(connection => {
+    row.get('connections').forEach((connection) => {
       const hubId = connection.get('hub').toString();
       if (!hubsImmutable.has(hubId)) {
         order += 1;
-        hubsImmutable = hubsImmutable.set(hubId, fromJS({hub: hubId, order, leftRelationship: {}, rightRelationships: {}}));
+        hubsImmutable = hubsImmutable.set(hubId, fromJS({ hub: hubId, order, leftRelationship: {}, rightRelationships: {} }));
       }
 
       if (row.get('sharedId') === action.parentEntity.get('sharedId')) {
@@ -52,9 +50,10 @@ const conformRelationships = (action) => {
 export default function (state = initialState, action = {}) {
   let relationships;
   let value;
+  let updatedHubs;
+  let relationship;
 
   switch (action.type) {
-
   case types.PARSE_RELATIONSHIPS_RESULTS:
     return conformRelationships(action);
 
@@ -63,7 +62,7 @@ export default function (state = initialState, action = {}) {
 
   case types.ADD_RELATIONSHIPS_HUB:
     return state.push(fromJS({
-      leftRelationship: {template: null},
+      leftRelationship: { template: null },
       rightRelationships: [emptyRigthRelationship()]
     }));
 
@@ -77,13 +76,13 @@ export default function (state = initialState, action = {}) {
     return state.setIn([action.index, 'deleted'], !value);
 
   case types.UPDATE_RELATIONSHIPS_RIGHT_TYPE:
-    let updatedHubs = state
+    updatedHubs = state
     .setIn([action.index, 'rightRelationships', action.rightIndex, 'template'], action._id)
     .setIn([action.index, 'rightRelationships', action.rightIndex, 'modified'], true);
 
     relationships = state
     .getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'])
-    .map(relationship => relationship.set('template', action._id));
+    .map(relations => relations.set('template', action._id));
 
     updatedHubs = updatedHubs.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
@@ -99,8 +98,8 @@ export default function (state = initialState, action = {}) {
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'deleted'], !value);
 
   case types.ADD_RELATIONSHIPS_ENTITY:
-    const relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
-    relationships = relationship.get('relationships').push(fromJS({template: relationship.get('template'), entity: action.entity}));
+    relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
+    relationships = relationship.get('relationships').push(fromJS({ template: relationship.get('template'), entity: action.entity }));
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 

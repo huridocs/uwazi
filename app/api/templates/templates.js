@@ -1,31 +1,30 @@
-import {db_url as dbURL} from '../config/database.js';
-import request from 'shared/JSONRequest.js';
-import {generateNamesAndIds, getUpdatedNames, getDeletedProperties} from './utils';
-import validateTemplate from 'api/templates/validateTemplate';
-import translations from 'api/i18n/translations';
-import instanceModel from 'api/odm';
-import templatesModel from './templatesModel.js';
 import entities from 'api/entities';
+import instanceModel from 'api/odm';
+import request from 'shared/JSONRequest.js';
+import translations from 'api/i18n/translations';
+import validateTemplate from 'api/templates/validateTemplate';
+
+import { db_url as dbURL } from '../config/database.js';
+import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
+import templatesModel from './templatesModel.js';
 
 const model = instanceModel(templatesModel);
 
-let checkDuplicated = (template) => {
-  return model.get()
-  .then((templates) => {
-    let duplicated = templates.find((entry) => {
-      let sameEntity = entry._id.equals(template._id);
-      let sameName = entry.name.trim().toLowerCase() === template.name.trim().toLowerCase();
-      return sameName && !sameEntity;
-    });
-
-    if (duplicated) {
-      return Promise.reject({json: 'duplicated_entry'});
-    }
+const checkDuplicated = template => model.get()
+.then((templates) => {
+  const duplicated = templates.find((entry) => {
+    const sameEntity = entry._id.equals(template._id);
+    const sameName = entry.name.trim().toLowerCase() === template.name.trim().toLowerCase();
+    return sameName && !sameEntity;
   });
-};
 
-let addTemplateTranslation = (template) => {
-  let values = {};
+  if (duplicated) {
+    return Promise.reject({ json: 'duplicated_entry' });
+  }
+});
+
+const addTemplateTranslation = (template) => {
+  const values = {};
   values[template.name] = template.name;
   template.properties.forEach((property) => {
     values[property.label] = property.label;
@@ -34,16 +33,16 @@ let addTemplateTranslation = (template) => {
   return translations.addContext(template._id, template.name, values, template.isEntity ? 'Entity' : 'Document');
 };
 
-let updateTranslation = (currentTemplate, template) => {
-  let currentProperties = currentTemplate.properties;
-  let newProperties = template.properties;
+const updateTranslation = (currentTemplate, template) => {
+  const currentProperties = currentTemplate.properties;
+  const newProperties = template.properties;
 
-  let updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
+  const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
-  let deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
-  let context = template.properties.reduce((ctx, prop) => {
+  const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
+  const context = template.properties.reduce((ctx, prop) => {
     ctx[prop.label] = prop.label;
     return ctx;
   }, {});
@@ -53,13 +52,9 @@ let updateTranslation = (currentTemplate, template) => {
   return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
 };
 
-let save = (template) => {
-  return checkDuplicated(template)
-  .then(() => validateTemplate(template))
-  .then(() => {
-    return model.save(template);
-  });
-};
+const save = template => checkDuplicated(template)
+.then(() => validateTemplate(template))
+.then(() => model.save(template));
 
 export default {
   save(template, language) {
@@ -68,14 +63,14 @@ export default {
 
     if (template._id) {
       return this.getById(template._id)
-      .then((currentTemplate) => Promise.all([currentTemplate, updateTranslation(currentTemplate, template)]))
+      .then(currentTemplate => Promise.all([currentTemplate, updateTranslation(currentTemplate, template)]))
       .then(([currentTemplate]) => {
         currentTemplate.properties = currentTemplate.properties || [];
         const currentTemplateContentProperties = currentTemplate.properties.filter(p => p.content);
         const templateContentProperties = template.properties.filter(p => p.content);
         const toRemoveValues = {};
         currentTemplateContentProperties.forEach((prop) => {
-          let sameProperty = templateContentProperties.find(p => p.id === prop.id);
+          const sameProperty = templateContentProperties.find(p => p.id === prop.id);
           if (sameProperty && sameProperty.content !== prop.content) {
             toRemoveValues[sameProperty.name] = prop.type === 'multiselect' ? [] : '';
           }
@@ -86,17 +81,13 @@ export default {
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
       .then(() => save(template))
-      .then((savedTemplate) => {
-        return entities.updateMetadataProperties(template, language)
-        .then(() => savedTemplate);
-      });
+      .then(savedTemplate => entities.updateMetadataProperties(template, language)
+      .then(() => savedTemplate));
     }
 
     return save(template)
-    .then((newTemplate) => {
-      return addTemplateTranslation(newTemplate)
-      .then(() => newTemplate);
-    });
+    .then(newTemplate => addTemplateTranslation(newTemplate)
+    .then(() => newTemplate));
   },
 
   get(query) {
@@ -111,16 +102,12 @@ export default {
     return this.countByTemplate(template._id)
     .then((count) => {
       if (count > 0) {
-        return Promise.reject({key: 'documents_using_template', value: count});
+        return Promise.reject({ key: 'documents_using_template', value: count });
       }
       return translations.deleteContext(template._id);
     })
-    .then(() => {
-      return model.delete(template._id);
-    })
-    .then(() => {
-      return template;
-    });
+    .then(() => model.delete(template._id))
+    .then(() => template);
   },
 
   countByTemplate(template) {
@@ -130,21 +117,19 @@ export default {
   getEntitySelectNames(templateId) {
     return this.getById(templateId)
     .then((template) => {
-      const selects = template.properties.filter((prop) => prop.type === 'select' || prop.type === 'multiselect');
+      const selects = template.properties.filter(prop => prop.type === 'select' || prop.type === 'multiselect');
       const entitySelects = [];
-      return Promise.all(selects.map((select) => {
-        return request.get(`${dbURL}/${select.content}`)
-        .then((result) => {
-          if (result.json.type === 'template') {
-            entitySelects.push(select.name);
-          }
-        });
-      }))
+      return Promise.all(selects.map(select => request.get(`${dbURL}/${select.content}`)
+      .then((result) => {
+        if (result.json.type === 'template') {
+          entitySelects.push(select.name);
+        }
+      })))
       .then(() => entitySelects);
     });
   },
 
   countByThesauri(thesauriId) {
-    return model.count({'properties.content': thesauriId});
+    return model.count({ 'properties.content': thesauriId });
   }
 };

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import marked from 'marked';
+import React, { Component } from 'react';
+import markdownIt from 'markdown-it';
 import rison from 'rison';
 import CustomHookComponents from './CustomHooks';
 import CustomComponents from './components';
@@ -9,18 +9,20 @@ const placeholder = '{-CUSTOMCOMPONENT-}';
 const componentSubstitution = '{-spliter-}{-CUSTOMCOMPONENT-}{-spliter-}';
 const spliter = '{-spliter-}';
 const customComponentMatcher = /{\w+}\(.+\)\(.+\)|{\w+}\(.+\)/g;
+const md = markdownIt();
 
 export class MarkdownViewer extends Component {
-
-  errorHtml(index) {
-    return <p key={index} className="error">
-            <br />
-              <strong><i>Custom component markup error: unsuported values! Please check your configuration</i></strong>
-            <br />
-           </p>;
+  static errorHtml(index) {
+    return (
+      <p key={index} className="error">
+        <br />
+        <strong><i>Custom component markup error: unsuported values! Please check your configuration</i></strong>
+        <br />
+      </p>
+    );
   }
 
-  customHook(config, index) {
+  static customHook(config, index) {
     let output;
     try {
       const props = rison.decode(config);
@@ -30,14 +32,14 @@ export class MarkdownViewer extends Component {
       const Element = CustomHookComponents[props.component];
       output = <Element {...props} key={index} />;
     } catch (err) {
-      output = this.errorHtml(index);
+      output = MarkdownViewer.errorHtml(index);
     }
     return output;
   }
 
   list(config, index) {
-    let listData = this.props.lists[this.renderedLists] || {};
-    let output = <CustomComponents.ItemList key={index} link={`/library/${listData.params}`} items={listData.items} options={listData.options}/>;
+    const listData = this.props.lists[this.renderedLists] || {};
+    const output = <CustomComponents.ItemList key={index} link={`/library/${listData.params}`} items={listData.items} options={listData.options}/>;
     this.renderedLists += 1;
     return output;
   }
@@ -53,7 +55,7 @@ export class MarkdownViewer extends Component {
     }
 
     if (type === 'customhook') {
-      return this.customHook(config, index);
+      return MarkdownViewer.customHook(config, index);
     }
 
     if (type === 'vimeo') {
@@ -77,12 +79,12 @@ export class MarkdownViewer extends Component {
     let customComponentsPrinted = 0;
     return htmlChunks.map((chunk, index) => {
       if (chunk === placeholder) {
-        let component = this.customComponent(customComponents[customComponentsPrinted], index);
+        const component = this.customComponent(customComponents[customComponentsPrinted], index);
         customComponentsPrinted += 1;
         return component;
       }
-      let __html = marked(chunk);
-      return <div key={index} dangerouslySetInnerHTML={{__html}}/>;
+      const __html = md.render(chunk);
+      return <div key={index} dangerouslySetInnerHTML={{ __html }}/>; // eslint-disable-line
     });
   }
 
@@ -90,19 +92,20 @@ export class MarkdownViewer extends Component {
     this.renderedLists = 0;
     return (
       <div className="markdown-viewer">
-        {this.markdownToHtml(this.props.markdown).map((item) => item)}
+        {this.markdownToHtml(this.props.markdown).map(item => item)}
       </div>
     );
   }
 }
 
 MarkdownViewer.defaultProps = {
-  lists: []
+  lists: [],
+  markdown: ''
 };
 
 MarkdownViewer.propTypes = {
   markdown: PropTypes.string,
-  lists: PropTypes.array
+  lists: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default MarkdownViewer;

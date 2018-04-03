@@ -14,8 +14,9 @@ config.plugins = config.plugins.concat([
   new webpack.NamedModulesPlugin(),
   // prints more readable module names in the browser console on HMR updates
 
-  new webpack.NoEmitOnErrorsPlugin()
+  new webpack.NoEmitOnErrorsPlugin(),
   // do not emit compiled assets that include errors
+  new webpack.DefinePlugin({ 'process.env': { HOT: true } })
 ])
 
 config.output = {

@@ -1,12 +1,16 @@
 engines:
   eslint:
     enabled: true
+    channel: "eslint-4"
+    config:
+      config: .eslintrc
   duplication:
     enabled: true
     config:
       languages:
       - javascript
-
 ratings:
   paths:
   - app/**
+exclude_patterns:
+  - "**/index.js"

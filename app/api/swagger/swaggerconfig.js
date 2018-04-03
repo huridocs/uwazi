@@ -1,6 +1,7 @@
 import express from 'express';
-import path from 'path';
 import swaggerJSDoc from 'swagger-jsdoc';
+
+import path from 'path';
 
 export default (app) => {
   const swaggerDefinition = {
@@ -13,21 +14,21 @@ export default (app) => {
     host: 'localhost:3000',
     basePath: '/api',
     tags: [
-      {name: 'attachments'},
-      {name: 'entities'}
+      { name: 'attachments' },
+      { name: 'entities' }
     ],
     definitions: {
       Error: {
         properties: {
-          error: {type: 'string'}
+          error: { type: 'string' }
         }
       }
     }
   };
 
   const options = {
-    swaggerDefinition: swaggerDefinition,
-    apis: [__dirname + '/../**/*.js']
+    swaggerDefinition,
+    apis: [`${__dirname}/../**/*.js`]
   };
 
   const swaggerSpec = swaggerJSDoc(options);

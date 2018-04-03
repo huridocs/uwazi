@@ -1,23 +1,22 @@
+import { remove as removeAccents } from 'diacritics';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {remove as removeAccents} from 'diacritics';
+import React, { Component } from 'react';
 
+import { Icon } from 'app/Layout/Icon';
+import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
-import {Icon} from 'app/Layout/Icon';
-import {t} from 'app/I18N';
 
 export default class MultiSelect extends Component {
-
   constructor(props) {
     super(props);
-    this.state = {filter: props.filter || '', showAll: props.showAll};
+    this.state = { filter: props.filter || '', showAll: props.showAll };
     this.optionsToShow = typeof props.optionsToShow !== 'undefined' ? props.optionsToShow : 5;
   }
 
   change(value) {
     let newValues = this.props.value ? this.props.value.slice(0) : [];
     if (newValues.includes(value)) {
-      newValues = newValues.filter((val) => val !== value);
+      newValues = newValues.filter(val => val !== value);
       return this.props.onChange(newValues);
     }
 
@@ -34,22 +33,22 @@ export default class MultiSelect extends Component {
 
   componentWillReceiveProps(props) {
     if (props.filter) {
-      this.setState({filter: props.filter});
+      this.setState({ filter: props.filter });
     }
   }
 
   filter(e) {
-    this.setState({filter: e.target.value});
+    this.setState({ filter: e.target.value });
   }
 
   resetFilter() {
-    this.setState({filter: ''});
+    this.setState({ filter: '' });
   }
 
   showAll(e) {
     e.preventDefault();
-    let showAll = !this.state.showAll;
-    this.setState({showAll: showAll});
+    const showAll = !this.state.showAll;
+    this.setState({ showAll });
   }
 
   sort(options, optionsValue, optionsLabel) {
@@ -72,82 +71,81 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    let {optionsValue, optionsLabel, prefix} = this.props;
+    let { optionsValue, optionsLabel, prefix } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
     prefix = prefix || '';
 
     let options = this.props.options.slice();
-    let totalOptions = options = options.filter((option) => {
+    const totalOptions = options.filter((option) => {
       let notDefined;
       return option.results === notDefined || option.results > 0 || this.checked(option[optionsValue]);
     });
+    options = totalOptions;
 
     if (this.state.filter) {
-      options = options.filter((opt) => {
-        return removeAccents(opt[optionsLabel].toLowerCase())
-        .indexOf(removeAccents(this.state.filter.toLowerCase())) >= 0;
-      });
+      options = options.filter(opt => removeAccents(opt[optionsLabel].toLowerCase())
+      .indexOf(removeAccents(this.state.filter.toLowerCase())) >= 0);
     }
 
-    let tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
+    const tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
 
     if (!this.props.noSort) {
       options = this.sort(options, optionsValue, optionsLabel);
     }
 
     if (tooManyOptions) {
-      let numberOfActiveOptions = options.filter((opt) => this.checked(opt[optionsValue])).length;
-      let optionsToShow = this.optionsToShow > numberOfActiveOptions ? this.optionsToShow : numberOfActiveOptions;
+      const numberOfActiveOptions = options.filter(opt => this.checked(opt[optionsValue])).length;
+      const optionsToShow = this.optionsToShow > numberOfActiveOptions ? this.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
     }
 
     return (
       <ul className="multiselect is-active">
-      <li className="multiselectActions">
-        <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.hideSearch}>
-          <div className="form-group">
-            <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)}></i>
-            <input
-              className="form-control"
-              type='text' placeholder={t('System', 'Search item')}
-              value={this.state.filter}
-              onChange={this.filter.bind(this)}
-            />
-          </div>
-        </ShowIf>
-      </li>
-        {options.map((option, index) => {
-          return <li className="multiselectItem" key={index} title={option[optionsLabel]}>
-            <input
-              type='checkbox'
-              className="multiselectItem-input"
-              value={option[optionsValue]}
-              id={prefix + option[optionsValue]}
-              onChange={this.change.bind(this, option[optionsValue])}
-              checked={this.checked(option[optionsValue])}
-            />
-            <label
-              className="multiselectItem-label"
-              htmlFor={prefix + option[optionsValue]}>
-                <i className="multiselectItem-icon fa fa-square-o"></i>
-                <i className="multiselectItem-icon fa fa-check"></i>
-                <span className="multiselectItem-name">
-                  <Icon className="item-icon" data={option.icon}/>
-                  {option[optionsLabel]}
-                </span>
-                <ShowIf if={typeof option.results !== 'undefined'}>
-                  <span className="multiselectItem-results">{option.results}
-                  </span>
-                </ShowIf>
-            </label>
-          </li>;
-        })}
+        <li className="multiselectActions">
+          <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.hideSearch}>
+            <div className="form-group">
+              <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)} />
+              <input
+                className="form-control"
+                type="text"
+                placeholder={t('System', 'Search item')}
+                value={this.state.filter}
+                onChange={this.filter.bind(this)}
+              />
+            </div>
+          </ShowIf>
+        </li>
+        {options.map((option, index) => (<li className="multiselectItem" key={index} title={option[optionsLabel]}>
+          <input
+            type="checkbox"
+            className="multiselectItem-input"
+            value={option[optionsValue]}
+            id={prefix + option[optionsValue]}
+            onChange={this.change.bind(this, option[optionsValue])}
+            checked={this.checked(option[optionsValue])}
+          />
+          <label
+            className="multiselectItem-label"
+            htmlFor={prefix + option[optionsValue]}
+          >
+            <i className="multiselectItem-icon fa fa-square-o" />
+            <i className="multiselectItem-icon fa fa-check" />
+            <span className="multiselectItem-name">
+              <Icon className="item-icon" data={option.icon}/>
+              {option[optionsLabel]}
+            </span>
+            <ShowIf if={typeof option.results !== 'undefined'}>
+              <span className="multiselectItem-results">{option.results}
+              </span>
+            </ShowIf>
+          </label>
+                                         </li>))}
 
         <li className="multiselectActions">
           <ShowIf if={totalOptions.length > this.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
-              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'}></i>
+              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
               <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.optionsToShow + t('System', 'x more')}</span>
             </button>
           </ShowIf>
@@ -155,7 +153,6 @@ export default class MultiSelect extends Component {
       </ul>
     );
   }
-
 }
 
 MultiSelect.propTypes = {
