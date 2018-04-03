@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Tip should render children 1`] = `
+<Modeled(Connect(Field))
+  model="model"
+>
+  <label
+    className="property-label"
+    htmlFor="testmodel"
+  >
+    <input
+      id="testmodel"
+      type="checkbox"
+    />
+     
+    label
+  </label>
+  children text!
+</Modeled(Connect(Field))>
+`;
+
+exports[`Tip should render label and input for the model 1`] = `
+<Modeled(Connect(Field))
+  model="model"
+>
+  <label
+    className="property-label"
+    htmlFor="testmodel"
+  >
+    <input
+      id="testmodel"
+      type="checkbox"
+    />
+     
+    label
+  </label>
+</Modeled(Connect(Field))>
+`;

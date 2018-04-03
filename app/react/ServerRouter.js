@@ -21,8 +21,6 @@ import settingsApi from '../api/settings/settings';
 import store from './store';
 import translationsApi from '../api/i18n/translations';
 
-//import assets from '../../dist/webpack-assets.json';
-
 let assets = {};
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
@@ -88,7 +86,6 @@ function onlySystemTranslations(AllTranslations) {
 }
 
 function handleRoute(res, renderProps, req) {
-  //const isDeveloping = process.env.NODE_ENV !== 'production';
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
@@ -114,7 +111,7 @@ function handleRoute(res, renderProps, req) {
     let locale;
     return settingsApi.get()
     .then((settings) => {
-      const languages = settings.languages;
+      const { languages } = settings;
       const path = req.url;
       locale = I18NUtils.getLocale(path, languages, req.cookies);
       api.locale(locale);
@@ -171,6 +168,8 @@ function handleRoute(res, renderProps, req) {
         handleError(res, error);
         return Promise.reject(error);
       }
+
+      return Promise.reject(error);
     })
     .then(([initialData, globalResources]) => {
       initialData.user = globalResources.user;
@@ -182,7 +181,6 @@ function handleRoute(res, renderProps, req) {
       renderPage(initialData, true);
     })
     .catch((error) => {
-      console.log(JSON.stringify(error, null, 4)); // eslint-disable-line
       console.trace(error); // eslint-disable-line
     });
   }
@@ -258,11 +256,10 @@ function getAssets() {
 function ServerRouter(req, res) {
   if (!allowedRoute(req.user, req.url)) {
     const url = req.user ? '/' : '/login';
-    res.redirect(302, url);
-    return;
+    return res.redirect(302, url);
   }
 
-  const PORT = process.env.PORT;
+  const { PORT } = process.env;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
 
   let location = req.url;

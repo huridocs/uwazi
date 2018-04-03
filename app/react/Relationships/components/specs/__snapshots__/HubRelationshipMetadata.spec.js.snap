@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HubRelationshipMetadata should render null if relationship lacks metadata or text 1`] = `""`;
+
+exports[`HubRelationshipMetadata should render the metadata correctly 1`] = `
+<div
+  className="relationship-metadata"
+>
+  <div
+    className="item-metadata"
+  >
+    <dl
+      className="item-property-default"
+      key="propertyA"
+    >
+      <dt>
+        labelA
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyB"
+    >
+      <dt>
+        labelB
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+  </div>
+</div>
+`;
+
+exports[`HubRelationshipMetadata should render the metadata correctly when text is also present 1`] = `
+<div
+  className="relationship-metadata"
+>
+  <div
+    className="item-metadata"
+  >
+    <dl
+      className="item-property-default"
+      key="propertyA"
+    >
+      <dt>
+        labelA
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyB"
+    >
+      <dt>
+        labelB
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="text"
+    >
+      <dt>
+        Text
+      </dt>
+      <dd>
+        <div
+          className="relationship-quote"
+        >
+          <i
+            className="quoteIconStart fa fa-quote-left"
+          />
+          Some quoted text
+          <i
+            className="quoteIconEnd fa fa-quote-right"
+          />
+        </div>
+      </dd>
+    </dl>
+  </div>
+</div>
+`;
+
+exports[`HubRelationshipMetadata should render the text quote correctly 1`] = `
+<div
+  className="relationship-metadata"
+>
+  <div
+    className="relationship-quote"
+  >
+    <i
+      className="quoteIconStart fa fa-quote-left"
+    />
+    Some quoted text
+    <i
+      className="quoteIconEnd fa fa-quote-right"
+    />
+  </div>
+</div>
+`;
