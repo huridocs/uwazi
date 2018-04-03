@@ -1,23 +1,22 @@
 import React from 'react';
-import {Control} from 'react-redux-form';
+import { Control } from 'react-redux-form';
 import * as forms from 'app/Forms';
 
-let Select = (props) => <Control.select component={forms.Select} {...props}/>;
-let DatePicker = (props) => <Control component={forms.DatePicker} {...props}/>;
-let DateRange = (props) => <Control.select component={forms.DateRange} {...props}/>;
-let MultiSelect = (props) => <Control.select component={forms.MultiSelect} {...props}/>;
-let MarkDown = (props) => <Control.text component={forms.MarkDown} {...props}/>;
-let Nested = (props) => <Control.select component={forms.Nested} {...props}/>;
-let NestedMultiselect = forms.NestedMultiselect;
-let MultiDate = (props) => <Control.select component={forms.MultiDate} {...props}/>;
-let MultiDateRange = (props) => <Control.select component={forms.MultiDateRange} {...props}/>;
-let Numeric = (props) => <Control component={forms.Numeric} {...props}/>;
-let NumericRange = (props) => <Control.select component={forms.NumericRange} {...props}/>;
-let DropdownList = (props) => <Control.select component={forms.DropdownList} {...props}/>;
-let IconSelector = (props) => <Control.select component={forms.IconSelector} {...props}/>;
-let RadioButtons = (props) => <Control.select component={forms.RadioButtons} {...props}/>;
-let Switcher = (props) => <Control.select component={forms.Switcher} {...props}/>;
-let FormGroup = forms.FormGroup;
+const Select = props => <Control.select component={forms.Select} {...props}/>;
+const DatePicker = props => <Control component={forms.DatePicker} {...props}/>;
+const DateRange = props => <Control.select component={forms.DateRange} {...props}/>;
+const MultiSelect = props => <Control.select component={forms.MultiSelect} {...props}/>;
+const MarkDown = props => <Control.text component={forms.MarkDown} {...props}/>;
+const Nested = props => <Control.select component={forms.Nested} {...props}/>;
+const MultiDate = props => <Control.select component={forms.MultiDate} {...props}/>;
+const MultiDateRange = props => <Control.select component={forms.MultiDateRange} {...props}/>;
+const Numeric = props => <Control component={forms.Numeric} {...props}/>;
+const NumericRange = props => <Control.select component={forms.NumericRange} {...props}/>;
+const DropdownList = props => <Control.select component={forms.DropdownList} {...props}/>;
+const IconSelector = props => <Control.select component={forms.IconSelector} {...props}/>;
+const RadioButtons = props => <Control.select component={forms.RadioButtons} {...props}/>;
+const Switcher = props => <Control.select component={forms.Switcher} {...props}/>;
+const { NestedMultiselect, FormGroup } = forms;
 
 export {
   Select,
