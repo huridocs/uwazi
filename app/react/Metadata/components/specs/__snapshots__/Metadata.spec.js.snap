@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Metadata should render string values 1`] = `
+<React.Fragment>
+  <dl
+    key="Label"
+  >
+    <dt>
+      Label
+    </dt>
+    <dd>
+      string value
+    </dd>
+  </dl>
+  ;
+</React.Fragment>
+`;
