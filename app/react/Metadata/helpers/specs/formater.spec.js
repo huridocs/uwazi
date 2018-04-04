@@ -1,5 +1,6 @@
 import formater from '../formater';
 import {fromJS} from 'immutable';
+import { formatMetadata } from '../../selectors';
 
 describe('metadata formater', () => {
   let doc;
@@ -228,6 +229,16 @@ describe('metadata formater', () => {
         expect(date.name).toBe('date');
         expect(date.value).toContain('1970');
       });
+    });
+  });
+
+  describe('formatMetadata selector', () => {
+    it('should use formater.prepareMetadata', () => {
+      spyOn(formater, 'prepareMetadata').and.returnValue({metadata: 'metadataFormated'});
+      const state = {templates, thesauris};
+      const metadata = formatMetadata(state, doc);
+      expect(metadata).toBe('metadataFormated');
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris);
     });
   });
 });
