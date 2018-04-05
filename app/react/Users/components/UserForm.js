@@ -21,6 +21,52 @@ class UserForm extends Component {
     );
   }
 
+  static footer() {
+    const backUrl = '/settings/users';
+    return (
+      <div className="settings-footer">
+        <I18NLink to={backUrl} className="btn btn-default">
+          <i className="fa fa-arrow-left" />
+          <span className="btn-label">Back</span>
+        </I18NLink>
+        <button type="submit" className="btn btn-success save-template">
+          <i className="fa fa-save" />
+          <span className="btn-label">{t('System', 'Save')}</span>
+        </button>
+      </div>
+    );
+  }
+
+  static getClassBasedOnRole(role) {
+    return `fa fa-lg fa-fw fa-times ${role === 'admin' ? 'label-success' : 'label-danger'}`;
+  }
+
+  static permissions(role, label) {
+    return (
+      <div className="col-sm-6">
+        <div className="well">
+          <label htmlFor={role}>
+            <input type="radio" id={role} name="role" value={role}/>&nbsp;
+            {t('System', label)}
+          </label>
+          <hr />
+          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Upload documents and create entities')}</p>
+          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Delete documents and entities')}</p>
+          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
+          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create connections and references')}</p>
+          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create a table of contents')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Manage site settings and configuration')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Configure filters')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/edit translations')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create document and entity types')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create dictionaries')}</p>
+          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Name connections')}</p>
+        </div>
+      </div>
+    );
+  }
+
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
@@ -31,7 +77,6 @@ class UserForm extends Component {
   }
 
   render() {
-    const backUrl = '/settings/users';
     const validator = {
       username: { required: notEmpty },
       email: { required: notEmpty },
@@ -46,7 +91,7 @@ class UserForm extends Component {
         >
           <div className="panel-default panel">
             <div className="panel-heading">
-              New user
+              {this.props.user.get('username') || 'New User'}
             </div>
             <div className="panel-body">
               {UserForm.formGroup('username', t('System', 'Username'))}
@@ -55,62 +100,13 @@ class UserForm extends Component {
                 <Field model=".role">
                   {t('System', 'Role')}
                   <div className="row">
-                    <div className="col-sm-6">
-                      <div className="well">
-                        <label htmlFor="editor">
-                          <input type="radio" id="editor" name="role" value="editor"/>&nbsp;
-                          {t('System', 'Editor')}
-                        </label>
-                        <hr />
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Upload documents and create entities')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Delete documents and entities')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create connections and references')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create a table of contents')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Manage site settings and configuration')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Configure filters')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Add/edit translations')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Create document and entity types')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Create dictionaries')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-times label-danger" />&nbsp;{t('System', 'Name connections')}</p>
-                      </div>
-                    </div>
-                    <div className="col-sm-6">
-                      <div className="well">
-                        <label htmlFor="admin">
-                          <input type="radio" id="admin" name="role" value="admin"/>&nbsp;
-                          {t('System', 'Admin')}
-                        </label>&nbsp;
-                        <hr />
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Upload documents and create entities')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Delete documents and entities')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create connections and references')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create a table of contents')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Manage site settings and configuration')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Configure filters')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Add/edit translations')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create document and entity types')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create dictionaries')}</p>
-                        <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Name connections')}</p>
-                      </div>
-                    </div>
+                    {UserForm.permissions('admin', 'Admin')}
+                    {UserForm.permissions('editor', 'Editor')}
                   </div>
                 </Field>
               </FormGroup>
             </div>
-            <div className="settings-footer">
-              <I18NLink to={backUrl} className="btn btn-default">
-                <i className="fa fa-arrow-left" />
-                <span className="btn-label">Back</span>
-              </I18NLink>
-              <button type="submit" className="btn btn-success save-template">
-                <i className="fa fa-save" />
-                <span className="btn-label">{t('System', 'Save')}</span>
-              </button>
-            </div>
+            {UserForm.footer()}
           </div>
         </LocalForm>
       </div>
