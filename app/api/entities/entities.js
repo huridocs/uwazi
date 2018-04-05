@@ -14,7 +14,7 @@ function updateEntity(entity, _template) {
   .then((docLanguages) => {
     if (docLanguages[0].template && entity.template && docLanguages[0].template.toString() !== entity.template.toString()) {
       return Promise.all([
-        this.deleteEntityFromMetadata(docLanguages[0]),
+        this.deleteEntityFromMetadata(docLanguages[0].sharedId, docLanguages[0].template),
         relationships.delete({ entity: entity.sharedId }, null, false)
       ])
       .then(() => docLanguages);
@@ -256,7 +256,7 @@ export default {
         relationshipProperties.forEach((property) => {
           const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
               (!property.content || r.entityData.template.toString() === property.content));
-          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity);
+          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity); //eslint-disable-line
         });
         if (relationshipProperties.length) {
           entitiesToReindex.push(entity.sharedId);
@@ -273,7 +273,7 @@ export default {
     actions.$unset = {};
     return templates.getById(template._id)
     .then((currentTemplate) => {
-      template.properties = generateNamesAndIds(template.properties);
+      template.properties = generateNamesAndIds(template.properties); //eslint-disable-line
       template.properties.forEach((property) => {
         const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
         if (currentProperty && currentProperty.name !== property.name) {
@@ -342,7 +342,7 @@ export default {
     .then(docs => Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
       this.deleteFiles(docs),
-      this.deleteEntityFromMetadata(docs[0])
+      this.deleteEntityFromMetadata(docs[0].sharedId, docs[0].template)
     ])
     .then(() => docs));
   },
@@ -365,34 +365,34 @@ export default {
     .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
-  deleteEntityFromMetadata(entity) {
-    return templates.get({ 'properties.content': entity.template })
+  deleteEntityFromMetadata(sahredId, propertyContent) {
+    return templates.get({ 'properties.content': propertyContent })
     .then((allTemplates) => {
       const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
       const selectProperties = allProperties.filter(p => p.type === 'select');
       const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
       const selectQuery = { $or: [] };
       const selectChanges = {};
-      selectQuery.$or = selectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
+      selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
         const p = {};
-        p[`metadata.${property.name}`] = entity.sharedId;
+        p[`metadata.${property.name}`] = sahredId;
         selectChanges[`metadata.${property.name}`] = '';
         return p;
       });
 
       const multiSelectQuery = { $or: [] };
       const multiSelectChanges = {};
-      multiSelectQuery.$or = multiselectProperties.filter(p => entity.template && p.content && entity.template.toString() === p.content.toString())
+      multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
         const p = {};
-        p[`metadata.${property.name}`] = entity.sharedId;
-        multiSelectChanges[`metadata.${property.name}`] = entity.sharedId;
+        p[`metadata.${property.name}`] = sahredId;
+        multiSelectChanges[`metadata.${property.name}`] = sahredId;
         return p;
       });
 
       if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
-        return;
+        return Promise.resolve();
       }
 
       return Promise.all([
