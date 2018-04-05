@@ -122,7 +122,7 @@ export default {
   },
 
   markdown(property, value, showInCard) {
-    return { label: property.get('label'), name: property.get('name'), markdown: value, showInCard };
+    return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
   prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {

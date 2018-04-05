@@ -21,7 +21,8 @@ describe('metadata formater', () => {
         markdown: 'markdown content',
         select: 'value3',
         relationship1: ['value1', 'value2'],
-        relationship2: ['value1', 'value2', 'value4']
+        relationship2: ['value1', 'value2', 'value4'],
+        select2: ''
       }
     };
 
@@ -142,7 +143,7 @@ describe('metadata formater', () => {
     it('should process markdown type', () => {
       expect(markdown.label).toBe('Mark Down');
       expect(markdown.name).toBe('markdown');
-      expect(markdown.markdown).toBe('markdown content');
+      expect(markdown.value).toBe('markdown content');
     });
 
     it('should process select type', () => {
@@ -212,7 +213,7 @@ describe('metadata formater', () => {
     it('should process markdown type', () => {
       expect(markdown.label).toBe('Mark Down');
       expect(markdown.name).toBe('markdown');
-      expect(markdown.markdown).toBe('markdown content');
+      expect(markdown.value).toBe('markdown content');
     });
 
     describe('when sort property passed', () => {

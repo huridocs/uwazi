@@ -1,18 +1,17 @@
-import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-
-import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
+import {connect} from 'react-redux';
+import formater from '../Metadata/helpers/formater';
 import MarkdownViewer from 'app/Markdown';
 
-import {RowList, ItemFooter} from './Lists';
-import DocumentLanguage from './DocumentLanguage';
-import Icon from './Icon';
-import Metadata from '../Metadata/components/Metadata.js';
-import PrintDate from './PrintDate';
-import TemplateLabel from './TemplateLabel';
-import formater from '../Metadata/helpers/formater';
 import t from '../I18N/t';
+
+import {RowList, ItemFooter} from './Lists';
+import Icon from './Icon';
+import DocumentLanguage from './DocumentLanguage';
+import TemplateLabel from './TemplateLabel';
+import PrintDate from './PrintDate';
+import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
 
 export class Item extends Component {
 
@@ -38,7 +37,7 @@ export class Item extends Component {
 
         let value = property.value && property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
 
-        if (property.markdown) {
+        if (property.type === 'markdown') {
           dlClassName = 'item-property-markdown';
           value = <MarkdownViewer markdown={property.markdown}/>;
         }
@@ -146,8 +145,8 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
-    //const metadataElements = this.getMetadata(doc);
-    //const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
+    const metadataElements = this.getMetadata(doc);
+    const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
 
     return (
       <RowList.Item
@@ -169,7 +168,7 @@ export class Item extends Component {
           {Snippet}
           {this.getSearchSnipett(doc)}
         </div>
-        <Metadata entity={doc}/>
+        {metadata}
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}
           {this.props.labels}

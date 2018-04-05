@@ -10,8 +10,8 @@ describe('Metadata', () => {
   let props;
 
   function testSnapshot() {
-    const tree = shallow(<Metadata.WrappedComponent {...props} />);
-    expect(tree).toMatchSnapshot();
+    const component = shallow(<Metadata.WrappedComponent {...props} />);
+    expect(component).toMatchSnapshot();
   }
 
   beforeEach(() => {
@@ -20,6 +20,16 @@ describe('Metadata', () => {
 
   it('should render string values', () => {
     props.metadata = [{ label: 'Label', value: 'string value' }];
+    testSnapshot();
+  });
+
+  it('should render array values separated by ", "', () => {
+    props.metadata = [{ label: 'label array', value: [{ value: 'first_value' }, { value: 'second_value' }] }];
+    testSnapshot();
+  });
+
+  it('should render a Markdown when the metadata is type mardown', () => {
+    props.metadata = [{ label: 'label array', value: 'some markdown text', type: 'markdown' }];
     testSnapshot();
   });
 });

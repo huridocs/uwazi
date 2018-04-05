@@ -1,5 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
+<React.Fragment>
+  <dl
+    key="label array"
+  >
+    <dt>
+      label array
+    </dt>
+    <dd>
+      <MarkdownViewer
+        lists={Array []}
+        markdown="some markdown text"
+      />
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata should render array values separated by ", " 1`] = `
+<React.Fragment>
+  <dl
+    key="label array"
+  >
+    <dt>
+      label array
+    </dt>
+    <dd>
+      first_value, second_value
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
 exports[`Metadata should render string values 1`] = `
 <React.Fragment>
   <dl
@@ -12,6 +45,5 @@ exports[`Metadata should render string values 1`] = `
       string value
     </dd>
   </dl>
-  ;
 </React.Fragment>
 `;
