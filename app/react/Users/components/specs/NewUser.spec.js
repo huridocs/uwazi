@@ -1,7 +1,7 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {LocalForm} from 'react-redux-form';
-import {NewUser} from '../NewUser';
+import { shallow } from 'enzyme';
+import { NewUser } from '../NewUser';
+import UserForm from '../UserForm';
 
 describe('NewUser', () => {
   let component;
@@ -13,24 +13,15 @@ describe('NewUser', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<NewUser {...props} />);
   };
 
   describe('render', () => {
-    it('should render a form', () => {
+    it('should render a form with the proper submit function', () => {
       render();
-      expect(component.find(LocalForm).length).toBe(1);
-    });
-  });
-
-  describe('submit', () => {
-    it('should call newUser', () => {
-      render();
-      const instance = component.instance();
-      const user = {username: 'spidey', email: 'peter@parker.com'};
-      instance.submit(user);
-      expect(props.newUser).toHaveBeenCalledWith(user);
+      expect(component.find(UserForm).length).toBe(1);
+      expect(component.find(UserForm).props().submit).toBe(props.newUser);
     });
   });
 });
