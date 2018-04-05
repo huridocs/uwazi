@@ -142,7 +142,7 @@ export default {
     }
 
 
-    const metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
+    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
     .map((property) => {
       const value = doc.metadata[property.get('name')];
       const showInCard = property.get('showInCard');
@@ -150,45 +150,73 @@ export default {
       const type = property.get('type');
 
       if (type === 'select' && value) {
-        return Object.assign(this.select(property, value, thesauris, showInCard), { type });
+        return Object.assign(this.select(property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'multiselect' && value) {
-        return Object.assign(this.multiselect(property, value, thesauris, showInCard), { type });
+        return Object.assign(this.multiselect(property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'relationship' && value) {
-        return Object.assign(this.relationship(property, value, thesauris, showInCard), { type });
+        return Object.assign(this.relationship(property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'date' && value) {
-        return Object.assign(this.date(property, value, showInCard), { type });
+        return Object.assign(this.date(property, value, showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'daterange' && value) {
-        return Object.assign(this.daterange(property, value, showInCard), { type });
+        return Object.assign(this.daterange(property, value, showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'multidate') {
-        return Object.assign(this.multidate(property, value || [], showInCard), { type });
+        return Object.assign(this.multidate(property, value || [], showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'multidaterange') {
-        return Object.assign(this.multidaterange(property, value || [], showInCard), { type });
+        return Object.assign(this.multidaterange(property, value || [], showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'markdown' && value) {
-        return Object.assign(this.markdown(property, value, showInCard), { type });
+        return Object.assign(this.markdown(property, value, showInCard), { type, translateContext: template.get('_id') });
       }
 
       if (type === 'nested' && value) {
-        return Object.assign(this.nested(property, value, showInCard), { type });
+        return Object.assign(this.nested(property, value, showInCard), { type, translateContext: template.get('_id') });
       }
 
-      return { label: property.get('label'), name: property.get('name'), value, showInCard };
+      return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
     });
 
+    metadata = this.addSortedProperty(metadata, templates, options.sortedProperty);
+
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
+  },
+
+  addSortedProperty(metadata, templates, sortedProperty) {
+    const sortPropertyInMetadata = metadata.find(p => `metadata.${p.name}` === sortedProperty);
+    if (!sortPropertyInMetadata) {
+      return metadata.push(
+        templates.reduce((_property, template) => {
+          if (!template.get('properties')) {
+            return _property;
+          }
+          let matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === sortedProperty);
+          if (matchProp) {
+            matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
+          }
+          return _property || matchProp;
+        }, false)
+      ).filter(p => p);
+    }
+
+    return metadata.map((prop) => {
+      prop.sortedBy = false;
+      if (`metadata.${prop.name}` === sortedProperty) {
+        prop.sortedBy = true;
+      }
+      return prop;
+    });
   },
 
   filterProperties(template, onlyForCards, sortedProperty) {

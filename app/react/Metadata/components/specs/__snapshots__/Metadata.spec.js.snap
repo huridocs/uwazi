@@ -8,7 +8,9 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
     <dt>
       label array
     </dt>
-    <dd>
+    <dd
+      className=""
+    >
       <MarkdownViewer
         lists={Array []}
         markdown="some markdown text"
@@ -26,8 +28,44 @@ exports[`Metadata should render array values separated by ", " 1`] = `
     <dt>
       label array
     </dt>
-    <dd>
+    <dd
+      className=""
+    >
       first_value, second_value
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata should render property not have this item when type is null 1`] = `
+<React.Fragment>
+  <dl
+    key="metadata without property"
+  >
+    <dt>
+      metadata without property
+    </dt>
+    <dd
+      className=""
+    >
+      No property
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata should render sorted property with sorted styles 1`] = `
+<React.Fragment>
+  <dl
+    key="sortedBy"
+  >
+    <dt>
+      sortedBy
+    </dt>
+    <dd
+      className="item-current-sort"
+    >
+      string value
     </dd>
   </dl>
 </React.Fragment>
@@ -41,7 +79,9 @@ exports[`Metadata should render string values 1`] = `
     <dt>
       Label
     </dt>
-    <dd>
+    <dd
+      className=""
+    >
       string value
     </dd>
   </dl>

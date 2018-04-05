@@ -1,20 +1,20 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import formater from '../Metadata/helpers/formater';
+import Metadata from 'app/Metadata/components/Metadata';
 import MarkdownViewer from 'app/Markdown';
 
 import t from '../I18N/t';
 
-import {RowList, ItemFooter} from './Lists';
+import { RowList, ItemFooter } from './Lists';
 import Icon from './Icon';
 import DocumentLanguage from './DocumentLanguage';
 import TemplateLabel from './TemplateLabel';
 import PrintDate from './PrintDate';
-import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
+import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
 
 export class Item extends Component {
-
   formatMetadata(populatedMetadata, creationDate, translationContext) {
     let sortPropertyInMetadata = false;
 
@@ -22,7 +22,7 @@ export class Item extends Component {
     .map((property, index) => {
       let isSortingProperty = false;
 
-      if ('metadata.' + property.name === this.props.search.sort) {
+      if (`metadata.${property.name}` === this.props.search.sort) {
         sortPropertyInMetadata = true;
         isSortingProperty = true;
       }
@@ -48,7 +48,7 @@ export class Item extends Component {
         }
 
         if ((property.type === 'multidate' || property.type === 'multidaterange') && property.value.map) {
-          value = <span dangerouslySetInnerHTML={{__html: property.value.map(d => d.value).join('<br />')}}></span>;
+          value = <span dangerouslySetInnerHTML={{ __html: property.value.map(d => d.value).join('<br />') }} />;
         }
 
         return (
@@ -71,9 +71,7 @@ export class Item extends Component {
 
     if (!propertiesToAvoid && !sortPropertyInMetadata) {
       const sortingProperty = this.props.templates.reduce((_property, template) => {
-        let matchProp = template.get('properties').find(prop => {
-          return `metadata.${prop.get('name')}` === this.props.search.sort;
-        });
+        const matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === this.props.search.sort);
         if (matchProp) {
           matchProp.set('context', template.get('_id'));
         }
@@ -93,7 +91,7 @@ export class Item extends Component {
         <dl key={metadata.length}>
           <dt>{t('System', 'Date added')}</dt>
           <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}>
-            <PrintDate utc={creationDate} toLocal={true} />
+            <PrintDate utc={creationDate} toLocal />
           </dd>
         </dl>
       );
@@ -107,9 +105,9 @@ export class Item extends Component {
     const populatedMetadata = formater.prepareMetadataForCard(doc, this.props.templates, this.props.thesauris, this.props.search.sort).metadata;
 
     if (this.props.additionalMetadata && this.props.additionalMetadata.length) {
-      this.props.additionalMetadata.reverse().forEach(metadata => {
-        const {label, value} = metadata;
-        populatedMetadata.unshift({value, label, icon: metadata.icon, showInCard: true, context: 'System'});
+      this.props.additionalMetadata.reverse().forEach((metadata) => {
+        const { label, value } = metadata;
+        populatedMetadata.unshift({ value, label, icon: metadata.icon, showInCard: true, context: 'System' });
       });
     }
 
@@ -124,14 +122,14 @@ export class Item extends Component {
     if (doc.snippets.length === 1) {
       return (
         <div className="item-snippet-wrapper">
-          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
+          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{ __html: `${doc.snippets[0].text} ...` }} />
         </div>
       );
     }
 
     return (
       <div className="item-snippet-wrapper">
-        <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{__html: doc.snippets[0].text + ' ...'}} />
+        <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{ __html: `${doc.snippets[0].text} ...` }} />
         <div>
           <a onClick={this.props.onSnippetClick}>{t('System', 'Show more')}</a>
         </div>
@@ -140,13 +138,13 @@ export class Item extends Component {
   }
 
   render() {
-    const {onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
-           additionalText, buttons, evalPublished} = this.props;
+    const { onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
+           additionalText, buttons, evalPublished } = this.props;
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
-    const metadataElements = this.getMetadata(doc);
-    const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
+    //const metadataElements = this.getMetadata(doc);
+    //const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
 
     return (
       <RowList.Item
@@ -155,11 +153,12 @@ export class Item extends Component {
         onMouseEnter={onMouseEnter || function () {}}
         onMouseLeave={onMouseLeave || function () {}}
         active={active}
-        tabIndex="1">
+        tabIndex="1"
+        >
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
-            {evalPublished && !doc.published ? <i className="item-private-icon fa fa-lock"></i> : false }
+            {evalPublished && !doc.published ? <i className="item-private-icon fa fa-lock" /> : false }
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc[this.props.titleProperty]}</span>
@@ -168,7 +167,9 @@ export class Item extends Component {
           {Snippet}
           {this.getSearchSnipett(doc)}
         </div>
-        {metadata}
+        <div className="item-metadata">
+          <Metadata entity={doc} sortedProperty={this.props.search.sort} />
+        </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}
           {this.props.labels}
@@ -205,10 +206,10 @@ Item.defaultProps = {
   titleProperty: 'title'
 };
 
-export const mapStateToProps = ({templates, thesauris}, ownProps) => {
+export const mapStateToProps = ({ templates, thesauris }, ownProps) => {
   const search = ownProps.searchParams;
   const _templates = ownProps.templates || templates;
-  return {templates: _templates, thesauris, search};
+  return { templates: _templates, thesauris, search };
 };
 
 export default connect(mapStateToProps)(Item);

@@ -1,5 +1,5 @@
+import Immutable from 'immutable';
 import formater from '../formater';
-import {fromJS} from 'immutable';
 import { formatMetadata } from '../../selectors';
 
 describe('metadata formater', () => {
@@ -16,8 +16,8 @@ describe('metadata formater', () => {
         date: 10,
         multiselect: ['value1', 'value2'],
         multidate: [10, 1000000],
-        daterange: {from: 10, to: 1000000},
-        multidaterange: [{from: 10, to: 1000000}, {from: 2000000, to: 3000000}],
+        daterange: { from: 10, to: 1000000 },
+        multidaterange: [{ from: 10, to: 1000000 }, { from: 2000000, to: 3000000 }],
         markdown: 'markdown content',
         select: 'value3',
         relationship1: ['value1', 'value2'],
@@ -26,37 +26,37 @@ describe('metadata formater', () => {
       }
     };
 
-    templates = fromJS([
-      {_id: 'template'},
-      {_id: 'template2'},
+    templates = Immutable.fromJS([
+      { _id: 'template' },
+      { _id: 'template2' },
       {
         _id: 'templateID',
         name: 'Mecanismo',
         isEntity: true,
         properties: [
-          {name: 'text', type: 'text', label: 'Text', showInCard: true},
-          {name: 'date', type: 'date', label: 'Date'},
-          {name: 'multiselect', content: 'thesauriId', type: 'multiselect', label: 'Multiselect'},
-          {name: 'multidate', type: 'multidate', label: 'Multi Date'},
-          {name: 'daterange', type: 'daterange', label: 'Date Range'},
-          {name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range'},
-          {name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true},
-          {name: 'select', content: 'thesauriId', type: 'select', label: 'Select'},
-          {name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1'},
-          {name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1'}
+          { name: 'text', type: 'text', label: 'Text', showInCard: true },
+          { name: 'date', type: 'date', label: 'Date' },
+          { name: 'multiselect', content: 'thesauriId', type: 'multiselect', label: 'Multiselect' },
+          { name: 'multidate', type: 'multidate', label: 'Multi Date' },
+          { name: 'daterange', type: 'daterange', label: 'Date Range' },
+          { name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range' },
+          { name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true },
+          { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
+          { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
+          { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' }
         ]
       }
     ]);
 
-    thesauris = fromJS([
+    thesauris = Immutable.fromJS([
       {
         _id: 'thesauriId',
         name: 'Multiselect',
         type: 'template',
         values: [
-          {label: 'Value 1', id: 'value1', _id: 'value1'},
-          {label: 'Value 2', id: 'value2', _id: 'value2'},
-          {label: 'Value 3', id: 'value3', _id: 'value3'}
+          { label: 'Value 1', id: 'value1', _id: 'value1' },
+          { label: 'Value 2', id: 'value2', _id: 'value2' },
+          { label: 'Value 3', id: 'value3', _id: 'value3' }
         ]
       },
       {
@@ -64,7 +64,7 @@ describe('metadata formater', () => {
         name: 'Multiselect2',
         type: 'template',
         values: [
-          {label: 'Value 4', id: 'value4', _id: 'value4'}
+          { label: 'Value 4', id: 'value4', _id: 'value4' }
         ]
       }
     ]);
@@ -72,7 +72,6 @@ describe('metadata formater', () => {
 
   describe('prepareMetadata', () => {
     let data;
-    let metadata;
 
     let text;
     let date;
@@ -87,8 +86,7 @@ describe('metadata formater', () => {
 
     beforeEach(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
-      metadata = data.metadata;
-      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2] = metadata;
+      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2] = data.metadata;
     });
 
     it('should maintain doc original data untouched', () => {
@@ -104,17 +102,20 @@ describe('metadata formater', () => {
       expect(text.label).toBe('Text');
       expect(text.name).toBe('text');
       expect(text.value).toBe('text content');
+      expect(text.translateContext).toBe('templateID');
     });
 
     it('should process date type', () => {
       expect(date.label).toBe('Date');
       expect(date.name).toBe('date');
       expect(date.value).toContain('1970');
+      expect(date.translateContext).toBe('templateID');
     });
 
     it('should process multiselect type', () => {
       expect(multiselect.label).toBe('Multiselect');
       expect(multiselect.name).toBe('multiselect');
+      expect(multiselect.translateContext).toBe('templateID');
       expect(multiselect.value.length).toBe(2);
       expect(multiselect.value[0].value).toBe('Value 1');
       expect(multiselect.value[1].value).toBe('Value 2');
@@ -123,14 +124,16 @@ describe('metadata formater', () => {
     it('should process multidate type', () => {
       expect(multidate.label).toBe('Multi Date');
       expect(multidate.name).toBe('multidate');
-      expect(multidate.value[0]).toEqual({timestamp: 10, value: 'Jan 1, 1970'});
-      expect(multidate.value[1]).toEqual({timestamp: 1000000, value: 'Jan 12, 1970'});
+      expect(multidate.value[0]).toEqual({ timestamp: 10, value: 'Jan 1, 1970' });
+      expect(multidate.value[1]).toEqual({ timestamp: 1000000, value: 'Jan 12, 1970' });
+      expect(multidate.translateContext).toBe('templateID');
     });
 
     it('should process daterange type', () => {
       expect(daterange.label).toBe('Date Range');
       expect(daterange.name).toBe('daterange');
       expect(daterange.value).toEqual('Jan 1, 1970 ~ Jan 12, 1970');
+      expect(daterange.translateContext).toBe('templateID');
     });
 
     it('should process multidaterange type', () => {
@@ -138,18 +141,21 @@ describe('metadata formater', () => {
       expect(multidaterange.name).toBe('multidaterange');
       expect(multidaterange.value[0].value).toEqual('Jan 1, 1970 ~ Jan 12, 1970');
       expect(multidaterange.value[1].value).toEqual('Jan 24, 1970 ~ Feb 4, 1970');
+      expect(multidaterange.translateContext).toBe('templateID');
     });
 
     it('should process markdown type', () => {
       expect(markdown.label).toBe('Mark Down');
       expect(markdown.name).toBe('markdown');
       expect(markdown.value).toBe('markdown content');
+      expect(markdown.translateContext).toBe('templateID');
     });
 
     it('should process select type', () => {
       expect(select.label).toBe('Select');
       expect(select.name).toBe('select');
       expect(select.value).toBe('Value 3');
+      expect(select.translateContext).toBe('templateID');
     });
 
     it('should process bound relationship types', () => {
@@ -160,6 +166,7 @@ describe('metadata formater', () => {
       expect(relationship1.value[0].url).toBe('/entity/value1');
       expect(relationship1.value[1].value).toBe('Value 2');
       expect(relationship1.value[1].url).toBe('/entity/value2');
+      expect(relationship1.translateContext).toBe('templateID');
     });
 
     it('should process free relationsip types', () => {
@@ -172,6 +179,7 @@ describe('metadata formater', () => {
       expect(relationship2.value[1].url).toBe('/entity/value2');
       expect(relationship2.value[2].value).toBe('Value 4');
       expect(relationship2.value[2].url).toBe('/entity/value4');
+      expect(relationship2.translateContext).toBe('templateID');
     });
 
     it('should not fail when field do not exists on the document', () => {
@@ -184,15 +192,13 @@ describe('metadata formater', () => {
 
   describe('prepareMetadataForCard', () => {
     let data;
-    let metadata;
 
     let text;
     let markdown;
 
     beforeEach(() => {
       data = formater.prepareMetadataForCard(doc, templates, thesauris);
-      metadata = data.metadata;
-      [text, markdown] = metadata;
+      [text, markdown] = data.metadata;
     });
 
     it('should maintain doc original data untouched', () => {
@@ -218,28 +224,73 @@ describe('metadata formater', () => {
 
     describe('when sort property passed', () => {
       let date;
-      beforeEach(() => {
-        data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
-        metadata = data.metadata;
-        [text, date, markdown] = metadata;
-      });
-
       it('should process also the sorted property even if its not a "showInCard"', () => {
+        data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
+        [text, date, markdown] = data.metadata;
         expect(data.metadata.length).toBe(3);
         expect(date.label).toBe('Date');
         expect(date.name).toBe('date');
         expect(date.value).toContain('1970');
+      });
+
+      it('should add sortedBy true to the property being sorted', () => {
+        data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
+        [text, date, markdown] = data.metadata;
+        expect(date.sortedBy).toBe(true);
+        expect(text.sortedBy).toBe(false);
+        expect(markdown.sortedBy).toBe(false);
+      });
+
+      describe('when sort property does not exists in the metadata', () => {
+        it('should return a property with null as value', () => {
+          templates = templates.push(Immutable.fromJS({
+            _id: 'otherTemplate',
+            properties: [
+              { name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }
+            ]
+          }));
+
+          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.nonexistent');
+          const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
+
+          expect(nonexistent.type).toBe(null);
+          expect(nonexistent.label).toBe('NonExistentLabel');
+          expect(nonexistent.translateContext).toBe('otherTemplate');
+        });
+
+        it('should ignore non metadata properties', () => {
+          templates = templates.push(Immutable.fromJS({
+            properties: [
+              { name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }
+            ]
+          }));
+
+          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'nonexistent');
+          const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
+
+          expect(nonexistent).not.toBeDefined();
+        });
       });
     });
   });
 
   describe('formatMetadata selector', () => {
     it('should use formater.prepareMetadata', () => {
-      spyOn(formater, 'prepareMetadata').and.returnValue({metadata: 'metadataFormated'});
-      const state = {templates, thesauris};
+      spyOn(formater, 'prepareMetadata').and.returnValue({ metadata: 'metadataFormated' });
+      const state = { templates, thesauris };
       const metadata = formatMetadata(state, doc);
       expect(metadata).toBe('metadataFormated');
       expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris);
+    });
+
+    describe('when passing sortProperty', () => {
+      it('should use formater.prepareMetadataForCard', () => {
+        spyOn(formater, 'prepareMetadataForCard').and.returnValue({ metadata: 'metadataFormated' });
+        const state = { templates, thesauris };
+        const metadata = formatMetadata(state, doc, 'sortProperty');
+        expect(metadata).toBe('metadataFormated');
+        expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, thesauris, 'sortProperty');
+      });
     });
   });
 });

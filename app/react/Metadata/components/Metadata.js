@@ -2,6 +2,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { t } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 
 import { formatMetadata } from '../selectors';
@@ -11,6 +13,10 @@ const showByType = (prop) => {
     return <MarkdownViewer markdown={prop.value} />;
   }
 
+  if (prop.type === null) {
+    return t('System', 'No property');
+  }
+
   if (prop.value.map) {
     return prop.value.map(v => v.value).join(', ');
   }
@@ -18,26 +24,26 @@ const showByType = (prop) => {
   return prop.value;
 };
 
-const Metadata = ({ metadata }) => {
-  return (
-    <React.Fragment>
-      {metadata.map(prop => (
-        <dl key={prop.label}>
-          <dt>{prop.label}</dt>
-          <dd>{showByType(prop)}</dd>
-        </dl>
+const Metadata = ({ metadata }) => (
+  <React.Fragment>
+    {metadata.map(prop => (
+      <dl key={prop.label}>
+        <dt>{t(prop.translateContext, prop.label)}</dt>
+        <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+          {showByType(prop)}
+        </dd>
+      </dl>
       ))}
-    </React.Fragment>
-  );
-};
+  </React.Fragment>
+);
 
 Metadata.propTypes = {
   metadata: PropTypes.array
 };
 
-export function mapStateToProps(state, { entity }) {
+export function mapStateToProps(state, { entity, sortedProperty }) {
   return {
-    metadata: formatMetadata(state, entity)
+    metadata: formatMetadata(state, entity, sortedProperty)
   };
 }
 

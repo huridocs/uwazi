@@ -32,4 +32,14 @@ describe('Metadata', () => {
     props.metadata = [{ label: 'label array', value: 'some markdown text', type: 'markdown' }];
     testSnapshot();
   });
+
+  it('should render property not have this item when type is null', () => {
+    props.metadata = [{ label: 'metadata without property', type: null }];
+    testSnapshot();
+  });
+
+  it('should render sorted property with sorted styles', () => {
+    props.metadata = [{ label: 'sortedBy', value: 'string value', sortedBy: true }];
+    testSnapshot();
+  });
 });
