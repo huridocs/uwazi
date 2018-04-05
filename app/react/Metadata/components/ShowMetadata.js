@@ -1,27 +1,26 @@
+import { fromJS as Immutable } from 'immutable';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {fromJS as Immutable} from 'immutable';
+import React, { Component } from 'react';
+import Metadata from 'app/Metadata/components/Metadata';
 
-import {I18NLink} from 'app/I18N';
-import t from 'app/I18N/t';
-import ShowIf from 'app/App/ShowIf';
+import { I18NLink } from 'app/I18N';
+import { Icon } from 'app/Layout/Icon';
+import { TemplateLabel, DocumentLanguage } from 'app/Layout';
+import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedData';
 import MarkdownViewer from 'app/Markdown';
-import {Icon} from 'app/Layout/Icon';
-import {TemplateLabel, DocumentLanguage} from 'app/Layout';
-
+import ShowIf from 'app/App/ShowIf';
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
-import {caseTemplate, matterTemplate} from 'app/Timeline/utils/timelineFixedData';
 
 export class ShowMetadata extends Component {
   getValue(property) {
     property.value = property.value || '';
 
     if (property.url) {
-      return <I18NLink to={property.url}>
-               <Icon className="item-icon item-icon-center" data={property.icon} />
-               {property.value}
-             </I18NLink>;
+      return (<I18NLink to={property.url}>
+        <Icon className="item-icon item-icon-center" data={property.icon} />
+        {property.value}
+              </I18NLink>);
     }
 
     if (typeof property.value === 'object' && !property.value.length) {
@@ -29,14 +28,14 @@ export class ShowMetadata extends Component {
     }
 
     if (typeof property.value === 'object') {
-      return <ul className={'multiline'}>
-               {property.value.map((value, indx) => {
+      return (<ul className="multiline">
+        {property.value.map((value, indx) => {
                  if (value.url) {
                    return <li key={indx}><I18NLink to={value.url}>{value.value}</I18NLink></li>;
                  }
                  return <li key={indx}>{value.value}</li>;
                })}
-             </ul>;
+              </ul>);
     }
 
     if (property.markdown) {
@@ -49,18 +48,18 @@ export class ShowMetadata extends Component {
   }
 
   render() {
-    const {entity, showTitle, showType} = this.props;
+    const { entity, showTitle, showType } = this.props;
     let header = '';
     if (showTitle || showType) {
       let title = '';
       if (showTitle) {
-        title = <div>
-                  <Icon className="item-icon item-icon-center" data={entity.icon} />
-                  <h1 className="item-name">
-                    {entity.title}
-                    <DocumentLanguage doc={Immutable(entity)} />
-                  </h1>
-                </div>;
+        title = (<div>
+          <Icon className="item-icon item-icon-center" data={entity.icon} />
+          <h1 className="item-name">
+            {entity.title}
+            <DocumentLanguage doc={Immutable(entity)} />
+          </h1>
+                 </div>);
       }
       const type = showType ? <TemplateLabel template={entity.template}/> : '';
       header = <div className="item-info">{title}{type}</div>;
@@ -75,19 +74,7 @@ export class ShowMetadata extends Component {
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
         </ShowIf>
-
-        {entity.metadata.map((property, index) => {
-          const value = this.getValue(property);
-          if (!value) {
-            return false;
-          }
-          return (
-            <dl key={index}>
-              <dt>{t(entity.template, property.label)}</dt>
-              <dd>{value}</dd>
-            </dl>
-          );
-        })}
+        <Metadata entity={entity} />
       </div>
     );
   }
@@ -100,8 +87,6 @@ ShowMetadata.propTypes = {
   showType: PropTypes.bool
 };
 
-const mapStateToProps = ({templates}) => {
-  return {templates};
-};
+const mapStateToProps = ({ templates }) => ({ templates });
 
 export default connect(mapStateToProps)(ShowMetadata);

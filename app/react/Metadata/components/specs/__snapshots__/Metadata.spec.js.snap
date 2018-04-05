@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Metadata should not render metadata without value 1`] = `
+<React.Fragment>
+  <dl
+    key="Label"
+  >
+    <dt>
+      Label
+    </dt>
+    <dd
+      className=""
+    >
+      string value
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
 <React.Fragment>
   <dl
@@ -32,6 +49,48 @@ exports[`Metadata should render array values separated by ", " 1`] = `
       className=""
     >
       first_value, second_value
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata should render links when multiple properties have url 1`] = `
+<React.Fragment>
+  <dl
+    key="withUrl"
+  >
+    <dt>
+      withUrl
+    </dt>
+    <dd
+      className=""
+    >
+      <Connect(I18NLink)
+        to="url"
+      >
+        string value
+      </Connect(I18NLink)>
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata should render links when the property has url 1`] = `
+<React.Fragment>
+  <dl
+    key="withUrl"
+  >
+    <dt>
+      withUrl
+    </dt>
+    <dd
+      className=""
+    >
+      <Connect(I18NLink)
+        to="url"
+      >
+        string value
+      </Connect(I18NLink)>
     </dd>
   </dl>
 </React.Fragment>

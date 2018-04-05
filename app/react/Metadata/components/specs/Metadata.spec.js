@@ -18,6 +18,14 @@ describe('Metadata', () => {
     props = {};
   });
 
+  it('should not render metadata without value', () => {
+    props.metadata = [
+      { label: 'Label', value: 'string value' },
+      { label: 'Label2' }
+    ];
+    testSnapshot();
+  });
+
   it('should render string values', () => {
     props.metadata = [{ label: 'Label', value: 'string value' }];
     testSnapshot();
@@ -40,6 +48,16 @@ describe('Metadata', () => {
 
   it('should render sorted property with sorted styles', () => {
     props.metadata = [{ label: 'sortedBy', value: 'string value', sortedBy: true }];
+    testSnapshot();
+  });
+
+  it('should render links when the property has url', () => {
+    props.metadata = [{ label: 'withUrl', value: 'string value', url: 'url' }];
+    testSnapshot();
+  });
+
+  it('should render links when multiple properties have url', () => {
+    props.metadata = [{ label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }];
     testSnapshot();
   });
 });

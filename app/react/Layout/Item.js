@@ -167,9 +167,6 @@ export class Item extends Component {
           {Snippet}
           {this.getSearchSnipett(doc)}
         </div>
-        <div className="item-metadata">
-          <Metadata entity={doc} sortedProperty={this.props.search.sort} />
-        </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}
           {this.props.labels}
