@@ -7,15 +7,20 @@ import Metadata from '../components/Metadata';
 
 
 const FormatMetadata = props => (
-  <Metadata metadata={formatMetadata(props, props.entity, props.sortedProperty)} compact={!!props.sortedProperty}/>
+  <Metadata
+    metadata={props.additionalMetadata.concat(formatMetadata(props, props.entity, props.sortedProperty))}
+    compact={!!props.sortedProperty}
+  />
 );
 
 FormatMetadata.defaultProps = {
-  sortedProperty: ''
+  sortedProperty: '',
+  additionalMetadata: []
 };
 
 FormatMetadata.propTypes = {
   entity: PropTypes.object.isRequired,
+  additionalMetadata: PropTypes.array,
   sortedProperty: PropTypes.string
 };
 

@@ -17,4 +17,17 @@ describe('FormatMetadata', () => {
     const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
     expect(component).toMatchSnapshot();
   });
+
+  it('should unshift additional metadata if passed', () => {
+    spyOn(selectors, 'formatMetadata').and.returnValue(['formated', 'metadata']);
+    const props = {
+      templates: [],
+      thesauris: [],
+      entity: {},
+      sortedProperty: 'sortedProperty',
+      additionalMetadata: ['more', 'data']
+    };
+    const component = shallow(<FormatMetadata.WrappedComponent {...props} />);
+    expect(component).toMatchSnapshot();
+  });
 });

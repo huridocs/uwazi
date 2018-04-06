@@ -1,6 +1,7 @@
 import Immutable from 'immutable';
-import formater from '../formater';
+
 import { formatMetadata } from '../../selectors';
+import formater from '../formater';
 
 describe('metadata formater', () => {
   let doc;
@@ -243,8 +244,18 @@ describe('metadata formater', () => {
         expect(markdown.sortedBy).toBe(false);
       });
 
+      describe('when sort property has no value', () => {
+        it('should add No Value key and translateContext system to the property', () => {
+          doc.metadata.date = '';
+          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
+          [text, date] = data.metadata;
+          expect(date.value).toBe('No value');
+          expect(date.translateContext).toBe('System');
+        });
+      });
+
       describe('when sort property is creationDate', () => {
-        fit('should add it as a value to show', () => {
+        it('should add it as a value to show', () => {
           data = formater.prepareMetadataForCard(doc, templates, thesauris, 'creationDate');
           [text, markdown, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
@@ -309,4 +320,3 @@ describe('metadata formater', () => {
     });
   });
 });
-

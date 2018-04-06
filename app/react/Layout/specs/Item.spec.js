@@ -1,16 +1,17 @@
+import { fromJS as Immutable } from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
-import {Item, mapStateToProps} from '../Item';
 
-import {RowList, ItemFooter} from '../Lists';
+import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
+import { shallow } from 'enzyme';
+
+import { FormatMetadata } from '../../Metadata';
+import { Item, mapStateToProps } from '../Item';
+import { RowList, ItemFooter } from '../Lists';
 import DocumentLanguage from '../DocumentLanguage';
-import TemplateLabel from '../TemplateLabel';
-import PrintDate from '../PrintDate';
 import * as Icon from '../Icon';
-import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
+import TemplateLabel from '../TemplateLabel';
 
-xdescribe('Item', () => {
+describe('Item', () => {
   let component;
   let props;
 
@@ -19,7 +20,7 @@ xdescribe('Item', () => {
     props = {
       doc: Immutable({
         type: 'entity',
-        icon: {_id: 'icon', type: 'Icons'},
+        icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
@@ -38,7 +39,7 @@ xdescribe('Item', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<Item {...props} />);
   };
 
@@ -67,7 +68,7 @@ xdescribe('Item', () => {
   });
 
   it('should call onSnippetClick when clicking on the snippet', () => {
-    props.doc = Immutable({_id: 'id', snippets: [{text: 'snippet', page: 1}]});
+    props.doc = Immutable({ _id: 'id', snippets: [{ text: 'snippet', page: 1 }] });
     render();
     component.find('.item-snippet').simulate('click');
     expect(props.onSnippetClick).toHaveBeenCalled();
@@ -84,7 +85,7 @@ xdescribe('Item', () => {
     render();
     expect(component.find('.item-name').text()).toContain('additionalIcon');
     expect(component.find('.item-name').text()).toContain('doc title');
-    expect(component.find('.item-name').find(Icon.default).props().data).toEqual({_id: 'icon', type: 'Icons'});
+    expect(component.find('.item-name').find(Icon.default).props().data).toEqual({ _id: 'icon', type: 'Icons' });
     expect(component.find('.item-name').find(DocumentLanguage).props().doc).toBe(props.doc);
   });
 
@@ -102,134 +103,13 @@ xdescribe('Item', () => {
   });
 
   describe('Metadata', () => {
-    beforeEach(() => {
-      props.doc = props.doc.set('metadata', {
-        sex: 'female',
-        age: 25,
-        markdown: 'SomeMarkdown'
-      });
-      props.thesauris = Immutable([{_id: 't1'}]);
-    });
-
-    it('should render upload date if no property is configured in the template to show in card', () => {
-      props.search = {sort: 'title'};
+    it('should render FormatMetadata passing entity sort property and additionalMetadata', () => {
+      props.search = { sort: 'sortedProperty' };
+      props.additionalMetadata = ['additioal', 'metadata'];
       render();
-      expect(component.find('.item-metadata').text()).toContain('Date added');
-      expect(component.find('.item-metadata').find(PrintDate).props().utc).toBe(123);
-    });
-
-    it('should not render upload date if there is no creationDate', () => {
-      props.search = {sort: 'title'};
-      props.doc = props.doc.delete('creationDate');
-      render();
-      expect(component.find('.item-metadata').length).toBe(0);
-    });
-
-    it('should render metadata if configured in template', () => {
-      props.templates = Immutable([{
-        _id: 'templateId',
-        properties: [
-          {name: 'sex', label: 'sexLabel', showInCard: true},
-          {name: 'age', label: 'ageLabel'},
-          {name: 'markdown', label: 'markdownLabel', type: 'markdown', showInCard: true}
-        ]
-      }]);
-
-      render();
-      expect(component.find('.item-metadata').text()).toContain('sexLabel');
-      expect(component.find('.item-metadata').text()).toContain('female');
-      //expect(component.find('.item-metadata').html()).toContain('<p>SomeMarkdown</p>');
-      expect(component.find('.item-metadata').text()).not.toContain('ageLabel');
-    });
-
-    it('should not render metadata container when there is no metadata', () => {
-      props.templates = Immutable([{
-        _id: 'templateId',
-        properties: []
-      }]);
-      props.doc = props.doc.delete('creationDate');
-
-      render();
-      expect(component.find('.item-metadata').length).toBe(0);
-    });
-
-    it('should render metadata if selected in search.sort', () => {
-      props.templates = Immutable([{
-        _id: 'templateId',
-        properties: [
-          {name: 'sex', label: 'sexLabel', showInCard: true},
-          {name: 'age', label: 'ageLabel'}
-        ]
-      }]);
-
-      props.search = {sort: 'metadata.age'};
-
-      render();
-
-      expect(component.find('.item-metadata').text()).toContain('sexLabel');
-      expect(component.find('.item-metadata').text()).toContain('female');
-      expect(component.find('.item-metadata').text()).toContain('ageLabel');
-      expect(component.find('.item-current-sort').text()).toContain('25');
-    });
-
-    it('should render additional metadata if passed', () => {
-      props.templates = Immutable([{
-        _id: 'templateId',
-        properties: [
-          {name: 'sex', label: 'sexLabel'},
-          {name: 'age', label: 'ageLabel'}
-        ]
-      }]);
-
-      props.additionalMetadata = [
-        {label: 'label1', value: 'value1', icon: {_id: 'customIcon', type: 'Icons'}},
-        {label: 'label2', value: 'value2'}
-      ];
-
-      render();
-      expect(component.find('.item-metadata').html()).toContain('<dt>label1</dt>');
-      expect(component.find('.item-metadata').html()).toContain('customIcon');
-      expect(component.find('.item-metadata').html()).toContain('value1');
-      expect(component.find('.item-metadata').html()).toContain('<dt>label2</dt>');
-      expect(component.find('.item-metadata').html()).toContain('<dd class=""><div class="">value2</div></dd>');
-    });
-
-    it('should render multiple values separated by comas', () => {
-      props.templates = Immutable([{
-        _id: 'templateId',
-        properties: [
-          {name: 'sex', label: 'sexLabel', showInCard: true}
-        ]
-      }]);
-
-      props.doc = props.doc.set('metadata', {
-        sex: [{value: 'a'}, {value: 'b'}]
-      });
-
-      render();
-      expect(component.find('.item-metadata').html()).toContain('a, b');
-    });
-
-    it('should render multiple values separated by <br /> if multidate or multidaterange', () => {
-      props.templates = Immutable([{
-        _id: 'templateId',
-        properties: [
-          {name: 'date', type: 'date', label: 'date', showInCard: true},
-          {name: 'multidate', type: 'multidate', label: 'multidate', showInCard: true},
-          {name: 'multidaterange', type: 'multidaterange', label: 'multidaterange', showInCard: true}
-        ]
-      }]);
-
-      props.doc = props.doc.set('metadata', {
-        date: [1, 1000],
-        multidate: [10000, 100000],
-        multidaterange: [{from: 1000000, to: 1200000}, {from: 2000000, to: 2200000}]
-      });
-
-      render();
-      expect(component.find('.item-metadata').find('dd').at(0).html()).toContain(',');
-      expect(component.find('.item-metadata').find('dd').at(1).html()).toContain('<br />');
-      expect(component.find('.item-metadata').find('dd').at(2).html()).toContain('<br />');
+      expect(component.find(FormatMetadata).props().entity).toEqual(props.doc.toJS());
+      expect(component.find(FormatMetadata).props().sortedProperty).toBe(props.search.sort);
+      expect(component.find(FormatMetadata).props().additionalMetadata).toBe(props.additionalMetadata);
     });
   });
 
@@ -237,7 +117,7 @@ xdescribe('Item', () => {
     it('should not render snippet secction when undefined', () => {
       props.doc = Immutable({
         type: 'entity',
-        icon: {_id: 'icon', type: 'Icons'},
+        icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
         creationDate: 123
@@ -249,7 +129,7 @@ xdescribe('Item', () => {
     it('should not render snippet secction when empty', () => {
       props.doc = Immutable({
         type: 'entity',
-        icon: {_id: 'icon', type: 'Icons'},
+        icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
@@ -265,11 +145,11 @@ xdescribe('Item', () => {
     it('should render the first snippet of the document if exists', () => {
       props.doc = Immutable({
         type: 'entity',
-        icon: {_id: 'icon', type: 'Icons'},
+        icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: [{text: '<span>snippet!</span>', page: 1}]
+        snippets: [{ text: '<span>snippet!</span>', page: 1 }]
       });
 
       render();
@@ -288,12 +168,12 @@ xdescribe('Item', () => {
     });
 
     it('should include templates, thesauris and default sort', () => {
-      expect(mapStateToProps({templates, thesauris}, {})).toEqual({templates, thesauris, search});
+      expect(mapStateToProps({ templates, thesauris }, {})).toEqual({ templates, thesauris, search });
     });
 
     it('should allow overriding the default sort', () => {
-      const ownProps = {searchParams: {sort: 'newSort'}};
-      expect(mapStateToProps({templates, thesauris}, ownProps)).toEqual({templates, thesauris, search: {sort: 'newSort'}});
+      const ownProps = { searchParams: { sort: 'newSort' } };
+      expect(mapStateToProps({ templates, thesauris }, ownProps)).toEqual({ templates, thesauris, search: { sort: 'newSort' } });
     });
   });
 });

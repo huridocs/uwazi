@@ -15,105 +15,6 @@ import PrintDate from './PrintDate';
 import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
 
 export class Item extends Component {
-  formatMetadata(populatedMetadata, creationDate, translationContext) {
-    let sortPropertyInMetadata = false;
-
-    const metadata = populatedMetadata
-    .map((property, index) => {
-      let isSortingProperty = false;
-
-      if (`metadata.${property.name}` === this.props.search.sort) {
-        sortPropertyInMetadata = true;
-        isSortingProperty = true;
-      }
-
-      const hasNoValue = !property.value && !property.markdown || !String(property.value).length;
-      if (isSortingProperty && hasNoValue) {
-        property.value = t('System', 'No value');
-      }
-
-      if (property.value && String(property.value).length || property.markdown) {
-        let dlClassName = 'item-property-default';
-
-        let value = property.value && property.value.map ? property.value.map(d => d.value).join(', ') : property.value;
-
-        if (property.type === 'markdown') {
-          dlClassName = 'item-property-markdown';
-          value = <MarkdownViewer markdown={property.markdown}/>;
-        }
-
-        if (property.type === 'date' || property.type === 'daterange' ||
-            property.type === 'multidate' || property.type === 'multidaterange') {
-          dlClassName = 'item-property-date';
-        }
-
-        if ((property.type === 'multidate' || property.type === 'multidaterange') && property.value.map) {
-          value = <span dangerouslySetInnerHTML={{ __html: property.value.map(d => d.value).join('<br />') }} />;
-        }
-
-        return (
-          <dl className={dlClassName} key={index}>
-            <dt>{t(property.context || translationContext, property.label)}</dt>
-            <dd className={isSortingProperty ? 'item-current-sort' : ''}>
-              <div className={value.length > 128 ? 'item-metadata-crop' : ''}>
-                <Icon className="item-icon item-icon-center" data={property.icon} />{value}
-              </div>
-            </dd>
-          </dl>
-        );
-      }
-      return null;
-    });
-
-    const propertiesToAvoid = this.props.search.sort === 'title'
-    || this.props.search.sort === 'creationDate'
-    || this.props.search.sort === '_score';
-
-    if (!propertiesToAvoid && !sortPropertyInMetadata) {
-      const sortingProperty = this.props.templates.reduce((_property, template) => {
-        const matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === this.props.search.sort);
-        if (matchProp) {
-          matchProp.set('context', template.get('_id'));
-        }
-
-        return _property || matchProp;
-      }, false);
-      metadata.push(
-        <dl key={metadata.length}>
-          <dt>{t(sortingProperty.get('context'), sortingProperty.get('label'))}</dt>
-          <dd className="item-metadata-empty">{t('System', 'No property')}</dd>
-        </dl>
-      );
-    }
-
-    if (creationDate && (!metadata.length && !populatedMetadata.filter(p => p.showInCard).length || this.props.search.sort === 'creationDate')) {
-      metadata.push(
-        <dl key={metadata.length}>
-          <dt>{t('System', 'Date added')}</dt>
-          <dd className={this.props.search.sort === 'creationDate' ? 'item-current-sort' : ''}>
-            <PrintDate utc={creationDate} toLocal />
-          </dd>
-        </dl>
-      );
-    }
-
-    return metadata;
-  }
-
-  getMetadata(doc) {
-    doc.metadata = doc.metadata || {};
-    const populatedMetadata = formater.prepareMetadataForCard(doc, this.props.templates, this.props.thesauris, this.props.search.sort).metadata;
-
-    if (this.props.additionalMetadata && this.props.additionalMetadata.length) {
-      this.props.additionalMetadata.reverse().forEach((metadata) => {
-        const { label, value } = metadata;
-        populatedMetadata.unshift({ value, label, icon: metadata.icon, showInCard: true, context: 'System' });
-      });
-    }
-
-    return this.formatMetadata(populatedMetadata, doc.creationDate, doc.template);
-  }
-
   getSearchSnipett(doc) {
     if (!doc.snippets || !doc.snippets.length) {
       return false;
@@ -143,8 +44,7 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
-    //const metadataElements = this.getMetadata(doc);
-    //const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
+
     return (
       <RowList.Item
         className={`item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`}
@@ -167,7 +67,11 @@ export class Item extends Component {
           {this.getSearchSnipett(doc)}
         </div>
         <div className="item-metadata">
-          <FormatMetadata entity={doc} sortedProperty={this.props.search.sort}/>
+          <FormatMetadata 
+            entity={doc}
+            sortedProperty={this.props.search.sort}
+            additionalMetadata={this.props.additionalMetadata}
+          />
         </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}

@@ -20,7 +20,6 @@ const showByType = (prop, compact) => {
   }
 
   if (prop.value.map) {
-    //console.log(prop.value);
     return <ValueList compact={compact} property={prop} />;
   }
 

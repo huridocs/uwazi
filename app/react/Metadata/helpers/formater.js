@@ -188,7 +188,7 @@ export default {
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
     });
 
-    metadata = this.addSortedProperty(metadata, templates, doc,  options.sortedProperty);
+    metadata = this.addSortedProperty(metadata, templates, doc, options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
   },
@@ -213,6 +213,10 @@ export default {
     let result = metadata.map((prop) => {
       prop.sortedBy = false;
       if (`metadata.${prop.name}` === sortedProperty) {
+        if (!prop.value) {
+          prop.value = 'No value';
+          prop.translateContext = 'System';
+        }
         prop.sortedBy = true;
       }
       return prop;

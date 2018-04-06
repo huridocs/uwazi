@@ -11,3 +11,17 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
   }
 />
 `;
+
+exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
+<Metadata
+  compact={true}
+  metadata={
+    Array [
+      "more",
+      "data",
+      "formated",
+      "metadata",
+    ]
+  }
+/>
+`;
