@@ -25,6 +25,18 @@ describe('ValueList', () => {
     testSnapshot();
   });
 
+  it('should rendern icons when the value has one', () => {
+    props.property = {
+      label: 'label',
+      value: [
+        { value: 'first_value', url: 'url1', icon: { icon: 'icon' } },
+        { value: 'second_value', icon: { icon: 'icon2' } },
+        { value: 'third value', url: 'url2' }
+      ]
+    };
+    testSnapshot();
+  });
+
   describe('compact render', () => {
     it('should render array values separated by ", "', () => {
       props.property = {
@@ -50,6 +62,19 @@ describe('ValueList', () => {
         label: 'label',
         type: 'multidate',
         value: [{ value: 'first_value', }, { value: 'second_value' }, { value: 'third value', }]
+      };
+      props.compact = true;
+      testSnapshot();
+    });
+
+    it('should rendern icons when the value has one', () => {
+      props.property = {
+        label: 'label',
+        value: [
+          { value: 'first_value' },
+          { value: 'second_value', icon: { icon: 'icon2' } },
+          { value: 'third value' }
+        ]
       };
       props.compact = true;
       testSnapshot();

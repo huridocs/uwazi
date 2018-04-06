@@ -1,6 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ValueList compact render should render array values separated by ", " 1`] = `"first_value, second_value, third value"`;
+exports[`ValueList compact render should render array values separated by ", " 1`] = `
+Array [
+  "first_value",
+  ", ",
+  "second_value",
+  ", ",
+  "third value",
+]
+`;
 
 exports[`ValueList compact render should render multidate in multiple lines 1`] = `
 Array [
@@ -22,6 +30,16 @@ Array [
 ]
 `;
 
+exports[`ValueList compact render should rendern icons when the value has one 1`] = `
+Array [
+  "first_value",
+  ", ",
+  <React.Fragment />,
+  ", ",
+  "third value",
+]
+`;
+
 exports[`ValueList should render the values as a ul list 1`] = `
 <ul
   className="multiline"
@@ -39,6 +57,56 @@ exports[`ValueList should render the values as a ul list 1`] = `
     key="labelsecond_value"
   >
     second_value
+  </li>
+  <li
+    key="labelthird value"
+  >
+    <Connect(I18NLink)
+      to="url2"
+    >
+      third value
+    </Connect(I18NLink)>
+  </li>
+</ul>
+`;
+
+exports[`ValueList should rendern icons when the value has one 1`] = `
+<ul
+  className="multiline"
+>
+  <li
+    key="labelfirst_value"
+  >
+    <Connect(I18NLink)
+      to="url1"
+    >
+      <React.Fragment>
+        <Connect(Icon)
+          className="item-icon item-icon-center"
+          data={
+            Object {
+              "icon": "icon",
+            }
+          }
+        />
+        first_value
+      </React.Fragment>
+    </Connect(I18NLink)>
+  </li>
+  <li
+    key="labelsecond_value"
+  >
+    <React.Fragment>
+      <Connect(Icon)
+        className="item-icon item-icon-center"
+        data={
+          Object {
+            "icon": "icon2",
+          }
+        }
+      />
+      second_value
+    </React.Fragment>
   </li>
   <li
     key="labelthird value"
