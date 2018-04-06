@@ -15,10 +15,14 @@ const renderList = prop => (
   </ul>
 );
 
-const renderCompact = values => values.map(v => v.value).join(', ');
+const renderCompact = prop => (
+  prop.type === 'multidate' || prop.type === 'multidaterange' ?
+    interpose(prop.value.map(v => v.value), <br />) :
+    prop.value.map(v => v.value).join(', ')
+);
 
 const ValueList = ({ property, compact }) => (
-  compact ? renderCompact(property.value) : renderList(property)
+  compact ? renderCompact(property) : renderList(property)
 );
 
 export default ValueList;

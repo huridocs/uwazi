@@ -2,6 +2,26 @@
 
 exports[`ValueList compact render should render array values separated by ", " 1`] = `"first_value, second_value, third value"`;
 
+exports[`ValueList compact render should render multidate in multiple lines 1`] = `
+Array [
+  "first_value",
+  <br />,
+  "second_value",
+  <br />,
+  "third value",
+]
+`;
+
+exports[`ValueList compact render should render multidaterange in multiple lines 1`] = `
+Array [
+  "first_value",
+  <br />,
+  "second_value",
+  <br />,
+  "third value",
+]
+`;
+
 exports[`ValueList should render the values as a ul list 1`] = `
 <ul
   className="multiline"

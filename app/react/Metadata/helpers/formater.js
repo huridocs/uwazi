@@ -182,7 +182,7 @@ export default {
       }
 
       if (type === 'nested' && value) {
-        return Object.assign(this.nested(property, value, showInCard), { type, translateContext: template.get('_id') });
+        return Object.assign(this.nested(property, value, showInCard), { type: 'markdown', translateContext: template.get('_id') });
       }
 
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
