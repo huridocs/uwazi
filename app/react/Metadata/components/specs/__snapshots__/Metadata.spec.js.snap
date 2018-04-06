@@ -48,7 +48,22 @@ exports[`Metadata should render array values separated by ", " 1`] = `
     <dd
       className=""
     >
-      first_value, second_value
+      <ValueList
+        compact={false}
+        property={
+          Object {
+            "label": "label array",
+            "value": Array [
+              Object {
+                "value": "first_value",
+              },
+              Object {
+                "value": "second_value",
+              },
+            ],
+          }
+        }
+      />
     </dd>
   </dl>
 </React.Fragment>
@@ -57,19 +72,32 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 exports[`Metadata should render links when multiple properties have url 1`] = `
 <React.Fragment>
   <dl
-    key="withUrl"
+    key="label array"
   >
     <dt>
-      withUrl
+      label array
     </dt>
     <dd
       className=""
     >
-      <Connect(I18NLink)
-        to="url"
-      >
-        string value
-      </Connect(I18NLink)>
+      <ValueList
+        compact={false}
+        property={
+          Object {
+            "label": "label array",
+            "value": Array [
+              Object {
+                "url": "url1",
+                "value": "first_value",
+              },
+              Object {
+                "url": "url2",
+                "value": "second_value",
+              },
+            ],
+          }
+        }
+      />
     </dd>
   </dl>
 </React.Fragment>
@@ -142,6 +170,40 @@ exports[`Metadata should render string values 1`] = `
       className=""
     >
       string value
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
+<React.Fragment>
+  <dl
+    key="label array"
+  >
+    <dt>
+      label array
+    </dt>
+    <dd
+      className=""
+    >
+      <ValueList
+        compact={true}
+        property={
+          Object {
+            "label": "label array",
+            "value": Array [
+              Object {
+                "url": "url1",
+                "value": "first_value",
+              },
+              Object {
+                "url": "url2",
+                "value": "second_value",
+              },
+            ],
+          }
+        }
+      />
     </dd>
   </dl>
 </React.Fragment>

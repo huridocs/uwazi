@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import formater from '../Metadata/helpers/formater';
-import Metadata from 'app/Metadata/components/Metadata';
+import { FormatMetadata } from 'app/Metadata';
 import MarkdownViewer from 'app/Markdown';
 
 import t from '../I18N/t';
@@ -145,7 +145,6 @@ export class Item extends Component {
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
     //const metadataElements = this.getMetadata(doc);
     //const metadata = metadataElements.length ? <div className="item-metadata">{metadataElements}</div> : '';
-
     return (
       <RowList.Item
         className={`item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`}
@@ -166,6 +165,9 @@ export class Item extends Component {
           </div>
           {Snippet}
           {this.getSearchSnipett(doc)}
+        </div>
+        <div className="item-metadata">
+          <FormatMetadata entity={doc} sortedProperty={this.props.search.sort}/>
         </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}

@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ValueList compact render should render array values separated by ", " 1`] = `"first_value, second_value, third value"`;
+
+exports[`ValueList should render the values as a ul list 1`] = `
+<ul
+  className="multiline"
+>
+  <li
+    key="labelfirst_value"
+  >
+    <Connect(I18NLink)
+      to="url1"
+    >
+      first_value
+    </Connect(I18NLink)>
+  </li>
+  <li
+    key="labelsecond_value"
+  >
+    second_value
+  </li>
+  <li
+    key="labelthird value"
+  >
+    <Connect(I18NLink)
+      to="url2"
+    >
+      third value
+    </Connect(I18NLink)>
+  </li>
+</ul>
+`;

@@ -1,20 +1,18 @@
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import { t, I18NLink } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 
-import { formatMetadata } from '../selectors';
+import ValueList from './ValueList';
 
-const showByType = (prop) => {
-  if (prop.type === 'markdown') {
-    return <MarkdownViewer markdown={prop.value} />;
-  }
-
+const showByType = (prop, compact) => {
   if (prop.type === null) {
     return t('System', 'No property');
+  }
+
+  if (prop.type === 'markdown') {
+    return <MarkdownViewer markdown={prop.value} />;
   }
 
   if (prop.url) {
@@ -22,42 +20,32 @@ const showByType = (prop) => {
   }
 
   if (prop.value.map) {
-    return prop.value.map(v => {
-      if (v.url) {
-        return <I18NLink to={v.url}>{v.value}</I18NLink>;
-      }
-      return <span>v.value</span>;
-    });
+    return <ValueList compact={compact} property={prop} />;
   }
 
   return prop.value;
 };
 
-const Metadata = ({ metadata }) => (
+const Metadata = ({ metadata, compact }) => (
   <React.Fragment>
     {metadata.filter(p => p.value || p.type === null).map(prop => (
       <dl key={prop.label}>
         <dt>{t(prop.translateContext, prop.label)}</dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop)}
+          {showByType(prop, compact)}
         </dd>
       </dl>
     ))}
   </React.Fragment>
 );
 
-Metadata.propTypes = {
-  metadata: PropTypes.array
+Metadata.defaultProps = {
+  compact: false
 };
 
-export function mapStateToProps(state, { entity, sortedProperty }) {
-  return {
-    metadata: formatMetadata(state, entity, sortedProperty)
-  };
-}
+Metadata.propTypes = {
+  metadata: PropTypes.array,
+  compact: PropTypes.bool
+};
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({}, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Metadata);
+export default Metadata;

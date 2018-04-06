@@ -1,0 +1,32 @@
+import React from 'react';
+
+import { shallow } from 'enzyme';
+
+import ValueList from '../ValueList';
+
+
+describe('ValueList', () => {
+  let props;
+
+  function testSnapshot() {
+    const component = shallow(<ValueList {...props} />);
+    expect(component).toMatchSnapshot();
+  }
+
+  beforeEach(() => {
+    props = {};
+  });
+
+  it('should render the values as a ul list', () => {
+    props.property = { label: 'label', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value' }, { value: 'third value', url: 'url2' }] };
+    testSnapshot();
+  });
+
+  describe('compact render', () => {
+    it('should render array values separated by ", "', () => {
+      props.property = { label: 'label',  value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value' }, { value: 'third value', url: 'url2' }] };
+      props.compact = true;
+      testSnapshot();
+    });
+  });
+});

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormatMetadata should render Metadata component passing the formatted metadata 1`] = `
+<Metadata
+  compact={true}
+  metadata={
+    Array [
+      "formated",
+      "metadata",
+    ]
+  }
+/>
+`;

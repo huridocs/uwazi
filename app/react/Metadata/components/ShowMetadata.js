@@ -2,7 +2,6 @@ import { fromJS as Immutable } from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import Metadata from 'app/Metadata/components/Metadata';
 
 import { I18NLink } from 'app/I18N';
 import { Icon } from 'app/Layout/Icon';
@@ -11,6 +10,8 @@ import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedDa
 import MarkdownViewer from 'app/Markdown';
 import ShowIf from 'app/App/ShowIf';
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
+
+import FormatMetadata from '../containers/FormatMetadata';
 
 export class ShowMetadata extends Component {
   getValue(property) {
@@ -74,7 +75,7 @@ export class ShowMetadata extends Component {
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
         </ShowIf>
-        <Metadata entity={entity} />
+        <FormatMetadata entity={entity} />
       </div>
     );
   }

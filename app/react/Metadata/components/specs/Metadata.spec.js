@@ -1,4 +1,3 @@
-import Immutable from 'immutable';
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -10,7 +9,7 @@ describe('Metadata', () => {
   let props;
 
   function testSnapshot() {
-    const component = shallow(<Metadata.WrappedComponent {...props} />);
+    const component = shallow(<Metadata {...props} />);
     expect(component).toMatchSnapshot();
   }
 
@@ -59,5 +58,13 @@ describe('Metadata', () => {
   it('should render links when multiple properties have url', () => {
     props.metadata = [{ label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }];
     testSnapshot();
+  });
+
+  describe('when passing compact prop', () => {
+    it('should pass it to ValueList', () => {
+      props.metadata = [{ label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }];
+      props.compact = true;
+      testSnapshot();
+    });
   });
 });

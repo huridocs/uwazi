@@ -20,7 +20,7 @@ import progress from 'app/Uploads/reducers/progressReducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducers/login';
-import {reducer as metadata} from 'app/Metadata';
+import metadata from 'app/Metadata/reducer';
 import locale from 'app/I18N/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';
