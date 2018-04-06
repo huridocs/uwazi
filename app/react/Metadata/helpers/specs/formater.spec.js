@@ -11,6 +11,7 @@ describe('metadata formater', () => {
     doc = {
       template: 'templateID',
       title: 'Corte Interamericana de Derechos Humanos',
+      creationDate: 0,
       metadata: {
         text: 'text content',
         date: 10,
@@ -195,6 +196,7 @@ describe('metadata formater', () => {
 
     let text;
     let markdown;
+    let creationDate;
 
     beforeEach(() => {
       data = formater.prepareMetadataForCard(doc, templates, thesauris);
@@ -239,6 +241,19 @@ describe('metadata formater', () => {
         expect(date.sortedBy).toBe(true);
         expect(text.sortedBy).toBe(false);
         expect(markdown.sortedBy).toBe(false);
+      });
+
+      describe('when sort property is creationDate', () => {
+        fit('should add it as a value to show', () => {
+          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'creationDate');
+          [text, markdown, creationDate] = data.metadata;
+          expect(text.sortedBy).toBe(false);
+          expect(markdown.sortedBy).toBe(false);
+          expect(creationDate.sortedBy).toBe(true);
+          expect(creationDate.value).toBe('Jan 1, 1970');
+          expect(creationDate.label).toBe('Date added');
+          expect(creationDate.translateContext).toBe('System');
+        });
       });
 
       describe('when sort property does not exists in the metadata', () => {

@@ -1,10 +1,12 @@
 import superagent from 'superagent';
-import {APIURL} from '../../config.js';
-import {notify} from 'app/Notifications';
+
+import { notify } from 'app/Notifications';
+import { selectSingleDocument } from 'app/Library/actions/libraryActions';
+import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
-import metadata from 'app/Metadata';
+
+import { APIURL } from '../../config.js';
 import api from '../../utils/api';
-import {selectSingleDocument} from 'app/Library/actions/libraryActions';
 
 export function enterUploads() {
   return {
@@ -14,7 +16,7 @@ export function enterUploads() {
 
 export function newEntity() {
   return function (dispatch, getState) {
-    let newEntityMetadata = {title: '', type: 'entity'};
+    const newEntityMetadata = { title: '', type: 'entity' };
     dispatch(metadata.actions.loadInReduxForm('uploads.sidepanel.metadata', newEntityMetadata, getState().templates.toJS()));
     dispatch(selectSingleDocument(newEntityMetadata));
   };
@@ -24,9 +26,9 @@ export function createDocument(newDoc) {
   return function (dispatch) {
     return api.post('documents', newDoc)
     .then((response) => {
-      let doc = response.json;
-      dispatch({type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId});
-      dispatch({type: types.ELEMENT_CREATED, doc});
+      const doc = response.json;
+      dispatch({ type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId });
+      dispatch({ type: types.ELEMENT_CREATED, doc });
       return doc;
     });
   };
@@ -34,26 +36,26 @@ export function createDocument(newDoc) {
 
 export function uploadDocument(docId, file) {
   return function (dispatch) {
-    superagent.post(APIURL + 'upload')
+    superagent.post(`${APIURL}upload`)
     .set('Accept', 'application/json')
     .field('document', docId)
     .attach('file', file, file.name)
     .on('progress', (data) => {
-      dispatch({type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent)});
+      dispatch({ type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
     })
     .on('response', () => {
-      dispatch({type: types.UPLOAD_COMPLETE, doc: docId});
+      dispatch({ type: types.UPLOAD_COMPLETE, doc: docId });
     })
     .end();
   };
 }
 
 export function documentProcessed(sharedId) {
-  return {type: types.DOCUMENT_PROCESSED, sharedId: sharedId};
+  return { type: types.DOCUMENT_PROCESSED, sharedId };
 }
 
 export function documentProcessError(sharedId) {
-  return {type: types.DOCUMENT_PROCESS_ERROR, sharedId: sharedId};
+  return { type: types.DOCUMENT_PROCESS_ERROR, sharedId };
 }
 
 export function publishEntity(entity) {
@@ -62,7 +64,7 @@ export function publishEntity(entity) {
     return api.post('entities', entity)
     .then(() => {
       dispatch(notify('Entity published', 'success'));
-      dispatch({type: types.REMOVE_DOCUMENT, doc: entity});
+      dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
     });
   };
 }
@@ -73,7 +75,7 @@ export function publishDocument(doc) {
     return api.post('documents', doc)
     .then(() => {
       dispatch(notify('Document published', 'success'));
-      dispatch({type: types.REMOVE_DOCUMENT, doc: doc});
+      dispatch({ type: types.REMOVE_DOCUMENT, doc });
     });
   };
 }

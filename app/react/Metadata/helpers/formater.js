@@ -188,14 +188,14 @@ export default {
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
     });
 
-    metadata = this.addSortedProperty(metadata, templates, options.sortedProperty);
+    metadata = this.addSortedProperty(metadata, templates, doc,  options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
   },
 
-  addSortedProperty(metadata, templates, sortedProperty) {
+  addSortedProperty(metadata, templates, doc, sortedProperty) {
     const sortPropertyInMetadata = metadata.find(p => `metadata.${p.name}` === sortedProperty);
-    if (!sortPropertyInMetadata) {
+    if (!sortPropertyInMetadata && sortedProperty !== 'creationDate') {
       return metadata.push(
         templates.reduce((_property, template) => {
           if (!template.get('properties')) {
@@ -210,13 +210,25 @@ export default {
       ).filter(p => p);
     }
 
-    return metadata.map((prop) => {
+    let result = metadata.map((prop) => {
       prop.sortedBy = false;
       if (`metadata.${prop.name}` === sortedProperty) {
         prop.sortedBy = true;
       }
       return prop;
     });
+
+
+    if (sortedProperty === 'creationDate') {
+      result = result.push({
+        value: moment.utc(doc.creationDate).format('ll'),
+        label: 'Date added',
+        translateContext: 'System',
+        sortedBy: true
+      });
+    }
+
+    return result;
   },
 
   filterProperties(template, onlyForCards, sortedProperty) {
