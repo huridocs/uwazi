@@ -11,7 +11,7 @@ import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import {reducer as connections} from 'app/Connections';
 import relationships from 'app/Relationships';
-import {reducer as ConnectionsList} from 'app/ConnectionsList';
+import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
 import {reducer as attachments} from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';

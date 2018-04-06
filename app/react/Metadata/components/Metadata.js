@@ -27,9 +27,16 @@ const showByType = (prop, compact) => {
   return prop.value;
 };
 
+const removeEmptyValues = (p) => {
+  if (Array.isArray(p.value)) {
+    return p.value.length;
+  }
+  return p.value || p.type === null;
+};
+
 const Metadata = ({ metadata, compact }) => (
   <React.Fragment>
-    {metadata.filter(p => p.value || p.type === null).map(prop => (
+    {metadata.filter(removeEmptyValues).map(prop => (
       <dl key={prop.label}>
         <dt>{t(prop.translateContext, prop.label)}</dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>

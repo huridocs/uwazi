@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Metadata should not render an empty list 1`] = `<React.Fragment />`;
+
 exports[`Metadata should not render metadata without value 1`] = `
 <React.Fragment>
   <dl

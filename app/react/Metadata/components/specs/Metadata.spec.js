@@ -60,6 +60,11 @@ describe('Metadata', () => {
     testSnapshot();
   });
 
+  it('should not render an empty list', () => {
+    props.metadata = [{ label: 'label array', value: [] }];
+    testSnapshot();
+  });
+
   describe('when passing compact prop', () => {
     it('should pass it to ValueList', () => {
       props.metadata = [{ label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }];
