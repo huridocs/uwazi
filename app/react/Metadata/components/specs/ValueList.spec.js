@@ -6,7 +6,7 @@ import ValueList from '../ValueList';
 
 
 describe('ValueList', () => {
-  let props;
+  const props = {};
 
   function testSnapshot() {
     const component = shallow(<ValueList {...props} />);
@@ -14,14 +14,13 @@ describe('ValueList', () => {
   }
 
   beforeEach(() => {
-    props = {};
-  });
-
-  it('should render the values as a ul list', () => {
     props.property = {
       label: 'label',
       value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value' }, { value: 'third value', url: 'url2' }]
     };
+  });
+
+  it('should render the values as a ul list', () => {
     testSnapshot();
   });
 
@@ -38,33 +37,30 @@ describe('ValueList', () => {
   });
 
   describe('compact render', () => {
-    it('should render array values separated by ", "', () => {
+    function testMultilineCase(type) {
+      props.property.type = type;
+      props.compact = true;
+      testSnapshot();
+    }
+
+    beforeEach(() => {
       props.property = {
         label: 'label',
-        value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value' }, { value: 'third value', url: 'url2' }]
+        value: [{ value: 'first_value', }, { value: 'second_value' }, { value: 'third value', }]
       };
+    });
+
+    it('should render array values separated by ", "', () => {
       props.compact = true;
       testSnapshot();
     });
 
     it('should render multidaterange in multiple lines', () => {
-      props.property = {
-        label: 'label',
-        type: 'multidaterange',
-        value: [{ value: 'first_value', }, { value: 'second_value' }, { value: 'third value', }]
-      };
-      props.compact = true;
-      testSnapshot();
+      testMultilineCase('multidaterange');
     });
 
     it('should render multidate in multiple lines', () => {
-      props.property = {
-        label: 'label',
-        type: 'multidate',
-        value: [{ value: 'first_value', }, { value: 'second_value' }, { value: 'third value', }]
-      };
-      props.compact = true;
-      testSnapshot();
+      testMultilineCase('multidate');
     });
 
     it('should rendern icons when the value has one', () => {
