@@ -7,23 +7,24 @@ import MarkdownViewer from 'app/Markdown';
 import ValueList from './ValueList';
 
 const showByType = (prop, compact) => {
+  let result = prop.value;
   if (prop.type === null) {
-    return t('System', 'No property');
+    result = t('System', 'No property');
   }
 
   if (prop.type === 'markdown') {
-    return <MarkdownViewer markdown={prop.value} />;
+    result = <MarkdownViewer markdown={prop.value} />;
   }
 
   if (prop.url) {
-    return <I18NLink to={prop.url}>{prop.value}</I18NLink>;
+    result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
   }
 
-  if (prop.value.map) {
-    return <ValueList compact={compact} property={prop} />;
+  if (prop.value && prop.value.map) {
+    result = <ValueList compact={compact} property={prop} />;
   }
 
-  return prop.value;
+  return result;
 };
 
 const removeEmptyValues = (p) => {
@@ -56,6 +57,8 @@ Metadata.propTypes = {
     label: PropTypes.string,
     value: PropTypes.oneOfType([
       PropTypes.string,
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.string),
       PropTypes.arrayOf(PropTypes.shape({
         value: PropTypes.string
       }))
