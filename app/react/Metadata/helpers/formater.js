@@ -8,7 +8,7 @@ import t from 'app/I18N/t';
 
 export default {
 
-  date(property, timestamp, showInCard) {
+  date(property, timestamp, thesauris, showInCard) {
     const value = moment.utc(timestamp, 'X').format('ll');
     return { label: property.get('label'), name: property.get('name'), value, timestamp, showInCard };
   },
@@ -25,16 +25,16 @@ export default {
     return `${from} ~ ${to}`;
   },
 
-  daterange(property, daterange, showInCard) {
+  daterange(property, daterange, thesauris, showInCard) {
     return { label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange), showInCard };
   },
 
-  multidate(property, timestamps, showInCard) {
+  multidate(property, timestamps = [], thesauris, showInCard) {
     const value = timestamps.map(timestamp => ({ timestamp, value: moment.utc(timestamp, 'X').format('ll') }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
-  multidaterange(property, dateranges, showInCard) {
+  multidaterange(property, dateranges = [], thesauris, showInCard) {
     const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
@@ -67,15 +67,7 @@ export default {
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-
-    const values = thesauriValues.map((thesauriValue) => {
-      const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-
-      return this.getSelectOptions(option, thesauri);
-    });
-
-    const sortedValues = advancedSort(values, { property: 'value' });
-
+    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
   },
 
@@ -95,18 +87,20 @@ export default {
       type: 'template'
     });
 
-    const values = thesauriValues.map((thesauriValue) => {
-      const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-
-      return this.getSelectOptions(option, thesauri);
-    });
-
-    const sortedValues = advancedSort(values, { property: 'value' });
+    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
 
     return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
   },
 
-  nested(property, rows, showInCard) {
+  getThesauriValues(thesauriValues, thesauri) {
+    return advancedSort(
+      thesauriValues.map((thesauriValue) => {
+        const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
+        return this.getSelectOptions(option, thesauri);
+      }), { property: 'value' });
+  },
+
+  nested(property, rows, thesauris, showInCard) {
     if (!rows[0]) {
       return { label: property.get('label'), value: '', showInCard };
     }
@@ -118,10 +112,10 @@ export default {
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
     result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
 
-    return this.markdown(property, result, showInCard);
+    return this.markdown(property, result, thesauris, showInCard);
   },
 
-  markdown(property, value, showInCard) {
+  markdown(property, value, thesauris, showInCard) {
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
@@ -149,40 +143,8 @@ export default {
 
       const type = property.get('type');
 
-      if (type === 'select' && value) {
-        return Object.assign(this.select(property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'multiselect' && value) {
-        return Object.assign(this.multiselect(property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'relationship' && value) {
-        return Object.assign(this.relationship(property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'date' && value) {
-        return Object.assign(this.date(property, value, showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'daterange' && value) {
-        return Object.assign(this.daterange(property, value, showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'multidate') {
-        return Object.assign(this.multidate(property, value || [], showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'multidaterange') {
-        return Object.assign(this.multidaterange(property, value || [], showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'markdown' && value) {
-        return Object.assign(this.markdown(property, value, showInCard), { type, translateContext: template.get('_id') });
-      }
-
-      if (type === 'nested' && value) {
-        return Object.assign(this.nested(property, value, showInCard), { type: 'markdown', translateContext: template.get('_id') });
+      if (this[type] && value) {
+        return Object.assign(this[type](property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
       }
 
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
@@ -211,15 +173,16 @@ export default {
     }
 
     let result = metadata.map((prop) => {
-      prop.sortedBy = false;
+      const newProp = Object.assign({}, prop);
+      newProp.sortedBy = false;
       if (`metadata.${prop.name}` === sortedProperty) {
         if (!prop.value) {
-          prop.value = 'No value';
-          prop.translateContext = 'System';
+          newProp.value = 'No value';
+          newProp.translateContext = 'System';
         }
-        prop.sortedBy = true;
+        newProp.sortedBy = true;
       }
-      return prop;
+      return newProp;
     });
 
 

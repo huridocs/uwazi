@@ -51,7 +51,16 @@ Metadata.defaultProps = {
 };
 
 Metadata.propTypes = {
-  metadata: PropTypes.array,
+  metadata: PropTypes.arrayOf(PropTypes.shape({
+    type: PropTypes.string,
+    label: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.shape({
+        value: PropTypes.string
+      }))
+    ])
+  })).isRequired,
   compact: PropTypes.bool
 };
 

@@ -5,8 +5,9 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
   compact={true}
   metadata={
     Array [
-      "formated",
-      "metadata",
+      Object {
+        "formated": "metadata",
+      },
     ]
   }
 />
@@ -17,10 +18,15 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
   compact={true}
   metadata={
     Array [
-      "more",
-      "data",
-      "formated",
-      "metadata",
+      Object {
+        "more": "data",
+      },
+      Object {
+        "and": "more",
+      },
+      Object {
+        "formated": "metadata",
+      },
     ]
   }
 />
