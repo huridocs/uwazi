@@ -1,18 +1,15 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import formater from '../Metadata/helpers/formater';
-import { FormatMetadata } from 'app/Metadata';
-import MarkdownViewer from 'app/Markdown';
 
-import t from '../I18N/t';
+import { FormatMetadata } from 'app/Metadata';
+import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
 
 import { RowList, ItemFooter } from './Lists';
-import Icon from './Icon';
 import DocumentLanguage from './DocumentLanguage';
+import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
-import PrintDate from './PrintDate';
-import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
+import t from '../I18N/t';
 
 export class Item extends Component {
   getSearchSnipett(doc) {
@@ -67,7 +64,7 @@ export class Item extends Component {
           {this.getSearchSnipett(doc)}
         </div>
         <div className="item-metadata">
-          <FormatMetadata 
+          <FormatMetadata
             entity={doc}
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
