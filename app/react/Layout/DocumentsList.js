@@ -1,32 +1,31 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
 
-import {RowList} from 'app/Layout/Lists';
+import { RowList } from 'app/Layout/Lists';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
-import {NeedAuthorization} from 'app/Auth';
-import {t} from 'app/I18N';
+import { NeedAuthorization } from 'app/Auth';
+import { t, Translate } from 'app/I18N';
 
 export default class DocumentsList extends Component {
-
   constructor(props, context) {
     super(props, context);
-    this.state = {loading: false};
+    this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.loadMoreDocuments = this.loadMoreDocuments.bind(this);
   }
 
   loadMoreDocuments() {
-    this.setState({loading: true});
+    this.setState({ loading: true });
     this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + this.props.loadMoreAmmount);
   }
 
   componentWillReceiveProps() {
-    this.setState({loading: false});
+    this.setState({ loading: false });
   }
 
   clickOnDocument() {
@@ -36,19 +35,19 @@ export default class DocumentsList extends Component {
   }
 
   render() {
-    const {documents, connections, GraphView, view, searchCentered, hideFooter,
-           connectionsGroups, LoadMoreButton, loadMoreAmmount} = this.props;
-    let counter = <span><b>{documents.get('totalRows')}</b> {t('System', 'documents')}</span>;
+    const { documents, connections, GraphView, view, searchCentered, hideFooter,
+           connectionsGroups, LoadMoreButton, loadMoreAmmount } = this.props;
+    let counter = <span><b>{documents.get('totalRows')}</b> <Translate>documents</Translate></span>;
     if (connections) {
       const summary = connectionsGroups.reduce((summaryData, g) => {
-        g.get('templates').forEach(template => {
+        g.get('templates').forEach((template) => {
           summaryData.totalConnections += template.get('count');
         });
         return summaryData;
-      }, {totalConnections: 0});
-      counter = <span>
-                  <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
-                </span>;
+      }, { totalConnections: 0 });
+      counter = (<span>
+        <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+      </span>);
     }
 
     const Search = this.props.SearchBar;
@@ -63,29 +62,32 @@ export default class DocumentsList extends Component {
             <Search storeKey={this.props.storeKey}/>
           </div>
           <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
-              <div className="documents-counter">
-                <span className="documents-counter-label">{counter}</span>
-                <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
-              </div>
-              <SortButtons sortCallback={this.props.searchDocuments}
-                           selectedTemplates={this.props.filters.get('documentTypes')}
-                           stateProperty={this.props.sortButtonsStateProperty}
-                           storeKey={this.props.storeKey}
-              />
+            <div className="documents-counter">
+              <span className="documents-counter-label">{counter}</span>
+              <span className="documents-counter-sort">{t('System', 'sorted by')}:</span>
+            </div>
+            <SortButtons
+              sortCallback={this.props.searchDocuments}
+              selectedTemplates={this.props.filters.get('documentTypes')}
+              stateProperty={this.props.sortButtonsStateProperty}
+              storeKey={this.props.storeKey}
+            />
           </div>
           {(() => {
             if (view !== 'graph') {
-              return <RowList>
-                      {documents.get('rows').map((doc, index) =>
-                        <Doc doc={doc}
-                             storeKey={this.props.storeKey}
-                             key={index}
-                             onClick={this.clickOnDocument}
-                             onSnippetClick={this.props.onSnippetClick}
-                             deleteConnection={this.props.deleteConnection}
-                             searchParams={this.props.search} />
+              return (<RowList>
+                {documents.get('rows').map((doc, index) =>
+                        (<Doc
+                          doc={doc}
+                          storeKey={this.props.storeKey}
+                          key={index}
+                          onClick={this.clickOnDocument}
+                          onSnippetClick={this.props.onSnippetClick}
+                          deleteConnection={this.props.deleteConnection}
+                          searchParams={this.props.search}
+                        />)
                       )}
-                     </RowList>;
+                      </RowList>);
             }
 
             if (view === 'graph') {
@@ -95,12 +97,12 @@ export default class DocumentsList extends Component {
           <div className="row">
             {(() => {
               if (view !== 'graph') {
-                return <p className="col-sm-12 text-center documents-counter">
-                        <b>{documents.get('rows').size}</b>
-                        {` ${t('System', 'of')} `}
-                        <b>{documents.get('totalRows')}</b>
-                        {` ${t('System', 'documents')}`}
-                       </p>;
+                return (<p className="col-sm-12 text-center documents-counter">
+                  <b>{documents.get('rows').size}</b>
+                  {` ${t('System', 'of')} `}
+                  <b>{documents.get('totalRows')}</b>
+                  {` ${t('System', 'documents')}`}
+                        </p>);
               }
             })()}
             {(() => {
@@ -112,7 +114,7 @@ export default class DocumentsList extends Component {
                 return (
                   <div className="col-sm-12 text-center">
                     <button onClick={this.loadMoreDocuments} className="btn btn-default btn-load-more">
-                      {loadMoreAmmount + ' ' + t('System', 'x more')}
+                      {`${loadMoreAmmount} ${t('System', 'x more')}`}
                     </button>
                   </div>
                 );
@@ -125,10 +127,11 @@ export default class DocumentsList extends Component {
             })()}
             <NeedAuthorization>
               <div className="col-sm-12 text-center protip">
-                <i className="fa fa-lightbulb-o"></i>
+                <i className="fa fa-lightbulb-o" />
                 <b>ProTip!</b>
                 <span>Use <span className="protip-key">cmd</span> or <span className="protip-key">shift</span>&nbsp;
-                + click to select multiple files.</span>
+                + click to select multiple files.
+                </span>
               </div>
             </NeedAuthorization>
           </div>

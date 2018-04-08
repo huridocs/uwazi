@@ -5,7 +5,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import { is } from 'immutable';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
@@ -117,7 +117,7 @@ export class DocumentTypesList extends Component {
       >
         <i className="multiselectItem-icon fa fa-square-o" />
         <i className="multiselectItem-icon fa fa-check" />
-        <span className="multiselectItem-name">{t(item.id, item.name)}</span>
+        <span className="multiselectItem-name"><Translate context={item.id}>{item.name}</Translate></span>
       </label>
       <span className="multiselectItem-results">
         {this.aggregations(item)}

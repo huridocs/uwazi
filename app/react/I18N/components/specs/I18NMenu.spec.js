@@ -1,23 +1,23 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-
-import {I18NMenu} from '../I18NMenu';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import * as Cookie from 'tiny-cookie';
+import { I18NMenu } from '../I18NMenu';
 
 describe('I18NMenu', () => {
   let component;
   let props;
-  let instance;
 
   beforeEach(() => {
     spyOn(Cookie, 'set');
-    let languages = [
-      {key: 'en', label: 'English', default: true},
-      {key: 'es', label: 'Español'}
+    const languages = [
+      { key: 'en', label: 'English', default: true },
+      { key: 'es', label: 'Español' }
     ];
     props = {
       languages: Immutable.fromJS(languages),
+      toggleInlineEdit: jasmine.createSpy('toggleInlineEdit'),
+      i18nmode: false,
       location: {
         pathname: '/templates/2452345',
         search: '?query=weneedmoreclerics'
@@ -25,16 +25,15 @@ describe('I18NMenu', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<I18NMenu {...props} />);
-    instance = component.instance();
-    spyOn(instance, 'reload');
+    spyOn(I18NMenu, 'reload');
   };
 
   describe('when there is NO language in the url', () => {
     it('should render links for each language', () => {
       render();
-      let links = component.find('a');
+      const links = component.find('a');
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
@@ -43,7 +42,7 @@ describe('I18NMenu', () => {
     it('should work fine with triky urls', () => {
       props.location.pathname = '/entity/2452345';
       render();
-      let links = component.find('a');
+      const links = component.find('a');
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/entity/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/entity/2452345?query=weneedmoreclerics');
@@ -59,7 +58,7 @@ describe('I18NMenu', () => {
     it('should render links for each language', () => {
       props.location.pathname = '/es/templates/2452345';
       render();
-      let links = component.find('a');
+      const links = component.find('a');
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
@@ -76,7 +75,7 @@ describe('I18NMenu', () => {
       props.location.pathname = '/es';
       props.location.search = '';
       render();
-      let links = component.find('a');
+      const links = component.find('a');
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/');
       expect(links.last().props().href).toBe('/es/');
@@ -86,9 +85,9 @@ describe('I18NMenu', () => {
   describe('when switching language', () => {
     it('should save the locale in to a coockie', () => {
       render();
-      let links = component.find('a');
+      const links = component.find('a');
       links.first().simulate('click');
-      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', {expires: 3650});
+      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', { expires: 3650 });
     });
   });
 });

@@ -1,18 +1,18 @@
-import {store} from 'app/store';
+import { store } from 'app/store';
 
-let t = (contextId, key, _text) => {
+const t = (contextId, key, _text) => {
   //return translations[contextId][key];
   //return 'text';
-  let text = _text || key;
+  const text = _text || key;
 
   if (!t.translation) {
-    let state = store.getState();
-    let translations = state.translations.toJS();
-    t.translation = translations.find((d) => d.locale === state.locale) || {contexts: []};
+    const state = store.getState();
+    const translations = state.translations.toJS();
+    t.translation = translations.find(d => d.locale === state.locale) || { contexts: [] };
     //console.log(t.translation);
   }
 
-  let context = t.translation.contexts.find((ctx) => ctx.id === contextId) || {values: {}};
+  const context = t.translation.contexts.find(ctx => ctx.id === contextId) || { values: {} };
 
   if (!context.values) {
     console.log(contextId); // eslint-disable-line no-console

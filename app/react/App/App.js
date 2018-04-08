@@ -1,32 +1,30 @@
 import fetch from 'isomorphic-fetch';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.css';
-//import 'font-awesome/css/font-awesome.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
-import './scss/styles.scss';
-
 import Notifications from 'app/Notifications';
+import { TranslateForm } from 'app/I18N';
+import { isClient } from 'app/utils';
+import { loadCSS } from 'fg-loadcss';
+import './scss/styles.scss';
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
-import {isClient} from 'app/utils';
-import {loadCSS} from 'fg-loadcss';
 
 if (isClient) {
   loadCSS('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
 }
 
 class App extends Component {
-
   constructor(props, context) {
     super(props, context);
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
-    this.state = {showmenu: false, confirmOptions: {}};
+    this.state = { showmenu: false, confirmOptions: {} };
   }
 
   getChildContext() {
@@ -36,15 +34,15 @@ class App extends Component {
   }
 
   toggleMenu() {
-    this.setState({showmenu: !this.state.showmenu});
+    this.setState({ showmenu: !this.state.showmenu });
   }
 
   closeMenu() {
-    this.setState({showmenu: false});
+    this.setState({ showmenu: false });
   }
 
   confirm(options) {
-    this.setState({confirmOptions: options});
+    this.setState({ confirmOptions: options });
   }
 
   renderTools() {
@@ -73,13 +71,14 @@ class App extends Component {
             <h1><SiteName/></h1>
           </nav>
           <header>
-            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
+            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)} />
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
             <Menu location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
+            <TranslateForm/>
             {this.props.children}
             <GoogleAnalytics/>
           </div>
