@@ -65,16 +65,30 @@ describe('metadata formater', () => {
         _id: 'thesauriId2',
         name: 'Multiselect2',
         type: 'template',
-        values: [
-          { label: 'Value 4', id: 'value4', _id: 'value4' }
-        ]
+        values: [{ label: 'Value 4', id: 'value4', _id: 'value4' }]
       }
     ]);
   });
 
+  function assessBasicProperties(element, options) {
+    expect(element.label).toBe(options[0]);
+    expect(element.name).toBe(options[1]);
+    expect(element.translateContext).toBe(options[2]);
+
+    if (options.length > 3) {
+      expect(element.value).toBe(options[3]);
+    }
+  }
+
+  function assessMultiValues(element, values, secondaryDepth) {
+    values.forEach((val, index) => {
+      const value = secondaryDepth ? element.value[index].value : element.value[index];
+      expect(value).toEqual(val);
+    });
+  }
+
   describe('prepareMetadata', () => {
     let data;
-
     let text;
     let date;
     let multiselect;
@@ -91,15 +105,7 @@ describe('metadata formater', () => {
       [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2] = data.metadata;
     });
 
-    function assessBasicProperties(element, options) {
-      expect(element.label).toBe(options[0]);
-      expect(element.name).toBe(options[1]);
-      expect(element.translateContext).toBe(options[2]);
-
-      if (options.length > 3) {
-        expect(element.value).toBe(options[3]);
-      }
-    }
+    const formatValue = value => ({ icon: undefined, url: `/entity/${value.toLowerCase().replace(/ /g, '')}`, value });
 
     it('should maintain doc original data untouched', () => {
       expect(data.title).toBe(doc.title);
@@ -122,14 +128,12 @@ describe('metadata formater', () => {
     it('should process multiselect type', () => {
       assessBasicProperties(multiselect, ['Multiselect', 'multiselect', 'templateID']);
       expect(multiselect.value.length).toBe(2);
-      expect(multiselect.value[0].value).toBe('Value 1');
-      expect(multiselect.value[1].value).toBe('Value 2');
+      assessMultiValues(multiselect, ['Value 1', 'Value 2'], true);
     });
 
     it('should process multidate type', () => {
       assessBasicProperties(multidate, ['Multi Date', 'multidate', 'templateID']);
-      expect(multidate.value[0]).toEqual({ timestamp: 10, value: 'Jan 1, 1970' });
-      expect(multidate.value[1]).toEqual({ timestamp: 1000000, value: 'Jan 12, 1970' });
+      assessMultiValues(multidate, [{ timestamp: 10, value: 'Jan 1, 1970' }, { timestamp: 1000000, value: 'Jan 12, 1970' }]);
     });
 
     it('should process daterange type', () => {
@@ -138,8 +142,7 @@ describe('metadata formater', () => {
 
     it('should process multidaterange type', () => {
       assessBasicProperties(multidaterange, ['Multi Date Range', 'multidaterange', 'templateID']);
-      expect(multidaterange.value[0].value).toEqual('Jan 1, 1970 ~ Jan 12, 1970');
-      expect(multidaterange.value[1].value).toEqual('Jan 24, 1970 ~ Feb 4, 1970');
+      assessMultiValues(multidaterange, ['Jan 1, 1970 ~ Jan 12, 1970', 'Jan 24, 1970 ~ Feb 4, 1970'], true);
     });
 
     it('should process markdown type', () => {
@@ -153,21 +156,13 @@ describe('metadata formater', () => {
     it('should process bound relationship types', () => {
       assessBasicProperties(relationship1, ['Relationship', 'relationship1', 'templateID']);
       expect(relationship1.value.length).toBe(2);
-      expect(relationship1.value[0].value).toBe('Value 1');
-      expect(relationship1.value[0].url).toBe('/entity/value1');
-      expect(relationship1.value[1].value).toBe('Value 2');
-      expect(relationship1.value[1].url).toBe('/entity/value2');
+      assessMultiValues(relationship1, [formatValue('Value 1'), formatValue('Value 2')]);
     });
 
     it('should process free relationsip types', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
-      expect(relationship2.value[0].value).toBe('Value 1');
-      expect(relationship2.value[0].url).toBe('/entity/value1');
-      expect(relationship2.value[1].value).toBe('Value 2');
-      expect(relationship2.value[1].url).toBe('/entity/value2');
-      expect(relationship2.value[2].value).toBe('Value 4');
-      expect(relationship2.value[2].url).toBe('/entity/value4');
+      assessMultiValues(relationship2, [formatValue('Value 1'), formatValue('Value 2'), formatValue('Value 4')]);
     });
 
     it('should not fail when field do not exists on the document', () => {
@@ -200,15 +195,11 @@ describe('metadata formater', () => {
     });
 
     it('should process text type', () => {
-      expect(text.label).toBe('Text');
-      expect(text.name).toBe('text');
-      expect(text.value).toBe('text content');
+      assessBasicProperties(text, ['Text', 'text', 'templateID', 'text content']);
     });
 
     it('should process markdown type', () => {
-      expect(markdown.label).toBe('Mark Down');
-      expect(markdown.name).toBe('markdown');
-      expect(markdown.value).toBe('markdown content');
+      assessBasicProperties(markdown, ['Mark Down', 'markdown', 'templateID', 'markdown content']);
     });
 
     describe('when sort property passed', () => {
@@ -216,9 +207,8 @@ describe('metadata formater', () => {
       it('should process also the sorted property even if its not a "showInCard"', () => {
         data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
         [text, date, markdown] = data.metadata;
+        assessBasicProperties(date, ['Date', 'date', 'templateID']);
         expect(data.metadata.length).toBe(3);
-        expect(date.label).toBe('Date');
-        expect(date.name).toBe('date');
         expect(date.value).toContain('1970');
       });
 
@@ -246,10 +236,8 @@ describe('metadata formater', () => {
           [text, markdown, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
+          assessBasicProperties(creationDate, ['Date added', undefined, 'System', 'Jan 1, 1970']);
           expect(creationDate.sortedBy).toBe(true);
-          expect(creationDate.value).toBe('Jan 1, 1970');
-          expect(creationDate.label).toBe('Date added');
-          expect(creationDate.translateContext).toBe('System');
         });
       });
 
@@ -257,29 +245,22 @@ describe('metadata formater', () => {
         it('should return a property with null as value', () => {
           templates = templates.push(Immutable.fromJS({
             _id: 'otherTemplate',
-            properties: [
-              { name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }
-            ]
+            properties: [{ name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }]
           }));
 
           data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.nonexistent');
           const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
-
+          assessBasicProperties(nonexistent, ['NonExistentLabel', 'nonexistent', 'otherTemplate']);
           expect(nonexistent.type).toBe(null);
-          expect(nonexistent.label).toBe('NonExistentLabel');
-          expect(nonexistent.translateContext).toBe('otherTemplate');
         });
 
         it('should ignore non metadata properties', () => {
           templates = templates.push(Immutable.fromJS({
-            properties: [
-              { name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }
-            ]
+            properties: [{ name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }]
           }));
 
           data = formater.prepareMetadataForCard(doc, templates, thesauris, 'nonexistent');
           const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
-
           expect(nonexistent).not.toBeDefined();
         });
       });
