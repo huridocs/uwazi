@@ -6,6 +6,57 @@ import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import t from 'app/I18N/t';
 
+const getOption = (thesauri, value) => thesauri.get('values').find(v => v.get('id').toString() === value.toString());
+
+const addSortedProperty = (templates, sortedProperty) => templates.reduce((_property, template) => {
+  if (!template.get('properties')) {
+    return _property;
+  }
+
+  let matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === sortedProperty);
+
+  if (matchProp) {
+    matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
+  }
+
+  return _property || matchProp;
+}, false);
+
+const formatMetadataSortedProperty = (metadata, sortedProperty) => metadata.map((prop) => {
+  const newProp = Object.assign({}, prop);
+  newProp.sortedBy = false;
+  if (sortedProperty === `metadata.${prop.name}`) {
+    newProp.sortedBy = true;
+    if (!prop.value) {
+      newProp.value = 'No value';
+      newProp.translateContext = 'System';
+    }
+  }
+  return newProp;
+});
+
+const addCreationDate = (result, doc) => result.push({
+  value: moment.utc(doc.creationDate).format('ll'),
+  label: 'Date added',
+  translateContext: 'System',
+  sortedBy: true
+});
+
+const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
+  const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);
+  if (!sortPropertyInMetadata && sortedProperty !== 'creationDate') {
+    return metadata.push(addSortedProperty(templates, sortedProperty)).filter(p => p);
+  }
+
+  let result = formatMetadataSortedProperty(metadata, sortedProperty);
+
+  if (sortedProperty === 'creationDate') {
+    result = addCreationDate(result, doc);
+  }
+
+  return result;
+};
+
 export default {
 
   date(property, timestamp, thesauris, showInCard) {
@@ -57,11 +108,7 @@ export default {
 
   select(property, thesauriValue, thesauris, showInCard) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-
-    const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-
-    const { value, url, icon } = this.getSelectOptions(option, thesauri);
-
+    const { value, url, icon } = this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri);
     return { label: property.get('label'), name: property.get('name'), value, icon, url, showInCard };
   },
 
@@ -94,10 +141,9 @@ export default {
 
   getThesauriValues(thesauriValues, thesauri) {
     return advancedSort(
-      thesauriValues.map((thesauriValue) => {
-        const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-        return this.getSelectOptions(option, thesauri);
-      }), { property: 'value' });
+      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)),
+      { property: 'value' }
+    );
   },
 
   nested(property, rows, thesauris, showInCard) {
@@ -150,52 +196,9 @@ export default {
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
     });
 
-    metadata = this.addSortedProperty(metadata, templates, doc, options.sortedProperty);
+    metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
-  },
-
-  addSortedProperty(metadata, templates, doc, sortedProperty) {
-    const sortPropertyInMetadata = metadata.find(p => `metadata.${p.name}` === sortedProperty);
-    if (!sortPropertyInMetadata && sortedProperty !== 'creationDate') {
-      return metadata.push(
-        templates.reduce((_property, template) => {
-          if (!template.get('properties')) {
-            return _property;
-          }
-          let matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === sortedProperty);
-          if (matchProp) {
-            matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
-          }
-          return _property || matchProp;
-        }, false)
-      ).filter(p => p);
-    }
-
-    let result = metadata.map((prop) => {
-      const newProp = Object.assign({}, prop);
-      newProp.sortedBy = false;
-      if (`metadata.${prop.name}` === sortedProperty) {
-        if (!prop.value) {
-          newProp.value = 'No value';
-          newProp.translateContext = 'System';
-        }
-        newProp.sortedBy = true;
-      }
-      return newProp;
-    });
-
-
-    if (sortedProperty === 'creationDate') {
-      result = result.push({
-        value: moment.utc(doc.creationDate).format('ll'),
-        label: 'Date added',
-        translateContext: 'System',
-        sortedBy: true
-      });
-    }
-
-    return result;
   },
 
   filterProperties(template, onlyForCards, sortedProperty) {
