@@ -63,7 +63,7 @@ export default (app) => {
       doc.toc = [];
       return doc;
     });
-    console.console.log('Saving documents');
+    console.log('Saving documents');
     return entities.saveMultiple(docs).then(() => {
       const sessionSockets = req.io.getCurrentSessionSockets();
       sessionSockets.emit('documentProcessed', req.body.document);
