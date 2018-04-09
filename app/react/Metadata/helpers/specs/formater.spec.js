@@ -91,6 +91,16 @@ describe('metadata formater', () => {
       [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2] = data.metadata;
     });
 
+    function assessBasicProperties(element, options) {
+      expect(element.label).toBe(options[0]);
+      expect(element.name).toBe(options[1]);
+      expect(element.translateContext).toBe(options[2]);
+
+      if (options.length > 3) {
+        expect(element.value).toBe(options[3]);
+      }
+    }
+
     it('should maintain doc original data untouched', () => {
       expect(data.title).toBe(doc.title);
       expect(data.template).toBe(doc.template);
@@ -101,79 +111,56 @@ describe('metadata formater', () => {
     });
 
     it('should process text type', () => {
-      expect(text.label).toBe('Text');
-      expect(text.name).toBe('text');
-      expect(text.value).toBe('text content');
-      expect(text.translateContext).toBe('templateID');
+      assessBasicProperties(text, ['Text', 'text', 'templateID', 'text content']);
     });
 
     it('should process date type', () => {
-      expect(date.label).toBe('Date');
-      expect(date.name).toBe('date');
+      assessBasicProperties(date, ['Date', 'date', 'templateID']);
       expect(date.value).toContain('1970');
-      expect(date.translateContext).toBe('templateID');
     });
 
     it('should process multiselect type', () => {
-      expect(multiselect.label).toBe('Multiselect');
-      expect(multiselect.name).toBe('multiselect');
-      expect(multiselect.translateContext).toBe('templateID');
+      assessBasicProperties(multiselect, ['Multiselect', 'multiselect', 'templateID']);
       expect(multiselect.value.length).toBe(2);
       expect(multiselect.value[0].value).toBe('Value 1');
       expect(multiselect.value[1].value).toBe('Value 2');
     });
 
     it('should process multidate type', () => {
-      expect(multidate.label).toBe('Multi Date');
-      expect(multidate.name).toBe('multidate');
+      assessBasicProperties(multidate, ['Multi Date', 'multidate', 'templateID']);
       expect(multidate.value[0]).toEqual({ timestamp: 10, value: 'Jan 1, 1970' });
       expect(multidate.value[1]).toEqual({ timestamp: 1000000, value: 'Jan 12, 1970' });
-      expect(multidate.translateContext).toBe('templateID');
     });
 
     it('should process daterange type', () => {
-      expect(daterange.label).toBe('Date Range');
-      expect(daterange.name).toBe('daterange');
-      expect(daterange.value).toEqual('Jan 1, 1970 ~ Jan 12, 1970');
-      expect(daterange.translateContext).toBe('templateID');
+      assessBasicProperties(daterange, ['Date Range', 'daterange', 'templateID', 'Jan 1, 1970 ~ Jan 12, 1970']);
     });
 
     it('should process multidaterange type', () => {
-      expect(multidaterange.label).toBe('Multi Date Range');
-      expect(multidaterange.name).toBe('multidaterange');
+      assessBasicProperties(multidaterange, ['Multi Date Range', 'multidaterange', 'templateID']);
       expect(multidaterange.value[0].value).toEqual('Jan 1, 1970 ~ Jan 12, 1970');
       expect(multidaterange.value[1].value).toEqual('Jan 24, 1970 ~ Feb 4, 1970');
-      expect(multidaterange.translateContext).toBe('templateID');
     });
 
     it('should process markdown type', () => {
-      expect(markdown.label).toBe('Mark Down');
-      expect(markdown.name).toBe('markdown');
-      expect(markdown.value).toBe('markdown content');
-      expect(markdown.translateContext).toBe('templateID');
+      assessBasicProperties(markdown, ['Mark Down', 'markdown', 'templateID', 'markdown content']);
     });
 
     it('should process select type', () => {
-      expect(select.label).toBe('Select');
-      expect(select.name).toBe('select');
-      expect(select.value).toBe('Value 3');
-      expect(select.translateContext).toBe('templateID');
+      assessBasicProperties(select, ['Select', 'select', 'templateID', 'Value 3']);
     });
 
     it('should process bound relationship types', () => {
-      expect(relationship1.label).toBe('Relationship');
-      expect(relationship1.name).toBe('relationship1');
+      assessBasicProperties(relationship1, ['Relationship', 'relationship1', 'templateID']);
       expect(relationship1.value.length).toBe(2);
       expect(relationship1.value[0].value).toBe('Value 1');
       expect(relationship1.value[0].url).toBe('/entity/value1');
       expect(relationship1.value[1].value).toBe('Value 2');
       expect(relationship1.value[1].url).toBe('/entity/value2');
-      expect(relationship1.translateContext).toBe('templateID');
     });
 
     it('should process free relationsip types', () => {
-      expect(relationship2.label).toBe('Relationship 2');
-      expect(relationship2.name).toBe('relationship2');
+      assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
       expect(relationship2.value[0].value).toBe('Value 1');
       expect(relationship2.value[0].url).toBe('/entity/value1');
@@ -181,7 +168,6 @@ describe('metadata formater', () => {
       expect(relationship2.value[1].url).toBe('/entity/value2');
       expect(relationship2.value[2].value).toBe('Value 4');
       expect(relationship2.value[2].url).toBe('/entity/value4');
-      expect(relationship2.translateContext).toBe('templateID');
     });
 
     it('should not fail when field do not exists on the document', () => {
