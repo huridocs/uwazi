@@ -117,13 +117,15 @@ export class EntityViewer extends Component {
                   if (entityBeingEdited) {
                     return <EntityForm/>;
                   }
-                  return (<div>
-                    <ShowMetadata entity={entity} showTitle={false} showType={false} />
-                    <AttachmentsList
-                      files={Immutable(attachments)}
-                      parentId={entity._id}
-                    />
-                          </div>);
+                  return (
+                    <div>
+                      <ShowMetadata entity={entity} showTitle={false} showType={false} />
+                      <AttachmentsList
+                        files={Immutable(attachments)}
+                        parentId={entity._id}
+                      />
+                    </div>
+                  );
                 })()}
               </div>
             </TabContent>

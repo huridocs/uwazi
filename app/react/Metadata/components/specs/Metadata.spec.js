@@ -17,57 +17,57 @@ describe('Metadata', () => {
     props = {};
   });
 
+  const prepareMultivalueMetadata = () => [
+    { label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }
+  ];
+
+  const testMetadata = (metadata) => {
+    props.metadata = metadata;
+    testSnapshot();
+  };
+
   it('should not render metadata without value', () => {
-    props.metadata = [
+    testMetadata([
       { label: 'Label', value: 'string value' },
       { label: 'Label2' }
-    ];
-    testSnapshot();
+    ]);
   });
 
   it('should render string values', () => {
-    props.metadata = [{ label: 'Label', value: 'string value' }];
-    testSnapshot();
+    testMetadata([{ label: 'Label', value: 'string value' }]);
   });
 
   it('should render array values separated by ", "', () => {
-    props.metadata = [{ label: 'label array', value: [{ value: 'first_value' }, { value: 'second_value' }] }];
-    testSnapshot();
+    testMetadata([{ label: 'label array', value: [{ value: 'first_value' }, { value: 'second_value' }] }]);
   });
 
   it('should render a Markdown when the metadata is type mardown', () => {
-    props.metadata = [{ label: 'label array', value: 'some markdown text', type: 'markdown' }];
-    testSnapshot();
+    testMetadata([{ label: 'label array', value: 'some markdown text', type: 'markdown' }]);
   });
 
   it('should render property not have this item when type is null', () => {
-    props.metadata = [{ label: 'metadata without property', type: null }];
-    testSnapshot();
+    testMetadata([{ label: 'metadata without property', type: null }]);
   });
 
   it('should render sorted property with sorted styles', () => {
-    props.metadata = [{ label: 'sortedBy', value: 'string value', sortedBy: true }];
-    testSnapshot();
+    testMetadata([{ label: 'sortedBy', value: 'string value', sortedBy: true }]);
   });
 
   it('should render links when the property has url', () => {
-    props.metadata = [{ label: 'withUrl', value: 'string value', url: 'url' }];
-    testSnapshot();
+    testMetadata([{ label: 'withUrl', value: 'string value', url: 'url' }]);
   });
 
   it('should render links when multiple properties have url', () => {
-    props.metadata = [{ label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }];
-    testSnapshot();
+    testMetadata(prepareMultivalueMetadata());
   });
 
   it('should not render an empty list', () => {
-    props.metadata = [{ label: 'label array', value: [] }];
-    testSnapshot();
+    testMetadata([{ label: 'label array', value: [] }]);
   });
 
   describe('when passing compact prop', () => {
     it('should pass it to ValueList', () => {
-      props.metadata = [{ label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }];
+      props.metadata = prepareMultivalueMetadata();
       props.compact = true;
       testSnapshot();
     });
