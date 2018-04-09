@@ -17,17 +17,19 @@ export class Item extends Component {
       return false;
     }
 
+    const snippetElement = (<div
+      onClick={this.props.onSnippetClick}
+      className="item-snippet"
+      dangerouslySetInnerHTML={{ __html: `${doc.snippets[0].text} ...` }}
+    />);
+
     if (doc.snippets.length === 1) {
-      return (
-        <div className="item-snippet-wrapper">
-          <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{ __html: `${doc.snippets[0].text} ...` }} />
-        </div>
-      );
+      return <div className="item-snippet-wrapper">{snippetElement}</div>;
     }
 
     return (
       <div className="item-snippet-wrapper">
-        <div onClick={this.props.onSnippetClick} className="item-snippet" dangerouslySetInnerHTML={{ __html: `${doc.snippets[0].text} ...` }} />
+        {snippetElement}
         <div>
           <a onClick={this.props.onSnippetClick}>{t('System', 'Show more')}</a>
         </div>
@@ -41,16 +43,11 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
+    const itemClassName = `item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`;
+    const itemProps = { className: itemClassName, onClick, onMouseEnter, onMouseLeave, active, tabIndex: '1' };
 
     return (
-      <RowList.Item
-        className={`item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`}
-        onClick={onClick || function () {}}
-        onMouseEnter={onMouseEnter || function () {}}
-        onMouseLeave={onMouseLeave || function () {}}
-        active={active}
-        tabIndex="1"
-        >
+      <RowList.Item {...itemProps}>
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
@@ -79,6 +76,12 @@ export class Item extends Component {
     );
   }
 }
+
+Item.defaultProps = {
+  onClick: () => {},
+  onMouseEnter: () => {},
+  onMouseLeave: () => {}
+};
 
 Item.propTypes = {
   templates: PropTypes.object,
