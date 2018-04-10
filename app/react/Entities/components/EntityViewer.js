@@ -1,34 +1,34 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import { fromJS as Immutable } from 'immutable';
+import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
+import { bindActionCreators } from 'redux';
+import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import Helmet from 'react-helmet';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {fromJS as Immutable} from 'immutable';
-import {t} from 'app/I18N';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import {formater, ShowMetadata} from 'app/Metadata';
-import ShowIf from 'app/App/ShowIf';
-import {browserHistory} from 'react-router';
-import {deleteEntity} from '../actions/actions';
-import {showTab} from '../actions/uiActions';
-import {CreateConnectionPanel} from 'app/Connections';
+import { AttachmentsList } from 'app/Attachments';
+import { ConnectionsGroups, ConnectionsList, ResetSearch } from 'app/ConnectionsList';
+import {
+  CreateConnectionPanel,
+  actions as connectionsActions
+} from 'app/Connections';
+import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
+import { RelationshipsFormButtons } from 'app/Relationships';
+import { TemplateLabel, Icon } from 'app/Layout';
+import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
+import { t } from 'app/I18N';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
-import {actions as connectionsActions} from 'app/Connections';
-import {ConnectionsGroups, ConnectionsList, ResetSearch} from 'app/ConnectionsList';
-import {connectionsChanged, deleteConnection} from 'app/ConnectionsList/actions/actions';
-import EntityForm from '../containers/EntityForm';
-import {MetadataFormButtons} from 'app/Metadata';
-import {RelationshipsFormButtons} from 'app/Relationships';
-import {TemplateLabel, Icon} from 'app/Layout';
-import SidePanel from 'app/Layout/SidePanel';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+import ShowIf from 'app/App/ShowIf';
+import SidePanel from 'app/Layout/SidePanel';
 
-import {createSelector} from 'reselect';
-import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import {AttachmentsList} from 'app/Attachments';
+import { deleteEntity } from '../actions/actions';
+import { showTab } from '../actions/uiActions';
+import EntityForm from '../containers/EntityForm';
 
 export class EntityViewer extends Component {
-
   constructor(props, context) {
     super(props, context);
     this.deleteEntity = this.deleteEntity.bind(this);
@@ -61,16 +61,16 @@ export class EntityViewer extends Component {
 
 
   render() {
-    const {entity, entityBeingEdited, tab, connectionsGroups} = this.props;
+    const { entity, entityBeingEdited, tab, connectionsGroups } = this.props;
     const selectedTab = tab || 'info';
     const attachments = entity.attachments ? entity.attachments : [];
 
     const summary = connectionsGroups.reduce((summaryData, g) => {
-      g.get('templates').forEach(template => {
+      g.get('templates').forEach((template) => {
         summaryData.totalConnections += template.get('count');
       });
       return summaryData;
-    }, {totalConnections: 0});
+    }, { totalConnections: 0 });
 
     return (
       <div className="row entity-content">
@@ -83,20 +83,23 @@ export class EntityViewer extends Component {
             <TemplateLabel template={entity.template}/>
           </div>
 
-          <Tabs className="content-header-tabs" selectedTab={selectedTab}
-                handleSelect={tabName => {
+          <Tabs
+            className="content-header-tabs"
+            selectedTab={selectedTab}
+            handleSelect={(tabName) => {
                   this.props.showTab(tabName);
-                }}>
+                }}
+          >
             <ul className="nav nav-tabs">
               <li>
                 <TabLink to="info">
-                  <i className="fa fa-info-circle"></i>
+                  <i className="fa fa-info-circle" />
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="connections">
-                  <i className="fa fa-exchange"></i>
+                  <i className="fa fa-exchange" />
                   <span className="connectionsNumber">{summary.totalConnections}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
@@ -114,16 +117,20 @@ export class EntityViewer extends Component {
                   if (entityBeingEdited) {
                     return <EntityForm/>;
                   }
-                  return <div>
-                    <ShowMetadata entity={entity} showTitle={false} showType={false} />
-                    <AttachmentsList files={Immutable(attachments)}
-                                      parentId={entity._id} />
-                  </div>;
+                  return (
+                    <div>
+                      <ShowMetadata entity={entity} showTitle={false} showType={false} />
+                      <AttachmentsList
+                        files={Immutable(attachments)}
+                        parentId={entity._id}
+                      />
+                    </div>
+                  );
                 })()}
               </div>
             </TabContent>
             <TabContent for="connections">
-              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered={true} />
+              <ConnectionsList deleteConnection={this.deleteConnection.bind(this)} searchCentered />
             </TabContent>
           </Tabs>
         </main>
@@ -133,8 +140,9 @@ export class EntityViewer extends Component {
             <MetadataFormButtons
               delete={this.deleteEntity.bind(this)}
               data={this.props.rawEntity}
-              formStatePath='entityView.entityForm'
-              entityBeingEdited={entityBeingEdited} />
+              formStatePath="entityView.entityForm"
+              entityBeingEdited={entityBeingEdited}
+            />
           </div>
         </ShowIf>
 
@@ -144,7 +152,7 @@ export class EntityViewer extends Component {
           </div>
         </ShowIf>
 
-        <SidePanel className={'entity-connections entity-' + this.props.tab} open={true}>
+        <SidePanel className={`entity-connections entity-${this.props.tab}`} open>
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
@@ -193,27 +201,17 @@ const selectEntity = createSelector(
   entity => entity.toJS()
 );
 
-const selectTemplates = createSelector(s => s.templates, template => template);
-const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri);
 const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
-const prepareMetadata = createSelector(
-  selectEntity,
-  selectTemplates,
-  selectThesauris,
-  (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
-);
 
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = state => ({
     rawEntity: state.entityView.entity,
     relationTypes: selectRelationTypes(state),
-    entity: prepareMetadata(state),
+    entity: selectEntity(state),
     connectionsGroups: state.relationships.list.connectionsGroups,
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: state.entityView.uiState.get('tab'),
     library: state.library
-  };
-};
+});
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({

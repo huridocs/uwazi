@@ -1,6 +1,6 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
@@ -191,7 +191,7 @@ describe('Connections', () => {
     .connections.getRelationsObjet()
     .then((relations) => {
       expect(relations).toEqual({
-        Interpretation: {Event: ['Gotham attack']}
+        Interpretation: { Event: ['Gotham attack'] }
       });
     })
     .then(done)

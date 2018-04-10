@@ -224,7 +224,7 @@ export class DocumentSidePanel extends Component {
 
                 return (
                   <div>
-                    <ShowMetadata entity={this.props.metadata} showTitle={true} showType={true} />
+                    <ShowMetadata entity={this.props.doc.toJS()} showTitle={true} showType={true} />
                     <AttachmentsList files={fromJS(attachments)}
                       readOnly={false}
                       isTargetDoc={isTargetDoc}
