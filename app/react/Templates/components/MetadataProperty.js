@@ -16,6 +16,11 @@ import ShowIf from 'app/App/ShowIf';
 import Icons from './Icons';
 
 export class MetadataProperty extends Component {
+  hasError(propertyErrors) {
+    const errors = Object.keys(propertyErrors);
+    return errors.length > 0;
+  }
+
   renderForm() {
     if (this.props.isCommonProperty) {
       return <FormConfigCommon formKey={this.props.localID} index={this.props.index} />;
@@ -29,12 +34,10 @@ export class MetadataProperty extends Component {
     if (this.props.type === 'nested') {
       return <FormConfigNested formKey={this.props.localID} index={this.props.index} />;
     }
+    if (this.props.type === 'geolocation') {
+      return <FormConfigInput type={this.props.type} formKey={this.props.localID} index={this.props.index} filter={false} />;
+    }
     return <FormConfigInput type={this.props.type} formKey={this.props.localID} index={this.props.index} />;
-  }
-
-  hasError(propertyErrors) {
-    const errors = Object.keys(propertyErrors);
-    return errors.length > 0;
   }
 
   render() {
