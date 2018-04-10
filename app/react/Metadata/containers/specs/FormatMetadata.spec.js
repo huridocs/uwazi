@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import FormatMetadata from '../FormatMetadata';
-import * as selectors from '../../selectors';
+import selectors from '../../selectors';
 
 describe('FormatMetadata', () => {
   it('should render Metadata component passing the formatted metadata', () => {

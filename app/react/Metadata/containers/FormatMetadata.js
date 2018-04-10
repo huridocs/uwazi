@@ -2,13 +2,13 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { formatMetadata } from '../selectors';
+import selectors from '../selectors';
 import Metadata from '../components/Metadata';
 
 
 const FormatMetadata = props => (
   <Metadata
-    metadata={props.additionalMetadata.concat(formatMetadata(props, props.entity, props.sortedProperty))}
+    metadata={props.additionalMetadata.concat(selectors.formatMetadata(props, props.entity, props.sortedProperty))}
     compact={!!props.sortedProperty}
   />
 );
@@ -19,8 +19,20 @@ FormatMetadata.defaultProps = {
 };
 
 FormatMetadata.propTypes = {
-  entity: PropTypes.object.isRequired,
-  additionalMetadata: PropTypes.array,
+  entity: PropTypes.shape({
+    metadata: PropTypes.object
+  }).isRequired,
+  additionalMetadata: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.arrayOf(PropTypes.string),
+      PropTypes.arrayOf(PropTypes.shape({
+        value: PropTypes.string
+      }))
+    ])
+  })),
   sortedProperty: PropTypes.string
 };
 

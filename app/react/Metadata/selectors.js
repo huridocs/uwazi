@@ -14,4 +14,4 @@ const formatMetadata = createSelector(
   }
 );
 
-export { formatMetadata };
+export default { formatMetadata };
