@@ -4,7 +4,7 @@ import selectors from '../helpers/selectors.js';
 
 const nightmare = createNightmare();
 
-fdescribe('Connections', () => {
+describe('Connections', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
