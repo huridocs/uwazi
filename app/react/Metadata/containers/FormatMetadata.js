@@ -20,7 +20,7 @@ FormatMetadata.defaultProps = {
 
 FormatMetadata.propTypes = {
   entity: PropTypes.shape({
-    metadata: PropTypes.object
+    metadata: PropTypes.array
   }).isRequired,
   additionalMetadata: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string,
