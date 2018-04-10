@@ -1,14 +1,14 @@
 import * as actions from '../actions';
 import * as reactReduxForm from 'react-redux-form';
-import {actions as formActions} from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import * as types from '../actionTypes';
 import * as routeActions from 'app/Viewer/actions/routeActions';
-import {mockID} from 'shared/uniqueID.js';
-import {api} from 'app/Entities';
+import { mockID } from 'shared/uniqueID.js';
+import { api } from 'app/Entities';
 
 import Immutable from 'immutable';
 
@@ -19,12 +19,12 @@ describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
       spyOn(formActions, 'load').and.returnValue('formload');
-      let dispatch = jasmine.createSpy('dispatch');
-      let doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
-      let templates = [{_id: 'templateId', properties: [{name: 'test'}, {name: 'newProp'}, {name: 'testRelation', type: 'relationship'}]}];
+      const dispatch = jasmine.createSpy('dispatch');
+      const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      let expectedDoc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2', newProp: '', testRelation: []}};
+      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2', newProp: '', testRelation: [] } };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
@@ -38,25 +38,26 @@ describe('Metadata Actions', () => {
         spyOn(formActions, 'load').and.returnValue('formload');
         spyOn(formActions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
-        doc = {title: 'test'};
+        doc = { title: 'test' };
         templates = [{
           _id: 'templateId1',
           name: 'first',
           isEntity: true,
           properties: [
-            {name: 'test'},
-            {name: 'newProp'},
-            {name: 'date', type: 'date'},
-            {name: 'multi', type: 'multiselect'}
+            { name: 'test' },
+            { name: 'newProp' },
+            { name: 'date', type: 'date' },
+            { name: 'multi', type: 'multiselect' },
+            { name: 'geolocation', type: 'geolocation' }
           ]
         }, {
           _id: 'templateId2',
           name: 'last',
           properties: [
-            {name: 'test'},
-            {name: 'newProp'},
-            {name: 'date', type: 'date'},
-            {name: 'multi', type: 'multiselect'}
+            { name: 'test' },
+            { name: 'newProp' },
+            { name: 'date', type: 'date' },
+            { name: 'multi', type: 'multiselect' }
           ]
         }];
       });
@@ -64,7 +65,11 @@ describe('Metadata Actions', () => {
       it('should set the first template', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        let expectedDoc = {title: 'test', metadata: {test: '', newProp: '', multi: []}, template: 'templateId1'};
+        const expectedDoc = {
+          title: 'test',
+          metadata: { geolocation: { lat: 0, lon: 0 }, test: '', newProp: '', multi: [] },
+          template: 'templateId1'
+        };
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
         expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
@@ -72,22 +77,22 @@ describe('Metadata Actions', () => {
       });
 
       it('should set the first document template if document has type document', () => {
-        doc = {title: 'test', type: 'document'};
+        doc = { title: 'test', type: 'document' };
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        let expectedDoc = {title: 'test', type: 'document', metadata: {test: '', newProp: '', multi: []}, template: 'templateId2'};
+        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
       it('should set the first entity template if document has type entity', () => {
-        doc = {title: 'test', type: 'entity'};
+        doc = { title: 'test', type: 'entity' };
         templates[0].isEntity = false;
         templates[1].isEntity = true;
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        let expectedDoc = {title: 'test', type: 'entity', metadata: {test: '', newProp: '', multi: []}, template: 'templateId2'};
+        const expectedDoc = { title: 'test', type: 'entity', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
         expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });
@@ -95,7 +100,7 @@ describe('Metadata Actions', () => {
 
   describe('changeTemplate', () => {
     beforeEach(() => {
-      const doc = {title: 'test', template: 'templateId', metadata: {test: 'test', test2: 'test2'}};
+      const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
       spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
       jasmine.clock().install();
     });
@@ -110,11 +115,11 @@ describe('Metadata Actions', () => {
 
       const dispatch = jasmine.createSpy('dispatch');
 
-      const template = {_id: 'newTemplate', properties: [{name: 'test'}, {name: 'newProp', type: 'nested'}]};
+      const template = { _id: 'newTemplate', properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }] };
       const state = {
         templates: Immutable.fromJS([
           template,
-          {_id: 'anotherTemplate'}
+          { _id: 'anotherTemplate' }
         ])
       };
 
@@ -123,7 +128,7 @@ describe('Metadata Actions', () => {
       actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
       expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
 
-      let expectedDoc = {title: 'test', template: 'newTemplate', metadata: {test: '', newProp: []}};
+      const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: '', newProp: [] } };
       expect(dispatch).toHaveBeenCalledWith('formReset');
       expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
 
@@ -138,14 +143,17 @@ describe('Metadata Actions', () => {
     it('should load the given template with empty values', () => {
       spyOn(formActions, 'load').and.returnValue('formLoad');
 
-      let template = {_id: '1', properties: [
-        {name: 'year', type: 'numeric'},
-        {name: 'powers', content: '1', type: 'multiselect'},
-        {name: 'enemies', content: '2', type: 'multiselect'},
-        {name: 'color', type: 'text', required: true}
-      ]};
+      const template = {
+        _id: '1',
+        properties: [
+          { name: 'year', type: 'numeric' },
+          { name: 'powers', content: '1', type: 'multiselect' },
+          { name: 'enemies', content: '2', type: 'multiselect' },
+          { name: 'color', type: 'text', required: true }
+        ]
+      };
 
-      let expectedModel = {
+      const expectedModel = {
         template: '1',
         metadata: {
           year: '',
@@ -155,7 +163,7 @@ describe('Metadata Actions', () => {
         }
       };
 
-      let dispatch = jasmine.createSpy('dispatch');
+      const dispatch = jasmine.createSpy('dispatch');
       actions.loadTemplate('formNamespace', template)(dispatch);
       expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedModel);
     });
@@ -165,14 +173,14 @@ describe('Metadata Actions', () => {
     it('should update selected entities with the given metadata and template', (done) => {
       mockID();
       spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
-      let entities = Immutable.fromJS([{sharedId: '1'}, {sharedId: '2'}]);
-      const metadata = {text: 'something new'};
+      const entities = Immutable.fromJS([{ sharedId: '1' }, { sharedId: '2' }]);
+      const metadata = { text: 'something new' };
       const template = 'template';
 
       const store = mockStore({});
-      store.dispatch(actions.multipleUpdate(entities, {template, metadata}))
+      store.dispatch(actions.multipleUpdate(entities, { template, metadata }))
       .then((docs) => {
-        expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], {template, metadata});
+        expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], { template, metadata });
         expect(docs[0].metadata).toEqual(metadata);
         expect(docs[0].template).toEqual('template');
         expect(docs[1].metadata).toEqual(metadata);
@@ -189,44 +197,44 @@ describe('Metadata Actions', () => {
     let file;
 
     beforeEach(() => {
-      mockUpload = superagent.post(APIURL + 'reupload');
+      mockUpload = superagent.post(`${APIURL}reupload`);
       spyOn(mockUpload, 'field').and.returnValue(mockUpload);
       spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
       spyOn(superagent, 'post').and.returnValue(mockUpload);
 
       // needed to work with firefox/chrome and phantomjs
-      file = {name: 'filename'};
-      let isChrome = typeof File === 'function';
+      file = { name: 'filename' };
+      const isChrome = typeof File === 'function';
       if (isChrome) {
         file = new File([], 'filename');
       }
       //
 
       jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve());
-      jest.spyOn(routeActions, 'setViewerState').mockImplementation(() => ({type: 'setViewerState'}));
-      store = mockStore({locale: 'es', templates: 'immutableTemplates'});
+      jest.spyOn(routeActions, 'setViewerState').mockImplementation(() => ({ type: 'setViewerState' }));
+      store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
       store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
     });
 
     it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
       const expectedActions = [
-        {type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1'},
-        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55},
-        {type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65},
-        {type: types.REUPLOAD_COMPLETE, doc: 'abc1', file, __reducerKey: 'storeKey'}
+        { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
+        { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
+        { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
+        { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file, __reducerKey: 'storeKey' }
       ];
 
       expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
 
-      mockUpload.emit('progress', {percent: 55.1});
-      mockUpload.emit('progress', {percent: 65});
+      mockUpload.emit('progress', { percent: 55.1 });
+      mockUpload.emit('progress', { percent: 65 });
       mockUpload.emit('response');
       expect(store.getActions()).toEqual(expectedActions);
     });
 
     describe('upon response', () => {
-      let state = {};
+      const state = {};
 
       beforeEach(() => {
         jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve(state));
@@ -234,9 +242,9 @@ describe('Metadata Actions', () => {
       });
 
       it('should request and set viewer states', () => {
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es', {templates: 'immutableTemplates'});
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es', { templates: 'immutableTemplates' });
         expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
-        expect(store.getActions()).toContainEqual({type: 'setViewerState'});
+        expect(store.getActions()).toContainEqual({ type: 'setViewerState' });
       });
     });
   });

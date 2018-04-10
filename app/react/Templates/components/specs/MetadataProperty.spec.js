@@ -1,17 +1,19 @@
-import React, {Component} from 'react';
+/* eslint-disable react/no-multi-comp */
+import React, { Component } from 'react';
 import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
-import {DragDropContext} from 'react-dnd';
-import {Provider} from 'react-redux';
-import {createStore} from 'redux';
+import { DragDropContext } from 'react-dnd';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import Immutable from 'immutable';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {MetadataProperty, dragSource, dropTarget} from 'app/Templates/components/MetadataProperty';
+import { MetadataProperty, dragSource, dropTarget } from 'app/Templates/components/MetadataProperty';
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 import FormConfigNested from 'app/Templates/components/FormConfigNested';
 import FormConfigCommon from 'app/Templates/components/FormConfigCommon';
+import FormConfigRelationship from 'app/Templates/components/FormConfigRelationship';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -28,7 +30,7 @@ function sourceTargetTestContext(Target, Source, actions) {
     class TestContextContainer extends Component {
       render() {
         const identity = x => x;
-        let targetProps = {
+        const targetProps = {
           label: 'target',
           index: 1,
           localID: 'target',
@@ -36,22 +38,25 @@ function sourceTargetTestContext(Target, Source, actions) {
           isDragging: false,
           uiState: Immutable.fromJS({}),
           templates: Immutable.fromJS([]),
-          formState: {fields: [], $form: {errors: {}}}
+          formState: { fields: [], $form: { errors: {} } }
         };
-        let sourceProps = {
+        const sourceProps = {
           label: 'source',
           type: 'type',
-          index: 2, localID: 'source',
+          index: 2,
+          localID: 'source',
           connectDragSource: identity,
           isDragging: false,
           uiState: Immutable.fromJS({}),
           templates: Immutable.fromJS([]),
-          formState: {fields: [], $form: {errors: {}}}
+          formState: { fields: [], $form: { errors: {} } }
         };
-        return <div>
-                <Target {...targetProps} {...actions}/>
-                <Source {...sourceProps} />
-              </div>;
+        return (
+          <div>
+            <Target {...targetProps} {...actions}/>
+            <Source {...sourceProps} />
+          </div>
+        );
       }
     }
   );
@@ -63,9 +68,9 @@ describe('MetadataProperty', () => {
   describe('commonProperty', () => {
     let editProperty;
     beforeEach(() => {
-      let identity = x => x;
+      const identity = x => x;
       editProperty = jasmine.createSpy('editProperty');
-      let props = {
+      const props = {
         isCommonProperty: true,
         isDragging: false,
         connectDragSource: identity,
@@ -74,19 +79,13 @@ describe('MetadataProperty', () => {
         type: 'propertyType',
         index: 1,
         localID: 'id',
-        formState: {fields: [], $form: {errors: {}}},
+        formState: { fields: [], $form: { errors: {} } },
         editProperty,
-        uiState: Immutable.fromJS({editingProperty: ''}),
+        uiState: Immutable.fromJS({ editingProperty: '' }),
         templates: Immutable.fromJS([])
       };
 
       component = shallow(<MetadataProperty {...props}/>);
-    });
-
-    describe('FormConfigCommon', () => {
-      it('should pass the localID', () => {
-        expect(component.find(FormConfigCommon).first().props().formKey).toBe('id');
-      });
     });
 
     describe('ui actions', () => {
@@ -109,10 +108,10 @@ describe('MetadataProperty', () => {
     let removeProperty;
     let editProperty;
     beforeEach(() => {
-      let identity = x => x;
+      const identity = x => x;
       removeProperty = jasmine.createSpy('removeProperty');
       editProperty = jasmine.createSpy('editProperty');
-      let props = {
+      const props = {
         isDragging: true,
         connectDragSource: identity,
         connectDropTarget: identity,
@@ -121,10 +120,10 @@ describe('MetadataProperty', () => {
         type: 'propertyType',
         index: 1,
         localID: 'id',
-        formState: {fields: [], $form: {errors: {}}},
+        formState: { fields: [], $form: { errors: {} } },
         removeProperty,
         editProperty,
-        uiState: Immutable.fromJS({editingProperty: ''}),
+        uiState: Immutable.fromJS({ editingProperty: '' }),
         templates: Immutable.fromJS([])
       };
 
@@ -147,17 +146,24 @@ describe('MetadataProperty', () => {
       it('should render FormConfigSelect', () => {
         expect(component.find(FormConfigInput).length).toBe(1);
 
-        component.setProps({type: 'select'});
+        component.setProps({ type: 'select' });
         expect(component.find(FormConfigSelect).length).toBe(1);
 
-        component.setProps({type: 'any'});
+        component.setProps({ type: 'any' });
         expect(component.find(FormConfigInput).length).toBe(1);
 
-        component.setProps({type: 'multiselect'});
+        component.setProps({ type: 'multiselect' });
         expect(component.find(FormConfigSelect).length).toBe(1);
 
-        component.setProps({type: 'nested'});
+        component.setProps({ type: 'nested' });
         expect(component.find(FormConfigNested).length).toBe(1);
+
+        component.setProps({ type: 'relationship' });
+        expect(component.find(FormConfigRelationship).length).toBe(1);
+
+        component.setProps({ type: 'geolocation' });
+        expect(component.find(FormConfigInput).length).toBe(1);
+        expect(component.find(FormConfigInput).props().canBeFilter).toBe(false);
       });
     });
 
@@ -185,41 +191,44 @@ describe('MetadataProperty', () => {
 
     function renderComponent(ComponentToRender, props) {
       let result;
-      let templateData = {name: '', properties: [{label: '', type: 'text'}, {label: '', type: 'text'}, {label: '', type: 'text'}]};
-      store = createStore(() => {
-        return {
+      const templateData = { name: '', properties: [{ label: '', type: 'text' }, { label: '', type: 'text' }, { label: '', type: 'text' }] };
+      store = createStore(() => ({
           template: {
             data: templateData,
-            uiState: Immutable.fromJS({templates: []}),
-            formState: {fields: [], errors: {}}
-          },
+            uiState: Immutable.fromJS({ templates: [] }),
+            formState: { fields: [], errors: {} }
+        },
           templates: Immutable.fromJS([]),
           modals: Immutable.fromJS({})
-        };
-      });
-      TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={(ref) => result = ref} {...props} index={0}/></Provider>);
+      }));
+      TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={ref => result = ref} {...props} index={0}/></Provider>);
       return result;
     }
 
     describe('dragSource', () => {
       beforeEach(() => {
-        let TestComponent = wrapInTestContext(dragSource);
-        component = renderComponent(TestComponent, {label: 'test', type: 'type', index: 0, localID: 'id', uiState: Immutable.fromJS({}),
-                                    formState: {fields: [], $form: {errors: {}}}});
+        const TestComponent = wrapInTestContext(dragSource);
+        component = renderComponent(TestComponent, {
+          label: 'test',
+          type: 'type',
+          index: 0,
+          localID: 'id',
+          uiState: Immutable.fromJS({}),
+          formState: { fields: [], $form: { errors: {} } } });
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });
 
       describe('beginDrag', () => {
         it('should return an object with name', () => {
-          let option = TestUtils.findRenderedComponentWithType(component, dragSource);
+          const option = TestUtils.findRenderedComponentWithType(component, dragSource);
           backend.simulateBeginDrag([option.getHandlerId()]);
-          expect(monitor.getItem()).toEqual({index: 0, label: 'test', type: 'type'});
+          expect(monitor.getItem()).toEqual({ index: 0, label: 'test', type: 'type' });
         });
 
         it('should add "dragging" class name', () => {
-          let option = TestUtils.findRenderedComponentWithType(component, dragSource);
-          let div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'li')[0];
+          const option = TestUtils.findRenderedComponentWithType(component, dragSource);
+          const div = TestUtils.scryRenderedDOMComponentsWithTag(option, 'li')[0];
 
           expect(div.className).not.toContain('dragging');
           backend.simulateBeginDrag([option.getHandlerId()]);
@@ -229,9 +238,9 @@ describe('MetadataProperty', () => {
     });
 
     describe('dropTarget', () => {
-      let actions = jasmine.createSpyObj(['reorderProperty', 'addProperty']);
+      const actions = jasmine.createSpyObj(['reorderProperty', 'addProperty']);
       beforeEach(() => {
-        let TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);
+        const TestDragAndDropContext = sourceTargetTestContext(dropTarget, dragSource, actions);
         component = renderComponent(TestDragAndDropContext);
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
@@ -239,8 +248,8 @@ describe('MetadataProperty', () => {
 
       describe('when reordering', () => {
         it('should call reorder with drag and hover indexes', () => {
-          let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
-          let source = TestUtils.findRenderedComponentWithType(component, dragSource);
+          const target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
+          const source = TestUtils.findRenderedComponentWithType(component, dragSource);
 
           backend.simulateBeginDrag([source.getHandlerId()]);
           backend.simulateHover([target.getHandlerId()]);
@@ -251,15 +260,15 @@ describe('MetadataProperty', () => {
 
       describe('when inserting', () => {
         it('should call addProperty with inserting flag and on index 0', () => {
-          let target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
-          let source = TestUtils.findRenderedComponentWithType(component, dragSource);
+          const target = TestUtils.scryRenderedComponentsWithType(component, dropTarget)[0];
+          const source = TestUtils.findRenderedComponentWithType(component, dragSource);
 
           backend.simulateBeginDrag([source.getHandlerId()]);
           delete monitor.getItem().index;
           backend.simulateHover([target.getHandlerId()]);
 
           expect(monitor.getItem().index).toBe(0);
-          expect(actions.addProperty).toHaveBeenCalledWith({label: 'source', type: 'type', inserting: true}, 0);
+          expect(actions.addProperty).toHaveBeenCalledWith({ label: 'source', type: 'type', inserting: true }, 0);
         });
       });
     });

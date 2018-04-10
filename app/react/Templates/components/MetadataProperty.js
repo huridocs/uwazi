@@ -3,41 +3,35 @@ import React, { Component } from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
 import { editProperty } from 'app/Templates/actions/uiActions';
 import { showModal } from 'app/Modals/actions/modalActions';
 import { reorderProperty, addProperty } from 'app/Templates/actions/templateActions';
+import ShowIf from 'app/App/ShowIf';
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
 import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
-import ShowIf from 'app/App/ShowIf';
 import Icons from './Icons';
 
 export class MetadataProperty extends Component {
-  hasError(propertyErrors) {
-    const errors = Object.keys(propertyErrors);
-    return errors.length > 0;
-  }
-
   renderForm() {
     if (this.props.isCommonProperty) {
-      return <FormConfigCommon formKey={this.props.localID} index={this.props.index} />;
+      return <FormConfigCommon index={this.props.index} />;
     }
     if (this.props.type === 'relationship') {
-      return <FormConfigRelationship formKey={this.props.localID} index={this.props.index} />;
+      return <FormConfigRelationship index={this.props.index} />;
     }
     if (this.props.type === 'select' || this.props.type === 'multiselect') {
-      return <FormConfigSelect formKey={this.props.localID} index={this.props.index} />;
+      return <FormConfigSelect index={this.props.index} />;
     }
     if (this.props.type === 'nested') {
-      return <FormConfigNested formKey={this.props.localID} index={this.props.index} />;
+      return <FormConfigNested index={this.props.index} />;
     }
     if (this.props.type === 'geolocation') {
-      return <FormConfigInput type={this.props.type} formKey={this.props.localID} index={this.props.index} filter={false} />;
+      return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false} />;
     }
-    return <FormConfigInput type={this.props.type} formKey={this.props.localID} index={this.props.index} />;
+    return <FormConfigInput type={this.props.type} index={this.props.index} />;
   }
 
   render() {
@@ -126,25 +120,22 @@ MetadataProperty.propTypes = {
 
 
 const target = {
-  drop(props) {
-    return props;
-  },
 
   hover(props, monitor) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
-
+    const item = monitor.getItem();
     if (typeof dragIndex === 'undefined') {
-      const item = monitor.getItem();
       item.inserting = true;
       item.index = 0;
-      return props.addProperty({ label: item.label, type: item.type, inserting: true }, 0);
+      props.addProperty({ label: item.label, type: item.type, inserting: true }, 0);
+      return;
     }
     if (dragIndex === hoverIndex) {
       return;
     }
     props.reorderProperty(dragIndex, hoverIndex);
-    monitor.getItem().index = hoverIndex;
+    item.index = hoverIndex;
   }
 };
 
