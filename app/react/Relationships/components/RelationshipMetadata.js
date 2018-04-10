@@ -17,10 +17,10 @@ export class RelationshipMetadata extends Component {
       <SidePanel open={this.props.selectedConnection} className="connections-metadata">
         <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.unselectConnection}></i>
         <div className="sidepanel-body">
-          <ShowMetadata entity={this.props.selectedConnectionMetadata} showTitle={true} showType={true} />
+          <ShowMetadata entity={this.props.entity} showTitle={true} showType={true} />
         </div>
         <div className="sidepanel-footer">
-          <MetadataFormButtons exclusivelyViewButton={true} data={Immutable(this.props.selectedConnectionMetadata)}/>
+          <MetadataFormButtons exclusivelyViewButton={true} data={Immutable(this.props.entity)}/>
         </div>
       </SidePanel>
     );
@@ -29,29 +29,19 @@ export class RelationshipMetadata extends Component {
 
 RelationshipMetadata.propTypes = {
   selectedConnection: PropTypes.bool,
-  selectedConnectionMetadata: PropTypes.object,
+  entity: PropTypes.object,
   unselectConnection: PropTypes.func
 };
 
 const connectionSelector = createSelector(
   state => state.relationships.connection,
-  entity => entity.toJS()
-);
-
-const selectTemplates = createSelector(s => s.templates, template => template);
-const selectThesauris = createSelector(s => s.thesauris, thesauri => thesauri);
-
-const prepareConnectionMetadata = createSelector(
-  connectionSelector,
-  selectTemplates,
-  selectThesauris,
-  (entity, templates, thesauris) => formater.prepareMetadata(entity, templates, thesauris)
+  entity => entity && entity.toJS ? entity.toJS() : { metadata: {} }
 );
 
 const mapStateToProps = (state) => {
   return {
     selectedConnection: Boolean(state.relationships.connection && state.relationships.connection.get('_id')),
-    selectedConnectionMetadata: prepareConnectionMetadata(state)
+    entity: connectionSelector(state)
   };
 };
 
