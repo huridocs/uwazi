@@ -11,9 +11,9 @@ There are important stories within your documents. Uwazi helps you tell them.  U
 
 [Uwazi](https://www.uwazi.io/) | [Huridocs](https://huridocs.org/)
 
+Read the [docs](https://github.com/huridocs/uwazi/wiki)
 
-
-Table of contents
+Intallation guide
 =================
 
   * [Dependencies](#dependencies)
