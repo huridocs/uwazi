@@ -5,7 +5,7 @@ import { I18NLink } from 'app/I18N';
 import { Icon } from '../../Layout';
 
 const withIcon = v => (
-  v.icon ? <React.Fragment><Icon className="item-icon item-icon-center" data={v.icon} />{v.value}</React.Fragment> : v.value
+  v.icon ? <React.Fragment key={v.value}><Icon className="item-icon item-icon-center" data={v.icon} />{v.value}</React.Fragment> : v.value
 );
 
 const interpose = (array, separator) => [].concat(...array.map(e => [separator, e])).slice(1);
