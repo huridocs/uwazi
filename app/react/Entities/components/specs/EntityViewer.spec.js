@@ -1,10 +1,10 @@
+import { fromJS as Immutable } from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
 
-import {EntityViewer} from '../EntityViewer';
+import { ConnectionsGroups, ConnectionsList } from 'app/ConnectionsList';
+import { shallow } from 'enzyme';
 
-import {ConnectionsGroups, ConnectionsList} from 'app/ConnectionsList';
+import { EntityViewer } from '../EntityViewer';
 
 describe('EntityViewer', () => {
   let component;
@@ -13,25 +13,25 @@ describe('EntityViewer', () => {
   let instance;
 
   beforeEach(() => {
-    context = {confirm: jasmine.createSpy('confirm')};
+    context = { confirm: jasmine.createSpy('confirm') };
     props = {
-      entity: {title: 'Title'},
+      entity: { title: 'Title' },
       templates: [
-        {_id: 'template1', properties: [{name: 'source_property', label: 'label1'}], name: 'template1Name'},
-        {_id: 'template2', properties: [{name: 'source_property', label: 'label2'}], name: 'template2Name'}
+        { _id: 'template1', properties: [{ name: 'source_property', label: 'label1' }], name: 'template1Name' },
+        { _id: 'template2', properties: [{ name: 'source_property', label: 'label2' }], name: 'template2Name' }
       ],
-      relationTypes: [{_id: 'abc', name: 'relationTypeName'}],
+      relationTypes: [{ _id: 'abc', name: 'relationTypeName' }],
       connectionsGroups: Immutable([
-        {key: 'g1', templates: [{_id: 't1', count: 1}]},
-        {key: 'g2', templates: [{_id: 't2', count: 2}, {_id: 't3', count: 3}]}
+        { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
+        { key: 'g2', templates: [{ _id: 't2', count: 2 }, { _id: 't3', count: 3 }] }
       ]),
       deleteConnection: jasmine.createSpy('deleteConnection'),
       startNewConnection: jasmine.createSpy('startNewConnection')
     };
   });
 
-  let render = () => {
-    component = shallow(<EntityViewer {...props} />, {context});
+  const render = () => {
+    component = shallow(<EntityViewer {...props} />, { context });
     instance = component.instance();
   };
 
@@ -44,7 +44,7 @@ describe('EntityViewer', () => {
   it('should render the ConnectionsList passing deleteConnection as prop', () => {
     render();
 
-    component.find(ConnectionsList).props().deleteConnection({sourceType: 'not metadata'});
+    component.find(ConnectionsList).props().deleteConnection({ sourceType: 'not metadata' });
     expect(context.confirm).toHaveBeenCalled();
   });
 
@@ -60,14 +60,14 @@ describe('EntityViewer', () => {
     });
 
     it('should delete the reference upon accepting', () => {
-      const ref = {_id: 'r1'};
+      const ref = { _id: 'r1' };
       instance.deleteConnection(ref);
       context.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteConnection).toHaveBeenCalledWith(ref);
     });
 
     it('should not atempt to delete references whos source is metadata', () => {
-      const ref = {_id: 'r1', sourceType: 'metadata'};
+      const ref = { _id: 'r1', sourceType: 'metadata' };
       instance.deleteConnection(ref);
       expect(context.confirm).not.toHaveBeenCalled();
       expect(props.deleteConnection).not.toHaveBeenCalled();

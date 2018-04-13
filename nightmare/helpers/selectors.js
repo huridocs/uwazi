@@ -169,7 +169,7 @@ export default {
     eventOption: 'li:nth-child(5)',
     interpretationOption: 'li:nth-child(6)',
 
-    sidePanelViewEntityButton : '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a > button',
+    sidePanelViewEntityButton: '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a > button',
     sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
     sidePanelDocuments: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div .item-name'
   },

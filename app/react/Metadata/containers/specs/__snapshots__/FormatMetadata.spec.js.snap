@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormatMetadata should render Metadata component passing the formatted metadata 1`] = `
+<Metadata
+  compact={true}
+  metadata={
+    Array [
+      Object {
+        "formated": "metadata",
+      },
+    ]
+  }
+/>
+`;
+
+exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
+<Metadata
+  compact={true}
+  metadata={
+    Array [
+      Object {
+        "more": "data",
+      },
+      Object {
+        "and": "more",
+      },
+      Object {
+        "formated": "metadata",
+      },
+    ]
+  }
+/>
+`;
