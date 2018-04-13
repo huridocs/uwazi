@@ -1,5 +1,5 @@
-import selectors from './selectors.js';
 import Nightmare from 'nightmare';
+import selectors from './selectors.js';
 
 Nightmare.action('connections', {
   waitForRelationHubs(done) {
@@ -29,7 +29,7 @@ Nightmare.action('connections', {
     this.waitToClick(selectors.connections.saveButton)
     .wait(() => {
       const element = document.querySelector('.removeHub');
-      return element ? false : true;
+      return !element;
     })
     .connections.waitForSave()
     .then(done)

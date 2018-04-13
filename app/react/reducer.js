@@ -11,7 +11,7 @@ import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import {reducer as connections} from 'app/Connections';
 import relationships from 'app/Relationships';
-import {reducer as ConnectionsList} from 'app/ConnectionsList';
+import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
 import {reducer as attachments} from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';
@@ -20,7 +20,7 @@ import progress from 'app/Uploads/reducers/progressReducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducers/login';
-import {reducer as metadata} from 'app/Metadata';
+import metadata from 'app/Metadata/reducer';
 import locale from 'app/I18N/reducer';
 
 import {modelReducer, formReducer} from 'react-redux-form';

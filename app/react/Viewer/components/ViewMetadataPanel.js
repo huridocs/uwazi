@@ -1,44 +1,29 @@
-import {connect} from 'react-redux';
-import {formater} from 'app/Metadata';
-import {bindActionCreators} from 'redux';
-import {saveToc, editToc, removeFromToc, indentTocElement} from '../actions/documentActions';
-import {actions as connectionsActions} from 'app/Connections';
-import {uiActions as connectionsUiActions} from 'app/Connections';
-import {closePanel} from '../actions/uiActions';
-import {actions as formActions} from 'react-redux-form';
-import {actions as actionCreators} from 'app/BasicReducer';
-import DocumentForm from '../containers/DocumentForm';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { actions as formActions } from 'react-redux-form';
+
+import { DocumentSidePanel, TocForm as tocFormComponent } from 'app/Documents';
+import { actions as actionCreators } from 'app/BasicReducer';
+import { actions } from 'app/Metadata';
+import {
+  actions as connectionsActions,
+  uiActions as connectionsUiActions
+} from 'app/Connections';
+import { deleteDocument } from 'app/Viewer/actions/documentActions';
 import modals from 'app/Modals';
-import {actions} from 'app/Metadata';
-import {deleteDocument} from 'app/Viewer/actions/documentActions';
-import {TocForm as tocFormComponent} from 'app/Documents';
-import {createSelector} from 'reselect';
 
-import {DocumentSidePanel} from 'app/Documents';
-
-const selectTemplates = createSelector(s => s.templates, templates => templates);
-const selectThesauris = createSelector(s => s.thesauris, thesauris => thesauris);
-const getSourceDoc = createSelector(s => s.documentViewer.doc, d => d.toJS());
-const getTargetDoc = createSelector(s => s.documentViewer.targetDoc, targetDoc => targetDoc.toJS());
-const getSourceMetadata = createSelector(
-  getSourceDoc, selectTemplates, selectThesauris,
-  (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
-);
-const getTargetMetadata = createSelector(
-  getTargetDoc, selectTemplates, selectThesauris,
-  (doc, templates, thesauris) => formater.prepareMetadata(doc, templates, thesauris)
-);
+import { closePanel } from '../actions/uiActions';
+import { saveToc, editToc, removeFromToc, indentTocElement } from '../actions/documentActions';
+import DocumentForm from '../containers/DocumentForm';
 
 export const mapStateToProps = (state) => {
-  let documentViewer = state.documentViewer;
-  let templates = state.templates;
-  let metadata = getSourceMetadata(state);
+  const documentViewer = state.documentViewer;
+  const templates = state.templates;
   let doc = documentViewer.doc;
   // TEST!!! Removed
   // let references = documentViewer.references;
 
   if (documentViewer.targetDoc.get('_id')) {
-    metadata = getTargetMetadata(state);
     doc = documentViewer.targetDoc;
     // TEST!!! Removed
     // references = documentViewer.targetDocReferences;
@@ -49,7 +34,6 @@ export const mapStateToProps = (state) => {
   return {
     open: documentViewer.uiState.get('panel') === 'viewMetadataPanel',
     doc,
-    metadata,
     templates,
     rawDoc: documentViewer.doc,
     docBeingEdited: !!documentViewer.sidepanel.metadata._id,
@@ -81,7 +65,7 @@ function mapDispatchToProps(dispatch) {
     editToc,
     removeFromToc,
     indentTocElement,
-    showTab: (tab) => actionCreators.set('viewer.sidepanel.tab', tab)
+    showTab: tab => actionCreators.set('viewer.sidepanel.tab', tab)
   }, dispatch);
 }
 

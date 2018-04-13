@@ -9,11 +9,11 @@
 
 There are important stories within your documents. Uwazi helps you tell them.  Uwazi is a free, open-source solution for organising, analysing and publishing your documents.
 
-[Uwazi](https://www.uwazi.io/) | [Huridocs](https://huridocs.org/)
+[Uwazi](https://www.uwazi.io/) | [HURIDOCS](https://huridocs.org/)
 
+Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
-
-Table of contents
+Intallation guide
 =================
 
   * [Dependencies](#dependencies)
