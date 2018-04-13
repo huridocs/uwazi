@@ -32,7 +32,7 @@ describe('Geolocation', () => {
       render();
       const inputs = component.find('input');
       const latInput = inputs.first();
-      latInput.simulate('change', { target: { value: 19 } });
+      latInput.simulate('change', { target: { value: '19' } });
       expect(props.onChange).toHaveBeenCalledWith({ lat: 19, lon: -17.2 });
     });
   });
@@ -42,7 +42,7 @@ describe('Geolocation', () => {
       render();
       const inputs = component.find('input');
       const lonInput = inputs.last();
-      lonInput.simulate('change', { target: { value: 28 } });
+      lonInput.simulate('change', { target: { value: '28' } });
       expect(props.onChange).toHaveBeenCalledWith({ lat: 32.18, lon: 28 });
     });
   });

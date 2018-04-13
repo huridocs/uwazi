@@ -96,6 +96,7 @@ export class MetadataFormFields extends Component {
 
 MetadataFormFields.defaultProps = {
   multipleEdition: false,
+  dateFormat: null
 };
 
 MetadataFormFields.propTypes = {
@@ -103,7 +104,7 @@ MetadataFormFields.propTypes = {
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
-  dateFormat: PropTypes.string.isRequired
+  dateFormat: PropTypes.string
 };
 
 export const mapStateToProps = state => ({
