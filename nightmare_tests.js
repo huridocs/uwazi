@@ -19,6 +19,7 @@ jasmine.loadConfig({
   spec_files: [
     'nightmare/helpers/extensions.js',
     'nightmare/helpers/connectionsDSL.js',
+    'nightmare/helpers/LibraryDSL.js',
     'nightmare/**/*.spec.js'
   ]
 });
@@ -29,6 +30,8 @@ jasmine.addReporter(new reporters.TerminalReporter({
   color: true,
   showStack: true
 }));
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 mongoose.connect(dbConfig.development, {useMongoClient: true});
 var db = mongoose.connection;
