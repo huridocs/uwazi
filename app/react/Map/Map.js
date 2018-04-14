@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
-import './styles.scss';
 
 class Map extends Component {
-  static markerClassName(marker) {
-    if (marker.size > 20) {
-      return 'map-marker-high';
-    }
-
-    if (marker.size > 10) {
-      return 'map-marker-medium';
-    }
-
-    return 'map-marker-low';
+  static renderMarker(marker, onClick) {
+    return (
+      <i
+        style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
+        className="fa fa-map-marker fa-3x fa-fw map-marker"
+        onClick={onClick}
+      />
+    );
   }
 
   constructor(props) {
@@ -26,16 +23,13 @@ class Map extends Component {
         height: props.height,
         zoom: props.zoom,
       },
-      popupInfo: null
+      selectedMarker: null
     };
 
     this._onViewportChange = (viewport) => {
       this.setState({ viewport });
     };
 
-    this._onClick = (event) => {
-      this.props.onClick(event);
-    };
     this.setSize = this.setSize.bind(this);
   }
 
@@ -52,7 +46,10 @@ class Map extends Component {
     if (!this.container) {
       return;
     }
-    const width = this.container.offsetWidth;
+    this.container.childNodes[0].style.width = 0;
+    let width = this.container.offsetWidth;
+    width = width < 240 ? 240 : width;
+    this.container.childNodes[0].style.width = width;
     const height = width * 0.6;
     const { viewport } = this.state;
     viewport.width = width;
@@ -60,42 +57,37 @@ class Map extends Component {
     this.setState({ viewport });
   }
 
-  renderPopup() {
-    const { popupInfo } = this.state;
+  clickOnMarker(marker) {
+    this.setState({ selectedMarker: marker });
+    this.props.clickOnMarker(marker);
+  }
 
-    return this.state.popupInfo &&
+  renderPopup() {
+    const { selectedMarker } = this.state;
+    return selectedMarker && selectedMarker.info &&
       <Popup
         tipSize={6}
         anchor="bottom"
-        longitude={popupInfo.longitude}
-        latitude={popupInfo.latitude}
-        onClose={() => this.setState({ popupInfo: null })}
+        longitude={selectedMarker.longitude}
+        latitude={selectedMarker.latitude}
+        onClose={() => this.setState({ selectedMarker: null })}
       >
         <div>
-          {popupInfo.size}
+          {selectedMarker.info}
         </div>
       </Popup>;
   }
 
-  renderMarker(marker) {
-    return (
-      <i
-        style={{ position: 'relative', top: '-14px', right: '13px', color: '#60748b' }}
-        className={`fa fa-map-marker fa-lg fa-fw map-marker ${Map.markerClassName(marker)}`}
-        onClick={() => this.setState({ popupInfo: marker })}
-      />
-    );
-  }
-
   renderMarkers() {
     const { markers } = this.props;
-    return markers.map((marker, index) =>
-      (
-        <Marker {...marker} key={index} offsetLeft={0} offsetTop={0} >
-          {this.renderMarker(marker)}
+    return markers.map((marker, index) => {
+      const onClick = this.clickOnMarker.bind(this, marker);
+      return (
+        <Marker {...marker} key={index} offsetLeft={0} offsetTop={0}>
+          {Map.renderMarker(marker, onClick)}
         </Marker>
-      )
-    );
+      );
+    });
   }
 
   /*OSM Styles
@@ -107,19 +99,23 @@ class Map extends Component {
   render() {
     const viewport = Object.assign({}, this.state.viewport);
     return (
-      <div ref={(container) => { this.container = container; }} style={{ width: '100%', height: '100%' }}>
+      <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%' }}>
         <ReactMapGL
           {...viewport}
           dragRotate
           mapStyle="https://openmaptiles.github.io/klokantech-basic-gl-style/style-cdn.json"
           onViewportChange={this._onViewportChange}
-          onClick={this._onClick}
+          onClick={this.props.onClick}
         >
           <div style={{ position: 'absolute', left: 5, top: 5 }}>
             <NavigationControl onViewportChange={this._onViewportChange}/>
           </div>
           {this.renderMarkers()}
           {this.renderPopup()}
+
+          <i className="mapbox-help fa fa-question-circle">
+            <span className="mapbox-tooltip">Hold shift to rotate the map</span>
+          </i>
         </ReactMapGL>
       </div>
     );
@@ -133,7 +129,8 @@ Map.defaultProps = {
   zoom: 7,
   width: 250,
   height: 200,
-  onClick: () => {}
+  onClick: () => {},
+  clickOnMarker: () => {}
 };
 
 Map.propTypes = {
@@ -143,7 +140,8 @@ Map.propTypes = {
   zoom: PropTypes.number,
   width: PropTypes.number,
   height: PropTypes.number,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  clickOnMarker: PropTypes.func
 };
 
 export default Map;

@@ -25,8 +25,7 @@ export default class Geolocation extends Component {
   }
 
   mapClick(event) {
-    console.log(event);
-    this.onChange({ lat: parseFloat(event.lngLat[1].toFixed(2)), lon: parseFloat(event.lngLat[0].toFixed(2)) });
+    this.onChange({ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]) });
   }
 
   render() {
@@ -34,15 +33,15 @@ export default class Geolocation extends Component {
     return (
       <div className="geolocation form-inline">
         <Map markers={markers} latitude={this.props.value.lat} longitude={this.props.value.lon} onClick={this.mapClick}/>
-        <div className="form-group">
-          <label htmlFor="lat">
-            <span>Latitude:</span>&nbsp;
+        <div className="form-row">
+          <div className="form-group">
+            <label>Latitude:</label>
             <input onChange={this.latChange} className="form-control" type="number" id="lat" value={this.props.value.lat}/>
-          </label>
-          <label htmlFor="lon">
-            <span>Longitude:</span>&nbsp;
+          </div>
+          <div className="form-group">
+            <label>Longitude:</label>
             <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={this.props.value.lon}/>
-          </label>
+          </div>
         </div>
       </div>
     );

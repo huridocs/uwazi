@@ -7,7 +7,7 @@
 @mixin btn ($color, $colorHover) {
   background: $color;
   border-color: $color;
-  
+
   &:hover,
   &:focus {
     background: $colorHover;
