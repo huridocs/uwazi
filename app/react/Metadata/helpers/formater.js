@@ -6,9 +6,60 @@ import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import t from 'app/I18N/t';
 
+const getOption = (thesauri, value) => thesauri.get('values').find(v => v.get('id').toString() === value.toString());
+
+const addSortedProperty = (templates, sortedProperty) => templates.reduce((_property, template) => {
+  if (!template.get('properties')) {
+    return _property;
+  }
+
+  let matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === sortedProperty);
+
+  if (matchProp) {
+    matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
+  }
+
+  return _property || matchProp;
+}, false);
+
+const formatMetadataSortedProperty = (metadata, sortedProperty) => metadata.map((prop) => {
+  const newProp = Object.assign({}, prop);
+  newProp.sortedBy = false;
+  if (sortedProperty === `metadata.${prop.name}`) {
+    newProp.sortedBy = true;
+    if (!prop.value) {
+      newProp.value = 'No value';
+      newProp.translateContext = 'System';
+    }
+  }
+  return newProp;
+});
+
+const addCreationDate = (result, doc) => result.push({
+  value: moment.utc(doc.creationDate).format('ll'),
+  label: 'Date added',
+  translateContext: 'System',
+  sortedBy: true
+});
+
+const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
+  const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);
+  if (!sortPropertyInMetadata && sortedProperty !== 'creationDate') {
+    return metadata.push(addSortedProperty(templates, sortedProperty)).filter(p => p);
+  }
+
+  let result = formatMetadataSortedProperty(metadata, sortedProperty);
+
+  if (sortedProperty === 'creationDate') {
+    result = addCreationDate(result, doc);
+  }
+
+  return result;
+};
+
 export default {
 
-  date(property, timestamp, showInCard) {
+  date(property, timestamp, thesauris, showInCard) {
     const value = moment.utc(timestamp, 'X').format('ll');
     return { label: property.get('label'), name: property.get('name'), value, timestamp, showInCard };
   },
@@ -25,16 +76,16 @@ export default {
     return `${from} ~ ${to}`;
   },
 
-  daterange(property, daterange, showInCard) {
+  daterange(property, daterange, thesauris, showInCard) {
     return { label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange), showInCard };
   },
 
-  multidate(property, timestamps, showInCard) {
+  multidate(property, timestamps = [], thesauris, showInCard) {
     const value = timestamps.map(timestamp => ({ timestamp, value: moment.utc(timestamp, 'X').format('ll') }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
-  multidaterange(property, dateranges, showInCard) {
+  multidaterange(property, dateranges = [], thesauris, showInCard) {
     const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
@@ -57,25 +108,13 @@ export default {
 
   select(property, thesauriValue, thesauris, showInCard) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-
-    const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-
-    const { value, url, icon } = this.getSelectOptions(option, thesauri);
-
+    const { value, url, icon } = this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri);
     return { label: property.get('label'), name: property.get('name'), value, icon, url, showInCard };
   },
 
   multiselect(property, thesauriValues, thesauris, showInCard) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-
-    const values = thesauriValues.map((thesauriValue) => {
-      const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-
-      return this.getSelectOptions(option, thesauri);
-    });
-
-    const sortedValues = advancedSort(values, { property: 'value' });
-
+    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
   },
 
@@ -95,18 +134,19 @@ export default {
       type: 'template'
     });
 
-    const values = thesauriValues.map((thesauriValue) => {
-      const option = thesauri.get('values').find(v => v.get('id').toString() === thesauriValue.toString());
-
-      return this.getSelectOptions(option, thesauri);
-    });
-
-    const sortedValues = advancedSort(values, { property: 'value' });
+    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
 
     return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
   },
 
-  nested(property, rows, showInCard) {
+  getThesauriValues(thesauriValues, thesauri) {
+    return advancedSort(
+      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)),
+      { property: 'value' }
+    );
+  },
+
+  nested(property, rows, thesauris, showInCard) {
     if (!rows[0]) {
       return { label: property.get('label'), value: '', showInCard };
     }
@@ -118,11 +158,11 @@ export default {
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
     result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
 
-    return this.markdown(property, result, showInCard);
+    return this.markdown(property, result, thesauris, showInCard);
   },
 
-  markdown(property, value, showInCard) {
-    return { label: property.get('label'), name: property.get('name'), markdown: value, showInCard };
+  markdown(property, value, thesauris, showInCard) {
+    return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
   prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
@@ -142,51 +182,21 @@ export default {
     }
 
 
-    const metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
+    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
     .map((property) => {
       const value = doc.metadata[property.get('name')];
       const showInCard = property.get('showInCard');
 
       const type = property.get('type');
 
-      if (type === 'select' && value) {
-        return Object.assign(this.select(property, value, thesauris, showInCard), { type });
+      if (this[type] && value) {
+        return Object.assign(this[type](property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
       }
 
-      if (type === 'multiselect' && value) {
-        return Object.assign(this.multiselect(property, value, thesauris, showInCard), { type });
-      }
-
-      if (type === 'relationship' && value) {
-        return Object.assign(this.relationship(property, value, thesauris, showInCard), { type });
-      }
-
-      if (type === 'date' && value) {
-        return Object.assign(this.date(property, value, showInCard), { type });
-      }
-
-      if (type === 'daterange' && value) {
-        return Object.assign(this.daterange(property, value, showInCard), { type });
-      }
-
-      if (type === 'multidate') {
-        return Object.assign(this.multidate(property, value || [], showInCard), { type });
-      }
-
-      if (type === 'multidaterange') {
-        return Object.assign(this.multidaterange(property, value || [], showInCard), { type });
-      }
-
-      if (type === 'markdown' && value) {
-        return Object.assign(this.markdown(property, value, showInCard), { type });
-      }
-
-      if (type === 'nested' && value) {
-        return Object.assign(this.nested(property, value, showInCard), { type });
-      }
-
-      return { label: property.get('label'), name: property.get('name'), value, showInCard };
+      return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
     });
+
+    metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
   },
