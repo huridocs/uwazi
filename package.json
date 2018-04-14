@@ -26,7 +26,7 @@
     "run-production": "export NODE_ENV=production; node server.js",
     "dev-server": "./node_modules/.bin/nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --watch 'app/react/ServerRouter.js'",
     "webpack-server": "node ./webpack/webpack.server.js",
-    "hot": "export HOT=true;npm run dev-server",
+    "hot": "export HOT=true;npm run dev-server && node ./webpack/webpack.server.js",
     "production-build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
     "analyze": "webpack --profile --json > stats.json;./node_modules/.bin/webpack-bundle-analyzer stats.json",
     "download-mongo-prebuilt": "node ./database/download_mongo_prebuilt.js",
