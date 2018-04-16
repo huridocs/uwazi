@@ -12,7 +12,6 @@ import { MetadataProperty, dragSource, dropTarget } from 'app/Templates/componen
 import FormConfigInput from 'app/Templates/components/FormConfigInput';
 import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
 import FormConfigNested from 'app/Templates/components/FormConfigNested';
-import FormConfigCommon from 'app/Templates/components/FormConfigCommon';
 import FormConfigRelationship from 'app/Templates/components/FormConfigRelationship';
 
 function wrapInTestContext(DecoratedComponent) {

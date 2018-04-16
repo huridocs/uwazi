@@ -3,7 +3,6 @@ import Immutable from 'immutable';
 import { formatMetadata } from '../../selectors';
 import formater from '../formater';
 import { fromJS } from 'immutable';
-import { shallow } from 'enzyme';
 import Map from 'app/Map/Map';
 
 describe('metadata formater', () => {
