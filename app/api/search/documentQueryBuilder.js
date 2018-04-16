@@ -184,9 +184,39 @@ export default function () {
 
     multiselectFilter(filter) {
       const filterValue = filter.value;
-      const values = filterValue.values;
-      let match = { terms: {} };
-      match.terms[`metadata.${filter.name}.raw`] = values;
+      const { values } = filterValue;
+      let match;
+      if (values.includes('missing') && !filterValue.and) {
+        const _values = values.filter(v => v !== 'missing');
+        match = {
+          bool: {
+            should: [
+              {
+                bool: {
+                  must_not: [
+                    {
+                      exists: {
+                        field: `metadata.${filter.name}.raw`
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                terms: {
+                }
+              }
+            ]
+          }
+        };
+        match.bool.should[1].terms[`metadata.${filter.name}.raw`] = _values;
+        baseQuery.query.bool.filter.push(match);
+        return this;
+      }
+      if (!values.includes('missing') && !filterValue.and) {
+        match = { terms: {} };
+        match.terms[`metadata.${filter.name}.raw`] = values;
+      }
 
       if (filterValue.and) {
         match = { bool: { must: [] } };
@@ -196,7 +226,6 @@ export default function () {
           return m;
         });
       }
-
       return match;
     },
 
@@ -371,6 +400,7 @@ export default function () {
       return {
         terms: {
           field: key,
+          missing: 'missing',
           size: 9999
         },
         aggregations: {

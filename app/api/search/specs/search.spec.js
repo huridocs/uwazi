@@ -9,7 +9,7 @@ import languages from 'shared/languages';
 import elasticResult from './elasticResult';
 import elasticFixtures, { ids } from './fixtures_elastic';
 
-describe('search', () => {
+fdescribe('search', () => {
   let result;
   const elasticTesting = instanceElasticTesting('search_index_test');
 
@@ -252,14 +252,17 @@ describe('search', () => {
           const template1Aggs = template1.aggregations.all.select1.buckets;
           expect(template1Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+          expect(template1Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(0);
 
           const template2Aggs = template2.aggregations.all.select1.buckets;
           expect(template2Aggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(0);
           expect(template2Aggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(1);
+          expect(template2Aggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
 
           const bothAggs = both.aggregations.all.select1.buckets;
           expect(bothAggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(2);
           expect(bothAggs.find(a => a.key === 'selectValue2').filtered.doc_count).toBe(2);
+          expect(bothAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
 
           const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
           expect(template1UnpubishedAggs.find(a => a.key === 'selectValue1').filtered.doc_count).toBe(0);
@@ -426,10 +429,10 @@ describe('search', () => {
         expect(asc.rows[2].title).toBe('metádata3');
         expect(asc.rows[3].title).toBe(' Metadáta4');
 
-        expect(desc.rows[0].title).toBe('metadata5');
-        expect(desc.rows[1].title).toBe(' Metadáta4');
-        expect(desc.rows[2].title).toBe('metádata3');
-        expect(desc.rows[3].title).toBe('Metadata2');
+        expect(desc.rows[0].title).toBe('Metdata6');
+        expect(desc.rows[1].title).toBe('metadata5');
+        expect(desc.rows[2].title).toBe(' Metadáta4');
+        expect(desc.rows[3].title).toBe('metádata3');
         done();
       })
       .catch(catchErrors(done));
