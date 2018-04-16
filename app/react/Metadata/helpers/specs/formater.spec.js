@@ -48,7 +48,7 @@ describe('metadata formater', () => {
           { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
           { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
           { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
-          { name: 'geolocation', type: 'geolocation', label: 'Geolocation' }
+          { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true }
         ]
       }
     ]);
@@ -189,19 +189,16 @@ describe('metadata formater', () => {
     let text;
     let markdown;
     let creationDate;
+    let geolocation;
 
     beforeEach(() => {
       data = formater.prepareMetadataForCard(doc, templates, thesauris);
-      [text, markdown] = data.metadata;
+      [text, markdown, geolocation] = data.metadata;
     });
 
     it('should maintain doc original data untouched', () => {
       expect(data.title).toBe(doc.title);
       expect(data.template).toBe(doc.template);
-    });
-
-    it('should process only showInCard metadata', () => {
-      expect(data.metadata.length).toBe(2);
     });
 
     it('should process text type', () => {
@@ -212,13 +209,17 @@ describe('metadata formater', () => {
       assessBasicProperties(markdown, ['Mark Down', 'markdown', 'templateID', 'markdown content']);
     });
 
+    it('should render a Map for geolocation fields', () => {
+      assessBasicProperties(geolocation, ['Geolocation', 'geolocation', 'templateID', 'Lat / Lon: 2 / 3']);
+    });
+
     describe('when sort property passed', () => {
       let date;
       it('should process also the sorted property even if its not a "showInCard"', () => {
         data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
         [text, date, markdown] = data.metadata;
         assessBasicProperties(date, ['Date', 'date', 'templateID']);
-        expect(data.metadata.length).toBe(3);
+        expect(data.metadata.length).toBe(4);
         expect(date.value).toContain('1970');
       });
 
@@ -243,7 +244,7 @@ describe('metadata formater', () => {
       describe('when sort property is creationDate', () => {
         it('should add it as a value to show', () => {
           data = formater.prepareMetadataForCard(doc, templates, thesauris, 'creationDate');
-          [text, markdown, creationDate] = data.metadata;
+          [text, markdown, geolocation, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
           assessBasicProperties(creationDate, ['Date added', undefined, 'System', 'Jan 1, 1970']);
