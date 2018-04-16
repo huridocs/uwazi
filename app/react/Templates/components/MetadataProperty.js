@@ -29,7 +29,7 @@ export class MetadataProperty extends Component {
       return <FormConfigNested index={this.props.index} />;
     }
     if (this.props.type === 'geolocation') {
-      return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false} />;
+      return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false} canShowInCard={false}/>;
     }
     return <FormConfigInput type={this.props.type} index={this.props.index} />;
   }

@@ -37,18 +37,18 @@ export class FormConfigInput extends Component {
             </i>
           </label>
         </Field>
-
-        <Field model={`template.data.properties[${index}].showInCard`}>
-          <input id={`showInCard${this.props.index}`} type="checkbox"/>
-          &nbsp;
-          <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
-            Show in cards
-            <i className="property-help fa fa-question-circle">
-              <div className="property-description">Show this property in the cards as part of the basic info.</div>
-            </i>
-          </label>
-        </Field>
-
+        <ShowIf if={this.props.canShowInCard}>
+          <Field model={`template.data.properties[${index}].showInCard`}>
+            <input id={`showInCard${this.props.index}`} type="checkbox"/>
+            &nbsp;
+            <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
+              Show in cards
+              <i className="property-help fa fa-question-circle">
+                <div className="property-description">Show this property in the cards as part of the basic info.</div>
+              </i>
+            </label>
+          </Field>
+        </ShowIf>
         <div>
           <ShowIf if={this.props.canBeFilter}>
             <Field className="filter" model={`template.data.properties[${index}].filter`}>
@@ -101,11 +101,13 @@ export class FormConfigInput extends Component {
 }
 
 FormConfigInput.defaultProps = {
-  canBeFilter: true
+  canBeFilter: true,
+  canShowInCard: true
 };
 
 FormConfigInput.propTypes = {
   canBeFilter: PropTypes.bool,
+  canShowInCard: PropTypes.bool,
   property: PropTypes.instanceOf(Object).isRequired,
   index: PropTypes.number.isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
