@@ -92,9 +92,13 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
-  geolocation(property, value, showInCard) {
+  geolocation(property, value, thesauris, showInCard, renderForCard) {
     const markers = [{ latitude: value.lat, longitude: value.lon }];
-    const _value = <Map latitude={value.lat} longitude={value.lon} markers={markers}/>;
+    let _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
+    if (!renderForCard) {
+      _value = <Map latitude={value.lat} longitude={value.lon} markers={markers}/>;
+    }
+
     return { label: property.get('label'), name: property.get('name'), value: _value, showInCard };
   },
 
@@ -197,7 +201,8 @@ export default {
       const type = property.get('type');
 
       if (this[type] && value) {
-        return Object.assign(this[type](property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
+        const formatedMetadata = this[type](property, value, thesauris, showInCard, options.onlyForCards);
+        return Object.assign(formatedMetadata, { type, translateContext: template.get('_id') });
       }
 
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
