@@ -137,7 +137,6 @@ module.exports = function(production) {
         chunks: ["main", "vendor", "nprogress"],
         minChunks: Infinity
       }),
-      // new webpack.optimize.ModuleConcatenationPlugin(),
       assetsPluginInstance
     ]
   };
