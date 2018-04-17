@@ -3,26 +3,24 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 function getOptions(property, thesauris) {
   const matchingTHesauri = thesauris.find(thesauri => thesauri._id === property.content);
-
-  if (matchingTHesauri) {
-    return matchingTHesauri.values;
-  }
+  return matchingTHesauri ? matchingTHesauri.values : null;
 }
 
 export function populateOptions(filters, thesauris) {
-  filters.map((property) => {
+  return filters.map((property) => {
     if (property.content) {
-      property.options = getOptions(property, thesauris);
+      return Object.assign(property, { options: getOptions(property, thesauris) });
     }
 
     if (!property.content && property.type === 'relationship') {
-      property.options = Array.prototype.concat(...thesauris.filter(thesauri => thesauri.type === 'template'));
+      return Object.assign(property, {
+        options: thesauris.filter(t => t.type === 'template')
+        .reduce((options, thesauri) => options.concat(thesauri.values), [])
+      });
     }
 
     return property;
   });
-
-  return filters;
 }
 
 function URLQueryToState(query, templates, thesauris) {
@@ -53,24 +51,21 @@ function URLQueryToState(query, templates, thesauris) {
   return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
 }
 
+const getOptionCount = (aggregations, optionId, name) => {
+  let aggregation;
+  if (aggregations.all && aggregations.all[name]) {
+    aggregation = aggregations.all[name].buckets.find(bucket => bucket.key.toString() === optionId.toString());
+  }
+  return aggregation ? aggregation.filtered.doc_count : 0;
+};
+
 export function parseWithAggregations(filters, aggregations) {
   return filters.map((_property) => {
     const property = Object.assign({}, _property);
     if (property.options && property.options.length) {
-      property.options = property.options.map((option) => {
-        option.results = 0;
-        let aggregation;
-        if (aggregations.all && aggregations.all[property.name]) {
-          aggregation = aggregations.all[property.name].buckets
-          .find(bucket => bucket.key.toString() === option.id.toString());
-        }
-
-        if (aggregation) {
-          option.results = aggregation.filtered.doc_count;
-        }
-
-        return option;
-      });
+      property.options = property.options.map(option => Object.assign(option, {
+        results: getOptionCount(aggregations, option.id, property.name)
+      }));
     }
 
     return property;
