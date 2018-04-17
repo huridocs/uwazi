@@ -1,4 +1,4 @@
-import { fromJS as Immutable } from 'immutable';
+import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -23,7 +23,7 @@ export class ShowMetadata extends Component {
             <Icon className="item-icon item-icon-center" data={entity.icon} />
             <h1 className="item-name">
               {entity.title}
-              <DocumentLanguage doc={Immutable(entity)} />
+              <DocumentLanguage doc={Immutable.fromJS(entity)} />
             </h1>
           </div>
         );
