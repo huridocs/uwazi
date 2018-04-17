@@ -25,7 +25,7 @@ const resetMetadata = (metadata, template, options) => {
       metadata[name] = [];
     }
     if (assignProperty && type === 'geolocation') {
-      metadata[name] = { lat: 0, lon: 0 };
+      metadata[name] = {};
     }
   });
 };

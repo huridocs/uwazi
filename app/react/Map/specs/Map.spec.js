@@ -120,4 +120,17 @@ describe('Map', () => {
       expect(props.clickOnMarker).toHaveBeenCalledWith(props.markers[0]);
     });
   });
+
+  describe('componentWillReceiveProps()', () => {
+    it('should update the viewport with the markers, latitude and longitude', () => {
+      render();
+      const instance = component.instance();
+      instance.componentWillReceiveProps({ latitude: 73, longitude: 23, markers: [] });
+      component.update();
+      const { viewport } = component.state();
+      expect(viewport.latitude).toBe(73);
+      expect(viewport.longitude).toBe(23);
+      expect(viewport.markers).toEqual([]);
+    });
+  });
 });

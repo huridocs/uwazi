@@ -93,8 +93,12 @@ export default {
   },
 
   geolocation(property, value, thesauris, showInCard, renderForCard) {
-    const markers = [{ latitude: value.lat, longitude: value.lon }];
-    let _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
+    const markers = [];
+    let _value;
+    if (value.lat && value.lon) {
+      _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
+      markers.push({ latitude: value.lat, longitude: value.lon });
+    }
     if (!renderForCard) {
       _value = <Map latitude={value.lat} longitude={value.lon} markers={markers}/>;
     }

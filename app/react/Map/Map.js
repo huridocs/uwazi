@@ -38,6 +38,12 @@ class Map extends Component {
     this.eventListener = window.addEventListener('resize', this.setSize);
   }
 
+  componentWillReceiveProps(props) {
+    const { latitude, longitude, markers } = props;
+    const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
+    this.setState({ viewport });
+  }
+
   componentWillUnmount() {
     window.removeEventListener('resize', this.setSize);
   }
@@ -124,9 +130,9 @@ class Map extends Component {
 
 Map.defaultProps = {
   markers: [],
-  latitude: 50,
-  longitude: 50,
-  zoom: 7,
+  latitude: 46.22093287671913,
+  longitude: 6.139284045121682,
+  zoom: 2,
   width: 250,
   height: 200,
   onClick: () => {},

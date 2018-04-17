@@ -67,7 +67,7 @@ describe('Metadata Actions', () => {
 
         const expectedDoc = {
           title: 'test',
-          metadata: { geolocation: { lat: 0, lon: 0 }, test: '', newProp: '', multi: [] },
+          metadata: { geolocation: {}, test: '', newProp: '', multi: [] },
           template: 'templateId1'
         };
         expect(dispatch).toHaveBeenCalledWith('formreset');
