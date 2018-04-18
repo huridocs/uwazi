@@ -296,8 +296,7 @@ export default function () {
 
       const keys = Object.keys(properties).filter(key => properties[key].any ||
           properties[key].values && properties[key].values.length);
-
-      match.bool.must = keys.map((key) => {
+      const nestedMatchers = keys.map((key) => {
         let nestedmatch;
         if (properties[key].any) {
           nestedmatch = {
@@ -316,10 +315,9 @@ export default function () {
           return nestedmatch;
         }
 
-
-        nestedmatch = { bool: { must: [] } };
-
-        nestedmatch.bool.must = properties[key].values.map((val) => {
+        const matchers = properties[key].values
+        .filter(val => val !== 'missing')
+        .map((val) => {
           const _match = {
             nested: {
               path: `metadata.${filter.name}`,
@@ -335,9 +333,31 @@ export default function () {
           _match.nested.query.bool.must[0].term[`metadata.${filter.name}.${key}.raw`] = val;
           return _match;
         });
-        return nestedmatch;
+
+        if (properties[key].values.includes('missing')) {
+          matchers.push({
+            nested: {
+              path: `metadata.${filter.name}`,
+              query: {
+                bool: {
+                  must_not: [
+                    {
+                      exists: {
+                        field: `metadata.${filter.name}.${key}.raw`
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          });
+        }
+
+        return matchers;
       });
 
+      match.bool.must = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
+      console.log(JSON.stringify(match, null, 4));
       return match;
     },
 
@@ -434,8 +454,12 @@ export default function () {
         const filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must && match.bool.must[0] && match.bool.must[0].nested) {
             match.bool.must = match.bool.must.filter(nestedMatcher => !nestedMatcher.nested ||
+              !nestedMatcher.nested.query.bool.must ||
               !nestedMatcher.nested.query.bool.must[0].terms ||
-              !nestedMatcher.nested.query.bool.must[0].terms[path]);
+              !nestedMatcher.nested.query.bool.must[0].terms[path] ||
+              !nestedMatcher.nested.query.bool.must_not ||
+              !nestedMatcher.nested.query.bool.must_not[0].exists ||
+              !nestedMatcher.nested.query.bool.must[0].exists.field[path]);
 
             if (!match.bool.must.length) {
               return;
@@ -447,6 +471,7 @@ export default function () {
         nestedAggregation.aggregations[prop] = {
           terms: {
             field: path,
+            missing: 'missing',
             size: 9999
           },
           aggregations: {
@@ -482,7 +507,9 @@ export default function () {
     aggregations(properties) {
       properties.forEach((property) => {
         const path = `metadata.${property.name}.raw`;
-        let filters = baseQuery.query.bool.filter.filter(match => match && (!match.terms || match.terms && !match.terms[path]));
+        let filters = baseQuery.query.bool.filter.filter(match => match &&
+          (!match.terms || match.terms && !match.terms[path]) &&
+          (!match.bool || !match.bool.should || !match.bool.should[1].terms[path]));
         filters = filters.concat(baseQuery.query.bool.must);
 
         const { should } = baseQuery.query.bool;

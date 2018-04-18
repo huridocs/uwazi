@@ -59,12 +59,17 @@ export default class NestedMultiselect extends Component {
     if (!aggregations[this.props.property.name]) {
       return [];
     }
-    const options = aggregations[this.props.property.name][prop].buckets
+    let options = aggregations[this.props.property.name][prop].buckets;
+    if (options.length === 1 && options[0].key === 'missing') {
+      return [];
+    }
+    options = options
     .map(item => ({ label: item.key, value: item.key, results: item.filtered.total.filtered.doc_count })).filter(option => option.results);
     return advancedSortUtil.advancedSort(options, { property: 'value', treatAs: 'dottedList', listTypes: [Number, Number, String] });
   }
 
   render() {
+    console.log(this.props);
     const property = this.props.property;
 
     const aggregations = this.props.aggregations ? this.props.aggregations.toJS() : {};
@@ -129,10 +134,15 @@ export default class NestedMultiselect extends Component {
   }
 }
 
+NestedMultiselect.defaultProps = {
+  value: {},
+  options: undefined
+};
+
 NestedMultiselect.propTypes = {
-  onChange: PropTypes.func,
-  value: PropTypes.object,
-  property: PropTypes.object,
-  options: PropTypes.array,
-  aggregations: PropTypes.object
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.instanceOf(Object),
+  property: PropTypes.instanceOf(Object).isRequired,
+  options: PropTypes.instanceOf(Array),
+  aggregations: PropTypes.instanceOf(Object).isRequired
 };
