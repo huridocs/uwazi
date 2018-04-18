@@ -285,16 +285,9 @@ $item-padding: 15px;
   padding: 0 $item-padding $item-padding;
 
   dl {
-    position: relative;
-    float: left;
-    clear: both;
     margin: 0;
     padding: 3px 0;
     font-size: $f-size-sm;
-
-    &.item-property-markdown {
-      width: 100%;
-    }
   }
 
   dt {
