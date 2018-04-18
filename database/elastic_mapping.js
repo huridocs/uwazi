@@ -130,9 +130,10 @@ const config = {
         }
       }, {
         geo_point_fields: {
-          match: '*',
-          match_mapping_type: 'geo_point',
-          mapping: { type: 'geo_point', doc_values: true }
+          match: '*_geolocation',
+          match_mapping_type: 'object',
+          path_match: 'metadata.*',
+          mapping: { type: 'geo_point' }
         }
       }, {
         nested_fields: {

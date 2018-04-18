@@ -128,7 +128,7 @@ module.exports = function(production) {
           }
 
           if (/.js$/.test(resource)) {
-            return /node_modules/.test(resource) 
+            return /node_modules/.test(resource)
           }
         },
       }),
@@ -137,9 +137,7 @@ module.exports = function(production) {
         chunks: ["main", "vendor", "nprogress"],
         minChunks: Infinity
       }),
-      new webpack.optimize.ModuleConcatenationPlugin(),
       assetsPluginInstance
     ]
   };
 }
-
