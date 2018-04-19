@@ -7,6 +7,7 @@ import Map from '../Map';
 describe('Map', () => {
   let component;
   let props;
+  let markers;
   beforeEach(() => {
     props = {
       onClick: jasmine.createSpy('onClick'),
@@ -21,6 +22,7 @@ describe('Map', () => {
 
   const render = () => {
     component = shallow(<Map {...props} />);
+    markers = component.find(Marker);
   };
 
   describe('render', () => {
@@ -38,7 +40,6 @@ describe('Map', () => {
     });
 
     it('should render one Marker for each marker in props', () => {
-      const markers = component.find(Marker);
       expect(markers.length).toBe(2);
       expect(markers.first().props().latitude).toBe(2);
       expect(markers.first().find('i').first().hasClass('map-marker')).toBe(true);
@@ -51,7 +52,6 @@ describe('Map', () => {
     it('should use custom renderMarker method', () => {
       props.renderMarker = (marker, onClick) => (<div className="my-marker" onClick={onClick}/>);
       render();
-      const markers = component.find(Marker);
       expect(markers.first().find('div').first().hasClass('my-marker')).toBe(true);
     });
   });
@@ -104,7 +104,6 @@ describe('Map', () => {
   describe('clicking on a marker', () => {
     it('should render a popup with the info', () => {
       render();
-      const markers = component.find(Marker);
       markers.first().find('i').first().simulate('click');
       component.update();
       const popup = component.find(Popup);
@@ -113,7 +112,6 @@ describe('Map', () => {
 
     it('should not render a popup when has no info', () => {
       render();
-      const markers = component.find(Marker);
       markers.last().find('i').first().simulate('click');
       component.update();
       const popup = component.find(Popup);
@@ -122,7 +120,6 @@ describe('Map', () => {
 
     it('should call clickOnMarker', () => {
       render();
-      const markers = component.find(Marker);
       markers.first().find('i').first().simulate('click');
       component.update();
       expect(props.clickOnMarker).toHaveBeenCalledWith(props.markers[0]);
