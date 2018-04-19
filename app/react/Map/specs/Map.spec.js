@@ -41,10 +41,18 @@ describe('Map', () => {
       const markers = component.find(Marker);
       expect(markers.length).toBe(2);
       expect(markers.first().props().latitude).toBe(2);
+      expect(markers.first().find('i').first().hasClass('map-marker')).toBe(true);
       expect(markers.first().props().longitude).toBe(32);
 
       expect(markers.last().props().latitude).toBe(23);
       expect(markers.last().props().longitude).toBe(21);
+    });
+
+    it('should use custom renderMarker method', () => {
+      props.renderMarker = (marker, onClick) => (<div className="my-marker" onClick={onClick}/>);
+      render();
+      const markers = component.find(Marker);
+      expect(markers.first().find('div').first().hasClass('my-marker')).toBe(true);
     });
   });
 
