@@ -3,16 +3,6 @@ import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
 
 class Map extends Component {
-  static renderMarker(marker, onClick) {
-    return (
-      <i
-        style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
-        className="fa fa-map-marker fa-3x fa-fw map-marker"
-        onClick={onClick}
-      />
-    );
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -68,6 +58,19 @@ class Map extends Component {
     this.props.clickOnMarker(marker);
   }
 
+  renderMarker(marker, onClick) {
+    if (this.props.renderMarker) {
+      return this.props.renderMarker(marker, onClick);
+    }
+    return (
+      <i
+        style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
+        className="fa fa-map-marker fa-3x fa-fw map-marker"
+        onClick={onClick}
+      />
+    );
+  }
+
   renderPopup() {
     const { selectedMarker } = this.state;
     return selectedMarker && selectedMarker.info &&
@@ -90,7 +93,7 @@ class Map extends Component {
       const onClick = this.clickOnMarker.bind(this, marker);
       return (
         <Marker {...marker} key={index} offsetLeft={0} offsetTop={0}>
-          {Map.renderMarker(marker, onClick)}
+          {this.renderMarker(marker, onClick)}
         </Marker>
       );
     });
@@ -132,11 +135,12 @@ Map.defaultProps = {
   markers: [],
   latitude: 46.22093287671913,
   longitude: 6.139284045121682,
-  zoom: 2,
+  zoom: 4,
   width: 250,
   height: 200,
   onClick: () => {},
-  clickOnMarker: () => {}
+  clickOnMarker: () => {},
+  renderMarker: null
 };
 
 Map.propTypes = {
@@ -147,7 +151,8 @@ Map.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   onClick: PropTypes.func,
-  clickOnMarker: PropTypes.func
+  clickOnMarker: PropTypes.func,
+  renderMarker: PropTypes.func
 };
 
 export default Map;
