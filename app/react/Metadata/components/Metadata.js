@@ -58,6 +58,7 @@ Metadata.propTypes = {
     value: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
+      PropTypes.instanceOf(Object),
       PropTypes.arrayOf(PropTypes.string),
       PropTypes.arrayOf(PropTypes.shape({
         value: PropTypes.string

@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {FormConfigInput} from 'app/Templates/components/FormConfigInput';
-import {Field} from 'react-redux-form';
+import { FormConfigInput } from 'app/Templates/components/FormConfigInput';
+import { Field } from 'react-redux-form';
 
 describe('FormConfigInput', () => {
   let component;
@@ -12,9 +12,9 @@ describe('FormConfigInput', () => {
     props = {
       type: 'text',
       index: 0,
-      property: {label: ''},
+      property: { label: '' },
       formState: {
-        'properties.0.label': {valid: true, dirty: false, errors: {}},
+        'properties.0.label': { valid: true, dirty: false, errors: {} },
         $form: {
           errors: {
             'properties.0.label.required': false,

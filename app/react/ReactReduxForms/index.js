@@ -16,6 +16,7 @@ const DropdownList = props => <Control.select component={forms.DropdownList} {..
 const IconSelector = props => <Control.select component={forms.IconSelector} {...props}/>;
 const RadioButtons = props => <Control.select component={forms.RadioButtons} {...props}/>;
 const Switcher = props => <Control.select component={forms.Switcher} {...props}/>;
+const Geolocation = props => <Control component={forms.Geolocation} {...props}/>;
 const { NestedMultiselect, FormGroup } = forms;
 
 export {
@@ -34,5 +35,6 @@ export {
   DropdownList,
   IconSelector,
   RadioButtons,
-  Switcher
+  Switcher,
+  Geolocation
 };

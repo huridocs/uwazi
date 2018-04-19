@@ -134,7 +134,8 @@ properties: [
           { label: 'label 1' },
           { label: 'label 2' },
           { label: 'label 3' },
-          { label: 'label 4', name: 'name' }
+          { label: 'label 4', name: 'name' },
+          { label: 'label 5', type: 'geolocation' }
         ] };
 
       templates.save(newTemplate)
@@ -146,6 +147,7 @@ properties: [
         expect(newDoc.properties[1].name).toEqual('label_2');
         expect(newDoc.properties[2].name).toEqual('label_3');
         expect(newDoc.properties[3].name).toEqual('label_4');
+        expect(newDoc.properties[4].name).toEqual('label_5_geolocation');
         done();
       })
       .catch(catchErrors(done));

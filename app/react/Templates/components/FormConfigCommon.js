@@ -1,21 +1,20 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {Field} from 'react-redux-form';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Field } from 'react-redux-form';
+import { connect } from 'react-redux';
 
 import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
-
   render() {
-    const {index} = this.props;
+    const { index } = this.props;
     const baseZeroIndex = index + this.props.data.commonProperties.length;
 
     return (
       <Field model={`template.data.commonProperties[${baseZeroIndex}].prioritySorting`}>
-        <input id={'prioritySorting' + this.props.index} type="checkbox" />
+        <input id={`prioritySorting${this.props.index}`} type="checkbox" />
         &nbsp;
-        <PrioritySortingLabel htmlFor={'prioritySorting' + this.props.index} />
+        <PrioritySortingLabel htmlFor={`prioritySorting${this.props.index}`} />
       </Field>
     );
   }
@@ -26,7 +25,7 @@ FormConfigCommon.propTypes = {
   index: PropTypes.number
 };
 
-export function mapStateToProps({template}) {
+export function mapStateToProps({ template }) {
   return {
     data: template.data
   };

@@ -1,10 +1,12 @@
 import Immutable from 'immutable';
 import moment from 'moment';
+import React from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import t from 'app/I18N/t';
+import Map from 'app/Map/Map';
 
 const getOption = (thesauri, value) => thesauri.get('values').find(v => v.get('id').toString() === value.toString());
 
@@ -88,6 +90,20 @@ export default {
   multidaterange(property, dateranges = [], thesauris, showInCard) {
     const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
+  },
+
+  geolocation(property, value, thesauris, showInCard, renderForCard) {
+    const markers = [];
+    let _value;
+    if (value.lat && value.lon) {
+      _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
+      markers.push({ latitude: value.lat, longitude: value.lon });
+    }
+    if (!renderForCard) {
+      _value = <Map latitude={value.lat} longitude={value.lon} markers={markers}/>;
+    }
+
+    return { label: property.get('label'), name: property.get('name'), value: _value, showInCard };
   },
 
   getSelectOptions(option, thesauri) {
@@ -181,7 +197,6 @@ export default {
       doc.metadata = {};
     }
 
-
     let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
     .map((property) => {
       const value = doc.metadata[property.get('name')];
@@ -190,7 +205,8 @@ export default {
       const type = property.get('type');
 
       if (this[type] && value) {
-        return Object.assign(this[type](property, value, thesauris, showInCard), { type, translateContext: template.get('_id') });
+        const formatedMetadata = this[type](property, value, thesauris, showInCard, options.onlyForCards);
+        return Object.assign(formatedMetadata, { type, translateContext: template.get('_id') });
       }
 
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };

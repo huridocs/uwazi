@@ -59,6 +59,7 @@ export class TemplateCreator extends Component {
                       <PropertyOption label="Multi Date" type="multidate"/>
                       <PropertyOption label="Multi Date Range" type="multidaterange"/>
                       <PropertyOption label="Rich Text" type="markdown"/>
+                      <PropertyOption label="Geolocation" type="geolocation"/>
                       <ShowIf if={this.props.settings.collection.toJS().project === 'cejil'}>
                         <PropertyOption label="Violated articles" type="nested"/>
                       </ShowIf>

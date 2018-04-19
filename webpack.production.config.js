@@ -12,6 +12,7 @@ var config = require('./webpack/config')(production);
 config.devtool = 'cheap-module-source-map';
 config.context = __dirname;
 config.plugins = config.plugins.concat([
+  new webpack.optimize.ModuleConcatenationPlugin(),
   new webpack.optimize.OccurrenceOrderPlugin(),
   new OptimizeCssAssetsPlugin(),
   new webpack.optimize.UglifyJsPlugin({
