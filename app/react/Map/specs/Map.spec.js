@@ -25,6 +25,9 @@ describe('Map', () => {
     markers = component.find(Marker);
   };
 
+  const firstMarker = () => markers.first();
+  const secondMarker = () => markers.last();
+
   describe('render', () => {
     beforeEach(render);
     it('should render a ReactMapGL with the props', () => {
@@ -41,18 +44,18 @@ describe('Map', () => {
 
     it('should render one Marker for each marker in props', () => {
       expect(markers.length).toBe(2);
-      expect(markers.first().props().latitude).toBe(2);
-      expect(markers.first().find('i').first().hasClass('map-marker')).toBe(true);
-      expect(markers.first().props().longitude).toBe(32);
+      expect(firstMarker().props().latitude).toBe(2);
+      expect(firstMarker().find('i').hasClass('map-marker')).toBe(true);
+      expect(firstMarker().props().longitude).toBe(32);
 
-      expect(markers.last().props().latitude).toBe(23);
-      expect(markers.last().props().longitude).toBe(21);
+      expect(secondMarker().props().latitude).toBe(23);
+      expect(secondMarker().props().longitude).toBe(21);
     });
 
     it('should use custom renderMarker method', () => {
-      props.renderMarker = (marker, onClick) => (<div className="my-marker" onClick={onClick}/>);
+      props.renderMarker = (marker, onClick) => (<div className="custom-class" onClick={onClick}/>);
       render();
-      expect(markers.first().find('div').first().hasClass('my-marker')).toBe(true);
+      expect(firstMarker().find('div').hasClass('custom-class')).toBe(true);
     });
   });
 
@@ -102,26 +105,26 @@ describe('Map', () => {
   });
 
   describe('clicking on a marker', () => {
-    it('should render a popup with the info', () => {
+    let popup;
+    beforeEach(() => {
       render();
-      markers.first().find('i').first().simulate('click');
+      firstMarker().find('i').first().simulate('click');
       component.update();
-      const popup = component.find(Popup);
+      popup = component.find(Popup);
+    });
+
+    it('should render a popup with the info', () => {
       expect(popup.length).toBe(1);
     });
 
     it('should not render a popup when has no info', () => {
-      render();
-      markers.last().find('i').first().simulate('click');
+      secondMarker().find('i').first().simulate('click');
       component.update();
-      const popup = component.find(Popup);
+      popup = component.find(Popup);
       expect(popup.length).toBe(0);
     });
 
     it('should call clickOnMarker', () => {
-      render();
-      markers.first().find('i').first().simulate('click');
-      component.update();
       expect(props.clickOnMarker).toHaveBeenCalledWith(props.markers[0]);
     });
   });
