@@ -206,7 +206,7 @@ export default {
 
       if (this[type] && value) {
         return Object.assign(
-          this[type](property, value, thesauris, showInCard),
+          this[type](property, value, thesauris, showInCard, options.onlyForCards),
           { type: type === 'nested' ? 'markdown' : type, translateContext: template.get('_id') }
         );
       }

@@ -50,7 +50,7 @@ describe('metadata formater', () => {
           { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
           { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
           { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
-          { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true }
+          { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
           { name: 'nested', type: 'nested', label: 'Nested' }
         ]
       }
@@ -106,6 +106,7 @@ describe('metadata formater', () => {
     let relationship1;
     let relationship2;
     let geolocation;
+    let nested;
 
     beforeEach(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
@@ -120,7 +121,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(11);
+      expect(data.metadata.length).toBe(12);
     });
 
     it('should process text type', () => {
