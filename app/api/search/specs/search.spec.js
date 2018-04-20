@@ -9,7 +9,7 @@ import languages from 'shared/languages';
 import elasticResult from './elasticResult';
 import elasticFixtures, { ids } from './fixtures_elastic';
 
-fdescribe('search', () => {
+describe('search', () => {
   let result;
   const elasticTesting = instanceElasticTesting('search_index_test');
 

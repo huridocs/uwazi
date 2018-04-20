@@ -75,69 +75,69 @@ export default function () {
     },
 
     fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
-      if (term) {
-        const should = [];
+      if (!term) {
+        return this;
+      }
+      const should = [];
+      const includeFullText = fieldsToSearch.includes('fullText');
+      const fields = fieldsToSearch.filter(field => field !== 'fullText');
 
-        const includeFullText = fieldsToSearch.find(field => field === 'fullText');
-        const fields = fieldsToSearch.filter(field => field !== 'fullText');
-
-        if (fields.length) {
-          should.push({
+      if (fields.length) {
+        should.push({
             multi_match: {
               query: term,
               type: 'phrase_prefix',
               fields,
               boost: 6
-            }
-          });
-        }
+          }
+        });
+      }
 
-        if (includeFullText) {
-          should.unshift(
-            {
-              has_child: {
-                type: 'fullText',
-                score_mode: 'max',
-                inner_hits: {
-                  _source: false,
-                  highlight: {
-                    order: 'score',
-                    pre_tags: ['<b>'],
-                    post_tags: ['</b>'],
-                    fields: {
-                      'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
-                    }
+      if (includeFullText) {
+        should.unshift(
+          {
+            has_child: {
+              type: 'fullText',
+              score_mode: 'max',
+              inner_hits: {
+                _source: false,
+                highlight: {
+                  order: 'score',
+                  pre_tags: ['<b>'],
+                  post_tags: ['</b>'],
+                  fields: {
+                    'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
                   }
-                },
-                query: {
-                  bool: {
-                    should: [
-                      {
-                        multi_match: {
-                          query: term,
-                          type: 'best_fields',
-                          fuzziness: 0,
-                          fields: ['fullText*']
-                        }
-                      },
-                      {
-                        multi_match: {
-                          query: term,
-                          type: 'phrase_prefix',
-                          fields: ['fullText*'],
-                          boost: 3
-                        }
+                }
+              },
+              query: {
+                bool: {
+                  should: [
+                    {
+                      multi_match: {
+                        query: term,
+                        type: 'best_fields',
+                        fuzziness: 0,
+                        fields: ['fullText*']
                       }
-                    ]
-                  }
+                    },
+                    {
+                      multi_match: {
+                        query: term,
+                        type: 'phrase_prefix',
+                        fields: ['fullText*'],
+                        boost: 3
+                      }
+                    }
+                  ]
                 }
               }
             }
-          );
-        }
-
-        addFullTextFilter({ bool: { should } });
+          }
+        );
       }
+
+      addFullTextFilter({ bool: { should } });
       return this;
     },
 
@@ -357,7 +357,6 @@ export default function () {
       });
 
       match.bool.must = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
-      console.log(JSON.stringify(match, null, 4));
       return match;
     },
 
