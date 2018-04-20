@@ -110,7 +110,8 @@ describe('metadata formater', () => {
 
     beforeEach(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
-      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2, geolocation, nested] = data.metadata;
+      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2, geolocation, nested]
+        = data.metadata;
     });
 
     const formatValue = value => ({ icon: undefined, url: `/entity/${value.toLowerCase().replace(/ /g, '')}`, value });
