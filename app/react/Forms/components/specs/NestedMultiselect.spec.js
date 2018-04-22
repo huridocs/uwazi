@@ -1,21 +1,76 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
+import { MultiSelect } from 'app/ReactReduxForms';
+import Immutable from 'immutable';
 import NestedMultiselect from '../NestedMultiselect';
 
-describe('NestedMultiselect', () => {
+fdescribe('NestedMultiselect', () => {
   let component;
   let props;
+  const aggregations = {
+    nested_property: {
+      acd: {
+        buckets: [
+          {
+            key: '1',
+            doc_count: 4,
+            filtered: {
+              doc_count: 2,
+              total: { doc_count: 4, filtered: { doc_count: 2 } }
+            }
+          },
+          {
+            key: '1.1',
+            doc_count: 3,
+            filtered: {
+              doc_count: 2,
+              total: { doc_count: 3, filtered: { doc_count: 2 } }
+            }
+          }
+        ]
+      },
+      cjh: {
+        buckets: [
+          {
+            key: '2',
+            doc_count: 4,
+            filtered: {
+              doc_count: 2,
+              total: { doc_count: 4, filtered: { doc_count: 2 } }
+            }
+          },
+          {
+            key: '1.2',
+            doc_count: 3,
+            filtered: {
+              doc_count: 2,
+              total: { doc_count: 4, filtered: { doc_count: 2 } }
+            }
+          }
+        ]
+      },
+      acb: {
+        buckets: [
+          {
+            key: 'missing',
+            doc_count: 3,
+            filtered: {
+              doc_count: 2,
+              total: { doc_count: 4, filtered: { doc_count: 2 } }
+            }
+          }
+        ]
+      }
+    }
+  };
 
   beforeEach(() => {
     props = {
       label: 'input label',
       value: [],
-      options: [
-        { label: 'Option1', value: 'option1', results: 4 },
-        { label: 'Option2', value: 'option2', results: 2 }
-      ],
-      onChange: jasmine.createSpy('onChange')
+      property: { name: 'nested_property', nestedProperties: ['acd', 'cjh', 'acb'] },
+      onChange: jasmine.createSpy('onChange'),
+      aggregations: Immutable.fromJS(aggregations)
     };
   });
 
@@ -23,69 +78,15 @@ describe('NestedMultiselect', () => {
     component = shallow(<NestedMultiselect {...props}/>);
   };
 
-  it('should render the checkboxes', () => {
+  it('should render the groups', () => {
     render();
-    const optionElements = component.find('input[type="checkbox"]');
+    const optionElements = component.find(MultiSelect);
 
     expect(optionElements.length).toBe(2);
-    expect(optionElements.first().props().value).toBe('option1');
-    expect(optionElements.last().props().value).toBe('option2');
-  });
+    expect(optionElements.first().props().model).toBe('.filters.nested_property.properties.acd.values');
+    expect(optionElements.first().props().options).toEqual([{ label: '1', results: 2, value: '1' }, { label: '1.1', results: 2, value: '1.1' }]);
 
-  describe('when checking an option', () => {
-    it('should call onChange with the new value', () => {
-      render();
-      component.find('input[type="checkbox"]').first().simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith(['option1']);
-    });
-
-    it('it should handle multiple options selected', () => {
-      props.value = ['option1'];
-      render();
-      component.find('input[type="checkbox"]').last().simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith(['option1', 'option2']);
-    });
-
-    it('it should remove options that were selected', () => {
-      props.value = ['option1'];
-      render();
-      component.find('input[type="checkbox"]').first().simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith([]);
-    });
-  });
-
-  describe('filtering', () => {
-    it('should render only options matching the filter', () => {
-      render();
-      component.setState({ filter: '1' });
-      const optionElements = component.find('input[type="checkbox"]');
-      expect(optionElements.length).toBe(1);
-      expect(optionElements.first().props().value).toBe('option1');
-    });
-  });
-
-  describe('different key name for label and value', () => {
-    beforeEach(() => {
-      props = {
-        label: 'input label',
-        value: [],
-        options: [
-          { name: 'Option1', id: 'option1', results: 4 },
-          { name: 'Option3', id: 'option3', results: 2 },
-          { name: 'Option2', id: 'option2', results: 2 }
-        ],
-        optionsValue: 'id',
-        optionsLabel: 'name'
-      };
-      component = shallow(<NestedMultiselect {...props}/>);
-    });
-
-    it('should render the options by results and then by label', () => {
-      const optionElements = component.find('input[type="checkbox"]');
-
-      expect(optionElements.length).toBe(3);
-      expect(optionElements.first().props().value).toBe('option1');
-      expect(optionElements.last().props().value).toBe('option3');
-    });
+    expect(optionElements.last().props().model).toBe('.filters.nested_property.properties.cjh.values');
+    expect(optionElements.first().props().options).toEqual([{ label: '1', results: 2, value: '1' }, { label: '1.1', results: 2, value: '1.1' }]);
   });
 });
