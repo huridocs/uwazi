@@ -9,8 +9,8 @@ class Map extends Component {
       viewport: {
         latitude: props.latitude,
         longitude: props.longitude,
-        width: props.width,
-        height: props.height,
+        width: props.width || 250,
+        height: props.height || 200,
         zoom: props.zoom,
       },
       selectedMarker: null
@@ -39,7 +39,7 @@ class Map extends Component {
   }
 
   setSize() {
-    if (!this.container) {
+    if (!this.container || this.props.width) {
       return;
     }
     this.container.childNodes[0].style.width = 0;
@@ -136,8 +136,8 @@ Map.defaultProps = {
   latitude: 46.22093287671913,
   longitude: 6.139284045121682,
   zoom: 4,
-  width: 250,
-  height: 200,
+  width: null,
+  height: null,
   onClick: () => {},
   clickOnMarker: () => {},
   renderMarker: null
