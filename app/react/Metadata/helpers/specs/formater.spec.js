@@ -26,7 +26,9 @@ describe('metadata formater', () => {
         select: 'value3',
         relationship1: ['value1', 'value2'],
         relationship2: ['value1', 'value2', 'value4'],
-        geolocation: { lat: 2, lon: 3 }
+        geolocation: { lat: 2, lon: 3 },
+        nested: [],
+        select2: ''
       }
     };
 
@@ -48,7 +50,8 @@ describe('metadata formater', () => {
           { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
           { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
           { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
-          { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true }
+          { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
+          { name: 'nested', type: 'nested', label: 'Nested' }
         ]
       }
     ]);
@@ -73,13 +76,13 @@ describe('metadata formater', () => {
     ]);
   });
 
-  function assessBasicProperties(element, options) {
-    expect(element.label).toBe(options[0]);
-    expect(element.name).toBe(options[1]);
-    expect(element.translateContext).toBe(options[2]);
+  function assessBasicProperties(element, [label, name, translateContext, value]) {
+    expect(element.label).toBe(label);
+    expect(element.name).toBe(name);
+    expect(element.translateContext).toBe(translateContext);
 
-    if (options.length > 3) {
-      expect(element.value).toBe(options[3]);
+    if (value) {
+      expect(element.value).toBe(value);
     }
   }
 
@@ -103,10 +106,12 @@ describe('metadata formater', () => {
     let relationship1;
     let relationship2;
     let geolocation;
+    let nested;
 
     beforeEach(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
-      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2, geolocation] = data.metadata;
+      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2, geolocation, nested]
+        = data.metadata;
     });
 
     const formatValue = value => ({ icon: undefined, url: `/entity/${value.toLowerCase().replace(/ /g, '')}`, value });
@@ -114,6 +119,10 @@ describe('metadata formater', () => {
     it('should maintain doc original data untouched', () => {
       expect(data.title).toBe(doc.title);
       expect(data.template).toBe(doc.template);
+    });
+
+    it('should process all metadata', () => {
+      expect(data.metadata.length).toBe(12);
     });
 
     it('should process text type', () => {
@@ -151,6 +160,12 @@ describe('metadata formater', () => {
 
     it('should process markdown type', () => {
       assessBasicProperties(markdown, ['Mark Down', 'markdown', 'templateID', 'markdown content']);
+      expect(markdown.type).toBe('markdown');
+    });
+
+    it('should process nested type', () => {
+      assessBasicProperties(nested, ['Nested', 'nested', 'templateID']);
+      expect(nested.type).toBe('markdown');
     });
 
     it('should process select type', () => {

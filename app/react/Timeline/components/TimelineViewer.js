@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Loader from 'app/components/Elements/Loader';
-import {t as translate, I18NLink} from 'app/I18N';
+import { t as translate, I18NLink } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 
 import DocumentsAPI from 'app/Documents/DocumentsAPI';
@@ -13,16 +13,15 @@ import formater from 'app/Metadata/helpers/formater';
 
 import moment from 'moment';
 
-import {caseTemplate, matterTemplate, renderableTemplates} from '../utils/timelineFixedData';
+import { caseTemplate, matterTemplate, renderableTemplates } from '../utils/timelineFixedData';
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
 
 export class TimelineViewer extends Component {
-
   getTemplateType(itemTemplate) {
     return this.plainTemplates.reduce((result, template, index) => {
       if (template._id === itemTemplate) {
-        return 'timeline-item-type-' + index;
+        return `timeline-item-type-${index}`;
       }
       return result;
     }, '');
@@ -34,7 +33,7 @@ export class TimelineViewer extends Component {
 
   getRelatedReferences(references, template) {
     let promise = Promise.resolve([]);
-    let relatedEntity = references.find(r => r.entityData.template === template);
+    const relatedEntity = references.find(r => r.entityData.template === template);
     if (relatedEntity) {
       promise = this.fetchReferences(relatedEntity.entityData.sharedId);
     }
@@ -49,13 +48,13 @@ export class TimelineViewer extends Component {
     const relatedReferenceClassName = this.getTemplateType(isCase ? matterTemplate : caseTemplate);
 
     return references
-    .map(r => {
-      r.parentTemplate = {label: referenceLabel, className: referenceClassName};
+    .map((r) => {
+      r.parentTemplate = { label: referenceLabel, className: referenceClassName };
       r.origin = isCase || !relatedReferences.length ? 'main' : 'related';
       return r;
     })
-    .concat(relatedReferences.map(r => {
-      r.parentTemplate = {label: relatedReferenceLabel, className: relatedReferenceClassName};
+    .concat(relatedReferences.map((r) => {
+      r.parentTemplate = { label: relatedReferenceLabel, className: relatedReferenceClassName };
       r.origin = isCase ? 'related' : 'main';
       return r;
     }))
@@ -63,7 +62,7 @@ export class TimelineViewer extends Component {
   }
 
   fetchReferenceData(references) {
-    const fetchPromises = references.map(reference => {
+    const fetchPromises = references.map((reference) => {
       const get = reference.entityData.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
       return get(reference.entityData.sharedId);
     });
@@ -72,9 +71,9 @@ export class TimelineViewer extends Component {
   }
 
   assignAdditionalData(reference) {
-    Object.keys(renderableTemplates).forEach(templateName => {
+    Object.keys(renderableTemplates).forEach((templateName) => {
       if (reference.data.template === renderableTemplates[templateName]) {
-        reference.additionalData = {type: templateName};
+        reference.additionalData = { type: templateName };
       }
     });
 
@@ -85,7 +84,7 @@ export class TimelineViewer extends Component {
 
   getDates(entity, origin) {
     const caseDatesNames = this.props.templates.reduce((names, t) => {
-      t.get('properties').forEach(p => {
+      t.get('properties').forEach((p) => {
         if (p.get('type') === 'multidate' || p.get('type') === 'date') {
           names.push(p.get('name'));
         }
@@ -96,12 +95,12 @@ export class TimelineViewer extends Component {
     return entity.metadata.reduce((dates, metadata) => {
       if (caseDatesNames.indexOf(metadata.name) !== -1) {
         if (metadata.type === 'date') {
-          dates.push({label: metadata.label, timestamp: metadata.timestamp, origin});
+          dates.push({ label: metadata.label, timestamp: metadata.timestamp, origin });
         }
 
         if (metadata.type === 'multidate') {
-          metadata.value.forEach(date => {
-            dates.push({label: metadata.label, timestamp: date.timestamp, origin});
+          metadata.value.forEach((date) => {
+            dates.push({ label: metadata.label, timestamp: date.timestamp, origin });
           });
         }
       }
@@ -117,11 +116,11 @@ export class TimelineViewer extends Component {
 
   normalizeYears(years) {
     const currentYear = Number(moment().format('YYYY'));
-    const {minYear, maxYear} = Object.keys(years).reduce((memo, year) => {
+    const { minYear, maxYear } = Object.keys(years).reduce((memo, year) => {
       memo.minYear = Math.min(memo.minYear, Number(year));
       memo.maxYear = Math.max(memo.maxYear, Number(year));
       return memo;
-    }, {minYear: currentYear, maxYear: 0});
+    }, { minYear: currentYear, maxYear: 0 });
 
     for (let year = minYear - 3; year < (maxYear || currentYear) + 3; year += 1) {
       years[year] = years[year] || [];
@@ -135,13 +134,13 @@ export class TimelineViewer extends Component {
       tracks[trackName] = Object.keys(years).reduce((memo, year) => {
         memo.years[year] = years[year].filter(i => trackName === 'main' ? i.origin !== 'related' : i.origin === 'related');
         return memo;
-      }, {years: {}, label: '', className: ''});
+      }, { years: {}, label: '', className: '' });
       return tracks;
-    }, {main: {}, related: {}});
+    }, { main: {}, related: {} });
   }
 
   assignActiveYears(tracks) {
-    Object.keys(tracks).forEach(track => {
+    Object.keys(tracks).forEach((track) => {
       tracks[track].active = Object.keys(tracks[track].years).reduce((memo, year) => {
         if (tracks[track].years[year].length) {
           if (!memo.start) {
@@ -150,7 +149,7 @@ export class TimelineViewer extends Component {
           memo.end = year;
         }
         return memo;
-      }, {start: null, end: null});
+      }, { start: null, end: null });
     });
 
     return tracks;
@@ -170,8 +169,8 @@ export class TimelineViewer extends Component {
   }
 
   arrangeTracks(references, dates, hasRelatedReferences) {
-    let years = {};
-    references.forEach(reference => {
+    const years = {};
+    references.forEach((reference) => {
       const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
       const hasDate = reference.data.metadata.fecha !== null;
       if (isDesiredTemplate && hasDate) {
@@ -180,7 +179,7 @@ export class TimelineViewer extends Component {
       }
     });
 
-    dates.forEach(date => {
+    dates.forEach((date) => {
       this.assignDataToYear(years, date.timestamp, date);
     });
 
@@ -211,7 +210,7 @@ export class TimelineViewer extends Component {
     const relatedEntity = references.find(r => r.entityData.template === (isCase ? matterTemplate : caseTemplate));
     if (relatedEntity) {
       fetchRelatedEntity = EntitiesAPI.get(relatedEntity.entityData.sharedId)
-                           .then(results => formater.prepareMetadata(results[0], this.props.templates, this.props.thesauris));
+      .then(results => formater.prepareMetadata(results[0], this.props.templates, this.props.thesauris));
     }
 
     return fetchRelatedEntity;
@@ -225,7 +224,7 @@ export class TimelineViewer extends Component {
     this.plainThesauris = this.props.thesauris.toJS();
 
     this.fetchReferences(entity.sharedId)
-    .then(references => {
+    .then((references) => {
       const relatedReferences = this.getRelatedReferences(references, isCase ? matterTemplate : caseTemplate);
       return Promise.all([this.getRelatedEntity(references, isCase), references, relatedReferences]);
     })
@@ -235,8 +234,8 @@ export class TimelineViewer extends Component {
     })
     .then(([relatedEntity, referencesData, relatedReferences]) => {
       const conformedReferences = usefulReferences.map((reference, index) => {
-        const {parentTemplate, origin} = reference;
-        return {reference, parentTemplate, origin, data: referencesData[index][0]};
+        const { parentTemplate, origin } = reference;
+        return { reference, parentTemplate, origin, data: referencesData[index][0] };
       });
 
       let entityDatesTrack = isCase ? 'main' : 'related';
@@ -261,28 +260,30 @@ export class TimelineViewer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.entity._id !== nextProps.entity._id) {
-      this.setState({tracks: null}, () => {
+      this.setState({ tracks: null }, () => {
         this.getTimelineInfo(nextProps.entity);
       });
     }
   }
 
   render() {
-    const tracks = {keys: ['main'], main: '', related: '', axis: ''};
+    const tracks = { keys: ['main'], main: '', related: '', axis: '' };
     if (this.state && this.state.tracks) {
       if (Object.keys(this.state.tracks).indexOf('related') !== -1) {
         tracks.keys.push('related');
       }
 
-      tracks.keys.forEach(trackName => {
+      tracks.keys.forEach((trackName) => {
         const track = this.state.tracks[trackName];
-        tracks[trackName] = Object.keys(track.years).map(year => {
+        tracks[trackName] = Object.keys(track.years).map((year) => {
           const nth5 = year % 5 === 0 ? 'nth5' : '';
           const activeClassName = `timeline-year-active ${track.className.replace('timeline-item-', '')}`;
           const active = year >= track.active.start && year <= track.active.end ? activeClassName : '';
           return (
-            <div key={year}
-                 className={`timeline-year ${nth5} ${active}`}>
+            <div
+              key={year}
+              className={`timeline-year ${nth5} ${active}`}
+              >
               <ShowIf if={year === track.active.start}>
                 <span className={`timeline-track-label item-type__name ${track.className}`}>{track.label}</span>
               </ShowIf>
@@ -291,20 +292,22 @@ export class TimelineViewer extends Component {
                 if (reference.reference) {
                   const linkType = reference.reference.entityData.type === 'document' ? 'document' : 'entity';
                   return (
-                    <I18NLink to={`/${linkType}/${reference.data.sharedId}`}
-                          key={index}
-                          className={`timeline-item ${reference.additionalData.className}`}
-                          data-toggle="tooltip"
-                          data-placement="top"
-                          data-animation="false"
-                          title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${reference.data.title}`}>
+                    <I18NLink
+                      to={`/${linkType}/${reference.data.sharedId}`}
+                      key={index}
+                      className={`timeline-item ${reference.additionalData.className}`}
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      data-animation="false"
+                      title={`${moment.utc(reference.additionalData.date * 1000).format('ll')}\n${reference.data.title}`}
+                    >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
                           <span>{`${moment.utc(reference.additionalData.date * 1000).format('MMM YYYY')}`}</span>
                         </span>
                       </ShowIf>
                       <ShowIf if={reference.additionalData.type === 'judgement'}>
-                        <i className="fa fa-legal"></i>
+                        <i className="fa fa-legal" />
                       </ShowIf>
                     </I18NLink>
                   );
@@ -312,12 +315,14 @@ export class TimelineViewer extends Component {
 
                 if (!reference.reference) {
                   return (
-                    <span key={index}
-                          className="timeline-item"
-                          data-toggle="tooltip"
-                          data-placement="top"
-                          data-animation="false"
-                          title={`${moment.utc(reference.timestamp * 1000).format('ll')}\n${reference.label}`}>
+                    <span
+                      key={index}
+                      className="timeline-item"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      data-animation="false"
+                      title={`${moment.utc(reference.timestamp * 1000).format('ll')}\n${reference.label}`}
+                    >
                       <ShowIf if={reference.firstMilestone}>
                         <span className="timeline-milestone ">
                           <span>{`${moment.utc(reference.timestamp * 1000).format('MMM YYYY')}`}</span>
@@ -333,11 +338,11 @@ export class TimelineViewer extends Component {
       });
 
       tracks.axis = Object.keys(this.state.tracks.main.years).map(year =>
-        <div key={year} className="timeline-year">
+        (<div key={year} className="timeline-year">
           <div className={`timeline-label ${year % 5 === 0 ? 'timeline-label-text' : ''}`}>
             <span>{year}</span>
           </div>
-        </div>
+         </div>)
       );
     }
 
@@ -371,8 +376,12 @@ TimelineViewer.propTypes = {
   thesauris: PropTypes.object
 };
 
-function mapStateToProps({templates, thesauris}) {
-  return {templates, thesauris};
+function mapStateToProps({ templates, thesauris }, { entity }) {
+  return {
+    templates,
+    thesauris,
+    entity: formater.prepareMetadata(entity, templates, thesauris)
+  };
 }
 
 export default connect(mapStateToProps)(TimelineViewer);
