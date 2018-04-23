@@ -6,22 +6,29 @@ import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import Welcome from 'app/Library/components/Welcome';
-import LibraryCharts from 'app/Charts/components/LibraryCharts';
+import MapView from 'app/Library/components/MapView';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
-import {enterLibrary, setDocuments, unsetDocuments, initializeFiltersForm} from 'app/Library/actions/libraryActions';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import { enterLibrary, setDocuments, unsetDocuments, initializeFiltersForm } from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import {actions as formActions} from 'react-redux-form';
-import {t} from 'app/I18N';
-import {wrapDispatch} from 'app/Multireducer';
-import {store} from 'app/store';
+import { actions as formActions } from 'react-redux-form';
+import { t } from 'app/I18N';
+import { wrapDispatch } from 'app/Multireducer';
+import { store } from 'app/store';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Library extends RouteHandler {
+  static getView(viewMode) {
+    let view = <DocumentsList storeKey="library"/>;
+    if (viewMode === 'map') {
+      view = <MapView storeKey="library"/>;
+    }
+    return view;
+  }
 
   constructor(props, context) {
     super(props, context);
@@ -37,8 +44,8 @@ export default class Library extends RouteHandler {
   }
 
   static requestState(params, _query = {}, globalResources) {
-    const defaultSearch = prioritySortingCriteria.get({templates: globalResources.templates});
-    let query = rison.decode(_query.q || '()');
+    const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
+    const query = rison.decode(_query.q || '()');
     query.order = query.order || defaultSearch.order;
     query.sort = query.sort || defaultSearch.sort;
 
@@ -48,7 +55,7 @@ export default class Library extends RouteHandler {
       return {
         library: {
           documents,
-          filters: {documentTypes: query.types || [], properties: filterState.properties},
+          filters: { documentTypes: query.types || [], properties: filterState.properties },
           aggregations: documents.aggregations,
           search: filterState.search
         }
@@ -81,22 +88,20 @@ export default class Library extends RouteHandler {
   }
 
   render() {
-
-    let state = store.getState();
+    const state = store.getState();
     if (!state.templates.size) {
       return <Welcome/>;
     }
 
-    let query = rison.decode(this.props.location.query.q || '()');
-    const chartView = this.props.location.query.view === 'chart';
-    const mainView = !chartView ? <DocumentsList storeKey="library"/> : <LibraryCharts storeKey="library" />;
+    const query = rison.decode(this.props.location.query.q || '()');
+    const viewMode = this.props.location.query.view || 'list';
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
         <main className="library-viewer document-viewer with-panel">
-          {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
-          {mainView}
+          <LibraryModeToggleButtons viewMode={viewMode} />
+          {Library.getView(viewMode)}
         </main>
         <LibraryFilters storeKey="library"/>
         <ViewMetadataPanel storeKey="library" searchTerm={query.searchTerm}/>

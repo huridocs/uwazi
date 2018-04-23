@@ -2,14 +2,14 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { browserHistory } from 'react-router';
 
-import { ListChartToggleButtons } from '../ListChartToggleButtons';
+import { LibraryModeToggleButtons } from '../LibraryModeToggleButtons';
 
-describe('ListChartToggleButtons', () => {
+describe('LibraryModeToggleButtons', () => {
   let component;
   let props;
 
   const render = () => {
-    component = shallow(<ListChartToggleButtons {...props} />);
+    component = shallow(<LibraryModeToggleButtons {...props} />);
   };
 
   describe('render()', () => {
@@ -29,7 +29,7 @@ describe('ListChartToggleButtons', () => {
     });
 
     it('should selected chart if active', () => {
-      props.active = 'chart';
+      props.viewMode = 'map';
       render();
 
       expect(component.find('button').length).toBe(2);
@@ -46,7 +46,7 @@ describe('ListChartToggleButtons', () => {
       expect(browserHistory.push.calls.mostRecent().args[0]).toBe('/location?q=(a:1)&view=list');
 
       chartSelect.simulate('click');
-      expect(browserHistory.push.calls.mostRecent().args[0]).toBe('/location?q=(a:1)&view=chart');
+      expect(browserHistory.push.calls.mostRecent().args[0]).toBe('/location?q=(a:1)&view=map');
     });
   });
 });

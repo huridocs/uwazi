@@ -1,5 +1,4 @@
 import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -23,25 +22,26 @@ function toggleButton(active, type, icon) {
   );
 }
 
-export class ListChartToggleButtons extends Component {
+export class LibraryModeToggleButtons extends Component {
   render() {
     return (
-      <div className={`search-list listChart-toggleButtons ${this.props.active === 'chart' ? 'is-chart' : 'is-list'}`}>
+      <div className="search-list listChart-toggleButtons">
         <div className="buttons-group">
-          { toggleButton(this.props.active !== 'chart', 'list', 'th-large') }
-          { toggleButton(this.props.active === 'chart', 'chart', 'area-chart') }
+          { toggleButton(this.props.viewMode === 'list', 'list', 'th-large') }
+          {/*toggleButton(this.props.viewMode === 'chart', 'chart', 'area-chart') */}
+          { toggleButton(this.props.viewMode === 'map', 'map', 'map-marker') }
         </div>
       </div>
     );
   }
 }
 
-ListChartToggleButtons.defaultProps = {
-  active: 'list'
+LibraryModeToggleButtons.defaultProps = {
+  viewMode: 'list'
 };
 
-ListChartToggleButtons.propTypes = {
-  active: PropTypes.string
+LibraryModeToggleButtons.propTypes = {
+  viewMode: PropTypes.string
 };
 
-export default connect()(ListChartToggleButtons);
+export default LibraryModeToggleButtons;
