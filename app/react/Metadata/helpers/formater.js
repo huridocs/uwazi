@@ -164,7 +164,7 @@ export default {
 
   nested(property, rows, thesauris, showInCard) {
     if (!rows[0]) {
-      return { label: property.get('label'), value: '', showInCard };
+      return { label: property.get('label'), name: property.get('name'), value: '', showInCard };
     }
 
     const { locale } = store.getState();
@@ -205,8 +205,10 @@ export default {
       const type = property.get('type');
 
       if (this[type] && value) {
-        const formatedMetadata = this[type](property, value, thesauris, showInCard, options.onlyForCards);
-        return Object.assign(formatedMetadata, { type, translateContext: template.get('_id') });
+        return Object.assign(
+          this[type](property, value, thesauris, showInCard, options.onlyForCards),
+          { type: type === 'nested' ? 'markdown' : type, translateContext: template.get('_id') }
+        );
       }
 
       return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
