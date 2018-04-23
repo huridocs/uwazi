@@ -34,7 +34,7 @@
     "reindex": "node run.js ./database/reindex_elastic.js",
     "health-check": "node run.js ./database/health_check.js",
     "blank-state": "./database/blank_state.sh",
-    "install-fixtures": "./install_fixtures.sh; npm run reindex",
+    "fixtures": "./install_fixtures.sh; npm run reindex",
     "e2e": "node nightmare_tests.js"
   },
   "dependencies": {
