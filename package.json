@@ -1,7 +1,7 @@
 {
   "name": "Uwazi",
-  "version": "0.0.1",
-  "description": "based on Dominic Tobias <dominic.tobias@gmail.com> universal react boilerplate",
+  "version": "1.1.1",
+  "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "main": "server.js",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
     "react"
   ],
   "author": "huridocs",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/huridocs/uwazidocs/issues"
   },
