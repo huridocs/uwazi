@@ -132,7 +132,6 @@
   },
   "devDependencies": {
     "assets-webpack-plugin": "Kronuz/assets-webpack-plugin",
-    "babel-istanbul-loader": "^0.1.0",
     "babel-jest": "^22.4.0",
     "babel-plugin-react-transform": "3.0.0",
     "babel-polyfill": "^6.23.0",
@@ -153,7 +152,6 @@
     "fetch-mock": "5.9.3",
     "identity-obj-proxy": "^3.0.0",
     "img-loader": "2.0.1",
-    "istanbul-instrumenter-loader": "^1.2.0",
     "jasmine": "2.7.0",
     "jasmine-core": "2.7.0",
     "jasmine-immutablejs-matchers": "^0.1.2",
