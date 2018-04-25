@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { browserHistory } from 'react-router';
+import { I18NLink } from 'app/I18N';
 
 import { LibraryModeToggleButtons } from '../LibraryModeToggleButtons';
 
@@ -13,40 +13,15 @@ describe('LibraryModeToggleButtons', () => {
   };
 
   describe('render()', () => {
-    beforeEach(() => {
-      props = {};
-
-      spyOn(browserHistory, 'getCurrentLocation').and.returnValue({ pathname: '/location', query: { q: '(a:1)' } });
-      spyOn(browserHistory, 'push');
-    });
-
-    it('should render two buttons, list selected by default', () => {
+    it('should render two links to the library and the map', () => {
+      props = {
+        searchUrl: '?q="asd"'
+      };
       render();
 
-      expect(component.find('button').length).toBe(2);
-      expect(component.find('button').at(0).props().className).toContain('btn-success');
-      expect(component.find('button').at(1).props().className).toContain('btn-default');
-    });
-
-    it('should selected chart if active', () => {
-      props.viewMode = 'map';
-      render();
-
-      expect(component.find('button').length).toBe(2);
-      expect(component.find('button').at(0).props().className).toContain('btn-default');
-      expect(component.find('button').at(1).props().className).toContain('btn-success');
-    });
-
-    it('should change the browserHistory to reflect the new selection', () => {
-      render();
-      const listSelect = component.find('button').at(0);
-      const chartSelect = component.find('button').at(1);
-
-      listSelect.simulate('click');
-      expect(browserHistory.push.calls.mostRecent().args[0]).toBe('/location?q=(a:1)&view=list');
-
-      chartSelect.simulate('click');
-      expect(browserHistory.push.calls.mostRecent().args[0]).toBe('/location?q=(a:1)&view=map');
+      expect(component.find(I18NLink).length).toBe(2);
+      expect(component.find(I18NLink).at(0).props().to).toBe('/library/?q="asd"');
+      expect(component.find(I18NLink).at(1).props().to).toBe('/library/map/?q="asd"');
     });
   });
 });

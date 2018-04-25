@@ -63,7 +63,7 @@ export function unsetDocuments() {
 }
 
 export function setTemplates(templates, thesauris) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch({ type: types.SET_LIBRARY_TEMPLATES, templates, thesauris });
   };
 }

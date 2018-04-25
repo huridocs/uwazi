@@ -8,18 +8,29 @@ import { wrapDispatch } from 'app/Multireducer';
 import { selectDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 
 export class MapView extends Component {
+  static renderMarker(marker, onClick) {
+    return (
+      <i
+        style={{ position: 'relative', top: '-35px', right: '25px' }}
+        className={`fa fa-map-marker fa-3x fa-fw map-marker color-${marker.templateIndex}`}
+        onClick={onClick}
+      />
+    );
+  }
+
   constructor(props) {
     super(props);
     this.clickOnMarker = this.clickOnMarker.bind(this);
   }
 
   getMarker(entity) {
-    const template = this.props.templates.find(t => t.get('_id') === entity.get('template')).toJS();
-    const geolocationProp = template.properties.find(p => p.type === 'geolocation');
+    const template = this.props.templates.find(t => t.get('_id') === entity.get('template'));
+    const templateIndex = this.props.templates.indexOf(template);
+    const geolocationProp = template.toJS().properties.find(p => p.type === 'geolocation');
     if (geolocationProp) {
       const _entity = entity.toJS();
       const marker = _entity.metadata[geolocationProp.name];
-      return marker ? { entity, latitude: marker.lat, longitude: marker.lon } : null;
+      return marker ? { entity, latitude: marker.lat, longitude: marker.lon, templateIndex } : null;
     }
 
     return null;
@@ -37,7 +48,7 @@ export class MapView extends Component {
   render() {
     const markers = this.getMarkers();
     return (
-      <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker}/>
+      <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker} renderMarker={MapView.renderMarker}/>
     );
   }
 }
@@ -51,7 +62,7 @@ MapView.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    entities: state[props.storeKey].documents,
+    entities: state[props.storeKey].markers,
     templates: state.templates
   };
 }

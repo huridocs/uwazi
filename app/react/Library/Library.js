@@ -1,35 +1,14 @@
 import React from 'react';
-import Helmet from 'react-helmet';
-import rison from 'rison';
-
-import api from 'app/Search/SearchAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import Welcome from 'app/Library/components/Welcome';
-import MapView from 'app/Library/components/MapView';
-import LibraryFilters from 'app/Library/components/LibraryFilters';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
-import { enterLibrary, setDocuments, unsetDocuments, initializeFiltersForm } from 'app/Library/actions/libraryActions';
-import libraryHelpers from 'app/Library/helpers/libraryFilters';
+import { enterLibrary } from 'app/Library/actions/libraryActions';
+import requestState from 'app/Library/helpers/requestState';
+import setReduxState from 'app/Library/helpers/setReduxState';
 import SearchButton from 'app/Library/components/SearchButton';
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import { actions as formActions } from 'react-redux-form';
-import { t } from 'app/I18N';
+import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
-import { store } from 'app/store';
-
-import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Library extends RouteHandler {
-  static getView(viewMode) {
-    let view = <DocumentsList storeKey="library"/>;
-    if (viewMode === 'map') {
-      view = <MapView storeKey="library"/>;
-    }
-    return view;
-  }
-
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
@@ -44,37 +23,11 @@ export default class Library extends RouteHandler {
   }
 
   static requestState(params, _query = {}, globalResources) {
-    const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
-    const query = rison.decode(_query.q || '()');
-    query.order = query.order || defaultSearch.order;
-    query.sort = query.sort || defaultSearch.sort;
-
-    return api.search(query)
-    .then((documents) => {
-      const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS(), globalResources.thesauris.toJS());
-      return {
-        library: {
-          documents,
-          filters: { documentTypes: query.types || [], properties: filterState.properties },
-          aggregations: documents.aggregations,
-          search: filterState.search
-        }
-      };
-    });
+    return requestState(params, _query, globalResources);
   }
 
   setReduxState(state) {
-    const dispatch = wrapDispatch(this.context.store.dispatch, 'library');
-    dispatch(unsetDocuments());
-    dispatch(formActions.load('library.search', state.library.search));
-
-    dispatch(initializeFiltersForm({
-      documentTypes: state.library.filters.documentTypes,
-      libraryFilters: state.library.filters.properties,
-      aggregations: state.library.aggregations
-    }));
-
-    dispatch(setDocuments(state.library.documents));
+    setReduxState(state, this.context);
   }
 
   componentWillMount() {
@@ -83,30 +36,15 @@ export default class Library extends RouteHandler {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.location.query.q !== this.props.location.query.q) {
-      return this.superComponentWillReceiveProps(nextProps);
+      this.superComponentWillReceiveProps(nextProps);
     }
   }
 
   render() {
-    const state = store.getState();
-    if (!state.templates.size) {
-      return <Welcome/>;
-    }
-
-    const query = rison.decode(this.props.location.query.q || '()');
-    const viewMode = this.props.location.query.view || 'list';
-
     return (
-      <div className="row panels-layout">
-        <Helmet title={t('System', 'Library')} />
-        <main className="library-viewer document-viewer with-panel">
-          <LibraryModeToggleButtons viewMode={viewMode} />
-          {Library.getView(viewMode)}
-        </main>
-        <LibraryFilters storeKey="library"/>
-        <ViewMetadataPanel storeKey="library" searchTerm={query.searchTerm}/>
-        <SelectMultiplePanelContainer storeKey="library"/>
-      </div>
+      <LibraryLayout>
+        <DocumentsList storeKey="library"/>
+      </LibraryLayout>
     );
   }
 }

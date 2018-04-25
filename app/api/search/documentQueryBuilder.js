@@ -141,6 +141,11 @@ export default function () {
       return this;
     },
 
+    select(fields) {
+      baseQuery._source.include = fields;
+      return this;
+    },
+
     language(language) {
       const match = { term: { language } };
       baseQuery.query.bool.filter.push(match);
@@ -167,6 +172,13 @@ export default function () {
       const sort = {};
       sort[`${property}.sort`] = { order, unmapped_type: 'boolean' };
       baseQuery.sort.push(sort);
+      return this;
+    },
+
+    hasMetadataProperties(fieldNames) {
+      const match = { bool: { should: [] } };
+      match.bool.should = fieldNames.map(field => ({ exists: { field: `metadata.${field}` } }));
+      addFilter(match);
       return this;
     },
 

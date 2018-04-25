@@ -1,47 +1,36 @@
-import { browserHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { toUrlParams } from 'shared/JSONRequest';
-
-function changeView(type) {
-  return () => {
-    const path = browserHistory.getCurrentLocation().pathname;
-    const { query } = browserHistory.getCurrentLocation();
-    query.view = type;
-
-    browserHistory.push(path + toUrlParams(query));
-  };
-}
-
-function toggleButton(active, type, icon) {
-  return (
-    <button className={`btn ${active ? 'btn-success' : 'btn-default'}`} onClick={changeView(type)}>
-      <i className={`fa fa-${icon}`} />
-    </button>
-  );
-}
+import { connect } from 'react-redux';
+import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { I18NLink } from 'app/I18N';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
     return (
       <div className="search-list listChart-toggleButtons">
         <div className="buttons-group">
-          { toggleButton(this.props.viewMode === 'list', 'list', 'th-large') }
-          {/*toggleButton(this.props.viewMode === 'chart', 'chart', 'area-chart') */}
-          { toggleButton(this.props.viewMode === 'map', 'map', 'map-marker') }
+          <I18NLink to={`/library/${this.props.searchUrl}`} className="btn btn-default">
+            <i className="fa fa-th" />
+          </I18NLink>
+          <I18NLink to={`/library/map/${this.props.searchUrl}`} className="btn btn-default">
+            <i className="fa fa-map-marker" />
+          </I18NLink>
         </div>
       </div>
     );
   }
 }
 
-LibraryModeToggleButtons.defaultProps = {
-  viewMode: 'list'
-};
-
 LibraryModeToggleButtons.propTypes = {
-  viewMode: PropTypes.string
+  searchUrl: PropTypes.string.isRequired,
 };
 
-export default LibraryModeToggleButtons;
+export function mapStateToProps(state, props) {
+  const params = processFilters(state[props.storeKey].search, state[props.storeKey].filters.toJS());
+  encodeSearch(params);
+  return {
+    searchUrl: encodeSearch(params)
+  };
+}
+
+export default connect(mapStateToProps)(LibraryModeToggleButtons);
