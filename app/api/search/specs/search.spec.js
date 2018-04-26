@@ -34,7 +34,6 @@ describe('search', () => {
     .toObject();
 
     db.clearAllAndLoad(elasticFixtures)
-    .then(() => mongoose.model('entities').collection.createIndex({ title: 'text' }))
     .then(() => elasticTesting.reindex())
     .then(done)
     .catch(catchErrors(done));
