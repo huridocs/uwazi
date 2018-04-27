@@ -7,6 +7,10 @@ describe('entitiesModel', () => {
     testingDB.clearAllAndLoad({}).then(done).catch(catchErrors(done));
   });
 
+  afterAll((done) => {
+    testingDB.disconnect().then(done);
+  });
+
   it('should set mongoLanguage to document passed', (done) => {
     Promise.all([
       entitiesModel.save({ title: 'docES', language: 'es' }),
