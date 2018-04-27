@@ -19,4 +19,4 @@ export default () => new Promise((resolve, reject) => {
 
 const disconnect = () => mongoose.disconnect();
 
-export { disconnect }
+export { disconnect };

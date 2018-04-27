@@ -1,6 +1,5 @@
 /* eslint-disable max-nested-callbacks */
 import { index as elasticIndex } from 'api/config/elasticIndexes';
-import mongoose from 'mongoose';
 import { search, documentQueryBuilder, elastic } from 'api/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
