@@ -263,6 +263,8 @@ describe('search', () => {
         .then(({ rows }) => {
           expect(rows[0].title).toBeDefined();
           expect(rows[0].template).toBeDefined();
+          expect(rows[0].sharedId).toBeDefined();
+          expect(rows[0].language).toBeDefined();
           expect(Object.keys(rows[0].metadata).length).toBe(1);
           done();
         });

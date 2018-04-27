@@ -7,12 +7,12 @@ import { I18NLink } from 'app/I18N';
 export class LibraryModeToggleButtons extends Component {
   render() {
     return (
-      <div className="search-list listChart-toggleButtons">
+      <div className="list-view-mode">
         <div className="buttons-group">
-          <I18NLink to={`/library/${this.props.searchUrl}`} className="btn btn-default">
+          <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
             <i className="fa fa-th" />
           </I18NLink>
-          <I18NLink to={`/library/map/${this.props.searchUrl}`} className="btn btn-default">
+          <I18NLink to={`library/map${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
             <i className="fa fa-map-marker" />
           </I18NLink>
         </div>

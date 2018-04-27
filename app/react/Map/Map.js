@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
+import Immutable from 'immutable';
+import style from './style.json';
 
 class Map extends Component {
   constructor(props) {
@@ -15,12 +17,14 @@ class Map extends Component {
       },
       selectedMarker: null
     };
-
+    this.mapStyle = Immutable.fromJS(style);
+    this.updateDataSource(props);
     this._onViewportChange = (viewport) => {
       this.setState({ viewport });
     };
 
     this.setSize = this.setSize.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   componentDidMount() {
@@ -31,11 +35,20 @@ class Map extends Component {
   componentWillReceiveProps(props) {
     const { latitude, longitude, markers } = props;
     const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
+    this.updateDataSource(props);
     this.setState({ viewport });
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.setSize);
+  }
+
+  onClick(e) {
+    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
+    if (feature) {
+      this.clickOnMarker(this.props.markers[feature.properties.index]);
+    }
+    this.props.onClick(e);
   }
 
   setSize() {
@@ -51,6 +64,27 @@ class Map extends Component {
     viewport.width = width;
     viewport.height = height;
     this.setState({ viewport });
+  }
+
+  updateDataSource(props) {
+    if (!this.props.cluster) {
+      return;
+    }
+    const markersData = props.markers
+    .map((marker, index) => {
+      const properties = marker.properties || {};
+      const { longitude, latitude } = marker;
+      properties.index = index;
+      return {
+          type: 'Feature',
+          properties,
+          geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+      };
+    });
+    this.mapStyle = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], markersData);
   }
 
   clickOnMarker(marker) {
@@ -88,7 +122,11 @@ class Map extends Component {
   }
 
   renderMarkers() {
-    const { markers } = this.props;
+    const { markers, cluster } = this.props;
+    if (cluster) {
+      return false;
+    }
+
     return markers.map((marker, index) => {
       const onClick = this.clickOnMarker.bind(this, marker);
       return (
@@ -105,6 +143,7 @@ class Map extends Component {
     https://openmaptiles.github.io/dark-matter-gl-style/style-cdn.json
     https://openmaptiles.github.io/klokantech-basic-gl-style/style-cdn.json
   */
+
   render() {
     const viewport = Object.assign({}, this.state.viewport);
     return (
@@ -112,9 +151,9 @@ class Map extends Component {
         <ReactMapGL
           {...viewport}
           dragRotate
-          mapStyle="https://openmaptiles.github.io/klokantech-basic-gl-style/style-cdn.json"
+          mapStyle={this.mapStyle}
           onViewportChange={this._onViewportChange}
-          onClick={this.props.onClick}
+          onClick={this.onClick}
         >
           <div style={{ position: 'absolute', left: 5, top: 5 }}>
             <NavigationControl onViewportChange={this._onViewportChange}/>
@@ -140,7 +179,8 @@ Map.defaultProps = {
   height: null,
   onClick: () => {},
   clickOnMarker: () => {},
-  renderMarker: null
+  renderMarker: null,
+  cluster: false
 };
 
 Map.propTypes = {
@@ -152,7 +192,8 @@ Map.propTypes = {
   height: PropTypes.number,
   onClick: PropTypes.func,
   clickOnMarker: PropTypes.func,
-  renderMarker: PropTypes.func
+  renderMarker: PropTypes.func,
+  cluster: PropTypes.bool
 };
 
 export default Map;

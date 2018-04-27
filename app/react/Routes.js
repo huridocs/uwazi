@@ -108,10 +108,8 @@ const routes =
       </Route>
       <Route path="filters" component={FiltersForm} />
     </Route>
-    <Route path="library">
-      <IndexRoute component={Library} onEnter={onEnter}/>
-      <Route path="map" component={LibraryMap} onEnter={onEnter}/>
-    </Route>
+    <Route path="library" component={Library} onEnter={onEnter}/>
+    <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />

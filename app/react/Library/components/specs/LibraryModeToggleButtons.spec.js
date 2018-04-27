@@ -20,8 +20,8 @@ describe('LibraryModeToggleButtons', () => {
       render();
 
       expect(component.find(I18NLink).length).toBe(2);
-      expect(component.find(I18NLink).at(0).props().to).toBe('/library/?q="asd"');
-      expect(component.find(I18NLink).at(1).props().to).toBe('/library/map/?q="asd"');
+      expect(component.find(I18NLink).at(0).props().to).toBe('library?q="asd"');
+      expect(component.find(I18NLink).at(1).props().to).toBe('library/map?q="asd"');
     });
   });
 });

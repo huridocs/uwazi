@@ -1,12 +1,12 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS } from 'immutable';
 
-import {DocumentSidePanel, mapStateToProps} from '../DocumentSidePanel';
-import {ConnectionsGroups} from 'app/ConnectionsList';
+import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
+import { ConnectionsGroups } from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
-import {Tabs} from 'react-tabs-redux';
+import { Tabs } from 'react-tabs-redux';
 import Immutable from 'immutable';
 
 import * as viewerModule from 'app/Viewer';
@@ -18,17 +18,23 @@ describe('DocumentSidePanel', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({metadata: [], attachments: [], type: 'document', file: {}}),
+      doc: Immutable.fromJS({ metadata: [], attachments: [], type: 'document', file: {} }),
       rawDoc: fromJS({}),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
+      showTab: jasmine.createSpy('showTab'),
+      closePanel: jasmine.createSpy('closePanel'),
+      deleteDocument: jasmine.createSpy('deleteDocument'),
+      resetForm: jasmine.createSpy('resetForm'),
+      excludeConnectionsTab: true,
+      storeKey: 'library',
       references: Immutable.fromJS(['reference']),
       connections: Immutable.fromJS(['connections']),
       formPath: 'formPath',
       connectionsGroups: Immutable.fromJS([
-        {templates: [{count: 1}, {count: 2}]},
-        {templates: [{count: 3}, {count: 4}]}
+        { templates: [{ count: 1 }, { count: 2 }] },
+        { templates: [{ count: 3 }, { count: 4 }] }
       ])
     };
   });
@@ -37,8 +43,8 @@ describe('DocumentSidePanel', () => {
     confirm: jasmine.createSpy('confirm')
   };
 
-  let render = () => {
-    component = shallow(<DocumentSidePanel {...props}/>, {context});
+  const render = () => {
+    component = shallow(<DocumentSidePanel {...props}/>, { context });
   };
 
   it('should have default props values assigned', () => {
@@ -71,12 +77,6 @@ describe('DocumentSidePanel', () => {
   });
 
   describe('Tabs', () => {
-    it('should set metadata as default tab', () => {
-      props.tab = '';
-      render();
-      expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
-    });
-
     it('should set tab in props as selected', () => {
       props.tab = 'selected-tab';
       render();
@@ -85,13 +85,13 @@ describe('DocumentSidePanel', () => {
 
     describe('when doc passed is an entity', () => {
       it('should set metadata as selected if tab is toc', () => {
-        props.doc = Immutable.fromJS({metadata: [], attachments: [], type: 'entity'});
+        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'toc';
         render();
         expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
       });
       it('should set metadata as selected if tab is references', () => {
-        props.doc = Immutable.fromJS({metadata: [], attachments: [], type: 'entity'});
+        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'references';
         render();
         expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
@@ -131,8 +131,8 @@ describe('DocumentSidePanel', () => {
 
     beforeEach(() => {
       state = {
-        documentViewer: {targetDoc: Immutable.fromJS({_id: null})},
-        relationships: {list: {connectionsGroups: 'connectionsGroups'}},
+        documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
+        relationships: { list: { connectionsGroups: 'connectionsGroups' } },
         relationTypes: Immutable.fromJS(['a', 'b'])
       };
       spyOn(viewerModule.selectors, 'parseReferences').and.callFake((doc, refs) => `Parsed ${doc} refs: ${refs}`);
@@ -143,7 +143,7 @@ describe('DocumentSidePanel', () => {
     });
 
     it('should map parsed references from ownProps if present and set the excludeConnectionsTab to true', () => {
-      const ownProps = {doc: 'fullDocData', references: 'allRefs'};
+      const ownProps = { doc: 'fullDocData', references: 'allRefs' };
       expect(mapStateToProps(state, ownProps).references).toBe('Parsed fullDocData refs: allRefs');
       expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(true);
     });
@@ -156,18 +156,14 @@ describe('DocumentSidePanel', () => {
 
     it('should map selected target references from viewer when no ownProps and targetDoc', () => {
       const ownProps = {};
-      state.documentViewer.targetDoc = Immutable.fromJS({_id: 'targetDocId'});
+      state.documentViewer.targetDoc = Immutable.fromJS({ _id: 'targetDocId' });
       expect(mapStateToProps(state, ownProps).references).toBe('Target references selector used correctly');
       expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(false);
     });
 
-    it('should map connectionsGroups and hasRelationTypes', () => {
+    it('should map connectionsGroups', () => {
       const ownProps = {};
       expect(mapStateToProps(state, ownProps).connectionsGroups).toBe('connectionsGroups');
-      expect(mapStateToProps(state, ownProps).hasRelationTypes).toBe(true);
-
-      state.relationTypes = Immutable.fromJS([]);
-      expect(mapStateToProps(state, ownProps).hasRelationTypes).toBe(false);
     });
   });
 });

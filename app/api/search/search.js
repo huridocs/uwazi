@@ -67,9 +67,8 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
     });
   });
   documentsQuery.hasMetadataProperties(geolocationProperties);
-  const selectProps = geolocationProperties.map(p => `metadata.${p}`);
-  selectProps.push('title');
-  selectProps.push('template');
+  const selectProps = geolocationProperties.map(p => `metadata.${p}`)
+  .concat(['title', 'template', 'sharedId', 'language']);
   documentsQuery.select(selectProps);
 }
 
