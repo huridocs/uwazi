@@ -460,10 +460,10 @@ describe('search', () => {
         expect(asc.rows[2].title).toBe('metádata3');
         expect(asc.rows[3].title).toBe(' Metadáta4');
 
-        expect(desc.rows[0].title).toBe('Metdata6');
-        expect(desc.rows[1].title).toBe('metadata5');
-        expect(desc.rows[2].title).toBe(' Metadáta4');
-        expect(desc.rows[3].title).toBe('metádata3');
+        expect(desc.rows[0].title).toBe('metadata5');
+        expect(desc.rows[1].title).toBe(' Metadáta4');
+        expect(desc.rows[2].title).toBe('metádata3');
+        expect(desc.rows[3].title).toBe('Metadata2');
         done();
       })
       .catch(catchErrors(done));
