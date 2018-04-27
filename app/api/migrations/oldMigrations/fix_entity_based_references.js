@@ -6,18 +6,10 @@ import relationships from '../relationships/relationships';
 import relationshipsModel from '../relationships/relationshipsModel';
 import mongoose from 'mongoose';
 
-relationshipsModel.delete({sourceType: 'metadata'})
-.then(() => {
-  return entities.get({}, {_id: 1})
-  .then(documents => {
-    return P.resolve(documents).map(({_id}) => {
-      return entities.get({_id})
-      .then(([doc]) => {
-        return relationships.saveEntityBasedReferences(doc, doc.language);
-      });
-    }, {concurrency: 1});
-  });
-})
+relationshipsModel.delete({ sourceType: 'metadata' })
+.then(() => entities.get({}, { _id: 1 })
+.then(documents => P.resolve(documents).map(({ _id }) => entities.get({ _id })
+.then(([doc]) => relationships.saveEntityBasedReferences(doc, doc.language)), { concurrency: 1 })))
 .then(() => {
   mongoose.disconnect();
 })
