@@ -14,7 +14,7 @@ describe('migration {{ name }}', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe({{nextMigrationVersion}});
+    expect(migration.delta).toBe({{nextMigrationDelta}});
   });
 
   it('should fail', (done) => {

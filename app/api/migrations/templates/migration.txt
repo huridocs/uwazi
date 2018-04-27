@@ -1,5 +1,5 @@
 export default {
-  delta: {{ nextMigrationVersion }},
+  delta: {{ nextMigrationDelta }},
 
   name: '{{ name }}',
 

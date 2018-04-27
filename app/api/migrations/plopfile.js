@@ -2,11 +2,10 @@
 require('babel-core/register')();
 
 module.exports = (plop) => {
-  // controller generator
-  let currentVersion;
-  plop.setHelper('nextMigrationVersion', () => {
-    if (currentVersion) {
-      return currentVersion;
+  let currentDelta;
+  plop.setHelper('nextMigrationDelta', () => {
+    if (currentDelta) {
+      return currentDelta;
     }
 
     const fs = require('fs');
@@ -17,13 +16,13 @@ module.exports = (plop) => {
     let migrations = fs.readdirSync(migrationsDir);
     migrations = migrations.map((migration) => {
       try {
-        return require(path.join(migrationsDir, migration)).version;
+        return require(path.join(migrationsDir, migration)).delta;
       } catch (e) {
         return null;
       }
     }).filter(m => m).sort((a, b) => b - a);
-    currentVersion = migrations.length ? migrations[0] + 1 : 1;
-    return currentVersion;
+    currentDelta = migrations.length ? migrations[0] + 1 : 1;
+    return currentDelta;
   });
 
   plop.setGenerator('migration', {
@@ -43,17 +42,17 @@ module.exports = (plop) => {
     actions: [
       {
         type: 'add',
-        path: './migrations/{{nextMigrationVersion}}-{{name}}/index.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/index.js',
         templateFile: './templates/migration.txt'
       },
       {
         type: 'add',
-        path: './migrations/{{nextMigrationVersion}}-{{name}}/specs/{{nextMigrationVersion}}-{{name}}.spec.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.js',
         templateFile: './templates/migration.spec.txt'
       },
       {
         type: 'add',
-        path: './migrations/{{nextMigrationVersion}}-{{name}}/specs/fixtures.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/fixtures.js',
         templateFile: './templates/fixtures.txt'
       }
     ]
