@@ -6,6 +6,7 @@ import migration from '../index.js';
 
 describe('migration entities_override_mongo_language', () => {
   beforeEach((done) => {
+    spyOn(process.stdout, 'write');
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -13,8 +14,8 @@ describe('migration entities_override_mongo_language', () => {
     testingDB.disconnect().then(done);
   });
 
-  it('should have a version number', () => {
-    expect(migration.version).toBe(1);
+  it('should have a delta number', () => {
+    expect(migration.delta).toBe(1);
   });
 
   it('should migrate properly', (done) => {

@@ -1,5 +1,5 @@
 export default {
-  version: 1,
+  delta: 1,
 
   name: 'entities_override_mongo_language',
 

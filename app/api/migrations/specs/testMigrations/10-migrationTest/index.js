@@ -1,5 +1,5 @@
 export default {
-  version: 10,
+  delta: 10,
   description: 'migration test 10',
 
   up() {

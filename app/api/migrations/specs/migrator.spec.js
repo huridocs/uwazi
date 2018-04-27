@@ -48,7 +48,7 @@ describe('migrator', () => {
       migrator.migrate()
       .then(migrationsModel.get)
       .then((migrations) => {
-        expect(migrations.map(m => m.version)).toEqual([1, 2, 10]);
+        expect(migrations.map(m => m.delta)).toEqual([1, 2, 10]);
         done();
       });
     });
@@ -58,7 +58,7 @@ describe('migrator', () => {
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel.save({ version: 1 })
+      migrationsModel.save({ delta: 1 })
       .then(() => migrator.migrate())
       .then(() => {
         expect(migration1.up).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe('migrator', () => {
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel.save([{ version: 1 }, { version: 2 }])
+      migrationsModel.save([{ delta: 1 }, { delta: 2 }])
       .then(() => migrator.migrate())
       .then(() => {
         expect(migration1.up).not.toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe('migrator', () => {
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel.save([{ version: 10 }])
+      migrationsModel.save([{ delta: 10 }])
       .then(() => migrator.migrate())
       .then(() => {
         expect(migration1.up).not.toHaveBeenCalled();

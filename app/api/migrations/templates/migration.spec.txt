@@ -5,6 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration {{ name }}', () => {
   beforeEach((done) => {
+    spyOn(process.stdout, 'write');
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -12,8 +13,8 @@ describe('migration {{ name }}', () => {
     testingDB.disconnect().then(done);
   });
 
-  it('should have a version number', () => {
-    expect(migration.version).toBe({{nextMigrationVersion}});
+  it('should have a delta number', () => {
+    expect(migration.delta).toBe({{nextMigrationVersion}});
   });
 
   it('should fail', (done) => {

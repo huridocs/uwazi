@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import instanceModel from 'api/odm';
 
 const entitySchema = new mongoose.Schema({
-  version: Number,
-  type: String,
+  delta: Number,
   name: String,
   description: String
 });
