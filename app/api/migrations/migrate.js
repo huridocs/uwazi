@@ -1,4 +1,4 @@
-import connect, { disconnect } from './connect_to_mongo.js';
+import connect, { disconnect } from 'api/utils/connect_to_mongo.js';
 import migrator from './migrator';
 
 connect()
