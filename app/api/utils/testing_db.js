@@ -28,7 +28,9 @@ testingDB.connect = () => {
   if (connected) {
     return Promise.resolve();
   }
-  return initMongoServer();
+  return initMongoServer().then(() => {
+    testingDB.mongodb = mongoose.connections[0].db;
+  });
 };
 
 testingDB.clearAllAndLoad = fixtures => testingDB.connect()

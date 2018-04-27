@@ -23,11 +23,11 @@
     ]
   },
   "scripts": {
+    "production-build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
     "run-production": "export NODE_ENV=production; node server.js",
     "dev-server": "./node_modules/.bin/nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --watch 'app/react/ServerRouter.js'",
     "webpack-server": "node ./webpack/webpack.server.js",
     "hot": "export HOT=true;npm run dev-server & npm run webpack-server",
-    "production-build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
     "analyze": "webpack --profile --json > stats.json;./node_modules/.bin/webpack-bundle-analyzer stats.json",
     "download-mongo-prebuilt": "node ./database/download_mongo_prebuilt.js",
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
@@ -35,6 +35,8 @@
     "health-check": "node run.js ./database/health_check.js",
     "blank-state": "./database/blank_state.sh; yarn reindex",
     "fixtures": "cd uwazi-fixtures; ./restore.sh; yarn reindex",
+    "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
+    "migrate": "node run.js ./app/api/migrations/migrate.js",
     "e2e": "node nightmare_tests.js"
   },
   "dependencies": {
@@ -158,6 +160,7 @@
     "jasmine-reporters": "^2.1.0",
     "jasmine-spec-reporter": "4.2.1",
     "jest": "^22.4.0",
+    "jest-extended": "^0.7.1",
     "jest-immutable-matchers": "^2.0.1",
     "mongodb-memory-server": "^1.7.0",
     "nightmare": "2.10.0",
@@ -167,6 +170,7 @@
     "nodemon": "^1.17.2",
     "null-loader": "^0.1.1",
     "optimize-css-assets-webpack-plugin": "3.2.0",
+    "plop": "^2.0.0",
     "pow-mongodb-fixtures": "^0.14.0",
     "react-addons-test-utils": "16.0.0-alpha.3",
     "react-dnd-test-backend": "2.5.1",

@@ -1,0 +1,22 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import testingDB from 'api/utils/testing_db';
+import migration from '../index.js';
+import fixtures from './fixtures.js';
+
+describe('migration {{ name }}', () => {
+  beforeEach((done) => {
+    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  });
+
+  afterAll((done) => {
+    testingDB.disconnect().then(done);
+  });
+
+  it('should have a version number', () => {
+    expect(migration.version).toBe({{nextMigrationVersion}});
+  });
+
+  it('should fail', (done) => {
+    migration.up().catch(catchErrors(done));
+  });
+});

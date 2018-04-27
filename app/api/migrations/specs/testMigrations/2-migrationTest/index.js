@@ -1,0 +1,10 @@
+export default {
+  version: 2,
+  description: 'migration test 2',
+
+  up() {
+    return new Promise((resolve) => {
+      setTimeout(resolve, 10);
+    });
+  }
+};
