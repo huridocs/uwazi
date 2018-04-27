@@ -27,7 +27,10 @@ export default {
       });
 
       cursor.on('err', reject);
-      cursor.on('end', resolve);
+      cursor.on('end', () => {
+        process.stdout.write(`processed -> ${index}\r\n`);
+        resolve();
+      });
     });
   }
 };
