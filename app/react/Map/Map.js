@@ -4,13 +4,16 @@ import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
 import style from './style.json';
 
+const defaultLatitude = 46.22093287671913;
+const defaultLongitude = 6.139284045121682;
+
 class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
       viewport: {
-        latitude: props.latitude,
-        longitude: props.longitude,
+        latitude: props.latitude || defaultLatitude,
+        longitude: props.longitude || defaultLongitude,
         width: props.width || 250,
         height: props.height || 200,
         zoom: props.zoom,
@@ -33,7 +36,9 @@ class Map extends Component {
   }
 
   componentWillReceiveProps(props) {
-    const { latitude, longitude, markers } = props;
+    const { markers } = props;
+    const latitude = props.latitude || this.state.viewport.latitude;
+    const longitude = props.longitude || this.state.viewport.longitude;
     const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
     this.updateDataSource(props);
     this.setState({ viewport });
@@ -172,8 +177,8 @@ class Map extends Component {
 
 Map.defaultProps = {
   markers: [],
-  latitude: 46.22093287671913,
-  longitude: 6.139284045121682,
+  latitude: null,
+  longitude: null,
   zoom: 4,
   width: null,
   height: null,

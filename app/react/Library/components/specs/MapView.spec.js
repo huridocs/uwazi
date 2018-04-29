@@ -29,8 +29,7 @@ describe('MapView', () => {
       markers: Immutable.fromJS(documents),
       storeKey: 'library',
       templates: Immutable.fromJS(templates),
-      selectDocument: jasmine.createSpy('selectDocument'),
-      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments')
+      getAndSelectDocument: jasmine.createSpy('getAndSelectDocument'),
     };
     component = shallow(<MapView {...props} />);
     instance = component.instance();
@@ -45,9 +44,9 @@ describe('MapView', () => {
 
     it('should pass the markers', () => {
       const expectedMarkers = [
-        { latitude: 1, longitude: 2, properties: { entity: documents.rows[0] } },
-        { latitude: 3, longitude: 4, properties: { entity: documents.rows[2] } },
-        { latitude: 1, longitude: 2, properties: { entity: documents.rows[3] } }
+        { latitude: 1, longitude: 2, properties: { entity: documents.rows[0], color: 0 } },
+        { latitude: 3, longitude: 4, properties: { entity: documents.rows[2], color: 1 } },
+        { latitude: 1, longitude: 2, properties: { entity: documents.rows[3], color: 1 } }
       ];
       expect(component.find(Map).props().markers).toEqual(expectedMarkers);
     });
@@ -57,8 +56,7 @@ describe('MapView', () => {
     it('should unselect all documents and select the one in i¡the marker', () => {
       const marker = { latitude: 1, longitude: 2, properties: { entity: documents.rows[2] } };
       instance.clickOnMarker(marker);
-      expect(props.unselectAllDocuments).toHaveBeenCalled();
-      expect(props.selectDocument).toHaveBeenCalledWith(Immutable.fromJS(documents.rows[2]));
+      expect(props.getAndSelectDocument).toHaveBeenCalledWith(Immutable.fromJS(documents.rows[2].sharedId));
     });
   });
 });

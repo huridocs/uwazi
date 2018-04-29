@@ -26,6 +26,15 @@ export function selectDocument(doc) {
   return { type: types.SELECT_DOCUMENT, doc: document };
 }
 
+export function getAndSelectDocument(id) {
+  return (dispatch) => {
+    entitiesAPI.get(id)
+    .then((entity) => {
+      dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc: entity[0] });
+    });
+  };
+}
+
 export function selectDocuments(docs) {
   return { type: types.SELECT_DOCUMENTS, docs };
 }

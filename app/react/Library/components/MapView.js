@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import Map from 'app/Map/Map';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
-import { selectDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { getAndSelectDocument } from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
 import { t } from 'app/I18N';
 
@@ -17,12 +17,12 @@ export class MapView extends Component {
 
   getMarker(entity) {
     const template = this.props.templates.find(_t => _t.get('_id') === entity.get('template'));
-    const templateIndex = this.props.templates.indexOf(template);
+    const color = this.props.templates.indexOf(template);
     const geolocationProp = template.toJS().properties.find(p => p.type === 'geolocation');
     if (geolocationProp) {
       const _entity = entity.toJS();
       const marker = _entity.metadata[geolocationProp.name];
-      return marker ? { properties: { entity: _entity }, latitude: marker.lat, longitude: marker.lon } : null;
+      return marker ? { properties: { entity: _entity, color }, latitude: marker.lat, longitude: marker.lon } : null;
     }
 
     return null;
@@ -33,8 +33,7 @@ export class MapView extends Component {
   }
 
   clickOnMarker(marker) {
-    this.props.unselectAllDocuments();
-    this.props.selectDocument(Immutable.fromJS(marker.properties.entity));
+    this.props.getAndSelectDocument(marker.properties.entity.sharedId);
   }
 
   render() {
@@ -55,8 +54,7 @@ MapView.propTypes = {
   markers: PropTypes.instanceOf(Immutable.Map).isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string.isRequired,
-  selectDocument: PropTypes.func.isRequired,
-  unselectAllDocuments: PropTypes.func.isRequired
+  getAndSelectDocument: PropTypes.func.isRequired
 };
 
 export function mapStateToProps(state, props) {
@@ -67,7 +65,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ selectDocument, unselectAllDocuments }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({ getAndSelectDocument }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapView);

@@ -19,7 +19,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://free.tilehosting.com/data/v3.json?key=RiS4gsgZPZqeeMlIyxFo"
+      "url": "https://free.tilehosting.com/data/v3.json?key=QiI1BlAJNMmZagsX5qp7"
     },
     "markers": {
       "type": "geojson",
@@ -32,8 +32,8 @@
       }
     }
   },
-  "sprite": "https://openmaptiles.github.io/klokantech-basic-gl-style/sprite",
-  "glyphs": "https://free.tilehosting.com/fonts/{fontstack}/{range}.pbf?key=RiS4gsgZPZqeeMlIyxFo",
+  "sprite": "https://openmaptiles.github.io/osm-bright-gl-style/sprite",
+  "glyphs": "https://free.tilehosting.com/fonts/{fontstack}/{range}.pbf?key=QiI1BlAJNMmZagsX5qp7",
   "layers": [
     {
       "id": "background",
@@ -1732,10 +1732,34 @@
         "source": "markers",
         "filter": ["!has", "point_count"],
         "paint": {
-            "circle-color": "#11b4da",
-            "circle-radius": 5,
-            "circle-stroke-width": 2,
-            "circle-stroke-color": "#fff"
+          "circle-radius": 6,
+          "circle-opacity": 0.8,
+          "circle-color": [
+            "match",
+            ["get", "color"],
+            0, "#C03B22",
+            1, "#D9534F",
+            2, "#E91E63",
+            3, "#A03AB1",
+            4, "#6F46B8",
+            5, "#3F51B5",
+            6, "#2196F3",
+            7, "#37BDCf",
+            8, "#359990",
+            9, "#5CB85C",
+            10, "#8BC34A",
+            11, "#CDDC39",
+            12, "#F7E64E",
+            13, "#F0AD4E",
+            14, "#EC9920",
+            15, "#E46841",
+            16, "#795548",
+            17, "#9E9E9E",
+            18, "#607D8B",
+            "#8BC34A"
+          ],
+          "circle-stroke-width": 1,
+          "circle-stroke-color": "#fff"
         },
         "interactive": true
     }
