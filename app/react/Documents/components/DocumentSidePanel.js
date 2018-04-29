@@ -289,6 +289,7 @@ DocumentSidePanel.propTypes = {
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
+  searchSnippets: PropTypes.func,
   getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
