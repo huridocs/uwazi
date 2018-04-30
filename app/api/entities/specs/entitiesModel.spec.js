@@ -33,22 +33,26 @@ describe('entitiesModel', () => {
     .catch(catchErrors(done));
   });
 
+  const expectArToBeNone = done => Promise.all([
+    entitiesModel.get({ mongoLanguage: 'es' }),
+    entitiesModel.get({ mongoLanguage: 'none' }),
+    entitiesModel.get({ mongoLanguage: 'ar' })
+  ])
+  .then(([es, none, ar]) => {
+    expect(es.length).toBe(1);
+    expect(none.length).toBe(1);
+    expect(ar.length).toBe(0);
+    done();
+  });
+
+
   it('should set mongoLanguage to document passed', (done) => {
     Promise.all([
       entitiesModel.save({ title: 'docES', language: 'es' }),
       entitiesModel.save({ title: 'docAR', language: 'ar' })
     ])
-    .then(() => Promise.all([
-        entitiesModel.get({ mongoLanguage: 'es' }),
-        entitiesModel.get({ mongoLanguage: 'none' }),
-        entitiesModel.get({ mongoLanguage: 'ar' })
-    ]))
-    .then(([es, none, ar]) => {
-      expect(es.length).toBe(1);
-      expect(none.length).toBe(1);
-      expect(ar.length).toBe(0);
-      done();
-    });
+    .then(expectArToBeNone.bind(null, done))
+    .catch(catchErrors(done));
   });
 
   it('should set mongoLanguage when passing multiple documents', (done) => {
@@ -56,17 +60,8 @@ describe('entitiesModel', () => {
       { title: 'docES', language: 'es' },
       { title: 'unsuported ar language', language: 'ar' }
     ])
-    .then(() => Promise.all([
-        entitiesModel.get({ mongoLanguage: 'es' }),
-        entitiesModel.get({ mongoLanguage: 'none' }),
-        entitiesModel.get({ mongoLanguage: 'ar' })
-    ]))
-    .then(([es, none, ar]) => {
-      expect(es.length).toBe(1);
-      expect(none.length).toBe(1);
-      expect(ar.length).toBe(0);
-      done();
-    });
+    .then(expectArToBeNone.bind(null, done))
+    .catch(catchErrors(done));
   });
 
   it('should do not set mongoLanguage when doc.language is undefined', (done) => {
