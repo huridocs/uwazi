@@ -52,6 +52,10 @@ export default function (state = initialState, action = {}) {
   let value;
   let updatedHubs;
   let relationship;
+  let target;
+  let relationshipsToMove;
+  let relationshipsMoved;
+  let _state;
 
   switch (action.type) {
   case types.PARSE_RELATIONSHIPS_RESULTS:
@@ -106,6 +110,35 @@ export default function (state = initialState, action = {}) {
   case types.TOGGLE_REMOVE_RELATIONSHIPS_ENTITY:
     value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted']);
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'deleted'], !value);
+
+  case types.TOGGLE_MOVE_RELATIONSHIPS_ENTITY:
+    value = state.getIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'move']);
+    return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships', action.relationshipIndex, 'move'], !value);
+
+  case types.MOVE_RELATIONSHIPS_ENTITY:
+    relationshipsToMove = [];
+    relationshipsMoved = [];
+    state.forEach((hub, hubIndex) => {
+      hub.get('rightRelationships')
+      .forEach((rightRelationshipGroup, rightRelationshipsIndex) => {
+        rightRelationshipGroup.get('relationships')
+        .forEach((_relationship, index) => {
+          if (_relationship.get('move')) {
+            relationshipsToMove.push(_relationship.remove('move'));
+            relationshipsMoved.push({ hubIndex, rightRelationshipsIndex, index });
+          }
+        });
+      });
+    });
+    _state = relationshipsMoved.reverse().reduce((result, relationShipMoved) => result.removeIn([
+      relationShipMoved.hubIndex,
+      'rightRelationships',
+      relationShipMoved.rightRelationshipsIndex,
+      'relationships',
+      relationShipMoved.index
+    ]), state);
+    target = _state.getIn([action.index, 'rightRelationships', action.rightRelationshipIndex, 'relationships']);
+    return _state.setIn([action.index, 'rightRelationships', action.rightRelationshipIndex, 'relationships'], target.concat(relationshipsToMove));
 
   default:
     return fromJS(state);

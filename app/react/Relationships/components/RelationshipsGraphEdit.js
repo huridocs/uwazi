@@ -87,7 +87,6 @@ export class RelationshipsGraphEdit extends Component {
   render() {
     const { parentEntity, hubs, search, addHub, hubActions, relationTypes } = this.props;
     const editing = hubActions.get('editing');
-
     return (
       <div className="relationships-graph">
 
@@ -188,38 +187,44 @@ export class RelationshipsGraphEdit extends Component {
                         })()}
                       </div>
                     )}
-                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) => (
-                      <div
-                        className={`rightRelationship ${!rightRelationship.get('deleted') && relationship.get('deleted') ? 'deleted' : ''}`}
-                        key={relationshipIndex}
-                      >
-                        <div className="rightRelationshipType">
-                          <Doc
-                            className="item-collapsed"
-                            doc={relationship.get('entity')}
-                            searchParams={search}
-                            onClick={this.onClick}
-                          />
-                          <HubRelationshipMetadata relationship={relationship} />
+                    {rightRelationship.get('relationships').map((relationship, relationshipIndex) => {
+                      const rightRelationshipDeleted = rightRelationship.get('deleted');
+                      const deleted = relationship.get('deleted');
+                      const move = relationship.get('move');
+                      return (
+                        <div
+                          className={`rightRelationship ${!rightRelationshipDeleted && deleted ? 'deleted' : ''} ${move ? 'move' : ''}`}
+                          key={relationshipIndex}
+                        >
+                          <div className="rightRelationshipType">
+                            <Doc
+                              className="item-collapsed"
+                              doc={relationship.get('entity')}
+                              searchParams={search}
+                              onClick={this.onClick}
+                            />
+                            <HubRelationshipMetadata relationship={relationship} />
+                          </div>
+                          {this.editingSelector(null,
+                            <div className="removeEntity">
+                              <i
+                                onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                                className={`relationships-icon fa ${!deleted ? 'fa-trash' : 'fa-undo'}`}
+                              />
+                            </div>
+                        )}
+                          {this.editingSelector(null,
+                            <div className="moveEntity">
+                              <i
+                                onClick={this.props.toggleMoveEntity.bind(this, index, rightRelationshipIndex, relationshipIndex)}
+                                className={`relationships-icon fa fa-sign-out ${!move ? '' : 'moving'}`}
+                                alt="move"
+                              />
+                            </div>
+                        )}
                         </div>
-                        {this.editingSelector(null,
-                          <div className="removeEntity">
-                            <i
-                              onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                              className={`relationships-icon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
-                            />
-                          </div>
-                        )}
-                        {this.editingSelector(null,
-                          <div className="moveEntity">
-                            <i
-                              onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                              className="relationships-icon fa fa-sign-out"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                     {(() => {
                       if (editing && rightRelationship.has('template')) {
                         const isActive = hubActions.getIn(['addTo', 'hubIndex']) === index &&
@@ -235,8 +240,8 @@ export class RelationshipsGraphEdit extends Component {
                             </button>
                             <div className="insertEntities">
                               <i
-                                onClick={this.toggleRemoveEntity(index, rightRelationshipIndex)}
-                                className="relationships-icon fa fa-sign-out"
+                                onClick={this.props.moveEntities.bind(this, index, rightRelationshipIndex)}
+                                className="relationships-icon fa fa-arrow-left"
                               />
                             </div>
                           </div>
@@ -275,17 +280,19 @@ RelationshipsGraphEdit.propTypes = {
   hubActions: PropTypes.object,
   searchResults: PropTypes.object,
   search: PropTypes.object,
-  relationTypes: PropTypes.array,
-  parseResults: PropTypes.func,
-  addHub: PropTypes.func,
-  updateLeftRelationshipType: PropTypes.func,
-  updateRightRelationshipType: PropTypes.func,
-  toggelRemoveLeftRelationship: PropTypes.func,
-  toggleRemoveRightRelationshipGroup: PropTypes.func,
-  setAddToData: PropTypes.func,
-  toggleRemoveEntity: PropTypes.func,
-  openAddEntitiesPanel: PropTypes.func,
-  selectConnection: PropTypes.func
+  relationTypes: PropTypes.array.isRequired,
+  parseResults: PropTypes.func.isRequired,
+  addHub: PropTypes.func.isRequired,
+  updateLeftRelationshipType: PropTypes.func.isRequired,
+  updateRightRelationshipType: PropTypes.func.isRequired,
+  toggelRemoveLeftRelationship: PropTypes.func.isRequired,
+  toggleRemoveRightRelationshipGroup: PropTypes.func.isRequired,
+  toggleMoveEntity: PropTypes.func.isRequired,
+  setAddToData: PropTypes.func.isRequired,
+  toggleRemoveEntity: PropTypes.func.isRequired,
+  moveEntities: PropTypes.func.isRequired,
+  openAddEntitiesPanel: PropTypes.func.isRequired,
+  selectConnection: PropTypes.func.isRequired
 };
 
 const selectRelationTypes = createSelector(
@@ -316,6 +323,8 @@ function mapDispatchToProps(dispatch) {
     toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
     setAddToData: actions.setAddToData,
     toggleRemoveEntity: actions.toggleRemoveEntity,
+    moveEntities: actions.moveEntities,
+    toggleMoveEntity: actions.toggleMoveEntity,
     openAddEntitiesPanel: uiActions.openPanel
   }, dispatch);
 }

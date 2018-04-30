@@ -457,6 +457,11 @@ $relationship-type-height: 32px;
     left: -25px;
   }
 
+  &.moving {
+    border: 1px solid $c-success;
+    color: $c-success;
+  }
+
   .rightRelationship &,
   .removeRightRelationshipGroup & {
     right: -25px;
@@ -647,6 +652,10 @@ $relationship-type-height: 32px;
 
   &.deleted {
     opacity: 0.3;
+  }
+
+  &.move .item {
+    box-shadow: 4px 3px 20px 0px $c-grey;
   }
 }
 
