@@ -1,12 +1,14 @@
 import mongoose from 'mongoose';
+
 import instanceModel from 'api/odm';
 
 const entitySchema = new mongoose.Schema({
-  language: {type: String, index: true},
-  sharedId: {type: String, index: true},
+  language: { type: String, index: true },
+  mongoLanguage: { type: String, select: false },
+  sharedId: { type: String, index: true },
   type: String,
-  title: {type: String, text: true},
-  template: {type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true},
+  title: String,
+  template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
   file: {
     originalname: String,
     filename: String,
@@ -14,7 +16,7 @@ const entitySchema = new mongoose.Schema({
     size: Number,
     language: String
   },
-  fullText: {type: mongoose.Schema.Types.Mixed, select: false},
+  fullText: { type: mongoose.Schema.Types.Mixed, select: false },
   icon: new mongoose.Schema({
     _id: String,
     label: String,
@@ -40,8 +42,36 @@ const entitySchema = new mongoose.Schema({
   published: Boolean,
   metadata: mongoose.Schema.Types.Mixed,
   pdfInfo: mongoose.Schema.Types.Mixed,
-  user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'}
-});
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' }
+}, { emitIndexErrors: true });
 
-let schema = mongoose.model('entities', entitySchema);
-export default instanceModel(schema);
+entitySchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
+
+const schema = mongoose.model('entities', entitySchema);
+const Model = instanceModel(schema);
+
+const { save } = Model;
+const unsuportedLanguages = ['ar'];
+
+const setMongoLanguage = (doc) => {
+  if (!doc.language) {
+    return doc;
+  }
+
+  let mongoLanguage = doc.language;
+  if (unsuportedLanguages.includes(doc.language)) {
+    mongoLanguage = 'none';
+  }
+
+  return Object.assign({}, doc, { mongoLanguage });
+};
+
+Model.save = (data) => {
+  if (Array.isArray(data)) {
+    return save(data.map(setMongoLanguage));
+  }
+
+  return save(setMongoLanguage(data));
+};
+
+export default Model;

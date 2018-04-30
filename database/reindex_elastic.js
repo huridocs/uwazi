@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-import connect from './connect_to_mongo';
+import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import request from '../app/shared/JSONRequest';
 import search from '../app/api/search/search';
 import elasticMapping from './elastic_mapping';
@@ -56,6 +55,6 @@ connect()
     const end = Date.now();
     process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
     process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
-    mongoose.disconnect();
+    return disconnect();
   });
 });
