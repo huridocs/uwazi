@@ -25,6 +25,7 @@ const mapStateToProps = (state, props) => {
     references: library.sidepanel.references,
     tab: library.sidepanel.tab,
     docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
+    searchTerm: library.search.searchTerm,
     formDirty: !library.sidepanel.metadataForm.$form.pristine,
     templates: getTemplates(state),
     formPath: `${props.storeKey}.sidepanel.metadata`,
