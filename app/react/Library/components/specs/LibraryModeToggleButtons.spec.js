@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'Immutable';
+import Immutable from 'immutable';
 import { I18NLink } from 'app/I18N';
 
 import { LibraryModeToggleButtons, mapStateToProps } from '../LibraryModeToggleButtons';
