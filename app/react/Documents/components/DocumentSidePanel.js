@@ -1,16 +1,16 @@
-import {Tabs, TabLink, TabContent} from 'react-tabs-redux';
-import {browserHistory} from 'react-router';
-import {connect} from 'react-redux';
-import Immutable, {fromJS} from 'immutable';
+import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
+import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
+import Immutable, { fromJS } from 'immutable';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-import {MetadataFormButtons, ShowMetadata} from 'app/Metadata';
-import {NeedAuthorization} from 'app/Auth';
-import {t} from 'app/I18N';
+import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
+import { NeedAuthorization } from 'app/Auth';
+import { t } from 'app/I18N';
 import AttachmentsList from 'app/Attachments/components/AttachmentsList';
 import Connections from 'app/Viewer/components/ConnectionsList';
-import {ConnectionsGroups} from 'app/ConnectionsList';
+import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 
@@ -21,14 +21,15 @@ import SnippetsTab from './SnippetsTab';
 import * as viewerModule from 'app/Viewer';
 
 export class DocumentSidePanel extends Component {
-
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
   }
 
-  selectTab(tabSelected) {
-    this.props.showTab(tabSelected);
+  componentWillReceiveProps(newProps) {
+    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
+      this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
+    }
   }
 
   deleteDocument() {
@@ -48,10 +49,8 @@ export class DocumentSidePanel extends Component {
     });
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.doc.get('_id') && newProps.doc.get('_id') !== this.props.doc.get('_id') && this.props.getDocumentReferences) {
-      this.props.getDocumentReferences(newProps.doc.get('sharedId'), this.props.storeKey);
-    }
+  selectTab(tabSelected) {
+    this.props.showTab(tabSelected);
   }
 
   close() {
@@ -71,8 +70,8 @@ export class DocumentSidePanel extends Component {
   }
 
   render() {
-    const {doc, docBeingEdited, DocumentForm, readOnly, references, EntityForm,
-           connectionsGroups, isTargetDoc, excludeConnectionsTab} = this.props;
+    const { doc, docBeingEdited, DocumentForm, readOnly, references, EntityForm,
+           connectionsGroups, isTargetDoc, excludeConnectionsTab } = this.props;
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
@@ -81,78 +80,77 @@ export class DocumentSidePanel extends Component {
 
     const docType = this.props.doc.get('type');
 
-    let tab = this.props.tab || 'metadata';
+    let { tab } = this.props;
     if (docType === 'entity' && (tab === 'references' || tab === 'toc')) {
       tab = 'metadata';
     }
 
-    // Duplicated code from EntityViewer, check if it merits an abstraction
     const summary = connectionsGroups.reduce((summaryData, g) => {
-      g.get('templates').forEach(template => {
+      g.get('templates').forEach((template) => {
         summaryData.totalConnections += template.get('count');
       });
       return summaryData;
-    }, {totalConnections: 0});
+    }, { totalConnections: 0 });
 
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
           <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
-          <Tabs selectedTab={tab} renderActiveTabContentOnly={true} handleSelect={this.selectTab}>
+          <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
               {(() => {
                 if (docType !== 'entity') {
-                  return <li>
+                  return (<li>
                     <TabLink to="text-search">
                       <SnippetsTab storeKey={this.props.storeKey} />
                     </TabLink>
-                  </li>;
+                          </li>);
                 }
               })()}
               {(() => {
                 if (docType !== 'entity') {
-                  return <li>
+                  return (<li>
                     <TabLink to="toc">
-                      <i className="fa fa-font"></i>
+                      <i className="fa fa-font" />
                       <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
                     </TabLink>
-                  </li>;
+                          </li>);
                 }
                 return <span/>;
               })()}
               {(() => {
                 if (docType !== 'entity') {
-                  return <li>
+                  return (<li>
                     <TabLink to="references">
-                      <i className="fa fa-sitemap"></i>
+                      <i className="fa fa-sitemap" />
                       <span className="connectionsNumber">{references.size}</span>
                       <span className="tab-link-tooltip">{t('System', 'References')}</span>
                     </TabLink>
-                  </li>;
+                          </li>);
                 }
                 return <span/>;
               })()}
               {(() => {
                 if (docType !== 'entity') {
-                  return <li className="tab-separator"></li>;
+                  return <li className="tab-separator" />;
                 }
                 return <span/>;
               })()}
               <li>
                 <TabLink to="metadata" default>
-                  <i className="fa fa-info-circle"></i>
+                  <i className="fa fa-info-circle" />
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
               {(() => {
                 if (!isTargetDoc && !excludeConnectionsTab) {
-                  return <li>
-                          <TabLink to="connections">
-                            <i className="fa fa-exchange"></i>
-                            <span className="connectionsNumber">{summary.totalConnections}</span>
-                            <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                          </TabLink>
-                         </li>;
+                  return (<li>
+                    <TabLink to="connections">
+                      <i className="fa fa-exchange" />
+                      <span className="connectionsNumber">{summary.totalConnections}</span>
+                      <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                    </TabLink>
+                  </li>);
                 }
               })()}
             </ul>
@@ -175,7 +173,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-                <i className="fa fa-save"></i>
+                <i className="fa fa-save" />
                 <span className="btn-label">Save</span>
               </button>
             </div>
@@ -186,7 +184,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
-                <i className="fa fa-pencil"></i>
+                <i className="fa fa-pencil" />
                 <span className="btn-label">Edit</span>
               </button>
             </div>
@@ -224,14 +222,16 @@ export class DocumentSidePanel extends Component {
 
                 return (
                   <div>
-                    <ShowMetadata entity={this.props.doc.toJS()} showTitle={true} showType={true} />
-                    <AttachmentsList files={fromJS(attachments)}
+                    <ShowMetadata entity={this.props.doc.toJS()} showTitle showType />
+                    <AttachmentsList
+                      files={fromJS(attachments)}
                       readOnly={false}
                       isTargetDoc={isTargetDoc}
                       isDocumentAttachments={Boolean(doc.get('file'))}
                       parentId={doc.get('_id')}
                       parentSharedId={doc.get('sharedId')}
-                      storeKey={this.props.storeKey}/>
+                      storeKey={this.props.storeKey}
+                    />
                   </div>
                 );
               })()}
@@ -253,42 +253,50 @@ export class DocumentSidePanel extends Component {
   }
 }
 
+DocumentSidePanel.defaultProps = {
+  tab: 'metadata',
+  open: false,
+  tocBeingEdited: false,
+  docBeingEdited: false,
+  searchTerm: '',
+  references: Immutable.fromJS([]),
+  tocFormState: {},
+  formDirty: false,
+  isTargetDoc: false,
+  readOnly: false,
+  getDocumentReferences: undefined
+};
+
 DocumentSidePanel.propTypes = {
-  doc: PropTypes.object,
-  metadata: PropTypes.object,
+  doc: PropTypes.instanceOf(Object).isRequired,
   EntityForm: PropTypes.func,
   tocFormComponent: PropTypes.func,
   DocumentForm: PropTypes.func,
   formDirty: PropTypes.bool,
-  formPath: PropTypes.string,
+  formPath: PropTypes.string.isRequired,
   searchTerm: PropTypes.string,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
   tocBeingEdited: PropTypes.bool,
-  showTab: PropTypes.func,
+  showTab: PropTypes.func.isRequired,
   tab: PropTypes.string,
-  saveDocument: PropTypes.func,
-  startNewConnection: PropTypes.func,
-  closePanel: PropTypes.func,
-  showModal: PropTypes.func,
-  deleteDocument: PropTypes.func,
-  resetForm: PropTypes.func,
-  connectionsGroups: PropTypes.instanceOf(Immutable.List),
+  closePanel: PropTypes.func.isRequired,
+  deleteDocument: PropTypes.func.isRequired,
+  resetForm: PropTypes.func.isRequired,
+  connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
   references: PropTypes.instanceOf(Immutable.List),
-  connections: PropTypes.instanceOf(Immutable.List),
-  tocFormState: PropTypes.object,
+  tocFormState: PropTypes.instanceOf(Object),
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
   editToc: PropTypes.func,
+  searchSnippets: PropTypes.func,
   getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
-  searchSnippets: PropTypes.func,
   isTargetDoc: PropTypes.bool,
   readOnly: PropTypes.bool,
-  hasRelationTypes: PropTypes.bool,
-  excludeConnectionsTab: PropTypes.bool,
-  storeKey: PropTypes.string
+  excludeConnectionsTab: PropTypes.bool.isRequired,
+  storeKey: PropTypes.string.isRequired
 };
 
 DocumentSidePanel.contextTypes = {
@@ -308,8 +316,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
-    connectionsGroups: state.relationships.list.connectionsGroups,
-    hasRelationTypes: !!state.relationTypes.size
+    connectionsGroups: state.relationships.list.connectionsGroups
   };
 };
 

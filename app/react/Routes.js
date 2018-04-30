@@ -45,9 +45,9 @@ import NewRelationType from 'app/RelationTypes/NewRelationType';
 import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
-
-import { store } from './store';
+import LibraryMap from 'app/Library/LibraryMap';
 import { trackPage } from 'app/App/GoogleAnalytics';
+import { store } from './store';
 
 function onEnter() {
   trackPage();
@@ -109,6 +109,7 @@ const routes =
       <Route path="filters" component={FiltersForm} />
     </Route>
     <Route path="library" component={Library} onEnter={onEnter}/>
+    <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />

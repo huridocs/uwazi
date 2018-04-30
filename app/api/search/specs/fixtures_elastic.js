@@ -29,7 +29,14 @@ export default {
       title: 'metadata1',
       published: true,
       user: userId,
-      metadata: { field1: 'joker', field2: 'bane', select1: 'selectValue1', multiselect1: ['multiValue1', 'multiValue2'], nestedField: [{ nested1: ['1', '2', '3'] }] }
+      metadata: {
+        field1: 'joker',
+        field2: 'bane',
+        select1: 'selectValue1',
+        multiselect1: ['multiValue1', 'multiValue2'],
+        nestedField: [{ nested1: ['1', '2', '3'] }],
+        city_geolocation: { lat: 1, lon: 2 }
+      }
     },
     {
       _id: db.id(),
@@ -39,7 +46,7 @@ export default {
       title: 'metadata1 es',
       published: true,
       user: userId,
-      metadata: { field1: 'joker', field2: 'bane' }
+      metadata: { field1: 'joker', field2: 'bane', city_geolocation: { lat: 1, lon: 2 } },
     },
     {
       _id: db.id(),
@@ -69,7 +76,13 @@ export default {
       title: ' Metadáta4',
       published: true,
       user: userId,
-      metadata: { field1: 'bane', field3: 'penguin', select1: 'selectValue2', multiselect1: ['multiValue2'], nestedField: [{ nested1: ['3', '4', '5'] }] }
+      metadata: {
+        field1: 'bane',
+        field3: 'penguin',
+        select1: 'selectValue2',
+        multiselect1: ['multiValue2'],
+        nestedField: [{ nested1: ['3', '4', '5'] }],
+        country_geolocation: { lat: 1, lon: 2 } }
     },
     {
       _id: db.id(),
@@ -79,17 +92,12 @@ export default {
       title: 'metadata5',
       published: true,
       user: userId,
-      metadata: { field1: 'penguin', field3: 'joker', nestedField: [{ nested1: ['5', '6', '7'] }] }
-    },
-    {
-      _id: db.id(),
-      sharedId: 'Metdata6',
-      template: templateMetadata1,
-      language: 'en',
-      title: 'Metdata6',
-      published: true,
-      user: userId,
-      metadata: { select1: '', multiselect1: [] }
+      metadata: {
+        field1: 'penguin',
+        field3: 'joker',
+        nestedField: [{ nested1: ['5', '6', '7'] }],
+        country_geolocation: { lat: 1, lon: 2 }
+      }
     },
     { _id: db.id(), sharedId: 'missingTemplate', language: 'en', title: 'missingTemplate', published: true, user: userId },
     { _id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: 'unpublished document', published: false, user: userId, metadata: { field1: 'joker' } },
@@ -109,7 +117,8 @@ export default {
         { name: 'field2', type: 'text' },
         { name: 'select1', type: 'select' },
         { name: 'multiselect1', type: 'multiselect' },
-        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'] }
+        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'] },
+        { name: 'city_geolocation', type: 'geolocation' }
       ]
     },
     {
@@ -119,37 +128,38 @@ export default {
         { name: 'field3', type: 'text' },
         { name: 'select1', type: 'select' },
         { name: 'multiselect1', type: 'multiselect' },
-        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'] }
+        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'] },
+        { name: 'country_geolocation', type: 'geolocation' }
       ]
     }
   ],
-  dictionaries: [
-    {
-      name: 'Contries Dcitionary',
-      values: [
-        {
-          label: 'Egypt',
-          id: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'
-        },
-        {
-          label: 'Chile',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
-        },
-        {
-          label: 'Egypto',
-          id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
-        }
-      ]
-    }
+    dictionaries: [
+      {
+        name: 'Contries Dcitionary',
+        values: [
+          {
+            label: 'Egypt',
+            id: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'
+          },
+          {
+            label: 'Chile',
+            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+          },
+          {
+            label: 'Egypto',
+            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+          }
+        ]
+      }
   ]
 };
 
 export const ids = {
-  batmanBegins,
-  batmanFinishes,
-  userId,
-  template1: template1.toString(),
-  template2: template2.toString(),
-  templateMetadata1: templateMetadata1.toString(),
-  templateMetadata2: templateMetadata2.toString()
+    batmanBegins,
+    batmanFinishes,
+    userId,
+    template1: template1.toString(),
+    template2: template2.toString(),
+    templateMetadata1: templateMetadata1.toString(),
+    templateMetadata2: templateMetadata2.toString()
 };
