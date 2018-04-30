@@ -53,24 +53,25 @@ const Model = instanceModel(schema);
 const { save } = Model;
 const unsuportedLanguages = ['ar'];
 
-Model.save = (data) => {
-  let docs = data;
-  if (!Array.isArray(docs)) {
-    docs = [docs];
+const setMongoLanguage = (doc) => {
+  if (!doc.language) {
+    return doc;
   }
 
-  return save(docs.map((doc) => {
-    let mongoLanguage = doc.language;
-    if (unsuportedLanguages.includes(doc.language)) {
-      mongoLanguage = 'none';
-    }
+  let mongoLanguage = doc.language;
+  if (unsuportedLanguages.includes(doc.language)) {
+    mongoLanguage = 'none';
+  }
 
-    if (mongoLanguage) {
-      return Object.assign({}, doc, { mongoLanguage });
-    }
+  return Object.assign({}, doc, { mongoLanguage });
+};
 
-    return doc;
-  }));
+Model.save = (data) => {
+  if (Array.isArray(data)) {
+    return save(data.map(setMongoLanguage));
+  }
+
+  return save(setMongoLanguage(data));
 };
 
 export default Model;
