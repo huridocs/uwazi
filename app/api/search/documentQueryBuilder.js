@@ -75,69 +75,74 @@ export default function () {
     },
 
     fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
-      if (term) {
-        const should = [];
+      if (!term) {
+        return this;
+      }
+      const should = [];
+      const includeFullText = fieldsToSearch.includes('fullText');
+      const fields = fieldsToSearch.filter(field => field !== 'fullText');
 
-        const includeFullText = fieldsToSearch.find(field => field === 'fullText');
-        const fields = fieldsToSearch.filter(field => field !== 'fullText');
-
-        if (fields.length) {
-          should.push({
+      if (fields.length) {
+        should.push({
             multi_match: {
               query: term,
               type: 'phrase_prefix',
               fields,
               boost: 6
-            }
-          });
-        }
+          }
+        });
+      }
 
-        if (includeFullText) {
-          should.unshift(
-            {
-              has_child: {
-                type: 'fullText',
-                score_mode: 'max',
-                inner_hits: {
-                  _source: false,
-                  highlight: {
-                    order: 'score',
-                    pre_tags: ['<b>'],
-                    post_tags: ['</b>'],
-                    fields: {
-                      'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
-                    }
+      if (includeFullText) {
+        should.unshift(
+          {
+            has_child: {
+              type: 'fullText',
+              score_mode: 'max',
+              inner_hits: {
+                _source: false,
+                highlight: {
+                  order: 'score',
+                  pre_tags: ['<b>'],
+                  post_tags: ['</b>'],
+                  fields: {
+                    'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
                   }
-                },
-                query: {
-                  bool: {
-                    should: [
-                      {
-                        multi_match: {
-                          query: term,
-                          type: 'best_fields',
-                          fuzziness: 0,
-                          fields: ['fullText*']
-                        }
-                      },
-                      {
-                        multi_match: {
-                          query: term,
-                          type: 'phrase_prefix',
-                          fields: ['fullText*'],
-                          boost: 3
-                        }
+                }
+              },
+              query: {
+                bool: {
+                  should: [
+                    {
+                      multi_match: {
+                        query: term,
+                        type: 'best_fields',
+                        fuzziness: 0,
+                        fields: ['fullText*']
                       }
-                    ]
-                  }
+                    },
+                    {
+                      multi_match: {
+                        query: term,
+                        type: 'phrase_prefix',
+                        fields: ['fullText*'],
+                        boost: 3
+                      }
+                    }
+                  ]
                 }
               }
             }
-          );
-        }
-
-        addFullTextFilter({ bool: { should } });
+          }
+        );
       }
+
+      addFullTextFilter({ bool: { should } });
+      return this;
+    },
+
+    select(fields) {
+      baseQuery._source.include = fields;
       return this;
     },
 
@@ -170,6 +175,13 @@ export default function () {
       return this;
     },
 
+    hasMetadataProperties(fieldNames) {
+      const match = { bool: { should: [] } };
+      match.bool.should = fieldNames.map(field => ({ exists: { field: `metadata.${field}` } }));
+      addFilter(match);
+      return this;
+    },
+
     textFilter(filter) {
       const match = { match: {} };
       match.match[`metadata.${filter.name}`] = filter.value;
@@ -184,9 +196,39 @@ export default function () {
 
     multiselectFilter(filter) {
       const filterValue = filter.value;
-      const values = filterValue.values;
-      let match = { terms: {} };
-      match.terms[`metadata.${filter.name}.raw`] = values;
+      const { values } = filterValue;
+      let match;
+      if (values.includes('missing') && !filterValue.and) {
+        const _values = values.filter(v => v !== 'missing');
+        match = {
+          bool: {
+            should: [
+              {
+                bool: {
+                  must_not: [
+                    {
+                      exists: {
+                        field: `metadata.${filter.name}.raw`
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                terms: {
+                }
+              }
+            ]
+          }
+        };
+        match.bool.should[1].terms[`metadata.${filter.name}.raw`] = _values;
+        baseQuery.query.bool.filter.push(match);
+        return this;
+      }
+      if (!values.includes('missing') && !filterValue.and) {
+        match = { terms: {} };
+        match.terms[`metadata.${filter.name}.raw`] = values;
+      }
 
       if (filterValue.and) {
         match = { bool: { must: [] } };
@@ -196,7 +238,6 @@ export default function () {
           return m;
         });
       }
-
       return match;
     },
 
@@ -267,8 +308,7 @@ export default function () {
 
       const keys = Object.keys(properties).filter(key => properties[key].any ||
           properties[key].values && properties[key].values.length);
-
-      match.bool.must = keys.map((key) => {
+      const nestedMatchers = keys.map((key) => {
         let nestedmatch;
         if (properties[key].any) {
           nestedmatch = {
@@ -287,10 +327,9 @@ export default function () {
           return nestedmatch;
         }
 
-
-        nestedmatch = { bool: { must: [] } };
-
-        nestedmatch.bool.must = properties[key].values.map((val) => {
+        const matchers = properties[key].values
+        .filter(val => val !== 'missing')
+        .map((val) => {
           const _match = {
             nested: {
               path: `metadata.${filter.name}`,
@@ -306,9 +345,30 @@ export default function () {
           _match.nested.query.bool.must[0].term[`metadata.${filter.name}.${key}.raw`] = val;
           return _match;
         });
-        return nestedmatch;
+
+        if (properties[key].values.includes('missing')) {
+          matchers.push({
+            nested: {
+              path: `metadata.${filter.name}`,
+              query: {
+                bool: {
+                  must_not: [
+                    {
+                      exists: {
+                        field: `metadata.${filter.name}.${key}.raw`
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          });
+        }
+
+        return matchers;
       });
 
+      match.bool.must = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
       return match;
     },
 
@@ -371,6 +431,7 @@ export default function () {
       return {
         terms: {
           field: key,
+          missing: 'missing',
           size: 9999
         },
         aggregations: {
@@ -404,8 +465,12 @@ export default function () {
         const filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
           if (match.bool && match.bool.must && match.bool.must[0] && match.bool.must[0].nested) {
             match.bool.must = match.bool.must.filter(nestedMatcher => !nestedMatcher.nested ||
+              !nestedMatcher.nested.query.bool.must ||
               !nestedMatcher.nested.query.bool.must[0].terms ||
-              !nestedMatcher.nested.query.bool.must[0].terms[path]);
+              !nestedMatcher.nested.query.bool.must[0].terms[path] ||
+              !nestedMatcher.nested.query.bool.must_not ||
+              !nestedMatcher.nested.query.bool.must_not[0].exists ||
+              !nestedMatcher.nested.query.bool.must[0].exists.field[path]);
 
             if (!match.bool.must.length) {
               return;
@@ -417,6 +482,7 @@ export default function () {
         nestedAggregation.aggregations[prop] = {
           terms: {
             field: path,
+            missing: 'missing',
             size: 9999
           },
           aggregations: {
@@ -452,7 +518,9 @@ export default function () {
     aggregations(properties) {
       properties.forEach((property) => {
         const path = `metadata.${property.name}.raw`;
-        let filters = baseQuery.query.bool.filter.filter(match => match && (!match.terms || match.terms && !match.terms[path]));
+        let filters = baseQuery.query.bool.filter.filter(match => match &&
+          (!match.terms || match.terms && !match.terms[path]) &&
+          (!match.bool || !match.bool.should || !match.bool.should[1].terms[path]));
         filters = filters.concat(baseQuery.query.bool.must);
 
         const { should } = baseQuery.query.bool;

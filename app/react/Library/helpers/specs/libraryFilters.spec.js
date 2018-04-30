@@ -110,17 +110,28 @@ describe('library helper', () => {
       const aggregations = {
         all: {
           country: {
-            buckets: [{
-              key: 1,
-              doc_count: 4,
-              filtered: { doc_count: 2 }
-            }]
+            buckets: [
+              {
+                key: 1,
+                doc_count: 4,
+                filtered: { doc_count: 2 }
+              },
+              {
+                key: 'missing',
+                doc_count: 3,
+                filtered: { doc_count: 2 }
+              }
+            ]
           }
         }
       };
 
       const populatedFilters = libraryHelper.parseWithAggregations(filters, aggregations);
-      expect(populatedFilters[0].options).toEqual([{ id: 1, value: 'value1', results: 2 }, { id: 2, value: 'value2', results: 0 }]);
+      expect(populatedFilters[0].options).toEqual([
+        { id: 1, value: 'value1', results: 2 },
+        { id: 2, value: 'value2', results: 0 },
+        { id: 'missing', label: 'No Value', results: 2 }
+      ]);
     });
   });
 });

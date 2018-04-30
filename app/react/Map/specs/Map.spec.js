@@ -6,6 +6,7 @@ import Map from '../Map';
 
 describe('Map', () => {
   let component;
+  let instance;
   let props;
   let markers;
   beforeEach(() => {
@@ -22,6 +23,7 @@ describe('Map', () => {
 
   const render = () => {
     component = shallow(<Map {...props} />);
+    instance = component.instance();
     markers = component.find(Marker);
   };
 
@@ -34,7 +36,7 @@ describe('Map', () => {
       const reactMap = component.find(ReactMapGL);
       expect(reactMap.props().latitude).toBe(103);
       expect(reactMap.props().longitude).toBe(-63);
-      expect(reactMap.props().onClick).toBe(props.onClick);
+      expect(reactMap.props().onClick).toBe(instance.onClick);
     });
 
     it('should render a NavigationControl', () => {
@@ -56,6 +58,28 @@ describe('Map', () => {
       props.renderMarker = (marker, onClick) => (<div className="custom-class" onClick={onClick}/>);
       render();
       expect(firstMarker().find('div').hasClass('custom-class')).toBe(true);
+    });
+
+    describe('when clustering', () => {
+      it('should not render any marker', () => {
+        props.cluster = true;
+        render();
+        expect(markers.length).toBe(0);
+      });
+    });
+  });
+
+  describe('updateDataSource', () => {
+    it('should update the clusters data layer of the map style', () => {
+      props.cluster = true;
+      render();
+      const { mapStyle } = component.find(ReactMapGL).props();
+      const markersData = mapStyle.getIn(['sources', 'markers', 'data', 'features']);
+      expect(markersData.length).toBe(2);
+      expect(markersData[0].properties.index).toBe(0);
+      expect(markersData[0].geometry.coordinates).toEqual([32, 2]);
+      expect(markersData[1].properties.index).toBe(1);
+      expect(markersData[1].geometry.coordinates).toEqual([21, 23]);
     });
   });
 
@@ -85,8 +109,8 @@ describe('Map', () => {
 
     describe('when the width is too tight', () => {
       it('should give at least 240px', () => {
-        component.instance().container = { style: {}, offsetWidth: 50, childNodes: [{ style: {} }] };
-        component.instance().setSize();
+        instance.container = { style: {}, offsetWidth: 50, childNodes: [{ style: {} }] };
+        instance.setSize();
         expect(component.state().viewport.width).toBe(240);
         expect(component.state().viewport.height).toBe(144);
       });
@@ -129,10 +153,25 @@ describe('Map', () => {
     });
   });
 
+  describe('click on the map', () => {
+    beforeEach(render);
+
+    it('should call props.onClick with the event', () => {
+      instance.onClick({ lngLat: [1, 2], features: [] });
+      expect(props.onClick).toHaveBeenCalledWith({ lngLat: [1, 2], features: [] });
+    });
+
+    describe('when clicking over a cluster marker', () => {
+      it('should call props.clickOnMarker with the marker', () => {
+        const featureClicked = { layer: { id: 'unclustered-point' }, properties: { index: 2 } };
+        instance.onClick({ lngLat: [1, 2], features: [featureClicked] });
+        expect(props.clickOnMarker).toHaveBeenCalledWith(props.markers[2]);
+      });
+    });
+  });
+
   describe('componentWillReceiveProps()', () => {
     it('should update the viewport with the markers, latitude and longitude', () => {
-      render();
-      const instance = component.instance();
       instance.componentWillReceiveProps({ latitude: 73, longitude: 23, markers: [] });
       component.update();
       const { viewport } = component.state();

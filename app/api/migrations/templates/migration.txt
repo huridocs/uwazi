@@ -1,0 +1,12 @@
+export default {
+  delta: {{ nextMigrationDelta }},
+
+  name: '{{ name }}',
+
+  description: '{{ description }}',
+
+  up() {
+    process.stdout.write(`${this.name}...\r\n`);
+    return Promise.reject();
+  }
+};

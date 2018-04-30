@@ -56,6 +56,22 @@ function agregationProperties(properties) {
   });
 }
 
+function searchGeolocation(documentsQuery, filteringTypes, templates) {
+  documentsQuery.limit(9999);
+  const geolocationProperties = [];
+  templates.forEach((template) => {
+    template.properties.forEach((prop) => {
+      if (prop.type === 'geolocation') {
+        geolocationProperties.push(prop.name);
+      }
+    });
+  });
+  documentsQuery.hasMetadataProperties(geolocationProperties);
+  const selectProps = geolocationProperties.map(p => `metadata.${p}`)
+  .concat(['title', 'template', 'sharedId', 'language']);
+  documentsQuery.select(selectProps);
+}
+
 const search = {
   search(query, language, user) {
     let searchEntitiesbyTitle = Promise.resolve([]);
@@ -111,6 +127,10 @@ const search = {
       documentsQuery.filterMetadataByFullText(textSearchFilters);
       documentsQuery.filterMetadata(filters);
       documentsQuery.aggregations(aggregations);
+
+      if (query.geolocation) {
+        searchGeolocation(documentsQuery, filteringTypes, templates);
+      }
 
       return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
       .then((response) => {

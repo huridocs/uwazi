@@ -63,6 +63,7 @@ export function parseWithAggregations(filters, aggregations) {
   return filters.map((_property) => {
     const property = Object.assign({}, _property);
     if (property.options && property.options.length) {
+      property.options.push({ id: 'missing', label: 'No Value' });
       property.options = property.options.map(option => Object.assign(option, {
         results: getOptionCount(aggregations, option.id, property.name)
       }));

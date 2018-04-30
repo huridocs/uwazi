@@ -36,6 +36,11 @@ Intallation guide
 - **MongoDB 3.4.x** https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
 - **Yarn** https://yarnpkg.com/en/docs/install
 
+Before anything else you will need to install the application dependencies running:
+```
+$ yarn install
+```
+
 # Production
 
 ### Production Configuration (advanced)
