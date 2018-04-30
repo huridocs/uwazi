@@ -99,7 +99,7 @@ export class RelationshipsGraphEdit extends Component {
                 <div className="removeHub">
                   <i
                     onClick={this.toggelRemoveLeftRelationship(index)}
-                    className={`relationships-removeIcon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
+                    className={`relationships-icon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
                   />
                 </div>
               )}
@@ -179,7 +179,7 @@ export class RelationshipsGraphEdit extends Component {
                           if (rightRelationship.has('template')) {
                             return (<i
                               onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
-                              className={`relationships-removeIcon fa
+                              className={`relationships-icon fa
                                                   ${!rightRelationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
                             />);
                           }
@@ -206,7 +206,15 @@ export class RelationshipsGraphEdit extends Component {
                           <div className="removeEntity">
                             <i
                               onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                              className={`relationships-removeIcon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
+                              className={`relationships-icon fa ${!relationship.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
+                            />
+                          </div>
+                        )}
+                        {this.editingSelector(null,
+                          <div className="moveEntity">
+                            <i
+                              onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                              className="relationships-icon fa fa-sign-out"
                             />
                           </div>
                         )}
@@ -225,6 +233,12 @@ export class RelationshipsGraphEdit extends Component {
                               <span>Add entities / documents</span>
                               <i className="fa fa-plus" />
                             </button>
+                            <div className="insertEntities">
+                              <i
+                                onClick={this.toggleRemoveEntity(index, rightRelationshipIndex)}
+                                className="relationships-icon fa fa-sign-out"
+                              />
+                            </div>
                           </div>
                         );
                       }

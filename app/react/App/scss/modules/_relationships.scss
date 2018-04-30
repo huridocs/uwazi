@@ -440,7 +440,7 @@ $relationship-type-height: 32px;
   }
 }
 
-.relationships-removeIcon {
+.relationships-icon {
   position: absolute;
   border: 1px solid $c-grey;
   color: $c-grey;
@@ -461,6 +461,21 @@ $relationship-type-height: 32px;
   .removeRightRelationshipGroup & {
     right: -25px;
   }
+}
+
+.insertEntities, .relationships-new {
+  float: left;
+}
+
+.insertEntities {
+  position: relative;
+  right: -8px;
+  top: 6px;
+}
+
+.moveEntity {
+  top: 20px;
+  position: relative;
 }
 
 .relationshipsParent,
@@ -666,6 +681,7 @@ $relationship-type-height: 32px;
 .rightRelationshipAdd {
   width: 100%;
   margin-top: 10px;
+  display: inline-block;
 }
 
 .relationships-new {
