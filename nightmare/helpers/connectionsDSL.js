@@ -64,6 +64,31 @@ Nightmare.action('connections', {
     .then(done)
     .catch(done);
   },
+  clickMoveRelationButton(matchingTitle, done) {
+    this.evaluate_now((term) => {
+      const helpers = document.__helpers;
+      const relations = helpers.querySelectorAll('.rightRelationship');
+      relations.forEach((relation) => {
+        if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
+          helpers.querySelector('.moveEntity i', relation).click();
+        }
+      });
+    }, done, matchingTitle)
+    .catch(done);
+  },
+  clickMoveToGroupButton(groupIndex, done) {
+    this.evaluate_now((index) => {
+      const helpers = document.__helpers;
+      helpers.querySelectorAll('.insertEntities i')[index].click();
+    }, done, groupIndex)
+    .catch(done);
+  },
+  moveRelationship(matchingTitle, relationGtoupIndex, done) {
+    this.connections.clickMoveRelationButton(matchingTitle)
+    .connections.clickMoveToGroupButton(relationGtoupIndex)
+    .then(done)
+    .catch(done);
+  },
   selectLeftHandRelation(optionSelector, number, done) {
     this.evaluate((option, relationshipNumber) => {
       const helpers = document.__helpers;
@@ -122,7 +147,7 @@ Nightmare.action('connections', {
   clickRemoveRelationButton(matchingTitle, done) {
     this.evaluate_now((term) => {
       const helpers = document.__helpers;
-      let relations = helpers.querySelectorAll('.rightRelationship');
+      const relations = helpers.querySelectorAll('.rightRelationship');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
           helpers.querySelector('.removeEntity i', relation).click();
@@ -134,7 +159,7 @@ Nightmare.action('connections', {
   clickRemoveRelationGroupButton(matchingTitle, done) {
     this.evaluate_now((term) => {
       const helpers = document.__helpers;
-      let relations = helpers.querySelectorAll('.rightRelationshipType');
+      const relations = helpers.querySelectorAll('.rightRelationshipType');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
           relation.nextSibling.querySelector('i').click();
@@ -190,7 +215,7 @@ Nightmare.action('connections', {
   getRelationsObjet(done) {
     this.evaluate_now(() => {
       const helpers = document.__helpers;
-      let result = {};
+      const result = {};
       const hubs = helpers.querySelectorAll('.relationshipsHub');
 
       hubs.forEach((hub, index) => {
@@ -200,9 +225,9 @@ Nightmare.action('connections', {
         }
         result[hubName] = {};
 
-        let rightHandRelations = helpers.querySelectorAll('.rightRelationshipsTypeGroup', hub);
+        const rightHandRelations = helpers.querySelectorAll('.rightRelationshipsTypeGroup', hub);
         rightHandRelations.forEach((relation) => {
-          let relationName = helpers.querySelector('.rw-input', relation).innerText;
+          const relationName = helpers.querySelector('.rw-input', relation).innerText;
           result[hubName][relationName] = [];
           relation.querySelectorAll('.item-name').forEach((item) => {
             result[hubName][relationName].push(item.innerText);

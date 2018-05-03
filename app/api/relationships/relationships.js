@@ -39,7 +39,10 @@ function groupByHubs(references) {
 
 function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   return hubs.reduce((result, hub) => {
-    const allReferencesAreOfTheType = hub.every(reference => reference.entity === entitySharedId || (reference.template && reference.template.toString() === propertyRelationType));
+    const allReferencesAreOfTheType = hub.every(
+      reference => reference.entity === entitySharedId ||
+      (reference.template && reference.template.toString() === propertyRelationType)
+    );
     if (allReferencesAreOfTheType) {
       return hub;
     }
@@ -85,7 +88,6 @@ const conformRelationships = (rows, parentEntitySharedId) => {
     return hubs.set(hub.get('order'), hub.set('rightRelationships', rightRelationships));
   }, fromJS([]));
 };
-// -------------------------------------------------------------
 
 const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
   const hubs = conformRelationships(results.rows, entitySharedId).toJS();
@@ -259,7 +261,8 @@ export default {
     return Promise.all(saveActions.concat(deleteActions))
     .then(bulkResponse => Promise.all(hubsAffected.map(hubid => this.getHub(hubid, language)))
     .then((hubs) => {
-      const entitiesAffected = hubs.reduce((result, hub) => result.concat(hub.map(relationship => relationship.entity)), []).concat(entitiesAffectedByDelete).filter(unique);
+      const entitiesAffected = hubs.reduce((result, hub) => result.concat(hub.map(relationship => relationship.entity)), [])
+      .concat(entitiesAffectedByDelete).filter(unique);
 
       return entities.updateMetdataFromRelationships(entitiesAffected, language)
       .then(() => bulkResponse);
@@ -371,7 +374,10 @@ export default {
       relationships.sort((a, b) => (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString()));
 
       const filter = Object.keys(query.filter).reduce((result, filterGroupKey) => result.concat(query.filter[filterGroupKey]), []);
-      const filteredRelationships = relationships.filter(relationship => !filter.length || filter.includes(relationship.template + relationship.entityData.template));
+      const filteredRelationships = relationships.filter(relationship =>
+        !filter.length ||
+        filter.includes(relationship.template + relationship.entityData.template)
+      );
 
       const ids = filteredRelationships
       .map(relationship => relationship.entity)
@@ -395,7 +401,10 @@ export default {
         if (results.rows.length) {
           let filteredRelationshipsHubs = results.rows.map(item => item.connections.map(relationship => relationship.hub.toString()));
           filteredRelationshipsHubs = Array.prototype.concat(...filteredRelationshipsHubs);
-          entity.connections = relationships.filter(relationship => relationship.entity === entitySharedId && filteredRelationshipsHubs.includes(relationship.hub.toString()));
+          entity.connections = relationships.filter(relationship =>
+            relationship.entity === entitySharedId &&
+            filteredRelationshipsHubs.includes(relationship.hub.toString())
+          );
           results.rows.push(entity);
         }
 

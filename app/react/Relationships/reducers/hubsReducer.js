@@ -102,7 +102,8 @@ export default function (state = initialState, action = {}) {
 
   case types.ADD_RELATIONSHIPS_ENTITY:
     relationship = state.getIn([action.index, 'rightRelationships', action.rightIndex]);
-    relationships = relationship.get('relationships').push(fromJS({ template: relationship.get('template'), entity: action.entity }));
+    relationships = relationship.get('relationships')
+    .push(fromJS({ template: relationship.get('template'), entity: action.entity.sharedId, entityData: action.entity }));
 
     return state.setIn([action.index, 'rightRelationships', action.rightIndex, 'relationships'], relationships);
 
