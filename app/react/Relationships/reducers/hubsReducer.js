@@ -24,9 +24,8 @@ const conformRelationships = (action) => {
         if (!hubsImmutable.getIn([hubId, 'rightRelationships']).has(templateId)) {
           hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId], fromJS([]));
         }
-        const newConnection = connection.set('entity', row.delete('connections'));
         hubsImmutable = hubsImmutable.setIn([hubId, 'rightRelationships', templateId],
-                                            hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(newConnection));
+                                            hubsImmutable.getIn([hubId, 'rightRelationships', templateId]).push(connection));
       }
     });
 
@@ -124,19 +123,19 @@ export default function (state = initialState, action = {}) {
         rightRelationshipGroup.get('relationships')
         .forEach((_relationship, index) => {
           if (_relationship.get('move')) {
-            relationshipsToMove.push(_relationship.remove('move'));
+            relationshipsToMove.push(_relationship.remove('move').remove('_id').remove('sharedId'));
             relationshipsMoved.push({ hubIndex, rightRelationshipsIndex, index });
           }
         });
       });
     });
-    _state = relationshipsMoved.reverse().reduce((result, relationShipMoved) => result.removeIn([
+    _state = relationshipsMoved.reverse().reduce((result, relationShipMoved) => result.setIn([
       relationShipMoved.hubIndex,
       'rightRelationships',
       relationShipMoved.rightRelationshipsIndex,
       'relationships',
-      relationShipMoved.index
-    ]), state);
+      relationShipMoved.index,
+      'moved'], true), state);
     target = _state.getIn([action.index, 'rightRelationships', action.rightRelationshipIndex, 'relationships']);
     return _state.setIn([action.index, 'rightRelationships', action.rightRelationshipIndex, 'relationships'], target.concat(relationshipsToMove));
 

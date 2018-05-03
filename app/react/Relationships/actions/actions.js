@@ -38,8 +38,8 @@ export function setAddToData(index, rightIndex) {
 }
 
 export function updateRightRelationshipType(index, rightIndex, _id) {
-  return function (dispatch, getState) {
-    const hubs = getState().relationships.hubs;
+  return (dispatch, getState) => {
+    const { hubs } = getState().relationships;
     const newRightRelationshipType = rightIndex === hubs.getIn([index, 'rightRelationships']).size - 1;
 
     dispatch({ type: types.UPDATE_RELATIONSHIPS_RIGHT_TYPE, index, rightIndex, _id, newRightRelationshipType });
@@ -52,7 +52,7 @@ export function updateRightRelationshipType(index, rightIndex, _id) {
 }
 
 export function addEntity(index, rightIndex, entity) {
-  return function (dispatch) {
+  return (dispatch) => {
     const title = entity.title.length > 75 ? `${entity.title.slice(0, 75)}(...)` : entity.title;
     dispatch(notify(`${title} added to hub.  Save your work to make change permanent.`, 'success'));
     dispatch({ type: types.ADD_RELATIONSHIPS_ENTITY, index, rightIndex, entity });
@@ -72,17 +72,15 @@ export function moveEntities(index, rightRelationshipIndex) {
 }
 
 export function reloadRelationships(parentEntityId) {
-  return function (dispatch, getState) {
-    return routeUtils.requestState(parentEntityId, getState())
-    .then(([connectionsGroups, searchResults]) => {
-      dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
-      dispatch(actions.set('relationships/list/searchResults', searchResults));
-    });
-  };
+  return (dispatch, getState) => routeUtils.requestState(parentEntityId, getState())
+  .then(([connectionsGroups, searchResults]) => {
+    dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
+    dispatch(actions.set('relationships/list/searchResults', searchResults));
+  });
 }
 
 export function saveRelationships() {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     dispatch({ type: types.SAVING_RELATIONSHIPS });
     const parentEntityId = getState().relationships.list.entityId;
     const hubs = getState().relationships.hubs.toJS();
@@ -93,8 +91,7 @@ export function saveRelationships() {
         const rightRelationships = hubData.rightRelationships.reduce((relationships, rightGroup) => {
           if (!rightGroup.deleted) {
             const newRelationships = rightGroup.relationships
-            .filter(r => !r.deleted)
-            .map(r => Object.assign(r, { entity: r.entity.sharedId }));
+            .filter(r => !r.deleted);
 
             return relationships.concat(newRelationships);
           }
@@ -116,21 +113,19 @@ export function saveRelationships() {
 
         hubData.rightRelationships.forEach((rightGroup) => {
           rightGroup.relationships.forEach((r) => {
-            const deleted = rightGroup.deleted || r.deleted;
+            const deleted = rightGroup.deleted || r.deleted || r.moved;
 
             if (deleted && r._id) {
-              apiActions.delete.push(Object.assign({ _id: r._id, entity: r.entity.sharedId }));
+              apiActions.delete.push(Object.assign({ _id: r._id, entity: r.entity }));
             }
 
             const toSave = rightGroup.modified || !r._id;
-
             if (toSave && !deleted) {
-              apiActions.save.push(Object.assign(r, { entity: r.entity.sharedId, hub: hubData.hub }));
+              apiActions.save.push(Object.assign(r, { entity: r.entity, hub: hubData.hub, template: rightGroup.template }));
             }
           });
         });
       }
-
       return apiActions;
     }, { save: [], delete: [] });
 
@@ -169,7 +164,7 @@ export function immidiateSearch(dispatch, searchTerm) {
 const debouncedSearch = debounce(immidiateSearch, 400);
 
 export function search(searchTerm) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(actions.set('relationships/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm);
   };

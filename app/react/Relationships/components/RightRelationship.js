@@ -1,0 +1,228 @@
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+
+import Doc from 'app/Library/components/Doc';
+import DropdownList from 'app/Forms/components/DropdownList';
+
+import * as actions from '../actions/actions';
+import * as uiActions from '../actions/uiActions';
+
+import HubRelationshipMetadata from './HubRelationshipMetadata';
+
+export class RightRelationship extends Component {
+  constructor(props) {
+    super(props);
+
+    this.updateRightRelationshipType = this.updateRightRelationshipType.bind(this);
+    this.toggleRemoveRightRelationshipGroup = this.toggleRemoveRightRelationshipGroup.bind(this);
+    this.toggleRemoveEntity = this.toggleRemoveEntity.bind(this);
+    this.setAddToData = this.setAddToData.bind(this);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick(e, entity) {
+    this.props.selectConnection(entity);
+  }
+
+  setAddToData(hubIndex, rightRelationshipIndex) {
+    return () => {
+      this.props.setAddToData(hubIndex, rightRelationshipIndex);
+      this.props.openAddEntitiesPanel();
+    };
+  }
+
+  updateRightRelationshipType(index, rightRelationshipIndex) {
+    return (value) => {
+      this.props.updateRightRelationshipType(index, rightRelationshipIndex, value._id);
+    };
+  }
+
+  toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex) {
+    return () => {
+      this.props.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex);
+    };
+  }
+
+  toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex) {
+    return () => {
+      this.props.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex);
+    };
+  }
+
+  render() {
+    const { hub, index, search, hubActions, relationTypes } = this.props;
+    const editing = hubActions.get('editing');
+    return (
+      <div className="rightRelationships">
+        {hub.get('rightRelationships').map((rightRelationshipGroup, rightRelationshipIndex) => (
+          <div
+            className={`rightRelationshipsTypeGroup ${rightRelationshipGroup.get('deleted') ? 'deleted' : ''}`}
+            key={rightRelationshipIndex}
+          >
+            <div className={`rightRelationshipType
+                             ${rightRelationshipIndex === hub.get('rightRelationships').size - 1 ? 'last-of-type' : ''}`}
+            >
+              {!editing && (
+                <div className="rw-dropdown-list rw-widget">
+                  <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
+                    <div className="rw-input rw-dropdown-list-input no-edit">
+                      {(() => {
+                       if (relationTypes.find(r => r._id === rightRelationshipGroup.get('template'))) {
+                         return rightRelationshipGroup.get('template') ?
+                           relationTypes.find(r => r._id === rightRelationshipGroup.get('template')).name :
+                           <i className="fa fa-link" />;
+                       }
+                       return null;
+                     })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {editing && (
+                <DropdownList
+                  valueField="_id"
+                  textField="name"
+                  data={relationTypes}
+                  value={rightRelationshipGroup.get('template')}
+                  placeholder="New connection type"
+                  filter="contains"
+                  onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}
+                />
+              )}
+            </div>
+            {editing && (
+              <div className="removeRightRelationshipGroup">
+                {(() => {
+                  if (rightRelationshipGroup.has('template')) {
+                    return (<i
+                      onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                      className={`relationships-icon fa
+                                          ${!rightRelationshipGroup.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
+                    />);
+                  }
+
+                  return <span>&nbsp;</span>;
+                })()}
+              </div>
+            )}
+            {rightRelationshipGroup.get('relationships').map((relationship, relationshipIndex) => {
+              if (relationship.get('moved')) {
+                return false;
+              }
+              const rightRelationshipDeleted = rightRelationshipGroup.get('deleted');
+              const deleted = relationship.get('deleted');
+              const move = relationship.get('move');
+              return (
+                <div
+                  className={`rightRelationship ${!rightRelationshipDeleted && deleted ? 'deleted' : ''} ${move ? 'move' : ''}`}
+                  key={relationshipIndex}
+                >
+                  <div className="rightRelationshipType">
+                    <Doc
+                      className="item-collapsed"
+                      doc={relationship.get('entityData')}
+                      searchParams={search}
+                      onClick={this.onClick}
+                    />
+                    <HubRelationshipMetadata relationship={relationship} />
+                  </div>
+                  {editing && (
+                    <div className="removeEntity">
+                      <i
+                        onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
+                        className={`relationships-icon fa ${!deleted ? 'fa-trash' : 'fa-undo'}`}
+                      />
+                    </div>
+                )}
+                  {editing && (
+                    <div className="moveEntity">
+                      <i
+                        onClick={this.props.toggleMoveEntity.bind(this, index, rightRelationshipIndex, relationshipIndex)}
+                        className={`relationships-icon fa fa-sign-out ${!move ? '' : 'moving'}`}
+                        alt="move"
+                      />
+                    </div>
+                )}
+                </div>
+              );
+            })}
+            {(() => {
+              if (editing && rightRelationshipGroup.has('template')) {
+                const isActive = hubActions.getIn(['addTo', 'hubIndex']) === index &&
+                                 hubActions.getIn(['addTo', 'rightRelationshipIndex']) === rightRelationshipIndex;
+                return (
+                  <div className="rightRelationshipAdd">
+                    <button
+                      className={`relationships-new ${isActive ? 'is-active' : ''}`}
+                      onClick={this.setAddToData(index, rightRelationshipIndex)}
+                    >
+                      <span>Add entities / documents</span>
+                      <i className="fa fa-plus" />
+                    </button>
+                    <div className="insertEntities">
+                      <i
+                        onClick={this.props.moveEntities.bind(this, index, rightRelationshipIndex)}
+                        className="relationships-icon fa fa-arrow-left"
+                      />
+                    </div>
+                  </div>
+                );
+              }
+
+              return null;
+            })()}
+          </div>)
+        )}
+      </div>
+    );
+  }
+}
+
+RightRelationship.propTypes = {
+  index: PropTypes.number.isRequired,
+  hub: PropTypes.instanceOf(Object).isRequired,
+  hubActions: PropTypes.instanceOf(Object).isRequired,
+  search: PropTypes.instanceOf(Object).isRequired,
+  relationTypes: PropTypes.instanceOf(Array).isRequired,
+  updateRightRelationshipType: PropTypes.func.isRequired,
+  toggleRemoveRightRelationshipGroup: PropTypes.func.isRequired,
+  toggleMoveEntity: PropTypes.func.isRequired,
+  setAddToData: PropTypes.func.isRequired,
+  toggleRemoveEntity: PropTypes.func.isRequired,
+  moveEntities: PropTypes.func.isRequired,
+  openAddEntitiesPanel: PropTypes.func.isRequired,
+  selectConnection: PropTypes.func.isRequired
+};
+
+const selectRelationTypes = createSelector(
+  state => state.relationTypes,
+  relationTypes => [{ _id: null, name: 'No label' }].concat(relationTypes.toJS())
+);
+
+export function mapStateToProps(state) {
+  const { relationships } = state;
+  return {
+    search: relationships.list.sort,
+    hubs: relationships.hubs,
+    hubActions: relationships.hubActions,
+    relationTypes: selectRelationTypes(state)
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    selectConnection: actions.selectConnection,
+    updateRightRelationshipType: actions.updateRightRelationshipType,
+    toggleRemoveRightRelationshipGroup: actions.toggleRemoveRightRelationshipGroup,
+    setAddToData: actions.setAddToData,
+    toggleRemoveEntity: actions.toggleRemoveEntity,
+    moveEntities: actions.moveEntities,
+    toggleMoveEntity: actions.toggleMoveEntity,
+    openAddEntitiesPanel: uiActions.openPanel
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RightRelationship);
