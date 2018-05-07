@@ -141,7 +141,7 @@ export class RightRelationship extends Component {
                     <div className="moveEntity">
                       <i
                         onClick={this.props.toggleMoveEntity.bind(this, index, rightRelationshipIndex, relationshipIndex)}
-                        className={`relationships-icon fa fa-sign-out ${!move ? '' : 'moving'}`}
+                        className={`relationships-icon fa fa-check ${!move ? '' : 'moving'}`}
                         alt="move"
                       />
                     </div>
