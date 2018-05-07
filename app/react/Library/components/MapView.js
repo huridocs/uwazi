@@ -22,7 +22,8 @@ export class MapView extends Component {
     if (geolocationProp) {
       const _entity = entity.toJS();
       const marker = _entity.metadata[geolocationProp.name];
-      return marker ? { properties: { entity: _entity, color }, latitude: marker.lat, longitude: marker.lon } : null;
+      const info = _entity.title;
+      return marker ? { properties: { entity: _entity, color, info }, latitude: marker.lat, longitude: marker.lon } : null;
     }
 
     return null;
@@ -39,12 +40,12 @@ export class MapView extends Component {
   render() {
     const markers = this.getMarkers();
     return (
-      <div className="main-wrapper">
+      <div className="library-map main-wrapper" style={{ width: '100%', height: '100%' }}>
         <div className="search-list"><SearchBar storeKey={this.props.storeKey}/></div>
         <div className="documents-counter">
           <span><b>{this.props.markers.get('totalRows')}</b> {t('System', 'documents')}</span>
         </div>
-        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker} cluster/>
+        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker} cluster autoCenter/>
       </div>
     );
   }

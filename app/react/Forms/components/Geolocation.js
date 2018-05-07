@@ -33,6 +33,7 @@ export default class Geolocation extends Component {
     if (this.props.value.lat && this.props.value.lon) {
       markers.push({ latitude: this.props.value.lat, longitude: this.props.value.lon });
     }
+    console.log(markers[0]);
     return (
       <div className="geolocation form-inline">
         <Map markers={markers} latitude={this.props.value.lat} longitude={this.props.value.lon} onClick={this.mapClick}/>

@@ -1,19 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
 import style from './style.json';
-
-const defaultLatitude = 46.22093287671913;
-const defaultLongitude = 6.139284045121682;
 
 class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
       viewport: {
-        latitude: props.latitude || defaultLatitude,
-        longitude: props.longitude || defaultLongitude,
+        latitude: props.latitude || 46,
+        longitude: props.longitude || 6,
         width: props.width || 250,
         height: props.height || 200,
         zoom: props.zoom,
@@ -28,10 +25,20 @@ class Map extends Component {
 
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.onHover = this.onHover.bind(this);
   }
 
   componentDidMount() {
     this.setSize();
+    const map = this.map.getMap();
+    map.on('style.load', () => {
+      this.centerOnMarkers(this.props.markers);
+    });
+    map.on('moveend', (e) => {
+      if (e.autoCentered) {
+        this.setViweport(map);
+      }
+    });
     this.eventListener = window.addEventListener('resize', this.setSize);
   }
 
@@ -49,6 +56,7 @@ class Map extends Component {
   }
 
   onClick(e) {
+    console.log(e.features[0]);
     const feature = e.features.find(f => f.layer.id === 'unclustered-point');
     if (feature) {
       this.clickOnMarker(this.props.markers[feature.properties.index]);
@@ -56,19 +64,56 @@ class Map extends Component {
     this.props.onClick(e);
   }
 
+  onHover(e) {
+    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
+    if (feature) {
+      this.hoverOnMarker(this.props.markers[feature.properties.index]);
+    }
+    if (!feature) {
+      this.setState({ selectedMarker: null });
+    }
+    this.props.onClick(e);
+  }
+
   setSize() {
-    if (!this.container || this.props.width) {
+    const { viewport } = this.state;
+    viewport.width = this.props.width || this.container.offsetWidth;
+    viewport.height = this.props.height || this.container.offsetHeight;
+    this.setState({ viewport });
+  }
+
+  setViweport(map) {
+    const viewport = Object.assign(this.state.viewport, {
+      latitude: map.getCenter().lat,
+      longitude: map.getCenter().lng,
+      zoom: map.getZoom(),
+      pitch: map.getPitch(),
+      bearing: map.getBearing()
+    });
+    this.setState({ viewport });
+  }
+
+  centerOnMarkers(markers) {
+    if (!this.map || !markers.length || !this.props.autoCenter) {
       return;
     }
-    this.container.childNodes[0].style.width = 0;
-    let width = this.container.offsetWidth;
-    width = width < 240 ? 240 : width;
-    this.container.childNodes[0].style.width = width;
-    const height = width * 0.6;
-    const { viewport } = this.state;
-    viewport.width = width;
-    viewport.height = height;
-    this.setState({ viewport });
+    const map = this.map.getMap();
+    const boundaries = markers.reduce((b, marker) => {
+      if (!b[0][0] || marker.longitude < b[0][0]) {
+        b[0][0] = marker.longitude;
+      }
+      if (!b[1][0] || marker.longitude > b[1][0]) {
+        b[1][0] = marker.longitude;
+      }
+      if (!b[1][1] || marker.latitude > b[1][1]) {
+        b[1][1] = marker.latitude;
+      }
+      if (!b[0][1] || marker.latitude < b[0][1]) {
+        b[0][1] = marker.latitude;
+      }
+      return b;
+    }, [[null, null], [null, null]]);
+    map.fitBounds(boundaries, { padding: 20 }, { autoCentered: true });
   }
 
   updateDataSource(props) {
@@ -89,12 +134,21 @@ class Map extends Component {
           }
       };
     });
-    this.mapStyle = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], markersData);
+    const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']);
+    if (currentData.equals(Immutable.fromJS(markersData))) {
+      return;
+    }
+    this.centerOnMarkers(props.markers);
+    this.mapStyle = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
   }
 
   clickOnMarker(marker) {
-    this.setState({ selectedMarker: marker });
     this.props.clickOnMarker(marker);
+  }
+
+  hoverOnMarker(marker) {
+    this.setState({ selectedMarker: marker });
+    this.props.hoverOnMarker(marker);
   }
 
   renderMarker(marker, onClick) {
@@ -112,7 +166,7 @@ class Map extends Component {
 
   renderPopup() {
     const { selectedMarker } = this.state;
-    return selectedMarker && selectedMarker.info &&
+    return selectedMarker && selectedMarker.properties && selectedMarker.properties.info &&
       <Popup
         tipSize={6}
         anchor="bottom"
@@ -121,7 +175,7 @@ class Map extends Component {
         onClose={() => this.setState({ selectedMarker: null })}
       >
         <div>
-          {selectedMarker.info}
+          {selectedMarker.properties.info}
         </div>
       </Popup>;
   }
@@ -142,27 +196,19 @@ class Map extends Component {
     });
   }
 
-  /*OSM Styles
-    https://openmaptiles.github.io/osm-bright-gl-style/style-cdn.json
-    https://openmaptiles.github.io/positron-gl-style/style-cdn.json
-    https://openmaptiles.github.io/dark-matter-gl-style/style-cdn.json
-    https://openmaptiles.github.io/klokantech-basic-gl-style/style-cdn.json
-  */
-
   render() {
     const viewport = Object.assign({}, this.state.viewport);
     return (
-      <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%' }}>
+      <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%', height: '100%' }}>
         <ReactMapGL
+          ref={ref => this.map = ref}
           {...viewport}
           dragRotate
           mapStyle={this.mapStyle}
           onViewportChange={this._onViewportChange}
           onClick={this.onClick}
+          onHover={this.onHover}
         >
-          <div style={{ position: 'absolute', left: 5, top: 5 }}>
-            <NavigationControl onViewportChange={this._onViewportChange}/>
-          </div>
           {this.renderMarkers()}
           {this.renderPopup()}
 
@@ -184,8 +230,11 @@ Map.defaultProps = {
   height: null,
   onClick: () => {},
   clickOnMarker: () => {},
+  hoverOnMarker: () => {},
+  clickOnCluster: () => {},
   renderMarker: null,
-  cluster: false
+  cluster: false,
+  autoCenter: false
 };
 
 Map.propTypes = {
@@ -197,8 +246,11 @@ Map.propTypes = {
   height: PropTypes.number,
   onClick: PropTypes.func,
   clickOnMarker: PropTypes.func,
+  clickOnCluster: PropTypes.func,
+  hoverOnMarker: PropTypes.func,
   renderMarker: PropTypes.func,
-  cluster: PropTypes.bool
+  cluster: PropTypes.bool,
+  autoCenter: PropTypes.bool
 };
 
 export default Map;
