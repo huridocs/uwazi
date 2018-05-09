@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Immutable from 'immutable';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
 import { StackedDualBarChart, arrayUtils } from 'app/Charts';
 import Loader from 'app/components/Elements/Loader';
+import { t } from 'app/I18N';
 
 export const countriesTemplate = '58b2f3a35d59f31e1345b480';
 export const countryKey = 'pa_s';
@@ -27,7 +28,8 @@ class CejilChart extends Component {
       .filter(country => country.filtered.doc_count)
       .map((_country) => {
         const country = _country;
-        country.label = countriesData.get('values').find(v => v.get('id') === country.key).get('label');
+        const foundCountry = countriesData.get('values').find(v => v.get('id') === country.key);
+        country.label = foundCountry ? foundCountry.get('label') : t('System', 'No Value');
         country.results = country.filtered.doc_count;
         return country;
       }));
