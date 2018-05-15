@@ -1,15 +1,15 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {browserHistory} from 'react-router';
+import { shallow } from 'enzyme';
+import { browserHistory } from 'react-router';
 
-import {Login} from '../Login.js';
+import { Login } from '../Login.js';
 
 describe('Login', () => {
   let component;
   let instance;
   let props;
 
-  let render = () => {
+  const render = () => {
     component = shallow(<Login {...props}/>);
     instance = component.instance();
   };
@@ -27,7 +27,7 @@ describe('Login', () => {
 
   describe('on instance', () => {
     it('should set state', () => {
-      expect(instance.state).toEqual({error: false, recoverPassword: false});
+      expect(instance.state).toEqual({ error: false, recoverPassword: false });
     });
   });
 
@@ -44,7 +44,7 @@ describe('Login', () => {
     describe('when recoverPassword is true', () => {
       it('should call recoverPassword with the email', (done) => {
         instance.state.recoverPassword = true;
-        instance.submit({username: 'email@recover.com'})
+        instance.submit({ username: 'email@recover.com' })
         .then(() => {
           expect(props.recoverPassword).toHaveBeenCalledWith('email@recover.com');
           done();
@@ -72,12 +72,12 @@ describe('Login', () => {
           render();
 
           spyOn(browserHistory, 'push');
-          spyOn(instance, 'reloadHome');
+          spyOn(window.location, 'reload');
 
           instance.submit('credentials')
           .then(() => {
             expect(browserHistory.push).toHaveBeenCalledWith('/');
-            expect(instance.reloadHome).toHaveBeenCalled();
+            expect(window.location.reload).toHaveBeenCalled();
             done();
           })
           .catch(done.fail);
