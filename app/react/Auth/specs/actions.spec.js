@@ -9,7 +9,7 @@ import * as actions from '../actions';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-fdescribe('auth actions', () => {
+describe('auth actions', () => {
   beforeEach(() => {
     backend.restore();
     backend
