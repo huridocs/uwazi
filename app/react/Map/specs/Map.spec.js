@@ -101,10 +101,10 @@ describe('Map', () => {
   describe('setSize()', () => {
     it('should adapt the map size to the container', () => {
       render();
-      component.instance().container = { style: {}, offsetWidth: 400, childNodes: [{ style: {} }] };
+      component.instance().container = { style: {}, offsetWidth: 400, offsetHeight: 300, childNodes: [{ style: {} }] };
       component.instance().setSize();
       expect(component.state().viewport.width).toBe(400);
-      expect(component.state().viewport.height).toBe(240);
+      expect(component.state().viewport.height).toBe(300);
     });
 
     describe('when the width is too tight', () => {

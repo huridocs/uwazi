@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
+import supercluster from 'supercluster';
 import style from './style.json';
 
 class Map extends Component {
@@ -56,10 +57,19 @@ class Map extends Component {
   }
 
   onClick(e) {
-    console.log(e.features[0]);
-    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
-    if (feature) {
-      this.clickOnMarker(this.props.markers[feature.properties.index]);
+    const markers = e.features.filter(f => f.layer.id === 'unclustered-point');
+    const cluster = e.features.find(f => f.layer.id === 'clusters');
+
+    if (markers.length === 1) {
+      this.clickOnMarker(this.props.markers[markers[0].properties.index]);
+    }
+    if (markers.length > 1) {
+      const markersOnCluster = markers.map(marker => this.props.markers[marker.properties.index]);
+      this.clickOnCluster(markersOnCluster);
+    }
+    if (cluster) {
+      const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(this.state.viewport.zoom), Infinity);
+      this.clickOnCluster(markersOnCluster);
     }
     this.props.onClick(e);
   }
@@ -120,6 +130,10 @@ class Map extends Component {
     if (!this.props.cluster) {
       return;
     }
+    this.supercluster = supercluster({
+        radius: style.sources.markers.clusterRadius,
+        maxZoom: style.sources.markers.clusterMaxZoom
+    });
     const markersData = props.markers
     .map((marker, index) => {
       const properties = marker.properties || {};
@@ -138,12 +152,17 @@ class Map extends Component {
     if (currentData.equals(Immutable.fromJS(markersData))) {
       return;
     }
+    this.supercluster.load(markersData);
     this.centerOnMarkers(props.markers);
     this.mapStyle = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
   }
 
   clickOnMarker(marker) {
     this.props.clickOnMarker(marker);
+  }
+
+  clickOnCluster(cluster) {
+    this.props.clickOnCluster(cluster);
   }
 
   hoverOnMarker(marker) {
