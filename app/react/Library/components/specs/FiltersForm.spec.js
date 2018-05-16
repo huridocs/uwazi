@@ -5,7 +5,7 @@ import { Form } from 'react-redux-form';
 
 import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
 
-fdescribe('FiltersForm', () => {
+describe('FiltersForm', () => {
   let component;
   let props;
 
