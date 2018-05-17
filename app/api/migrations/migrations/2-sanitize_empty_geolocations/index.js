@@ -12,6 +12,13 @@ export default {
       let index = 1;
       cursor.on('data', (entity) => {
         cursor.pause();
+        if (!entity.metadata) {
+          process.stdout.write(`processed -> ${index}\r`);
+          index += 1;
+          cursor.resume();
+          return;
+        }
+
         const metadataProperties = Object.keys(entity.metadata);
         const metadata = metadataProperties.reduce((_metadata, k) => {
           const isGeolocation = k.indexOf('_geolocation') > -1;
