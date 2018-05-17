@@ -45,7 +45,7 @@ export class MapView extends Component {
         <div className="documents-counter">
           <span><b>{this.props.markers.get('totalRows')}</b> {t('System', 'documents')}</span>
         </div>
-        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker} cluster autoCenter/>
+        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker}/>
       </div>
     );
   }

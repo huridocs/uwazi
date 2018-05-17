@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
-import supercluster from 'supercluster';
-import style from './style.json';
+import supercluster from 'supercluster'; //eslint-disable-line
+import _style from './style.json';
+import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
 
-class Map extends Component {
+export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -18,8 +19,12 @@ class Map extends Component {
       },
       selectedMarker: null
     };
-    this.mapStyle = Immutable.fromJS(style);
-    this.updateDataSource(props);
+    this.mapStyle = Immutable.fromJS(_style);
+    this.supercluster = supercluster({
+        radius: _style.sources.markers.clusterRadius,
+        maxZoom: _style.sources.markers.clusterMaxZoom
+    });
+    this.updateMapStyle(props);
     this._onViewportChange = (viewport) => {
       this.setState({ viewport });
     };
@@ -32,9 +37,7 @@ class Map extends Component {
   componentDidMount() {
     this.setSize();
     const map = this.map.getMap();
-    map.on('style.load', () => {
-      this.centerOnMarkers(this.props.markers);
-    });
+    map.on('style.load', () => this.centerOnMarkers(this.props.markers));
     map.on('moveend', (e) => {
       if (e.autoCentered) {
         this.setViweport(map);
@@ -48,7 +51,7 @@ class Map extends Component {
     const latitude = props.latitude || this.state.viewport.latitude;
     const longitude = props.longitude || this.state.viewport.longitude;
     const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
-    this.updateDataSource(props);
+    this.updateMapStyle(props);
     this.setState({ viewport });
   }
 
@@ -68,7 +71,10 @@ class Map extends Component {
       this.clickOnCluster(markersOnCluster);
     }
     if (cluster) {
-      const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(this.state.viewport.zoom), Infinity);
+      const map = this.map.getMap();
+      const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
+      this.supercluster.load(currentData);
+      const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
       this.clickOnCluster(markersOnCluster);
     }
     this.props.onClick(e);
@@ -79,7 +85,7 @@ class Map extends Component {
     if (feature) {
       this.hoverOnMarker(this.props.markers[feature.properties.index]);
     }
-    if (!feature) {
+    if (!feature && this.state.selectedMarker && this.props.cluster) {
       this.setState({ selectedMarker: null });
     }
     this.props.onClick(e);
@@ -104,57 +110,27 @@ class Map extends Component {
   }
 
   centerOnMarkers(markers) {
-    if (!this.map || !markers.length || !this.props.autoCenter) {
+    if (!this.map || !markers.length) {
       return;
     }
     const map = this.map.getMap();
-    const boundaries = markers.reduce((b, marker) => {
-      if (!b[0][0] || marker.longitude < b[0][0]) {
-        b[0][0] = marker.longitude;
-      }
-      if (!b[1][0] || marker.longitude > b[1][0]) {
-        b[1][0] = marker.longitude;
-      }
-      if (!b[1][1] || marker.latitude > b[1][1]) {
-        b[1][1] = marker.latitude;
-      }
-      if (!b[0][1] || marker.latitude < b[0][1]) {
-        b[0][1] = marker.latitude;
-      }
-      return b;
-    }, [[null, null], [null, null]]);
-    map.fitBounds(boundaries, { padding: 20 }, { autoCentered: true });
+    const boundaries = getMarkersBoudingBox(markers);
+    map.fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 } }, { autoCentered: true });
   }
 
-  updateDataSource(props) {
+  updateMapStyle(props) {
+    this.centerOnMarkers(props.markers);
     if (!this.props.cluster) {
       return;
     }
-    this.supercluster = supercluster({
-        radius: style.sources.markers.clusterRadius,
-        maxZoom: style.sources.markers.clusterMaxZoom
-    });
-    const markersData = props.markers
-    .map((marker, index) => {
-      const properties = marker.properties || {};
-      const { longitude, latitude } = marker;
-      properties.index = index;
-      return {
-          type: 'Feature',
-          properties,
-          geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-          }
-      };
-    });
+
+    const markersData = markersToStyleFormat(props.markers);
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']);
-    if (currentData.equals(Immutable.fromJS(markersData))) {
-      return;
+    if (!currentData.equals(Immutable.fromJS(markersData))) {
+      const style = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
+      this.mapStyle = style;
+      this.supercluster.load(markersData);
     }
-    this.supercluster.load(markersData);
-    this.centerOnMarkers(props.markers);
-    this.mapStyle = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
   }
 
   clickOnMarker(marker) {
@@ -166,11 +142,13 @@ class Map extends Component {
   }
 
   hoverOnMarker(marker) {
-    this.setState({ selectedMarker: marker });
+    if (this.state.selectedMarker !== marker) {
+      this.setState({ selectedMarker: marker });
+    }
     this.props.hoverOnMarker(marker);
   }
 
-  renderMarker(marker, onClick) {
+  renderMarker(marker, onClick, onMouseEnter, onMouseLeave) {
     if (this.props.renderMarker) {
       return this.props.renderMarker(marker, onClick);
     }
@@ -179,6 +157,8 @@ class Map extends Component {
         style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
         className="fa fa-map-marker fa-3x fa-fw map-marker"
         onClick={onClick}
+        onMouseOver={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       />
     );
   }
@@ -191,7 +171,8 @@ class Map extends Component {
         anchor="bottom"
         longitude={selectedMarker.longitude}
         latitude={selectedMarker.latitude}
-        onClose={() => this.setState({ selectedMarker: null })}
+        offsetTop={-30}
+        closeButton={false}
       >
         <div>
           {selectedMarker.properties.info}
@@ -207,9 +188,11 @@ class Map extends Component {
 
     return markers.map((marker, index) => {
       const onClick = this.clickOnMarker.bind(this, marker);
+      const onMouseEnter = this.hoverOnMarker.bind(this, marker);
+      const onMouseLeave = this.hoverOnMarker.bind(this, null);
       return (
         <Marker {...marker} key={index} offsetLeft={0} offsetTop={0}>
-          {this.renderMarker(marker, onClick)}
+          {this.renderMarker(marker, onClick, onMouseEnter, onMouseLeave)}
         </Marker>
       );
     });
@@ -230,7 +213,6 @@ class Map extends Component {
         >
           {this.renderMarkers()}
           {this.renderPopup()}
-
           <i className="mapbox-help fa fa-question-circle">
             <span className="mapbox-tooltip">Hold shift to rotate the map</span>
           </i>
@@ -252,8 +234,7 @@ Map.defaultProps = {
   hoverOnMarker: () => {},
   clickOnCluster: () => {},
   renderMarker: null,
-  cluster: false,
-  autoCenter: false
+  cluster: false
 };
 
 Map.propTypes = {
@@ -268,8 +249,5 @@ Map.propTypes = {
   clickOnCluster: PropTypes.func,
   hoverOnMarker: PropTypes.func,
   renderMarker: PropTypes.func,
-  cluster: PropTypes.bool,
-  autoCenter: PropTypes.bool
+  cluster: PropTypes.bool
 };
-
-export default Map;
