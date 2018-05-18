@@ -2,9 +2,9 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 
-import {APIURL} from 'app/config.js';
-import * as actions from '../actions';
+import { APIURL } from 'app/config.js';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
+import * as actions from '../actions';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -13,10 +13,10 @@ describe('auth actions', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .post(APIURL + 'login', {body: JSON.stringify({success: true})})
-    .post(APIURL + 'recoverPassword', {body: JSON.stringify({success: true})})
-    .post(APIURL + 'resetPassword', {body: JSON.stringify({success: true})})
-    .get(APIURL + 'user', {body: JSON.stringify({username: 'username'})});
+    .post(`${APIURL}login`, { body: JSON.stringify({ success: true }) })
+    .post(`${APIURL}recoverpassword`, { body: JSON.stringify({ success: true }) })
+    .post(`${APIURL}resetpassword`, { body: JSON.stringify({ success: true }) })
+    .get(`${APIURL}user`, { body: JSON.stringify({ username: 'username' }) });
   });
 
   afterEach(() => backend.restore());
@@ -25,15 +25,15 @@ describe('auth actions', () => {
     describe('when success', () => {
       it('should login, fetch user loged and store it in the state', (done) => {
         const expectedActions = [
-          {type: 'auth/user/SET', value: {username: 'username'}}
+          { type: 'auth/user/SET', value: { username: 'username' } }
         ];
 
         const store = mockStore({});
 
-        let credentials = {username: 'username'};
+        const credentials = { username: 'username' };
         store.dispatch(actions.login(credentials))
         .then(() => {
-          expect(backend.calls(APIURL + 'login')[0][1].body).toEqual(JSON.stringify(credentials));
+          expect(backend.calls(`${APIURL}login`)[0][1].body).toEqual(JSON.stringify(credentials));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -47,7 +47,7 @@ describe('auth actions', () => {
       spyOn(notifications, 'notify');
       actions.recoverPassword('email@forgot.com')(jasmine.createSpy('dispatch'))
       .then(() => {
-        expect(backend.calls(APIURL + 'recoverPassword')[0][1].body).toEqual(JSON.stringify({email: 'email@forgot.com'}));
+        expect(backend.calls(`${APIURL}recoverpassword`)[0][1].body).toEqual(JSON.stringify({ email: 'email@forgot.com' }));
         expect(notifications.notify).toHaveBeenCalled();
         done();
       })
@@ -55,12 +55,12 @@ describe('auth actions', () => {
     });
   });
 
-  describe('recoverPassword', () => {
+  describe('resetPassword', () => {
     it('should post to resetPassword with new password and the key', (done) => {
       spyOn(notifications, 'notify');
       actions.resetPassword('asd123', 'uniqueKey')(jasmine.createSpy('dispatch'))
       .then(() => {
-        expect(backend.calls(APIURL + 'resetPassword')[0][1].body).toEqual(JSON.stringify({password: 'asd123', key: 'uniqueKey'}));
+        expect(backend.calls(`${APIURL}resetpassword`)[0][1].body).toEqual(JSON.stringify({ password: 'asd123', key: 'uniqueKey' }));
         expect(notifications.notify).toHaveBeenCalled();
         done();
       })

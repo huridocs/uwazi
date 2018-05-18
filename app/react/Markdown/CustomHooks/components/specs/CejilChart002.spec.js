@@ -15,6 +15,7 @@ describe('CejilChart002', () => {
     response.aggregations.all[countryKey] = { buckets: [
       { key: 'keyA', filtered: { doc_count: count.a } },
       { key: 'keyB', filtered: { doc_count: count.b } },
+      { key: 'missing', filtered: { doc_count: 1 } },
     ] };
     return response;
   }
