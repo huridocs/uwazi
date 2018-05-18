@@ -166,19 +166,22 @@ export default class Map extends Component {
 
   renderPopup() {
     const { selectedMarker } = this.state;
-    return selectedMarker && selectedMarker.properties && selectedMarker.properties.info &&
-      <Popup
-        tipSize={6}
-        anchor="bottom"
-        longitude={selectedMarker.longitude}
-        latitude={selectedMarker.latitude}
-        offsetTop={-30}
-        closeButton={false}
-      >
-        <div>
-          {selectedMarker.properties.info}
-        </div>
-      </Popup>;
+    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker.properties && selectedMarker.properties.info))) {
+      return (
+        <Popup
+          tipSize={6}
+          anchor="bottom"
+          longitude={selectedMarker.longitude}
+          latitude={selectedMarker.latitude}
+          offsetTop={-20}
+          closeButton={false}
+        >
+          <div>
+            {this.props.renderPopupInfo ? this.props.renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
+          </div>
+        </Popup>);
+    }
+    return false;
   }
 
   renderMarkers() {
@@ -234,6 +237,7 @@ Map.defaultProps = {
   clickOnMarker: () => {},
   hoverOnMarker: () => {},
   clickOnCluster: () => {},
+  renderPopupInfo: null,
   renderMarker: null,
   cluster: false
 };
@@ -247,6 +251,7 @@ Map.propTypes = {
   height: PropTypes.number,
   onClick: PropTypes.func,
   clickOnMarker: PropTypes.func,
+  renderPopupInfo: PropTypes.func,
   clickOnCluster: PropTypes.func,
   hoverOnMarker: PropTypes.func,
   renderMarker: PropTypes.func,

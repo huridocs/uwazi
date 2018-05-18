@@ -7,9 +7,20 @@ import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
+import { TemplateLabel } from 'app/Layout';
 import { t } from 'app/I18N';
 
 export class MapView extends Component {
+  static renderInfo(marker) {
+    return (
+      <div>
+        <TemplateLabel template={marker.properties.entity.template} />
+        &nbsp;
+        {marker.properties.entity.title}
+      </div>
+    );
+  }
+
   constructor(props) {
     super(props);
     this.clickOnMarker = this.clickOnMarker.bind(this);
@@ -23,8 +34,7 @@ export class MapView extends Component {
     if (geolocationProp) {
       const _entity = entity.toJS();
       const marker = _entity.metadata[geolocationProp.name];
-      const info = _entity.title;
-      return marker ? { properties: { entity: _entity, color, info }, latitude: marker.lat, longitude: marker.lon } : null;
+      return marker ? { properties: { entity: _entity, color }, latitude: marker.lat, longitude: marker.lon } : null;
     }
 
     return null;
@@ -51,7 +61,14 @@ export class MapView extends Component {
         <div className="documents-counter">
           <span><b>{this.props.markers.get('totalRows')}</b> {t('System', 'documents')}</span>
         </div>
-        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker} clickOnCluster={this.clickOnCluster} cluster/>
+        <Map
+          markers={markers}
+          zoom={1}
+          clickOnMarker={this.clickOnMarker}
+          clickOnCluster={this.clickOnCluster}
+          renderPopupInfo={MapView.renderInfo}
+          cluster
+        />
       </div>
     );
   }
