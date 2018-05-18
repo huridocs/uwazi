@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import Map from 'app/Map/Map';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
-import { getAndSelectDocument } from 'app/Library/actions/libraryActions';
+import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
 import { t } from 'app/I18N';
 
@@ -13,6 +13,7 @@ export class MapView extends Component {
   constructor(props) {
     super(props);
     this.clickOnMarker = this.clickOnMarker.bind(this);
+    this.clickOnCluster = this.clickOnCluster.bind(this);
   }
 
   getMarker(entity) {
@@ -37,6 +38,11 @@ export class MapView extends Component {
     this.props.getAndSelectDocument(marker.properties.entity.sharedId);
   }
 
+  clickOnCluster(cluster) {
+    this.props.unselectAllDocuments();
+    this.props.selectDocuments(cluster.map(m => m.properties.entity));
+  }
+
   render() {
     const markers = this.getMarkers();
     return (
@@ -45,7 +51,7 @@ export class MapView extends Component {
         <div className="documents-counter">
           <span><b>{this.props.markers.get('totalRows')}</b> {t('System', 'documents')}</span>
         </div>
-        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker}/>
+        <Map markers={markers} zoom={1} clickOnMarker={this.clickOnMarker} clickOnCluster={this.clickOnCluster} cluster/>
       </div>
     );
   }
@@ -55,7 +61,9 @@ MapView.propTypes = {
   markers: PropTypes.instanceOf(Immutable.Map).isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string.isRequired,
-  getAndSelectDocument: PropTypes.func.isRequired
+  getAndSelectDocument: PropTypes.func.isRequired,
+  selectDocuments: PropTypes.func.isRequired,
+  unselectAllDocuments: PropTypes.func.isRequired
 };
 
 export function mapStateToProps(state, props) {
@@ -66,7 +74,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ getAndSelectDocument }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({ getAndSelectDocument, selectDocuments, unselectAllDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapView);

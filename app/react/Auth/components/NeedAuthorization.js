@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import {Component} from 'react';
-import {connect} from 'react-redux';
+import { Component } from 'react';
+import { connect } from 'react-redux';
 
 export class NeedAuthorization extends Component {
   render() {
@@ -18,7 +18,7 @@ NeedAuthorization.propTypes = {
   authorized: PropTypes.bool
 };
 
-export function mapStateToProps({user}, props) {
+export function mapStateToProps({ user }, props) {
   const roles = props.roles || ['admin'];
   return {
     authorized: !!(user.get('_id') && roles.includes(user.get('role')))

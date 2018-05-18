@@ -1,13 +1,13 @@
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {wrapDispatch} from 'app/Multireducer';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
 
-import {unselectAllDocuments, updateSelectedEntities, updateEntities} from 'app/Library/actions/libraryActions';
-import {SelectMultiplePanel} from 'app/Metadata';
+import { unselectAllDocuments, updateSelectedEntities, updateEntities, getAndSelectDocument } from 'app/Library/actions/libraryActions';
+import { SelectMultiplePanel } from 'app/Metadata';
 
 function mapStateToProps(state, props) {
   return {
-    formKey: props.storeKey + '.sidepanel.multipleEdit',
+    formKey: `${props.storeKey}.sidepanel.multipleEdit`,
     state: state[props.storeKey].sidepanel.multipleEdit,
     formState: state[props.storeKey].sidepanel.multipleEditForm,
     templates: state.templates,
@@ -18,7 +18,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({unselectAllDocuments, updateSelectedEntities, updateEntities}, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({ unselectAllDocuments, updateSelectedEntities, updateEntities, getAndSelectDocument }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);
