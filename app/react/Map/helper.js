@@ -1,8 +1,3 @@
-import style from './style.json';
-import Immutable from 'immutable';
-
-let _style;
-
 const getMarkersBoudingBox = markers => markers.reduce((_b, marker) => {
   const b = _b.slice();
   if (!b[0][0] || marker.longitude < b[0][0]) {

@@ -18,7 +18,12 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ unselectAllDocuments, updateSelectedEntities, updateEntities, getAndSelectDocument }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({
+    unselectAllDocuments,
+    updateSelectedEntities,
+    updateEntities,
+    getAndSelectDocument
+  }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);

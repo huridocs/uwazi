@@ -1,9 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import { SelectMultiplePanel, mapStateToProps } from '../SelectMultiplePanel';
-import { TemplateLabel, SidePanel } from 'app/Layout';
 import Immutable from 'immutable';
+import { TemplateLabel, SidePanel } from 'app/Layout';
+import { SelectMultiplePanel, mapStateToProps } from '../SelectMultiplePanel';
 
 describe('SelectMultiplePanel', () => {
   let component;
@@ -100,7 +99,8 @@ describe('SelectMultiplePanel', () => {
       render();
       instance.save({ icon: 'doc-icon', metadata: { title: 'new title', date: '' } })
       .then(() => {
-        expect(props.multipleUpdate).toHaveBeenCalledWith(props.entitiesSelected, { template: '4', metadata: { title: 'new title' }, icon: 'doc-icon' });
+        expect(props.multipleUpdate)
+        .toHaveBeenCalledWith(props.entitiesSelected, { template: '4', metadata: { title: 'new title' }, icon: 'doc-icon' });
         expect(props.updateEntities).toHaveBeenCalledWith('updated entities');
         expect(props.unselectAllDocuments).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith(props.formKey);
