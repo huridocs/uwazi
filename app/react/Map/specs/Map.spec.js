@@ -28,7 +28,7 @@ describe('Map', () => {
     component = shallow(<Map {...props} />, { disableLifecycleMethods: true });
     instance = component.instance();
     instance.container = { style: {}, offsetWidth: 400, offsetHeight: 300, childNodes: [{ style: {} }] };
-    map = jasmine.createSpyObj(['on', 'fitBounds', 'getZoom']);
+    map = jasmine.createSpyObj(['on', 'fitBounds', 'getZoom', 'stop']);
     instance.map = { getMap: () => map };
     markers = component.find(Marker);
   };
@@ -79,8 +79,10 @@ describe('Map', () => {
         { latitude: 7, longitude: 11 },
         { latitude: 22, longitude: -21 }
       ];
+      map.stop.and.returnValue(map);
       instance.centerOnMarkers(_markers);
-      expect(map.fitBounds).toHaveBeenCalledWith([[-21, 2], [32, 23]], { padding: { bottom: 20, left: 20, right: 20, top: 70 } }, { autoCentered: true });
+      expect(map.fitBounds)
+      .toHaveBeenCalledWith([[-21, 2], [32, 23]], { padding: { bottom: 20, left: 20, right: 20, top: 70 }, maxZoom: 5 }, { autoCentered: true });
     });
   });
 

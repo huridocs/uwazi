@@ -51,7 +51,10 @@ export default class Map extends Component {
     const latitude = props.latitude || this.state.viewport.latitude;
     const longitude = props.longitude || this.state.viewport.longitude;
     const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
-    this.updateMapStyle(props);
+    if (JSON.stringify(props.markers) !== JSON.stringify(this.props.markers)) {
+      this.centerOnMarkers(markers);
+      this.updateMapStyle(props);
+    }
     this.setState({ viewport });
   }
 
@@ -88,7 +91,6 @@ export default class Map extends Component {
     if (!feature && this.state.selectedMarker && this.props.cluster) {
       this.setState({ selectedMarker: null });
     }
-    this.props.onClick(e);
   }
 
   setSize() {
@@ -115,11 +117,10 @@ export default class Map extends Component {
     }
     const map = this.map.getMap();
     const boundaries = getMarkersBoudingBox(markers);
-    map.fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 } }, { autoCentered: true });
+    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5 }, { autoCentered: true });
   }
 
   updateMapStyle(props) {
-    this.centerOnMarkers(props.markers);
     if (!this.props.cluster) {
       return;
     }
