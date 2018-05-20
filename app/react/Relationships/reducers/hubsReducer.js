@@ -55,6 +55,7 @@ export default function (state = initialState, action = {}) {
   let relationshipsToMove;
   let relationshipsMoved;
   let _state;
+  let targetTemplate;
 
   switch (action.type) {
   case types.PARSE_RELATIONSHIPS_RESULTS:
@@ -118,13 +119,14 @@ export default function (state = initialState, action = {}) {
   case types.MOVE_RELATIONSHIPS_ENTITY:
     relationshipsToMove = [];
     relationshipsMoved = [];
+    targetTemplate = state.getIn([action.index, 'rightRelationships', action.rightRelationshipIndex, 'template']);
     state.forEach((hub, hubIndex) => {
       hub.get('rightRelationships')
       .forEach((rightRelationshipGroup, rightRelationshipsIndex) => {
         rightRelationshipGroup.get('relationships')
         .forEach((_relationship, index) => {
           if (_relationship.get('move')) {
-            relationshipsToMove.push(_relationship.remove('move').remove('_id').remove('sharedId'));
+            relationshipsToMove.push(_relationship.remove('move').remove('_id').remove('sharedId').set('template', targetTemplate));
             relationshipsMoved.push({ hubIndex, rightRelationshipsIndex, index });
           }
         });
