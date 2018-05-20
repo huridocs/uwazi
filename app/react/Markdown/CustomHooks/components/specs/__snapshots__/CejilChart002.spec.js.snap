@@ -44,6 +44,19 @@ exports[`CejilChart002 When data loaded should allow changing the filter propert
             "setBLabel": "Mujer",
             "setBValue": 2,
           },
+          Object {
+            "filtered": Object {
+              "doc_count": 1,
+            },
+            "key": "missing",
+            "label": "No Value",
+            "name": "No Value",
+            "results": 1,
+            "setALabel": "Hombre",
+            "setAValue": 1,
+            "setBLabel": "Mujer",
+            "setBValue": 1,
+          },
         ]
       }
     />
@@ -94,6 +107,19 @@ exports[`CejilChart002 When data loaded should sort and format the results appro
             "setAValue": 3,
             "setBLabel": "Mujer",
             "setBValue": 2,
+          },
+          Object {
+            "filtered": Object {
+              "doc_count": 1,
+            },
+            "key": "missing",
+            "label": "No Value",
+            "name": "No Value",
+            "results": 1,
+            "setALabel": "Hombre",
+            "setAValue": 1,
+            "setBLabel": "Mujer",
+            "setBValue": 1,
           },
         ]
       }
