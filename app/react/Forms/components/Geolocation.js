@@ -30,20 +30,30 @@ export default class Geolocation extends Component {
 
   render() {
     const markers = [];
-    if (this.props.value.lat && this.props.value.lon) {
-      markers.push({ latitude: this.props.value.lat, longitude: this.props.value.lon });
+    const { value } = this.props;
+    let lat;
+    let lon;
+
+    if (value) {
+      lat = value.lat;
+      lon = value.lon;
     }
+
+    if (lat && lon) {
+      markers.push({ latitude: value.lat, longitude: value.lon });
+    }
+
     return (
       <div className="geolocation form-inline">
-        <Map markers={markers} latitude={this.props.value.lat} longitude={this.props.value.lon} onClick={this.mapClick}/>
+        <Map markers={markers} latitude={lat} longitude={lon} onClick={this.mapClick}/>
         <div className="form-row">
           <div className="form-group">
             <label>Latitude:</label>
-            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={this.props.value.lat}/>
+            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat}/>
           </div>
           <div className="form-group">
             <label>Longitude:</label>
-            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={this.props.value.lon}/>
+            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon}/>
           </div>
         </div>
       </div>
@@ -51,10 +61,14 @@ export default class Geolocation extends Component {
   }
 }
 
+Geolocation.defaultProps = {
+  value: undefined
+};
+
 Geolocation.propTypes = {
   value: PropTypes.shape({
     lat: PropTypes.number,
     lon: PropTypes.number
-  }).isRequired,
+  }),
   onChange: PropTypes.func.isRequired
 };

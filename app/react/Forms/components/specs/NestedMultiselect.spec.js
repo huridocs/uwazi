@@ -4,7 +4,7 @@ import { MultiSelect } from 'app/ReactReduxForms';
 import Immutable from 'immutable';
 import NestedMultiselect from '../NestedMultiselect';
 
-fdescribe('NestedMultiselect', () => {
+describe('NestedMultiselect', () => {
   let component;
   let props;
   const aggregations = {
