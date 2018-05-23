@@ -100,7 +100,7 @@ export default {
       markers.push({ latitude: value.lat, longitude: value.lon });
     }
     if (!renderForCard) {
-      _value = <Map latitude={value.lat} longitude={value.lon} markers={markers}/>;
+      _value = <Map latitude={value.lat} height={370} longitude={value.lon} markers={markers}/>;
     }
 
     return { label: property.get('label'), name: property.get('name'), value: _value, showInCard };

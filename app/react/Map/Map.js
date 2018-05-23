@@ -112,7 +112,7 @@ export default class Map extends Component {
   }
 
   centerOnMarkers(markers) {
-    if (!this.map || !markers.length) {
+    if (!this.map || !markers.length || !this.props.autoCenter) {
       return;
     }
     const map = this.map.getMap();
@@ -239,7 +239,8 @@ Map.defaultProps = {
   clickOnCluster: () => {},
   renderPopupInfo: null,
   renderMarker: null,
-  cluster: false
+  cluster: false,
+  autoCenter: true
 };
 
 Map.propTypes = {
@@ -255,5 +256,6 @@ Map.propTypes = {
   clickOnCluster: PropTypes.func,
   hoverOnMarker: PropTypes.func,
   renderMarker: PropTypes.func,
-  cluster: PropTypes.bool
+  cluster: PropTypes.bool,
+  autoCenter: PropTypes.bool
 };
