@@ -5,7 +5,7 @@ import random from 'shared/uniqueID';
 import model from './usersModel';
 import settings from '../settings/settings';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
-import {createError} from 'api/utils';
+import { createError } from 'api/utils';
 
 const encryptPassword = password => SHA256(password).toString();
 
@@ -29,14 +29,14 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
 
     response.subject = `Welcome to ${siteName}`;
     response.text = text;
-    response.html = '<p>' +
-                    response.text
-                    .replace(new RegExp(user.username, 'g'), `<b>${user.username}</b>`)
-                    .replace(new RegExp(`${domain}/setpassword/${key}\\?createAccount=true`, 'g'), htmlLink)
-                    .replace(new RegExp('https://www.uwazi.io', 'g'), '<a href="https://www.uwazi.io">https://www.uwazi.io</a>')
-                    .replace(/\n{2,}/g, '</p><p>')
-                    .replace(/\n/g, '<br />') +
-                    '</p>';
+    response.html = `<p>${
+      response.text
+      .replace(new RegExp(user.username, 'g'), `<b>${user.username}</b>`)
+      .replace(new RegExp(`${domain}/setpassword/${key}\\?createAccount=true`, 'g'), htmlLink)
+      .replace(new RegExp('https://www.uwazi.io', 'g'), '<a href="https://www.uwazi.io">https://www.uwazi.io</a>')
+      .replace(/\n{2,}/g, '</p><p>')
+      .replace(/\n/g, '<br />')
+    }</p>`;
   }
 
   return response;
@@ -44,12 +44,8 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
 
 export default {
   save(user, currentUser) {
-    return model.get({_id: user._id})
+    return model.get({ _id: user._id })
     .then(([userInTheDatabase]) => {
-      if (user.hasOwnProperty('password') && user._id && user._id !== currentUser._id.toString()) {
-        return Promise.reject(createError('Can not change other user password', 403));
-      }
-
       if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
         return Promise.reject(createError('Can not change your own role', 403));
       }
@@ -68,8 +64,8 @@ export default {
 
   newUser(user, domain) {
     return Promise.all([
-      model.get({username: user.username}),
-      model.get({email: user.email})
+      model.get({ username: user.username }),
+      model.get({ email: user.email })
     ])
     .then(([userNameMatch, emailMatch]) => {
       if (userNameMatch.length) {
@@ -84,7 +80,7 @@ export default {
 
       return model.save(user)
       .then((_user) => {
-        this.recoverPassword(user.email, domain, {newUser: true});
+        this.recoverPassword(user.email, domain, { newUser: true });
         return _user;
       });
     });
@@ -106,7 +102,7 @@ export default {
     return model.count()
     .then((count) => {
       if (count > 1) {
-        return model.delete({_id});
+        return model.delete({ _id });
       }
 
       return Promise.reject(createError('Can not delete last user', 403));
@@ -114,17 +110,17 @@ export default {
   },
 
   recoverPassword(email, domain, options = {}) {
-    let key = SHA256(email + Date.now()).toString();
+    const key = SHA256(email + Date.now()).toString();
     return Promise.all([
-      model.get({email}),
+      model.get({ email }),
       settings.get()
     ])
     .then(([_user, _settings]) => {
       const user = _user[0];
       if (user) {
-        return passwordRecoveriesModel.save({key, user: user._id})
+        return passwordRecoveriesModel.save({ key, user: user._id })
         .then(() => {
-          let mailOptions = {from: '"Uwazi" <no-reply@uwazi.io>', to: email};
+          const mailOptions = { from: '"Uwazi" <no-reply@uwazi.io>', to: email };
           const mailTexts = conformRecoverText(options, _settings, domain, key, user);
           mailOptions.subject = mailTexts.subject;
           mailOptions.text = mailTexts.text;
@@ -142,12 +138,12 @@ export default {
   },
 
   resetPassword(credentials) {
-    return passwordRecoveriesModel.get({key: credentials.key})
+    return passwordRecoveriesModel.get({ key: credentials.key })
     .then((response) => {
       if (response.length) {
         return Promise.all([
           passwordRecoveriesModel.delete(response[0]._id),
-          model.save({_id: response[0].user, password: encryptPassword(credentials.password)})
+          model.save({ _id: response[0].user, password: encryptPassword(credentials.password) })
         ]);
       }
     });
