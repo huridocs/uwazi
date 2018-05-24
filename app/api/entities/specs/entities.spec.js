@@ -527,7 +527,6 @@ template: templateId };
 
     it('should do nothing when there is no changed or deleted properties', (done) => {
       spyOn(entitiesModel.db, 'updateMany');
-      const template =
 
       entities.updateMetadataProperties(currentTemplate, currentTemplate)
       .then(() => {
