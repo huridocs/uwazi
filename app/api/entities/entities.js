@@ -267,49 +267,46 @@ export default {
     .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
   },
 
-  updateMetadataProperties(template, language) {
+  updateMetadataProperties(template, currentTemplate, language) {
     const actions = {};
     actions.$rename = {};
     actions.$unset = {};
-    return templates.getById(template._id)
-    .then((currentTemplate) => {
-      template.properties = generateNamesAndIds(template.properties); //eslint-disable-line
-      template.properties.forEach((property) => {
-        const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
-        if (currentProperty && currentProperty.name !== property.name) {
-          actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
-        }
-      });
-      currentTemplate.properties.forEach((property) => {
-        if (!template.properties.find(p => p.id === property.id)) {
-          actions.$unset[`metadata.${property.name}`] = '';
-        }
-      });
-
-      const noneToUnset = !Object.keys(actions.$unset).length;
-      const noneToRename = !Object.keys(actions.$rename).length;
-
-      if (noneToUnset) {
-        delete actions.$unset;
+    template.properties = generateNamesAndIds(template.properties); //eslint-disable-line
+    template.properties.forEach((property) => {
+      const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
+      if (currentProperty && currentProperty.name !== property.name) {
+        actions.$rename[`metadata.${currentProperty.name}`] = `metadata.${property.name}`;
       }
-      if (noneToRename) {
-        delete actions.$rename;
+    });
+    currentTemplate.properties.forEach((property) => {
+      if (!template.properties.find(p => p.id === property.id)) {
+        actions.$unset[`metadata.${property.name}`] = '';
+      }
+    });
+
+    const noneToUnset = !Object.keys(actions.$unset).length;
+    const noneToRename = !Object.keys(actions.$rename).length;
+
+    if (noneToUnset) {
+      delete actions.$unset;
+    }
+    if (noneToRename) {
+      delete actions.$rename;
+    }
+
+    let dbUpdate = Promise.resolve();
+    if (actions.$unset || actions.$rename) {
+      dbUpdate = model.db.updateMany({ template }, actions);
+    }
+
+    return dbUpdate
+    .then(() => {
+      if (!template.properties.find(p => p.type === 'relationship')) {
+        return this.indexEntities({ template: template._id }, null, 1000);
       }
 
-      let dbUpdate = Promise.resolve();
-      if (actions.$unset || actions.$rename) {
-        dbUpdate = model.db.updateMany({ template }, actions);
-      }
-
-      return dbUpdate
-      .then(() => {
-        if (!template.properties.find(p => p.type === 'relationship')) {
-          return this.indexEntities({ template: template._id }, null, 1000);
-        }
-
-        const asd = this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
-        return asd;
-      });
+      const asd = this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
+      return asd;
     });
   },
 

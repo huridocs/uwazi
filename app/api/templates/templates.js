@@ -60,11 +60,12 @@ export default {
   save(template, language) {
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
-
+    let _currentTemplate;
     if (template._id) {
       return this.getById(template._id)
       .then(currentTemplate => Promise.all([currentTemplate, updateTranslation(currentTemplate, template)]))
       .then(([currentTemplate]) => {
+        _currentTemplate = currentTemplate;
         currentTemplate.properties = currentTemplate.properties || [];
         const currentTemplateContentProperties = currentTemplate.properties.filter(p => p.content);
         const templateContentProperties = template.properties.filter(p => p.content);
@@ -80,9 +81,9 @@ export default {
         }
         return entities.removeValuesFromEntities(toRemoveValues, currentTemplate._id);
       })
+      .then(() => entities.updateMetadataProperties(template, _currentTemplate, language)
       .then(() => save(template))
-      .then(savedTemplate => entities.updateMetadataProperties(template, language)
-      .then(() => savedTemplate));
+      .then(savedTemplate => savedTemplate));
     }
 
     return save(template)
