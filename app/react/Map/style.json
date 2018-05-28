@@ -1692,15 +1692,7 @@
         "source": "markers",
         "filter": ["has", "point_count"],
         "paint": {
-            "circle-color": [
-                "step",
-                ["get", "point_count"],
-                "#51bbd6",
-                5,
-                "#f1f075",
-                20,
-                "#f28cb1"
-            ],
+            "circle-color": "#60748b",
             "circle-radius": [
                 "step",
                 ["get", "point_count"],
@@ -1713,7 +1705,8 @@
             "circle-opacity": 0.7,
             "circle-stroke-width": 2,
             "circle-stroke-color": "#fff"
-        }
+        },
+        "interactive": true
     },
     {
         "id": "cluster-count",

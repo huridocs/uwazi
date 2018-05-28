@@ -19,7 +19,7 @@ export default class LibraryLayout extends Component {
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library')} />
-        <main className="library-viewer document-viewer with-panel">
+        <main className={`library-viewer document-viewer with-panel ${this.props.className}`}>
           <LibraryModeToggleButtons storeKey="library"/>
           {this.props.children}
         </main>
@@ -31,6 +31,11 @@ export default class LibraryLayout extends Component {
   }
 }
 
+LibraryLayout.defaultProps = {
+  className: ''
+};
+
 LibraryLayout.propTypes = {
-  children: PropTypes.instanceOf(Object).isRequired
+  children: PropTypes.instanceOf(Object).isRequired,
+  className: PropTypes.string
 };

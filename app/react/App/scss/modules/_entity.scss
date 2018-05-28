@@ -74,6 +74,11 @@
     border-bottom: 1px solid $c-grey-light;
   }
 
+  li:hover {
+    cursor: pointer;
+    background-color: $c-shadow;
+  }
+
   .fa {
     position: relative;
     top: 1px;
