@@ -1,24 +1,39 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {DropTarget} from 'react-dnd';
-import {Form} from 'react-redux-form';
-import {I18NLink} from 'app/I18N';
-import {actions as formActions} from 'react-redux-form';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { DropTarget } from 'react-dnd';
+import { Form } from 'react-redux-form';
+import { I18NLink } from 'app/I18N';
+import { actions as formActions } from 'react-redux-form';
 
-import {inserted, addProperty} from 'app/Templates/actions/templateActions';
+import { inserted, addProperty } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import validator from './ValidateTemplate';
-import {FormGroup} from 'app/Forms';
-import {Field} from 'react-redux-form';
+import { FormGroup } from 'app/Forms';
+import { Field } from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
 
 export class MetadataTemplate extends Component {
+  constructor(props) {
+    super(props);
+    this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  onSubmit(_template) {
+    const template = Object.assign({}, _template);
+    template.properties = template.properties.map((_prop) => {
+      const prop = Object.assign({}, _prop);
+      prop.label = _prop.label.trim();
+      return prop;
+    });
+
+    this.props.saveTemplate(template);
+  }
 
   render() {
-    const {connectDropTarget} = this.props;
+    const { connectDropTarget } = this.props;
     const commonProperties = this.props.commonProperties || [];
 
     return (
@@ -31,11 +46,11 @@ export class MetadataTemplate extends Component {
           validators={validator(this.props.properties, this.props.templates.toJS(), this.props._id)}
         >
           <div className="metadataTemplate-heading">
-          <FormGroup model={'.name'}>
-            <Field model={'.name'}>
-              <input placeholder="Template name" className="form-control"/>
-            </Field>
-          </FormGroup>
+            <FormGroup model=".name">
+              <Field model=".name">
+                <input placeholder="Template name" className="form-control"/>
+              </Field>
+            </FormGroup>
           </div>
 
           <ShowIf if={!this.props.relationType}>
@@ -50,14 +65,14 @@ export class MetadataTemplate extends Component {
                   return <MetadataProperty {...config} key={localID} localID={localID} index={index}/>;
                 })}
                 <div className="no-properties">
-                  <span className="no-properties-wrap"><i className="fa fa-clone"></i>Drag properties here</span>
+                  <span className="no-properties-wrap"><i className="fa fa-clone" />Drag properties here</span>
                 </div>
               </ul>
             )}
           </ShowIf>
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
-              <i className="fa fa-arrow-left"></i>
+              <i className="fa fa-arrow-left" />
               <span className="btn-label">Back</span>
             </I18NLink>
             <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>
@@ -91,38 +106,36 @@ const target = {
   },
 
   drop(props, monitor) {
-    let item = monitor.getItem();
+    const item = monitor.getItem();
 
-    let propertyAlreadyAdded = props.properties[item.index];
+    const propertyAlreadyAdded = props.properties[item.index];
 
     if (propertyAlreadyAdded) {
       props.inserted(item.index);
       return;
     }
 
-    props.addProperty({label: item.label, type: item.type}, props.properties.length);
-    return {name: 'container'};
+    props.addProperty({ label: item.label, type: item.type }, props.properties.length);
+    return { name: 'container' };
   }
 };
 
-let dropTarget = DropTarget('METADATA_OPTION', target, (connector) => ({
+const dropTarget = DropTarget('METADATA_OPTION', target, connector => ({
   connectDropTarget: connector.dropTarget()
 }))(MetadataTemplate);
 
-export {dropTarget};
+export { dropTarget };
 
-const mapStateToProps = ({template, templates}) => {
-  return {
+const mapStateToProps = ({ template, templates }) => ({
     _id: template.data._id,
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
-    templates: templates,
+    templates,
     savingTemplate: template.uiState.get('savingTemplate')
-  };
-};
+});
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({inserted, addProperty, setErrors: formActions.setErrors}, dispatch);
+  return bindActionCreators({ inserted, addProperty, setErrors: formActions.setErrors }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, null, {withRef: true})(dropTarget);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);
