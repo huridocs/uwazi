@@ -305,8 +305,7 @@ export default {
         return this.indexEntities({ template: template._id }, null, 1000);
       }
 
-      const asd = this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
-      return asd;
+      return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
     });
   },
 
