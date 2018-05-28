@@ -65,8 +65,38 @@
   margin-right: -15px;
 }
 
-.main-wrapper .map-container {
-  margin-top: 15px;
+.library-map > .map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.library-map-layout {
+  padding: 0;
+
+  .list-view-mode .buttons-group {
+    top: 15px;
+    right: 15px;
+  }
+
+  .search-list {
+    margin: 0;
+    position: relative;
+    top: 15px;
+    left: 15px;
+  }
+
+  .documents-counter {
+    z-index: 1;
+    position: relative;
+    top: 18px;
+    left: 15px;
+    color: #555;
+    text-shadow: 1px 1px #fff;
+    b {
+      color: #555;
+    }
+  }
 }
 
 .list-view-mode {
