@@ -97,12 +97,12 @@ export default class DocumentsList extends Component {
           <div className="row">
             {(() => {
               if (view !== 'graph') {
-                return (<p className="col-sm-12 text-center documents-counter">
-                  <b>{documents.get('rows').size}</b>
-                  {` ${t('System', 'of')} `}
-                  <b>{documents.get('totalRows')}</b>
-                  {` ${t('System', 'documents')}`}
-                        </p>);
+                return (
+                  <p className="col-sm-12 text-center documents-counter">
+                    <b> {documents.get('rows').size} </b>{t('System', 'of')}
+                    <b> {documents.get('totalRows')} </b>{t('System', 'documents')}
+                  </p>
+                );
               }
             })()}
             {(() => {
@@ -114,7 +114,7 @@ export default class DocumentsList extends Component {
                 return (
                   <div className="col-sm-12 text-center">
                     <button onClick={this.loadMoreDocuments} className="btn btn-default btn-load-more">
-                      {`${loadMoreAmmount} ${t('System', 'x more')}`}
+                      {`${loadMoreAmmount}`} {t('System', 'x more')}
                     </button>
                   </div>
                 );

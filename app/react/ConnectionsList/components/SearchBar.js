@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Field, Form, actions as formActions} from 'react-redux-form';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Field, Form, actions as formActions } from 'react-redux-form';
 
 import debounce from 'app/utils/debounce';
-import {t} from 'app/I18N';
+import { t } from 'app/I18N';
 
-import {searchReferences} from '../actions/actions';
+import { searchReferences } from '../actions/actions';
 
 export class SearchBar extends Component {
-
   resetSearchTerm() {
     this.props.change('relationships/list/search.searchTerm', '');
   }
@@ -35,24 +34,24 @@ export class SearchBar extends Component {
   }
 
   render() {
-    const {search} = this.props;
+    const { search } = this.props;
     const searchTerm = search.searchTerm && search.searchTerm.value ? search.searchTerm.value : '';
 
     return (
       <div className="search-box">
         <Form model="relationships/list/search" onSubmit={this.props.searchReferences} autoComplete="off">
-          <div className={'input-group' + (searchTerm ? ' is-active' : '')}>
+          <div className={`input-group${searchTerm ? ' is-active' : ''}`}>
             <Field model="relationships/list/search.searchTerm">
-              <i className="fa fa-search"></i>
+              <i className="fa fa-search" />
               <input
                 type="text"
-                placeholder={t('System', 'Search related entities or documents')}
+                placeholder={t('System', 'Search related entities or documents', null, false)}
                 className="form-control"
                 onChange={this.changeSearchTerm.bind(this)}
                 autoComplete="off"
                 value={searchTerm}
               />
-              <i className="fa fa-close" onClick={this.resetSearch.bind(this)}></i>
+              <i className="fa fa-close" onClick={this.resetSearch.bind(this)} />
             </Field>
           </div>
         </Form>
@@ -68,8 +67,8 @@ SearchBar.propTypes = {
   entityId: PropTypes.string
 };
 
-export function mapStateToProps({relationships}) {
-  const {entityId, search} = relationships.list;
+export function mapStateToProps({ relationships }) {
+  const { entityId, search } = relationships.list;
   return {
     entityId,
     search

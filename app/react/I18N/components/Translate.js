@@ -47,9 +47,10 @@ export const mapStateToProps = (state, props) => {
   }
   const _ctx = props.context || 'System';
   const context = Translate.translation.contexts.find(ctx => ctx.id === _ctx) || { values: {} };
+  const canEditThisValue = (_ctx === 'System' || !!context.values[props.children]);
   return {
     text: context.values[props.children] || props.children,
-    i18nmode: state.inlineEdit.get('inlineEdit')
+    i18nmode: state.inlineEdit.get('inlineEdit') && canEditThisValue
   };
 };
 

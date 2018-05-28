@@ -1,15 +1,17 @@
 import { store } from 'app/store';
+import React from 'react';
+import { Translate } from './';
 
-const t = (contextId, key, _text) => {
-  //return translations[contextId][key];
-  //return 'text';
+const t = (contextId, key, _text, returnComponent = true) => {
+  if (returnComponent) {
+    return (<Translate context={contextId}>{key}</Translate>);
+  }
   const text = _text || key;
 
   if (!t.translation) {
     const state = store.getState();
     const translations = state.translations.toJS();
     t.translation = translations.find(d => d.locale === state.locale) || { contexts: [] };
-    //console.log(t.translation);
   }
 
   const context = t.translation.contexts.find(ctx => ctx.id === contextId) || { values: {} };

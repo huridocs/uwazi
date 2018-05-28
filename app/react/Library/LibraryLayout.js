@@ -18,7 +18,7 @@ export default class LibraryLayout extends Component {
 
     return (
       <div className="row panels-layout">
-        <Helmet title={t('System', 'Library')} />
+        <Helmet title={t('System', 'Library', null, false)} />
         <main className={`library-viewer document-viewer with-panel ${this.props.className}`}>
           <LibraryModeToggleButtons storeKey="library"/>
           {this.props.children}

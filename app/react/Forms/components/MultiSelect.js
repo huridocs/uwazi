@@ -70,6 +70,15 @@ export default class MultiSelect extends Component {
     });
   }
 
+  moreLessLabel(totalOptions) {
+    if (this.state.showAll) {
+      return t('System', 'x less');
+    }
+    return (
+      <span>{totalOptions.length - this.optionsToShow} {t('System', 'x more')}</span>
+    );
+  }
+
   render() {
     let { optionsValue, optionsLabel, prefix } = this.props;
     optionsValue = optionsValue || 'value';
@@ -109,7 +118,7 @@ export default class MultiSelect extends Component {
               <input
                 className="form-control"
                 type="text"
-                placeholder={t('System', 'Search item')}
+                placeholder={t('System', 'Search item', null, false)}
                 value={this.state.filter}
                 onChange={this.filter.bind(this)}
               />
@@ -146,7 +155,7 @@ export default class MultiSelect extends Component {
           <ShowIf if={totalOptions.length > this.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
-              <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.optionsToShow + t('System', 'x more')}</span>
+              {this.moreLessLabel(totalOptions)}
             </button>
           </ShowIf>
         </li>

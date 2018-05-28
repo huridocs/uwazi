@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
 const translateOptions = thesauri => thesauri.values.map((option) => {
-  option.label = t(thesauri._id, option.label);
+  option.label = t(thesauri._id, option.label, null, false);
   return option;
 });
 
