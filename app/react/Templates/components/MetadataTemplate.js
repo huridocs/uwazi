@@ -41,7 +41,7 @@ export class MetadataTemplate extends Component {
         <RemovePropertyConfirm />
         <Form
           model="template.data"
-          onSubmit={this.props.saveTemplate}
+          onSubmit={this.onSubmit}
           className="metadataTemplate"
           validators={validator(this.props.properties, this.props.templates.toJS(), this.props._id)}
         >
