@@ -17,6 +17,10 @@
 }
 
 .thesauri-values {
+  .sub-group {
+    padding: 15px 0px 0px 25px;
+  }
+
   .list-group-item {
     padding: 5px 10px;
   }
@@ -24,6 +28,10 @@
     border: 0;
     padding: 15px 25px 0px;
     z-index: 1;
+  }
+  .list-group-name:first-child {
+    padding: 5px 0px;
+    border: 1px solid #fff;
   }
   .list-group-item .form-control {
     border: 1px solid #fff;
