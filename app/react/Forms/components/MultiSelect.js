@@ -70,8 +70,7 @@ export default class MultiSelect extends Component {
 
   showAll(e) {
     e.preventDefault();
-    const showAll = !this.state.showAll;
-    this.setState({ showAll });
+    this.setState({ showAll: !this.state.showAll });
   }
 
   sort(options, optionsValue, optionsLabel) {
@@ -95,11 +94,9 @@ export default class MultiSelect extends Component {
 
   toggleOptions(group, e) {
     e.preventDefault();
-    if (!this.checked(group) && group.options.find(itm => this.checked(itm))) {
-      return;
-    }
+    const groupKey = group[this.props.optionsValue];
     const ui = this.state.ui;
-    ui[group.id] = !ui[group.id];
+    ui[groupKey] = !ui[groupKey];
     this.setState({ ui });
   }
 
@@ -110,11 +107,11 @@ export default class MultiSelect extends Component {
 
   renderGroup(group, index) {
     return (
-      <li key={index}>
+      <li key={index} className="multiselect-group">
         <div className="multiselectItem">
           <input
             type="checkbox"
-            className="form-control multiselectItem-input"
+            className="group-checkbox multiselectItem-input"
             id={group.id}
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
@@ -144,8 +141,7 @@ export default class MultiSelect extends Component {
   }
 
   renderOption(option, index, groupIndex = '') {
-    const { optionsValue, optionsLabel } = this.props;
-    const prefix = this.props.prefix;
+    const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
     return (
       <li className="multiselectItem" key={key} title={option[optionsLabel]}>
@@ -247,18 +243,19 @@ MultiSelect.defaultProps = {
   optionsValue: 'value',
   value: [],
   prefix: '',
+  options: [],
   filter: '',
   optionsToShow: 5,
   showAll: false,
+  hideSearch: false,
   noSort: false,
-  sortbyLabel: true,
-  hideSearch: false
+  sortbyLabel: true
 };
 
 MultiSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  options: PropTypes.array.isRequired,
+  options: PropTypes.array,
   value: PropTypes.array,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,

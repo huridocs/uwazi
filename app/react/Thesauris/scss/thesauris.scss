@@ -18,7 +18,14 @@
 
 .thesauri-values {
   .sub-group {
-    padding: 15px 0px 0px 25px;
+    padding-left: 0px;
+    .list-group-item {
+      padding-left: 35px;
+    }
+
+    .list-group-item.list-group-name {
+      padding-left: 0px;
+    }
   }
 
   .list-group-item {

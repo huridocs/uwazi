@@ -4,6 +4,7 @@ import { t } from 'app/I18N';
 import * as types from 'app/Thesauris/actions/actionTypes';
 import api from 'app/Thesauris/ThesaurisAPI';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
+import { advancedSort } from 'app/utils/advancedSort';
 
 
 export function saveThesauri(thesauri) {
@@ -12,6 +13,22 @@ export function saveThesauri(thesauri) {
     notifications.notify(t('System', 'Thesaurus saved'), 'success')(dispatch);
     dispatch(formActions.change('thesauri.data', _thesauri));
   });
+}
+
+export function sortValues() {
+  return (dispatch, getState) => {
+    let values = getState().thesauri.data.values.slice(0);
+    values = advancedSort(values, { property: 'label' });
+    values = values.map((_value) => {
+      const value = Object.assign({}, _value);
+      if (value.values) {
+        value.values = value.values.slice(0);
+        value.values = advancedSort(value.values, { property: 'label' });
+      }
+      return value;
+    });
+    dispatch(formActions.change('thesauri.data.values', values));
+  };
 }
 
 export function addValue(group) {
