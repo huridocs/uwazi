@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-export default class DatePicker extends Component {
-
+export default class Numeric extends Component {
   constructor(props) {
     super(props);
-    this.state = {value: props.value || ''};
+    this.state = { value: props.value || '' };
   }
 
   onChange(e) {
     const value = e.target.value;
-    this.setState({value: value});
+    this.setState({ value });
     if (!value) {
       return this.props.onChange(null);
     }
@@ -21,17 +20,16 @@ export default class DatePicker extends Component {
 
   render() {
     return (
-        <input
-          className="form-control"
-          onChange={this.onChange.bind(this)}
-          value={this.state.value}
-        />
+      <input
+        className="form-control"
+        onChange={this.onChange.bind(this)}
+        value={this.state.value}
+      />
     );
   }
-
 }
 
-DatePicker.propTypes = {
+Numeric.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.any
 };

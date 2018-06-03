@@ -5,11 +5,21 @@ import React, { Component } from 'react';
 import Icons from './Icons';
 
 export class FilterSuggestions extends Component {
+  static getTypeIcon(type) {
+    return Icons[type] || 'fa fa-font';
+  }
+
+  getThesauriName(thesauriId) {
+    const _thesauri = this.props.thesauris.toJS().find(thesauri => thesauri._id === thesauriId) || {};
+
+    return _thesauri.name;
+  }
+
   findSameLabelProperties(label, templates) {
     return templates
     .filter(template => template._id !== this.props.data._id)
     .map((template) => {
-      const property = template.properties.find(prop => prop.label.toLowerCase() === label.toLowerCase() && prop.filter);
+      const property = template.properties.find(prop => prop.label.trim().toLowerCase() === label.trim().toLowerCase() && prop.filter);
 
       if (property) {
         return { template: template.name, property };
@@ -18,8 +28,13 @@ export class FilterSuggestions extends Component {
     .filter(match => match);
   }
 
-  getTypeIcon(type) {
-    return Icons[type] || 'fa fa-font';
+  filterSuggestions(label, type, content, hasThesauri) {
+    return this.findSameLabelProperties(label, this.props.templates.toJS())
+    .map((propertyMatch, index) => {
+      const typeConflict = propertyMatch.property.type !== type;
+      const contentConflict = propertyMatch.property.content !== content;
+      return this.renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index);
+    });
   }
 
   renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index) {
@@ -32,40 +47,30 @@ export class FilterSuggestions extends Component {
     if (typeConflict) {
       title = 'This property has different Type and wont\'t be used together.';
     }
-    const icon = this.getTypeIcon(propertyMatch.property.type);
+    const icon = FilterSuggestions.getTypeIcon(propertyMatch.property.type);
     const type = propertyMatch.property.type[0].toUpperCase() + propertyMatch.property.type.slice(1);
 
-    return (<tr key={index} className={activeClass} title={title}>
-      <td><i className="fa fa-file-o" /> {propertyMatch.template}</td>
-      <td className={typeConflict ? 'conflict' : ''}>
-        <i className="fa fa-warning" />
-        <i className={icon} /> {type}
-      </td>
-      {(() => {
-              if (hasThesauri && propertyMatch.property.content) {
-                const thesauri = this.getThesauriName(propertyMatch.property.content);
-                return (<td className={contentConflict ? 'conflict' : ''}>
-                  <i className="fa fa-warning" />
-                  <i className="fa fa-book" /> {thesauri}
-                </td>);
-              }
-            })()}
-    </tr>);
-  }
-
-  getThesauriName(thesauriId) {
-    const _thesauri = this.props.thesauris.toJS().find(thesauri => thesauri._id === thesauriId) || {};
-
-    return _thesauri.name;
-  }
-
-  filterSuggestions(label, type, content, hasThesauri) {
-    return this.findSameLabelProperties(label, this.props.templates.toJS())
-    .map((propertyMatch, index) => {
-      const typeConflict = propertyMatch.property.type !== type;
-      const contentConflict = propertyMatch.property.content !== content;
-      return this.renderMatch(propertyMatch, typeConflict, contentConflict, hasThesauri, index);
-    });
+    return (
+      <tr key={index} className={activeClass} title={title}>
+        <td><i className="fa fa-file-o" /> {propertyMatch.template}</td>
+        <td className={typeConflict ? 'conflict' : ''}>
+          <i className="fa fa-warning" />
+          <i className={icon} /> {type}
+        </td>
+        {(() => {
+                if (hasThesauri && propertyMatch.property.content) {
+                  const thesauri = this.getThesauriName(propertyMatch.property.content);
+                  return (
+                    <td className={contentConflict ? 'conflict' : ''}>
+                      <i className="fa fa-warning" />
+                      <i className="fa fa-book" /> {thesauri}
+                    </td>
+                  );
+                }
+                return false;
+              })()}
+      </tr>
+    );
   }
 
   render() {
@@ -75,7 +80,7 @@ export class FilterSuggestions extends Component {
     const hasThesauri = typeof content !== 'undefined';
     const activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
     const title = 'This is the current property and will be used togheter with equal properties.';
-    const icon = this.getTypeIcon(type);
+    const icon = FilterSuggestions.getTypeIcon(type);
 
 
     return (

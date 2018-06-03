@@ -28,7 +28,7 @@ describe('FilterSuggestions', () => {
       { _id: 'template3',
         name: 'Template 3',
         properties: [
-          { label: 'Date', type: 'date', filter: true },
+          { label: 'date ', type: 'date', filter: true },
           { label: 'Keywords', type: 'text', filter: true }
         ] }
     ];
