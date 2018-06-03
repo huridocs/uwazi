@@ -21,6 +21,11 @@ export class ThesauriForm extends Component {
     };
   }
 
+  constructor(props) {
+    super(props);
+    this.save = this.save.bind(this);
+  }
+
   componentWillReceiveProps(props) {
     props.thesauri.values.forEach((value, index) => {
       if (value.values && value.values[value.values.length - 1].label !== '') {
@@ -36,6 +41,20 @@ export class ThesauriForm extends Component {
   componentWillUnmount() {
     this.props.resetForm('thesauri.data');
     this.props.setInitial('thesauri.data');
+  }
+
+  save(thesauri) {
+    const sanitizedThesauri = Object.assign({}, thesauri);
+    sanitizedThesauri.values = sanitizedThesauri.values
+    .filter(value => value.label)
+    .map((value) => {
+      const _value = Object.assign({}, value);
+      if (_value.values) {
+        _value.values = _value.values.filter(_v => _v.label);
+      }
+      return _value;
+    });
+    this.props.saveThesauri(sanitizedThesauri);
   }
 
   renderGroup(value, groupIndex) {
@@ -94,7 +113,7 @@ export class ThesauriForm extends Component {
       <div className="thesauri">
         <Form
           model="thesauri.data"
-          onSubmit={this.props.saveThesauri}
+          onSubmit={this.save}
           validators={ThesauriForm.validation(this.props.thesauris.toJS(), this.props.thesauri._id)}
         >
           <div className="panel panel-default thesauri">

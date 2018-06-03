@@ -5,9 +5,10 @@ const dictionarySchema = new mongoose.Schema({
   name: String,
   values: [{
     id: String,
-    label: {type: String}
+    label: { type: String },
+    values: mongoose.Schema.Types.Mixed,
   }]
 });
 
-let Model = mongoose.model('dictionaries', dictionarySchema);
+const Model = mongoose.model('dictionaries', dictionarySchema);
 export default instanceModel(Model);

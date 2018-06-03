@@ -9,8 +9,34 @@ import ShowIf from 'app/App/ShowIf';
 export default class MultiSelect extends Component {
   constructor(props) {
     super(props);
-    this.state = { filter: props.filter || '', showAll: props.showAll };
-    this.optionsToShow = typeof props.optionsToShow !== 'undefined' ? props.optionsToShow : 5;
+    this.state = { filter: props.filter, showAll: props.showAll, ui: {} };
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.filter) {
+      this.setState({ filter: props.filter });
+    }
+  }
+
+  changeGroup(group, e) {
+    const selectedItems = this.props.value.slice(0);
+    if (e.target.checked) {
+      group.options.forEach((_item) => {
+        if (!this.checked(_item[this.props.optionsValue])) {
+          selectedItems.push(_item[this.props.optionsValue]);
+        }
+      });
+    }
+
+    if (!e.target.checked) {
+      group.options.forEach((_item) => {
+        if (this.checked(_item[this.props.optionsValue])) {
+          const index = selectedItems.indexOf(_item[this.props.optionsValue]);
+          selectedItems.splice(index, 1);
+        }
+      });
+    }
+    this.props.onChange(selectedItems);
   }
 
   change(value) {
@@ -28,13 +54,10 @@ export default class MultiSelect extends Component {
     if (!this.props.value) {
       return false;
     }
-    return this.props.value.includes(value);
-  }
-
-  componentWillReceiveProps(props) {
-    if (props.filter) {
-      this.setState({ filter: props.filter });
+    if (value.options) {
+      return value.options.reduce((allIncluded, option) => allIncluded && this.props.value.includes(option[this.props.optionsValue]), true);
     }
+    return this.props.value.includes(value);
   }
 
   filter(e) {
@@ -70,11 +93,93 @@ export default class MultiSelect extends Component {
     });
   }
 
+  toggleOptions(group, e) {
+    e.preventDefault();
+    if (!this.checked(group) && group.options.find(itm => this.checked(itm))) {
+      return;
+    }
+    const ui = this.state.ui;
+    ui[group.id] = !ui[group.id];
+    this.setState({ ui });
+  }
+
+  showSubOptions(parent) {
+    const toggled = this.state.ui[parent.id];
+    return !!(toggled || !!(!this.checked(parent) && parent.options.find(itm => this.checked(itm))));
+  }
+
+  renderGroup(group, index) {
+    return (
+      <li key={index}>
+        <div className="multiselectItem">
+          <input
+            type="checkbox"
+            className="form-control multiselectItem-input"
+            id={group.id}
+            onChange={this.changeGroup.bind(this, group)}
+            checked={this.checked(group)}
+          />
+          <label htmlFor={group.id} className="multiselectItem-label">
+            <i className="multiselectItem-icon fa fa-square-o" />
+            <i className="multiselectItem-icon fa fa-check" />
+            <span className="multiselectItem-name"><b>{group.label}</b></span>
+          </label>
+          <span className="multiselectItem-results">
+            <ShowIf if={typeof group.results !== 'undefined'}>
+              <span className="multiselectItem-results">{group.results}
+              </span>
+            </ShowIf>
+            <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, group)}>
+              <i className={this.state.ui[group.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+            </span>
+          </span>
+        </div>
+        <ShowIf if={this.showSubOptions(group)}>
+          <ul className="multiselectChild is-active">
+            {group.options.map((_item, i) => this.renderOption(_item, i, index))}
+          </ul>
+        </ShowIf>
+      </li>
+    );
+  }
+
+  renderOption(option, index, groupIndex = '') {
+    const { optionsValue, optionsLabel } = this.props;
+    const prefix = this.props.prefix;
+    const key = `${groupIndex}${index}`;
+    return (
+      <li className="multiselectItem" key={key} title={option[optionsLabel]}>
+        <input
+          type="checkbox"
+          className="multiselectItem-input"
+          value={option[optionsValue]}
+          id={prefix + option[optionsValue]}
+          onChange={this.change.bind(this, option[optionsValue])}
+          checked={this.checked(option[optionsValue])}
+        />
+        <label
+          className="multiselectItem-label"
+          htmlFor={prefix + option[optionsValue]}
+        >
+          <i className="multiselectItem-icon fa fa-square-o" />
+          <i className="multiselectItem-icon fa fa-check" />
+          <span className="multiselectItem-name">
+            <Icon className="item-icon" data={option.icon}/>
+            {option[optionsLabel]}
+          </span>
+          <ShowIf if={typeof option.results !== 'undefined'}>
+            <span className="multiselectItem-results">{option.results}
+            </span>
+          </ShowIf>
+        </label>
+      </li>
+    );
+  }
+
   render() {
-    let { optionsValue, optionsLabel, prefix } = this.props;
+    let { optionsValue, optionsLabel } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
-    prefix = prefix || '';
 
     let options = this.props.options.slice();
     const totalOptions = options.filter((option) => {
@@ -88,7 +193,7 @@ export default class MultiSelect extends Component {
       .indexOf(removeAccents(this.state.filter.toLowerCase())) >= 0);
     }
 
-    const tooManyOptions = !this.state.showAll && options.length > this.optionsToShow;
+    const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
     if (!this.props.noSort) {
       options = this.sort(options, optionsValue, optionsLabel);
@@ -96,14 +201,14 @@ export default class MultiSelect extends Component {
 
     if (tooManyOptions) {
       const numberOfActiveOptions = options.filter(opt => this.checked(opt[optionsValue])).length;
-      const optionsToShow = this.optionsToShow > numberOfActiveOptions ? this.optionsToShow : numberOfActiveOptions;
+      const optionsToShow = this.props.optionsToShow > numberOfActiveOptions ? this.props.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
     }
 
     return (
       <ul className="multiselect is-active">
         <li className="multiselectActions">
-          <ShowIf if={this.props.options.length > this.optionsToShow && !this.props.hideSearch}>
+          <ShowIf if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}>
             <div className="form-group">
               <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)} />
               <input
@@ -116,37 +221,19 @@ export default class MultiSelect extends Component {
             </div>
           </ShowIf>
         </li>
-        {options.map((option, index) => (<li className="multiselectItem" key={index} title={option[optionsLabel]}>
-          <input
-            type="checkbox"
-            className="multiselectItem-input"
-            value={option[optionsValue]}
-            id={prefix + option[optionsValue]}
-            onChange={this.change.bind(this, option[optionsValue])}
-            checked={this.checked(option[optionsValue])}
-          />
-          <label
-            className="multiselectItem-label"
-            htmlFor={prefix + option[optionsValue]}
-          >
-            <i className="multiselectItem-icon far fa-square" />
-            <i className="multiselectItem-icon fa fa-check" />
-            <span className="multiselectItem-name">
-              <Icon className="item-icon" data={option.icon}/>
-              {option[optionsLabel]}
-            </span>
-            <ShowIf if={typeof option.results !== 'undefined'}>
-              <span className="multiselectItem-results">{option.results}
-              </span>
-            </ShowIf>
-          </label>
-                                         </li>))}
+        {options.map((option, index) => {
+          if (option.options) {
+            return this.renderGroup(option, index);
+          }
+
+          return this.renderOption(option, index);
+        })}
 
         <li className="multiselectActions">
-          <ShowIf if={totalOptions.length > this.optionsToShow && !this.props.showAll}>
+          <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
-              <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.optionsToShow + t('System', 'x more')}</span>
+              <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.props.optionsToShow + t('System', 'x more')}</span>
             </button>
           </ShowIf>
         </li>
@@ -155,12 +242,24 @@ export default class MultiSelect extends Component {
   }
 }
 
+MultiSelect.defaultProps = {
+  optionsLabel: 'label',
+  optionsValue: 'value',
+  value: [],
+  prefix: '',
+  filter: '',
+  optionsToShow: 5,
+  showAll: false,
+  noSort: false,
+  sortbyLabel: true,
+  hideSearch: false
+};
+
 MultiSelect.propTypes = {
-  onChange: PropTypes.func,
-  label: PropTypes.string,
-  options: PropTypes.array,
+  onChange: PropTypes.func.isRequired,
+  label: PropTypes.string.isRequired,
+  options: PropTypes.array.isRequired,
   value: PropTypes.array,
-  placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
   filter: PropTypes.string,

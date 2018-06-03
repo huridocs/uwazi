@@ -32,7 +32,13 @@ export function addValue(group) {
 export function addGroup() {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
-    values[values.length - 1] = { label: '', values: [{ label: '' }] };
+    const lastIndex = values.length - 1;
+    const newGroup = { label: '', values: [{ label: '' }] };
+    if (!values[lastIndex].values) {
+      values[lastIndex] = newGroup;
+    } else {
+      values.push(newGroup);
+    }
     dispatch(formActions.change('thesauri.data.values', values));
   };
 }
