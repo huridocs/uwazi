@@ -105,6 +105,30 @@ export default class MultiSelect extends Component {
     return !!(toggled || !!(!this.checked(parent) && parent.options.find(itm => this.checked(itm))));
   }
 
+  label(option) {
+    const { optionsValue, optionsLabel, prefix } = this.props;
+    return (
+      <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]} >
+        <i className="multiselectItem-icon fa fa-square-o" />
+        <i className="multiselectItem-icon fa fa-check" />
+        <span className="multiselectItem-name">
+          <Icon className="item-icon" data={option.icon}/>
+          {option[optionsLabel]}
+        </span>
+        <span className="multiselectItem-results">
+          <ShowIf if={option.results !== undefined}>
+            <span>{option.results}</span>
+          </ShowIf>
+          {option.options &&
+            <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
+              <i className={this.state.ui[option.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+            </span>
+          }
+        </span>
+      </label>
+    );
+  }
+
   renderGroup(group, index) {
     return (
       <li key={index} className="multiselect-group">
@@ -116,20 +140,7 @@ export default class MultiSelect extends Component {
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
           />
-          <label htmlFor={group.id} className="multiselectItem-label">
-            <i className="multiselectItem-icon fa fa-square-o" />
-            <i className="multiselectItem-icon fa fa-check" />
-            <span className="multiselectItem-name"><b>{group.label}</b></span>
-          </label>
-          <span className="multiselectItem-results">
-            <ShowIf if={typeof group.results !== 'undefined'}>
-              <span className="multiselectItem-results">{group.results}
-              </span>
-            </ShowIf>
-            <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, group)}>
-              <i className={this.state.ui[group.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
-            </span>
-          </span>
+          {this.label(group)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
@@ -153,21 +164,7 @@ export default class MultiSelect extends Component {
           onChange={this.change.bind(this, option[optionsValue])}
           checked={this.checked(option[optionsValue])}
         />
-        <label
-          className="multiselectItem-label"
-          htmlFor={prefix + option[optionsValue]}
-        >
-          <i className="multiselectItem-icon fa fa-square-o" />
-          <i className="multiselectItem-icon fa fa-check" />
-          <span className="multiselectItem-name">
-            <Icon className="item-icon" data={option.icon}/>
-            {option[optionsLabel]}
-          </span>
-          <ShowIf if={typeof option.results !== 'undefined'}>
-            <span className="multiselectItem-results">{option.results}
-            </span>
-          </ShowIf>
-        </label>
+        {this.label(option)}
       </li>
     );
   }

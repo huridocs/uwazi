@@ -74,8 +74,9 @@ describe('MultiSelect', () => {
   });
 
   describe('toggleOptions', () => {
-    it('should togle a flag in the state to show or not group sub options', () => {
-      component.find('.multiselect-group .multiselectItem-action').first().simulate('click', { preventDefault: () => {} });
+    it('should toggle a flag in the state to show or not group sub options', () => {
+      render();
+      component.find('.multiselectItem-action').first().simulate('click', { preventDefault: () => {} });
       expect(component.state().ui).toEqual({ Group: true });
     });
   });
