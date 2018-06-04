@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Menu } from '../Menu';
 import Immutable from 'immutable';
 import { I18NLink } from 'app/I18N';
+import { Menu } from '../Menu';
 
 describe('Menu', () => {
   let component;
@@ -12,8 +12,8 @@ describe('Menu', () => {
     props = {
       user: Immutable.fromJS({}),
       links: Immutable.fromJS([
-        {_id: 1, url: 'internal_url', title: 'Internal url'},
-        {_id: 2, url: 'http://external_url', title: 'External url'}
+        { _id: 1, url: 'internal_url', title: 'Internal url' },
+        { _id: 2, url: 'http://external_url', title: 'External url' }
       ]),
       libraryFilters: Immutable.fromJS({
         properties: []
@@ -24,7 +24,7 @@ describe('Menu', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<Menu {...props} />);
   };
 

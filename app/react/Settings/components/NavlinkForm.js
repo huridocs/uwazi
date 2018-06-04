@@ -123,7 +123,7 @@ export class NavlinkForm extends Component {
                 <div className="col-sm-8">
                   <div className="input-group">
                     <span className="input-group-addon">
-                      {hostname}
+                      URL
                     </span>
                     <Field model={`settings.navlinksData.links[${index}].url`}>
                       <input className="form-control" />
