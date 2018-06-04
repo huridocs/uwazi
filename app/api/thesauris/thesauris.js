@@ -7,6 +7,7 @@ import model from './dictionariesModel';
 
 const autoincrementValuesId = (thesauri) => {
   thesauri.values = generateIds(thesauri.values);
+
   thesauri.values = thesauri.values.map((value) => {
     if (value.values) {
       value.values = generateIds(value.values);
