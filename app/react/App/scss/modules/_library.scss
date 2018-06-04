@@ -71,6 +71,20 @@
   left: 0;
 }
 
+.buttons-group {
+  .btn {
+    border-radius: 50%;
+  }
+  .btn:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .btn:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
 .library-map-layout {
   padding: 0;
 
@@ -109,11 +123,9 @@
     z-index: 1;
 
     .btn {
-      margin-left: 3px;
       height: $header-height * 0.88;
       line-height: $header-height * 0.88;
       width: $header-height * 0.88;
-      border-radius: 50%;
       padding: 0;
       text-align: center;
     }
