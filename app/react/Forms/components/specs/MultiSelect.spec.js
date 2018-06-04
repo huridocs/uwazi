@@ -5,6 +5,7 @@ import MultiSelect from '../MultiSelect';
 
 describe('MultiSelect', () => {
   let component;
+  let instance;
   let props;
 
   beforeEach(() => {
@@ -29,6 +30,7 @@ describe('MultiSelect', () => {
 
   const render = () => {
     component = shallow(<MultiSelect {...props}/>);
+    instance = component.instance();
   };
 
   it('should render the checkboxes', () => {
@@ -111,6 +113,37 @@ describe('MultiSelect', () => {
       expect(optionElements.length).toBe(3);
       expect(optionElements.first().props().value).toBe('option1');
       expect(optionElements.last().props().value).toBe('option3');
+    });
+  });
+
+  describe('filter()', () => {
+    it('should set the input value filter', () => {
+      instance.filter({ target: { value: 'something' } });
+      expect(instance.state.filter).toBe('something');
+    });
+  });
+
+  describe('resetFilter()', () => {
+    it('should reset the filter', () => {
+      instance.resetFilter();
+      expect(instance.state.filter).toBe('');
+    });
+  });
+
+  describe('componentWillReceiveProps()', () => {
+    it('should set the filter in the state', () => {
+      instance.componentWillReceiveProps({ filter: 'Only this' });
+      expect(instance.state.filter).toBe('Only this');
+    });
+  });
+
+  describe('showAll()', () => {
+    it('should toggle state flag showAll', () => {
+      instance.showAll({ preventDefault: () => {} });
+      expect(instance.state.showAll).toBe(true);
+
+      instance.showAll({ preventDefault: () => {} });
+      expect(instance.state.showAll).toBe(false);
     });
   });
 });
