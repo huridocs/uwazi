@@ -69,9 +69,7 @@ export class FiltersForm extends Component {
               <Switcher
                 model={`.filters.${property.name}.and`}
                 prefix={property.name}
-                onChange={() => {
-                this.autoSearch = true;
-              }}
+                onChange={this.activateAutoSearch}
               />
             </ShowIf>
           </li>
