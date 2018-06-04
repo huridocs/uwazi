@@ -183,6 +183,16 @@ export default class MultiSelect extends Component {
       return option.results === notDefined || option.results > 0 || this.checked(option[optionsValue]);
     });
     options = totalOptions;
+    options = options.map((option) => {
+      if (option.options) {
+        option.options = option.options.filter((_opt) => {
+          let notDefined;
+          return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt[optionsValue]);
+        });
+      }
+
+      return option;
+    });
 
     if (this.state.filter) {
       options = options.filter(opt => removeAccents(opt[optionsLabel].toLowerCase())

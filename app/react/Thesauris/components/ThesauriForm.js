@@ -24,6 +24,7 @@ export class ThesauriForm extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
+    this.renderValue = this.renderValue.bind(this);
   }
 
 
@@ -36,6 +37,15 @@ export class ThesauriForm extends Component {
 
     if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
       props.addValue();
+    }
+  }
+
+  componentDidUpdate(previousProps) {
+    const addedValue = this.props.thesauri.values.length > previousProps.thesauri.values.length;
+    const lasValueIsGroup = this.props.thesauri.values[this.props.thesauri.values.length - 1].values;
+    const previousLasValueWasGroup = previousProps.thesauri.values[previousProps.thesauri.values.length - 1].values;
+    if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
+      this.groups[this.groups.length - 1].focus();
     }
   }
 
@@ -64,7 +74,7 @@ export class ThesauriForm extends Component {
         <li className="list-group-item list-group-name">
           <FormGroup>
             <Field model={`thesauri.data.values[${groupIndex}].label`}>
-              <input className="form-control" type="text" placeholder="Group name" />
+              <input ref={i => this.groups.push(i)} className="form-control" type="text" placeholder="Group name" />
               <button
                 tabIndex={groupIndex + 500}
                 type="button"
@@ -76,7 +86,7 @@ export class ThesauriForm extends Component {
             </Field>
           </FormGroup>
         </li>
-        <li className="list-group-item"><b>Items:</b></li>
+        <li className="list-group-item"><b>Group items:</b></li>
         {value.values.map((_value, index) => (
           this.renderValue(_value, index, groupIndex)
         ))}
@@ -115,10 +125,11 @@ export class ThesauriForm extends Component {
   render() {
     const isNew = this.props.new;
     const id = this.props.thesauri._id;
+    const { values } = this.props.thesauri;
     if (!isNew && !id) {
       return false;
     }
-
+    this.groups = [];
     return (
       <div className="thesauri">
         <Form
@@ -141,9 +152,7 @@ export class ThesauriForm extends Component {
             </div>
             <ul className="thesauri-values list-group">
               <li className="list-group-item"><b>Items:</b></li>
-              {this.props.thesauri.values.map((value, index) => (
-                this.renderValue(value, index)
-              ))}
+              {values.map((value, index) => this.renderValue(value, index))}
             </ul>
             <div className="settings-footer">
               <I18NLink to="/settings/dictionaries" className="btn btn-default">
