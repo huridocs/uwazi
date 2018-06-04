@@ -256,6 +256,7 @@ a.mapboxgl-ctrl-logo {
     height: 0;
     border: 10px solid transparent;
     z-index: 1;
+    display: none;
 }
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
     -webkit-align-self: center;
@@ -325,9 +326,10 @@ a.mapboxgl-ctrl-logo {
     position: relative;
     background: #fff;
     border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.20);
     padding: 10px 10px 15px;
     pointer-events: auto;
+    border: 1px solid #ccc;
 }
 .mapboxgl-popup-anchor-top-left .mapboxgl-popup-content {
     border-top-left-radius: 0;

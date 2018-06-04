@@ -30,20 +30,29 @@ export default class Geolocation extends Component {
 
   render() {
     const markers = [];
-    if (this.props.value.lat && this.props.value.lon) {
-      markers.push({ latitude: this.props.value.lat, longitude: this.props.value.lon });
+    const { value } = this.props;
+    let lat;
+    let lon;
+
+    if (value) {
+      lat = value.lat;
+      lon = value.lon;
+    }
+
+    if (lat && lon) {
+      markers.push({ latitude: parseFloat(value.lat), longitude: parseFloat(value.lon) });
     }
     return (
       <div className="geolocation form-inline">
-        <Map markers={markers} latitude={this.props.value.lat} longitude={this.props.value.lon} onClick={this.mapClick}/>
+        <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false}/>
         <div className="form-row">
           <div className="form-group">
-            <label>Latitude:</label>
-            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={this.props.value.lat}/>
+            <label>Latitude&nbsp;</label>
+            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat}/>
           </div>
           <div className="form-group">
-            <label>Longitude:</label>
-            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={this.props.value.lon}/>
+            <label>Longitude&nbsp;</label>
+            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon}/>
           </div>
         </div>
       </div>
@@ -51,10 +60,11 @@ export default class Geolocation extends Component {
   }
 }
 
+Geolocation.defaultProps = {
+  value: { lat: '', lon: '' }
+};
+
 Geolocation.propTypes = {
-  value: PropTypes.shape({
-    lat: PropTypes.number,
-    lon: PropTypes.number
-  }).isRequired,
+  value: PropTypes.instanceOf(Object),
   onChange: PropTypes.func.isRequired
 };

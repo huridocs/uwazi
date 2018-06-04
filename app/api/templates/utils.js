@@ -2,7 +2,7 @@ import uuid from 'node-uuid';
 
 export function generateNames(properties) {
   return properties.map((property) => {
-    property.name = property.label ? property.label.replace(/[^a-z0-9]/gi, '_').toLowerCase() : property.name;
+    property.name = property.label ? property.label.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() : property.name;
     if (property.type === 'geolocation') {
       property.name += '_geolocation';
     }
