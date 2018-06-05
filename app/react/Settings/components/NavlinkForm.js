@@ -70,8 +70,6 @@ export const LinkTarget = {
 export class NavlinkForm extends Component {
   render() {
     const { link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState } = this.props;
-    const hostname = isClient ? window.location.origin : '';
-
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
 
