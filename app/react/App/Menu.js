@@ -37,12 +37,14 @@ class Menu extends Component {
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                   <i className="fa fa-th"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
                   <span><i className="fa fa-cloud-upload"></i></span>
+                  <span className="tab-link-tooltip">{t('System', 'Private documents')}</span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
@@ -50,6 +52,7 @@ class Menu extends Component {
               <li className="menuNav-item">
                 <I18NLink to='/settings/account' className="menuNav-btn btn btn-default">
                   <i className="fa fa-cog"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
@@ -59,6 +62,7 @@ class Menu extends Component {
                   <li className="menuNav-item">
                     <I18NLink to='/login' className="menuNav-btn btn btn-default">
                       <i className="fa fa-power-off"></i>
+                      <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
                     </I18NLink>
                   </li>
                 );

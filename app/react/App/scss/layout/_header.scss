@@ -122,6 +122,10 @@ header {
     width: auto;
     min-width: $header-height;
   }
+
+  &:hover .tab-link-tooltip{
+    display: block;
+  }
 }
 
 .menuNav-btn {
@@ -211,7 +215,7 @@ header {
     border-top: 0;
     border-right: 1px solid transparentize($c-black, .6);
   }
-  
+
   .menuNav-btn {
     font-size: $f-size-sm;
   }
