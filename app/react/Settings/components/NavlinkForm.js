@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { editLink } from 'app/Settings/actions/uiActions';
-import { isClient } from 'app/utils';
 import { removeLink } from 'app/Settings/actions/navlinksActions';
 import ShowIf from 'app/App/ShowIf';
 
