@@ -181,5 +181,9 @@ export default [
 { key: 'x less', label: ' less' },
 { key: 'x more', label: ' more' },
 { key: 'Private instance', label: 'Private instance' },
-{ key: 'check as private instance', label: 'Check to make this instance private (only logged users access the data)' }
+{ key: 'check as private instance', label: 'Check to make this instance private (only logged users access the data)' },
+{ key: 'Public documents', label: 'Public documents' },
+{ key: 'Private documents', label: 'Private documents' },
+{ key: 'Account settings', label: 'Account settings' },
+{ key: 'Sign in', label: 'Sign in' }
 ];
