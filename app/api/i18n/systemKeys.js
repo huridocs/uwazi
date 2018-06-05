@@ -185,5 +185,7 @@ export default [
 { key: 'Public documents', label: 'Public documents' },
 { key: 'Private documents', label: 'Private documents' },
 { key: 'Account settings', label: 'Account settings' },
-{ key: 'Sign in', label: 'Sign in' }
+{ key: 'Sign in', label: 'Sign in' },
+{ key: 'Map view', label: 'Map view' },
+{ key: 'List view', label: 'List view' }
 ];
