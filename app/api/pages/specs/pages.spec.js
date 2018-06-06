@@ -87,4 +87,16 @@ describe('pages', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('getById', () => {
+    it('Throws 404 error on unexistent id', (done) => {
+      pages.getById('unexistent_id').then(() => {
+        done.fail('It should throw and error');
+      })
+      .catch((error) => {
+        expect(error.code).toBe(404);
+        done();
+      });
+    });
+  });
 });
