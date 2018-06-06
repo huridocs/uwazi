@@ -1,7 +1,7 @@
+import { createError } from 'api/utils';
 import date from 'api/utils/date.js';
 import ID from 'shared/uniqueID';
 import settings from '../settings';
-
 import model from './pagesModel';
 
 export default {
@@ -34,7 +34,8 @@ export default {
   },
 
   getById(sharedId, language) {
-    return this.get({sharedId, language}).then(results => results[0]);
+    return this.get({sharedId, language})
+    .then(results => results[0] ? results[0] : Promise.reject(createError('Page not found', 404)));
   },
 
   delete(sharedId) {
