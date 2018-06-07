@@ -5,11 +5,10 @@ import { Field, Form, actions as formActions } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { I18NLink } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
-import 'app/Thesauris/scss/thesauris.scss';
 import { notEmpty } from 'app/Metadata/helpers/validator';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { saveThesauri, addValue, removeValue, addGroup, sortValues } from 'app/Thesauris/actions/thesauriActions';
+import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
 
 export class ThesauriForm extends Component {
   static validation(thesauris, id) {
@@ -23,8 +22,13 @@ export class ThesauriForm extends Component {
 
   constructor(props) {
     super(props);
+    this.state = { movingValues: [] };
     this.save = this.save.bind(this);
     this.renderValue = this.renderValue.bind(this);
+  }
+
+  componentWillMount() {
+    this.firstLoad = true;
   }
 
 
@@ -41,6 +45,10 @@ export class ThesauriForm extends Component {
   }
 
   componentDidUpdate(previousProps) {
+    if (this.firstLoad) {
+      this.firstLoad = false;
+      return;
+    }
     const addedValue = this.props.thesauri.values.length > previousProps.thesauri.values.length;
     const lasValueIsGroup = this.props.thesauri.values[this.props.thesauri.values.length - 1].values;
     const previousLasValueWasGroup = previousProps.thesauri.values[previousProps.thesauri.values.length - 1].values;
@@ -68,29 +76,57 @@ export class ThesauriForm extends Component {
     this.props.saveThesauri(sanitizedThesauri);
   }
 
+  beenMove(value) {
+    return this.state.movingValues.includes(value);
+  }
+
+  toggleToMove(value) {
+    let movingValues = this.state.movingValues.slice(0);
+    if (movingValues.includes(value)) {
+      movingValues = movingValues.filter(v => v !== value);
+    } else {
+      movingValues.push(value);
+    }
+    this.setState({ movingValues });
+  }
+
+  moveToGroup(groupIndex) {
+    this.props.moveValues(this.state.movingValues, groupIndex);
+    this.setState({ movingValues: [] });
+  }
+
   renderGroup(value, groupIndex) {
     return (
-      <ul key={`group-${groupIndex}`} className="sub-group">
-        <li className="list-group-item list-group-name">
-          <FormGroup>
-            <Field model={`thesauri.data.values[${groupIndex}].label`}>
-              <input ref={i => this.groups.push(i)} className="form-control" type="text" placeholder="Group name" />
-              <button
-                tabIndex={groupIndex + 500}
-                type="button"
-                className="btn btn-xs btn-danger"
-                onClick={this.props.removeValue.bind(null, groupIndex)}
-              >
-                <i className="fa fa-trash" /> Delete Group
-              </button>
-            </Field>
-          </FormGroup>
-        </li>
-        <li className="list-group-item"><b>Group items:</b></li>
-        {value.values.map((_value, index) => (
-          this.renderValue(_value, index, groupIndex)
-        ))}
-      </ul>
+      <li key={`group-${groupIndex}`} className="list-group-item sub-group">
+        <FormGroup>
+          <Field model={`thesauri.data.values[${groupIndex}].label`}>
+            <input ref={i => this.groups.push(i)} className="form-control" type="text" placeholder="Group name" />
+            <button
+              tabIndex={groupIndex + 500}
+              type="button"
+              className="btn btn-xs btn-danger"
+              onClick={this.props.removeValue.bind(null, groupIndex)}
+            >
+              <i className="fa fa-trash" /> Delete Group
+            </button>
+            <button
+              tabIndex={groupIndex + 500}
+              type="button"
+              className="btn btn-xs btn-danger"
+              alt="move"
+              onClick={this.moveToGroup.bind(this, groupIndex)}
+            >
+              <i className="rounded-icon-small fa fa-arrow-left" />
+            </button>
+          </Field>
+        </FormGroup>
+        <ul className="">
+          <li className="list-group-item"><b>Group items:</b></li>
+          {value.values.map((_value, index) => (
+              this.renderValue(_value, index, groupIndex)
+            ))}
+        </ul>
+      </li>
     );
   }
 
@@ -98,13 +134,14 @@ export class ThesauriForm extends Component {
     if (value.values) {
       return this.renderGroup(value, index);
     }
+    const beenMove = this.beenMove(value) ? 'moving' : '';
 
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {
       model = `thesauri.data.values[${groupIndex}].values[${index}].label`;
     }
     return (
-      <li key={`item-${groupIndex || ''}${index}`} className="list-group-item">
+      <li key={`item-${groupIndex || ''}${index}`} className={`list-group-item ${beenMove}`}>
         <FormGroup>
           <Field model={model}>
             <input className="form-control" type="text" placeholder="Item name" />
@@ -115,6 +152,15 @@ export class ThesauriForm extends Component {
               onClick={this.props.removeValue.bind(null, index, groupIndex)}
             >
               <i className="fa fa-trash" /> Delete
+            </button>
+            <button
+              tabIndex={index + 500}
+              type="button"
+              className="btn btn-xs btn-danger"
+              alt="move"
+              onClick={this.toggleToMove.bind(this, value)}
+            >
+              <i className="rounded-icon-small fa fa-check " />
             </button>
           </Field>
         </FormGroup>
@@ -191,6 +237,7 @@ ThesauriForm.propTypes = {
   addGroup: PropTypes.func.isRequired,
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
+  moveValues: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
   state: PropTypes.object.isRequired,
@@ -212,6 +259,7 @@ function bindActions(dispatch) {
     addGroup,
     sortValues,
     removeValue,
+    moveValues,
     resetForm: formActions.reset,
     setInitial: formActions.setInitial,
     validate: formActions.validate
