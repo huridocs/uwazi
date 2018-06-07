@@ -1,11 +1,11 @@
 /* eslint-disable */
 import db from 'api/utils/testing_db';
-const templateToBeEditedId = '589af97080fc0b23471d67f2';
+const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const templateWithContents = db.id();
 export default {
   templates: [
-    {_id: db.id(templateToBeEditedId), name: 'template to be edited'},
+    {_id: templateToBeEditedId, name: 'template to be edited'},
     {_id: db.id(templateToBeDeleted), name: 'to be deleted'},
     {_id: db.id(), name: 'duplicated name'},
     {_id: db.id(), name: 'thesauri template', properties: [{type: 'select', content: 'thesauri1'}]},
