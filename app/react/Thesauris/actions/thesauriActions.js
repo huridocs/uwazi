@@ -49,7 +49,7 @@ export function moveValues(valuesToMove, groupIndex) {
 
     if (!groupIndex) {
       values.splice(-1, 1);
-      values.concat(valuesToMove);
+      values = values.concat(valuesToMove);
     }
 
     dispatch(formActions.change('thesauri.data.values', values));
