@@ -8,7 +8,7 @@ nightmareUpload(Nightmare);
 
 export default function createNightmare(width = 1100, height = 600) {
   const nightmare = new Nightmare({
-    show: true,
+    show: false,
     typeInterval: 10,
     x: 0,
     y: 0,
