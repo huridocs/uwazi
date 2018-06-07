@@ -33,10 +33,10 @@ export class ConfirmCloseForm extends Component {
 
         <Modal.Footer>
           <button type="button" className="btn btn-default cancel-button" onClick={() => this.props.hideModal('ConfirmCloseForm')}>
-            <i className="fa fa-close"></i> Cancel
+            <i className="fa fa-times"></i> Cancel
           </button>
           <button type="button" className="btn btn-danger confirm-button" onClick={() => this.confirm()}>
-            <i className="fa fa-trash"></i> Ok
+            <i className="fa fa-trash-alt"></i> Ok
           </button>
         </Modal.Footer>
 

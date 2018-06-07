@@ -76,12 +76,12 @@ export class Attachment extends Component {
                       <div className="attachment-buttons">
                         <ShowIf if={!this.props.readOnly}>
                           <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
-                            <i className="fa fa-pencil"></i>
+                            <i className="fa fa-pencil-alt"></i>
                           </a>
                         </ShowIf>
                         <ShowIf if={item.deletable && !this.props.readOnly}>
                           <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
-                            <i className="fa fa-trash"></i>
+                            <i className="fa fa-trash-alt"></i>
                           </a>
                         </ShowIf>
                         <ShowIf if={item.replaceable && !this.props.readOnly}>
@@ -107,7 +107,7 @@ export class Attachment extends Component {
                   <div className="item-shortcut-group">
                     <NeedAuthorization roles={['admin', 'editor']}>
                       <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
-                        <i className="fa fa-close"></i>
+                        <i className="fa fa-times"></i>
                       </a>
                     </NeedAuthorization>
                     <NeedAuthorization roles={['admin', 'editor']}>

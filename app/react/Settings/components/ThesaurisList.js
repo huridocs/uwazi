@@ -39,11 +39,11 @@ export class ThesaurisList extends Component {
               <I18NLink to={'/settings/dictionaries/edit/' + dictionary._id}>{dictionary.name}</I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/dictionaries/edit/' + dictionary._id} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil"></i>&nbsp;
+                  <i className="fa fa-pencil-alt"></i>&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <a onClick={this.deleteThesauri.bind(this, dictionary)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash"></i>&nbsp;
+                  <i className="fa fa-trash-alt"></i>&nbsp;
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>

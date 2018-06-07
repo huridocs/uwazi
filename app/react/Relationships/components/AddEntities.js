@@ -29,7 +29,7 @@ export class AddEntities extends Component {
       <SidePanel open={open} className="create-reference">
         <div className="sidepanel-header">
           <h1>Add entities / documents</h1>
-          <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
+          <i className="closeSidepanel fa fa-times close-modal" onClick={this.props.closePanel}></i>
 
           <div className="search-form">
             <SearchForm />

@@ -39,7 +39,7 @@ let ItemLabel = ({children, status}) => {
     icon = 'fa fa-check';
   }
   if (status === 'danger') {
-    icon = 'fa fa-close';
+    icon = 'fa fa-times';
   }
   if (status === 'warning') {
     icon = 'fa fa-warning';

@@ -4,12 +4,12 @@ export default {
   relationship: 'fa fa-link fa-fw',
   select: 'fa fa-sort fa-fw',
   multiselect: 'fa fa-list fa-fw',
-  date: 'fa fa-calendar fa-fw',
+  date: 'far fa-calendar fa-fw',
   text: 'fa fa-font fa-fw',
-  markdown: 'fa fa-file-text-o fa-fw',
+  markdown: 'far fa-file-alt fa-fw',
   nested: 'fa fa-cubes fa-fw',
-  multidate: 'fa fa-calendar fa-fw',
-  multidaterange: 'fa fa-calendar fa-fw',
-  daterange: 'fa fa-calendar fa-fw',
+  multidate: 'far fa-calendar fa-fw',
+  multidaterange: 'far fa-calendar fa-fw',
+  daterange: 'far fa-calendar fa-fw',
   geolocation: 'fa fa-map-marker fa-fw'
 };

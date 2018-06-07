@@ -99,7 +99,7 @@ export class EntityViewer extends Component {
               </li>
               <li>
                 <TabLink to="connections">
-                  <i className="fa fa-exchange" />
+                  <i className="fa fa-exchange-alt" />
                   <span className="connectionsNumber">{summary.totalConnections}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>

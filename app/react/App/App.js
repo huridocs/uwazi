@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.css';
 //import 'font-awesome/css/font-awesome.css';
@@ -13,20 +13,19 @@ import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
-import {isClient} from 'app/utils';
-import {loadCSS} from 'fg-loadcss';
+import { isClient } from 'app/utils';
+import { loadCSS } from 'fg-loadcss';
 
 if (isClient) {
-  loadCSS('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+  loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');
 }
 
 class App extends Component {
-
   constructor(props, context) {
     super(props, context);
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
-    this.state = {showmenu: false, confirmOptions: {}};
+    this.state = { showmenu: false, confirmOptions: {} };
   }
 
   getChildContext() {
@@ -36,15 +35,15 @@ class App extends Component {
   }
 
   toggleMenu() {
-    this.setState({showmenu: !this.state.showmenu});
+    this.setState({ showmenu: !this.state.showmenu });
   }
 
   closeMenu() {
-    this.setState({showmenu: false});
+    this.setState({ showmenu: false });
   }
 
   confirm(options) {
-    this.setState({confirmOptions: options});
+    this.setState({ confirmOptions: options });
   }
 
   renderTools() {
@@ -61,7 +60,7 @@ class App extends Component {
     let navClass = 'menuNav';
 
     if (this.state.showmenu) {
-      MenuButtonClass = 'menu-button fa fa-close';
+      MenuButtonClass = 'menu-button fa fa-times';
       navClass += ' is-active';
     }
 
@@ -73,7 +72,7 @@ class App extends Component {
             <h1><SiteName/></h1>
           </nav>
           <header>
-            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)}></i>
+            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)} />
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
             <Menu location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
