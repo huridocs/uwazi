@@ -11,7 +11,7 @@ export class I18NLink extends Component {
 }
 
 export function mapStateToProps({locale}, ownProps) {
-  return {to: `/${locale || ''}/${ownProps.to}`.replace(/\/+/g, '/')};
+  return {to: `/${locale || ''}/${ownProps.to}`.replace(/\/+/g, '/') };
 }
 
 export default connect(mapStateToProps)(I18NLink);
