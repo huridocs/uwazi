@@ -5,7 +5,7 @@ import {NeedAuthorization} from 'app/Auth';
 import {I18NLink, I18NMenu, t} from 'app/I18N';
 import {processFilters, encodeSearch} from 'app/Library/actions/libraryActions';
 
-class Menu extends Component {
+export class Menu extends Component {
 
   libraryUrl() {
     const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
@@ -21,11 +21,20 @@ class Menu extends Component {
     const {links} = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links.map(link =>
-      <li key={link.get('_id')} className="menuNav-item">
-        <I18NLink to={link.get('url') || '/'} className="btn menuNav-btn">{t('Menu', link.get('title'))}</I18NLink>
-      </li>
-    );
+    const navLinks = links.map((link) => {
+      if (link.get('url').startsWith('http')) {
+        return (
+          <li key={link.get('_id')} className="menuNav-item">
+            <a href={link.get('url') || '/'} className="btn menuNav-btn" target="_blank">{t('Menu', link.get('title'))}</a>
+          </li>
+        );
+      }
+      return (
+          <li key={link.get('_id')} className="menuNav-item">
+            <I18NLink to={link.get('url') || '/'} className="btn menuNav-btn">{t('Menu', link.get('title'))}</I18NLink>
+          </li>
+      );
+    });
 
     return (
       <ul onClick={this.props.onClick} className={this.props.className}>
@@ -37,12 +46,14 @@ class Menu extends Component {
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                   <i className="fa fa-th"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
                   <span><i className="fa fa-cloud-upload"></i></span>
+                  <span className="tab-link-tooltip">{t('System', 'Private documents')}</span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
@@ -50,6 +61,7 @@ class Menu extends Component {
               <li className="menuNav-item">
                 <I18NLink to='/settings/account' className="menuNav-btn btn btn-default">
                   <i className="fa fa-cog"></i>
+                  <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
@@ -59,6 +71,7 @@ class Menu extends Component {
                   <li className="menuNav-item">
                     <I18NLink to='/login' className="menuNav-btn btn btn-default">
                       <i className="fa fa-power-off"></i>
+                      <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
                     </I18NLink>
                   </li>
                 );
