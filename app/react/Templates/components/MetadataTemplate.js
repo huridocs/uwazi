@@ -3,17 +3,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { DropTarget } from 'react-dnd';
-import { Form } from 'react-redux-form';
 import { I18NLink } from 'app/I18N';
-import { actions as formActions } from 'react-redux-form';
+import { actions as formActions, Field, Form } from 'react-redux-form';
+import { FormGroup } from 'app/Forms';
+import ShowIf from 'app/App/ShowIf';
 
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import validator from './ValidateTemplate';
-import { FormGroup } from 'app/Forms';
-import { Field } from 'react-redux-form';
-import ShowIf from 'app/App/ShowIf';
 
 export class MetadataTemplate extends Component {
   constructor(props) {
@@ -86,12 +84,16 @@ export class MetadataTemplate extends Component {
   }
 }
 
+MetadataTemplate.defaultProps = {
+  savingTemplate: false
+};
+
 MetadataTemplate.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   formState: PropTypes.object,
   backUrl: PropTypes.string,
   _id: PropTypes.string,
-  saveTemplate: PropTypes.func,
+  saveTemplate: PropTypes.func.isRequired,
   savingTemplate: PropTypes.bool,
   relationType: PropTypes.bool,
   setErrors: PropTypes.func,

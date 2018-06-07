@@ -8,6 +8,7 @@ import translations from 'api/i18n/translations';
 
 import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents } from './fixtures.js';
 
+
 describe('templates', () => {
   beforeEach((done) => {
     spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
@@ -173,10 +174,11 @@ properties: [
 
       it('should updateMetadataProperties', (done) => {
         spyOn(translations, 'updateContext');
+        const template = { _id: templateToBeEditedId, name: 'template to be edited', properties: [] };
         const toSave = { _id: templateToBeEditedId, name: 'changed name' };
         templates.save(toSave, 'en')
         .then(() => {
-          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, 'en');
+          expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en');
           done();
         })
         .catch(catchErrors(done));
@@ -188,7 +190,7 @@ properties: [
         templates.save(toSave)
         .then(templates.get)
         .then((allTemplates) => {
-          const edited = allTemplates.find(template => template._id.toString() === templateToBeEditedId);
+          const edited = allTemplates.find(template => template._id.toString() === templateToBeEditedId.toString());
           expect(edited.name).toBe('changed name');
           done();
         })

@@ -3,11 +3,10 @@ import TestUtils from 'react-dom/test-utils';
 import TestBackend from 'react-dnd-test-backend';
 import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import { modelReducer, formReducer, Field } from 'react-redux-form';
-import { combineReducers } from 'redux';
+import { combineReducers, createStore } from 'redux';
 
 import { MetadataTemplate, dropTarget } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
@@ -27,7 +26,8 @@ function sourceTargetTestContext(Target, Source, actions) {
           templates,
           connectDropTarget: identity,
           formState: { fields: {}, errors: {} },
-          backUrl: 'url'
+          backUrl: 'url',
+          saveTemplate: jasmine.createSpy('saveTemplate')
         };
         const sourceProps = {
           label: 'source',
@@ -35,7 +35,9 @@ function sourceTargetTestContext(Target, Source, actions) {
           index: 2,
           localID: 'source',
           connectDragSource: identity,
-          formState: { fields: {}, errors: {} } };
+          formState: { fields: {}, errors: {} }
+        };
+
         return (
           <div>
             <Target {...targetProps} {...actions}/>
@@ -129,10 +131,12 @@ describe('MetadataTemplate', () => {
     });
   });
 
-  describe('onSubmit()', () => {
-    it('should trim all the labels and then call saveTemplate', () => {
-      const template = { properties: [{ label: ' trim me please ' }] };
+  describe('onSubmit', () => {
+    it('should thrim the properties labels and then call props.saveTemplate', () => {
       const component = shallow(<MetadataTemplate {...props} />);
+      const template = { properties: [
+        { label: ' trim me please ' }
+      ] };
       component.instance().onSubmit(template);
       expect(props.saveTemplate).toHaveBeenCalledWith({ properties: [{ label: 'trim me please' }] });
     });
