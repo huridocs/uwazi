@@ -113,7 +113,7 @@ export class AccountSettings extends Component {
         </div>
         <div className="settings-footer">
           <a href='/logout' className="btn btn-danger">
-            <i className="fa fa-sign-out"></i>
+            <i className="fa fa-sign-out-alt"></i>
             <span className="btn-label">{t('System', 'Logout')}</span>
           </a>
         </div>

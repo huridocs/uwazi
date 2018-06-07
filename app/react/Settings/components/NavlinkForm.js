@@ -92,14 +92,14 @@ export class NavlinkForm extends Component {
             className="btn btn-default btn-xs property-edit"
             onClick={() => this.props.editLink(link.localID)}
           >
-            <i className="fa fa-pencil" /> Edit
+            <i className="fa fa-pencil-alt" /> Edit
           </button>
           <button
             type="button"
             className="btn btn-danger btn-xs property-remove"
             onClick={() => this.props.removeLink(index)}
           >
-            <i className="fa fa-trash" /> Delete
+            <i className="fa fa-trash-alt" /> Delete
           </button>
         </div>
 

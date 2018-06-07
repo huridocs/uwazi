@@ -52,7 +52,7 @@ export class Menu extends Component {
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
-                  <span><i className="fa fa-cloud-upload"></i></span>
+                  <span><i className="fa fa-cloud-upload-alt"></i></span>
                   <span className="tab-link-tooltip">{t('System', 'Private documents')}</span>
                 </I18NLink>
               </li>

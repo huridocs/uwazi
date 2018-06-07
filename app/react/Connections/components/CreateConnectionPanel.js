@@ -18,7 +18,7 @@ export class CreateConnectionPanel extends Component {
       return <i className="fa fa-check"></i>;
     }
 
-    return <i className="fa fa-square-o"></i>;
+    return <i className="far fa-square"></i>;
   }
 
   render() {
@@ -33,7 +33,7 @@ export class CreateConnectionPanel extends Component {
       <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
           <h1>Create {typeLabel}</h1>
-          <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.closePanel}></i>
+          <i className="closeSidepanel fa fa-times close-modal" onClick={this.props.closePanel}></i>
 
           <ul className="connections-list">
             {this.props.relationTypes.map((template) => {
@@ -51,7 +51,7 @@ export class CreateConnectionPanel extends Component {
 
         <div className="sidepanel-footer">
           <button className="btn btn-primary" onClick={this.props.closePanel}>
-            <i className="fa fa-close"></i>
+            <i className="fa fa-times"></i>
           </button>
           <ShowIf if={connection.type !== 'targetRanged'}>
             <ActionButton action="save" onCreate={(reference) => {

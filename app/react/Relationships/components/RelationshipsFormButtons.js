@@ -31,7 +31,7 @@ export class RelationshipsFormButtons extends Component {
           <ShowIf if={!editing}>
             <button onClick={this.edit(true)}
                     className="edit-metadata btn btn-primary">
-              <i className="fa fa-pencil"></i>
+              <i className="fa fa-pencil-alt"></i>
               <span className="btn-label">{t('System', 'Edit')}</span>
             </button>
           </ShowIf>
@@ -40,7 +40,7 @@ export class RelationshipsFormButtons extends Component {
           <ShowIf if={editing}>
             <button onClick={this.edit(false)}
                     className="cancel-edit-metadata btn btn-primary">
-              <i className="fa fa-close"></i>
+              <i className="fa fa-times"></i>
               <span className="btn-label">{t('System', 'Cancel')}</span>
             </button>
           </ShowIf>

@@ -52,7 +52,7 @@ export class SearchBar extends Component {
                 autoComplete="off"
                 value={searchTerm}
               />
-              <i className="fa fa-close" onClick={this.resetSearch.bind(this)}></i>
+              <i className="fa fa-times" onClick={this.resetSearch.bind(this)}></i>
             </Field>
           </div>
         </Form>

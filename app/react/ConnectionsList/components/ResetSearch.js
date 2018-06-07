@@ -1,21 +1,23 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import ShowIf from 'app/App/ShowIf';
-import {t} from 'app/I18N';
+import { t } from 'app/I18N';
 
-import {resetSearch} from '../actions/actions';
+import { resetSearch } from '../actions/actions';
 
 export class ResetSearch extends Component {
   render() {
-    const {connectionsGroups} = this.props;
+    const { connectionsGroups } = this.props;
     return (
       <ShowIf if={Boolean(connectionsGroups.size)}>
-        <button onClick={this.props.resetSearch}
-                className="btn btn-primary">
-          <i className="fa fa-refresh"></i>
+        <button
+          onClick={this.props.resetSearch}
+          className="btn btn-primary"
+        >
+          <i className="fa fa-sync" />
           <span className="btn-label">{t('System', 'Reset')}</span>
         </button>
       </ShowIf>
@@ -28,14 +30,14 @@ ResetSearch.propTypes = {
   resetSearch: PropTypes.func
 };
 
-function mapStateToProps({relationships}) {
+function mapStateToProps({ relationships }) {
   return {
     connectionsGroups: relationships.list.connectionsGroups
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({resetSearch}, dispatch);
+  return bindActionCreators({ resetSearch }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResetSearch);

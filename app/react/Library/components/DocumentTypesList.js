@@ -115,7 +115,7 @@ export class DocumentTypesList extends Component {
         className="multiselectItem-label"
         htmlFor={item.id}
       >
-        <i className="multiselectItem-icon fa fa-square-o" />
+        <i className="multiselectItem-icon far fa-square" />
         <i className="multiselectItem-icon fa fa-check" />
         <span className="multiselectItem-name">{t(item.id, item.name)}</span>
       </label>
@@ -136,7 +136,7 @@ export class DocumentTypesList extends Component {
           checked={this.checked(item)}
         />
         <label htmlFor={item.id} className="multiselectItem-label">
-          <i className="multiselectItem-icon fa fa-square-o" />
+          <i className="multiselectItem-icon far fa-square" />
           <i className="multiselectItem-icon fa fa-check" />
           <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>
         </label>

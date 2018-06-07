@@ -13,19 +13,19 @@ export default function createNightmare(width = 1100, height = 600) {
     x: 0,
     y: 0,
     webPreferences: {
-      preload: __dirname + '/custom-preload.js'
+      preload: `${__dirname}/custom-preload.js`
     }
   }).viewport(width, height);
 
-  nightmare.on('page', function (type, message, error) {
+  nightmare.on('page', (type, message, error) => {
     fail(error);
   });
 
-  nightmare.on('dom-ready', function () {
-    nightmare.inject('css', __dirname + '/tests.css');
+  nightmare.on('dom-ready', () => {
+    nightmare.inject('css', `${__dirname}/tests.css`);
   });
 
-  nightmare.on('console', function (type, message) {
+  nightmare.on('console', (type, message) => {
     //if (message.match(/Unknown prop `storeSubscription`/)) {
       //return;
     //}

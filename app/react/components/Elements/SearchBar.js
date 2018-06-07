@@ -22,7 +22,7 @@ class SearchBar extends Component {
       <form onSubmit={this.search.bind(this)}>
         <div className="input-group">
           <span className="input-group-btn">
-            <button className="btn btn-default"><i className="fa fa-search" /><i className="fa fa-close" /></button>
+            <button className="btn btn-default"><i className="fa fa-search" /><i className="fa fa-times" /></button>
           </span>
           <input
             ref={ref => this.field = ref}
