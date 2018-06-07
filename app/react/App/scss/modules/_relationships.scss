@@ -440,27 +440,49 @@ $relationship-type-height: 32px;
   }
 }
 
-.relationships-removeIcon {
+.relationships-icon {
   position: absolute;
   border: 1px solid $c-grey;
   color: $c-grey;
-  margin: $relationship-type-height/4 0px;
-  width: $relationship-type-height/2;
-  height: $relationship-type-height/2;
   text-align: center;
-  line-height: 13px !important;
-  font-size: $f-size-xs !important;
   border-radius: 50%;
   cursor: pointer;
+  width: 25px;
+  height: 25px;
+  padding: 5px;
 
   .removeHub & {
-    left: -25px;
+    left: -30px;
+  }
+
+  &.moving {
+    border: 1px solid $c-success;
+    color: $c-success;
   }
 
   .rightRelationship &,
   .removeRightRelationshipGroup & {
-    right: -25px;
+    right: -30px;
   }
+}
+
+.removeRightRelationshipGroup i, .removeHub i{
+  top: 3px;
+}
+
+.insertEntities, .relationships-new {
+  float: left;
+}
+
+.insertEntities {
+  position: relative;
+  right: -5px;
+  top: 10px;
+}
+
+.moveEntity {
+  top: 30px;
+  position: relative;
 }
 
 .relationshipsParent,
@@ -633,6 +655,10 @@ $relationship-type-height: 32px;
   &.deleted {
     opacity: 0.3;
   }
+
+  &.move .item {
+    box-shadow: 4px 3px 20px 0px $c-grey;
+  }
 }
 
 .leftDocument {
@@ -666,6 +692,7 @@ $relationship-type-height: 32px;
 .rightRelationshipAdd {
   width: 100%;
   margin-top: 10px;
+  display: inline-block;
 }
 
 .relationships-new {

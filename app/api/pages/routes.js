@@ -16,8 +16,8 @@ export default (app) => {
 
   app.get('/api/pages', (req, res) => {
     pages.getById(req.query.sharedId, req.language)
-    .then(response => res.json(response))
-    .catch(error => res.json({error}));
+    .then(res.json)
+    .catch(res.error);
   });
 
   app.delete('/api/pages', needsAuthorization(), (req, res) => {

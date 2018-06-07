@@ -1,37 +1,48 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
-import style from './style.json';
+import supercluster from 'supercluster'; //eslint-disable-line
+import _style from './style.json';
+import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
 
-const defaultLatitude = 46.22093287671913;
-const defaultLongitude = 6.139284045121682;
-
-class Map extends Component {
+export default class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
       viewport: {
-        latitude: props.latitude || defaultLatitude,
-        longitude: props.longitude || defaultLongitude,
+        latitude: props.latitude || 46,
+        longitude: props.longitude || 6,
         width: props.width || 250,
         height: props.height || 200,
         zoom: props.zoom,
       },
       selectedMarker: null
     };
-    this.mapStyle = Immutable.fromJS(style);
-    this.updateDataSource(props);
+    this.mapStyle = Immutable.fromJS(_style);
+    this.supercluster = supercluster({
+        radius: _style.sources.markers.clusterRadius,
+        maxZoom: _style.sources.markers.clusterMaxZoom
+    });
+    this.updateMapStyle(props);
     this._onViewportChange = (viewport) => {
       this.setState({ viewport });
     };
 
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.onHover = this.onHover.bind(this);
   }
 
   componentDidMount() {
     this.setSize();
+    const map = this.map.getMap();
+    map.on('style.load', () => this.centerOnMarkers(this.props.markers));
+    map.on('moveend', (e) => {
+      if (e.autoCentered) {
+        this.setViweport(map);
+      }
+    });
     this.eventListener = window.addEventListener('resize', this.setSize);
   }
 
@@ -40,7 +51,10 @@ class Map extends Component {
     const latitude = props.latitude || this.state.viewport.latitude;
     const longitude = props.longitude || this.state.viewport.longitude;
     const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
-    this.updateDataSource(props);
+    if (JSON.stringify(props.markers) !== JSON.stringify(this.props.markers)) {
+      this.centerOnMarkers(markers);
+      this.updateMapStyle(props);
+    }
     this.setState({ viewport });
   }
 
@@ -49,55 +63,93 @@ class Map extends Component {
   }
 
   onClick(e) {
-    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
-    if (feature) {
-      this.clickOnMarker(this.props.markers[feature.properties.index]);
+    const markers = e.features.filter(f => f.layer.id === 'unclustered-point');
+    const cluster = e.features.find(f => f.layer.id === 'clusters');
+
+    if (markers.length === 1) {
+      this.clickOnMarker(this.props.markers[markers[0].properties.index]);
+    }
+    if (markers.length > 1) {
+      const markersOnCluster = markers.map(marker => this.props.markers[marker.properties.index]);
+      this.clickOnCluster(markersOnCluster);
+    }
+    if (cluster) {
+      const map = this.map.getMap();
+      const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
+      this.supercluster.load(currentData);
+      const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
+      this.clickOnCluster(markersOnCluster);
     }
     this.props.onClick(e);
   }
 
-  setSize() {
-    if (!this.container || this.props.width) {
-      return;
+  onHover(e) {
+    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
+    if (feature) {
+      this.hoverOnMarker(this.props.markers[feature.properties.index]);
     }
-    this.container.childNodes[0].style.width = 0;
-    let width = this.container.offsetWidth;
-    width = width < 240 ? 240 : width;
-    this.container.childNodes[0].style.width = width;
-    const height = width * 0.6;
+    if (!feature && this.state.selectedMarker && this.props.cluster) {
+      this.setState({ selectedMarker: null });
+    }
+  }
+
+  setSize() {
     const { viewport } = this.state;
-    viewport.width = width;
-    viewport.height = height;
+    viewport.width = this.props.width || this.container.offsetWidth;
+    viewport.height = this.props.height || this.container.offsetHeight;
     this.setState({ viewport });
   }
 
-  updateDataSource(props) {
+  setViweport(map) {
+    const viewport = Object.assign(this.state.viewport, {
+      latitude: map.getCenter().lat,
+      longitude: map.getCenter().lng,
+      zoom: map.getZoom(),
+      pitch: map.getPitch(),
+      bearing: map.getBearing()
+    });
+    this.setState({ viewport });
+  }
+
+  centerOnMarkers(markers) {
+    if (!this.map || !markers.length || !this.props.autoCenter) {
+      return;
+    }
+    const map = this.map.getMap();
+    const boundaries = getMarkersBoudingBox(markers);
+    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5 }, { autoCentered: true });
+  }
+
+  updateMapStyle(props) {
     if (!this.props.cluster) {
       return;
     }
-    const markersData = props.markers
-    .map((marker, index) => {
-      const properties = marker.properties || {};
-      const { longitude, latitude } = marker;
-      properties.index = index;
-      return {
-          type: 'Feature',
-          properties,
-          geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-          }
-      };
-    });
-    this.mapStyle = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], markersData);
+
+    const markersData = markersToStyleFormat(props.markers);
+    const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']);
+    if (!currentData.equals(Immutable.fromJS(markersData))) {
+      const style = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
+      this.mapStyle = style;
+      this.supercluster.load(markersData);
+    }
   }
 
   clickOnMarker(marker) {
-    this.setState({ selectedMarker: marker });
     this.props.clickOnMarker(marker);
   }
 
-  renderMarker(marker, onClick) {
+  clickOnCluster(cluster) {
+    this.props.clickOnCluster(cluster);
+  }
+
+  hoverOnMarker(marker) {
+    if (this.state.selectedMarker !== marker) {
+      this.setState({ selectedMarker: marker });
+    }
+    this.props.hoverOnMarker(marker);
+  }
+
+  renderMarker(marker, onClick, onMouseEnter, onMouseLeave) {
     if (this.props.renderMarker) {
       return this.props.renderMarker(marker, onClick);
     }
@@ -106,24 +158,30 @@ class Map extends Component {
         style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
         className="fa fa-map-marker fa-3x fa-fw map-marker"
         onClick={onClick}
+        onMouseOver={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       />
     );
   }
 
   renderPopup() {
     const { selectedMarker } = this.state;
-    return selectedMarker && selectedMarker.info &&
-      <Popup
-        tipSize={6}
-        anchor="bottom"
-        longitude={selectedMarker.longitude}
-        latitude={selectedMarker.latitude}
-        onClose={() => this.setState({ selectedMarker: null })}
-      >
-        <div>
-          {selectedMarker.info}
-        </div>
-      </Popup>;
+    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker.properties && selectedMarker.properties.info))) {
+      return (
+        <Popup
+          tipSize={6}
+          anchor="bottom"
+          longitude={selectedMarker.longitude}
+          latitude={selectedMarker.latitude}
+          offsetTop={-20}
+          closeButton={false}
+        >
+          <div>
+            {this.props.renderPopupInfo ? this.props.renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
+          </div>
+        </Popup>);
+    }
+    return false;
   }
 
   renderMarkers() {
@@ -134,38 +192,31 @@ class Map extends Component {
 
     return markers.map((marker, index) => {
       const onClick = this.clickOnMarker.bind(this, marker);
+      const onMouseEnter = this.hoverOnMarker.bind(this, marker);
+      const onMouseLeave = this.hoverOnMarker.bind(this, null);
       return (
         <Marker {...marker} key={index} offsetLeft={0} offsetTop={0}>
-          {this.renderMarker(marker, onClick)}
+          {this.renderMarker(marker, onClick, onMouseEnter, onMouseLeave)}
         </Marker>
       );
     });
   }
 
-  /*OSM Styles
-    https://openmaptiles.github.io/osm-bright-gl-style/style-cdn.json
-    https://openmaptiles.github.io/positron-gl-style/style-cdn.json
-    https://openmaptiles.github.io/dark-matter-gl-style/style-cdn.json
-    https://openmaptiles.github.io/klokantech-basic-gl-style/style-cdn.json
-  */
-
   render() {
     const viewport = Object.assign({}, this.state.viewport);
     return (
-      <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%' }}>
+      <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%', height: '100%' }}>
         <ReactMapGL
+          ref={ref => this.map = ref}
           {...viewport}
           dragRotate
           mapStyle={this.mapStyle}
           onViewportChange={this._onViewportChange}
           onClick={this.onClick}
+          onHover={this.onHover}
         >
-          <div style={{ position: 'absolute', left: 5, top: 5 }}>
-            <NavigationControl onViewportChange={this._onViewportChange}/>
-          </div>
           {this.renderMarkers()}
           {this.renderPopup()}
-
           <i className="mapbox-help fa fa-question-circle">
             <span className="mapbox-tooltip">Hold shift to rotate the map</span>
           </i>
@@ -184,8 +235,12 @@ Map.defaultProps = {
   height: null,
   onClick: () => {},
   clickOnMarker: () => {},
+  hoverOnMarker: () => {},
+  clickOnCluster: () => {},
+  renderPopupInfo: null,
   renderMarker: null,
-  cluster: false
+  cluster: false,
+  autoCenter: true
 };
 
 Map.propTypes = {
@@ -197,8 +252,10 @@ Map.propTypes = {
   height: PropTypes.number,
   onClick: PropTypes.func,
   clickOnMarker: PropTypes.func,
+  renderPopupInfo: PropTypes.func,
+  clickOnCluster: PropTypes.func,
+  hoverOnMarker: PropTypes.func,
   renderMarker: PropTypes.func,
-  cluster: PropTypes.bool
+  cluster: PropTypes.bool,
+  autoCenter: PropTypes.bool
 };
-
-export default Map;

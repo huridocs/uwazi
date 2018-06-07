@@ -46,6 +46,7 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('Ra\'s al Ghul')
     .connections.sidePanelSearchAndSelect('robin')
     .connections.sidePanelSearchAndSelect('Talia al Ghul')
+    .connections.sidePanelSearchAndSelect('Cluemaster Wikipedia')
     .then(done)
     .catch(catchErrors(done));
   }, 10000);
@@ -72,14 +73,29 @@ describe('Connections', () => {
     .catch(catchErrors(done));
   });
 
+  it('should move robin to the heroes', (done) => {
+    nightmare
+    .connections.edit()
+    .connections.moveRelationship('robin', 0)
+    .then(done)
+    .catch(catchErrors(done));
+  }, 10000);
+
+  it('should save the relations', (done) => {
+    nightmare
+    .connections.save()
+    .then(done)
+    .catch(catchErrors(done));
+  }, 10000);
+
   it('should render the relations properly after a save', (done) => {
     nightmare
     .connections.getRelationsObjet()
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman', 'Alfred Pennyworth'],
-          Perpetrator: ['Scarecrow', 'Robin', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
+          Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
+          Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker', 'Cluemaster Wikipedia']
         }
       });
     })
@@ -95,8 +111,8 @@ describe('Connections', () => {
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman', 'Alfred Pennyworth'],
-          Perpetrator: ['Scarecrow', 'Robin', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
+          Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
+          Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker', 'Cluemaster Wikipedia']
         }
       });
     })
@@ -104,18 +120,18 @@ describe('Connections', () => {
     .catch(catchErrors(done));
   });
 
-  it('should fix the perpetrators, removing robin with an undo remove of talia', (done) => {
+  it('should fix the perpetrators, removing Cluemaster (was not there) and do an undo remove of talia', (done) => {
     nightmare
     .connections.edit()
     .connections.removeRelation('talia')
-    .connections.removeRelation('robin')
+    .connections.removeRelation('cluemaster')
     .connections.undoRemoveRelation('talia')
     .connections.save()
     .connections.getRelationsObjet()
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman', 'Alfred Pennyworth'],
+          Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
           Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
         }
       });
@@ -152,7 +168,7 @@ describe('Connections', () => {
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman', 'Alfred Pennyworth'],
+          Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
           Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
         },
         Event1: {
@@ -208,7 +224,7 @@ describe('Connections', () => {
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman', 'Alfred Pennyworth'],
+          Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
           Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
         },
         Event1: {
@@ -231,7 +247,7 @@ describe('Connections', () => {
     .then((relations) => {
       expect(relations).toEqual({
         Event: {
-          Heros: ['Batman', 'Alfred Pennyworth'],
+          Heros: ['Batman', 'Robin', 'Alfred Pennyworth'],
           Perpetrator: ['Scarecrow', 'Talia al Ghul', 'Ra\'s al Ghul', 'Joker']
         }
       });
@@ -248,7 +264,7 @@ describe('Connections', () => {
       .then((relations) => {
         expect(relations).toEqual({
           Event: {
-            Heros: ['Alfred Pennyworth', 'Batman'],
+            Heros: ['Alfred Pennyworth', 'Batman', 'Robin'],
             Perpetrator: ['Joker', 'Ra\'s al Ghul', 'Scarecrow', 'Talia al Ghul']
           }
         });
@@ -267,7 +283,7 @@ describe('Connections', () => {
         expect(relations).toEqual({
           Event: {
             Perpetrator: ['Talia al Ghul', 'Scarecrow', 'Ra\'s al Ghul', 'Joker'],
-            Heros: ['Batman', 'Alfred Pennyworth']
+            Heros: ['Robin', 'Batman', 'Alfred Pennyworth']
           }
         });
       })
@@ -285,7 +301,7 @@ describe('Connections', () => {
         expect(relations).toEqual({
           Event: {
             Perpetrator: ['Talia al Ghul', 'Ra\'s al Ghul'],
-            Heros: ['Batman']
+            Heros: ['Robin', 'Batman']
           }
         });
       })

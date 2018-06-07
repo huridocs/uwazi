@@ -11,7 +11,7 @@ export default class LibraryMap extends Library {
 
   render() {
     return (
-      <LibraryLayout>
+      <LibraryLayout className="library-map-layout">
         <MapView storeKey="library"/>
       </LibraryLayout>
     );

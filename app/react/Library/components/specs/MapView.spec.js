@@ -30,6 +30,8 @@ describe('MapView', () => {
       storeKey: 'library',
       templates: Immutable.fromJS(templates),
       getAndSelectDocument: jasmine.createSpy('getAndSelectDocument'),
+      selectDocuments: jasmine.createSpy('selectDocuments'),
+      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments')
     };
     component = shallow(<MapView {...props} />);
     instance = component.instance();
@@ -53,10 +55,22 @@ describe('MapView', () => {
   });
 
   describe('clickOnMarker()', () => {
-    it('should unselect all documents and select the one in i¡the marker', () => {
+    it('should unselect all documents and select the one in the marker', () => {
       const marker = { latitude: 1, longitude: 2, properties: { entity: documents.rows[2] } };
       instance.clickOnMarker(marker);
-      expect(props.getAndSelectDocument).toHaveBeenCalledWith(Immutable.fromJS(documents.rows[2].sharedId));
+      expect(props.getAndSelectDocument).toHaveBeenCalledWith(documents.rows[2].sharedId);
+    });
+  });
+
+  describe('clickOnCluster()', () => {
+    it('should unselect all documents and select the documents in the cluster', () => {
+      const cluster = [
+        { latitude: 1, longitude: 2, properties: { entity: documents.rows[2] } },
+        { latitude: 1, longitude: 2, properties: { entity: documents.rows[3] } }
+      ];
+      instance.clickOnCluster(cluster);
+      expect(props.unselectAllDocuments).toHaveBeenCalled();
+      expect(props.selectDocuments).toHaveBeenCalledWith([documents.rows[2], documents.rows[3]]);
     });
   });
 });

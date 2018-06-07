@@ -46,8 +46,9 @@ export class NavlinksSettings extends Component {
                 <div className="alert alert-info">
                   <i className="fa fa-info-circle"></i>
                   <div>
-                    Use only relative URLs (starting with a /) and not fully formed URLs like http://www.google.com.<br />
-                    If you copied a page universal URL, be sure to delete the first part ({hostname}).
+                    If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.<br />
+                    If it is an internal URL within this website, be sure to delete the first part ({hostname}),
+                     leaving only a relative URL starting with a slash character. Ie. /some_url.
                   </div>
                 </div>
               </li>

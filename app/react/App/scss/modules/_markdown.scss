@@ -1,5 +1,6 @@
 .markdownEditor {
   position: relative;
+  margin-top: 15px;
 
   textarea {
     padding: 15px;
@@ -168,14 +169,14 @@
   cursor: pointer;
   border-radius: 3px;
   padding: 8px 16px;
-  
+
   &:first-child {
     margin-top: 16px;
   }
   &:nth-child(odd) {
     background: $c-grey-lighten;
   }
-  
+
   &:hover {
     background: $c-primary-lighten;
   }

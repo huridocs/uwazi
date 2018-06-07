@@ -11,6 +11,15 @@
       label {
         display: inline-block;
       }
+
+      input {
+        width: -moz-available;
+        width: -webkit-fill-available;
+      }
     }
+  }
+
+  .overlays {
+    cursor: pointer;
   }
 }
