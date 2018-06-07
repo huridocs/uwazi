@@ -197,7 +197,18 @@ export class ThesauriForm extends Component {
               </FormGroup>
             </div>
             <ul className="thesauri-values list-group">
-              <li className="list-group-item"><b>Items:</b></li>
+              <li className="list-group-item">
+                <b>Items:</b>
+                <button
+                  tabIndex={500}
+                  type="button"
+                  className="btn btn-xs btn-danger"
+                  alt="move"
+                  onClick={this.moveToGroup.bind(this)}
+                >
+                  <i className="rounded-icon-small fa fa-arrow-left" />
+                </button>
+              </li>
               {values.map((value, index) => this.renderValue(value, index))}
             </ul>
             <div className="settings-footer">
