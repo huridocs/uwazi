@@ -1,12 +1,12 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-describe('publish entity path', () => {
+fdescribe('publish entity path', () => {
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
@@ -15,7 +15,7 @@ describe('publish entity path', () => {
       .wait(selectors.uploadsView.newEntityButtom)
       .url()
       .then((url) => {
-        expect(url.match(config.url + '/uploads')).not.toBe(null);
+        expect(url.match(`${config.url}/uploads`)).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));
@@ -53,23 +53,23 @@ describe('publish entity path', () => {
     .waitToClick(selectors.libraryView.libraryFirstDocument)
     .wait(selectors.newEntity.viewer.title)
     .getInnerText(selectors.newEntity.viewer.title)
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('scarecrow');
       return nightmare.getInnerText(selectors.newEntity.viewer.realName);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('?');
       return nightmare.getInnerText(selectors.newEntity.viewer.knownAccomplices);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('Joker');
       return nightmare.getInnerText(selectors.newEntity.viewer.mainSuperpower);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('fly');
       return nightmare.getInnerText(selectors.newEntity.viewer.superpowers);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('fly\nlaser beam\n');
     })
     .then(() => {
@@ -105,27 +105,27 @@ describe('publish entity path', () => {
     .waitToClick(selectors.libraryView.libraryFirstDocument)
     .wait(selectors.newEntity.viewer.title)
     .getInnerText(selectors.newEntity.viewer.title)
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('scarecrow');
       return nightmare.getInnerText(selectors.newEntity.viewer.realName);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('Dr. Jonathan Crane');
       return nightmare.getInnerText(selectors.newEntity.viewer.knownAccomplices);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('Joker');
       return nightmare.getInnerText(selectors.newEntity.viewer.mainSuperpower);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('fly');
       return nightmare.getInnerText(selectors.newEntity.viewer.superpowers);
     })
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('fly\nlaser beam\n');
       return nightmare.getInnerText(selectors.newEntity.viewer.whoIsHe);
     })
-    .then(text => {
+    .then((text) => {
       expect(text.match('professor of psychology in Gotham')).not.toBe(null);
       return nightmare.click(selectors.libraryView.deleteButton)
       .waitToClick(selectors.libraryView.deleteButtonConfirmation)
