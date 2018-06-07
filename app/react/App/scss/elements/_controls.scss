@@ -207,6 +207,10 @@
     color: $c-grey-dark;
     text-decoration: none;
   }
+  
+  &:hover .tab-link-tooltip{
+    display: block;
+  }
 }
 
 .form-control[disabled],
