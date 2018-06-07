@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {Attachment, mapStateToProps} from '../Attachment';
-import {NeedAuthorization} from 'app/Auth';
+import { Attachment, mapStateToProps } from '../Attachment';
+import { NeedAuthorization } from 'app/Auth';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 
@@ -13,7 +13,7 @@ describe('Attachment', () => {
   let context;
 
   beforeEach(() => {
-    file = {originalname: 'Human name 1', filename: 'filename.ext'};
+    file = { originalname: 'Human name 1', filename: 'filename.ext' };
 
     props = {
       file,
@@ -29,11 +29,11 @@ describe('Attachment', () => {
       isSourceDocument: false
     };
 
-    context = {confirm: jasmine.createSpy('confirm')};
+    context = { confirm: jasmine.createSpy('confirm') };
   });
 
-  let render = () => {
-    component = shallow(<Attachment {...props} />, {context});
+  const render = () => {
+    component = shallow(<Attachment {...props} />, { context });
   };
 
   it('should render originalname of the attachment', () => {
@@ -102,7 +102,7 @@ describe('Attachment', () => {
   it('should hold a thumbnail for PDFs and valid images', () => {
     props.file.filename = 'document.pdf';
     render();
-    expect(component.find('.attachment-thumbnail i').props().className).toContain('fa-file-pdf-o');
+    expect(component.find('.attachment-thumbnail i').props().className).toContain('fa-file-pdf');
     expect(component.find('.attachment-thumbnail > span').text()).toBe(' pdf');
 
     props.file.filename = 'image.jpg';
@@ -156,11 +156,11 @@ describe('Attachment', () => {
 
   describe('mapStateToProps', () => {
     it('should map if attachment is being edited', () => {
-      let state = {attachments: {edit: {attachment: {_id: 'id'}}}};
-      let ownProps = {file: {_id: 'id'}};
+      const state = { attachments: { edit: { attachment: { _id: 'id' } } } };
+      let ownProps = { file: { _id: 'id' } };
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(true);
 
-      ownProps = {file: {_id: 'otherId'}};
+      ownProps = { file: { _id: 'otherId' } };
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(false);
     });
   });

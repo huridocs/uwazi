@@ -244,7 +244,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">
-                <i className="fa fa-save"></i>
+                <i className="far fa-save"></i>
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>

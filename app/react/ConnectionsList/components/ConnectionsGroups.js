@@ -11,7 +11,7 @@ export class ConnectionsGroups extends Component {
     const {connectionsGroups} = this.props;
 
     let Results = <div className="blank-state">
-                    <i className="fa fa-exchange"></i>
+                    <i className="fa fa-exchange-alt"></i>
                     <h4>{t('System', 'No Relationships')}</h4>
                     <p>{t('System', 'No Relationships description')}</p>
                   </div>;

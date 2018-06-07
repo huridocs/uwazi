@@ -38,7 +38,7 @@ export class ActionButton extends Component {
     const connectionValid = !validate(connection, validator);
     const enabled = connectionValid && !this.props.busy;
     const buttonClass = this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
-    const iClass = this.props.action === 'save' ? 'fa fa-save' : 'fa fa-arrow-right';
+    const iClass = this.props.action === 'save' ? 'far fa-save' : 'fa fa-arrow-right';
 
     return (
       <button className={buttonClass}

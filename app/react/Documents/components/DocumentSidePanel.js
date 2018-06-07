@@ -95,7 +95,7 @@ export class DocumentSidePanel extends Component {
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
-          <i className="closeSidepanel fa fa-close close-modal" onClick={this.close.bind(this)}/>&nbsp;
+          <i className="closeSidepanel fa fa-times close-modal" onClick={this.close.bind(this)}/>&nbsp;
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
               {(() => {
@@ -146,7 +146,7 @@ export class DocumentSidePanel extends Component {
                 if (!isTargetDoc && !excludeConnectionsTab) {
                   return (<li>
                     <TabLink to="connections">
-                      <i className="fa fa-exchange" />
+                      <i className="fa fa-exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                     </TabLink>
@@ -173,7 +173,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-                <i className="fa fa-save" />
+                <i className="far fa-save" />
                 <span className="btn-label">Save</span>
               </button>
             </div>
@@ -184,7 +184,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
-                <i className="fa fa-pencil" />
+                <i className="fa fa-pencil-alt" />
                 <span className="btn-label">Edit</span>
               </button>
             </div>

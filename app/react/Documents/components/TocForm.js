@@ -20,7 +20,7 @@ export class TocForm extends Component {
                   <input className="form-control"/>
                 </Field>
                 <a onClick={this.props.removeEntry.bind(this, tocElement)} className="btn btn-danger">
-                  <i className="fa fa-trash"></i>
+                  <i className="fa fa-trash-alt"></i>
                 </a>
               </div>
             </div>

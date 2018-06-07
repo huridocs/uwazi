@@ -37,7 +37,7 @@
     }
   }
   .input-group .fa-search,
-  .input-group .fa-close {
+  .input-group .fa-times {
     position: absolute;
     line-height: $header-height;
     top: 50%;
@@ -49,7 +49,7 @@
     font-size: $f-size-lg;
     cursor: pointer;
   }
-  .input-group .fa-close {
+  .input-group .fa-times {
     display: none;
     right: 50px;
     width: 18px;
@@ -66,7 +66,7 @@
       border-color: $c-black;
     }
   }
-  .input-group.is-active .fa-close {
+  .input-group.is-active .fa-times {
     display: block;
   }
 }
@@ -290,10 +290,10 @@
     color: $c-success;
   }
 
-  .fa-close {
+  .fa-times {
     color: $c-danger;
   }
-  .fa-close + span {
+  .fa-times + span {
     margin-left: 5px;
     color: $c-danger;
     cursor: pointer;

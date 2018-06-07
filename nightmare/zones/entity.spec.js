@@ -1,6 +1,6 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -14,7 +14,7 @@ describe('Entity zone', () => {
       .login('admin', 'admin')
       .openEntityFromLibrary(entityTitle)
       .getInnerText(selectors.entityView.contentHeader)
-      .then(headerText => {
+      .then((headerText) => {
         expect(headerText).toContain(entityTitle);
         done();
       })
@@ -28,7 +28,7 @@ describe('Entity zone', () => {
       .select(selectors.entityView.metadataFormType, '58ad7d240d44252fee4e61fb')
       .saveEntityFromEntityViewer()
       .getInnerText(selectors.entityView.contentHeader)
-      .then(headerText => {
+      .then((headerText) => {
         expect(headerText).toContain('Man-bat (Dr. Langstrom)');
         expect(headerText).toContain('Super Villian');
         done();
@@ -47,7 +47,7 @@ describe('Entity zone', () => {
           mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
           suporPowers: {
             fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-            laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label > i.multiselectItem-icon.fa.fa-square-o'
+            laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label > i.multiselectItem-icon.fa.fa-square'
           },
           firstSighting: '#metadataForm > div:nth-child(4) > div:nth-child(6) > ul > li.wide > div > input',
           whoIsHe: '#metadataForm > div:nth-child(4) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
@@ -85,27 +85,27 @@ describe('Entity zone', () => {
       .saveEntityFromEntityViewer()
       .refresh()
       .getInnerText(selectors.manBatEntity.viewer.realName)
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('Dr. Kirk Langstrom');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.age);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('39');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.knownAccomplices);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('Joker');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.mainSuperpower);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('fly');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.superpowers);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('fly\nlaser beam\n');
         return nightmare.getInnerText(selectors.manBatEntity.viewer.whoIsHe);
       })
-      .then(text => {
+      .then((text) => {
         expect(text.match('Jekyll and Hyde story')).not.toBe(null);
       })
       .then(done)

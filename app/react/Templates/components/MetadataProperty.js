@@ -57,10 +57,10 @@ export class MetadataProperty extends Component {
           <span className="property-name"><i className="fa fa-lock fa-fw" />&nbsp;<i className={iconClass} />&nbsp;{label}</span>
           <div className="list-group-item-actions">
             <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
-              <i className="fa fa-pencil" /> Edit
+              <i className="fa fa-pencil-alt" /> Edit
             </button>
             <button type="button" className="btn btn-danger btn-xs property-remove" disabled>
-              <i className="fa fa-trash" /> Delete
+              <i className="fa fa-trash-alt" /> Delete
             </button>
           </div>
           <ShowIf if={editingProperty === localID}>
@@ -82,14 +82,14 @@ export class MetadataProperty extends Component {
             </span>
           </ShowIf>
           <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
-            <i className="fa fa-pencil" /> Edit
+            <i className="fa fa-pencil-alt" /> Edit
           </button>
           <button
             type="button"
             className="btn btn-danger btn-xs property-remove"
             onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
           >
-            <i className="fa fa-trash" /> Delete
+            <i className="fa fa-trash-alt" /> Delete
           </button>
         </div>
         <ShowIf if={editingProperty === localID}>

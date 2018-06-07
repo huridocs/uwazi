@@ -187,7 +187,7 @@ export class FiltersForm extends Component {
           if (activeTypes.size > 0 && fields.length === 0) {
             return (
               <div className="blank-state">
-                <i className="fa fa-close" />
+                <i className="fa fa-times" />
                 <h4>{t('System', 'No common filters')}</h4>
                 <p>The combination of document and entity types doesn&#39;t have any filters in common.</p>
                 <a href="https://github.com/huridocs/uwazi/wiki/Filter" target="_blank" rel="noopener noreferrer">Learn more</a>

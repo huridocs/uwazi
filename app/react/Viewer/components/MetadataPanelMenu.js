@@ -24,7 +24,7 @@ export class MetadataPanelMenu extends Component {
             return (
               <MenuButtons.Main disabled={disabled} >
                 <button type="submit" form="metadataForm" disabled={disabled}>
-                  <i className="fa fa-save"></i>
+                  <i className="far fa-save"></i>
                 </button>
               </MenuButtons.Main>
             );
@@ -33,7 +33,7 @@ export class MetadataPanelMenu extends Component {
             <NeedAuthorization roles={['admin', 'editor']}>
               <MenuButtons.Main
                 onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
-                <i className="fa fa-pencil"></i>
+                <i className="fa fa-pencil-alt"></i>
               </MenuButtons.Main>
             </NeedAuthorization>
           );
