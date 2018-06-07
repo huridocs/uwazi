@@ -26,6 +26,7 @@ describe('ThesauriForm', () => {
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
       removeValue: jasmine.createSpy('removeValue'),
+      moveValues: jasmine.createSpy('moveValues'),
       state: { fields: [], $form: {} }
     };
   });
@@ -92,6 +93,7 @@ describe('ThesauriForm', () => {
           ]
         }
       };
+      instance.firstLoad = false;
       instance.groups = [
         { focus: jasmine.createSpy('focus') },
         { focus: jasmine.createSpy('focus') }
