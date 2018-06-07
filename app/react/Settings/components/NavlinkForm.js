@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { editLink } from 'app/Settings/actions/uiActions';
-import { isClient } from 'app/utils';
 import { removeLink } from 'app/Settings/actions/navlinksActions';
 import ShowIf from 'app/App/ShowIf';
 
@@ -70,8 +69,6 @@ export const LinkTarget = {
 export class NavlinkForm extends Component {
   render() {
     const { link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState } = this.props;
-    const hostname = isClient ? window.location.origin : '';
-
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
 
@@ -123,7 +120,7 @@ export class NavlinkForm extends Component {
                 <div className="col-sm-8">
                   <div className="input-group">
                     <span className="input-group-addon">
-                      {hostname}
+                      URL
                     </span>
                     <Field model={`settings.navlinksData.links[${index}].url`}>
                       <input className="form-control" />
