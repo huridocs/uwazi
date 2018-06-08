@@ -22,7 +22,7 @@ export class Menu extends Component {
     const user = this.props.user.toJS();
 
     const navLinks = links.map((link) => {
-      if (link.get('url').startsWith('http')) {
+      if (link.get('url') && link.get('url').startsWith('http')) {
         return (
           <li key={link.get('_id')} className="menuNav-item">
             <a href={link.get('url') || '/'} className="btn menuNav-btn" target="_blank">{t('Menu', link.get('title'))}</a>

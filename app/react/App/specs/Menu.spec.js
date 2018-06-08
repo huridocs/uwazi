@@ -13,7 +13,9 @@ describe('Menu', () => {
       user: Immutable.fromJS({}),
       links: Immutable.fromJS([
         { _id: 1, url: 'internal_url', title: 'Internal url' },
-        { _id: 2, url: 'http://external_url', title: 'External url' }
+        { _id: 2, url: 'http://external_url', title: 'External url' },
+        { _id: 3, url: undefined, title: 'undefined url' },
+        { _id: 4, url: '/', title: 'single slash url' }
       ]),
       libraryFilters: Immutable.fromJS({
         properties: []
@@ -32,8 +34,10 @@ describe('Menu', () => {
     render();
 
     const internalLink = component.find('.menuNav-list').first().find(I18NLink);
-    expect(internalLink.length).toBe(1);
-    expect(internalLink.props().to).toBe('internal_url');
+    expect(internalLink.length).toBe(3);
+    expect(internalLink.at(0).props().to).toBe('internal_url');
+    expect(internalLink.at(1).props().to).toBe('/');
+    expect(internalLink.at(2).props().to).toBe('/');
 
     const externalLink = component.find('.menuNav-list').first().find('a');
     expect(externalLink.length).toBe(1);
