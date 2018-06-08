@@ -70,6 +70,7 @@ describe('Entity zone', () => {
 
       nightmare
       .editEntityFromEntityViewer()
+
       .select(selectors.entityView.metadataFormType, '58f0aed2e147e720856a0741')
       .wait(selectors.manBatEntity.form.realName)
       .write(selectors.manBatEntity.form.realName, 'Dr. Kirk Langstrom')

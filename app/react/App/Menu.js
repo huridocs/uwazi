@@ -1,24 +1,23 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {NeedAuthorization} from 'app/Auth';
-import {I18NLink, I18NMenu, t} from 'app/I18N';
-import {processFilters, encodeSearch} from 'app/Library/actions/libraryActions';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { NeedAuthorization } from 'app/Auth';
+import { I18NLink, I18NMenu, t } from 'app/I18N';
+import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 
 export class Menu extends Component {
-
   libraryUrl() {
     const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
-    return '/library/' + encodeSearch(params);
+    return `/library/${encodeSearch(params)}`;
   }
 
   uploadsUrl() {
     const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
-    return '/uploads/' + encodeSearch(params);
+    return `/uploads/${encodeSearch(params)}`;
   }
 
   render() {
-    const {links} = this.props;
+    const { links } = this.props;
     const user = this.props.user.toJS();
 
     const navLinks = links.map((link) => {
@@ -30,9 +29,9 @@ export class Menu extends Component {
         );
       }
       return (
-          <li key={link.get('_id')} className="menuNav-item">
-            <I18NLink to={link.get('url') || '/'} className="btn menuNav-btn">{t('Menu', link.get('title'))}</I18NLink>
-          </li>
+        <li key={link.get('_id')} className="menuNav-item">
+          <I18NLink to={link.get('url') || '/'} className="btn menuNav-btn">{t('Menu', link.get('title'))}</I18NLink>
+        </li>
       );
     });
 
@@ -45,22 +44,22 @@ export class Menu extends Component {
           <ul className="menuNav-list">
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
-                  <i className="fa fa-th"></i>
-                  <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
+                <i className="fa fa-th" />
+                <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
-                  <span><i className="fa fa-cloud-upload-alt"></i></span>
+                  <span><i className="fa fa-cloud-upload-alt" /></span>
                   <span className="tab-link-tooltip">{t('System', 'Private documents')}</span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
-                <I18NLink to='/settings/account' className="menuNav-btn btn btn-default">
-                  <i className="fa fa-cog"></i>
+                <I18NLink to="/settings/account" className="menuNav-btn btn btn-default">
+                  <i className="fa fa-cog" />
                   <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
                 </I18NLink>
               </li>
@@ -69,8 +68,8 @@ export class Menu extends Component {
               if (!user._id) {
                 return (
                   <li className="menuNav-item">
-                    <I18NLink to='/login' className="menuNav-btn btn btn-default">
-                      <i className="fa fa-power-off"></i>
+                    <I18NLink to="/login" className="menuNav-btn btn btn-default">
+                      <i className="fa fa-power-off" />
                       <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
                     </I18NLink>
                   </li>
@@ -97,7 +96,7 @@ Menu.propTypes = {
   links: PropTypes.object
 };
 
-export function mapStateToProps({user, settings, library, uploads}) {
+export function mapStateToProps({ user, settings, library, uploads }) {
   return {
     user,
     librarySearch: library.search,
