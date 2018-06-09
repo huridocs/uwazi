@@ -1,6 +1,6 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
-import selectors from '../helpers/selectors.js';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -31,8 +31,13 @@ describe('Entity zone', () => {
       .then((headerText) => {
         expect(headerText).toContain('Man-bat (Dr. Langstrom)');
         expect(headerText).toContain('Super Villian');
-        done();
       })
+      .then(() => nightmare
+      .editEntityFromEntityViewer()
+      .clearInput(selectors.entityView.metadataFormTitle)
+      .write(selectors.entityView.metadataFormTitle, 'Man-bat')
+      .saveEntityFromEntityViewer())
+      .then(done)
       .catch(catchErrors(done));
     });
 
