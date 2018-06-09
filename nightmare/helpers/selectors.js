@@ -135,7 +135,7 @@ export default {
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div.upload-box',
-    firstDocument: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div',
+    firstDocument: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1)',
     newEntityButtom: '#app > div.content > div > div > div > div > button',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     firstPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > button',
