@@ -6,7 +6,7 @@ import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
 
-fdescribe('publish entity path', () => {
+describe('publish entity path', () => {
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
