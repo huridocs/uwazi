@@ -23,7 +23,7 @@ let jasmineConfig = {
   ]
 }
 
-let suite = 'nightmare/**/*.spec.js';
+let suite = 'nightmare/paths/*.spec.js';
 
 if(process.argv[2]) {
     suite = 'nightmare/paths/' + process.argv[2] + '.spec.js';
