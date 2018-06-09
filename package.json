@@ -38,7 +38,7 @@
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node run.js ./app/api/migrations/migrate.js",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch -i",
-    "e2e": "node nightmare_tests.js",
+    "e2e": "node nightmare/nightmare_tests.js",
     "eslint": "./node_modules/.bin/eslint app --quiet"
   },
   "dependencies": {

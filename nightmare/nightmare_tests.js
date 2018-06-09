@@ -6,10 +6,10 @@ var jasmine = new Jasmine();
 var reporters = require('jasmine-reporters');
 var exec = require('child_process').exec;
 
-var dbConfig = require('./app/api/config/database.js');
+var dbConfig = require('../app/api/config/database.js');
 
-var systemKeys = require('./app/api/i18n/systemKeys.js');
-var translations = require('./app/api/i18n/translations.js');
+var systemKeys = require('../app/api/i18n/systemKeys.js');
+var translations = require('../app/api/i18n/translations.js');
 
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
