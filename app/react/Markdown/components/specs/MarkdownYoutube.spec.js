@@ -19,7 +19,8 @@ describe('MarkdownYoutube', () => {
   describe('render', () => {
     it('should render an iframe with the correct video id', () => {
       render();
-      expect(component.find('iframe').props().src).toBe('https://www.youtube.com/embed/253530307?rel=0&amp;showinfo=0');
+      expect(component.find('ReactPlayer').props().url)
+      .toBe('https://www.youtube.com/253530307');
     });
   });
 });

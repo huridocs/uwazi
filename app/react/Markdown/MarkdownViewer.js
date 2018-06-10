@@ -66,6 +66,10 @@ export class MarkdownViewer extends Component {
       return <CustomComponents.MarkdownYoutube key={index} config={config} />;
     }
 
+    if (type === 'media') {
+      return <CustomComponents.MarkdownMedia key={index} config={config} />;
+    }
+
     if (type === 'list') {
       return this.list(config, index);
     }
