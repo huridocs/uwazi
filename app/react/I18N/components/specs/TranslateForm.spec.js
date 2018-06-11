@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 import { Form, Field } from 'react-redux-form';
 import Modal from 'app/Layout/Modal';
 import { FormGroup } from 'app/Forms';
-import { TranslateForm, mapStateToProps } from '../TranslateForm';
+import { TranslateForm } from '../TranslateForm';
 
 
 fdescribe('TranslateForm', () => {
@@ -75,17 +75,6 @@ fdescribe('TranslateForm', () => {
       render();
       component.instance().submit({ en: 'Search en', es: 'Buscar es' });
       expect(props.close).toHaveBeenCalled();
-    });
-  });
-
-  describe('mapStateToProps', () => {
-    it('should try to translate the children and pass it on text', () => {
-      props = {};
-      const state = {
-        locale: 'es',
-        inlineEdit: { inlineEdit: true },
-        translations: Immutable.fromJS(translations)
-      };
     });
   });
 });

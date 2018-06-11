@@ -39,8 +39,8 @@ describe('I18NActions', () => {
   describe('saveTranslations', () => {
     it('should request the I18NApi to save each translation', (done) => {
       spyOn(I18NApi, 'save').and.returnValue(Promise.resolve());
-      const translations = [{ _id: 1 }, { _id: 2 }];
-      actions.saveTranslations(translations)(dispatch);
+      const translation = [{ _id: 1 }, { _id: 2 }];
+      actions.saveTranslations(translation)(dispatch);
       expect(I18NApi.save).toHaveBeenCalledWith({ _id: 1 });
       expect(I18NApi.save).toHaveBeenCalledWith({ _id: 2 });
       done();
@@ -50,9 +50,9 @@ describe('I18NActions', () => {
   describe('editTranslations', () => {
     it('should load the translation in to the translations form', (done) => {
       spyOn(formActions, 'load').and.returnValue(() => {});
-      const translations = [{ _id: 1 }, { _id: 2 }];
+      const translation = [{ _id: 1 }, { _id: 2 }];
       actions.editTranslations(translations)(dispatch);
-      expect(formActions.load).toHaveBeenCalledWith('translationsForm', translations);
+      expect(formActions.load).toHaveBeenCalledWith('translationsForm', translation);
       done();
     });
   });

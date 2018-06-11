@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux';
 import { Form } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
-import MetadataFormFields from './MetadataFormFields';
 import ShowIf from 'app/App/ShowIf';
 import { comonProperties } from 'shared/comonProperties';
 import * as metadataActions from 'app/Metadata/actions/actions';
@@ -17,7 +16,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { advancedSort } from 'app/utils/advancedSort';
 import { TemplateLabel, SidePanel } from 'app/Layout';
 import Immutable from 'immutable';
-import { fromJS } from 'immutable';
+import MetadataFormFields from './MetadataFormFields';
 
 const sortedTemplates = createSelector(
   s => s.templates,
