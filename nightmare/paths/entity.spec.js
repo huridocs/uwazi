@@ -1,6 +1,6 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
-import selectors from '../helpers/selectors.js';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -31,8 +31,13 @@ describe('Entity zone', () => {
       .then((headerText) => {
         expect(headerText).toContain('Man-bat (Dr. Langstrom)');
         expect(headerText).toContain('Super Villian');
-        done();
       })
+      .then(() => nightmare
+      .editEntityFromEntityViewer()
+      .clearInput(selectors.entityView.metadataFormTitle)
+      .write(selectors.entityView.metadataFormTitle, 'Man-bat')
+      .saveEntityFromEntityViewer())
+      .then(done)
       .catch(catchErrors(done));
     });
 
@@ -47,7 +52,7 @@ describe('Entity zone', () => {
           mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
           suporPowers: {
             fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-            laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label > i.multiselectItem-icon.fa.fa-square'
+            laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
           },
           firstSighting: '#metadataForm > div:nth-child(4) > div:nth-child(6) > ul > li.wide > div > input',
           whoIsHe: '#metadataForm > div:nth-child(4) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
