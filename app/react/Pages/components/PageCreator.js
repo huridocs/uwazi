@@ -58,7 +58,7 @@ export class PageCreator extends Component {
             <button type="submit"
                     className="btn btn-success save-template"
                     disabled={!!savingPage}>
-              <i className="fa fa-save"></i>
+              <i className="far fa-save"></i>
               <span className="btn-label">Save</span>
             </button>
           </div>

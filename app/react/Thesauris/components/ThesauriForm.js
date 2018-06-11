@@ -66,7 +66,7 @@ export class ThesauriForm extends Component {
                             <Field model={`thesauri.data.values[${index}].label`}>
                               <input className="form-control" type="text" placeholder="Item name" />
                               <a className="btn btn-xs btn-danger" onClick={this.props.removeValue.bind(null, index)}>
-                                <i className="fa fa-trash"></i> Delete
+                                <i className="fa fa-trash-alt"></i> Delete
                               </a>
                             </Field>
                           </FormGroup>
@@ -83,7 +83,7 @@ export class ThesauriForm extends Component {
                   <span className="btn-label">Add item</span>
                 </a>
                 <button className="btn btn-success save-template">
-                  <i className="fa fa-save"/>
+                  <i className="far fa-save"/>
                   <span className="btn-label">Save</span>
                 </button>
               </div>

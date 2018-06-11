@@ -93,8 +93,8 @@ export class ConnectionsList extends Component {
             let itemClass = '';
             let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
             // This is no longer possible to determine?
-            // let referenceIcon = reference.template ? 'fa-sign-in' : 'fa-sign-out';
-            const referenceIcon = 'fa-sign-out';
+            // let referenceIcon = reference.template ? 'fa-sign-in' : 'fa-sign-out-alt';
+            const referenceIcon = 'fa-sign-out-alt';
 
             if (uiState.highlightedReference === reference._id && !this.props.readOnly) {
               itemClass = 'relationship-hover';
@@ -131,7 +131,7 @@ export class ConnectionsList extends Component {
                     <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
                       <NeedAuthorization roles={['admin', 'editor']}>
                         <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-trash"></i>
+                          <i className="fa fa-trash-alt"></i>
                         </a>
                       </NeedAuthorization>
                     </ShowIf>
@@ -140,7 +140,7 @@ export class ConnectionsList extends Component {
                       <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
                             onClick={e => e.stopPropagation()}
                             className="item-shortcut btn btn-default">
-                        <i className="fa fa-file-text-o"></i>
+                        <i className="far fa-file-alt"></i>
                       </I18NLink>
                     </ShowIf>
                   </div>

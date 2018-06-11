@@ -72,7 +72,7 @@ export class SearchText extends Component {
                     className="form-control"
                     autoComplete="off"
                   />
-                  <i className="fa fa-close" onClick={this.resetSearch.bind(this)} />
+                  <i className="fa fa-times" onClick={this.resetSearch.bind(this)}/>
                 </Field>
               </div>
             </div>

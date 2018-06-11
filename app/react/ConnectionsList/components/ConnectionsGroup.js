@@ -82,7 +82,7 @@ export class ConnectionsGroup extends Component {
             checked={this.state.selected}
           />
           <label htmlFor={`group${group.key}`} className="multiselectItem-label">
-            <i className="multiselectItem-icon fa fa-square-o" />
+            <i className="multiselectItem-icon far fa-square" />
             <i className="multiselectItem-icon fa fa-check" />
             <span className="multiselectItem-name">
               <b>{group.key ?
@@ -112,7 +112,7 @@ export class ConnectionsGroup extends Component {
                   className="multiselectItem-label"
                   htmlFor={group.key + template._id}
                 >
-                  <i className="multiselectItem-icon fa fa-square-o" />
+                  <i className="multiselectItem-icon far fa-square" />
                   <i className="multiselectItem-icon fa fa-check" />
                   <span className="multiselectItem-name">{t(template._id, template.label)}</span>
                 </label>

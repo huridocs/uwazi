@@ -104,7 +104,7 @@ export default class NestedMultiselect extends Component {
                   onChange={this.selectAnyChange.bind(this, prop)}
                 />
                 <label htmlFor={prop} className="multiselectItem-label">
-                  <i className="multiselectItem-icon fa fa-square-o" />
+                  <i className="multiselectItem-icon far fa-square" />
                   <i className="multiselectItem-icon fa fa-check" />
                   <span className="multiselectItem-name" title={label}><b>{label}</b></span>
                 </label>

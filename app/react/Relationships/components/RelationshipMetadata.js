@@ -13,7 +13,7 @@ export class RelationshipMetadata extends Component {
   render() {
     return (
       <SidePanel open={this.props.selectedConnection} className="connections-metadata">
-        <i className="closeSidepanel fa fa-close close-modal" onClick={this.props.unselectConnection} />
+        <i className="closeSidepanel fa fa-times close-modal" onClick={this.props.unselectConnection} />
         <div className="sidepanel-body">
           <ShowMetadata entity={this.props.entity} showTitle showType />
         </div>

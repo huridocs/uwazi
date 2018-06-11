@@ -220,7 +220,7 @@ Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
 });
 
 Nightmare.action('editItemFromList', function (liElement, targetText, done) {
-  this.manageItemFromList(liElement, targetText, '.fa-pencil')
+  this.manageItemFromList(liElement, targetText, '.fa-pencil-alt')
   .wait('.settings form')
   .then(done);
 });

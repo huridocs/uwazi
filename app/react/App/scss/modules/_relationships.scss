@@ -200,7 +200,7 @@ $c-background: #fcfcfc;
     margin-top: 15px;
   }
 
-  .connection-type:has(> .fa-exchange) {
+  .connection-type:has(> .fa-exchange-alt) {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }

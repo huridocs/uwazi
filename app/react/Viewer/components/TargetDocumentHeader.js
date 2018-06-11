@@ -36,7 +36,7 @@ export class TargetDocumentHeader extends Component {
         <div className="ContextMenu ContextMenu-center">
           <button onClick={this.save.bind(this, connection, targetRange)}
             className={className}>
-            <i className="fa fa-save"></i>
+            <i className="far fa-save"></i>
             <span className="ContextMenu-tooltip">Save</span>
           </button>
         </div>

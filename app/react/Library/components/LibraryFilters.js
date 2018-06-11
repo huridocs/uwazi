@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {wrapDispatch} from 'app/Multireducer';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
 
-import {resetFilters} from 'app/Library/actions/filterActions';
+import { resetFilters } from 'app/Library/actions/filterActions';
 import FiltersForm from 'app/Library/components/FiltersForm';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
-import {t} from 'app/I18N';
+import { t } from 'app/I18N';
 
 export class LibraryFilters extends Component {
-
   reset() {
     this.props.resetFilters(this.props.storeKey);
   }
@@ -21,11 +20,11 @@ export class LibraryFilters extends Component {
       <SidePanel className="library-filters" open={this.props.open}>
         <div className="sidepanel-footer">
           <span onClick={this.reset.bind(this)} className="btn btn-primary">
-            <i className="fa fa-refresh"></i>
+            <i className="fa fa-sync" />
             <span className="btn-label">{t('System', 'Reset')}</span>
           </span>
           <button type="submit" form="filtersForm" className="btn btn-success">
-            <i className="fa fa-search"></i>
+            <i className="fa fa-search" />
             <span className="btn-label">{t('System', 'Search')}</span>
           </button>
         </div>
@@ -54,7 +53,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({resetFilters}, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({ resetFilters }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);
