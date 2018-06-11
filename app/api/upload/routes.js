@@ -49,13 +49,14 @@ export default (app) => {
     const sessionSockets = req.io.getCurrentSessionSockets();
     sessionSockets.emit('conversionStart', req.body.document);
     console.log('Starting conversion of:', req.files[0].originalname);
-    return Promise.all([
-        new PDF(file, req.files[0].originalname).convert(),
+    return Promise.all([new PDF(file, req.files[0].originalname).convert(),
         getDocuments(req.body.document, allLanguages)
     ]);
   })
   .then(([conversion, _docs]) => {
     console.log('Conversion succeeed for:', req.files[0].originalname);
+    console.log(conversion);
+    console.log(_docs);
     const docs = _docs.map((doc) => {
       doc.processed = true;
       doc.fullText = conversion.fullText;

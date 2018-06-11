@@ -6,6 +6,7 @@ import Dropzone from 'react-dropzone';
 import {wrapDispatch} from 'app/Multireducer';
 
 import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
+import {newEntity} from 'app/Uploads/actions/uploadsActions';
 import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
 import socket from 'app/socket';
 
@@ -24,6 +25,8 @@ export class UploadBox extends Component {
 
   onDrop(files) {
     files.forEach((file) => {
+      console.log(file);
+
       let doc = {title: this.extractTitle(file)};
       this.props.createDocument(doc)
       .then((newDoc) => {
@@ -46,7 +49,7 @@ export class UploadBox extends Component {
   render() {
     return (
       <Dropzone className="upload-box"
-                style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
+                style={{}} onDrop={this.onDrop.bind(this)} accept="image/*, video/*, audio/*, application/pdf">
         <div className="upload-box_wrapper">
           <i className="fa fa-upload"></i>
           <a className="upload-box_link">Browse your PDFs to upload</a>
@@ -68,7 +71,8 @@ UploadBox.propTypes = {
   uploadDocument: PropTypes.func,
   createDocument: PropTypes.func,
   unselectAllDocuments: PropTypes.func,
-  documents: PropTypes.object
+  documents: PropTypes.object,
+  newEntity: PropTypes.func
 };
 
 export function mapStateToProps({uploads}) {
@@ -80,7 +84,7 @@ export function mapStateToProps({uploads}) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError
+    uploadDocument, unselectAllDocuments, createDocument, documentProcessed, documentProcessError, newEntity
   }, wrapDispatch(dispatch, 'uploads'));
 }
 
