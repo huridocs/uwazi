@@ -15,15 +15,43 @@
     }
   }
 }
+.moving .rounded-icon-small{
+  border-color: $c-success;
+  color: $c-success;
+}
 
 .thesauri-values {
+  .list-group-item.sub-group {
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
+    > .form-group {
+      padding-left: 10px;
+      padding-right: 20px;
+    }
+    ul {
+      padding-left: 0;
+      width: 100%;
+    }
+    .list-group-item {
+      padding: 5px 20px 5px 25px;
+    }
+  }
+
   .list-group-item {
-    padding: 5px 10px;
+    padding: 5px 20px 5px 10px;
   }
   .list-group-item:first-child {
     border: 0;
-    padding: 15px 25px 0px;
+    padding: 15px 20px 0 25px;
     z-index: 1;
+    .btn:last-of-type {
+      right: 15px;
+    }
+  }
+  .list-group-name:first-child {
+    padding: 5px 20px 5px 0;
+    border: 1px solid #fff;
   }
   .list-group-item .form-control {
     border: 1px solid #fff;
@@ -39,9 +67,12 @@
     width: 100%;
     margin: 0;
   }
-  .list-group-item .btn {
+  .list-group-item button{
     position: absolute;
     top: 10px;
-    right: 15px;
+    right: 25px;
+    &.rounded-icon-small {
+      right: 0px;
+    }
   }
 }

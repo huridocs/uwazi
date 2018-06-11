@@ -145,7 +145,16 @@ describe('thesauris', () => {
     });
 
     it('should create a translation context', (done) => {
-      const data = { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] };
+      const data = { name: 'Batman wish list',
+        values: [
+          { id: '1', label: 'Joker BFF' },
+          { label: 'Heroes',
+            values: [
+              { id: '2', label: 'Batman' },
+              { id: '3', label: 'Robin' }
+            ]
+          }
+        ] };
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       thesauris.save(data)
       .then((response) => {
@@ -154,8 +163,11 @@ describe('thesauris', () => {
           response._id,
           'Batman wish list',
           {
+            Batman: 'Batman',
             'Batman wish list': 'Batman wish list',
-            'Joker BFF': 'Joker BFF'
+            Heroes: 'Heroes',
+            'Joker BFF': 'Joker BFF',
+            Robin: 'Robin'
           },
           'Dictionary'
         );
