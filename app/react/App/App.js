@@ -15,6 +15,7 @@ import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import { isClient } from 'app/utils';
 import { loadCSS } from 'fg-loadcss';
+import Icons from "./Icons";
 
 if (isClient) {
   loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');

@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import Helmet from 'react-helmet';
 import {I18NLink} from 'app/I18N';
+import Icon from '@fortawesome/react-fontawesome';
 
 export class SiteName extends Component {
   render() {
@@ -15,6 +16,7 @@ export class SiteName extends Component {
             {name: 'description', content: 'Uwazi docs'}
           ]}
         />
+        <Icon icon="coffee" />
         <I18NLink to="/">{this.props.siteName}</I18NLink>
       </div>
     );

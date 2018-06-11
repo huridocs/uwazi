@@ -42,6 +42,10 @@
     "eslint": "./node_modules/.bin/eslint app --quiet"
   },
   "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free-regular": "^5.0.13",
+    "@fortawesome/fontawesome-free-solid": "^5.0.13",
+    "@fortawesome/react-fontawesome": "^0.0.20",
     "@vimeo/player": "^2.2.1",
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",
