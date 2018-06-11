@@ -64,6 +64,7 @@ describe('ThesauriForm', () => {
         values: [
           { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] },
           { label: '', values: [{ label: 'Joker' }, { label: 'Penguin' }] },
+          { label: 'I have no values', values: [] },
           { label: '' }
         ]
       };

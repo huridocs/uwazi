@@ -34,7 +34,7 @@ export class ThesauriForm extends Component {
 
   componentWillReceiveProps(props) {
     props.thesauri.values.forEach((value, index) => {
-      if (value.values && value.values[value.values.length - 1].label !== '') {
+      if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
         props.addValue(index);
       }
     });
@@ -66,6 +66,7 @@ export class ThesauriForm extends Component {
     const sanitizedThesauri = Object.assign({}, thesauri);
     sanitizedThesauri.values = sanitizedThesauri.values
     .filter(value => value.label)
+    .filter(value => !value.values || value.values.length)
     .map((value) => {
       const _value = Object.assign({}, value);
       if (_value.values) {
@@ -112,16 +113,13 @@ export class ThesauriForm extends Component {
             <button
               tabIndex={groupIndex + 500}
               type="button"
-              className="btn btn-xs btn-danger"
+              className="rounded-icon-small fa fa-arrow-left"
               alt="move"
               onClick={this.moveToGroup.bind(this, groupIndex)}
-            >
-              <i className="rounded-icon-small fa fa-arrow-left" />
-            </button>
+            />
           </Field>
         </FormGroup>
         <ul className="">
-          <li className="list-group-item"><b>Group items:</b></li>
           {value.values.map((_value, index) => (
               this.renderValue(_value, index, groupIndex)
             ))}
@@ -156,12 +154,10 @@ export class ThesauriForm extends Component {
             <button
               tabIndex={index + 500}
               type="button"
-              className="btn btn-xs btn-danger"
+              className="rounded-icon-small fa fa-check"
               alt="move"
               onClick={this.toggleToMove.bind(this, value)}
-            >
-              <i className="rounded-icon-small fa fa-check " />
-            </button>
+            />
           </Field>
         </FormGroup>
       </li>
@@ -202,12 +198,10 @@ export class ThesauriForm extends Component {
                 <button
                   tabIndex={500}
                   type="button"
-                  className="btn btn-xs btn-danger"
+                  className="rounded-icon-small fa fa-arrow-left"
                   alt="move"
                   onClick={this.moveToGroup.bind(this)}
-                >
-                  <i className="rounded-icon-small fa fa-arrow-left" />
-                </button>
+                />
               </li>
               {values.map((value, index) => this.renderValue(value, index))}
             </ul>
@@ -221,7 +215,7 @@ export class ThesauriForm extends Component {
                 <span className="btn-label">Add group</span>
               </a>
               <a className="btn btn-primary" onClick={this.props.sortValues}>
-                <i className="fa fa-sort-alpha-asc" />
+                <i className="fa fa-sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
               <button className="btn btn-success save-template">
