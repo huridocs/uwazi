@@ -72,7 +72,7 @@ export class MetadataProperty extends Component {
       );
     }
 
-    return connectDragSource(connectDropTarget(
+    const result = connectDropTarget(
       <li className={propertyClass}>
         <span className="property-name"><i className="fa fa-reorder fa-fw" />&nbsp;<i className={iconClass} />&nbsp;{label}</span>
         <div className="list-group-item-actions">
@@ -98,7 +98,10 @@ export class MetadataProperty extends Component {
           </div>
         </ShowIf>
       </li>
-    ));
+    );
+
+    if (editingProperty === localID) return result;
+    return connectDragSource(result);
   }
 }
 
