@@ -51,7 +51,7 @@ describe('I18NActions', () => {
     it('should load the translation in to the translations form', (done) => {
       spyOn(formActions, 'load').and.returnValue(() => {});
       const translation = [{ _id: 1 }, { _id: 2 }];
-      actions.editTranslations(translations)(dispatch);
+      actions.editTranslations(translation)(dispatch);
       expect(formActions.load).toHaveBeenCalledWith('translationsForm', translation);
       done();
     });
