@@ -84,8 +84,8 @@ describe('search filters path', () => {
 
     it('should filter by multiple options', (done) => {
       filterBySuperVillian();
-      filterBySuperPowers('fly');
-      filterBySuperPowers('hyper speed kick')
+      filterBySuperPowers('laser beam');
+      filterBySuperPowers('fly')
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Daneryl');
