@@ -261,7 +261,6 @@ MultiSelect.defaultProps = {
 
 MultiSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
   options: PropTypes.array,
   value: PropTypes.array,
   optionsValue: PropTypes.string,
