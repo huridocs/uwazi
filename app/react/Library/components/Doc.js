@@ -26,7 +26,7 @@ export class Doc extends Component {
         {connections.map((connection, index) =>
           <div key={index} className="item-connection">
             <div>
-              <i className="fa fa-exchange"></i>
+              <i className="fa fa-exchange-alt"></i>
               <span>
                 {t(connection.context, connection.label)}
                 {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
@@ -35,7 +35,7 @@ export class Doc extends Component {
             <NeedAuthorization roles={['admin', 'editor']}>
               <ShowIf if={connection.sourceType !== 'metadata'}>
                 <button className="btn btn-default btn-hover-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
-                  <i className="fa fa-trash"></i>
+                  <i className="fa fa-trash-alt"></i>
                 </button>
               </ShowIf>
             </NeedAuthorization>

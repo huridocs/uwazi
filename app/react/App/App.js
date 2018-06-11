@@ -16,7 +16,7 @@ import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 
 if (isClient) {
-  loadCSS('https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css');
+  loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');
 }
 
 class App extends Component {
@@ -59,7 +59,7 @@ class App extends Component {
     let navClass = 'menuNav';
 
     if (this.state.showmenu) {
-      MenuButtonClass = 'menu-button fa fa-close';
+      MenuButtonClass = 'menu-button fa fa-times';
       navClass += ' is-active';
     }
 

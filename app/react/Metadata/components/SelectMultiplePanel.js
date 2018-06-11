@@ -158,7 +158,7 @@ export class SelectMultiplePanel extends Component {
       <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
           <i className="fa fa-check-square" /> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
-          <i className="closeSidepanel fa fa-close close-modal" onClick={this.close}/>&nbsp;
+          <i className="closeSidepanel fa fa-times close-modal" onClick={this.close}/>&nbsp;
         </div>
         <div className="sidepanel-body">
           <ShowIf if={!editing}>
@@ -220,25 +220,25 @@ export class SelectMultiplePanel extends Component {
         <div className="sidepanel-footer">
           <ShowIf if={!editing}>
             <button onClick={this.edit} className="edit btn btn-primary">
-              <i className="fa fa-pencil" />
+              <i className="fa fa-pencil-alt" />
               <span className="btn-label">{t('System', 'Edit')}</span>
             </button>
           </ShowIf>
           <ShowIf if={!editing}>
             <button className="delete btn btn-danger" onClick={this.delete}>
-              <i className="fa fa-trash" />
+              <i className="fa fa-trash-alt" />
               <span className="btn-label">{t('System', 'Delete')}</span>
             </button>
           </ShowIf>
           <ShowIf if={editing}>
             <button onClick={this.cancel} className="cancel-edit-metadata btn btn-primary">
-              <i className="fa fa-close" />
+              <i className="fa fa-times" />
               <span className="btn-label">{t('System', 'Cancel')}</span>
             </button>
           </ShowIf>
           <ShowIf if={editing}>
             <button type="submit" form="multiEdit" className="btn btn-success">
-              <i className="fa fa-save" />
+              <i className="far fa-save" />
               <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>

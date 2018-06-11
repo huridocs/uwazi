@@ -69,7 +69,7 @@ export class SearchBar extends Component {
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
-              <i className="fa fa-close" onClick={this.resetSearch.bind(this)} />
+              <i className="fa fa-times" onClick={this.resetSearch.bind(this)}/>
             </Field>
           </div>
           <div
@@ -81,8 +81,8 @@ export class SearchBar extends Component {
               const documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
               return (<p className="search-suggestions-item" key={index}>
                 <I18NLink to={documentViewUrl}>
-                  <span dangerouslySetInnerHTML={{ __html: suggestion.title }}/>
-                  <i className="fa fa-file-text-o" />
+                  <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
+                  <i className="far fa-file-alt"/>
                 </I18NLink>
                       </p>);
             })}

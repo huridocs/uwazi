@@ -71,7 +71,7 @@ export class NavlinksSettings extends Component {
               <button type="submit"
                       className="btn btn-success"
                       disabled={!!this.props.savingNavlinks}>
-                <i className="fa fa-save"/>
+                <i className="far fa-save"/>
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>

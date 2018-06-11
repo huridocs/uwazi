@@ -48,7 +48,7 @@ export class FiltersForm extends Component {
               <input type="text" className="form-control" value={group.name} onChange={nameChange.bind(this)} />
               <span className="input-group-btn">
                 <button className="btn btn-danger" onClick={this.removeGroup.bind(this, group)} disabled={group.items.length}>
-                  <i className="fa fa-trash"></i>
+                  <i className="fa fa-trash-alt"></i>
                 </button>
               </span>
             </div>
@@ -63,7 +63,7 @@ export class FiltersForm extends Component {
     return <div>
             <span>{item.name}</span>
             <button className="btn btn-xs btn-danger" onClick={this.removeItem.bind(this, item)}>
-              <i className="fa fa-trash"></i>
+              <i className="fa fa-trash-alt"></i>
             </button>
           </div>;
   }
@@ -177,7 +177,7 @@ export class FiltersForm extends Component {
                 <span className="btn-label">{t('System', 'Create group')}</span>
               </button>
               <button onClick={this.save.bind(this)} className="btn btn-sm btn-success">
-                <i className="fa fa-save"></i>
+                <i className="far fa-save"></i>
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>

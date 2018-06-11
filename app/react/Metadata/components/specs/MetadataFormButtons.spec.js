@@ -1,9 +1,9 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as immutable} from 'immutable';
-import {I18NLink} from 'app/I18N';
+import { shallow } from 'enzyme';
+import { fromJS as immutable } from 'immutable';
+import { I18NLink } from 'app/I18N';
 
-import {MetadataFormButtons} from '../MetadataFormButtons';
+import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {
   let component;
@@ -12,13 +12,13 @@ describe('MetadataFormButtons', () => {
 
 
   beforeEach(() => {
-    context = {confirm: jasmine.createSpy('confirm')};
+    context = { confirm: jasmine.createSpy('confirm') };
     props = {
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       resetForm: jasmine.createSpy('resetForm'),
       delete: jasmine.createSpy('delete'),
-      data: immutable({test: 'test', sharedId: 'shId', type: 'type'}),
-      templates: immutable([{test: 'test'}]),
+      data: immutable({ test: 'test', sharedId: 'shId', type: 'type' }),
+      templates: immutable([{ test: 'test' }]),
       formName: 'FormName',
       formStatePath: 'form',
       includeViewButton: true,
@@ -26,8 +26,8 @@ describe('MetadataFormButtons', () => {
     };
   });
 
-  let render = () => {
-    component = shallow(<MetadataFormButtons {...props} />, {context});
+  const render = () => {
+    component = shallow(<MetadataFormButtons {...props} />, { context });
   };
 
   describe('view', () => {
@@ -104,7 +104,7 @@ describe('MetadataFormButtons', () => {
       const link = component.find(I18NLink);
       expect(link.props().to).toBe('type/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
-      expect(component.find('.edit-metadata').at(0).find('.fa-file-text-o').length).toBe(1);
+      expect(component.find('.edit-metadata').at(0).find('.fa-file-alt').length).toBe(1);
       expect(component.find('.btn-success').length).toBe(0);
       expect(component.find('.delete-metadata').length).toBe(0);
     });
