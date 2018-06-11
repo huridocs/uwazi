@@ -3,7 +3,7 @@ import config from './config.js';
 import Nightmare from 'nightmare';
 
 Nightmare.action('clearInput', function (selector, done) {
-  let backSpaces = [];
+  const backSpaces = [];
   for (let i = 0; i < 50; i += 1) {
     backSpaces.push('\u0008');
   }
@@ -21,7 +21,7 @@ Nightmare.action('waitFirstDocumentToMatch', function (term, done) {
   this.wait((termToMatch, selector) => {
     const element = document.querySelector(selector);
     if (!element) {
-      throw new Error('Selector not Found! -> ' + selector);
+      throw new Error(`Selector not Found! -> ${selector}`);
     }
     return element.innerText.match(termToMatch);
   }, term, selectors.libraryView.libraryFirstDocument)
@@ -53,9 +53,7 @@ Nightmare.action('gotoLibrary', function (done) {
 });
 
 Nightmare.action('countFiltersResults', function (done) {
-  this.evaluate_now(() => {
-    return document.querySelectorAll('.item-entity').length;
-  }, done);
+  this.evaluate_now(() => document.querySelectorAll('.item-entity').length, done);
 });
 
 Nightmare.action('goToUploads', function (done) {
@@ -160,7 +158,7 @@ Nightmare.action('isVisible', function (selector, done) {
 
 Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
   this.wait((title) => {
-    let cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
+    const cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
 
     let found = false;
 
@@ -177,7 +175,7 @@ Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
 
 Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
   this.wait((cardSelector, cardStatus) => {
-    let cardLabel = document.querySelector(cardSelector + ' .label');
+    const cardLabel = document.querySelector(`${cardSelector} .label`);
 
     if (cardLabel) {
       return cardLabel.innerText.match(cardStatus);
@@ -191,7 +189,7 @@ Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
 Nightmare.action('manageItemFromList', function (liElement, targetText, action, done) {
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;
-    let list = document.querySelectorAll(listSelector);
+    const list = document.querySelectorAll(listSelector);
     list.forEach((item) => {
       let text = item.innerText;
       text += Array.from(item.querySelectorAll('input')).map(input => input.value).join('');
@@ -202,7 +200,7 @@ Nightmare.action('manageItemFromList', function (liElement, targetText, action, 
     return itemFound;
   }, liElement, targetText)
   .evaluate((listSelector, textToMatch, actionToTake) => {
-    let list = document.querySelectorAll(listSelector);
+    const list = document.querySelectorAll(listSelector);
     list.forEach((item) => {
       let text = item.innerText;
       text += Array.from(item.querySelectorAll('input')).map(input => input.value).join('');
@@ -222,6 +220,11 @@ Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
 Nightmare.action('editItemFromList', function (liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.fa-pencil-alt')
   .wait('.settings form')
+  .then(done);
+});
+
+Nightmare.action('clickMultiselectOption', function (liElement, targetText, done) {
+  this.manageItemFromList(liElement, targetText, '.multiselectItem-label')
   .then(done);
 });
 
@@ -259,7 +262,7 @@ Nightmare.action('selectText', function (selector, done) {
 //.wait(selectors.libraryView.anyItemSnippet)
 Nightmare.action('clickCardOnLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    let cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
+    const cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
     let found = false;
     cards.forEach((card) => {
       if (found) {
@@ -279,10 +282,10 @@ Nightmare.action('clickCardOnLibrary', function (itemName, done) {
 
 Nightmare.action('getResultsAsJson', function (done) {
   this.evaluate_now(() => {
-    let normalizedCards = [];
-    let cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
+    const normalizedCards = [];
+    const cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
     cards.forEach((card) => {
-      let normalized = {};
+      const normalized = {};
       normalized.title = card.querySelector('.item-name span').innerText;
       if (card.querySelector('.item-connection span')) {
         normalized.connectionType = card.querySelector('.item-connection span').innerText;
@@ -295,7 +298,7 @@ Nightmare.action('getResultsAsJson', function (done) {
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    let cards = document.querySelectorAll('.main-wrapper div.item-entity');
+    const cards = document.querySelectorAll('.main-wrapper div.item-entity');
     let found = false;
     cards.forEach((card) => {
       if (found) {
@@ -310,15 +313,13 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
       found.querySelector('a').click();
     }
   }, itemName)
-  .wait(elementToSelect => {
-    return document.querySelector(elementToSelect).innerText;
-  }, selectors.entityView.contentHeaderTitle)
+  .wait(elementToSelect => document.querySelector(elementToSelect).innerText, selectors.entityView.contentHeaderTitle)
   .then(done);
 });
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    let cards = document.querySelectorAll('div.item-entity');
+    const cards = document.querySelectorAll('div.item-entity');
     let found = false;
     cards.forEach((card) => {
       if (found) {
@@ -333,15 +334,13 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
       found.querySelector('a').click();
     }
   }, itemName)
-  .wait(elementToSelect => {
-    return document.querySelector(elementToSelect).innerText;
-  }, selectors.entityView.contentHeaderTitle)
+  .wait(elementToSelect => document.querySelector(elementToSelect).innerText, selectors.entityView.contentHeaderTitle)
   .then(done);
 });
 
 Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    let cards = document.querySelectorAll('div.item-document');
+    const cards = document.querySelectorAll('div.item-document');
     let found = false;
     cards.forEach((card) => {
       if (found) {
@@ -356,9 +355,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
       found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
-  .wait(elementToSelect => {
-    return document.querySelector(elementToSelect).innerText;
-  }, selectors.documentView.contentHeader)
+  .wait(elementToSelect => document.querySelector(elementToSelect).innerText, selectors.documentView.contentHeader)
   .then(done);
 });
 
@@ -396,9 +393,6 @@ Nightmare.action('pickToday', function (input, done) {
   this.waitToClick(input)
   .wait(selectors.datePicker.today)
   .click(selectors.datePicker.today)
-  .wait(elementToSelect => {
-    return document.querySelector(elementToSelect).value;
-  }, input)
+  .wait(elementToSelect => document.querySelector(elementToSelect).value, input)
   .then(done);
 });
-
