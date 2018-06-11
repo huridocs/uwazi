@@ -7,7 +7,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/8c98a251ca64daf434f2/test_coverage)](https://codeclimate.com/github/huridocs/uwazi/test_coverage)
 
 
-There are important stories within your documents. Uwazi helps you tell them.  Uwazi is a free, open-source solution for organising, analysing and publishing your documents.
+There are important stories within your documents. Uwazi helps you tell them. Uwazi is a free, open-source solution for organizing, analyzing and publishing your documents.
 
 [Uwazi](https://www.uwazi.io/) | [HURIDOCS](https://huridocs.org/)
 
@@ -58,7 +58,7 @@ $ export API_URL=/api/
 $ export PORT=3000
 ```
 
-Again, please be adviced that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overriden, Uwazi will fail to run properly.
+Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
 
 ### Production Build
 
@@ -82,7 +82,7 @@ $ yarn run-production
 
 ### Upgrading Uwazi (migrations)
 
-We are working on a migration system that will allow seamless transitions from one version to the next of Uwazi.  For the time being, please, check the release notes for each version as to what is required in order to have the data properly migrated. 
+We are working on a migration system that will allow seamless transitions from one version to the next of Uwazi.  For the time being, please, check the release notes for each version as to what is required in order to have the data properly migrated.
 
 # Development
 
@@ -98,18 +98,17 @@ This will launch a webpack server and nodemon app server for hot reloading any c
 #### Unit and Integration tests
 
 We test using the JEST framework (built on top of Jasmine).  To run the unit and integration tests, execute
-
 ```
-$ ./node_modules/.bin/jest
+$ yarn test
 ```
 
-This will run the entire battery of tests, both on server and client apps.
+This will run the entire test suite, both on server and client apps.
 
 #### End to End (e2e)
 
-For End-to-End testing, we have a full set of fixtures that test the overall functionality.  Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any exisitng data and replace it with the testing fixtures.  DO NOT RUN ON PRODUCTION ENVIROMENTS!
+For End-to-End testing, we have a full set of fixtures that test the overall functionality.  Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any exisisting data and replace it with the testing fixtures.  DO NOT RUN ON PRODUCTION ENVIRONMENTS!
 
-Running end to end tests require a runnig uwazi app.
+Running end to end tests require a running Uwazi app.
 
 ```
 $ yarn hot
@@ -120,4 +119,4 @@ On a different console tab, run
 $ yarn e2e
 ```
 
-Note that if you already have an instance running, this will likely throw an error of ports already been used.  Only one instance of uwazi may be run in a the same port at the same time.
+Note that if you already have an instance running, this will likely throw an error of ports already been used.  Only one instance of Uwazi may be run in a the same port at the same time.

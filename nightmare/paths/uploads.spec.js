@@ -1,6 +1,6 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 500]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -18,10 +18,10 @@ describe('Uploads', () => {
 
   describe('when uploading a pdf', () => {
     it('should create the new document and show a "no type state"', (done) => {
-      let expectedTitle = 'Valid';
+      const expectedTitle = 'Valid';
 
       nightmare
-      .upload('.upload-box input', __dirname + '/test_files/valid.pdf')
+      .upload('.upload-box input', `${__dirname}/test_files/valid.pdf`)
       .waitForCardToBeCreated(expectedTitle)
       .waitForCardStatus(selectors.uploadsView.firstDocument, 'No type selected')
       .getResultsAsJson()
@@ -34,10 +34,10 @@ describe('Uploads', () => {
 
     describe('when processing fails', () => {
       it('should create the document and show "Conversion failed"', (done) => {
-        let expectedTitle = 'Invalid';
+        const expectedTitle = 'Invalid';
 
         nightmare
-        .upload('.upload-box input', __dirname + '/test_files/invalid.pdf')
+        .upload('.upload-box input', `${__dirname}/test_files/invalid.pdf`)
         .waitForCardToBeCreated(expectedTitle)
         .waitForCardStatus(selectors.uploadsView.firstDocument, 'Conversion failed')
         .getResultsAsJson()
