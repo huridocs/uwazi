@@ -61,8 +61,8 @@ describe('MarkdownViewer', () => {
       render();
       expect(component.find(CustomHookComponents.validcomponent).at(0).props().prop).toBe('a prop');
       expect(component.find(CustomHookComponents.validcomponent).at(0).props().array).toEqual([{child: ['a'], bool: true}, {child: ['b']}]);
-      expect(component.find(CustomComponents.MarkdownVimeo).props().config).toEqual('(1234, options)');
-      expect(component.find(CustomComponents.MarkdownYoutube).props().config).toEqual('(1234)');
+      expect(component.find(CustomComponents.MarkdownMedia).at(0).props().config).toEqual('(1234, options)');
+      expect(component.find(CustomComponents.MarkdownMedia).at(1).props().config).toEqual('(1234)');
       expect(component.find(CustomComponents.ItemList).at(0).props().link).toBe('/library/param1');
       expect(component.find(CustomComponents.ItemList).at(0).props().items).toEqual(['items1']);
       expect(component.find(CustomComponents.ItemList).at(0).props().options).toEqual({option1: 'optionValue'});
