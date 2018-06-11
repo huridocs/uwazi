@@ -12,7 +12,7 @@ export class MarkdownMedia extends Component {
     let parsedProps = props.config.replace(/\(|\)/g, '').split(',');
     config.url = parsedProps.shift();
 
-    parsedProps =  parsedProps.join(',') || '{}';
+    parsedProps = parsedProps.join(',') || '{}';
     parsedProps = parsedProps.replace(/&quot;/g, '"');
 
     try {
@@ -53,7 +53,7 @@ export class MarkdownMedia extends Component {
             width="100%"
             height="100%"
             url={config.url}
-            controls={true}
+            controls
           />
         </div>
         <div>
