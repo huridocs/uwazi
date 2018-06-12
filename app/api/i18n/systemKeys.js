@@ -187,5 +187,6 @@ export default [
 { key: 'Account settings', label: 'Account settings' },
 { key: 'Sign in', label: 'Sign in' },
 { key: 'Map view', label: 'Map view' },
-{ key: 'List view', label: 'List view' }
+{ key: 'List view', label: 'List view' },
+{ key: 'Customisation', label: 'Customisation' }
 ];
