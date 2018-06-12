@@ -8,10 +8,12 @@ import { Customisation } from '../Customisation';
 describe('Customisation', () => {
   let component;
   let loadForm;
+  let saveSettings;
 
   beforeEach(() => {
     loadForm = jasmine.createSpy('loadForm');
-    component = shallow(<Customisation settings={Immutable.fromJS({ customCSS: 'custom css' })} loadForm={loadForm} />);
+    saveSettings = jasmine.createSpy('saveSettings');
+    component = shallow(<Customisation settings={Immutable.fromJS({ customCSS: 'custom css' })} loadForm={loadForm} saveSettings={saveSettings} />);
   });
 
   it('should render Customisation component', () => {
@@ -23,5 +25,6 @@ describe('Customisation', () => {
 
     instance.componentDidMount();
     expect(loadForm).toHaveBeenCalledWith('settings', { customCSS: 'custom css' });
+    expect(saveSettings).toBeDefined();
   });
 });
