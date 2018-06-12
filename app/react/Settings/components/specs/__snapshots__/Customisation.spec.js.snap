@@ -13,7 +13,7 @@ exports[`Customisation should render Customisation component 1`] = `
     className="panel-body"
   />
   <Connect(Form)
-    model="settings"
+    model="settings.settings"
   >
     <div
       className="form-group"
