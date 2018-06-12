@@ -1,17 +1,17 @@
-import {Settings} from '../Settings';
 import UsersAPI from 'app/Users/UsersAPI';
-import SettingsAPI from '../SettingsAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import {I18NApi} from 'app/I18N';
+import { I18NApi } from 'app/I18N';
+import SettingsAPI from '../SettingsAPI';
+import { Settings } from '../Settings';
 
 describe('Settings', () => {
   describe('requestState', () => {
-    let user = {name: 'doe'};
-    let dictionaries = [{_id: 1, name: 'Countries'}];
-    let relationTypes = [{_id: 1, name: 'Supports'}];
-    let translations = [{_id: 1, locale: 'es', values: {}}];
-    let settings = {siteName: 'BatCave'};
+    const user = { name: 'doe' };
+    const dictionaries = [{ _id: 1, name: 'Countries' }];
+    const relationTypes = [{ _id: 1, name: 'Supports' }];
+    const translations = [{ _id: 1, locale: 'es', values: {} }];
+    const settings = { siteName: 'BatCave' };
 
     beforeEach(() => {
       spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
@@ -30,6 +30,11 @@ describe('Settings', () => {
         expect(state.settings.collection).toEqual(settings);
         done();
       });
+    });
+  });
+  describe('setReduxState', () => {
+    it('should set state on the store', (done) => {
+
     });
   });
 });
