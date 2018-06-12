@@ -39,9 +39,7 @@ describe('metadata path', () => {
     it('should create a new dictionary with two values', (done) => {
       nightmare
       .write(selectors.settingsView.dictionaryNameForm, 'test dictionary 2')
-      .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
       .write(selectors.settingsView.firstDictionaryValForm, 'tests value 1')
-      .waitToClick(selectors.settingsView.addNewValueToDictionaryButton)
       .write(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')

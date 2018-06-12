@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -39,7 +39,7 @@ describe('PublishDocument', () => {
       .waitToClick(selectors.navigation.uploadsNavButton)
       .url()
       .then((url) => {
-        expect(url.match(config.url + '/uploads')).not.toBe(null);
+        expect(url.match(`${config.url}/uploads`)).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));
@@ -78,7 +78,7 @@ describe('PublishDocument', () => {
       .waitForTheEntityToBeIndexed()
       .openDocumentFromLibrary(title)
       .getInnerText(selectors.documentView.contentHeader)
-      .then(headerText => {
+      .then((headerText) => {
         expect(headerText).toContain(title);
         done();
       })
@@ -97,19 +97,19 @@ describe('PublishDocument', () => {
       .refresh()
       .wait(selectors.documentView.sidePanelTitle)
       .getInnerText(selectors.doc.viewer.title)
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('Wolverine (Logan)');
         return nightmare.getInnerText(selectors.doc.viewer.company);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('Marvel');
         return nightmare.getInnerText(selectors.doc.viewer.nemesis);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('Daneryl');
         return nightmare.getInnerText(selectors.doc.viewer.superpowers);
       })
-      .then(text => {
+      .then((text) => {
         expect(text).toBe('regeneration\n');
       })
       .then(done)
@@ -129,7 +129,7 @@ describe('PublishDocument', () => {
     .refresh()
     .waitToClick(selectors.libraryView.libraryFirstDocument)
     .getInnerText(selectors.libraryView.sidePanelDocumentType)
-    .then(text => {
+    .then((text) => {
       expect(text).toBe('Test Document');
       return nightmare
       .click(selectors.libraryView.deleteButton)

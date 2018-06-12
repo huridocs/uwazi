@@ -58,12 +58,8 @@ export class MarkdownViewer extends Component {
       return MarkdownViewer.customHook(config, index);
     }
 
-    if (type === 'vimeo') {
-      return <CustomComponents.MarkdownVimeo key={index} config={config} />;
-    }
-
-    if (type === 'youtube') {
-      return <CustomComponents.MarkdownYoutube key={index} config={config} />;
+    if (['vimeo', 'youtube', 'media'].includes(type)) {
+      return <CustomComponents.MarkdownMedia key={index} config={config} />;
     }
 
     if (type === 'list') {
