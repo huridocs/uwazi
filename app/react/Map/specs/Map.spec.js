@@ -11,6 +11,9 @@ describe('Map', () => {
   let markers;
   let map;
   beforeEach(() => {
+    window.URL.createObjectURL = () => {};
+    const mapbox = require('mapbox-gl'); //eslint-disable-line
+    mapbox.setRTLTextPlugin = () => {};
     props = {
       onClick: jasmine.createSpy('onClick'),
       clickOnMarker: jasmine.createSpy('clickOnMarker'),
@@ -38,7 +41,7 @@ describe('Map', () => {
 
   describe('render', () => {
     beforeEach(render);
-    it('should render a ReactMapGL with the props', () => {
+    fit('should render a ReactMapGL with the props', () => {
       const reactMap = component.find(ReactMapGL);
       expect(reactMap.props().latitude).toBe(103);
       expect(reactMap.props().longitude).toBe(-63);
