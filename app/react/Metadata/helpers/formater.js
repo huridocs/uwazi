@@ -8,7 +8,24 @@ import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedPro
 import t from 'app/I18N/t';
 import Map from 'app/Map/Map';
 
-const getOption = (thesauri, value) => thesauri.get('values').find(v => v.get('id').toString() === value.toString());
+const getOption = (_thesauri, id) => {
+  const thesauri = _thesauri.toJS();
+  let option;
+  thesauri.values.forEach((value) => {
+    if (value.id === id) {
+      return option = value;
+    }
+
+    if (value.values) {
+      value.values.forEach((_value) => {
+        if (_value.id === id) {
+          return option = _value;
+        }
+      });
+    }
+  });
+  return Immutable.fromJS(option);
+};
 
 const addSortedProperty = (templates, sortedProperty) => templates.reduce((_property, template) => {
   if (!template.get('properties')) {

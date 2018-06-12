@@ -7,6 +7,14 @@ import model from './dictionariesModel';
 
 const autoincrementValuesId = (thesauri) => {
   thesauri.values = generateIds(thesauri.values);
+
+  thesauri.values = thesauri.values.map((value) => {
+    if (value.values) {
+      value.values = generateIds(value.values);
+    }
+
+    return value;
+  });
   return thesauri;
 };
 
@@ -23,11 +31,22 @@ const checkDuplicated = thesauri => model.get()
   }
 });
 
-function _save(thesauri) {
-  const context = thesauri.values.reduce((ctx, value) => {
-    ctx[value.label] = value.label;
+function thesauriToTranslatioNContext(thesauri) {
+  return thesauri.values.reduce((ctx, prop) => {
+    ctx[prop.label] = prop.label;
+    if (prop.values) {
+      const propctx = prop.values.reduce((_ctx, val) => {
+        _ctx[val.label] = val.label;
+        return _ctx;
+      }, {});
+      ctx = Object.assign(ctx, propctx);
+    }
     return ctx;
   }, {});
+}
+
+function _save(thesauri) {
+  const context = thesauriToTranslatioNContext(thesauri);
   context[thesauri.name] = thesauri.name;
 
   return model.save(thesauri)
@@ -44,10 +63,7 @@ const updateTranslation = (current, thesauri) => {
     updatedLabels[current.name] = thesauri.name;
   }
   const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
-  const context = thesauri.values.reduce((ctx, prop) => {
-    ctx[prop.label] = prop.label;
-    return ctx;
-  }, {});
+  const context = thesauriToTranslatioNContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
 
