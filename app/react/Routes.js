@@ -17,7 +17,8 @@ import {
   RelationTypesList,
   ThesaurisList,
   TranslationsList,
-  FiltersForm
+  FiltersForm,
+  Customisation
 } from 'app/Settings';
 
 import Pages from 'app/Pages/Pages';
@@ -107,6 +108,7 @@ const routes =
         <Route path="edit/:context" component={EditTranslations} />
       </Route>
       <Route path="filters" component={FiltersForm} />
+      <Route path="customisation" component={Customisation} />
     </Route>
     <Route path="library" component={Library} onEnter={onEnter}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
