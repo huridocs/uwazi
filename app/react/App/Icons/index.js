@@ -1,8 +1,10 @@
 import fontawesome from '@fortawesome/fontawesome'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
-import faCoffee from '@fortawesome/fontawesome-free-solid/faCoffee'
+import faBars from '@fortawesome/fontawesome-free-solid/faBars'
+import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 
 export default fontawesome.library.add(
-  faCoffee,
+  faBars,
+  faTimes,
 );

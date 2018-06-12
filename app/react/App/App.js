@@ -16,6 +16,7 @@ import GoogleAnalytics from './GoogleAnalytics';
 import { isClient } from 'app/utils';
 import { loadCSS } from 'fg-loadcss';
 import Icons from "./Icons";
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
 if (isClient) {
   loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');
@@ -57,11 +58,11 @@ class App extends Component {
   }
 
   render() {
-    let MenuButtonClass = 'menu-button fa fa-bars';
+    let MenuButtonIcon = 'bars';
     let navClass = 'menuNav';
 
     if (this.state.showmenu) {
-      MenuButtonClass = 'menu-button fa fa-times';
+      MenuButtonIcon = 'times';
       navClass += ' is-active';
     }
 
@@ -73,7 +74,9 @@ class App extends Component {
             <h1><SiteName/></h1>
           </nav>
           <header>
-            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)} />
+            <span className="menu-button" onClick={this.toggleMenu.bind(this)}>
+              <FontAwesomeIcon icon={MenuButtonIcon}/>
+            </span>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
             <Menu location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
