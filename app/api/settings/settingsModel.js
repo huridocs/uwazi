@@ -29,8 +29,9 @@ const settingsSchema = new mongoose.Schema({
   mailerConfig: String,
   analyticsTrackingId: String,
   dateFormat: String,
-  custom: mongoose.Schema.Types.Mixed
+  custom: mongoose.Schema.Types.Mixed,
+  customCSS: String
 });
 
-let Model = mongoose.model('settings', settingsSchema);
+const Model = mongoose.model('settings', settingsSchema);
 export default instanceModel(Model);
