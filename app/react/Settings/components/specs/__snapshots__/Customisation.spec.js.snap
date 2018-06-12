@@ -14,6 +14,7 @@ exports[`Customisation should render Customisation component 1`] = `
   />
   <Connect(Form)
     model="settings.settings"
+    onSubmit={[Function]}
   >
     <div
       className="form-group"
@@ -32,6 +33,12 @@ exports[`Customisation should render Customisation component 1`] = `
           rows="30"
         />
       </Modeled(Connect(Field))>
+      <button
+        className="btn btn-success"
+        type="submit"
+      >
+        Update
+      </button>
     </div>
   </Connect(Form)>
 </div>
