@@ -17,6 +17,21 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
 
+var winston = require('winston'),
+  expressWinston = require('express-winston');
+
+app.use(expressWinston.logger({
+      transports: [
+        new winston.transports.File({
+          name: 'access',
+          filename: './log/access.log',
+          json: false,
+          handleExceptions: true,
+          level: 'debug'
+        })
+      ]
+    }));
+
 app.use(error_handling_middleware);
 app.use(compression());
 var oneYear = 31557600;
@@ -42,6 +57,22 @@ var translations = require('./app/api/i18n/translations.js');
 var systemKeys = require('./app/api/i18n/systemKeys.js');
 var ports = require('./app/api/config/ports.js');
 const port = ports[app.get('env')];
+
+app.use(expressWinston.errorLogger({
+      transports: [
+        new winston.transports.File({
+          name: 'error',
+          filename: './log/error.log',
+          prettyPrint: true,
+          json: false,
+          handleExceptions: true,
+          humanReadableUnhandledException: true
+        })
+      ]
+    }));
+
+process.on('uncaughtException', err => winston.error('uncaught exception: ', err));
+process.on('unhandledRejection', (reason, p) => winston.error('unhandled rejection: ', reason, p));
 
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
