@@ -3,9 +3,11 @@ import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
 import supercluster from 'supercluster'; //eslint-disable-line
+import mapbox from 'mapbox-gl'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
 
+mapbox.setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');
 export default class Map extends Component {
   constructor(props) {
     super(props);
