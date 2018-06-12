@@ -59,7 +59,9 @@ class Root extends Component {
           {head.link.toComponent()}
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           {CSS.map((style, key) => <link key={key} href={style} rel="stylesheet" type="text/css" />)}
-          <style type="text/css" dangerouslySetInnerHTML={{ __html: this.props.reduxData.settings.collection.customCSS }} />
+          <style type="text/css">
+            {this.props.reduxData.settings.collection.customCSS}
+          </style>
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
