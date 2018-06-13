@@ -14,7 +14,8 @@ import { t } from 'app/I18N';
 // };
 
 const saveSettings = data => (dispatch) => {
-  SettingsAPI.save(data).then(() => {
+  SettingsAPI.save(data)
+  .then(() => {
     dispatch();
   });
 };
