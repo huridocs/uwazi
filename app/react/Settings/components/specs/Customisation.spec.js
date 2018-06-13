@@ -13,7 +13,13 @@ describe('Customisation', () => {
   beforeEach(() => {
     loadForm = jasmine.createSpy('loadForm');
     saveSettings = jasmine.createSpy('saveSettings');
-    component = shallow(<Customisation settings={Immutable.fromJS({ customCSS: 'custom', customSetting: 'anything' })} loadForm={loadForm} saveSettings={saveSettings} />);
+    component = shallow(
+      <Customisation
+        settings={Immutable.fromJS({ customCSS: 'custom', customSetting: 'anything' })}
+        loadForm={loadForm}
+        saveSettings={saveSettings}
+      />
+    );
   });
 
   it('should render Customisation component', () => {
