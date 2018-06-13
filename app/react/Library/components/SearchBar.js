@@ -1,19 +1,18 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {I18NLink} from 'app/I18N';
-import {Field, Form, actions as formActions} from 'react-redux-form';
-import {wrapDispatch} from 'app/Multireducer';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { I18NLink } from 'app/I18N';
+import { Field, Form, actions as formActions } from 'react-redux-form';
+import { wrapDispatch } from 'app/Multireducer';
 
-import {searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
+import { searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions } from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
-import {t} from 'app/I18N';
+import { t } from 'app/I18N';
 
 export class SearchBar extends Component {
-
   onChange(e) {
-    this.props.change(this.props.storeKey + '.search.searchTerm', e.target.value);
+    this.props.change(`${this.props.storeKey}.search.searchTerm`, e.target.value);
     this.getSuggestions(e);
   }
 
@@ -43,53 +42,55 @@ export class SearchBar extends Component {
   }
 
   resetSearch() {
-    this.props.change(this.props.storeKey + '.search.searchTerm', '');
-    let search = Object.assign({}, this.props.search);
+    this.props.change(`${this.props.storeKey}.search.searchTerm`, '');
+    const search = Object.assign({}, this.props.search);
     search.searchTerm = '';
-    this.props.searchDocuments({search}, this.props.storeKey);
+    this.props.searchDocuments({ search }, this.props.storeKey);
   }
 
   search(search) {
-    this.props.searchDocuments({search}, this.props.storeKey);
+    this.props.searchDocuments({ search }, this.props.storeKey);
   }
 
   render() {
-    let {search, showSuggestions, suggestions, overSuggestions} = this.props;
-    const model = this.props.storeKey + '.search';
+    const { search, showSuggestions, suggestions, overSuggestions } = this.props;
+    const model = `${this.props.storeKey}.search`;
     return (
-      <div className={'search-box' + (this.props.open ? ' is-active' : '')}>
+      <div className={`search-box${this.props.open ? ' is-active' : ''}`}>
         <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
-          <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
-            <Field model={'.searchTerm'} updateOn='submit'>
-              <i className="fa fa-search"></i>
+          <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
+            <Field model=".searchTerm" updateOn="submit">
+              <i className="fa fa-search" />
               <input
                 type="text"
-                placeholder={t('System', 'Search')}
+                placeholder={t('System', 'Search', null, false)}
                 className="form-control"
                 onChange={this.onChange.bind(this)}
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
-              <i className="fa fa-times" onClick={this.resetSearch.bind(this)}></i>
+              <i className="fa fa-times" onClick={this.resetSearch.bind(this)}/>
             </Field>
           </div>
           <div
             onMouseOver={this.mouseEnter.bind(this)}
             onMouseLeave={this.mouseOut.bind(this)}
-            className={'search-suggestions' + (showSuggestions && search.searchTerm || overSuggestions ? ' is-active' : '')}
-            >
+            className={`search-suggestions${showSuggestions && search.searchTerm || overSuggestions ? ' is-active' : ''}`}
+          >
             {suggestions.toJS().map((suggestion, index) => {
-              let documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
-              return <p className="search-suggestions-item" key={index}>
+              const documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
+              return (<p className="search-suggestions-item" key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <i className="far fa-file-alt">
-                  </i>
+                  <i className="far fa-file-alt"/>
                 </I18NLink>
-              </p>;
+                      </p>);
             })}
-            <button className="search-suggestions-all"
-                    type="submit" onClick={this.closeSuggestions.bind(this)}>
+            <button
+              className="search-suggestions-all"
+              type="submit"
+              onClick={this.closeSuggestions.bind(this)}
+            >
               View all results for <b>{search.searchTerm}</b>
             </button>
           </div>

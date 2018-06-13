@@ -10,7 +10,7 @@ import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import fs from 'fs';
-import t from 'app/I18N/t';
+import { t, Translate } from 'app/I18N';
 
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
@@ -35,6 +35,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   global.window = {};
   //
   t.resetCachedTranslation();
+  Translate.resetCachedTranslation();
   try {
     componentHtml = renderToString(
       <Provider store={initialStore}>

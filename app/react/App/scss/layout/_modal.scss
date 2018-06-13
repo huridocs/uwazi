@@ -6,7 +6,7 @@
 	.btn-default {
 		opacity: 0.5;
 	}
-  
+
   &:focus {
     outline: none;
   }
@@ -21,10 +21,12 @@
 .modal-success {
 	border-left: 5px solid #8BC74C;
 }
+.modal-info {
+	border-left: 5px solid #cce5ff;
+}
 .modal-warning {
 	border-left: 5px solid orange;
 }
 .modal-danger {
 	border-left: 5px solid #ED353D;
 }
-
