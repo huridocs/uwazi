@@ -15,7 +15,16 @@ import ShowIf from 'app/App/ShowIf';
 import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 
-const translatedOptions = property => property.options.map(option => Object.assign({}, option, { label: t(property.content, option.label) }));
+const translatedOptions = property => property.options.map((option) => {
+  option.label = t(property.content, option.label);
+  if (option.values) {
+    option.options = option.values.map((val) => {
+      val.label = t(property.content, val.label);
+      return val;
+    });
+  }
+  return option;
+});
 
 export class FiltersForm extends Component {
   constructor(props) {
@@ -60,9 +69,7 @@ export class FiltersForm extends Component {
               <Switcher
                 model={`.filters.${property.name}.and`}
                 prefix={property.name}
-                onChange={() => {
-                this.autoSearch = true;
-              }}
+                onChange={this.activateAutoSearch}
               />
             </ShowIf>
           </li>

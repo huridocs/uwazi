@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -15,7 +15,7 @@ describe('filters path', () => {
       .wait(selectors.settingsView.settingsHeader)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/settings/account');
+        expect(url).toBe(`${config.url}/settings/account`);
         done();
       })
       .catch(catchErrors(done));

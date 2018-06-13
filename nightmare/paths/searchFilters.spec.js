@@ -9,6 +9,7 @@ selectors.libraryView.filters = {
   secondPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name',
   sixthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
+  superPowers: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li',
   superPowersAndOrSwitch: '#filtersForm > div:nth-child(1) > ul > li:nth-child(1) > div > label',
   searchButton: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > button',
   planetsConqueredFrom: '#filtersForm div.Numeric__From > input',
@@ -34,10 +35,11 @@ const expectFilterToShowResult = (date, expected, selector) => (
   })
 );
 
-const filterBySuperPowers = (power1, power2) => (
-  filterBySuperVillian()
-  .library.clickFilter(power1)
-  .library.clickFilter(power2)
+const filterBySuperPowers = superPower => (
+  nightmare
+  .library.setCurrentState()
+  .clickMultiselectOption(selectors.libraryView.filters.superPowers, superPower)
+  .library.waitForSearchToFinish()
 );
 
 describe('search filters path', () => {
@@ -70,8 +72,8 @@ describe('search filters path', () => {
 
   describe('multiselect filters', () => {
     it('should filter', (done) => {
-      filterBySuperVillian()
-      .library.clickFilter(selectors.libraryView.filters.sixthPower)
+      filterBySuperVillian();
+      filterBySuperPowers('fly')
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Daneryl');
@@ -81,7 +83,9 @@ describe('search filters path', () => {
     });
 
     it('should filter by multiple options', (done) => {
-      filterBySuperPowers(selectors.libraryView.filters.sixthPower, selectors.libraryView.filters.fifthPower)
+      filterBySuperVillian();
+      filterBySuperPowers('laser beam');
+      filterBySuperPowers('fly')
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Daneryl');
@@ -92,11 +96,13 @@ describe('search filters path', () => {
 
     describe('AND switch', () => {
       it('should filter entities having all the values selected', (done) => {
-        filterBySuperPowers(selectors.libraryView.filters.firstPower, selectors.libraryView.filters.secondPower)
+        filterBySuperVillian();
+        filterBySuperPowers('create chaos');
+        filterBySuperPowers('fly')
         .library.clickFilter(selectors.libraryView.filters.superPowersAndOrSwitch)
         .library.countFiltersResults()
         .then((resutls) => {
-          expect(resutls).toBe(2);
+          expect(resutls).toBe(1);
           done();
         })
         .catch(catchErrors(done));

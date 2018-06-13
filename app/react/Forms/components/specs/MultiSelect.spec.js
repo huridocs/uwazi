@@ -5,6 +5,7 @@ import MultiSelect from '../MultiSelect';
 
 describe('MultiSelect', () => {
   let component;
+  let instance;
   let props;
 
   beforeEach(() => {
@@ -13,7 +14,15 @@ describe('MultiSelect', () => {
       value: [],
       options: [
         { label: 'Option1', value: 'option1', results: 4 },
-        { label: 'Option2', value: 'option2', results: 2 }
+        { label: 'Option2', value: 'option2', results: 2 },
+        { label: 'Group',
+          value: 'Group',
+          results: 3,
+          options: [
+            { label: 'Group option1', value: 'group-option1', results: 2 },
+            { label: 'Group option2', value: 'group-option2', results: 1 }
+          ]
+        }
       ],
       onChange: jasmine.createSpy('onChange')
     };
@@ -21,36 +30,54 @@ describe('MultiSelect', () => {
 
   const render = () => {
     component = shallow(<MultiSelect {...props}/>);
+    instance = component.instance();
   };
 
   it('should render the checkboxes', () => {
     render();
     const optionElements = component.find('input[type="checkbox"]');
-
-    expect(optionElements.length).toBe(2);
-    expect(optionElements.first().props().value).toBe('option1');
-    expect(optionElements.last().props().value).toBe('option2');
+    expect(optionElements.length).toBe(5);
+    expect(optionElements.at(3).props().value).toBe('option1');
+    expect(optionElements.at(4).props().value).toBe('option2');
   });
 
   describe('when checking an option', () => {
     it('should call onChange with the new value', () => {
       render();
-      component.find('input[type="checkbox"]').first().simulate('change');
+      component.find('input[type="checkbox"]').at(3).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option1']);
     });
 
     it('it should handle multiple options selected', () => {
       props.value = ['option1'];
       render();
-      component.find('input[type="checkbox"]').last().simulate('change');
+      component.find('input[type="checkbox"]').at(4).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option1', 'option2']);
     });
 
     it('it should remove options that were selected', () => {
       props.value = ['option1'];
       render();
-      component.find('input[type="checkbox"]').first().simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('checking a group', () => {
+    it('should modify all options of that group', () => {
+      render();
+      component.find('.group-checkbox').first().simulate('change', { target: { checked: true } });
+      expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
+      component.find('.group-checkbox').first().simulate('change', { target: { checked: false } });
+      expect(props.onChange).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('toggleOptions', () => {
+    it('should toggle a flag in the state to show or not group sub options', () => {
+      render();
+      component.find('.multiselectItem-action').first().simulate('click', { preventDefault: () => {} });
+      expect(component.state().ui).toEqual({ Group: true });
     });
   });
 
@@ -75,7 +102,8 @@ describe('MultiSelect', () => {
           { name: 'Option2', id: 'option2', results: 2 }
         ],
         optionsValue: 'id',
-        optionsLabel: 'name'
+        optionsLabel: 'name',
+        onChange: jasmine.createSpy('onChange')
       };
       component = shallow(<MultiSelect {...props}/>);
     });
@@ -86,6 +114,37 @@ describe('MultiSelect', () => {
       expect(optionElements.length).toBe(3);
       expect(optionElements.first().props().value).toBe('option1');
       expect(optionElements.last().props().value).toBe('option3');
+    });
+  });
+
+  describe('filter()', () => {
+    it('should set the input value filter', () => {
+      instance.filter({ target: { value: 'something' } });
+      expect(instance.state.filter).toBe('something');
+    });
+  });
+
+  describe('resetFilter()', () => {
+    it('should reset the filter', () => {
+      instance.resetFilter();
+      expect(instance.state.filter).toBe('');
+    });
+  });
+
+  describe('componentWillReceiveProps()', () => {
+    it('should set the filter in the state', () => {
+      instance.componentWillReceiveProps({ filter: 'Only this' });
+      expect(instance.state.filter).toBe('Only this');
+    });
+  });
+
+  describe('showAll()', () => {
+    it('should toggle state flag showAll', () => {
+      instance.showAll({ preventDefault: () => {} });
+      expect(instance.state.showAll).toBe(true);
+
+      instance.showAll({ preventDefault: () => {} });
+      expect(instance.state.showAll).toBe(false);
     });
   });
 });

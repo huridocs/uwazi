@@ -6,23 +6,32 @@ var jasmine = new Jasmine();
 var reporters = require('jasmine-reporters');
 var exec = require('child_process').exec;
 
-var dbConfig = require('./app/api/config/database.js');
+var dbConfig = require('../app/api/config/database.js');
 
-var systemKeys = require('./app/api/i18n/systemKeys.js');
-var translations = require('./app/api/i18n/translations.js');
+var systemKeys = require('../app/api/i18n/systemKeys.js');
+var translations = require('../app/api/i18n/translations.js');
 
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
 
-jasmine.loadConfig({
+let jasmineConfig = {
   spec_dir: '/',
   spec_files: [
     'nightmare/helpers/extensions.js',
     'nightmare/helpers/connectionsDSL.js',
-    'nightmare/helpers/LibraryDSL.js',
-    'nightmare/**/*.spec.js'
+    'nightmare/helpers/LibraryDSL.js'
   ]
-});
+}
+
+let suite = 'nightmare/paths/*.spec.js';
+
+if(process.argv[2]) {
+    suite = 'nightmare/paths/' + process.argv[2] + '.spec.js';
+}
+
+jasmineConfig.spec_files.push(suite);
+
+jasmine.loadConfig(jasmineConfig);
 
 jasmine.clearReporters();
 jasmine.addReporter(new reporters.TerminalReporter({

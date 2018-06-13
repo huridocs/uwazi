@@ -1,12 +1,10 @@
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
-let getInnerText = (selector) => {
-  return document.querySelector(selector).innerText;
-};
+const getInnerText = selector => document.querySelector(selector).innerText;
 
 describe('toc path', () => {
   describe('login', () => {
@@ -25,16 +23,14 @@ describe('toc path', () => {
       nightmare
       .wait(selectors.libraryView.librarySecondDocumentTitle)
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
-      .then((itemName) => {
-        return nightmare
-        .openDocumentFromLibrary(itemName)
-        .wait(selectors.documentView.documentPage)
-        .isVisible(selectors.documentView.documentPage)
-        .then((result) => {
-          expect(result).toBe(true);
-          done();
-        });
-      })
+      .then(itemName => nightmare
+      .openDocumentFromLibrary(itemName)
+      .wait(selectors.documentView.documentPage)
+      .isVisible(selectors.documentView.documentPage)
+      .then((result) => {
+        expect(result).toBe(true);
+        done();
+      }))
       .catch(catchErrors(done));
     });
 
@@ -78,7 +74,7 @@ describe('toc path', () => {
       .waitToClick(selectors.navigation.spanish)
       .waitToClick(selectors.documentView.tocPannelLink)
       .getInnerText(selectors.documentView.tocPannel)
-      .then(text => {
+      .then((text) => {
         expect(text).toContain('Frank Miller');
         done();
       })

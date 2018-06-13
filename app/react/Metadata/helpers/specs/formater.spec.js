@@ -18,7 +18,7 @@ describe('metadata formater', () => {
       metadata: {
         text: 'text content',
         date: 10,
-        multiselect: ['value1', 'value2'],
+        multiselect: ['value1', 'value2', 'value5'],
         multidate: [10, 1000000],
         daterange: { from: 10, to: 1000000 },
         multidaterange: [{ from: 10, to: 1000000 }, { from: 2000000, to: 3000000 }],
@@ -64,7 +64,14 @@ describe('metadata formater', () => {
         values: [
           { label: 'Value 1', id: 'value1', _id: 'value1' },
           { label: 'Value 2', id: 'value2', _id: 'value2' },
-          { label: 'Value 3', id: 'value3', _id: 'value3' }
+          {
+            label: 'Value 3',
+            id: 'value3',
+            _id: 'value3',
+            values: [
+              { label: 'Value 5', id: 'value5', _id: 'value5' },
+              { label: 'Value 6', id: 'value6', _id: 'value6' },
+            ] }
         ]
       },
       {
@@ -136,8 +143,8 @@ describe('metadata formater', () => {
 
     it('should process multiselect type', () => {
       assessBasicProperties(multiselect, ['Multiselect', 'multiselect', 'templateID']);
-      expect(multiselect.value.length).toBe(2);
-      assessMultiValues(multiselect, ['Value 1', 'Value 2'], true);
+      expect(multiselect.value.length).toBe(3);
+      assessMultiValues(multiselect, ['Value 1', 'Value 2', 'Value 5'], true);
     });
 
     it('should process multidate type', () => {

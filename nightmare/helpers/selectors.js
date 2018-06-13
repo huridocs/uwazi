@@ -135,7 +135,7 @@ export default {
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div.upload-box',
-    firstDocument: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div',
+    firstDocument: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1)',
     newEntityButtom: '#app > div.content > div > div > div > div > button',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     firstPublishButton: '#app > div.content > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > button',
@@ -188,7 +188,7 @@ export default {
       mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
       suporPowers: {
         fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-        laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label > i.multiselectItem-icon.fa-square'
+        laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
       },
       firstSighting: '#metadataForm > div:nth-child(4) > div:nth-child(6) > ul > li.wide > div > input',
       whoIsHe: '#metadataForm > div:nth-child(4) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
