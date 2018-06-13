@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { saveSettings } from '../actions/settingsActions';
-import { actions } from 'app/BasicReducer';
+// import { actions } from 'app/BasicReducer';
 
 import { t } from 'app/I18N';
 
@@ -14,12 +14,16 @@ export class Customisation extends Component {
     this.props.loadForm('settings', this.props.settings.toJS());
   }
 
+  handleSubmit(data) {
+    this.props.saveSettings(data);
+  }
+
   render() {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Customisation')}</div>
         <div className="panel-body" />
-        <Form model="settings.settings" onSubmit={this.props.saveSettings}>
+        <Form model="settings.settings" onSubmit={this.handleSubmit.bind(this)}>
           <div className="form-group">
             <label className="form-group-label" htmlFor="collection_name">{t('System', 'Custom CSS')}</label>
             <Field model=".customCSS">
@@ -42,6 +46,6 @@ Customisation.propTypes = {
 const mapStateToProps = state => ({ settings: state.settings.collection });
 const mapDispatchToProps = dispatch => bindActionCreators({
   loadForm: formActions.load,
-  saveSettings: actions.set.bind(null, 'settings/collection') }, dispatch);
+  saveSettings }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customisation);
