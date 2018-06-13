@@ -1,23 +1,10 @@
-import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications';
 import { t } from 'app/I18N';
+import SettingsAPI from 'app/Settings/SettingsAPI';
 
-// const saveSettings = (data) => {
-//   const settings = Object.assign({}, data);
-//   settings.customCSS = data.settings.customCSS;
-//   SettingsAPI.save(settings)
-//   .then((result) => {
-//     notify(t('System', 'Settings updated'), 'success');
-//     // this.props.setSettings(result);
-//     console.log(result);
-//   });
-// };
-
-const saveSettings = data => (dispatch) => {
-  SettingsAPI.save(data)
-  .then(() => {
-    dispatch();
-  });
-};
+const saveSettings = data => dispatch => SettingsAPI.save(data)
+.then(() => {
+  dispatch(notify(t('System', 'Settings updated'), 'success'));
+});
 
 export default saveSettings;
