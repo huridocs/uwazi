@@ -1,24 +1,23 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {fromJS as Immutable} from 'immutable';
-import {I18NLink} from 'app/I18N';
-import {NeedAuthorization} from 'app/Auth';
-import {t} from 'app/I18N';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fromJS as Immutable } from 'immutable';
+import { I18NLink } from 'app/I18N';
+import { NeedAuthorization } from 'app/Auth';
+import { t } from 'app/I18N';
 
 import ShowIf from 'app/App/ShowIf';
-import {deleteReference} from 'app/Viewer/actions/referencesActions';
-import {highlightReference, closePanel, activateReference, selectReference, deactivateReference} from 'app/Viewer/actions/uiActions';
-import {Item} from 'app/Layout';
-import {createSelector} from 'reselect';
+import { deleteReference } from 'app/Viewer/actions/referencesActions';
+import { highlightReference, closePanel, activateReference, selectReference, deactivateReference } from 'app/Viewer/actions/uiActions';
+import { Item } from 'app/Layout';
+import { createSelector } from 'reselect';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
 export class ConnectionsList extends Component {
-
   relationType(id, relationTypes) {
-    let type = relationTypes.find((relation) => relation._id === id);
+    const type = relationTypes.find(relation => relation._id === id);
     if (type) {
       return type.name;
     }
@@ -57,8 +56,8 @@ export class ConnectionsList extends Component {
     const useSourceTargetIcons = typeof this.props.useSourceTargetIcons !== 'undefined' ? this.props.useSourceTargetIcons : true;
 
     const references = this.props.references.toJS().sort((a, b) => {
-      let aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
-      let bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
+      const aStart = typeof a.range.start !== 'undefined' ? a.range.start : -1;
+      const bStart = typeof b.range.start !== 'undefined' ? b.range.start : -1;
       return aStart - bStart;
     });
 
@@ -69,7 +68,7 @@ export class ConnectionsList extends Component {
     if (!this.props.references.size && this.props.referencesSection === 'references') {
       return (
         <div className="blank-state">
-          <i className="fa fa-sitemap"></i>
+          <i className="fa fa-sitemap" />
           <h4>{t('System', 'No References')}</h4>
           <p>{t('System', 'No References description')}</p>
         </div>
@@ -79,7 +78,7 @@ export class ConnectionsList extends Component {
     if (!this.props.references.size) {
       return (
         <div className="blank-state">
-          <i className="fa fa-sitemap"></i>
+          <i className="fa fa-sitemap" />
           <h4>{t('System', 'No Connections')}</h4>
           <p>{t('System', 'No Connections description')}</p>
         </div>
@@ -88,10 +87,9 @@ export class ConnectionsList extends Component {
 
     return (
       <div className="item-group">
-        {(() => {
-          return references.map((reference, index) => {
+        {(() => references.map((reference, index) => {
             let itemClass = '';
-            let disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
+            const disabled = this.props.targetDoc && typeof reference.range.start === 'undefined';
             // This is no longer possible to determine?
             // let referenceIcon = reference.template ? 'fa-sign-in' : 'fa-sign-out-alt';
             const referenceIcon = 'fa-sign-out-alt';
@@ -119,36 +117,37 @@ export class ConnectionsList extends Component {
                 className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''}`}
                 data-id={reference._id}
                 additionalIcon={<ShowIf if={useSourceTargetIcons}>
-                                  <span><i className={`fa ${referenceIcon}`}></i>&nbsp;</span>
-                                </ShowIf>}
+                  <span><i className={`fa ${referenceIcon}`} />&nbsp;</span>
+                </ShowIf>}
                 additionalText={reference.associatedRelationship.range ? reference.associatedRelationship.range.text : null}
                 additionalMetadata={[
-                  {label: 'Connection type', value: this.relationType(reference.template, relationTypes)}
+                  { label: 'Connection type', value: this.relationType(reference.template, relationTypes) }
                 ]}
-                evalPublished={true}
+                evalPublished
                 buttons={
                   <div className="item-shortcut-group">
                     <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
                       <NeedAuthorization roles={['admin', 'editor']}>
                         <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-trash-alt"></i>
+                          <i className="fa fa-trash-alt" />
                         </a>
                       </NeedAuthorization>
                     </ShowIf>
 
                     <ShowIf if={!this.props.targetDoc}>
-                      <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
-                            onClick={e => e.stopPropagation()}
-                            className="item-shortcut btn btn-default">
-                        <i className="far fa-file-alt"></i>
+                      <I18NLink
+                        to={`/${doc.get('type')}/${doc.get('sharedId')}`}
+                        onClick={e => e.stopPropagation()}
+                        className="item-shortcut btn btn-default"
+                      >
+                        <i className="far fa-file-alt" />
                       </I18NLink>
                     </ShowIf>
                   </div>
                 }
               />
             );
-          });
-        })()}
+          }))()}
       </div>
     );
   }
@@ -184,7 +183,7 @@ const selectDoc = createSelector(
 );
 
 const mapStateToProps = (state) => {
-  const {documentViewer} = state;
+  const { documentViewer } = state;
   return {
     uiState: documentViewer.uiState,
     relationTypes: documentViewer.relationTypes,
@@ -194,7 +193,7 @@ const mapStateToProps = (state) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({highlightReference, closePanel, activateReference, selectReference, deactivateReference, deleteReference}, dispatch);
+  return bindActionCreators({ highlightReference, closePanel, activateReference, selectReference, deactivateReference, deleteReference }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConnectionsList);

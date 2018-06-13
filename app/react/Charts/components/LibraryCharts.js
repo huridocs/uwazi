@@ -12,7 +12,7 @@ function translateOptions(_property) {
   const property = _property;
   property.options = property.options.map((_option) => {
     const option = _option;
-    option.label = t(property.content, option.label);
+    option.label = t(property.content, option.label, null, false);
     return option;
   });
   return property;
