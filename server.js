@@ -20,17 +20,17 @@ var bodyParser = require('body-parser');
 var winston = require('winston'),
   expressWinston = require('express-winston');
 
-app.use(expressWinston.logger({
-      transports: [
-        new winston.transports.File({
-          name: 'access',
-          filename: './log/access.log',
-          json: false,
-          handleExceptions: true,
-          level: 'debug'
-        })
-      ]
-    }));
+// app.use(expressWinston.logger({
+//       transports: [
+//         new winston.transports.File({
+//           name: 'access',
+//           filename: './log/access.log',
+//           json: false,
+//           handleExceptions: true,
+//           level: 'debug'
+//         })
+//       ]
+//     }));
 
 app.use(error_handling_middleware);
 app.use(compression());
@@ -66,7 +66,8 @@ app.use(expressWinston.errorLogger({
           prettyPrint: true,
           json: false,
           handleExceptions: true,
-          humanReadableUnhandledException: true
+          humanReadableUnhandledException: true,
+          level: 'error'
         })
       ]
     }));

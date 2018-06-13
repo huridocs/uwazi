@@ -1,11 +1,13 @@
 import winston from 'winston';
 
 const logger = new (winston.Logger)({
-  level: 'debug',
   transports: [
     new winston.transports.File({
       filename: './log/debug.log',
-      prettyPrint: true
+      prettyPrint: false,
+      json: false,
+      handleExceptions: true,
+      level: 'debug'
     })
   ]
 });
