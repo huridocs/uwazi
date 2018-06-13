@@ -11,7 +11,7 @@ import { t } from 'app/I18N';
 
 export class Customisation extends Component {
   componentDidMount() {
-    this.props.loadForm('settings', this.props.settings.toJS());
+    this.props.loadForm('settings', { customCSS: this.props.settings.get('customCSS') });
   }
 
   render() {
