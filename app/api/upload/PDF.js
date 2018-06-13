@@ -52,7 +52,7 @@ export default class PDF extends EventEmitter {
                 return page.getTextContent()
                 .then((text) => {
                   logger.debug('processing page text');
-                  const something = text.items.map(s => s.str).join('').replace(/(\S+)(\s?)/g, `$1[[${Number(page.pageIndex) + 1}]]$2`);
+                  const something = `${text.items.map(s => s.str).join('').replace(/(\S+)(\s?)/g, `$1[[${Number(page.pageIndex) + 1}]]$2`)}\f`;
                   return something;
                 });
               }));
