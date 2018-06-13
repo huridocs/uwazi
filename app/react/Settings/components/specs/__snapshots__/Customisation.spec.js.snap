@@ -19,19 +19,21 @@ exports[`Customisation should render Customisation component 1`] = `
     <div
       className="form-group"
     >
-      <label
-        className="form-group-label"
-        htmlFor="collection_name"
-      >
-        Custom CSS
-      </label>
       <Modeled(Connect(Field))
         model=".customCSS"
       >
-        <textarea
-          className="form-control"
-          rows="30"
-        />
+        <label
+          className="form-group-label"
+          htmlFor="custom_css"
+        >
+          Custom CSS
+          <textarea
+            className="form-control"
+            cols="100"
+            id="custom_css"
+            rows="30"
+          />
+        </label>
       </Modeled(Connect(Field))>
       <button
         className="btn btn-success"

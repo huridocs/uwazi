@@ -14,20 +14,17 @@ export class Customisation extends Component {
     this.props.loadForm('settings', this.props.settings.toJS());
   }
 
-  handleSubmit(data) {
-    this.props.saveSettings(data);
-  }
-
   render() {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Customisation')}</div>
         <div className="panel-body" />
-        <Form model="settings.settings" onSubmit={this.handleSubmit.bind(this)}>
+        <Form model="settings.settings" onSubmit={this.props.saveSettings}>
           <div className="form-group">
-            <label className="form-group-label" htmlFor="collection_name">{t('System', 'Custom CSS')}</label>
             <Field model=".customCSS">
-              <textarea className="form-control" rows="30" />
+              <label className="form-group-label" htmlFor="custom_css">{t('System', 'Custom CSS')}
+                <textarea className="form-control" id="custom_css" rows="30" cols="100" />
+              </label>
             </Field>
             <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
           </div>
