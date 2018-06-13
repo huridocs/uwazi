@@ -24,8 +24,6 @@ import translationsApi from '../api/i18n/translations';
 let assets = {};
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
-  let componentHtml;
-
   let initialStore = store({});
 
   if (isRedux) {
