@@ -41,7 +41,7 @@ describe('Map', () => {
 
   describe('render', () => {
     beforeEach(render);
-    fit('should render a ReactMapGL with the props', () => {
+    it('should render a ReactMapGL with the props', () => {
       const reactMap = component.find(ReactMapGL);
       expect(reactMap.props().latitude).toBe(103);
       expect(reactMap.props().longitude).toBe(-63);
