@@ -30,7 +30,7 @@ test:
   pre:
     - ./cc-test-reporter before-build
   override:
-    - ./node_modules/.bin/eslint app
+    - ./node_modules/.bin/eslint app --quiet
     - ./node_modules/.bin/jest -i --coverage
   post:
     - ./cc-test-reporter after-build --exit-code $EXIT_CODE
