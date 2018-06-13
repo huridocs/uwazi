@@ -2,7 +2,7 @@
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 
 describe('translations path', () => {
   const nightmare = createNightmare();
@@ -15,7 +15,7 @@ describe('translations path', () => {
       .wait(selectors.settingsView.settingsHeader)
       .url()
       .then((url) => {
-        expect(url).toBe(config.url + '/settings/account');
+        expect(url).toBe(`${config.url}/settings/account`);
         done();
       })
       .catch(catchErrors(done));
@@ -44,12 +44,8 @@ describe('translations path', () => {
       .clearInput(selectors.settingsView.translationInputEs)
       .write(selectors.settingsView.translationInputEs, 'Documento')
       .waitToClick(selectors.settingsView.translationsSaveButton)
-      .wait('.alert.alert-success')
-      .isVisible('.alert.alert-success')
-      .then((result) => {
-        expect(result).toBe(true);
-        done();
-      })
+      .waitToClick('.alert.alert-success')
+      .then(done)
       .catch(catchErrors(done));
     });
 
@@ -57,7 +53,7 @@ describe('translations path', () => {
       nightmare
       .waitToClick(selectors.navigation.libraryNavButton)
       .waitToClick(selectors.navigation.spanish)
-      .wait(500)
+      .wait(selectors.libraryView.documentTypeFilter)
       .getInnerText(selectors.libraryView.documentTypeFilter)
       .then((result) => {
         expect(result).toBe('Documento');
@@ -70,7 +66,7 @@ describe('translations path', () => {
       nightmare
       .waitToClick(selectors.navigation.libraryNavButton)
       .waitToClick(selectors.navigation.english)
-      .wait(500)
+      .wait(selectors.libraryView.documentTypeFilter)
       .wait(selectors.libraryView.documentTypeFilter)
       .getInnerText(selectors.libraryView.documentTypeFilter)
       .then((result) => {

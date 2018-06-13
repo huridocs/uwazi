@@ -100,7 +100,7 @@ export default class MultiSelect extends Component {
       return t('System', 'x less');
     }
     return (
-      <span>{totalOptions.length - this.optionsToShow} {t('System', 'x more')}</span>
+      <span>{totalOptions.length - this.props.optionsToShow} {t('System', 'x more')}</span>
     );
   }
 
@@ -268,7 +268,7 @@ MultiSelect.defaultProps = {
   showAll: false,
   hideSearch: false,
   noSort: false,
-  sortbyLabel: true
+  sortbyLabel: false
 };
 
 MultiSelect.propTypes = {
