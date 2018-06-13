@@ -21,10 +21,10 @@ function getData() {
 
 function prepareData(countries, setA, setB) {
   const caseTemptale = this.props.templates.find(template => template.get('_id') === casesTemplate);
-  const caseLabel = t(casesTemplate, caseTemptale.get('name'));
+  const caseLabel = t(casesTemplate, caseTemptale.get('name'), null, false);
 
   const provisionalMeasureTemplate = this.props.templates.find(template => template.get('_id') === provisionalMeasuresTemplate);
-  const provisionalMeasureLabel = t(provisionalMeasuresTemplate, provisionalMeasureTemplate.get('name'));
+  const provisionalMeasureLabel = t(provisionalMeasuresTemplate, provisionalMeasureTemplate.get('name'), null, false);
 
   return countries.map((_country) => {
     const country = _country;

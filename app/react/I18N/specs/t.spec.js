@@ -1,4 +1,4 @@
-import {store} from 'app/store';
+import { store } from 'app/store';
 import Immutable from 'immutable';
 import t from '../t';
 import I18NApi from '../I18NApi';
@@ -8,7 +8,7 @@ describe('t', () => {
 
   beforeEach(() => {
     t.resetCachedTranslation();
-    let dictionaries = [
+    const dictionaries = [
       {
         locale: 'en',
         contexts: [
@@ -41,7 +41,7 @@ describe('t', () => {
     state = {
       locale: 'es',
       translations: Immutable.fromJS(dictionaries),
-      user: Immutable.fromJS({_id: 'abc'})
+      user: Immutable.fromJS({ _id: 'abc' })
     };
 
     spyOn(store, 'getState').and.returnValue(state);

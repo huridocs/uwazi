@@ -127,7 +127,7 @@ export default {
     let value = '';
     let icon;
     if (option) {
-      value = t(thesauri.get('_id'), option.get('label'));
+      value = t(thesauri.get('_id'), option.get('label'), null, false);
       icon = option.get('icon');
     }
 

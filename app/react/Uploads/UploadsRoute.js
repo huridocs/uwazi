@@ -9,16 +9,16 @@ import LibraryCharts from 'app/Charts/components/LibraryCharts';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 import Welcome from 'app/Library/components/Welcome';
 // import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
-import {enterLibrary, setDocuments} from 'app/Library/actions/libraryActions';
+import { enterLibrary, setDocuments } from 'app/Library/actions/libraryActions';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-import {actions} from 'app/BasicReducer';
-import {actions as formActions} from 'react-redux-form';
-import {t} from 'app/I18N';
-import {wrapDispatch} from 'app/Multireducer';
-import {store} from 'app/store';
+import { actions } from 'app/BasicReducer';
+import { actions as formActions } from 'react-redux-form';
+import { t } from 'app/I18N';
+import { wrapDispatch } from 'app/Multireducer';
+import { store } from 'app/store';
 import ShowIf from 'app/App/ShowIf';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
@@ -27,7 +27,6 @@ import UploadsHeader from 'app/Uploads/components/UploadsHeader';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export default class Uploads extends RouteHandler {
-
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
@@ -42,8 +41,8 @@ export default class Uploads extends RouteHandler {
   }
 
   static requestState(params, _query = {}, globalResources) {
-    const defaultSearch = prioritySortingCriteria.get({templates: globalResources.templates});
-    let query = rison.decode(_query.q || '()');
+    const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
+    const query = rison.decode(_query.q || '()');
     query.order = query.order || defaultSearch.order;
     query.sort = query.sort || defaultSearch.sort;
     query.unpublished = true;
@@ -54,7 +53,7 @@ export default class Uploads extends RouteHandler {
       return {
         uploads: {
           documents,
-          filters: {documentTypes: query.types || [], properties: filterState.properties},
+          filters: { documentTypes: query.types || [], properties: filterState.properties },
           aggregations: documents.aggregations,
           search: filterState.search
         }
@@ -67,10 +66,10 @@ export default class Uploads extends RouteHandler {
     dispatch(setDocuments(state.uploads.documents));
     dispatch(actions.set('aggregations', state.uploads.aggregations));
     dispatch(formActions.load('uploads.search', state.uploads.search));
-    dispatch({type: 'SET_LIBRARY_FILTERS',
+    dispatch({ type: 'SET_LIBRARY_FILTERS',
                                 documentTypes: state.uploads.filters.documentTypes,
-                                libraryFilters: state.uploads.filters.properties}
-                               );
+                                libraryFilters: state.uploads.filters.properties }
+    );
   }
 
   componentDidMount() {
@@ -85,26 +84,26 @@ export default class Uploads extends RouteHandler {
   }
 
   render() {
-    let state = store.getState();
+    const state = store.getState();
     if (!state.templates.size) {
       return <Welcome/>;
     }
 
-    let query = rison.decode(this.props.location.query.q || '()');
+    const query = rison.decode(this.props.location.query.q || '()');
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? <DocumentsList storeKey="uploads"/> : <LibraryCharts storeKey="uploads" />;
     const hasDocumentTemplates = state.templates.reduce((result, template) => result || !template.get('isEntity'), false);
 
     return (
       <div className="row panels-layout">
-        <Helmet title={t('System', 'Uploads')} />
+        <Helmet title={t('System', 'Uploads', null, false)} />
         <UploadsHeader/>
         <main className="uploads-viewer document-viewer with-panel">
           <ShowIf if={hasDocumentTemplates}><UploadBox /></ShowIf>
           {/*<ListChartToggleButtons active={chartView ? 'chart' : 'list'} />*/}
           {mainView}
         </main>
-        <LibraryFilters uploadsSection={true} storeKey="uploads"/>
+        <LibraryFilters uploadsSection storeKey="uploads"/>
         <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm}/>
         <SelectMultiplePanelContainer storeKey="uploads"/>
       </div>

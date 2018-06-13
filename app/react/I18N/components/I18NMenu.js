@@ -1,38 +1,40 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { actions } from 'app/I18N';
 import utils from '../utils';
+import { NeedAuthorization } from 'app/Auth';
 
 export class I18NMenu extends Component {
-
-  constructor(props, context) {
-    super(props, context);
-    this.state = {open: false};
-  }
-
-  toggle() {
-    this.setState({open: !this.state.open});
-  }
-
-  changeLanguage(locale, url) {
-    this.saveCookie(locale);
-    this.reload(url);
-  }
-
-  reload(url) {
+  static reload(url) {
     window.location.href = url;
   }
 
-  saveCookie(locale) {
+  static saveCookie(locale) {
     utils.saveLocale(locale);
+  }
+
+  static changeLanguage(locale, url) {
+    I18NMenu.saveCookie(locale);
+    I18NMenu.reload(url);
+  }
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = { open: false };
+  }
+
+  toggle() {
+    this.setState({ open: !this.state.open });
   }
 
   render() {
     const languages = this.props.languages.toJS();
     let path = this.props.location.pathname;
-    let locale = utils.getLocale(path, languages);
+    const locale = utils.getLocale(path, languages);
 
-    let regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
+    const regexp = new RegExp(`^\/?${locale}\/|^\/?${locale}$`);
     path = path.replace(regexp, '/');
 
     if (languages.length <= 1) {
@@ -41,34 +43,55 @@ export class I18NMenu extends Component {
 
     return (
       <ul className="menuNav-I18NMenu">
-        {(() => {
-          return languages.map((lang) => {
-            let url = `/${lang.key}${path}${this.props.location.search}`;
-            return <li className={'menuNav-item' + (locale === lang.key ? ' is-active' : '')} key={lang.key}>
-                    <a className="menuNav-btn btn btn-default" href={url} onClick={this.changeLanguage.bind(this, lang.key, url)}>
-                      {lang.key}
-                    </a>
-                   </li>;
-          });
-        })()}
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <button
+            className={this.props.i18nmode ? 'inlineEdit menuNav-btn btn btn-default active' : 'menuNav-btn btn btn-default'}
+            onClick={this.props.toggleInlineEdit}
+          >
+            <i className="fa fa-language fa-lg"/>
+          </button>
+        </NeedAuthorization>
+        {(() => languages.map((lang) => {
+            const url = `/${lang.key}${path}${this.props.location.search}`;
+            return (
+              <li className={`menuNav-item${locale === lang.key ? ' is-active' : ''}`} key={lang.key}>
+                <a
+                  className="menuNav-btn btn btn-default"
+                  href={url}
+                  onClick={() => {
+                  I18NMenu.changeLanguage(lang.key, url);
+                }}
+                >
+                  {lang.key}
+                </a>
+              </li>
+          );
+          }))()}
       </ul>
     );
   }
 }
 
 I18NMenu.propTypes = {
-  languages: PropTypes.object,
-  location: PropTypes.object
+  location: PropTypes.instanceOf(Object).isRequired,
+  languages: PropTypes.instanceOf(Object).isRequired,
+  toggleInlineEdit: PropTypes.func.isRequired,
+  i18nmode: PropTypes.bool.isRequired
 };
 
 I18NMenu.contextTypes = {
   router: PropTypes.object
 };
 
-export function mapStateToProps({settings}) {
+export function mapStateToProps(state) {
   return {
-    languages: settings.collection.get('languages')
+    languages: state.settings.collection.get('languages'),
+    i18nmode: state.inlineEdit.get('inlineEdit')
   };
 }
 
-export default connect(mapStateToProps)(I18NMenu);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ toggleInlineEdit: actions.toggleInlineEdit }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(I18NMenu);

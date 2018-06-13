@@ -38,10 +38,10 @@ function prepareData(countries, setA, setB) {
 
     country.name = country.label;
 
-    country.setALabel = t(sexTranslationsContext, 'Hombre');
+    country.setALabel = t(sexTranslationsContext, 'Hombre', null, false);
     country.setAValue = maleResults ? maleResults.filtered.doc_count : 0;
 
-    country.setBLabel = t(sexTranslationsContext, 'Mujer');
+    country.setBLabel = t(sexTranslationsContext, 'Mujer', null, false);
     country.setBValue = femaleResults ? femaleResults.filtered.doc_count : 0;
 
     return country;
