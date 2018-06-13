@@ -32,9 +32,4 @@ describe('Settings', () => {
       });
     });
   });
-  describe('setReduxState', () => {
-    it('should set state on the store', (done) => {
-
-    });
-  });
 });
