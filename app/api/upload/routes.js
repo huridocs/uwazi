@@ -41,48 +41,66 @@ export default (app) => {
     return entities.saveMultiple(docs);
   })
   .then(() => {
+    const sessionSockets = req.io.getCurrentSessionSockets();
     console.log('Documents saved as uploaded for:', req.files[0].originalname);
     res.json(req.files[0]);
 
+    if (req.files[0].mimetype !== 'application/pdf') {
+      getDocuments(req.body.document, allLanguages)
+      .then((_docs) => {
+        const docs = _docs.map((doc) => {
+          doc.processed = true;
+          doc.type = 'entity';
+          return doc;
+        });
+        entities.saveMultiple(docs);
+      });
+      sessionSockets.emit('documentProcessed', req.body.document);
+      return true;
+    }
+
     const file = req.files[0].destination + req.files[0].filename;
 
-    const sessionSockets = req.io.getCurrentSessionSockets();
     sessionSockets.emit('conversionStart', req.body.document);
     console.log('Starting conversion of:', req.files[0].originalname);
+
     return Promise.all([new PDF(file, req.files[0].originalname).convert(),
         getDocuments(req.body.document, allLanguages)
-    ]);
-  })
-  .then(([conversion, _docs]) => {
-    console.log('Conversion succeeed for:', req.files[0].originalname);
-    console.log(conversion);
-    console.log(_docs);
-    const docs = _docs.map((doc) => {
-      doc.processed = true;
-      doc.fullText = conversion.fullText;
-      doc.file.language = languages.detect(conversion.fullText, 'franc');
-      doc.toc = [];
-      return doc;
-    });
-    console.log('Saving documents');
-    return entities.saveMultiple(docs).then(() => {
-      const sessionSockets = req.io.getCurrentSessionSockets();
-      sessionSockets.emit('documentProcessed', req.body.document);
-    });
-  })
-  .catch((err) => {
-    getDocuments(req.body.document, allLanguages)
-    .then((_docs) => {
+    ])
+    .then(([conversion, _docs]) => {
+      console.log('Conversion succeeed for:', req.files[0].originalname);
+      //console.log('Conversion', conversion);
+      //console.log('Docs', _docs);
       const docs = _docs.map((doc) => {
-        doc.processed = false;
+        doc.processed = true;
+        doc.fullText = conversion.fullText;
+        doc.file.language = languages.detect(conversion.fullText, 'franc');
+        doc.toc = [];
         return doc;
       });
-      entities.saveMultiple(docs);
-    });
+      console.log('Saving documents');
+      return entities.saveMultiple(docs).then(() => {
+        //const sessionSockets = req.io.getCurrentSessionSockets();
+        sessionSockets.emit('documentProcessed', req.body.document);
+      });
+    })
+    .catch((err) => {
+      getDocuments(req.body.document, allLanguages)
+      .then((_docs) => {
+        const docs = _docs.map((doc) => {
+          doc.processed = false;
+          return doc;
+        });
+        entities.saveMultiple(docs);
+      });
 
-    const sessionSockets = req.io.getCurrentSessionSockets();
-    sessionSockets.emit('conversionFailed', req.body.document);
-    console.error(err);
+      //const sessionSockets = req.io.getCurrentSessionSockets();
+      sessionSockets.emit('conversionFailed', req.body.document);
+      console.error(err);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
   });
 
   app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));

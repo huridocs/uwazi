@@ -41,6 +41,7 @@ describe('upload routes', () => {
 
   describe('POST/upload', () => {
     // Temporary test for PDF conversion. This should probably go elsewhere?
+    // > I wonder how temporary this has been, 3 years? =D
     it('should process the document after upload', (done) => {
       iosocket.emit.and.callFake((eventName) => {
         if (eventName === 'documentProcessed') {

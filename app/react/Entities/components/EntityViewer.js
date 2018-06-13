@@ -112,6 +112,7 @@ export class EntityViewer extends Component {
 
           <Tabs selectedTab={selectedTab}>
             <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
+              <div>Preview</div>
               <div className="entity-metadata">
                 {(() => {
                   if (entityBeingEdited) {
