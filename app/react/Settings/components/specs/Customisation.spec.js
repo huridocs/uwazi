@@ -24,6 +24,6 @@ describe('Customisation', () => {
     const instance = component.instance();
 
     instance.componentDidMount();
-    expect(loadForm).toHaveBeenCalledWith('settings', { customCSS: 'custom' });
+    expect(loadForm).toHaveBeenCalledWith('settings.settings', { customCSS: 'custom' });
   });
 });

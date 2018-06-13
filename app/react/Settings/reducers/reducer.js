@@ -10,7 +10,7 @@ export default combineReducers({
   navlinksFormState: formReducer('settings.navlinksData'),
   form: modelReducer('account.form', { username: '', password: '' }),
   formState: formReducer('account.form'),
-  settingForm: formReducer('settings'),
-  settings: modelReducer('settings', {}),
+  settingForm: formReducer('settings.settings'),
+  settings: modelReducer('settings.settings', {}),
   uiState: ui
 });

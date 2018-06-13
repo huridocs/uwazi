@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { saveSettings } from '../actions/settingsActions';
+import saveSettings from '../actions/settingsActions';
 // import { actions } from 'app/BasicReducer';
 
 import { t } from 'app/I18N';
 
 export class Customisation extends Component {
   componentDidMount() {
-    this.props.loadForm('settings', { customCSS: this.props.settings.get('customCSS') });
+    this.props.loadForm('settings.settings', { customCSS: this.props.settings.get('customCSS') });
   }
 
   render() {
@@ -43,6 +43,7 @@ Customisation.propTypes = {
 const mapStateToProps = state => ({ settings: state.settings.collection });
 const mapDispatchToProps = dispatch => bindActionCreators({
   loadForm: formActions.load,
-  saveSettings }, dispatch);
+  saveSettings
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Customisation);
