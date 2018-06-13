@@ -108,8 +108,8 @@ export class SelectMultiplePanel extends Component {
       accept: () => {
         this.props.resetForm(this.props.formKey);
       },
-      title: t('System', 'Confirm'),
-      message: t('System', 'Discard changes')
+      title: t('System', 'Confirm', null, false),
+      message: t('System', 'Discard changes', null, false)
     });
   }
 

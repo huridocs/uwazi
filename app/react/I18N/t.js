@@ -17,17 +17,6 @@ const t = (contextId, key, _text, returnComponent = true) => {
 
   const context = t.translation.contexts.find(ctx => ctx.id === contextId) || { values: {} };
 
-  if (!context.values) {
-    console.log(contextId); // eslint-disable-line no-console
-    console.log(key); // eslint-disable-line no-console
-    console.log(_text); // eslint-disable-line no-console
-    console.log(context); // eslint-disable-line no-console
-  }
-
-  if (contextId === 'System' && !context.values[key]) {
-    console.error(`"${key}" (${text})  key does not exist, configure it on /api/i18n/systemKeys.js`); // eslint-disable-line
-  }
-
   return context.values[key] || text;
 };
 

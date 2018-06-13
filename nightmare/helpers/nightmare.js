@@ -5,10 +5,11 @@ import nightmareUpload from 'nightmare-upload';
 
 realMouse(Nightmare);
 nightmareUpload(Nightmare);
-
+console.log(process.argv);
+const show = !!process.argv.includes('--show');
 export default function createNightmare(width = 1100, height = 600) {
   const nightmare = new Nightmare({
-    show: false,
+    show,
     typeInterval: 10,
     x: 0,
     y: 0,

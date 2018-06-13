@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import moment from 'moment';
-import {isClient} from 'app/utils';
+import { isClient } from 'app/utils';
 
-import {actions} from 'app/BasicReducer';
+import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
-import {notify} from 'app/Notifications/actions/notificationsActions';
-import {RadioButtons} from 'app/Forms';
-import {t} from 'app/I18N';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { RadioButtons } from 'app/Forms';
+import { t } from 'app/I18N';
 
 export class CollectionSettings extends Component {
   constructor(props, context) {
@@ -29,16 +29,16 @@ export class CollectionSettings extends Component {
 
   dateFormatSeparatorOptions() {
     return [
-      {label: '/', value: '/'},
-      {label: '-', value: '-'}
+      { label: '/', value: '/' },
+      { label: '-', value: '-' }
     ];
   }
 
   dateFormatOptions(separator) {
     return [
-      {label: 'Year, Month, Day', value: `YYYY${separator}MM${separator}DD`},
-      {label: 'Day, Month, Year', value: `DD${separator}MM${separator}YYYY`},
-      {label: 'Month, Day, Year', value: `MM${separator}DD${separator}YYYY`}
+      { label: 'Year, Month, Day', value: `YYYY${separator}MM${separator}DD` },
+      { label: 'Day, Month, Year', value: `DD${separator}MM${separator}YYYY` },
+      { label: 'Month, Day, Year', value: `MM${separator}DD${separator}YYYY` }
     ];
   }
 
@@ -48,45 +48,45 @@ export class CollectionSettings extends Component {
 
   changeLandingPage(e) {
     const customLandingpage = e.target.value === 'custom';
-    this.setState({customLandingpage, homePage: ''});
-    let settings = Object.assign(this.props.settings, {home_page: ''}); // eslint-disable-line camelcase
+    this.setState({ customLandingpage, homePage: '' });
+    const settings = Object.assign(this.props.settings, { home_page: '' }); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
   changeName(e) {
-    this.setState({siteName: e.target.value});
-    let settings = Object.assign(this.props.settings, {site_name: e.target.value}); // eslint-disable-line camelcase
+    this.setState({ siteName: e.target.value });
+    const settings = Object.assign(this.props.settings, { site_name: e.target.value }); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
   changeMailerConfig(e) {
-    this.setState({mailerConfig: e.target.value});
-    let settings = Object.assign(this.props.settings, {mailerConfig: e.target.value});
+    this.setState({ mailerConfig: e.target.value });
+    const settings = Object.assign(this.props.settings, { mailerConfig: e.target.value });
     this.props.setSettings(settings);
   }
 
   changeAnalyticsTrackingId(e) {
-    this.setState({analyticsTrackingId: e.target.value});
-    let settings = Object.assign(this.props.settings, {analyticsTrackingId: e.target.value});
+    this.setState({ analyticsTrackingId: e.target.value });
+    const settings = Object.assign(this.props.settings, { analyticsTrackingId: e.target.value });
     this.props.setSettings(settings);
   }
 
   changePrivate() {
-    const privateInstance = this.state.private ? false : true;
-    this.setState({private: privateInstance});
-    let settings = Object.assign(this.props.settings, {private: privateInstance});
+    const privateInstance = !this.state.private;
+    this.setState({ private: privateInstance });
+    const settings = Object.assign(this.props.settings, { private: privateInstance });
     this.props.setSettings(settings);
   }
 
   changeHomePage(e) {
-    this.setState({homePage: e.target.value});
-    let settings = Object.assign(this.props.settings, {home_page: e.target.value}); // eslint-disable-line camelcase
+    this.setState({ homePage: e.target.value });
+    const settings = Object.assign(this.props.settings, { home_page: e.target.value }); // eslint-disable-line camelcase
     this.props.setSettings(settings);
   }
 
   changeDateFormat(dateFormat) {
-    this.setState({dateFormat});
-    let settings = Object.assign(this.props.settings, {dateFormat});
+    this.setState({ dateFormat });
+    const settings = Object.assign(this.props.settings, { dateFormat });
     this.props.setSettings(settings);
   }
 
@@ -100,14 +100,14 @@ export class CollectionSettings extends Component {
     const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition] ?
       this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value : '';
 
-    this.setState({dateSeparator, dateFormat});
-    let settings = Object.assign(this.props.settings, {dateFormat});
+    this.setState({ dateSeparator, dateFormat });
+    const settings = Object.assign(this.props.settings, { dateFormat });
     this.props.setSettings(settings);
   }
 
   updateSettings(e) {
     e.preventDefault();
-    let settings = Object.assign({}, this.props.settings);
+    const settings = Object.assign({}, this.props.settings);
     settings.home_page = this.state.homePage; // eslint-disable-line camelcase
     settings.site_name = this.state.siteName; // eslint-disable-line camelcase
     settings.mailerConfig = this.state.mailerConfig;
@@ -115,7 +115,7 @@ export class CollectionSettings extends Component {
     settings.private = this.state.private;
     SettingsAPI.save(settings)
     .then((result) => {
-      this.props.notify(t('System', 'Settings updated'), 'success');
+      this.props.notify(t('System', 'Settings updated', null, false), 'success');
       this.props.setSettings(result);
     });
   }
@@ -132,7 +132,7 @@ export class CollectionSettings extends Component {
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
               <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
             </div>
-            <div className='form-group'>
+            <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Private instance')}</label>
               <div className="checkbox">
                 <label>
@@ -203,7 +203,7 @@ export class CollectionSettings extends Component {
               </div>
             </div>
             <div className="alert alert-info">
-              <i className="fa fa-home"></i>
+              <i className="fa fa-home" />
               <div>
                 The landing page is the first thing users will see when visiting your Uwazi instance.<br />
                 You can use any URL from your Uwazi instance as a landing page, examples:
@@ -218,23 +218,27 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Google Analytics ID')}</label>
-              <input name="analyticsTrackingId"
+              <input
+                name="analyticsTrackingId"
                 onChange={this.changeAnalyticsTrackingId.bind(this)}
                 value={this.state.analyticsTrackingId}
                 type="text"
-                className="form-control"/>
+                className="form-control"
+              />
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
-              <textarea name="collectionMailerConfig"
+              <textarea
+                name="collectionMailerConfig"
                 onChange={this.changeMailerConfig.bind(this)}
                 value={this.state.mailerConfig}
                 type="text"
                 className="form-control"
-                rows="5"/>
+                rows="5"
+              />
             </div>
             <div className="alert alert-info">
-              <i className="fa fa-envelope"></i>
+              <i className="fa fa-envelope" />
               <div>
                 This is a JSON configuration object that should match the options values required by Nodemailer,
                 as explained in <a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a><br />
@@ -244,7 +248,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">
-                <i className="far fa-save"></i>
+                <i className="far fa-save" />
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>
@@ -262,11 +266,11 @@ CollectionSettings.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {settings: state.settings.collection.toJS()};
+  return { settings: state.settings.collection.toJS() };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setSettings: actions.set.bind(null, 'settings/collection'), notify}, dispatch);
+  return bindActionCreators({ setSettings: actions.set.bind(null, 'settings/collection'), notify }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CollectionSettings);

@@ -23,6 +23,9 @@ export class Translate extends Component {
   }
 
   render() {
+    if (typeof this.props.text !== 'string') {
+      console.log(this.props.text);
+    }
     return <span onClick={this.onClick} className={this.props.i18nmode ? 'translation active' : 'translation'}>{this.props.text}</span>;
   }
 }

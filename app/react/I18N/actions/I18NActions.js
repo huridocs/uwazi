@@ -36,7 +36,7 @@ export function saveTranslations(translations) {
   return (dispatch) => {
     Promise.all(translations.map(translation => I18NApi.save(translation)))
     .then(() => {
-      notifications.notify(t('System', 'Translations saved'), 'success')(dispatch);
+      notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
     });
   };
 }
