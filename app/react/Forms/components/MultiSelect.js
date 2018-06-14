@@ -121,7 +121,7 @@ export default class MultiSelect extends Component {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]} >
-        <i className="multiselectItem-icon fa fa-square-o" />
+        <i className="multiselectItem-icon far fa-square" />
         <i className="multiselectItem-icon fa fa-check" />
         <span className="multiselectItem-name">
           <Icon className="item-icon" data={option.icon}/>
