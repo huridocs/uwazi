@@ -33,6 +33,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   global.window = {};
   //
   t.resetCachedTranslation();
+  Translate.resetCachedTranslation();
   const componentHtml = renderToString(
     <Provider store={initialStore}>
       <CustomProvider initialData={initialData} user={user}>
