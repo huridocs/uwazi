@@ -27,6 +27,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
+import CustomComponents from '../../Markdown/components';
 
 export class EntityViewer extends Component {
   constructor(props, context) {
@@ -62,8 +63,13 @@ export class EntityViewer extends Component {
 
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups } = this.props;
-    const selectedTab = tab || 'info';
+
+    if(!entity._id) return false;
+
     const attachments = entity.attachments ? entity.attachments : [];
+
+    console.log(entity);
+    const config = 'http://localhost:3000/uploaded_documents/';
 
     const summary = connectionsGroups.reduce((summaryData, g) => {
       g.get('templates').forEach((template) => {
@@ -85,7 +91,7 @@ export class EntityViewer extends Component {
 
           <Tabs
             className="content-header-tabs"
-            selectedTab={selectedTab}
+            selectedTab={this.props.tab}
             handleSelect={(tabName) => {
                   this.props.showTab(tabName);
                 }}
@@ -110,9 +116,11 @@ export class EntityViewer extends Component {
 
         <main className="entity-viewer">
 
-          <Tabs selectedTab={selectedTab}>
-            <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
-              <div>Preview</div>
+          <Tabs selectedTab={this.props.tab}>
+            <TabContent for={this.props.tab === 'info' || this.props.tab === 'attachments' ? this.props.tab : 'none'}>
+              <div>
+                <CustomComponents.MarkdownMedia config={config} />
+              </div>
               <div className="entity-metadata">
                 {(() => {
                   if (entityBeingEdited) {
@@ -136,7 +144,7 @@ export class EntityViewer extends Component {
           </Tabs>
         </main>
 
-        <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
+        <ShowIf if={this.props.tab === 'info' || this.props.tab === 'attachments'}>
           <div className="sidepanel-footer">
             <MetadataFormButtons
               delete={this.deleteEntity.bind(this)}
@@ -147,22 +155,22 @@ export class EntityViewer extends Component {
           </div>
         </ShowIf>
 
-        <ShowIf if={selectedTab === 'connections'}>
+        <ShowIf if={this.props.tab === 'connections'}>
           <div className="sidepanel-footer">
             <RelationshipsFormButtons />
           </div>
         </ShowIf>
 
         <SidePanel className={`entity-connections entity-${this.props.tab}`} open>
-          <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
+          <ShowIf if={this.props.tab === 'info' || this.props.tab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
             </div>
           </ShowIf>
 
           <div className="sidepanel-body">
-            <Tabs selectedTab={selectedTab}>
-              <TabContent for={selectedTab === 'info' || selectedTab === 'connections' ? selectedTab : 'none'}>
+            <Tabs selectedTab={this.props.tab}>
+              <TabContent for={this.props.tab === 'info' || this.props.tab === 'connections' ? this.props.tab : 'none'}>
                 <ConnectionsGroups />
               </TabContent>
             </Tabs>
@@ -177,6 +185,10 @@ export class EntityViewer extends Component {
   }
 }
 
+EntityViewer.defaultProps = {
+  tab: 'info'
+};
+
 EntityViewer.propTypes = {
   entity: PropTypes.object,
   rawEntity: PropTypes.object,
@@ -190,7 +202,7 @@ EntityViewer.propTypes = {
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
   library: PropTypes.object,
-  showTab: PropTypes.func
+  showTab: PropTypes.func.isRequired
 };
 
 EntityViewer.contextTypes = {

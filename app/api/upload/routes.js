@@ -13,7 +13,9 @@ const storage = multer.diskStorage({
     cb(null, uploadDocumentsPath);
   },
   filename(req, file, cb) {
-    cb(null, `${Date.now() + ID()}.pdf`);
+    console.log(file);
+    const fileExt = file.originalname.split('.').pop();
+    cb(null, `${Date.now() + ID()}.${fileExt}`);
   }
 });
 
