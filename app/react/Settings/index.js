@@ -10,6 +10,7 @@ import RelationTypesList from './components/RelationTypesList';
 import ThesaurisList from './components/ThesaurisList';
 import TranslationsList from './components/TranslationsList';
 import FiltersForm from './components/FiltersForm';
+import Customisation from './components/Customisation';
 
 export {
   Settings,
@@ -22,5 +23,6 @@ export {
   RelationTypesList,
   ThesaurisList,
   TranslationsList,
-  FiltersForm
+  FiltersForm,
+  Customisation
 };

@@ -2,16 +2,15 @@ import React from 'react';
 import Helmet from 'react-helmet';
 
 import RouteHandler from 'app/App/RouteHandler';
-import SettingsNavigation from './components/SettingsNavigation';
 import UsersAPI from 'app/Users/UsersAPI';
-import SettingsAPI from './SettingsAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import {actions} from 'app/BasicReducer';
-import {I18NApi} from 'app/I18N';
+import { actions } from 'app/BasicReducer';
+import { I18NApi } from 'app/I18N';
+import SettingsNav from './components/SettingsNavigation';
+import SettingsAPI from './SettingsAPI';
 
 export class Settings extends RouteHandler {
-
   static requestState() {
     return Promise.all([
       UsersAPI.currentUser(),
@@ -20,9 +19,9 @@ export class Settings extends RouteHandler {
       I18NApi.get(),
       SettingsAPI.get()
     ])
-    .then(([user, dictionaries, relationTypes, translations, collection]) => {
-      return {user, dictionaries, relationTypes, translations, settings: {collection}};
-    });
+    .then(([user, dictionaries, relationTypes, translations, collection]) => (
+      { user, dictionaries, relationTypes, translations, settings: { collection } }
+    ));
   }
 
   setReduxState(state) {
@@ -35,15 +34,15 @@ export class Settings extends RouteHandler {
 
   render() {
     return (
-        <div className="row settings">
-          <Helmet title="Settings" />
-          <div className="settings-navigation">
-            <SettingsNavigation/>
-          </div>
-          <div className="settings-content">
-            {this.props.children}
-          </div>
+      <div className="row settings">
+        <Helmet title="Settings" />
+        <div className="settings-navigation">
+          <SettingsNav/>
         </div>
+        <div className="settings-content">
+          {this.props.children}
+        </div>
+      </div>
     );
   }
 }

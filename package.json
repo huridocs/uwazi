@@ -25,7 +25,7 @@
   "scripts": {
     "production-build": "NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
     "run-production": "export NODE_ENV=production; node server.js",
-    "dev-server": "./node_modules/.bin/nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --watch 'app/react/ServerRouter.js'",
+    "dev-server": "./node_modules/.bin/nodemon --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --watch 'app/react/ServerRouter.js' --watch 'app/react/App/Root.js'",
     "webpack-server": "node ./webpack/webpack.server.js",
     "hot": "export HOT=true;npm run dev-server & npm run webpack-server",
     "analyze": "webpack --profile --json > stats.json;./node_modules/.bin/webpack-bundle-analyzer stats.json",
