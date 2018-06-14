@@ -17,6 +17,12 @@ console.error = function (message) {
   error(message);
 };
 
+//Mock mapbox arabic support plugin setup
+window.URL.createObjectURL = () => {};
+const mapbox = require('mapbox-gl');//eslint-disable-line
+mapbox.setRTLTextPlugin = () => {};
+//
+
 jasmine.createSpyObj = (name, methodNames) => {
   let names = methodNames;
   if (Array.isArray(name)) {
