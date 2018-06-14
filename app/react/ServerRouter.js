@@ -171,7 +171,8 @@ function handleRoute(res, renderProps, req) {
       initialData.locale = locale;
       renderPage(initialData, true);
     })
-    .catch((error) => {
+    .catch((e) => {
+      let error = e;
       // console.trace(error); // eslint-disable-line
       if (error instanceof Error) {
         error = error.stack.split('\n');

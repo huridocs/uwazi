@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import saveSettings from '../actions/settingsActions';
-// import { actions } from 'app/BasicReducer';
 
 import { t } from 'app/I18N';
+
+import saveSettings from '../actions/settingsActions';
 
 export class Customisation extends Component {
   componentDidMount() {
