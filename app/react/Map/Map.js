@@ -2,11 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
-import supercluster from 'supercluster'; //eslint-disable-line
 import { isClient } from 'app/utils';
-
+import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
+
+if (isClient) {
+  require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
+}
+
 
 export default class Map extends Component {
   constructor(props) {
@@ -34,11 +38,6 @@ export default class Map extends Component {
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
-
-    if (isClient) {
-      const mapbox = require('mapbox-gl'); //eslint-disable-line
-      mapbox.setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');
-    }
   }
 
   componentDidMount() {

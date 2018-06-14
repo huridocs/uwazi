@@ -11,9 +11,6 @@ describe('Map', () => {
   let markers;
   let map;
   beforeEach(() => {
-    window.URL.createObjectURL = () => {};
-    const mapbox = require('mapbox-gl'); //eslint-disable-line
-    mapbox.setRTLTextPlugin = () => {};
     props = {
       onClick: jasmine.createSpy('onClick'),
       clickOnMarker: jasmine.createSpy('clickOnMarker'),
