@@ -1,29 +1,21 @@
-import {store} from 'app/store';
+import { store } from 'app/store';
+import React from 'react';
+import { Translate } from './';
 
-let t = (contextId, key, _text) => {
-  //return translations[contextId][key];
-  //return 'text';
-  let text = _text || key;
+const testingEnvironment = process.env.NODE_ENV === 'test';
+const t = (contextId, key, _text, returnComponent = true) => {
+  if (returnComponent && !testingEnvironment) {
+    return (<Translate context={contextId}>{key}</Translate>);
+  }
+  const text = _text || key;
 
   if (!t.translation) {
-    let state = store.getState();
-    let translations = state.translations.toJS();
-    t.translation = translations.find((d) => d.locale === state.locale) || {contexts: []};
-    //console.log(t.translation);
+    const state = store.getState();
+    const translations = state.translations.toJS();
+    t.translation = translations.find(d => d.locale === state.locale) || { contexts: [] };
   }
 
-  let context = t.translation.contexts.find((ctx) => ctx.id === contextId) || {values: {}};
-
-  if (!context.values) {
-    console.log(contextId); // eslint-disable-line no-console
-    console.log(key); // eslint-disable-line no-console
-    console.log(_text); // eslint-disable-line no-console
-    console.log(context); // eslint-disable-line no-console
-  }
-
-  if (contextId === 'System' && !context.values[key]) {
-    console.error(`"${key}" (${text})  key does not exist, configure it on /api/i18n/systemKeys.js`); // eslint-disable-line
-  }
+  const context = t.translation.contexts.find(ctx => ctx.id === contextId) || { values: {} };
 
   return context.values[key] || text;
 };
