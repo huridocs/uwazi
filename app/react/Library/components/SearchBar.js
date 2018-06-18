@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
 import {Field, Form, actions as formActions} from 'react-redux-form';
 import {wrapDispatch} from 'app/Multireducer';
+import { Icon } from 'UI';
 
 import {searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions} from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
@@ -61,7 +62,7 @@ export class SearchBar extends Component {
         <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
           <div className={'input-group' + (search.searchTerm ? ' is-active' : '')}>
             <Field model={'.searchTerm'} updateOn='submit'>
-              <i className="fa fa-search"></i>
+              <Icon icon="search" />
               <input
                 type="text"
                 placeholder={t('System', 'Search')}
@@ -70,7 +71,7 @@ export class SearchBar extends Component {
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
-              <i className="fa fa-times" onClick={this.resetSearch.bind(this)}></i>
+              <Icon icon="times" onClick={this.resetSearch.bind(this)} />
             </Field>
           </div>
           <div
@@ -83,8 +84,7 @@ export class SearchBar extends Component {
               return <p className="search-suggestions-item" key={index}>
                 <I18NLink to={documentViewUrl}>
                   <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <i className="far fa-file-alt">
-                  </i>
+                  <Icon icon="file" />
                 </I18NLink>
               </p>;
             })}

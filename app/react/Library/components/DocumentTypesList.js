@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import { is } from 'immutable';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
@@ -143,7 +144,7 @@ export class DocumentTypesList extends Component {
         <span className="multiselectItem-results">
           <span>{this.aggregations(item)}</span>
           <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
-            <i className={this.state.ui[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+            <Icon icon={this.state.ui[item.id] ? 'caret-up' : 'caret-down'} />
           </span>
         </span>
       </div>

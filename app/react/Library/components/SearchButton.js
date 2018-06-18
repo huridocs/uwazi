@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {t} from 'app/I18N';
+import { Icon } from 'UI';
 
 import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
 import {wrapDispatch} from 'app/Multireducer';
@@ -28,11 +29,11 @@ export class SearchButton extends Component {
     return (
       <a href='#' className={'search-button btn ' + activeClass} onClick={toggle}>
         <div className="searchButton-open">
-          <i className="fa fa-search"></i>
+          <Icon icon="search" />
           <span>{t('System', 'Search')}...</span>
         </div>
         <div className="searchButton-close">
-          <i className="fa fa-chevron-right"></i>
+          <Icon icon="chevron-right" />
         </div>
       </a>
     );
