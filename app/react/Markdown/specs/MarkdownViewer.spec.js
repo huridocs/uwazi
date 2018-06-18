@@ -118,7 +118,17 @@ describe('MarkdownViewer', () => {
         props.lists = [
           { params: 'param1', items: ['items1'], options: { option1: 'optionValue' } },
         ];
-        props.markdown = '<div>{list}(url)(options)<div>{youtube}(url)</div></div>';
+        props.markdown = '<div>{list}(url)(options) <div>{youtube}(url)</div></div>';
+
+        render();
+        expect(component).toMatchSnapshot();
+      });
+    });
+
+    describe('when not valid html', () => {
+      it('should not fail', () => {
+        props.markdown = '<div><h</div>';
+        props.html = true;
 
         render();
         expect(component).toMatchSnapshot();

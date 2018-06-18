@@ -88,27 +88,39 @@ exports[`MarkdownViewer render should render list components 1`] = `
   <ItemList
     items={
       Array [
-        "items2",
+        "items1",
       ]
     }
     key="0"
+    link="/library/param1"
+    options={
+      Object {
+        "option1": "optionValue",
+      }
+    }
+  />
+  
+
+  <ItemList
+    items={
+      Array [
+        "items2",
+      ]
+    }
+    key="2"
     link="/library/param2"
     options={Object {}}
   />
   
 
   <ItemList
-    items={Array []}
-    key="2"
-    link="/library/undefined"
-    options={Object {}}
-  />
-  
-
-  <ItemList
-    items={Array []}
+    items={
+      Array [
+        "items3",
+      ]
+    }
     key="4"
-    link="/library/undefined"
+    link="/library/param3"
     options={Object {}}
   />
   
@@ -203,6 +215,14 @@ exports[`MarkdownViewer render should support containers with custom classNames 
 `;
 
 exports[`MarkdownViewer render when markdown is empty should not render anything 1`] = `""`;
+
+exports[`MarkdownViewer render when not valid html should not fail 1`] = `
+<React.Fragment>
+  <div
+    key="0"
+  />
+</React.Fragment>
+`;
 
 exports[`MarkdownViewer render when passing html true prop should render customComponents nested inside html 1`] = `
 <React.Fragment>
