@@ -61,22 +61,30 @@ export default (_markdown, callback, withHtml = false) => {
       let type;
       let config;
 
-      if (node.name === 'placeholder' && node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher)) {
-        type = node.children[0].data.match(customComponentTypeMatcher)[1];
+      const isCustomComponentPlaceholder = node.name === 'placeholder'
+        && node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
+
+      if (isCustomComponentPlaceholder) {
+        [, type] = node.children[0].data.match(customComponentTypeMatcher);
         config = getConfig(node.children[0].data);
       }
 
-      if (node && (!node.parent || node.parent && node.parent.name !== 'placeholder') && node.data && node.data.match(customComponentMatcher)) {
-        type = node.data.match(customComponentTypeMatcher)[1];
+      const isCustomComponent = node && (!node.parent || node.parent && node.parent.name !== 'placeholder')
+        && node.data && node.data.match(customComponentMatcher);
+
+      if (isCustomComponent) {
+        [, type] = node.data.match(customComponentTypeMatcher);
         config = getConfig(node.data);
       }
 
 
-      if (type) {
-        return callback(type, config, index);
+      let newNode = callback(type, config, index);
+
+      if (!newNode) {
+        newNode = processNodeDefinitions.processDefaultNode(node, children, index);
       }
 
-      return processNodeDefinitions.processDefaultNode(node, children, index);
+      return newNode;
     }
   }];
 

@@ -54,6 +54,8 @@ export class MarkdownViewer extends Component {
       if (type === 'customhook') {
         return MarkdownViewer.customHook(config, index);
       }
+
+      return false;
     }, this.props.html);
 
     if (!MyElement) {
