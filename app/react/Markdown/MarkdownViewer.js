@@ -60,7 +60,7 @@ export class MarkdownViewer extends Component {
       return false;
     }
 
-    return <React.Fragment>{MyElement}</React.Fragment>;
+    return <div className="markdown-viewer">{MyElement}</div>;
   }
 }
 

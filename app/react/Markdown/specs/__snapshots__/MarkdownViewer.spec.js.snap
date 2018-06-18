@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MarkdownViewer render should be able to render properly custom components not separated by \\n\\n 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <MarkdownMedia
     config="(youtubeUrl)"
     key="0"
@@ -14,11 +16,13 @@ exports[`MarkdownViewer render should be able to render properly custom componen
   />
   
 
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render should not render html by default 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <p
     key="0"
   >
@@ -26,11 +30,13 @@ exports[`MarkdownViewer render should not render html by default 1`] = `
   </p>
   
 
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render should render customHook components 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <customComponent
     array={
       Array [
@@ -80,11 +86,13 @@ exports[`MarkdownViewer render should render customHook components 1`] = `
   </p>
   
 
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render should render list components 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <ItemList
     items={
       Array [
@@ -125,11 +133,13 @@ exports[`MarkdownViewer render should render list components 1`] = `
   />
   
 
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render should render markdown 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <h2
     key="0"
   >
@@ -171,11 +181,13 @@ exports[`MarkdownViewer render should render markdown 1`] = `
   </pre>
   
 
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render should render media components 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <MarkdownMedia
     config="(1234, options)"
     key="0"
@@ -194,11 +206,13 @@ exports[`MarkdownViewer render should render media components 1`] = `
   />
   
 
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render should support containers with custom classNames 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <div
     className="test classname"
     key="0"
@@ -211,21 +225,25 @@ exports[`MarkdownViewer render should support containers with custom classNames 
     
 
   </div>
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render when markdown is empty should not render anything 1`] = `""`;
 
 exports[`MarkdownViewer render when not valid html should not fail 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <div
     key="0"
   />
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render when passing html true prop should render customComponents nested inside html 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <div
     key="0"
   >
@@ -252,11 +270,13 @@ exports[`MarkdownViewer render when passing html true prop should render customC
       />
     </div>
   </div>
-</React.Fragment>
+</div>
 `;
 
 exports[`MarkdownViewer render when passing html true prop should render html 1`] = `
-<React.Fragment>
+<div
+  className="markdown-viewer"
+>
   <div
     key="0"
   >
@@ -266,5 +286,5 @@ exports[`MarkdownViewer render when passing html true prop should render html 1`
       test
     </h1>
   </div>
-</React.Fragment>
+</div>
 `;
