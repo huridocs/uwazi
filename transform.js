@@ -12,7 +12,10 @@ export default function transformer(file, api) {
         if (attributes) {
           attributes.map(attr => {
             if(attr.name.name === "className" && attr.value.value !== undefined) {
-              if(attr.value.value.startsWith("fa fa")) {
+              if(attr.value.value.startsWith("fa fa-")) {
+                attr.name.name = "icon";
+                attr.value.value = attr.value.value.replace("fa fa-", "");
+                path.value.name = "Icon"
                 console.log(attr.name.name + attr.value.value)
               }
             }
