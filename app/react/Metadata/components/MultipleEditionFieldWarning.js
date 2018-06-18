@@ -2,13 +2,14 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {getField} from 'react-redux-form';
+import { Icon } from 'UI';
 
 export class MultipleEditionFieldWarning extends Component {
   render() {
     if (!this.props.touched || !this.props.multipleEdition) {
       return false;
     }
-    return <span><i className="fa fa-warning"></i>&nbsp;</span>;
+    return <span><Icon icon="warning" />&nbsp;</span>;
   }
 }
 

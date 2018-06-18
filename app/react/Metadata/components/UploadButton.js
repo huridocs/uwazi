@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {reuploadDocument} from 'app/Metadata/actions/actions';
 import socket from 'app/socket';
+import { Icon } from 'UI';
 
 export class UploadButton extends Component {
 
@@ -50,7 +51,7 @@ export class UploadButton extends Component {
   renderUploadButton() {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut btn btn-default">
-        <i className="fa fa-upload"></i>
+        <Icon icon="upload" />
         <input onChange={this.onChange.bind(this)}
                type="file"
                accept="application/pdf"
@@ -63,7 +64,7 @@ export class UploadButton extends Component {
   renderCompleted() {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut btn btn-success">
-        <i className="fa fa-check"></i>
+        <Icon icon="check" />
         <input onChange={this.onChange.bind(this)}
                type="file"
                accept="application/pdf"
@@ -76,7 +77,7 @@ export class UploadButton extends Component {
   renderFailed() {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut btn btn-danger">
-        <i className="fa fa-exclamation-triangle"></i>
+        <Icon icon="exclamation-triangle" />
         <input onChange={this.onChange.bind(this)}
                type="file"
                accept="application/pdf"
@@ -94,7 +95,7 @@ export class UploadButton extends Component {
 
   renderProcessing() {
     return <div className="item-shortcut btn btn-default">
-             <i className="fa fa-cog fa-spin"></i>
+            <Icon icon="cog" spin />
            </div>;
   }
 
