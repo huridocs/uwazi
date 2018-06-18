@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import './scss/styles.scss';
-import 'UI/Icon/library.js';
+import '../UI/Icon/library.js';
 
 import Notifications from 'app/Notifications';
 import Menu from './Menu';
@@ -15,7 +15,7 @@ import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import { isClient } from 'app/utils';
 import { loadCSS } from 'fg-loadcss';
-import { Icon } from 'UI';
+import { Icon } from '../UI';
 
 class App extends Component {
   constructor(props, context) {

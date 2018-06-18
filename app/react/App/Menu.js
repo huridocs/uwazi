@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t } from 'app/I18N';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { Icon } from 'UI';
+import { Icon } from '../UI';
 
 export class Menu extends Component {
   libraryUrl() {
