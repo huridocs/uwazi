@@ -4,6 +4,8 @@ import date from 'api/utils/date.js';
 import relationships from 'api/relationships/relationships';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
+import path from 'path';
+import { uploadDocumentsPath } from 'api/config/paths';
 
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
@@ -311,8 +313,17 @@ export default {
 
   deleteFiles(deletedDocs) {
     let filesToDelete = deletedDocs
-    .filter(d => d.file)
-    .map(doc => `./uploaded_documents/${doc.file.filename}`);
+    .reduce((paths, doc) => {
+      if (doc.file) {
+        paths.push(path.normalize(`${uploadDocumentsPath}/${doc.file.filename}`));
+      }
+
+      if (doc.attachments) {
+        doc.attachments.forEach(file => paths.push(path.normalize(`${uploadDocumentsPath}/${file.filename}`)));
+      }
+
+      return paths;
+    }, []);
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
     return deleteFiles(filesToDelete)
     .catch((error) => {

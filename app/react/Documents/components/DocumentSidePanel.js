@@ -91,7 +91,7 @@ export class DocumentSidePanel extends Component {
       });
       return summaryData;
     }, { totalConnections: 0 });
-
+    console.log(this.props.doc.toJS());
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
