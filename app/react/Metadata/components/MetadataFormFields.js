@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Immutable from 'immutable';
+import { FormGroup } from 'app/Forms';
+import { Field } from 'react-redux-form';
+import t from 'app/I18N/t';
+import { connect } from 'react-redux';
 import {
-  FormGroup,
   Select,
   MultiSelect,
   MarkDown,
@@ -13,10 +16,7 @@ import {
   MultiDateRange,
   Numeric,
   Geolocation
-} from 'app/ReactReduxForms';
-import { Field } from 'react-redux-form';
-import t from 'app/I18N/t';
-import { connect } from 'react-redux';
+} from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
 const translateOptions = thesauri => thesauri.values.map((option) => {

@@ -19,7 +19,7 @@ const Switcher = props => <Control.select component={forms.Switcher} {...props}/
 const Geolocation = props => <Control component={forms.Geolocation} {...props}/>;
 const { NestedMultiselect, FormGroup } = forms;
 
-export {
+export default {
   Select,
   FormGroup,
   DatePicker,
