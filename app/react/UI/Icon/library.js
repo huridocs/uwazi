@@ -16,3 +16,4 @@ export default fontawesome.library.add(
   faCog,
   faPowerOff
 );
+

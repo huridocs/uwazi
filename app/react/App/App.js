@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import 'bootstrap/dist/css/bootstrap.css';
-//import 'font-awesome/css/font-awesome.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import './scss/styles.scss';
+import 'UI/Icon/library.js';
 
 import Notifications from 'app/Notifications';
 import Menu from './Menu';
@@ -15,12 +15,7 @@ import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import { isClient } from 'app/utils';
 import { loadCSS } from 'fg-loadcss';
-import Icons from "./Icons";
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-
-if (isClient) {
-  loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');
-}
+import { Icon } from 'UI';
 
 class App extends Component {
   constructor(props, context) {
@@ -75,7 +70,7 @@ class App extends Component {
           </nav>
           <header>
             <span className="menu-button" onClick={this.toggleMenu.bind(this)}>
-              <FontAwesomeIcon icon={MenuButtonIcon}/>
+              <Icon icon={MenuButtonIcon}/>
             </span>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
