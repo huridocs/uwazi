@@ -13,7 +13,7 @@ const dynamicCustomContainersConfig = {
   render(tokens, idx) {
     const token = tokens[idx];
 
-    if (token.nesting === 1) {
+    if (token.type === 'container_dynamic_open') {
       return `<div class="${token.info.trim()}">`;
     }
     return '</div>';

@@ -42,7 +42,8 @@ export class MarkdownViewer extends Component {
 
   render() {
     this.renderedLists = 0;
-    const MyElement = markdownToReact(this.props.markdown, (type, config, index) => {
+
+    const ReactFromMarkdown = markdownToReact(this.props.markdown, (type, config, index) => {
       if (type === 'list') {
         return this.list(config, index);
       }
@@ -58,11 +59,11 @@ export class MarkdownViewer extends Component {
       return false;
     }, this.props.html);
 
-    if (!MyElement) {
+    if (!ReactFromMarkdown) {
       return false;
     }
 
-    return <div className="markdown-viewer">{MyElement}</div>;
+    return <div className="markdown-viewer">{ReactFromMarkdown}</div>;
   }
 }
 
