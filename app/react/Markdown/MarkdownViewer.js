@@ -1,15 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import markdownIt from 'markdown-it';
 import rison from 'rison';
-import CustomHookComponents from './CustomHooks';
-import CustomComponents from './components';
 
-const placeholder = '{-CUSTOMCOMPONENT-}';
-const componentSubstitution = '{-spliter-}{-CUSTOMCOMPONENT-}{-spliter-}';
-const spliter = '{-spliter-}';
-const customComponentMatcher = /{\w+}\(.+\)\(.+\)|{\w+}\(.+\)/g;
-const md = markdownIt();
+import CustomComponents from './components';
+import CustomHookComponents from './CustomHooks';
+
+import markdownToReact from './markdownToReact';
 
 export class MarkdownViewer extends Component {
   static errorHtml(index) {
@@ -44,64 +40,40 @@ export class MarkdownViewer extends Component {
     return output;
   }
 
-  customComponent(customComponentString, index) {
-    const customComponentTypeMatcher = /{(.+)}\(/;
-    const customComponentOptionsMatcher = /{\w+}(\(.+\)\(.+\))|{\w+}(\(.+\))/g;
-    const type = customComponentString.match(customComponentTypeMatcher)[1];
-    const configMatch = customComponentOptionsMatcher.exec(customComponentString);
-    let config;
-    if (configMatch) {
-      config = configMatch[1] || configMatch[2];
-    }
-
-    if (type === 'customhook') {
-      return MarkdownViewer.customHook(config, index);
-    }
-
-    if (['vimeo', 'youtube', 'media'].includes(type)) {
-      return <CustomComponents.MarkdownMedia key={index} config={config} />;
-    }
-
-    if (type === 'list') {
-      return this.list(config, index);
-    }
-
-    return <div key={index}>{customComponentString}</div>;
-  }
-
-  markdownToHtml(markdown) {
-    const customComponents = markdown.match(customComponentMatcher);
-    const htmlChunks = markdown.replace(customComponentMatcher, componentSubstitution).split(spliter);
-    let customComponentsPrinted = 0;
-    return htmlChunks.map((chunk, index) => {
-      if (chunk === placeholder) {
-        const component = this.customComponent(customComponents[customComponentsPrinted], index);
-        customComponentsPrinted += 1;
-        return component;
-      }
-      const __html = md.render(chunk);
-      return <div key={index} dangerouslySetInnerHTML={{ __html }}/>; // eslint-disable-line
-    });
-  }
-
   render() {
     this.renderedLists = 0;
-    return (
-      <div className="markdown-viewer">
-        {this.markdownToHtml(this.props.markdown).map(item => item)}
-      </div>
-    );
+    const MyElement = markdownToReact(this.props.markdown, (type, config, index) => {
+      if (type === 'list') {
+        return this.list(config, index);
+      }
+
+      if (['vimeo', 'youtube', 'media'].includes(type)) {
+        return <CustomComponents.MarkdownMedia key={index} config={config} />;
+      }
+
+      if (type === 'customhook') {
+        return MarkdownViewer.customHook(config, index);
+      }
+    }, this.props.html);
+
+    if (!MyElement) {
+      return false;
+    }
+
+    return <React.Fragment>{MyElement}</React.Fragment>;
   }
 }
 
 MarkdownViewer.defaultProps = {
   lists: [],
-  markdown: ''
+  markdown: '',
+  html: false
 };
 
 MarkdownViewer.propTypes = {
   markdown: PropTypes.string,
-  lists: PropTypes.arrayOf(PropTypes.object)
+  lists: PropTypes.arrayOf(PropTypes.object),
+  html: PropTypes.bool
 };
 
 export default MarkdownViewer;
