@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import './scss/alert.scss';
+import { Icon } from "UI";
 
 class Alert extends Component {
 
@@ -20,9 +21,9 @@ class Alert extends Component {
   render() {
     let type = this.props.type || 'info';
     let cssClass = 'alert alert-' + type;
-    let icon = 'fa fa-info-circle';
+    let icon = 'info-circle';
     if (type === 'warning' || type === 'danger') {
-      icon = 'fa fa-exclamation-triangle';
+      icon = 'exclamation-triangle';
     }
 
     return (
@@ -31,10 +32,10 @@ class Alert extends Component {
           if (this.state.show) {
             return (
             <div className={cssClass}><span className="alert-icon">
-              <i className={icon}></i>
+              <Icon icon={icon} />
               </span><span className="alert-message">{this.props.message}</span>
               <a onClick={this.hide} className="alert-close">
-                <i className="fa fa-times"></i>
+                <Icon icon="times" />
               </a>
             </div>
             );
