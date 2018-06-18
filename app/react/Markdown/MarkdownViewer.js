@@ -33,6 +33,22 @@ export class MarkdownViewer extends Component {
     return output;
   }
 
+  static customComponent(type, config, index) {
+    if (type === 'list') {
+      return this.list(config, index);
+    }
+
+    if (['vimeo', 'youtube', 'media'].includes(type)) {
+      return <CustomComponents.MarkdownMedia key={index} config={config} />;
+    }
+
+    if (type === 'customhook') {
+      return MarkdownViewer.customHook(config, index);
+    }
+
+    return false;
+  }
+
   list(config, index) {
     const listData = this.props.lists[this.renderedLists] || {};
     const output = <CustomComponents.ItemList key={index} link={`/library/${listData.params}`} items={listData.items} options={listData.options}/>;
@@ -43,21 +59,7 @@ export class MarkdownViewer extends Component {
   render() {
     this.renderedLists = 0;
 
-    const ReactFromMarkdown = markdownToReact(this.props.markdown, (type, config, index) => {
-      if (type === 'list') {
-        return this.list(config, index);
-      }
-
-      if (['vimeo', 'youtube', 'media'].includes(type)) {
-        return <CustomComponents.MarkdownMedia key={index} config={config} />;
-      }
-
-      if (type === 'customhook') {
-        return MarkdownViewer.customHook(config, index);
-      }
-
-      return false;
-    }, this.props.html);
+    const ReactFromMarkdown = markdownToReact(this.props.markdown, MarkdownViewer.customComponent.bind(this), this.props.html);
 
     if (!ReactFromMarkdown) {
       return false;
