@@ -178,7 +178,7 @@ export class FiltersForm extends Component {
                 <span className="btn-label">{t('System', 'Create group')}</span>
               </button>
               <button onClick={this.save.bind(this)} className="btn btn-sm btn-success">
-                <i className="far fa-save"></i>
+                <Icon icon="save" />
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>

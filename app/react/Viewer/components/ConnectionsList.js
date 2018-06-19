@@ -141,7 +141,7 @@ export class ConnectionsList extends Component {
                       <I18NLink to={`/${doc.get('type')}/${doc.get('sharedId')}`}
                             onClick={e => e.stopPropagation()}
                             className="item-shortcut btn btn-default">
-                        <i className="far fa-file-alt"></i>
+                        <Icon icon="file" />
                       </I18NLink>
                     </ShowIf>
                   </div>

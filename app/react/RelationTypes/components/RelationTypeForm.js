@@ -63,7 +63,7 @@ export class RelationTypeForm extends Component {
                   <span className="btn-label">Back</span>
                 </I18NLink>
                 <button type="submit" className="btn btn-success save-template">
-                  <i className="far fa-save"/>
+                  <Icon icon="save"/>
                   <span className="btn-label">Save</span>
                 </button>
               </div>
