@@ -47,7 +47,6 @@ app.use('/public', express.static(path.resolve(__dirname, 'public')));
 app.use(bodyParser.json());
 require('./app/api/auth/routes.js')(app);
 app.use(privateInstanceMiddleware);
-app.use('/media', express.static(path.resolve(__dirname, uploadsFolder)));
 app.use('/flag-images', express.static(path.resolve(__dirname, 'dist/flags')));
 
 require('./app/api/api.js')(app, http);
