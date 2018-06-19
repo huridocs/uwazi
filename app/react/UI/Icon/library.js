@@ -14,6 +14,7 @@ import faCheck from '@fortawesome/fontawesome-free-solid/faCheck'
 import faCheckSquare from '@fortawesome/fontawesome-free-solid/faCheckSquare'
 import faChevronRight from '@fortawesome/fontawesome-free-solid/faChevronRight'
 import faClone from '@fortawesome/fontawesome-free-solid/faClone'
+import faClock from '@fortawesome/fontawesome-free-solid/faClock'
 import faCog from '@fortawesome/fontawesome-free-solid/faCog'
 import faCloudUploadAlt from '@fortawesome/fontawesome-free-solid/faCloudUploadAlt'
 import faEnvelope from '@fortawesome/fontawesome-free-solid/faEnvelope'
@@ -53,6 +54,7 @@ import faTerminal from '@fortawesome/fontawesome-free-solid/faTerminal'
 import faTh from '@fortawesome/fontawesome-free-solid/faTh'
 import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt'
+import faUpload from '@fortawesome/fontawesome-free-solid/faUpload'
 //!!
 import faWarning from '@fortawesome/fontawesome-free-solid/faExclamationTriangle'
 
@@ -70,6 +72,7 @@ export default fontawesome.library.add(
   faChevronRight,
   faClone,
   faCog,
+  faClock,
   faCloudUploadAlt,
   faEnvelope,
   faExchangeAlt,
@@ -105,6 +108,7 @@ export default fontawesome.library.add(
   faTh,
   faTimes,
   faTrashAlt,
+  faUpload,
   faWarning,
 );
 

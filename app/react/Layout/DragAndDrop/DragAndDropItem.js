@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
 import {DragSource, DropTarget} from 'react-dnd';
+import { Icon } from 'UI';
 
 export const itemSource = {
   beginDrag(props) {
@@ -89,7 +90,7 @@ export class DragAndDropItem extends Component {
 
     return connectDragSource(connectDropTarget(
       <div className={propertyClass}>
-        <i className="fa fa-reorder"></i>
+        <Icon icon="reorder" />
         {this.props.children}
       </div>
     ));

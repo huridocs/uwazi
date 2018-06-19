@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Icon } from 'UI';
 
 let List = ({children}) => {
   return <div className="item-group">{children}</div>;
@@ -15,15 +16,15 @@ let ItemFooter = ({children, onClick}) => {
 
 let ProgressBar = ({progress}) => {
   let message = `${progress} % Completed`;
-  let icon = 'fa fa-upload';
+  let icon = 'upload';
   if (progress === 100) {
     message = 'Processing...';
-    icon = 'fa fa-clock-o';
+    icon = 'clock';
   }
   return (
     <div className="label-progress">
       <span className="label label-info">
-        <i className={icon}></i>&nbsp;
+        <Icon icon={icon} />&nbsp;
         <span>{message}</span>
       </span>
       <div className="progress">
@@ -36,17 +37,17 @@ let ProgressBar = ({progress}) => {
 let ItemLabel = ({children, status}) => {
   let icon = '';
   if (status === 'success') {
-    icon = 'fa fa-check';
+    icon = 'check';
   }
   if (status === 'danger') {
-    icon = 'fa fa-times';
+    icon = 'times';
   }
   if (status === 'warning') {
-    icon = 'fa fa-warning';
+    icon = 'warning';
   }
   return (
     <span className={'label label-' + (status || 'default')}>
-      <i className={icon}></i>
+      <Icon icon={icon} />
       <span>{children}</span>
     </span>
   );
