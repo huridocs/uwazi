@@ -23,6 +23,7 @@ import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+//import { Icon } from 'UI';
 
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
@@ -93,13 +94,13 @@ export class EntityViewer extends Component {
             <ul className="nav nav-tabs">
               <li>
                 <TabLink to="info">
-                  <i className="fa fa-info-circle" />
+                  <Icon icon="info-circle" />
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="connections">
-                  <i className="fa fa-exchange-alt" />
+                  <Icon icon="exchange-alt" />
                   <span className="connectionsNumber">{summary.totalConnections}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>
