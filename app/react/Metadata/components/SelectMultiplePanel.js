@@ -9,12 +9,13 @@ import ShowIf from 'app/App/ShowIf';
 import { comonProperties } from 'shared/comonProperties';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import validator from 'app/Metadata/helpers/validator';
-import { FormGroup, IconSelector } from 'app/ReactReduxForms';
-import { Select as SimpleSelect } from 'app/Forms';
+import { Select as SimpleSelect, FormGroup } from 'app/Forms';
+import { IconSelector } from 'app/ReactReduxForms';
 import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
 import { advancedSort } from 'app/utils/advancedSort';
-import { TemplateLabel, SidePanel } from 'app/Layout';
+import TemplateLabel from 'app/Layout/TemplateLabel';
+import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import MetadataFormFields from './MetadataFormFields';
 
