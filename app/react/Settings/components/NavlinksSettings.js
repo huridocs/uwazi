@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Form} from 'react-redux-form';
 import {isClient} from 'app/utils';
+import { Icon } from "UI";
 
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -44,7 +45,7 @@ export class NavlinksSettings extends Component {
             <ul className="list-group">
               <li className="list-group-item">
                 <div className="alert alert-info">
-                  <i className="fa fa-info-circle"></i>
+                  <Icon icon="info-circle" />
                   <div>
                     If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.<br />
                     If it is an internal URL within this website, be sure to delete the first part ({hostname}),
@@ -65,7 +66,7 @@ export class NavlinksSettings extends Component {
             <div className="settings-footer">
               <a className="btn btn-primary"
                  onClick={this.props.addLink.bind(this, links)}>
-                <i className="fa fa-plus"></i>
+                 <Icon icon="plus" />
                 <span className="btn-label">{t('System', 'Add link')}</span>
               </a>
               <button type="submit"

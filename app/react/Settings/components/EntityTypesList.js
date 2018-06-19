@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {Link} from 'react-router';
 import {deleteTemplate, checkTemplateCanBeDeleted} from 'app/Templates/actions/templatesActions';
 import {t} from 'app/I18N';
+import { Icon } from "UI";
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
 
@@ -43,11 +44,11 @@ export class EntityTypesList extends Component {
               <Link to={'/settings/entities/edit/' + template._id}>{template.name}</Link>
               <div className="list-group-item-actions">
                 <Link to={'/settings/entities/edit/' + template._id} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil-alt"></i>&nbsp;
+                  <Icon icon="pencil-alt" />&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </Link>
                 <a onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash-alt"></i>&nbsp;
+                  <Icon icon="trash-alt" />&nbsp;
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
@@ -56,7 +57,7 @@ export class EntityTypesList extends Component {
       </ul>
       <div className="settings-footer">
         <Link to="/settings/entities/new" className="btn btn-success">
-          <i className="fa fa-plus"></i>
+          <Icon icon="plus" />
           <span className="btn-label">{t('System', 'Add entity type')}</span>
         </Link>
       </div>

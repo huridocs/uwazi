@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {I18NLink, t} from 'app/I18N';
 import {deleteRelationType, checkRelationTypeCanBeDeleted} from 'app/RelationTypes/actions/relationTypesActions';
+import { Icon } from "UI";
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
 
@@ -39,11 +40,11 @@ export class RelationTypesList extends Component {
               <I18NLink to={'/settings/connections/edit/' + relationType._id}>{relationType.name}</I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/connections/edit/' + relationType._id} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil-alt"></i>&nbsp;
+                  <Icon icon="pencil-alt" />&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <a onClick={this.deleteRelationType.bind(this, relationType)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash-alt"></i>&nbsp;
+                  <Icon icon="trash-alt" />&nbsp;
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
@@ -52,7 +53,7 @@ export class RelationTypesList extends Component {
       </ul>
       <div className="settings-footer">
         <I18NLink to="/settings/connections/new" className="btn btn-success">
-          <i className="fa fa-plus"></i>
+          <Icon icon="plus" />
           <span className="btn-label">{t('System', 'Add connection')}</span>
         </I18NLink>
       </div>
