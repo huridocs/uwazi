@@ -1,10 +1,10 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
-import { MultiSelect, DatePicker, FormGroup } from 'app/ReactReduxForms';
+import { FormGroup } from 'app/Forms';
 import { MetadataFormFields } from '../MetadataFormFields';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
-
+import { MultiSelect, DatePicker } from '../../../ReactReduxForms';
 
 describe('MetadataFormFields', () => {
   let component;
