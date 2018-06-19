@@ -8,11 +8,18 @@ export default class MarkDown extends Component {
   render() {
     const { rows } = this.props;
     return (
-      <Tabs className="markdownEditor">
+      <Tabs renderActiveTabContentOnly className="markdownEditor">
         <div className="tab-nav">
           <TabLink to="edit" default>Edit</TabLink>
           <TabLink to="preview">Preview</TabLink>
-          <a className="tab-link tab-link--help" href="https://guides.github.com/features/mastering-markdown/" target="_blank">help</a>
+          <a
+            className="tab-link tab-link--help"
+            href="https://guides.github.com/features/mastering-markdown/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            help
+          </a>
         </div>
         <TabContent for="edit">
           <textarea className="form-control" rows={rows} onChange={this.props.onChange} value={this.props.value}/>

@@ -49,7 +49,7 @@ exports[`MarkdownViewer render should render Link 1`] = `
 </div>
 `;
 
-exports[`MarkdownViewer render should render customHook components 1`] = `
+exports[`MarkdownViewer render should render customHook components and show an error for invalid ones 1`] = `
 <div
   className="markdown-viewer"
 >
@@ -98,6 +98,8 @@ exports[`MarkdownViewer render should render customHook components 1`] = `
         Custom component markup error: unsuported values! Please check your configuration
       </i>
     </strong>
+    <br />
+    Invalid  component
     <br />
   </p>
   

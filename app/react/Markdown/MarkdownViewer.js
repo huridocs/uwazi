@@ -8,46 +8,46 @@ import CustomHookComponents from './CustomHooks';
 import markdownToReact from './markdownToReact';
 
 class MarkdownViewer extends Component {
-  static errorHtml(index) {
+  static errorHtml(index, message) {
     return (
       <p key={index} className="error">
         <br />
         <strong><i>Custom component markup error: unsuported values! Please check your configuration</i></strong>
+        <br />
+        {message}
         <br />
       </p>
     );
   }
 
   static customHook(config, index) {
-    let output;
-    try {
-      const props = rison.decode(config);
-      if (!CustomHookComponents[props.component]) {
-        throw new Error('Invalid  component');
-      }
-      const Element = CustomHookComponents[props.component];
-      output = <Element {...props} key={index} />;
-    } catch (err) {
-      output = MarkdownViewer.errorHtml(index);
+    const props = rison.decode(config);
+    if (!CustomHookComponents[props.component]) {
+      throw new Error('Invalid  component');
     }
-    return output;
+    const Element = CustomHookComponents[props.component];
+    return <Element {...props} key={index} />;
   }
 
   static customComponent(type, config, index) {
-    if (type === 'list') {
-      return this.list(config, index);
-    }
+    try {
+      if (type === 'list') {
+        return this.list(config, index);
+      }
 
-    if (type === 'link') {
-      return <CustomComponents.MarkdownLink {...rison.decode(config)} key={index}/>;
-    }
+      if (type === 'link') {
+        return <CustomComponents.MarkdownLink {...rison.decode(config)} key={index}/>;
+      }
 
-    if (['vimeo', 'youtube', 'media'].includes(type)) {
-      return <CustomComponents.MarkdownMedia key={index} config={config} />;
-    }
+      if (['vimeo', 'youtube', 'media'].includes(type)) {
+        return <CustomComponents.MarkdownMedia key={index} config={config} />;
+      }
 
-    if (type === 'customhook') {
-      return MarkdownViewer.customHook(config, index);
+      if (type === 'customhook') {
+        return MarkdownViewer.customHook(config, index);
+      }
+    } catch (error) {
+      return MarkdownViewer.errorHtml(index, error.message);
     }
 
     return false;

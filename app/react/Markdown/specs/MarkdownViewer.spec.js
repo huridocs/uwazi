@@ -72,7 +72,7 @@ describe('MarkdownViewer', () => {
       expect(component).toMatchSnapshot();
     });
 
-    it('should render customHook components', () => {
+    it('should render customHook components and show an error for invalid ones', () => {
       CustomHookComponents.validcomponent = class customComponent extends Component {
         render() {
           return <p>Custom</p>;
