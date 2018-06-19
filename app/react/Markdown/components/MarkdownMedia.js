@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactPlayer from 'react-player';
+import { Icon } from 'UI';
 
 export class MarkdownMedia extends Component {
   propsToConfig(props) {
@@ -32,7 +33,7 @@ export class MarkdownMedia extends Component {
     return Object.keys(timelinks).map((timeKey, index) => {
       const seconds = timeKey.split(':').reverse().reduce((_seconds, n, _index) => _seconds + parseInt(n, 10) * (60 ** _index), 0);
       return (<div className="timelink" key={index} onClick={this.seekTo.bind(this, seconds)} >
-        <b><i className="fa fa-play" /> {timeKey}</b>
+        <b><Icon icon="play" /> {timeKey}</b>
         <span>{timelinks[timeKey]}</span>
       </div>);
     });

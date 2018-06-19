@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from 'UI';
 
 export default class VictimSlider extends Component {
   constructor(props) {
@@ -53,10 +54,14 @@ export default class VictimSlider extends Component {
     return (
       <div className="slider">
         <div className="slider-buttons">
-          <i className="slider-btn fa fa-angle-left"
-            onClick={() => this.slide(-1)}></i>
-          <i className="slider-btn fa fa-angle-right"
-            onClick={() => this.slide(1)}></i>
+          <button className="slider-btn"
+            onClick={() => this.slide(-1)}>
+            <Icon icon="angle-left" />
+          </button>
+          <button className="slider-btn"
+            onClick={() => this.slide(1)}>
+            <Icon icon="angle-right" />
+          </button>
         </div>
         <div className="slider-items">
           { items }
