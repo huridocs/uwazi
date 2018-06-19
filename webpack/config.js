@@ -42,11 +42,6 @@ module.exports = function(production) {
       extensions: ['.js', '.json'],
       mainFields: ['loader', 'main']
     },
-    resolve: {
-      alias: {
-        UI: path.resolve('app/react/UI/')
-      }
-    },
     module: {
       rules: [
         {

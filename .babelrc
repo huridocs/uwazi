@@ -18,7 +18,8 @@
       alias: {
         app: './app/react',
         shared: './app/shared',
-        api: './app/api'
+        api: './app/api',
+        UI: './app/react/UI'
       }
     }]
   ]
