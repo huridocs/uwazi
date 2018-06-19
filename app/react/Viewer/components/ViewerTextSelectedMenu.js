@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {addToToc} from '../actions/documentActions';
+import { Icon } from "UI";
 
 import {actions as connectionsActions} from 'app/Connections';
 import {openPanel} from 'app/Viewer/actions/uiActions';
@@ -21,20 +22,20 @@ export class ViewerTextSelectedMenu extends Component {
           <div className="btn btn-primary"
                onClick={this.showPanel.bind(this, 'targetRanged')}>
             <span className="ContextMenu-tooltip">Connect to a paragraph</span>
-            <i className="fa fa-paragraph"></i>
+            <Icon icon="paragraph" />
           </div>
         </ShowIf>
         <ShowIf if={this.props.hasRelationTypes}>
           <div className="btn btn-primary"
                onClick={this.showPanel.bind(this, 'ranged')} >
             <span className="ContextMenu-tooltip">Connect to a document</span>
-            <i className="fa fa-file-o"></i>
+            <Icon icon="file" />
           </div>
         </ShowIf>
         <div className="btn btn-primary"
              onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}>
           <span className="ContextMenu-tooltip">Add to table of contents</span>
-          <i className="fa fa-font"></i>
+          <Icon icon="font" />
         </div>
       </div>
     );

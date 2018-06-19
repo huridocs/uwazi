@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 
 import {addReference, saveTargetRangedReference} from '../actions/referencesActions';
 import {cancelTargetDocument} from '../actions/documentActions';
+import { Icon } from "UI";
 
 export class TargetDocumentHeader extends Component {
 
@@ -28,7 +29,7 @@ export class TargetDocumentHeader extends Component {
       <div>
         <div className="relationship-steps is-fixed">
           <button onClick={this.props.cancelTargetDocument} className="btn btn-default">
-            <i className="fa fa-arrow-left"></i>
+            <Icon icon="arrow-left" />
             Back
           </button>
           <h2>Select target paragraph<small>3</small></h2>
@@ -36,7 +37,7 @@ export class TargetDocumentHeader extends Component {
         <div className="ContextMenu ContextMenu-center">
           <button onClick={this.save.bind(this, connection, targetRange)}
             className={className}>
-            <i className="far fa-save"></i>
+            <Icon icon="save" />
             <span className="ContextMenu-tooltip">Save</span>
           </button>
         </div>

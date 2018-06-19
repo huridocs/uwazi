@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import { Icon } from "UI";
 
 import {actions} from 'app/Metadata';
 import {MenuButtons} from 'app/ContextMenu';
@@ -24,7 +25,7 @@ export class MetadataPanelMenu extends Component {
             return (
               <MenuButtons.Main disabled={disabled} >
                 <button type="submit" form="metadataForm" disabled={disabled}>
-                  <i className="far fa-save"></i>
+                  <Icon icon="save" />
                 </button>
               </MenuButtons.Main>
             );
@@ -33,7 +34,7 @@ export class MetadataPanelMenu extends Component {
             <NeedAuthorization roles={['admin', 'editor']}>
               <MenuButtons.Main
                 onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
-                <i className="fa fa-pencil-alt"></i>
+                <Icon icon="pencil-alt" />
               </MenuButtons.Main>
             </NeedAuthorization>
           );

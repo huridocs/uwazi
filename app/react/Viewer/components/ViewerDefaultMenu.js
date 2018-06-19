@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from "UI";
 
 import {openPanel} from 'app/Viewer/actions/uiActions';
 
@@ -12,7 +13,7 @@ export class ViewerDefaultMenu extends Component {
       <div className={this.props.active ? 'active' : ''}>
         <ShowIf if={!this.props.panelIsOpen}>
           <div className="btn btn-primary" onClick={this.props.openPanel.bind(null, 'viewMetadataPanel')}>
-            <i className="fa fa-bar-chart"></i>
+            <Icon icon="bar-chart" />
           </div>
         </ShowIf>
       </div>
