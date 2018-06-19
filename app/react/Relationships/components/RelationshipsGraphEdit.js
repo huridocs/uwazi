@@ -7,6 +7,7 @@ import * as actions from '../actions/actions';
 
 import LeftRelationship from './LeftRelationship';
 import RightRelationship from './RightRelationship';
+import { Icon } from 'UI';
 
 export class RelationshipsGraphEdit extends Component {
   componentWillMount() {
@@ -37,7 +38,7 @@ export class RelationshipsGraphEdit extends Component {
               <div className="leftRelationshipType ">
                 <button className="relationships-new" onClick={addHub}>
                   <span>New relationships group</span>
-                  <i className="fa fa-plus" />
+                  <Icon icon="plus" />
                 </button>
               </div>
             </div>

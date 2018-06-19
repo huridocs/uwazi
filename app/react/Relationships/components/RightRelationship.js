@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Icon } from 'UI';
 
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
@@ -73,7 +74,7 @@ export class RightRelationship extends Component {
                        if (relationTypes.find(r => r._id === rightRelationshipGroup.get('template'))) {
                          return rightRelationshipGroup.get('template') ?
                            relationTypes.find(r => r._id === rightRelationshipGroup.get('template')).name :
-                           <i className="fa fa-link" />;
+                           <Icon icon="link" />;
                        }
                        return null;
                      })()}
@@ -160,7 +161,7 @@ export class RightRelationship extends Component {
                       onClick={this.setAddToData(index, rightRelationshipIndex)}
                     >
                       <span>Add entities / documents</span>
-                      <i className="fa fa-plus" />
+                      <Icon icon="plus" />
                     </button>
                     <div className="insertEntities">
                       <i
