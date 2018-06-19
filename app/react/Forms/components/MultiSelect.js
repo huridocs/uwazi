@@ -121,7 +121,7 @@ export default class MultiSelect extends Component {
           </ShowIf>
           {option.options &&
             <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-              <i className={this.state.ui[option.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
             </span>
           }
         </span>
@@ -213,7 +213,7 @@ export default class MultiSelect extends Component {
         <li className="multiselectActions">
           <ShowIf if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}>
             <div className="form-group">
-              <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)} />
+              <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter.bind(this)} />
               <input
                 className="form-control"
                 type="text"
@@ -235,7 +235,7 @@ export default class MultiSelect extends Component {
         <li className="multiselectActions">
           <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
-              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
               <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.props.optionsToShow + t('System', 'x more')}</span>
             </button>
           </ShowIf>
