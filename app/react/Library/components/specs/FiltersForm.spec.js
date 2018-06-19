@@ -78,7 +78,7 @@ describe('FiltersForm', () => {
   });
 
   describe('render()', () => {
-    fit('should render diferent type fileds', () => {
+    it('should render diferent type fileds', () => {
       const fields = component.find(FormGroup);
       expect(fields.length).toBe(6);
     });
