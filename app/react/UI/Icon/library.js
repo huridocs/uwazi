@@ -8,6 +8,8 @@ import faArrowRight from '@fortawesome/fontawesome-free-solid/faArrowRight'
 import faBarChart from '@fortawesome/fontawesome-free-solid/faChartBar'
 import faBars from '@fortawesome/fontawesome-free-solid/faBars'
 import faBook from '@fortawesome/fontawesome-free-solid/faBook'
+import faCalculator from '@fortawesome/fontawesome-free-solid/faCalculator'
+import faCalendar from '@fortawesome/fontawesome-free-solid/faCalendar'
 import faCaretDown from '@fortawesome/fontawesome-free-solid/faCaretDown'
 import faCaretUp from '@fortawesome/fontawesome-free-solid/faCaretUp'
 import faCheck from '@fortawesome/fontawesome-free-solid/faCheck'
@@ -17,6 +19,7 @@ import faClone from '@fortawesome/fontawesome-free-solid/faClone'
 import faClock from '@fortawesome/fontawesome-free-solid/faClock'
 import faCog from '@fortawesome/fontawesome-free-solid/faCog'
 import faCloudUploadAlt from '@fortawesome/fontawesome-free-solid/faCloudUploadAlt'
+import faCubes from '@fortawesome/fontawesome-free-solid/faCubes'
 import faEnvelope from '@fortawesome/fontawesome-free-solid/faEnvelope'
 import faExchangeAlt from '@fortawesome/fontawesome-free-solid/faExchangeAlt'
 import faExclamationTriangle from '@fortawesome/fontawesome-free-solid/faExclamationTriangle'
@@ -32,6 +35,7 @@ import faLanguage from '@fortawesome/fontawesome-free-solid/faLanguage'
 import faLegal from '@fortawesome/fontawesome-free-solid/faBalanceScale'
 import faLightbulb from '@fortawesome/fontawesome-free-solid/faLightbulb'
 import faLink from '@fortawesome/fontawesome-free-solid/faLink'
+import faList from '@fortawesome/fontawesome-free-solid/faList'
 import faLock from '@fortawesome/fontawesome-free-solid/faLock'
 import faMapMarker from '@fortawesome/fontawesome-free-solid/faMapMarker'
 import faPaperPlane from '@fortawesome/fontawesome-free-solid/faPaperPlane'
@@ -47,6 +51,7 @@ import faSave from '@fortawesome/fontawesome-free-solid/faSave'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faSignOutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt'
 import faSitemap from '@fortawesome/fontawesome-free-solid/faSitemap'
+import faSort from '@fortawesome/fontawesome-free-solid/faSort'
 import faSortAlphaDown from '@fortawesome/fontawesome-free-solid/faSortAlphaDown'
 import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner'
 import faSync from '@fortawesome/fontawesome-free-solid/faSync'
@@ -66,6 +71,8 @@ export default fontawesome.library.add(
   faBarChart,
   faBars,
   faBook,
+  faCalendar,
+  faCalculator,
   faCaretDown,
   faCaretUp,
   faCheck,
@@ -75,6 +82,7 @@ export default fontawesome.library.add(
   faCog,
   faClock,
   faCloudUploadAlt,
+  faCubes,
   faEnvelope,
   faExchangeAlt,
   faExclamationTriangle,
@@ -88,6 +96,7 @@ export default fontawesome.library.add(
   faLegal,
   faLightbulb,
   faLink,
+  faList,
   faLock,
   faMapMarker,
   faPaperPlane,
@@ -102,6 +111,7 @@ export default fontawesome.library.add(
   faSearch,
   faSignOutAlt,
   faSitemap,
+  faSort,
   faSortAlphaDown,
   faSpinner,
   faSync,

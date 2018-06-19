@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import Icons from './Icons';
+import { Icon } from 'UI';
 
 export class FilterSuggestions extends Component {
   static getTypeIcon(type) {
-    return Icons[type] || 'fa fa-font';
+    return Icons[type] || 'font';
   }
 
   getThesauriName(thesauriId) {
@@ -52,18 +53,18 @@ export class FilterSuggestions extends Component {
 
     return (
       <tr key={index} className={activeClass} title={title}>
-        <td><i className="fa fa-file-o" /> {propertyMatch.template}</td>
+        <td><Icon icon="file-o" /> {propertyMatch.template}</td>
         <td className={typeConflict ? 'conflict' : ''}>
-          <i className="fa fa-warning" />
-          <i className={icon} /> {type}
+          <Icon icon="warning" />
+          <Icon icon={icon} /> {type}
         </td>
         {(() => {
                 if (hasThesauri && propertyMatch.property.content) {
                   const thesauri = this.getThesauriName(propertyMatch.property.content);
                   return (
                     <td className={contentConflict ? 'conflict' : ''}>
-                      <i className="fa fa-warning" />
-                      <i className="fa fa-book" /> {thesauri}
+                      <Icon icon="warning" />
+                      <Icon icon="book" /> {thesauri}
                     </td>
                   );
                 }
@@ -98,12 +99,12 @@ export class FilterSuggestions extends Component {
         </thead>
         <tbody>
           <tr className={activeClass} title={title}>
-            <td><i className="fa fa-file-o" /> {this.props.data.name}</td>
-            <td><i className={icon} /> {type[0].toUpperCase() + type.slice(1)}</td>
+            <td><Icon icon="file-o" /> {this.props.data.name}</td>
+            <td><Icon icon={icon} /> {type[0].toUpperCase() + type.slice(1)}</td>
             {(() => {
               if (hasThesauri) {
                 const thesauri = this.getThesauriName(content);
-                return <td><i className="fa fa-book" /> {thesauri}</td>;
+                return <td><Icon icon="book" /> {thesauri}</td>;
               }
             })()}
           </tr>
