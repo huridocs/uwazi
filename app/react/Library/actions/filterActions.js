@@ -5,46 +5,46 @@ import * as libraryActions from 'app/Library/actions/libraryActions';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 export function filterDocumentTypes(documentTypes, storeKey) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const state = getState();
 
     const templates = state.templates.toJS();
     const thesauris = state.thesauris.toJS();
 
     let libraryFilters = comonPropertiesHelper.comonProperties(templates, documentTypes)
-    .filter((prop) => prop.filter);
+    .filter(prop => prop.filter);
     libraryFilters = libraryHelper.populateOptions(libraryFilters, thesauris);
 
     const usefulTemplates = documentTypes.length ? templates.filter(t => documentTypes.includes(t._id)) : templates;
 
-    const {sort, order} = prioritySortingCriteria.get({
-      currentCriteria: {sort: state[storeKey].search.sort, order: state[storeKey].search.order},
+    const { sort, order } = prioritySortingCriteria.get({
+      currentCriteria: { sort: state[storeKey].search.sort, order: state[storeKey].search.order },
       filteredTemplates: usefulTemplates.map(t => t._id),
       templates: state.templates,
       selectedSorting: state[storeKey].selectedSorting
     });
 
-    const search = Object.assign({types: documentTypes}, state[storeKey].search, {sort, order});
-    let filters = {documentTypes, properties: libraryFilters};
-    dispatch(libraryActions.searchDocuments({filters, search}, storeKey));
+    const search = Object.assign({ types: documentTypes }, state[storeKey].search, { sort, order });
+    const filters = { documentTypes, properties: libraryFilters };
+    dispatch(libraryActions.searchDocuments({ filters, search }, storeKey));
   };
 }
 
 export function resetFilters(storeKey) {
-  return function (dispatch, getState) {
-    dispatch({type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: []});
-    libraryActions.searchDocuments({search: getState()[storeKey].search}, storeKey)(dispatch, getState);
+  return (dispatch, getState) => {
+    dispatch({ type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: [] });
+    libraryActions.searchDocuments({ search: getState()[storeKey].search }, storeKey)(dispatch, getState);
   };
 }
 
 export function toggleFilter(propertyName, properties) {
-  return function (dispatch) {
-    let updatedProperties = properties.map((property) => {
+  return (dispatch) => {
+    const updatedProperties = properties.map((property) => {
       if (property.name === propertyName) {
         property.active = !property.active;
       }
       return property;
     });
-    dispatch({type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties});
+    dispatch({ type: types.UPDATE_LIBRARY_FILTERS, libraryFilters: updatedProperties });
   };
 }
