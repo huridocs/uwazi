@@ -7,7 +7,7 @@ import CustomHookComponents from './CustomHooks';
 
 import markdownToReact from './markdownToReact';
 
-export class MarkdownViewer extends Component {
+class MarkdownViewer extends Component {
   static errorHtml(index) {
     return (
       <p key={index} className="error">
@@ -36,6 +36,10 @@ export class MarkdownViewer extends Component {
   static customComponent(type, config, index) {
     if (type === 'list') {
       return this.list(config, index);
+    }
+
+    if (type === 'link') {
+      return <CustomComponents.MarkdownLink {...rison.decode(config)} key={index}/>;
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {

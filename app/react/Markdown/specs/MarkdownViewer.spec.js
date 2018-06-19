@@ -104,6 +104,13 @@ describe('MarkdownViewer', () => {
       expect(component).toMatchSnapshot();
     });
 
+    it('should render Link', () => {
+      props.markdown = '{link}(url:this_is_the_url,label:\'this is a label\')';
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
     describe('when passing html true prop', () => {
       it('should render html', () => {
         props.html = true;

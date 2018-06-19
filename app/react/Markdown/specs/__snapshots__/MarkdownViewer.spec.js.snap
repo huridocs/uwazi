@@ -33,6 +33,22 @@ exports[`MarkdownViewer render should not render html by default 1`] = `
 </div>
 `;
 
+exports[`MarkdownViewer render should render Link 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <MarkdownLink
+    className=""
+    icon=""
+    key="0"
+    label="this is a label"
+    url="this_is_the_url"
+  />
+  
+
+</div>
+`;
+
 exports[`MarkdownViewer render should render customHook components 1`] = `
 <div
   className="markdown-viewer"

@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Link should render a react-router Link when the url is relative 1`] = `
+<Link
+  href="url"
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="url"
+>
+  label
+</Link>
+`;
+
+exports[`Link when passing an icon property should render an extra div with icon class 1`] = `
+<div
+  className="icon-link "
+>
+  <Link
+    href="url"
+    onlyActiveOnIndex={false}
+    style={Object {}}
+    to="url"
+  >
+    <div>
+      <i
+        className="fa fa-iconName"
+      />
+    </div>
+    <span>
+      label
+    </span>
+  </Link>
+</div>
+`;
+
+exports[`Link when passing an icon property when passing a className property should append the className for the wrapping div 1`] = `
+<div
+  className="icon-link extraClassName"
+>
+  <Link
+    href="url"
+    onlyActiveOnIndex={false}
+    style={Object {}}
+    to="url"
+  >
+    <div>
+      <i
+        className="fa fa-iconName"
+      />
+    </div>
+    <span>
+      label
+    </span>
+  </Link>
+</div>
+`;
