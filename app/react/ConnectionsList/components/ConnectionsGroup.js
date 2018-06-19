@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { is, fromJS as Immutable } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Icon } from 'UI';
 
 import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
@@ -93,7 +94,7 @@ export class ConnectionsGroup extends Component {
           <span className="multiselectItem-results">
             <span>{group.templates.reduce((size, i) => size + i.count, 0)}</span>
             <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
-              <i className={this.state.expanded ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <Icon icon={this.state.expanded ? 'caret-up' : 'caret-down'} />
             </span>
           </span>
         </div>

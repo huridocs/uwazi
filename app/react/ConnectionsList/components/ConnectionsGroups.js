@@ -5,13 +5,14 @@ import {connect} from 'react-redux';
 import {t} from 'app/I18N';
 
 import ConnectionsGroup from './ConnectionsGroup';
+import { Icon } from 'UI';
 
 export class ConnectionsGroups extends Component {
   render() {
     const {connectionsGroups} = this.props;
 
     let Results = <div className="blank-state">
-                    <i className="fa fa-exchange-alt"></i>
+                    <Icon icon="exchange-alt" />
                     <h4>{t('System', 'No Relationships')}</h4>
                     <p>{t('System', 'No Relationships description')}</p>
                   </div>;
