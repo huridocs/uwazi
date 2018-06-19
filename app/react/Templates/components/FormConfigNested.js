@@ -6,6 +6,7 @@ import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties
 import {Field} from 'react-redux-form';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import { Icon } from 'UI';
 
 export class FormConfigNested extends Component {
 
@@ -44,9 +45,9 @@ export class FormConfigNested extends Component {
           &nbsp;
           <label className="property-label" htmlFor={'required' + this.props.index}>
             Required property
-            <i className="property-help fa fa-question-circle">
+            <span className="property-help">
               <div className="property-description">You won't be able to publish a document if this property is empty.</div>
-            </i>
+            </span>
           </label>
         </Field>
 
@@ -55,11 +56,11 @@ export class FormConfigNested extends Component {
           &nbsp;
           <label className="property-label" htmlFor={'showInCard' + this.props.index}>
             Show in cards
-            <i className="property-help fa fa-question-circle">
+            <span className="property-help">
               <div className="property-description">
                 This property will appear in the library cards as part of the basic info.
               </div>
-            </i>
+            </span>
           </label>
         </Field>
         <div className="well-metadata-creator">
@@ -69,10 +70,10 @@ export class FormConfigNested extends Component {
               &nbsp;
               <label className="property-label" htmlFor={'filter' + this.props.index}>
                 Use as filter
-                <i className="property-help fa fa-question-circle">
+                <span className="property-help">
                   <div className="property-description">This property will be used for filtering the library results.
                   When properties match in equal name and field type with other document types, they will be combined for filtering.</div>
-                </i>
+                </span>
               </label>
             </Field>
             <FilterSuggestions {...property} />

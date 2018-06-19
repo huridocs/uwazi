@@ -45,6 +45,7 @@ import faPencilAlt from '@fortawesome/fontawesome-free-solid/faPencilAlt'
 import faPlay from '@fortawesome/fontawesome-free-solid/faPlay'
 import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 import faPowerOff from '@fortawesome/fontawesome-free-solid/faPowerOff'
+import faQuestionCircle from '@fortawesome/fontawesome-free-solid/faQuestionCircle'
 //!!
 import faReorder from '@fortawesome/fontawesome-free-solid/faBars'
 import faSave from '@fortawesome/fontawesome-free-solid/faSave'
@@ -106,6 +107,7 @@ export default fontawesome.library.add(
   faPlay,
   faPlus,
   faPowerOff,
+  faQuestionCircle,
   faReorder,
   faSave,
   faSearch,
