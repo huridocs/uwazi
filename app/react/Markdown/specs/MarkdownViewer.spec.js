@@ -141,5 +141,12 @@ describe('MarkdownViewer', () => {
         expect(component).toMatchSnapshot();
       });
     });
+
+    it('should render a searchbox', () => {
+      props.markdown = '{searchbox}(placeholder:\'this is a placeholder\')';
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
   });
 });

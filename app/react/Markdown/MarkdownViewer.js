@@ -39,6 +39,10 @@ class MarkdownViewer extends Component {
         return <CustomComponents.MarkdownLink {...rison.decode(config)} key={index}/>;
       }
 
+      if (type === 'searchbox') {
+        return <CustomComponents.SearchBox {...rison.decode(config)} key={index}/>;
+      }
+
       if (['vimeo', 'youtube', 'media'].includes(type)) {
         return <CustomComponents.MarkdownMedia key={index} config={config} />;
       }

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchBox should render a basic input that binds to the correct model 1`] = `
+<Connect(Form)
+  model="library.search"
+  onSubmit={[Function]}
+>
+  <Modeled(Connect(Field))
+    model=".searchTerm"
+  >
+    <input
+      type="text"
+    />
+  </Modeled(Connect(Field))>
+</Connect(Form)>
+`;

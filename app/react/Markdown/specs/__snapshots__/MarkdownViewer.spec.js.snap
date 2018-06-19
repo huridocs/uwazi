@@ -49,6 +49,19 @@ exports[`MarkdownViewer render should render Link 1`] = `
 </div>
 `;
 
+exports[`MarkdownViewer render should render a searchbox 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <SearchBox
+    key="0"
+    placeholder="this is a placeholder"
+  />
+  
+
+</div>
+`;
+
 exports[`MarkdownViewer render should render customHook components and show an error for invalid ones 1`] = `
 <div
   className="markdown-viewer"
