@@ -10,7 +10,7 @@ describe('SearchBox', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<SearchBox placeholder="placeholder text" />);
+    component = shallow(<SearchBox className="custom-class" placeholder="placeholder text" />);
   });
 
   it('should render a basic input that binds to the correct model', () => {

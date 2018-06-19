@@ -54,6 +54,7 @@ exports[`MarkdownViewer render should render a searchbox 1`] = `
   className="markdown-viewer"
 >
   <SearchBox
+    className=""
     key="0"
     placeholder="this is a placeholder"
   />

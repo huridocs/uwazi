@@ -1,16 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SearchBox should render a basic input that binds to the correct model 1`] = `
-<Connect(Form)
-  model="library.search"
-  onSubmit={[Function]}
+<div
+  className="search-box custom-class"
 >
-  <Modeled(Connect(Field))
-    model=".searchTerm"
+  <Connect(Form)
+    model="library.search"
+    onSubmit={[Function]}
   >
-    <input
-      type="text"
-    />
-  </Modeled(Connect(Field))>
-</Connect(Form)>
+    <div
+      className="input-group"
+    >
+      <button
+        type="submit"
+      >
+        <i
+          className="fa fa-search"
+        />
+      </button>
+      <Modeled(Connect(Field))
+        model=".searchTerm"
+      >
+        <input
+          className="form-control"
+          placeholder="placeholder text"
+          type="text"
+        />
+      </Modeled(Connect(Field))>
+    </div>
+  </Connect(Form)>
+</div>
 `;
