@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import {Form, Field} from 'react-redux-form';
 import {MarkDown} from 'app/ReactReduxForms';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 
 import {resetPage, savePage} from 'app/Pages/actions/pageActions';
 import validator from './ValidatePage';
@@ -43,7 +44,7 @@ export class PageCreator extends Component {
             <div className="panel-body page-viewer document-viewer">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
-                  <i className="fa fa-terminal"></i> {pageUrl}
+                  <Icon icon="terminal" /> {pageUrl}
                   <a target="_blank" href={pageUrl} className="pull-right">(view page)</a>
                 </div>
               </ShowIf>
@@ -52,7 +53,7 @@ export class PageCreator extends Component {
           </div>
           <div className="settings-footer">
             <I18NLink to={backUrl} className="btn btn-default">
-              <i className="fa fa-arrow-left"></i>
+              <Icon icon="arrow-left" />
               <span className="btn-label">Back</span>
             </I18NLink>
             <button type="submit"
