@@ -372,7 +372,7 @@ export default {
     .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
-  deleteEntityFromMetadata(sahredId, propertyContent) {
+  deleteEntityFromMetadata(sharedId, propertyContent) {
     return templates.get({ 'properties.content': propertyContent })
     .then((allTemplates) => {
       const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
@@ -383,7 +383,7 @@ export default {
       selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
         const p = {};
-        p[`metadata.${property.name}`] = sahredId;
+        p[`metadata.${property.name}`] = sharedId;
         selectChanges[`metadata.${property.name}`] = '';
         return p;
       });
@@ -393,8 +393,8 @@ export default {
       multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
         const p = {};
-        p[`metadata.${property.name}`] = sahredId;
-        multiSelectChanges[`metadata.${property.name}`] = sahredId;
+        p[`metadata.${property.name}`] = sharedId;
+        multiSelectChanges[`metadata.${property.name}`] = sharedId;
         return p;
       });
 

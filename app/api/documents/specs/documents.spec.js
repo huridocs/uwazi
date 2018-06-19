@@ -9,7 +9,7 @@ import db from 'api/utils/testing_db';
 import path from 'path';
 import documents from '../documents.js';
 import fixtures, { templateId } from './fixtures.js';
-import { uploadDocumentsPath } from '../config/paths';
+import { uploadDocumentsPath } from '../../config/paths';
 
 
 describe('documents', () => {
