@@ -5,6 +5,7 @@ import {scrollTo} from 'app/Viewer/actions/uiActions';
 import Immutable from 'immutable';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
+import { Icon } from 'UI';
 
 export class ShowToc extends Component {
 
@@ -19,7 +20,7 @@ export class ShowToc extends Component {
     if (!toc.size) {
       return (
         <div className="blank-state">
-          <i className="fa fa-font"></i>
+          <Icon icon="font" />
           <h4>{t('System', 'No Table of Content')}</h4>
           <p>{t('System', 'No Table of Content description')}</p>
         </div>
