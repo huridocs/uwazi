@@ -9,8 +9,13 @@ import dictionariesModel from '../app/api/thesauris/dictionariesModel';
 import entitiesModel from '../app/api/entities/entitiesModel';
 
 let fix = false;
+let verbose = false;
 if (process.argv.includes('--fix')) {
   fix = true;
+}
+
+if (process.argv.includes('--verbose')) {
+  verbose = true;
 }
 
 const entitiesNeedToBeFixed = [];
@@ -56,9 +61,13 @@ function processForeignIdProperty(property, entity, checkFunction) {
   const unExistant = [];
   let action = Promise.resolve();
   if (property.type === 'select') {
-    action = checkFunction(entity.metadata[property.name])
+    const value = entity.metadata[property.name];
+    action = checkFunction(value)
     .then((exists) => {
       if (!exists) {
+        if (verbose) {
+          console.log(`Entity ${entity.title} (${entity.sharedId}) in ${property.name} has an unexistant value: ${value}`);
+        }
         unExistant.push(entity.metadata[property.name]);
       }
     });
@@ -66,6 +75,9 @@ function processForeignIdProperty(property, entity, checkFunction) {
     action = Promise.all(entity.metadata[property.name].map(sharedId => checkFunction(sharedId)
     .then((exists) => {
       if (!exists) {
+        if (verbose) {
+          console.log(`Entity ${entity.title} (${entity.sharedId}) in ${property.name} has an unexistant value: ${sharedId}`);
+        }
         unExistant.push(sharedId);
       }
     })));
