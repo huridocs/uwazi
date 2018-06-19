@@ -53,6 +53,7 @@ import faSync from '@fortawesome/fontawesome-free-solid/faSync'
 import faTerminal from '@fortawesome/fontawesome-free-solid/faTerminal'
 import faTh from '@fortawesome/fontawesome-free-solid/faTh'
 import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
+import faTrash from '@fortawesome/fontawesome-free-solid/faTrashAlt'
 import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt'
 import faUpload from '@fortawesome/fontawesome-free-solid/faUpload'
 //!!
@@ -107,6 +108,7 @@ export default fontawesome.library.add(
   faTerminal,
   faTh,
   faTimes,
+  faTrash,
   faTrashAlt,
   faUpload,
   faWarning,
