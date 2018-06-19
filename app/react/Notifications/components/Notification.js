@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {removeNotification} from 'app/Notifications';
+import { Icon } from 'UI';
 
 export class Notification extends Component {
 
@@ -13,15 +14,14 @@ export class Notification extends Component {
   render() {
     let type = this.props.type || 'success';
     let cssClass = 'alert alert-' + type;
-    let icon = 'fa fa-check';
+    let icon = 'check';
     if (type === 'warning' || type === 'danger') {
-      icon = 'fa fa-exclamation-triangle';
+      icon = 'exclamation-triangle';
     }
 
     return (
         <div className={cssClass} onClick={this.close.bind(this)}>
-          <i className={icon}>
-          </i>
+          <Icon icon={icon} />
           <span>{this.props.message}</span>
         </div>
     );
