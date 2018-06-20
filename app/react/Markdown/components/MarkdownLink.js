@@ -2,27 +2,23 @@ import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const MarkdownLink = ({ url, label, icon, className }) => (
-  icon ?
-    <div className={`icon-link ${className}`}>
-      <Link to={url} href={url}>
-        <div><i className={`fa fa-${icon}`} /></div>
-        <span>{label}</span>
-      </Link>
-    </div>
-    : <Link to={url} href={url}>{label}</Link>
+const MarkdownLink = ({ url, className, children }) => (
+  <Link to={url} className={className} href={url}>{children}</Link>
 );
 
 MarkdownLink.defaultProps = {
-  icon: '',
-  className: ''
+  children: '',
+  className: '',
 };
 
 MarkdownLink.propTypes = {
   url: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  icon: PropTypes.string,
   className: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.string,
+  ]),
 };
 
 export default MarkdownLink;

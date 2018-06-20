@@ -39,11 +39,22 @@ exports[`MarkdownViewer render should render Link 1`] = `
 >
   <MarkdownLink
     className=""
-    icon=""
     key="0"
     label="this is a label"
     url="this_is_the_url"
   />
+  
+
+  <p
+    key="2"
+  >
+    <MarkdownLink
+      className=""
+      url="the_url"
+    >
+      label
+    </MarkdownLink>
+  </p>
   
 
 </div>
