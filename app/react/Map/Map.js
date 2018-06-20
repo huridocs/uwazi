@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
+import { Icon } from 'UI';
 
 export default class Map extends Component {
   constructor(props) {
@@ -154,9 +155,11 @@ export default class Map extends Component {
       return this.props.renderMarker(marker, onClick);
     }
     return (
-      <i
+      <Icon
         style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
-        className="fa fa-map-marker fa-3x fa-fw map-marker"
+        icon="map-marker"
+        size="3x"
+        fixedWidth
         onClick={onClick}
         onMouseOver={onMouseEnter}
         onMouseLeave={onMouseLeave}
