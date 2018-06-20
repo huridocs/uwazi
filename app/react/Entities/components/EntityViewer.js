@@ -16,14 +16,15 @@ import {
 } from 'app/Connections';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
-import { TemplateLabel, Icon } from 'app/Layout';
+//import { TemplateLabel, Icon } from 'app/Layout';
+import { TemplateLabel } from 'app/Layout';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import { t } from 'app/I18N';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
-//import { Icon } from 'UI';
+import { Icon } from 'UI';
 
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
@@ -79,7 +80,9 @@ export class EntityViewer extends Component {
 
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+            {/*
+              <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+            */}
             <h1 className="item-name">{entity.title}</h1>
             <TemplateLabel template={entity.template}/>
           </div>
