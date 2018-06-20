@@ -2,7 +2,8 @@ import { remove as removeAccents } from 'diacritics';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Icon } from 'app/Layout/Icon';
+//import { Icon } from 'app/Layout/Icon';
+import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 
@@ -109,10 +110,14 @@ export default class MultiSelect extends Component {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]} >
-        <i className="multiselectItem-icon fa fa-square-o" />
-        <i className="multiselectItem-icon fa fa-check" />
+        <span className="multiselectItem-icon">
+          <Icon icon="square" className="checkbox-empty" />
+          <Icon icon="check" className="checkbox-checked" />
+        </span>
         <span className="multiselectItem-name">
-          <Icon className="item-icon" data={option.icon}/>
+          {/*
+            <Icon className="item-icon" data={option.icon}/>
+          */}
           {option[optionsLabel]}
         </span>
         <span className="multiselectItem-results">
