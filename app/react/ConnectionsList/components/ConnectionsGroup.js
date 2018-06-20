@@ -83,8 +83,10 @@ export class ConnectionsGroup extends Component {
             checked={this.state.selected}
           />
           <label htmlFor={`group${group.key}`} className="multiselectItem-label">
-            <i className="multiselectItem-icon far fa-square" />
-            <i className="multiselectItem-icon fa fa-check" />
+            <span className="multiselectItem-icon">
+              <Icon icon="square" className="checkbox-empty" />
+              <Icon icon="check" className="checkbox-checked" />
+            </span>
             <span className="multiselectItem-name">
               <b>{group.key ?
                   t(group.context, connectionLabel) : t('System', 'No Label')}
@@ -113,8 +115,10 @@ export class ConnectionsGroup extends Component {
                   className="multiselectItem-label"
                   htmlFor={group.key + template._id}
                 >
-                  <i className="multiselectItem-icon far fa-square" />
-                  <i className="multiselectItem-icon fa fa-check" />
+                  <span className="multiselectItem-icon">
+                    <Icon icon="square" className="checkbox-empty" />
+                    <Icon icon="check" className="checkbox-checked" />
+                  </span>
                   <span className="multiselectItem-name">{t(template._id, template.label)}</span>
                 </label>
                 <span className="multiselectItem-results">
