@@ -55,6 +55,7 @@ import faSitemap from '@fortawesome/fontawesome-free-solid/faSitemap'
 import faSort from '@fortawesome/fontawesome-free-solid/faSort'
 import faSortAlphaDown from '@fortawesome/fontawesome-free-solid/faSortAlphaDown'
 import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner'
+import faSquare from '@fortawesome/fontawesome-free-solid/faSquare'
 import faSync from '@fortawesome/fontawesome-free-solid/faSync'
 import faTerminal from '@fortawesome/fontawesome-free-solid/faTerminal'
 import faTh from '@fortawesome/fontawesome-free-solid/faTh'
@@ -116,6 +117,7 @@ export default fontawesome.library.add(
   faSort,
   faSortAlphaDown,
   faSpinner,
+  faSquare,
   faSync,
   faTerminal,
   faTh,
