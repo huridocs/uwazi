@@ -63,6 +63,7 @@ import faTimes from '@fortawesome/fontawesome-free-solid/faTimes'
 import faTrash from '@fortawesome/fontawesome-free-solid/faTrashAlt'
 import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt'
 import faUpload from '@fortawesome/fontawesome-free-solid/faUpload'
+import faUndo from '@fortawesome/fontawesome-free-solid/faUndo'
 //!!
 import faWarning from '@fortawesome/fontawesome-free-solid/faExclamationTriangle'
 
@@ -125,6 +126,7 @@ export default fontawesome.library.add(
   faTrash,
   faTrashAlt,
   faUpload,
+  faUndo,
   faWarning,
 );
 

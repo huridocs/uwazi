@@ -5,12 +5,17 @@ import { Map, List } from 'immutable';
 
 import { t } from 'app/I18N';
 import formater from 'app/Metadata/helpers/formater';
+import { Icon } from 'UI';
 
 const conformQuote = text => (
   <div className="relationship-quote">
-    <i className="quoteIconStart fa fa-quote-left" />
+    <span className="quoteIconStart">
+      <Icon icon="quote-left" />
+    </span>
     {text}
-    <i className="quoteIconEnd fa fa-quote-right" />
+    <span className="quoteIconEnd">
+      <Icon icon="quote-right" />
+    </span>
   </div>
 );
 

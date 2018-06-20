@@ -51,7 +51,7 @@ export class RelationshipsFormButtons extends Component {
             <button onClick={this.props.save}
                     className="btn btn-success"
                     disabled={saving}>
-              <i className={`fa fa-fw ${!saving ? 'fa-save' : 'fa-spinner fa-pulse fa-spin'}`}></i>
+                    <Icon icon={!saving ? 'save' : 'spinner'} pulse={saving ? 'pulse' : false} fixedWidth />
               <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>
