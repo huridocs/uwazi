@@ -33,7 +33,7 @@ class MarkdownViewer extends Component {
     try {
       if (typeof type === 'function') {
         const Element = type;
-        return <Element {...config}>{children}</Element>;
+        return <Element {...config} key={index}>{children}</Element>;
       }
 
       if (type === 'list') {

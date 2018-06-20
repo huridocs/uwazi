@@ -2,18 +2,18 @@ import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const MarkdownLink = ({ url, className, children }) => (
-  <Link to={url} className={className} href={url}>{children}</Link>
+const MarkdownLink = ({ url, classname, children }) => (
+  <Link to={url} className={classname} href={url}>{children}</Link>
 );
 
 MarkdownLink.defaultProps = {
   children: '',
-  className: '',
+  classname: '',
 };
 
 MarkdownLink.propTypes = {
   url: PropTypes.string.isRequired,
-  className: PropTypes.string,
+  classname: PropTypes.string,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

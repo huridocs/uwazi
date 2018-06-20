@@ -8,8 +8,8 @@ const search = ({ searchTerm }) => {
   browserHistory.push(`/library/?q=${rison.encode({ searchTerm })}`);
 };
 
-const SearchBox = ({ placeholder, className }) => (
-  <div className={`search-box ${className}`}>
+const SearchBox = ({ placeholder, classname }) => (
+  <div className={`search-box ${classname}`}>
     <Form model="library.search" onSubmit={search} >
       <div className="input-group">
         <button type="submit">
@@ -25,12 +25,12 @@ const SearchBox = ({ placeholder, className }) => (
 
 SearchBox.defaultProps = {
   placeholder: '',
-  className: '',
+  classname: '',
 };
 
 SearchBox.propTypes = {
   placeholder: PropTypes.string,
-  className: PropTypes.string,
+  classname: PropTypes.string,
 };
 
 export default SearchBox;

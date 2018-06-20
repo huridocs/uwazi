@@ -19,7 +19,7 @@ exports[`Link should allow nesting children inside 1`] = `
 
 exports[`Link should allow to set a custom class to the component 1`] = `
 <Link
-  className="custom class"
+  className=""
   href="url"
   onlyActiveOnIndex={false}
   style={Object {}}
