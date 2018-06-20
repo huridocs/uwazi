@@ -1,6 +1,7 @@
 import fontawesome from '@fortawesome/fontawesome'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
+import faAngleLeft from '@fortawesome/fontawesome-free-solid/faAngleLeft'
 import faAngleRight from '@fortawesome/fontawesome-free-solid/faAngleRight'
 import faArrowLeft from '@fortawesome/fontawesome-free-solid/faArrowLeft'
 import faArrowRight from '@fortawesome/fontawesome-free-solid/faArrowRight'
@@ -68,6 +69,7 @@ import faUndo from '@fortawesome/fontawesome-free-solid/faUndo'
 import faWarning from '@fortawesome/fontawesome-free-solid/faExclamationTriangle'
 
 export default fontawesome.library.add(
+  faAngleLeft,
   faAngleRight,
   faArrowLeft,
   faArrowRight,
