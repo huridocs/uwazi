@@ -625,7 +625,7 @@
 }
 
 .multiselectItem-icon {
-  .checkbox-empty { display: block; }
+  .checkbox-empty { display: block; color: $c-grey-light; }
   .checkbox-checked { display: none; color: $c-success; }
 }
 .multiselectItem-input:checked {
