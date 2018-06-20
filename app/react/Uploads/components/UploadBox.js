@@ -54,7 +54,7 @@ export class UploadBox extends Component {
           <span> or drop your files here.</span>
         </div>
         <div className="protip">
-          <Icon icon="lightbulb-o" />
+          <Icon icon="lightbulb" />
           <b>ProTip!</b>
           <span>For better performance, upload your documents in batches of 50 or less.</span>
         </div>
