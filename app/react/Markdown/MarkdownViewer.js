@@ -29,8 +29,13 @@ class MarkdownViewer extends Component {
     return <Element {...props} key={index} />;
   }
 
-  static customComponent(type, config, index) {
+  static customComponent(type, config, index, children) {
     try {
+      if (typeof type === 'function') {
+        const Element = type;
+        return <Element {...config}>{children}</Element>;
+      }
+
       if (type === 'list') {
         return this.list(config, index);
       }
