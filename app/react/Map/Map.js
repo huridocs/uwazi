@@ -220,9 +220,10 @@ export default class Map extends Component {
         >
           {this.renderMarkers()}
           {this.renderPopup()}
-          <i className="mapbox-help fa fa-question-circle">
+          <span className="mapbox-help">
+            <Icon icon="question-circle" />
             <span className="mapbox-tooltip">Hold shift to rotate the map</span>
-          </i>
+          </span>
         </ReactMapGL>
       </div>
     );
