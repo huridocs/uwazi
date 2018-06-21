@@ -158,7 +158,7 @@ export default class Map extends Component {
       <Icon
         style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
         icon="map-marker"
-        size="3x"
+        size="2x"
         fixedWidth
         onClick={onClick}
         onMouseOver={onMouseEnter}
