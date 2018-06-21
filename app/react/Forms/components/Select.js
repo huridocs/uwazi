@@ -2,6 +2,20 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { advancedSort } from 'app/utils/advancedSort';
 
+const sanitizeOptions = (option, optionsLabel) => {
+  let selectOptions = option.options;
+
+  if (option.options.length && React.isValidElement(option.options[0][optionsLabel])) {
+    selectOptions = selectOptions.map((o) => {
+      const newOption = Object.assign({}, o);
+      newOption[optionsLabel] = o[optionsLabel].props.children;
+      return newOption;
+    });
+  }
+
+  return selectOptions;
+};
+
 export default class Select extends Component {
   render() {
     const { options, optionsValue, optionsLabel, required, placeholder } = this.props;
@@ -18,17 +32,7 @@ export default class Select extends Component {
           const key = option._id || option.id || index;
 
           if (option.options) {
-            let selectOptions = option.options;
-
-            if (option.options.length && React.isValidElement(option.options[0][optionsLabel])) {
-              selectOptions = selectOptions.map((o) => {
-                const newOption = Object.assign({}, o);
-                newOption[optionsLabel] = o[optionsLabel].props.children;
-                return newOption;
-              });
-            }
-
-            const groupOptions = advancedSort(selectOptions, { property: optionsLabel });
+            const groupOptions = advancedSort(sanitizeOptions(option, optionsLabel), { property: optionsLabel });
             return (
               <optgroup key={key} label={option.label}>
                 {groupOptions.map((opt, indx) => {
