@@ -16,15 +16,27 @@ export default class Select extends Component {
         <option disbaled={disbaled.toString()} value="" >{placeholder}</option>;
         {sortedOptions.map((option, index) => {
           const key = option._id || option.id || index;
+
           if (option.options) {
-            const groupOptions = advancedSort(option.options, { property: optionsLabel });
+            let selectOptions = option.options;
+
+            if (option.options.length && React.isValidElement(option.options[0][optionsLabel])) {
+              selectOptions = selectOptions.map((o) => {
+                const newOption = Object.assign({}, o);
+                newOption[optionsLabel] = o[optionsLabel].props.children;
+                return newOption;
+              });
+            }
+
+            const groupOptions = advancedSort(selectOptions, { property: optionsLabel });
             return (
               <optgroup key={key} label={option.label}>
                 {groupOptions.map((opt, indx) => {
                   const ky = opt._id || opt.id || indx;
                   return <option key={ky} value={opt[optionsValue]}>{opt[optionsLabel]}</option>;
                 })}
-              </optgroup>);
+              </optgroup>
+            );
           }
           return <option key={key} value={option[optionsValue]}>{option[optionsLabel]}</option>;
         })}
