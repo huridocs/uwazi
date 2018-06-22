@@ -59,11 +59,13 @@ const getOptionCount = (aggregations, optionId, name) => {
   return aggregation ? aggregation.filtered.doc_count : 0;
 };
 
-export function parseWithAggregations(filters, aggregations) {
+export function parseWithAggregations(filters, aggregations, showNoValue = true) {
   return filters.map((_property) => {
     const property = Object.assign({}, _property);
     if (property.options && property.options.length) {
-      property.options.push({ id: 'missing', label: 'No Value' });
+      if (showNoValue) {
+        property.options.push({ id: 'missing', label: 'No Value' });
+      }
       property.options = property.options.map((_option) => {
         const option = Object.assign(_option, { results: getOptionCount(aggregations, _option.id, property.name) });
         if (option.values) {
@@ -75,7 +77,7 @@ export function parseWithAggregations(filters, aggregations) {
           });
         }
         return option;
-      });
+      }).filter(opt => opt.results);
     }
 
     return property;

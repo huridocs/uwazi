@@ -154,24 +154,26 @@ describe('LibraryCharts', () => {
           }
         }),
         fields: fromJS([
-          { type: 'select',
-content: 'cid',
-name: 'pname',
-options: [
-            { id: 'o1', label: 'a', results: 10 },
-            { id: 'o2', label: 'z', results: 8 },
-            { id: 'o3', label: 'a', results: 8 },
-            { id: 'o4', label: 'n', results: 8 },
-            { id: 'o5', label: 'a', results: 2 }
-] },
+          {
+            type: 'select',
+            content: 'cid',
+            name: 'pname',
+            options: [
+              { id: 'o1', label: 'a', results: 10 },
+              { id: 'o2', label: 'z', results: 8 },
+              { id: 'o3', label: 'a', results: 8 },
+              { id: 'o4', label: 'n', results: 8 },
+              { id: 'o5', label: 'a', results: 2 }
+            ] },
           { type: 'not-valid' },
-          { type: 'multiselect',
-options: [
-            { label: 'Z', results: 10 },
-            { label: 'A', results: 8 },
-            { label: 'Z', results: 8 },
-            { label: 'g', results: 8 },
-            { label: 'a', results: 2 }
+          {
+            type: 'multiselect',
+            options: [
+              { label: 'Z', results: 10 },
+              { label: 'A', results: 8 },
+              { label: 'Z', results: 8 },
+              { label: 'g', results: 8 },
+              { label: 'a', results: 2 }
             ] },
           { type: 'multiselect', options: [] }
         ]),
@@ -181,7 +183,7 @@ options: [
 
     it('should render one LibraryChart for each supported field with sorted options', () => {
       render();
-      expect(component.find(LibraryChart).length).toBe(2);
+      expect(component.find(LibraryChart).length).toBe(1);
 
       const LibraryChartElement1 = component.find(LibraryChart).at(0);
 
@@ -190,17 +192,6 @@ options: [
       expect(LibraryChartElement1.props().options[2]).toEqual({ id: 'o4', label: 'nTranslated', results: 8 });
       expect(LibraryChartElement1.props().options[3]).toEqual({ id: 'o2', label: 'z', results: 8 });
       expect(LibraryChartElement1.props().options[4]).toEqual({ id: 'o5', label: 'a', results: 2 });
-
-      // Failing tests?
-      // const LibraryChartElement2 = component.find(LibraryChart).at(1);
-
-      // console.log(LibraryChartElement2.props().options[0]);
-
-      // expect(LibraryChartElement2.props().options[0]).toEqual({label: 'Z', results: 10});
-      // expect(LibraryChartElement2.props().options[1]).toEqual({label: 'A', results: 8});
-      // expect(LibraryChartElement2.props().options[2]).toEqual({label: 'g', results: 8});
-      // expect(LibraryChartElement2.props().options[3]).toEqual({label: 'Z', results: 8});
-      // expect(LibraryChartElement2.props().options[4]).toEqual({label: 'a', results: 2});
     });
   });
 
