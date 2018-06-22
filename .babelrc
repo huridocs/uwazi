@@ -11,6 +11,7 @@
     }
   },
   "plugins": [
+    "transform-object-rest-spread",
     "transform-es2015-typeof-symbol",
     "transform-class-properties",
     "add-module-exports",

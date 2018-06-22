@@ -8,10 +8,20 @@ import { t } from 'app/I18N';
 
 import { upload } from '../../Uploads/actions/uploadsActions';
 
+const UploadProgressCompoent = ({ progress }) => {
+  return <span>{progress} %</span>;
+};
+
+const UploadProgress = connect(({ progress }, props) => {
+  console.log(progress.toJS());
+
+  return {progress: 50};
+})(UploadProgressCompoent);
+
 export class CustomUploads extends Component {
   onDrop(files) {
     files.forEach((file) => {
-      this.props.upload(file);
+      this.props.upload(file.preview, file);
     });
   }
   render() {
@@ -35,6 +45,7 @@ export class CustomUploads extends Component {
               <span>For better performance, upload your documents in batches of 50 or less.</span>
             </div>
           </Dropzone>
+          <UploadProgress />
         </div>
       </div>
     );
