@@ -93,7 +93,7 @@ describe('Select', () => {
         label: 'input label',
         options: [
           { label: 'Option group 1', options: [{ name: 'opt 1', id: 1 }, { name: 'opt 1', id: 4 }] },
-          { label: 'An option group', options: [{ name: 'opt 3', id: 3 }, { name: 'opt 4', id: 4 }] }
+          { label: 'An option group', options: [{ name: <span>opt 3</span>, id: 3 }, { name: <span>opt 4</span>, id: 4 }] }
         ],
         optionsValue: 'id',
         optionsLabel: 'name',
