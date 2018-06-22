@@ -7,6 +7,7 @@ import relationships from 'api/relationships';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import { uploadDocumentsPath } from '../config/paths';
+import uploads from './uploads';
 import fs from 'fs';
 
 import logger from 'shared/logger';
@@ -88,6 +89,13 @@ export default (app) => {
   });
 
   app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));
+
+  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
+    uploads.save(req.files[0])
+    .then((saved) => {
+      res.json(saved);
+    });
+  });
 
   app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => entities.getById(req.body.document)
   .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))

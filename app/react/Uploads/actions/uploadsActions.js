@@ -50,6 +50,21 @@ export function uploadDocument(docId, file) {
   };
 }
 
+export function upload(docId, file) {
+  return function (dispatch) {
+    superagent.post(`${APIURL}customisation/upload`)
+    .set('Accept', 'application/json')
+    .attach('file', file, file.name)
+    .on('progress', (data) => {
+      dispatch({ type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
+    })
+    .on('response', () => {
+      dispatch({ type: types.UPLOAD_COMPLETE, doc: docId });
+    })
+    .end();
+  };
+}
+
 export function documentProcessed(sharedId) {
   return { type: types.DOCUMENT_PROCESSED, sharedId };
 }
