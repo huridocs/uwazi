@@ -6,22 +6,12 @@ import React, { Component } from 'react';
 
 import { t } from 'app/I18N';
 
-import { upload } from '../../Uploads/actions/uploadsActions';
-
-const UploadProgressCompoent = ({ progress }) => {
-  return <span>{progress} %</span>;
-};
-
-const UploadProgress = connect(({ progress }, props) => {
-  console.log(progress.toJS());
-
-  return {progress: 50};
-})(UploadProgressCompoent);
+import { uploadCustom } from '../../Uploads/actions/uploadsActions';
 
 export class CustomUploads extends Component {
   onDrop(files) {
     files.forEach((file) => {
-      this.props.upload(file.preview, file);
+      this.props.upload(file);
     });
   }
   render() {
@@ -32,31 +22,42 @@ export class CustomUploads extends Component {
           <Dropzone
             className="upload-box"
             onDrop={this.onDrop.bind(this)}
-            style={{}}
           >
             <div className="upload-box_wrapper">
               <i className="fa fa-upload" />
-              <a className="upload-box_link">Browse your PDFs to upload</a>
+              <a className="upload-box_link">Browse files to upload</a>
               <span> or drop your files here.</span>
             </div>
             <div className="protip">
               <i className="fa fa-lightbulb-o" />
-              <b>ProTip!</b>
-              <span>For better performance, upload your documents in batches of 50 or less.</span>
             </div>
           </Dropzone>
-          <UploadProgress />
         </div>
+        {this.props.progress && <p>Uploading ...</p>}
+        <ul>
+          {this.props.customUploads.map((upload) => {
+            return <li>{`/uploaded_documents/${upload.get('filename')}`}</li>;
+          })}
+        </ul>
       </div>
     );
   }
 }
 
+CustomUploads.defaultProps = {
+  progress: false
+};
+
 CustomUploads.propTypes = {
+  progress: PropTypes.bool,
   upload: PropTypes.func.isRequired
 };
 
-const mapStateToProps = () => ({});
-const mapDispatchToProps = dispatch => bindActionCreators({ upload }, dispatch);
+export const mapStateToProps = ({ customUploads, progress }) => ({
+    customUploads,
+    progress: !!progress.filter((v, key) => key.match(/customUpload/)).size
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ upload: uploadCustom }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomUploads);

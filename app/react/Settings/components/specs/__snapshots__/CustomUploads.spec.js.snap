@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomUploads should render CustomUploads component 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Custom Uploads
+  </div>
+  <div
+    className="panel-body"
+  >
+    <t
+      className="upload-box"
+      disableClick={false}
+      disablePreview={false}
+      disabled={false}
+      maxSize={Infinity}
+      minSize={0}
+      multiple={true}
+      onDrop={[Function]}
+      preventDropOnDocument={true}
+    >
+      <div
+        className="upload-box_wrapper"
+      >
+        <i
+          className="fa fa-upload"
+        />
+        <a
+          className="upload-box_link"
+        >
+          Browse files to upload
+        </a>
+        <span>
+           or drop your files here.
+        </span>
+      </div>
+      <div
+        className="protip"
+      >
+        <i
+          className="fa fa-lightbulb-o"
+        />
+      </div>
+    </t>
+  </div>
+</div>
+`;
+
+exports[`CustomUploads should render CustomUploads component with uploaded files 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Custom Uploads
+  </div>
+  <div
+    className="panel-body"
+  >
+    <t
+      className="upload-box"
+      disableClick={false}
+      disablePreview={false}
+      disabled={false}
+      maxSize={Infinity}
+      minSize={0}
+      multiple={true}
+      onDrop={[Function]}
+      preventDropOnDocument={true}
+    >
+      <div
+        className="upload-box_wrapper"
+      >
+        <i
+          className="fa fa-upload"
+        />
+        <a
+          className="upload-box_link"
+        >
+          Browse files to upload
+        </a>
+        <span>
+           or drop your files here.
+        </span>
+      </div>
+      <div
+        className="protip"
+      >
+        <i
+          className="fa fa-lightbulb-o"
+        />
+      </div>
+    </t>
+  </div>
+</div>
+`;
+
+exports[`CustomUploads when upload on progress should render on progress feedback 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Custom Uploads
+  </div>
+  <div
+    className="panel-body"
+  >
+    <t
+      className="upload-box"
+      disableClick={false}
+      disablePreview={false}
+      disabled={false}
+      maxSize={Infinity}
+      minSize={0}
+      multiple={true}
+      onDrop={[Function]}
+      preventDropOnDocument={true}
+    >
+      <div
+        className="upload-box_wrapper"
+      >
+        <i
+          className="fa fa-upload"
+        />
+        <a
+          className="upload-box_link"
+        >
+          Browse files to upload
+        </a>
+        <span>
+           or drop your files here.
+        </span>
+      </div>
+      <div
+        className="protip"
+      >
+        <i
+          className="fa fa-lightbulb-o"
+        />
+      </div>
+    </t>
+  </div>
+  <p>
+    Uploading ...
+  </p>
+</div>
+`;

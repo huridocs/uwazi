@@ -9,6 +9,7 @@ import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
+import { actions as basicActions } from 'app/BasicReducer';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -92,8 +93,44 @@ describe('uploadsActions', () => {
 
         mockUpload.emit('progress', { percent: 55.1 });
         mockUpload.emit('progress', { percent: 65 });
-        mockUpload.emit('response');
+        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }) });
         expect(store.getActions()).toEqual(expectedActions);
+      });
+    });
+
+    describe('uploadCustom', () => {
+      it('should upload a file and then add it to the customUploads', (done) => {
+        const mockUpload = superagent.post(`${APIURL}customisation/upload`);
+        spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+        spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+        spyOn(superagent, 'post').and.returnValue(mockUpload);
+
+        const expectedActions = [
+          { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 65 },
+          { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 75 },
+          { type: types.UPLOAD_COMPLETE, doc: 'customUpload_unique_id' },
+          basicActions.push('customUploads', { test: 'test' })
+        ];
+        const store = mockStore({});
+
+        // needed to work with firefox/chrome and phantomjs
+        let file = { name: 'filename' };
+        const isChrome = typeof File === 'function';
+        if (isChrome) {
+          file = new File([], 'filename');
+        }
+        //
+
+        store.dispatch(actions.uploadCustom(file))
+        .then(() => {
+          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+          expect(store.getActions()).toEqual(expectedActions);
+          done();
+        });
+
+        mockUpload.emit('progress', { percent: 65.1 });
+        mockUpload.emit('progress', { percent: 75 });
+        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }) });
       });
     });
 

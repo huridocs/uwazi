@@ -7,6 +7,8 @@ import * as types from 'app/Uploads/actions/actionTypes';
 
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
+import uniqueID from 'shared/uniqueID';
+import { actions as basicActions } from 'app/BasicReducer';
 
 export function enterUploads() {
   return {
@@ -41,12 +43,22 @@ export function upload(docId, file, endpoint = 'upload') {
     .on('progress', (data) => {
       dispatch({ type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
     })
-    .on('response', () => {
+    .on('response', (response) => {
       dispatch({ type: types.UPLOAD_COMPLETE, doc: docId });
-      resolve();
+      resolve(JSON.parse(response.text));
     })
     .end();
   });
+}
+
+export function uploadCustom(file) {
+  return (dispatch) => {
+    const id = `customUpload_${uniqueID()}`;
+    return upload(id, file, 'customisation/upload')(dispatch)
+    .then((response) => {
+      dispatch(basicActions.push('customUploads', response));
+    });
+  };
 }
 
 export function uploadDocument(docId, file) {
