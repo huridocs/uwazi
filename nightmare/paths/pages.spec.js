@@ -40,7 +40,8 @@ describe('pages path', () => {
       .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info')
       .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info')
       .then((text) => {
-        expect(text).toContain('http://localhost');
+        expect(text).toContain('/page');
+        expect(text).toContain('(view page)');
       })
       .then(done)
       .catch(catchErrors(done));
