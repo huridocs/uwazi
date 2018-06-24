@@ -7,43 +7,64 @@ import CustomHookComponents from './CustomHooks';
 
 import markdownToReact from './markdownToReact';
 
-export class MarkdownViewer extends Component {
-  static errorHtml(index) {
+class MarkdownViewer extends Component {
+  static errorHtml(index, message) {
     return (
       <p key={index} className="error">
         <br />
         <strong><i>Custom component markup error: unsuported values! Please check your configuration</i></strong>
+        <br />
+        {message}
         <br />
       </p>
     );
   }
 
   static customHook(config, index) {
-    let output;
-    try {
-      const props = rison.decode(config);
-      if (!CustomHookComponents[props.component]) {
-        throw new Error('Invalid  component');
-      }
-      const Element = CustomHookComponents[props.component];
-      output = <Element {...props} key={index} />;
-    } catch (err) {
-      output = MarkdownViewer.errorHtml(index);
+    const props = rison.decode(config);
+    if (!CustomHookComponents[props.component]) {
+      throw new Error('Invalid  component');
     }
-    return output;
+    const Element = CustomHookComponents[props.component];
+    return <Element {...props} key={index} />;
   }
 
-  static customComponent(type, config, index) {
+  inlineComponent(type, config, index) {
+    let result;
     if (type === 'list') {
-      return this.list(config, index);
+      result = this.list(config, index);
+    }
+
+    if (type === 'link') {
+      result = <CustomComponents.MarkdownLink {...rison.decode(config)} key={index}/>;
+    }
+
+    if (type === 'searchbox') {
+      result = <CustomComponents.SearchBox {...rison.decode(config)} key={index}/>;
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {
-      return <CustomComponents.MarkdownMedia key={index} config={config} />;
+      result = <CustomComponents.MarkdownMedia key={index} config={config} />;
     }
 
     if (type === 'customhook') {
-      return MarkdownViewer.customHook(config, index);
+      result = MarkdownViewer.customHook(config, index);
+    }
+    return result;
+  }
+
+  customComponent(type, config, index, children) {
+    try {
+      if (typeof type === 'function') {
+        const Element = type;
+        return <Element {...config} key={index}>{children}</Element>;
+      }
+
+      if (type) {
+        return this.inlineComponent(type, config, index);
+      }
+    } catch (error) {
+      return MarkdownViewer.errorHtml(index, error.message);
     }
 
     return false;
@@ -59,7 +80,7 @@ export class MarkdownViewer extends Component {
   render() {
     this.renderedLists = 0;
 
-    const ReactFromMarkdown = markdownToReact(this.props.markdown, MarkdownViewer.customComponent.bind(this), this.props.html);
+    const ReactFromMarkdown = markdownToReact(this.props.markdown, this.customComponent.bind(this), this.props.html);
 
     if (!ReactFromMarkdown) {
       return false;

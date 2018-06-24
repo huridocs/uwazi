@@ -3,6 +3,10 @@ import React from 'react';
 import HtmlToReact, { Parser } from 'html-to-react';
 import instanceMarkdownIt from 'markdown-it';
 import mdContainer from 'markdown-it-container';
+import CustomComponents from './components';
+
+const components = Object.keys(CustomComponents).reduce((map, key) => Object.assign({}, map, { [key.toLowerCase()]: CustomComponents[key] }), {});
+const availableComponents = Object.keys(components);
 
 const myParser = new Parser();
 const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
@@ -77,8 +81,12 @@ export default (_markdown, callback, withHtml = false) => {
         config = getConfig(node.data);
       }
 
+      if (availableComponents.includes(node.name)) {
+        type = components[node.name];
+        config = node.attribs;
+      }
 
-      let newNode = callback(type, config, index);
+      let newNode = callback(type, config, index, children);
 
       if (!newNode) {
         newNode = processNodeDefinitions.processDefaultNode(node, children, index);
