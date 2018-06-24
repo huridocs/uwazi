@@ -1,3 +1,4 @@
+import path from 'path';
 import multer from 'multer';
 import ID from 'shared/uniqueID';
 import languages from 'shared/languages';
@@ -12,7 +13,7 @@ import logger from 'shared/logger';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, uploadDocumentsPath);
+    cb(null, path.normalize(`${uploadDocumentsPath}/`));
   },
   filename(req, file, cb) {
     cb(null, `${Date.now() + ID()}.pdf`);
