@@ -1,6 +1,7 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -9,11 +10,17 @@ import { t } from 'app/I18N';
 import { uploadCustom } from '../../Uploads/actions/uploadsActions';
 
 export class CustomUploads extends Component {
+  constructor(props) {
+    super(props);
+    this.onDrop = this.onDrop.bind(this);
+  }
+
   onDrop(files) {
     files.forEach((file) => {
       this.props.upload(file);
     });
   }
+
   render() {
     return (
       <div className="panel panel-default">
@@ -21,11 +28,11 @@ export class CustomUploads extends Component {
         <div className="panel-body">
           <Dropzone
             className="upload-box"
-            onDrop={this.onDrop.bind(this)}
+            onDrop={this.onDrop}
           >
             <div className="upload-box_wrapper">
               <i className="fa fa-upload" />
-              <a className="upload-box_link">Browse files to upload</a>
+              <button className="upload-box_link">Browse files to upload</button>
               <span> or drop your files here.</span>
             </div>
             <div className="protip">
@@ -35,9 +42,7 @@ export class CustomUploads extends Component {
         </div>
         {this.props.progress && <p>Uploading ...</p>}
         <ul>
-          {this.props.customUploads.map((upload) => {
-            return <li>{`/uploaded_documents/${upload.get('filename')}`}</li>;
-          })}
+          {this.props.customUploads.map(upload => <li key={upload.get('filename')}>{`/uploaded_documents/${upload.get('filename')}`}</li>)}
         </ul>
       </div>
     );
@@ -50,6 +55,7 @@ CustomUploads.defaultProps = {
 
 CustomUploads.propTypes = {
   progress: PropTypes.bool,
+  customUploads: PropTypes.instanceOf(Immutable.List).isRequired,
   upload: PropTypes.func.isRequired
 };
 

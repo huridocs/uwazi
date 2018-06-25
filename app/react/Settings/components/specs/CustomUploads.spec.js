@@ -11,7 +11,8 @@ describe('CustomUploads', () => {
 
   beforeEach(() => {
     props = {
-      upload: jasmine.createSpy('upload')
+      upload: jasmine.createSpy('upload'),
+      customUploads: Immutable.fromJS([])
     };
   });
 
@@ -43,7 +44,7 @@ describe('CustomUploads', () => {
         progress: Immutable.fromJS({})
       };
 
-      let props = mapStateToProps(state);
+      props = mapStateToProps(state);
       expect(props.customUploads).toBe('customUploads');
       expect(props.progress).toBe(false);
 

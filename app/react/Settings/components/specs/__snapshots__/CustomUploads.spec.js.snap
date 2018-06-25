@@ -1,55 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CustomUploads should render CustomUploads component 1`] = `
-<div
-  className="panel panel-default"
->
-  <div
-    className="panel-heading"
-  >
-    Custom Uploads
-  </div>
-  <div
-    className="panel-body"
-  >
-    <t
-      className="upload-box"
-      disableClick={false}
-      disablePreview={false}
-      disabled={false}
-      maxSize={Infinity}
-      minSize={0}
-      multiple={true}
-      onDrop={[Function]}
-      preventDropOnDocument={true}
-    >
-      <div
-        className="upload-box_wrapper"
-      >
-        <i
-          className="fa fa-upload"
-        />
-        <a
-          className="upload-box_link"
-        >
-          Browse files to upload
-        </a>
-        <span>
-           or drop your files here.
-        </span>
-      </div>
-      <div
-        className="protip"
-      >
-        <i
-          className="fa fa-lightbulb-o"
-        />
-      </div>
-    </t>
-  </div>
-</div>
-`;
-
 exports[`CustomUploads should render CustomUploads component with uploaded files 1`] = `
 <div
   className="panel panel-default"
@@ -79,11 +29,11 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
         <i
           className="fa fa-upload"
         />
-        <a
+        <button
           className="upload-box_link"
         >
           Browse files to upload
-        </a>
+        </button>
         <span>
            or drop your files here.
         </span>
@@ -97,6 +47,18 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
       </div>
     </t>
   </div>
+  <ul>
+    <li
+      key="file1"
+    >
+      /uploaded_documents/file1
+    </li>
+    <li
+      key="file2"
+    >
+      /uploaded_documents/file2
+    </li>
+  </ul>
 </div>
 `;
 
@@ -129,11 +91,11 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
         <i
           className="fa fa-upload"
         />
-        <a
+        <button
           className="upload-box_link"
         >
           Browse files to upload
-        </a>
+        </button>
         <span>
            or drop your files here.
         </span>
@@ -150,5 +112,6 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
   <p>
     Uploading ...
   </p>
+  <ul />
 </div>
 `;
