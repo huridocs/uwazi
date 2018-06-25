@@ -38,7 +38,7 @@ export class CustomUploads extends RouteHandler {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Custom Uploads')}</div>
-        <div className="panel-body">
+        <div className="panel-body custom-uploads">
           <Dropzone
             className="upload-box"
             onDrop={this.onDrop}
@@ -52,15 +52,19 @@ export class CustomUploads extends RouteHandler {
               <i className="fa fa-lightbulb-o" />
             </div>
           </Dropzone>
+          {this.props.progress && <p className="uploading"><i className="fas fa-spinner fa-spin" />&nbsp;Uploading ...</p>}
+          <ul>
+            {this.props.customUploads.map(upload => (
+              <li key={upload.get('filename')}>
+                <Thumbnail file={`/uploaded_documents/${upload.get('filename')}`} />
+                <div className="info">
+                  URL:<br />
+                  <span className="thumbnail-url">{`/uploaded_documents/${upload.get('filename')}`}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        {this.props.progress && <p>Uploading ...</p>}
-        <ul>
-          {this.props.customUploads.map(upload => (
-            <li key={upload.get('filename')}>
-              <Thumbnail file={`/uploaded_documents/${upload.get('filename')}`} />{`/uploaded_documents/${upload.get('filename')}`}
-            </li>
-          ))}
-        </ul>
       </div>
     );
   }
