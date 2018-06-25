@@ -1,7 +1,6 @@
 Fixes issue #
 
 PR checklist:
-- [ ] End-to-end test
 - [ ] Update READ.me ?
 - [ ] Update API documentation ?
 
