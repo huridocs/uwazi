@@ -152,7 +152,7 @@ export default class MultiSelect extends Component {
 
   renderGroup(group, index) {
     const { prefix } = this.props;
-    const _group = Object.assign({}, group, { results: `~ ${group.results}` });
+    const _group = Object.assign({}, group, { results: `${group.results}` });
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
