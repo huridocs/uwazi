@@ -29,7 +29,7 @@ class CejilChart extends Component {
       .map((_country) => {
         const country = _country;
         const foundCountry = countriesData.get('values').find(v => v.get('id') === country.key);
-        country.label = foundCountry ? foundCountry.get('label') : t('System', 'No Value');
+        country.label = foundCountry ? foundCountry.get('label') : t('System', 'No Value', null, false);
         country.results = country.filtered.doc_count;
         return country;
       }));
