@@ -2,14 +2,17 @@ import Immutable from 'immutable';
 import React from 'react';
 
 import { shallow } from 'enzyme';
+import api from 'app/utils/api';
 
 import { CustomUploads, mapStateToProps } from '../CustomUploads';
 
 describe('CustomUploads', () => {
   let component;
   let props;
+  let context;
 
   beforeEach(() => {
+    spyOn(api, 'get').and.returnValue(Promise.resolve('uploads'));
     props = {
       upload: jasmine.createSpy('upload'),
       customUploads: Immutable.fromJS([])
@@ -17,7 +20,8 @@ describe('CustomUploads', () => {
   });
 
   const render = () => {
-    component = shallow(<CustomUploads {...props}/>);
+    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    component = shallow(<CustomUploads {...props}/>, context);
   };
 
   it('should render CustomUploads component with uploaded files', () => {
@@ -55,6 +59,27 @@ describe('CustomUploads', () => {
       state.progress = Immutable.fromJS({ not_custom_upload: 9 });
       props = mapStateToProps(state);
       expect(props.progress).toBe(false);
+    });
+  });
+
+  describe('requestState', () => {
+    it('should get the uploads', (done) => {
+      render();
+      CustomUploads.requestState()
+      .then((state) => {
+        expect(api.get).toHaveBeenCalledWith('/customisation/upload');
+        expect(state.customUploads).toEqual('uploads');
+        done();
+      });
+    });
+  });
+
+  describe('setReduxState', () => {
+    it('should set customUploads in state', () => {
+      render();
+      const instance = component.instance();
+      instance.setReduxState({ customUploads: 'CustomUploads' });
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'customUploads/SET', value: 'customUploads' });
     });
   });
 });

@@ -3,16 +3,24 @@ import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Thumbnail } from 'app/Layout';
+import React from 'react';
 
+import { Thumbnail } from 'app/Layout';
+import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
+import RouteHandler from 'app/App/RouteHandler';
+import api from 'app/utils/api';
 
 import { uploadCustom } from '../../Uploads/actions/uploadsActions';
 
-export class CustomUploads extends Component {
-  constructor(props) {
-    super(props);
+export class CustomUploads extends RouteHandler {
+  static requestState() {
+    return api.get('customisation/upload')
+    .then(customUploads => ({ customUploads: customUploads.json }));
+  }
+
+  constructor(props, context) {
+    super(props, context);
     this.onDrop = this.onDrop.bind(this);
   }
 
@@ -20,6 +28,10 @@ export class CustomUploads extends Component {
     files.forEach((file) => {
       this.props.upload(file);
     });
+  }
+
+  setReduxState(state) {
+    this.context.store.dispatch(actions.set('customUpload', state.customUploads));
   }
 
   render() {
@@ -53,6 +65,10 @@ export class CustomUploads extends Component {
     );
   }
 }
+
+CustomUploads.contextTypes = {
+  store: PropTypes.object
+};
 
 CustomUploads.defaultProps = {
   progress: false
