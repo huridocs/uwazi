@@ -19,7 +19,7 @@ export class PageCreator extends Component {
   render() {
     const { formState, page, savingPage } = this.props;
     const backUrl = '/settings/pages';
-    const pageUrl = `http://${window.location.host}/page/${page.data.sharedId}`;
+    const pageUrl = `/page/${page.data.sharedId}`;
 
     let nameGroupClass = 'template-name form-group';
     if (formState.title && !formState.title.valid && (formState.submitFailed || formState.title.touched)) {
