@@ -6,13 +6,14 @@ import api from 'app/utils/api';
 
 import { CustomUploads, mapStateToProps } from '../CustomUploads';
 
-describe('CustomUploads', () => {
+fdescribe('CustomUploads', () => {
   let component;
   let props;
   let context;
+  let instance;
 
   beforeEach(() => {
-    spyOn(api, 'get').and.returnValue(Promise.resolve('uploads'));
+    spyOn(api, 'get').and.returnValue(Promise.resolve({ json: 'uploads' }));
     props = {
       upload: jasmine.createSpy('upload'),
       customUploads: Immutable.fromJS([])
@@ -21,7 +22,8 @@ describe('CustomUploads', () => {
 
   const render = () => {
     context = { store: { dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<CustomUploads {...props}/>, context);
+    component = shallow(<CustomUploads {...props}/>, { context });
+    instance = component.instance();
   };
 
   it('should render CustomUploads component with uploaded files', () => {
@@ -67,7 +69,7 @@ describe('CustomUploads', () => {
       render();
       CustomUploads.requestState()
       .then((state) => {
-        expect(api.get).toHaveBeenCalledWith('/customisation/upload');
+        expect(api.get).toHaveBeenCalledWith('customisation/upload');
         expect(state.customUploads).toEqual('uploads');
         done();
       });
@@ -77,8 +79,7 @@ describe('CustomUploads', () => {
   describe('setReduxState', () => {
     it('should set customUploads in state', () => {
       render();
-      const instance = component.instance();
-      instance.setReduxState({ customUploads: 'CustomUploads' });
+      instance.setReduxState({ customUploads: 'customUploads' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'customUploads/SET', value: 'customUploads' });
     });
   });

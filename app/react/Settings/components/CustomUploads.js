@@ -31,7 +31,7 @@ export class CustomUploads extends RouteHandler {
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(actions.set('customUpload', state.customUploads));
+    this.context.store.dispatch(actions.set('customUploads', state.customUploads));
   }
 
   render() {
@@ -65,10 +65,6 @@ export class CustomUploads extends RouteHandler {
     );
   }
 }
-
-CustomUploads.contextTypes = {
-  store: PropTypes.object
-};
 
 CustomUploads.defaultProps = {
   progress: false
