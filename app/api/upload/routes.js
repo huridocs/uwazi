@@ -1,23 +1,25 @@
 import path from 'path';
 import multer from 'multer';
+
 import ID from 'shared/uniqueID';
-import languages from 'shared/languages';
 import entities from 'api/entities';
+import fs from 'fs';
+import languages from 'shared/languages';
+import logger from 'shared/logger';
+import path from 'path';
 import relationships from 'api/relationships';
+
+import { uploadDocumentsPath } from '../config/paths';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
-import { uploadDocumentsPath } from '../config/paths';
 import uploads from './uploads';
-import fs from 'fs';
-
-import logger from 'shared/logger';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, path.normalize(`${uploadDocumentsPath}/`));
   },
   filename(req, file, cb) {
-    cb(null, `${Date.now() + ID()}.pdf`);
+    cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
 });
 
@@ -94,6 +96,13 @@ export default (app) => {
     uploads.save(req.files[0])
     .then((saved) => {
       res.json(saved);
+    });
+  });
+
+  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
+    uploads.get()
+    .then((result) => {
+      res.json(result);
     });
   });
 

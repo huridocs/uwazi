@@ -177,4 +177,20 @@ describe('upload routes', () => {
       .catch(done.fail);
     });
   });
+
+  describe('POST/customisation/upload', () => {
+    it('should save the upload and return it', async () => {
+      const result = await routes.post('/api/customisation/upload', req);
+      delete result._id;
+      delete result.creationDate;
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('GET/customisation/upload', () => {
+    it('should return all uploads', async () => {
+      const result = await routes.get('/api/customisation/upload', {});
+      expect(result.map(r => r.originalname)).toMatchSnapshot();
+    });
+  });
 });

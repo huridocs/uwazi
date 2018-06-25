@@ -4,6 +4,7 @@ import Dropzone from 'react-dropzone';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Thumbnail } from 'app/Layout';
 
 import { t } from 'app/I18N';
 
@@ -42,7 +43,11 @@ export class CustomUploads extends Component {
         </div>
         {this.props.progress && <p>Uploading ...</p>}
         <ul>
-          {this.props.customUploads.map(upload => <li key={upload.get('filename')}>{`/uploaded_documents/${upload.get('filename')}`}</li>)}
+          {this.props.customUploads.map(upload => (
+            <li key={upload.get('filename')}>
+              <Thumbnail file={`/uploaded_documents/${upload.get('filename')}`} />{`/uploaded_documents/${upload.get('filename')}`}
+            </li>
+          ))}
         </ul>
       </div>
     );
@@ -60,8 +65,8 @@ CustomUploads.propTypes = {
 };
 
 export const mapStateToProps = ({ customUploads, progress }) => ({
-    customUploads,
-    progress: !!progress.filter((v, key) => key.match(/customUpload/)).size
+  customUploads,
+  progress: !!progress.filter((v, key) => key.match(/customUpload/)).size
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({ upload: uploadCustom }, dispatch);

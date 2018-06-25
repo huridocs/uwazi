@@ -51,11 +51,19 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
     <li
       key="file1"
     >
+      <Thumbnail
+        alt=""
+        file="/uploaded_documents/file1"
+      />
       /uploaded_documents/file1
     </li>
     <li
       key="file2"
     >
+      <Thumbnail
+        alt=""
+        file="/uploaded_documents/file2"
+      />
       /uploaded_documents/file2
     </li>
   </ul>
