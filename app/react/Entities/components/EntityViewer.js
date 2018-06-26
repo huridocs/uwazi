@@ -16,8 +16,7 @@ import {
 } from 'app/Connections';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
-//import { TemplateLabel, Icon } from 'app/Layout';
-import { TemplateLabel } from 'app/Layout';
+import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import { t } from 'app/I18N';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
@@ -80,9 +79,7 @@ export class EntityViewer extends Component {
 
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            {/*
-              <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
-            */}
+            <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
             <h1 className="item-name">{entity.title}</h1>
             <TemplateLabel template={entity.template}/>
           </div>

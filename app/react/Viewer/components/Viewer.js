@@ -21,7 +21,7 @@ import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
-import {TemplateLabel, Icon} from 'app/Layout';
+import {TemplateLabel, Icon as PropertyIcon} from 'app/Layout';
 import Marker from 'app/Viewer/utils/Marker';
 
 import {ConnectionsList} from 'app/ConnectionsList';
@@ -64,7 +64,7 @@ export class Viewer extends Component {
         <ShowIf if={!this.props.targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
-              <Icon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
+              <PropertyIcon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
               <h1 className="item-name">{doc.get('title')}</h1>
               <TemplateLabel template={doc.get('template')}/>
             </div>

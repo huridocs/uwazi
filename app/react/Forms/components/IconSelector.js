@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import fontawesomeIcons from 'app/utils/fontawesomeIcons';
+import { iconNames } from 'UI/Icon/library';
+import { Icon } from 'UI';
 import countries from 'world-countries';
 import Flag from 'react-flags';
 
@@ -20,7 +21,7 @@ export class ListItem extends Component {
     if (item.type === 'Icons') {
       icon = (
         <span style={style}>
-          <i className={`fa fa-${item._id}`} />
+          <Icon icon={`${item._id}`} />
         </span>);
     }
 
@@ -50,7 +51,7 @@ export class ListItem extends Component {
 export class IconSelector extends Component {
   componentWillMount() {
     const listOptions = [{ _id: null, type: 'Empty' }]
-    .concat(fontawesomeIcons.map(icon => ({
+    .concat(iconNames.map(icon => ({
       _id: icon,
       type: 'Icons',
       label: icon

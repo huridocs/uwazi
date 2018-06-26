@@ -19,6 +19,7 @@ import faChevronRight from '@fortawesome/fontawesome-free-solid/faChevronRight'
 import faClone from '@fortawesome/fontawesome-free-solid/faClone'
 import faClock from '@fortawesome/fontawesome-free-solid/faClock'
 import faCog from '@fortawesome/fontawesome-free-solid/faCog'
+import faCoffee from '@fortawesome/fontawesome-free-solid/faCoffee'
 import faCloudUploadAlt from '@fortawesome/fontawesome-free-solid/faCloudUploadAlt'
 import faCubes from '@fortawesome/fontawesome-free-solid/faCubes'
 import faEnvelope from '@fortawesome/fontawesome-free-solid/faEnvelope'
@@ -68,7 +69,7 @@ import faUndo from '@fortawesome/fontawesome-free-solid/faUndo'
 //!!
 import faWarning from '@fortawesome/fontawesome-free-solid/faExclamationTriangle'
 
-export default fontawesome.library.add(
+export const icons = {
   faAngleLeft,
   faAngleRight,
   faArrowLeft,
@@ -85,6 +86,7 @@ export default fontawesome.library.add(
   faChevronRight,
   faClone,
   faCog,
+  faCoffee,
   faClock,
   faCloudUploadAlt,
   faCubes,
@@ -130,5 +132,11 @@ export default fontawesome.library.add(
   faUpload,
   faUndo,
   faWarning,
-);
+};
+
+export const iconNames = Object.values(icons).map(icon => icon.iconName);
+
+console.log(iconNames);
+
+export default fontawesome.library.add.apply(fontawesome.library, Object.values(icons));
 
