@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { Thumbnail } from 'app/Layout';
+import { Thumbnail, ConfirmButton } from 'app/Layout';
 import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
 import RouteHandler from 'app/App/RouteHandler';
@@ -60,6 +60,7 @@ export class CustomUploads extends RouteHandler {
                 <div className="info">
                   URL:<br />
                   <span className="thumbnail-url">{`/uploaded_documents/${upload.get('filename')}`}</span>
+                  <ConfirmButton>delete</ConfirmButton>
                 </div>
               </li>
             ))}
@@ -72,6 +73,11 @@ export class CustomUploads extends RouteHandler {
 
 CustomUploads.defaultProps = {
   progress: false
+};
+
+CustomUploads.contextTypes = {
+  confirm: PropTypes.func,
+  store: PropTypes.object
 };
 
 CustomUploads.propTypes = {

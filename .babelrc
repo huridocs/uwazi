@@ -1,5 +1,9 @@
 {
-  "presets": ["env", "react"],
+  "presets": [["env", {
+      "targets": {
+        "node": "current"
+      }
+    }], "react"],
   "retainLines": "true",
   "env": {
     "production": {

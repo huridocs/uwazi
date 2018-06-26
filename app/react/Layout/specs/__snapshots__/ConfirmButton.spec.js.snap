@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConfirmButton on click should render a Confirm modal 1`] = `
+<React.Fragment>
+  <button
+    onClick={[Function]}
+  >
+    text
+  </button>
+  <Confirm
+    isOpen={true}
+  />
+</React.Fragment>
+`;
+
+exports[`ConfirmButton should render a button 1`] = `
+<React.Fragment>
+  <button
+    onClick={[Function]}
+  >
+    text
+  </button>
+</React.Fragment>
+`;

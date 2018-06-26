@@ -3,13 +3,13 @@ import settings from 'api/settings';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default app => {
-  app.post('/api/templates', needsAuthorization(), (req, res) => {
+  app.post('/api/templates', needsAuthorization(), (req, res, next) => {
     templates.save(req.body, req.language)
     .then((response) => {
       res.json(response);
       req.io.sockets.emit('templateChange', response);
     })
-    .catch(res.error);
+    .catch(next);
   });
 
   app.get('/api/templates', (req, res) => {
