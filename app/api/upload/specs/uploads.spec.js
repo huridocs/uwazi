@@ -1,11 +1,16 @@
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
+import fs from 'fs';
+import path from 'path';
+
 import uploads from '../uploads';
 import uploadsModel from '../uploadsModel';
+import { uploadDocumentsPath } from '../../config/paths';
 
 describe('uploads', () => {
   let file;
+  const uploadId = db.id();
 
   beforeEach((done) => {
     file = {
@@ -19,7 +24,7 @@ describe('uploads', () => {
       size: 171411271
     };
 
-    db.clearAllAndLoad({ uploads: [{}] }).then(done).catch(catchErrors(done));
+    db.clearAllAndLoad({ uploads: [{ _id: uploadId, filename: 'upload.filename' }] }).then(done).catch(catchErrors(done));
   });
 
   afterAll((done) => {
@@ -39,6 +44,18 @@ describe('uploads', () => {
         filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
         size: 171411271
       });
+    });
+  });
+
+  describe('delete', () => {
+    fit('should delete the file', async () => {
+      fs.writeFileSync(path.join(uploadDocumentsPath, 'upload.filename'));
+
+      expect(fs.existsSync(path.join(uploadDocumentsPath, 'upload.filename'))).toBe(true);
+
+      await uploads.delete(uploadId);
+
+      expect(fs.existsSync(path.join(uploadDocumentsPath, 'upload.filename'))).toBe(false);
     });
   });
 });

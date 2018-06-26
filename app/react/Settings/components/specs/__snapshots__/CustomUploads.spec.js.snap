@@ -10,7 +10,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
     Custom Uploads
   </div>
   <div
-    className="panel-body"
+    className="panel-body custom-uploads"
   >
     <t
       className="upload-box"
@@ -46,27 +46,47 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
         />
       </div>
     </t>
+    <ul>
+      <li
+        key="file1"
+      >
+        <Thumbnail
+          alt=""
+          file="/uploaded_documents/file1"
+        />
+        <div
+          className="info"
+        >
+          URL:
+          <br />
+          <span
+            className="thumbnail-url"
+          >
+            /uploaded_documents/file1
+          </span>
+        </div>
+      </li>
+      <li
+        key="file2"
+      >
+        <Thumbnail
+          alt=""
+          file="/uploaded_documents/file2"
+        />
+        <div
+          className="info"
+        >
+          URL:
+          <br />
+          <span
+            className="thumbnail-url"
+          >
+            /uploaded_documents/file2
+          </span>
+        </div>
+      </li>
+    </ul>
   </div>
-  <ul>
-    <li
-      key="file1"
-    >
-      <Thumbnail
-        alt=""
-        file="/uploaded_documents/file1"
-      />
-      /uploaded_documents/file1
-    </li>
-    <li
-      key="file2"
-    >
-      <Thumbnail
-        alt=""
-        file="/uploaded_documents/file2"
-      />
-      /uploaded_documents/file2
-    </li>
-  </ul>
 </div>
 `;
 
@@ -80,7 +100,7 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
     Custom Uploads
   </div>
   <div
-    className="panel-body"
+    className="panel-body custom-uploads"
   >
     <t
       className="upload-box"
@@ -116,10 +136,15 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
         />
       </div>
     </t>
+    <p
+      className="uploading"
+    >
+      <i
+        className="fas fa-spinner fa-spin"
+      />
+       Uploading ...
+    </p>
+    <ul />
   </div>
-  <p>
-    Uploading ...
-  </p>
-  <ul />
 </div>
 `;
