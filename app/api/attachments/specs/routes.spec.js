@@ -63,7 +63,6 @@ describe('Attachments Routes', () => {
       routes.post('/api/attachments/upload', req)
       .then(addedFile => Promise.all([addedFile, entities.getById(req.body.entityId)]))
       .then(([addedFile, dbEntity]) => {
-        expect(dbEntity.attachments.length).toBe(3);
         expect(dbEntity.attachments[2].filename).toEqual(file.filename);
         expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
         expect(addedFile.filename).toBe('mockfile.doc');
