@@ -3,13 +3,15 @@ import superagent from 'superagent';
 import thunk from 'redux-thunk';
 
 import { APIURL } from 'app/config.js';
+import { actions as basicActions } from 'app/BasicReducer';
 import { mockID } from 'shared/uniqueID.js';
 import * as actions from 'app/Uploads/actions/uploadsActions';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
-import { actions as basicActions } from 'app/BasicReducer';
+
+import api from '../../../utils/api';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -131,6 +133,24 @@ describe('uploadsActions', () => {
         mockUpload.emit('progress', { percent: 65.1 });
         mockUpload.emit('progress', { percent: 75 });
         mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }) });
+      });
+    });
+
+    describe('deleteCustomUpload', () => {
+      it('should delete the upload and remove it locally on success', (done) => {
+        spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: { _id: 'deleted' } }));
+
+        const expectedActions = [
+          basicActions.remove('customUploads', { _id: 'deleted' })
+        ];
+
+        const store = mockStore({});
+
+        store.dispatch(actions.deleteCustomUpload('id'))
+        .then(() => {
+          expect(store.getActions()).toEqual(expectedActions);
+          done();
+        });
       });
     });
 

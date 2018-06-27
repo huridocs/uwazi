@@ -64,6 +64,13 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           >
             /uploaded_documents/file1
           </span>
+          <ConfirmButton
+            action={[Function]}
+            message="Are you sure you want to continue?"
+            title="Confirm action"
+          >
+            delete
+          </ConfirmButton>
         </div>
       </li>
       <li
@@ -83,6 +90,13 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           >
             /uploaded_documents/file2
           </span>
+          <ConfirmButton
+            action={[Function]}
+            message="Are you sure you want to continue?"
+            title="Confirm action"
+          >
+            delete
+          </ConfirmButton>
         </div>
       </li>
     </ul>

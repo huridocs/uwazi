@@ -1,14 +1,14 @@
 import superagent from 'superagent';
 
+import { actions as basicActions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications';
 import { selectSingleDocument } from 'app/Library/actions/libraryActions';
 import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
+import uniqueID from 'shared/uniqueID';
 
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
-import uniqueID from 'shared/uniqueID';
-import { actions as basicActions } from 'app/BasicReducer';
 
 export function enterUploads() {
   return {
@@ -59,6 +59,13 @@ export function uploadCustom(file) {
       dispatch(basicActions.push('customUploads', response));
     });
   };
+}
+
+export function deleteCustomUpload(_id) {
+  return dispatch => api.delete('/customisation/upload', { _id })
+  .then((response) => {
+    dispatch(basicActions.remove('customUploads', response.json));
+  });
 }
 
 export function uploadDocument(docId, file) {
