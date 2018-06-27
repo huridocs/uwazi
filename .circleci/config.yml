@@ -5,11 +5,12 @@ jobs:
     parallelism: 1
     environment:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
-      xpack.security.enabled: false
     docker:
       - image: circleci/node:8.11.3-browsers
       - image: circleci/mongo:3.4-ram
       - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
+        environment:
+          xpack.security.enabled: false
 
     steps:
       - checkout
