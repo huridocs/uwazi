@@ -31,8 +31,12 @@ export class GoogleAnalytics extends Component {
   }
 }
 
+GoogleAnalytics.defaultProps = {
+  analyticsTrackingId: ''
+};
+
 GoogleAnalytics.propTypes = {
-  analyticsTrackingId: PropTypes.string.isRequired
+  analyticsTrackingId: PropTypes.string
 };
 
 export function mapStateToProps({ settings }) {
