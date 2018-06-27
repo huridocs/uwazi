@@ -77,6 +77,7 @@
     "font-awesome": "^4.5.0",
     "franc": "^3.1.0",
     "get-youtube-id": "^1.0.0",
+    "graylog2": "^0.2.1",
     "history": "4.7.2",
     "html-to-react": "^1.3.3",
     "immutable": "^3.7.6",
