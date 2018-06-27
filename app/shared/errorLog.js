@@ -13,9 +13,7 @@ const formatMessage = (info) => {
   return result;
 };
 
-const formatter = winston.format.printf((info) => {
-  return formatMessage(info);
-});
+const formatter = winston.format.printf(info => formatMessage(info));
 
 const errorLogger = winston.createLogger({
   transports: [
@@ -39,7 +37,7 @@ const errorLogger = winston.createLogger({
   ]
 });
 
-const graylog = new graylog2.graylog({
+const graylog = new graylog2.graylog({ //eslint-disable-line new-cap
   servers: [
         { host: process.env.USE_GRAYLOG, port: 12201 }
   ],
@@ -48,7 +46,7 @@ const graylog = new graylog2.graylog({
 });
 
 graylog.on('error', (error) => {
-    console.error('Error while trying to write to graylog2:', error);
+  console.error('Error while trying to write to graylog2:', error); //eslint-disable-line no-console
 });
 
 class GrayLogTransport extends winston.Transport {
