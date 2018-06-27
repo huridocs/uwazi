@@ -11,7 +11,5 @@ export default function (err, req, res, next) {
   }
 
   errorLog.error(result);
-  console.log('da error', result);
-
   next(err);
 }
