@@ -16,10 +16,10 @@ import debounce from 'app/utils/debounce';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 
 const translatedOptions = property => property.options.map((option) => {
-  option.label = t(property.content, option.label);
+  option.label = t(property.content, option.label, null, false);
   if (option.values) {
     option.options = option.values.map((val) => {
-      val.label = t(property.content, val.label);
+      val.label = t(property.content, val.label, null, false);
       return val;
     });
   }

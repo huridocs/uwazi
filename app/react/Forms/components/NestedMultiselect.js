@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Field } from 'react-redux-form';
-import { MultiSelect } from 'app/ReactReduxForms';
 import ShowIf from 'app/App/ShowIf';
+import { Field, Control } from 'react-redux-form';
 import { t } from 'app/I18N';
 import advancedSortUtil from 'app/utils/advancedSort';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import { store } from 'app/store';
+import MultiSelect from './MultiSelect';
 
 export default class NestedMultiselect extends Component {
   constructor(props) {
@@ -116,7 +116,8 @@ export default class NestedMultiselect extends Component {
               </div>
             </Field>
             <ShowIf if={this.state[prop]}>
-              <MultiSelect
+              <Control
+                component={MultiSelect}
                 model={`.filters.${property.name}.properties.${prop}.values`}
                 prefix={property.name + prop}
                 options={options}

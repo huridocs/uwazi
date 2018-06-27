@@ -129,7 +129,7 @@ describe('library helper', () => {
       const populatedFilters = libraryHelper.parseWithAggregations(filters, aggregations);
       expect(populatedFilters[0].options).toEqual([
         { id: 1, value: 'value1', results: 2 },
-        { id: 'missing', label: 'No Value', results: 2 }
+        { id: 'missing', label: 'No Value', results: 2, noValueKey: true }
       ]);
     });
   });
