@@ -11,14 +11,15 @@ import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
 import ActionButton from './ActionButton';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 
 export class CreateConnectionPanel extends Component {
   renderCheckType(template) {
     if (this.props.connection.get('template') === template.get('_id')) {
-      return <i className="fa fa-check"></i>;
+      return <Icon icon="check" />;
     }
 
-    return <i className="far fa-square"></i>;
+    return <Icon icon="square" />;
   }
 
   render() {
@@ -33,7 +34,9 @@ export class CreateConnectionPanel extends Component {
       <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
           <h1>Create {typeLabel}</h1>
-          <i className="closeSidepanel fa fa-times close-modal" onClick={this.props.closePanel}></i>
+          <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
+            <Icon icon="times" />
+          </button>
 
           <ul className="connections-list">
             {this.props.relationTypes.map((template) => {

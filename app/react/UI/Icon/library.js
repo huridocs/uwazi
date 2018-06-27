@@ -1,5 +1,6 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { 
+  faArrowRight,
   faBars,
   faCoffee,
   faTimes,
@@ -13,10 +14,16 @@ import {
   faSave,
   faUpload,
   faPaperclip,
-  faLink
+  faLink,
+  faSpinner,
+  faCheck,
+  faSquare,
+  faCaretUp,
+  faCaretDown
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
+  faArrowRight,
   faBars,
   faCoffee,
   faTimes,
@@ -30,6 +37,11 @@ export default library.add(
   faSave,
   faUpload,
   faPaperclip,
-  faLink
+  faLink,
+  faSpinner,
+  faCheck,
+  faSquare,
+  faCaretUp,
+  faCaretDown
 );
 
