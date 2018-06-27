@@ -3,16 +3,16 @@ jobs:
   build:
     working_directory: ~/huridocs/uwazi
     parallelism: 1
+    environment:
+      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+      xpack.security.enabled: false
     docker:
       - image: circleci/node:8.11.3-browsers
       - image: circleci/mongo:3.4-ram
-    environment:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
 
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
 
       # Download and cache dependencies
       - restore_cache:
@@ -23,7 +23,6 @@ jobs:
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
-      - run: docker run -d -p 9200:9200 --name elasticsearch -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1" -e "xpack.security.enabled=false" docker.elastic.co/elasticsearch/elasticsearch:5.5.3
       # - run: |
       #     if [[ ! -e elasticsearch-5.5.1 ]]; then
       #       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.tar.gz
