@@ -72,7 +72,7 @@ describe('MarkdownViewer', () => {
       expect(component).toMatchSnapshot();
     });
 
-    it('should render customHook components', () => {
+    it('should render customHook components and show an error for invalid ones', () => {
       CustomHookComponents.validcomponent = class customComponent extends Component {
         render() {
           return <p>Custom</p>;
@@ -99,6 +99,15 @@ describe('MarkdownViewer', () => {
 
     it('should not render html by default', () => {
       props.markdown = '<div><h1>should be all a escaped string</h1></div>';
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should render Link', () => {
+      props.markdown = '{link}(url:this_is_the_url,label:\'this is a label\')'
+        + '\n<MarkdownLink url="the_url">label</MarkDownLink>';
+      props.html = true;
 
       render();
       expect(component).toMatchSnapshot();
@@ -133,6 +142,13 @@ describe('MarkdownViewer', () => {
         render();
         expect(component).toMatchSnapshot();
       });
+    });
+
+    it('should render a searchbox', () => {
+      props.markdown = '{searchbox}(placeholder:\'this is a placeholder\')';
+
+      render();
+      expect(component).toMatchSnapshot();
     });
   });
 });

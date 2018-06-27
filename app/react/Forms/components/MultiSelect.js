@@ -77,22 +77,29 @@ export default class MultiSelect extends Component {
   }
 
   sort(options, optionsValue, optionsLabel) {
-    return options.sort((a, b) => {
+    let sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
         sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
       }
 
-      if (!this.props.sortbyLabel && sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
+      if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
         sorting = a.results > b.results ? -1 : 1;
       }
 
-      if (sorting === 0) {
+      if (sorting === 0 || this.state.showAll || this.state.sortbyLabel) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
       return sorting;
     });
+
+    const noValueOption = sortedOptions.find(opt => opt.noValueKey);
+    if (noValueOption && !this.checked(noValueOption[optionsValue])) {
+      sortedOptions = sortedOptions.filter(opt => !opt.noValueKey);
+      sortedOptions.push(noValueOption);
+    }
+    return sortedOptions;
   }
 
   moreLessLabel(totalOptions) {
@@ -107,14 +114,16 @@ export default class MultiSelect extends Component {
   toggleOptions(group, e) {
     e.preventDefault();
     const groupKey = group[this.props.optionsValue];
-    const ui = this.state.ui;
+    const { ui } = this.state;
     ui[groupKey] = !ui[groupKey];
     this.setState({ ui });
   }
 
   showSubOptions(parent) {
     const toggled = this.state.ui[parent.id];
-    return !!(toggled || !!(!this.checked(parent) && parent.options.find(itm => this.checked(itm))));
+    const parentChecked = this.checked(parent);
+    const childChecked = !!parent.options.find(itm => this.checked(itm[this.props.optionsValue]));
+    return toggled || (!parentChecked && childChecked);
   }
 
   label(option) {
@@ -133,7 +142,7 @@ export default class MultiSelect extends Component {
           </ShowIf>
           {option.options &&
             <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-              <i className={this.state.ui[option.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <i className={this.showSubOptions(option) ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
             </span>
           }
         </span>
@@ -142,13 +151,14 @@ export default class MultiSelect extends Component {
   }
 
   renderGroup(group, index) {
+    const { prefix } = this.props;
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
           <input
             type="checkbox"
             className="group-checkbox multiselectItem-input"
-            id={group.id}
+            id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
           />

@@ -64,22 +64,21 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
     const property = Object.assign({}, _property);
     if (property.options && property.options.length) {
       if (showNoValue) {
-        property.options.push({ id: 'missing', label: 'No Value' });
+        property.options.push({ id: 'missing', label: 'No Value', noValueKey: true });
       }
       property.options = property.options.map((_option) => {
         const option = Object.assign(_option, { results: getOptionCount(aggregations, _option.id, property.name) });
         if (option.values) {
           option.values = option.values.map((_opt) => {
-            const results = getOptionCount(aggregations, _opt.id, property.name);
-            option.results += results;
-            _opt.results = results;
+            _opt.results = getOptionCount(aggregations, _opt.id, property.name);
             return _opt;
           });
+
+          option.results = option.values.reduce((r, o) => o.results > r ? o.results : r, 0);
         }
         return option;
       }).filter(opt => opt.results);
     }
-
     return property;
   });
 }

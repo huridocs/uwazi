@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Link should allow nesting children inside 1`] = `
+<Link
+  className=""
+  href="url"
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="url"
+>
+  <div>
+    Extra content
+  </div>
+  <span>
+    Label
+  </span>
+</Link>
+`;
+
+exports[`Link should allow to set a custom class to the component 1`] = `
+<Link
+  className=""
+  href="url"
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="url"
+>
+  label
+</Link>
+`;
+
+exports[`Link should render a react-router Link 1`] = `
+<Link
+  className=""
+  href="url"
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="url"
+>
+  label
+</Link>
+`;
