@@ -7,7 +7,7 @@ import { FormGroup } from 'app/Forms';
 import { TranslateForm } from '../TranslateForm';
 
 
-fdescribe('TranslateForm', () => {
+describe('TranslateForm', () => {
   let component;
   let props;
   const translations = Immutable.fromJS([
