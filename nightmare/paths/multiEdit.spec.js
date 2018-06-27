@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import selectors from '../helpers/selectors.js';
 import config from '../helpers/config.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -16,7 +16,7 @@ describe('multi edit path', () => {
         .wait(selectors.uploadsView.newEntityButtom)
         .url()
         .then((url) => {
-          expect(url.match(config.url + '/uploads')).not.toBe(null);
+          expect(url.match(`${config.url}/uploads`)).not.toBe(null);
           done();
         })
         .catch(catchErrors(done));
@@ -85,9 +85,11 @@ describe('multi edit path', () => {
     .waitToClick(selectors.uploadsView.thirdPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
+    .waitToDisapear('.alert.alert-success')
     .waitToClick(selectors.uploadsView.secondPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
+    .waitToDisapear('.alert.alert-success')
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')

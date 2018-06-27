@@ -57,7 +57,7 @@ describe('Select', () => {
 
       const optionElements = component.find('option');
       expect(optionElements.length).toBe(3);
-      expect(optionElements.first().props().value).toBe('');
+      expect(optionElements.first().props().value).not.toBeDefined();
       expect(optionElements.first().text()).toBe('blank');
     });
   });

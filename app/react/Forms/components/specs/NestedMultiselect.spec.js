@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import NestedMultiselect from '../NestedMultiselect';
-import { MultiSelect } from '../../../ReactReduxForms';
+import { Control } from 'react-redux-form';
 
 describe('NestedMultiselect', () => {
   let component;
@@ -80,8 +80,7 @@ describe('NestedMultiselect', () => {
 
   it('should render the groups', () => {
     render();
-    const optionElements = component.find(MultiSelect);
-
+    const optionElements = component.find(Control);
     expect(optionElements.length).toBe(2);
     expect(optionElements.first().props().model).toBe('.filters.nested_property.properties.acd.values');
     expect(optionElements.first().props().options).toEqual([{ label: '1', results: 2, value: '1' }, { label: '1.1', results: 2, value: '1.1' }]);
