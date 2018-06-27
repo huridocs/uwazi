@@ -1,6 +1,7 @@
 import winston from 'winston';
 
 const DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
+const LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : `${__dirname}/../../log`;
 
 const formatter = winston.format.printf((info) => {
   const message = (typeof info.message === 'object')
@@ -12,7 +13,7 @@ const formatter = winston.format.printf((info) => {
 export default winston.createLogger({
   transports: [
     new winston.transports.File({
-      filename: './log/error.log',
+      filename: `${LOGS_DIR}/error.log`,
       handleExceptions: true,
       level: 'error',
       format: winston.format.combine(
