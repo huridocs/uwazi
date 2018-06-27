@@ -6,7 +6,14 @@ import {
   faTh,
   faPowerOff,
   faCog,
-  faCloudUploadAlt
+  faCloudUploadAlt,
+  faFilePdf,
+  faPencilAlt,
+  faTrashAlt,
+  faSave,
+  faUpload,
+  faPaperclip,
+  faLink
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -16,6 +23,13 @@ export default library.add(
   faTh,
   faPowerOff,
   faCog,
-  faCloudUploadAlt
+  faCloudUploadAlt,
+  faFilePdf,
+  faPencilAlt,
+  faTrashAlt,
+  faSave,
+  faUpload,
+  faPaperclip,
+  faLink
 );
 

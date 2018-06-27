@@ -10,6 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm } from '../actions/actions';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
+import { Icon } from "UI";
 
 export class Attachment extends Component {
   deleteAttachment(attachment) {
@@ -45,7 +46,7 @@ export class Attachment extends Component {
     let thumbnail = null;
 
     if (this.getExtension(file.filename) === 'pdf') {
-      thumbnail = <span><i className="far fa-file-pdf" /> pdf</span>;
+      thumbnail = <span><Icon icon="file-pdf" /> pdf</span>
     }
 
     if (acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename.toLowerCase())) !== -1) {
@@ -75,12 +76,12 @@ export class Attachment extends Component {
         <div className="attachment-buttons">
           <ShowIf if={!this.props.readOnly}>
             <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
-              <i className="fa fa-pencil-alt" />
+              <Icon icon="pencil-alt" />
             </a>
           </ShowIf>
           <ShowIf if={item.deletable && !this.props.readOnly}>
             <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
-              <i className="fa fa-trash-alt" />
+              <Icon icon="trash-alt" />
             </a>
           </ShowIf>
           <ShowIf if={item.replaceable && !this.props.readOnly}>
@@ -106,12 +107,12 @@ export class Attachment extends Component {
         <div className="item-shortcut-group">
           <NeedAuthorization roles={['admin', 'editor']}>
             <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
-              <i className="fa fa-times" />
+              <Icon icon="times" />
             </a>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor']}>
             <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model, storeKey)}>
-              <i className="fa fa-floppy-o" />
+              <Icon icon="save" />
             </a>
           </NeedAuthorization>
         </div>
