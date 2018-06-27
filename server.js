@@ -13,26 +13,12 @@ var compression = require('compression');
 const app = express();
 
 var http = require('http').Server(app);
-var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
 
-var winston = require('winston'),
-  expressWinston = require('express-winston');
-
-// app.use(expressWinston.logger({
-//       transports: [
-//         new winston.transports.File({
-//           name: 'access',
-//           filename: './log/access.log',
-//           json: false,
-//           handleExceptions: true,
-//           level: 'debug'
-//         })
-//       ]
-//     }));
-
+var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 app.use(error_handling_middleware);
+
 app.use(compression());
 var oneYear = 31557600;
 
@@ -58,22 +44,9 @@ var systemKeys = require('./app/api/i18n/systemKeys.js');
 var ports = require('./app/api/config/ports.js');
 const port = ports[app.get('env')];
 
-app.use(expressWinston.errorLogger({
-      transports: [
-        new winston.transports.File({
-          name: 'error',
-          filename: './log/error.log',
-          prettyPrint: true,
-          json: false,
-          handleExceptions: true,
-          humanReadableUnhandledException: true,
-          level: 'error'
-        })
-      ]
-    }));
-
-process.on('uncaughtException', err => winston.error('uncaught exception: ', err));
-process.on('unhandledRejection', (reason, p) => winston.error('unhandled rejection: ', reason, p));
+// Error logging needs to be after the last route
+var error_logging_middleware = require('./app/api/utils/error_logging_middleware.js');
+app.use(error_logging_middleware);
 
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;

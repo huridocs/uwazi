@@ -20,6 +20,7 @@ import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
 import store from './store';
 import translationsApi from '../api/i18n/translations';
+import errorLog from 'shared/errorLog';
 
 let assets = {};
 
@@ -173,11 +174,11 @@ function handleRoute(res, renderProps, req) {
     })
     .catch((e) => {
       let error = e;
-      // console.trace(error); // eslint-disable-line
+
       if (error instanceof Error) {
         error = error.stack.split('\n');
       }
-      console.log(error);
+      errorLog.error(error);
     });
   }
 
