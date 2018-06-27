@@ -59,7 +59,7 @@ describe('Attachments Routes', () => {
       expect(routes.post('/api/attachments/upload', req)).toNeedAuthorization();
     });
 
-    fit('should add the uploaded file to attachments and return it, incluiding its new ID', (done) => {
+    it('should add the uploaded file to attachments and return it, incluiding its new ID', (done) => {
       routes.post('/api/attachments/upload', req)
       .then(addedFile => Promise.all([addedFile, entities.getById(req.body.entityId)]))
       .then(([addedFile, dbEntity]) => {
