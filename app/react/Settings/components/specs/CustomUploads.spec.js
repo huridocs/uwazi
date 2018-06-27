@@ -3,6 +3,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import api from 'app/utils/api';
+import { ConfirmButton } from 'app/Layout';
 
 import { CustomUploads, mapStateToProps } from '../CustomUploads';
 
@@ -16,6 +17,7 @@ fdescribe('CustomUploads', () => {
     spyOn(api, 'get').and.returnValue(Promise.resolve({ json: 'uploads' }));
     props = {
       upload: jasmine.createSpy('upload'),
+      deleteCustomUpload: jasmine.createSpy('deleteCustomUpload'),
       customUploads: Immutable.fromJS([])
     };
   });
@@ -40,6 +42,17 @@ fdescribe('CustomUploads', () => {
       props.progress = true;
       render();
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('deleteCustomUpload', () => {
+    it('should call deleteCustomUpload on click', () => {
+      props.customUploads = Immutable.fromJS([{ _id: 'upload', filename: 'name' }]);
+      render();
+
+      component.find(ConfirmButton).props().action();
+
+      expect(props.deleteCustomUpload).toHaveBeenCalledWith('upload');
     });
   });
 

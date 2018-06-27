@@ -16,6 +16,7 @@ var http = require('http').Server(app);
 var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
+var uploadsFolder = require('./app/api/config/paths').uploadDocumentsPath;
 
 var winston = require('winston'),
   expressWinston = require('express-winston');
@@ -48,6 +49,7 @@ app.use(bodyParser.json());
 require('./app/api/auth/routes.js')(app);
 app.use(privateInstanceMiddleware);
 app.use('/flag-images', express.static(path.resolve(__dirname, 'dist/flags')));
+app.use('/uploaded_documents', express.static(uploadsFolder));
 
 require('./app/api/api.js')(app, http);
 require('./app/react/server.js')(app);

@@ -105,6 +105,13 @@ export default (app) => {
     });
   });
 
+  app.delete('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
+    uploads.delete(req.query._id)
+    .then((result) => {
+      res.json(result);
+    });
+  });
+
   app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => entities.getById(req.body.document)
   .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
   .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))

@@ -1,6 +1,7 @@
 import db from 'api/utils/testing_db';
 
 const entityId = db.id();
+const uploadId = db.id();
 
 export default {
   entities: [
@@ -8,11 +9,12 @@ export default {
     { _id: db.id(), sharedId: 'id', language: 'en', title: 'Gadgets 01 EN' }
   ],
   uploads: [
-    { _id: db.id(), originalname: 'upload1' },
+    { _id: uploadId, originalname: 'upload1' },
     { _id: db.id(), originalname: 'upload2' },
   ]
 };
 
 export {
-  entityId
+  entityId,
+  uploadId
 };

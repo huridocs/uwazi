@@ -9,6 +9,7 @@ import search from 'api/search/search';
 import fixtures, { entityId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
+import uploads from '../uploads.js';
 
 describe('upload routes', () => {
   let routes;
@@ -191,6 +192,15 @@ describe('upload routes', () => {
     it('should return all uploads', async () => {
       const result = await routes.get('/api/customisation/upload', {});
       expect(result.map(r => r.originalname)).toMatchSnapshot();
+    });
+  });
+
+  describe('DELETE/customisation/upload', () => {
+    it('should delete upload and return the response', async () => {
+      spyOn(uploads, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
+      const result = await routes.delete('/api/customisation/upload', { query: { _id: 'upload_id' } });
+      expect(result).toBe('upload_deleted');
+      expect(uploads.delete).toHaveBeenCalledWith('upload_id');
     });
   });
 });

@@ -11,7 +11,7 @@ import { t } from 'app/I18N';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 
-import { uploadCustom } from '../../Uploads/actions/uploadsActions';
+import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsActions';
 
 export class CustomUploads extends RouteHandler {
   static requestState() {
@@ -60,7 +60,7 @@ export class CustomUploads extends RouteHandler {
                 <div className="info">
                   URL:<br />
                   <span className="thumbnail-url">{`/uploaded_documents/${upload.get('filename')}`}</span>
-                  <ConfirmButton>delete</ConfirmButton>
+                  <ConfirmButton action={() => this.props.deleteCustomUpload(upload.get('_id'))}>delete</ConfirmButton>
                 </div>
               </li>
             ))}
@@ -83,7 +83,8 @@ CustomUploads.contextTypes = {
 CustomUploads.propTypes = {
   progress: PropTypes.bool,
   customUploads: PropTypes.instanceOf(Immutable.List).isRequired,
-  upload: PropTypes.func.isRequired
+  upload: PropTypes.func.isRequired,
+  deleteCustomUpload: PropTypes.func.isRequired
 };
 
 export const mapStateToProps = ({ customUploads, progress }) => ({
@@ -91,6 +92,6 @@ export const mapStateToProps = ({ customUploads, progress }) => ({
   progress: !!progress.filter((v, key) => key.match(/customUpload/)).size
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ upload: uploadCustom }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ upload: uploadCustom, deleteCustomUpload }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomUploads);

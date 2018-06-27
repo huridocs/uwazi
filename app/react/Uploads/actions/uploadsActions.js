@@ -62,7 +62,7 @@ export function uploadCustom(file) {
 }
 
 export function deleteCustomUpload(_id) {
-  return dispatch => api.delete('/customisation/upload', { _id })
+  return dispatch => api.delete('customisation/upload', { _id })
   .then((response) => {
     dispatch(basicActions.remove('customUploads', response.json));
   });
