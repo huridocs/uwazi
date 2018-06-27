@@ -15,9 +15,8 @@ import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 
-if (isClient) {
-  loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');
-}
+import 'UI/Icon/library';
+import { Icon } from 'UI';
 
 class App extends Component {
   constructor(props, context) {
