@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t } from 'app/I18N';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { Icon } from 'UI';
 
 export class Menu extends Component {
   libraryUrl() {
@@ -46,14 +47,16 @@ export class Menu extends Component {
           <ul className="menuNav-list">
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
-                <i className="fa fa-th" />
+                <Icon icon="th" />
                 <span className="tab-link-tooltip">{t('System', 'Public documents')}</span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to={this.uploadsUrl()} className="menuNav-btn btn btn-default">
-                  <span><i className="fa fa-cloud-upload-alt" /></span>
+                  <span>
+                    <Icon icon="cloud-upload-alt" />
+                  </span>
                   <span className="tab-link-tooltip">{t('System', 'Private documents')}</span>
                 </I18NLink>
               </li>
@@ -61,7 +64,7 @@ export class Menu extends Component {
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to="/settings/account" className="menuNav-btn btn btn-default">
-                  <i className="fa fa-cog" />
+                  <Icon icon="cog" />
                   <span className="tab-link-tooltip">{t('System', 'Account settings')}</span>
                 </I18NLink>
               </li>
@@ -71,7 +74,7 @@ export class Menu extends Component {
                 return (
                   <li className="menuNav-item">
                     <I18NLink to="/login" className="menuNav-btn btn btn-default">
-                      <i className="fa fa-power-off" />
+                      <Icon icon="power-off" />
                       <span className="tab-link-tooltip">{t('System', 'Sign in')}</span>
                     </I18NLink>
                   </li>
