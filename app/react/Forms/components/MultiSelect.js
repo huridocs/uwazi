@@ -122,8 +122,8 @@ export default class MultiSelect extends Component {
   showSubOptions(parent) {
     const toggled = this.state.ui[parent.id];
     const parentChecked = this.checked(parent);
-    const childChecked = parent.options.find(itm => this.checked(itm[this.props.optionsValue]));
-    return toggled || parentChecked || !!childChecked;
+    const childChecked = !!parent.options.find(itm => this.checked(itm[this.props.optionsValue]));
+    return toggled || (!parentChecked && childChecked);
   }
 
   label(option) {
@@ -142,7 +142,7 @@ export default class MultiSelect extends Component {
           </ShowIf>
           {option.options &&
             <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-              <i className={this.state.ui[option.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <i className={this.showSubOptions(option) ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
             </span>
           }
         </span>
