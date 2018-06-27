@@ -94,7 +94,7 @@ export class Login extends RouteHandler {
                 <div className="form-text">
                   <span className="required">{t('System', 'Login failed')} - </span>
                   <a
-                    title={t('System', 'Forgot Password?')}
+                    title={t('System', 'Forgot Password?', null, false)}
                     onClick={this.setRecoverPassword.bind(this)}
                     className={(this.state.error ? 'label-danger' : '')}
                   >
@@ -110,7 +110,7 @@ export class Login extends RouteHandler {
               <ShowIf if={this.state.recoverPassword}>
                 <div className="form-text">
                   <a
-                    title={t('System', 'Cancel')}
+                    title={t('System', 'Cancel', null, false)}
                     onClick={this.setLogin.bind(this)}
                   >
                     {t('System', 'Cancel')}

@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -17,7 +18,7 @@ export class PageViewer extends Component {
         <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
         <main className="page-viewer document-viewer">
           <div className="main-wrapper">
-            <MarkdownViewer markdown={originalText} lists={lists}/>
+            <MarkdownViewer html markdown={originalText} lists={lists}/>
             <Footer/>
           </div>
         </main>
@@ -26,9 +27,14 @@ export class PageViewer extends Component {
   }
 }
 
+PageViewer.defaultProps = {
+  page: Immutable.fromJS({}),
+  itemLists: Immutable.fromJS({})
+};
+
 PageViewer.propTypes = {
-  page: PropTypes.object,
-  itemLists: PropTypes.object
+  page: PropTypes.instanceOf(Immutable.Map),
+  itemLists: PropTypes.instanceOf(Immutable.List)
 };
 
 const mapStateToProps = ({ page }) => ({

@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {t, I18NLink} from 'app/I18N';
-import {actions as formActions, Field, LocalForm} from 'react-redux-form';
-import {searchSnippets} from 'app/Library/actions/libraryActions';
-import {highlightSearch} from 'app/Viewer/actions/uiActions';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { t, I18NLink } from 'app/I18N';
+import { actions as formActions, Field, LocalForm } from 'react-redux-form';
+import { searchSnippets } from 'app/Library/actions/libraryActions';
+import { highlightSearch } from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
-import {browserHistory} from 'react-router';
-import {scrollToPage} from 'app/Viewer/actions/uiActions';
-import {toUrlParams} from '../../../shared/JSONRequest';
+import { browserHistory } from 'react-router';
+import { scrollToPage } from 'app/Viewer/actions/uiActions';
+import { toUrlParams } from '../../../shared/JSONRequest';
 import { Icon } from 'UI';
 
 export class SearchText extends Component {
@@ -51,25 +51,25 @@ export class SearchText extends Component {
   }
 
   render() {
-    let snippets = this.props.snippets.toJS();
-    let documentViewUrl = `/document/${this.props.doc.get('sharedId')}`;
+    const snippets = this.props.snippets.toJS();
+    const documentViewUrl = `/document/${this.props.doc.get('sharedId')}`;
 
     return (
       <div>
         <LocalForm
-          model={'searchText'}
+          model="searchText"
           onSubmit={this.submit.bind(this)}
-          getDispatch={(dispatch) => this.attachDispatch(dispatch)}
+          getDispatch={dispatch => this.attachDispatch(dispatch)}
           autoComplete="off"
         >
           <ShowIf if={this.props.storeKey === 'documentViewer'} >
-            <div className={'search-box'}>
-              <div className={'input-group'}>
-                <Field model={'.searchTerm'}>
+            <div className="search-box">
+              <div className="input-group">
+                <Field model=".searchTerm">
                   <Icon icon="search" />
                   <input
                     type="text"
-                    placeholder={t('System', 'Search')}
+                    placeholder={t('System', 'Search', null, false)}
                     className="form-control"
                     autoComplete="off"
                   />
@@ -89,17 +89,16 @@ export class SearchText extends Component {
         </ShowIf>
 
         <ul className="snippet-list">
-          {snippets.map((snippet, index) => {
-            return (
-              <li key={index}>
-                <I18NLink
-                  onClick={() => this.props.scrollToPage(snippet.page)}
-                  to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${this.props.searchTerm || ''}`}>
-                  {snippet.page}
-                </I18NLink>
-                <span dangerouslySetInnerHTML={{__html: snippet.text}}></span>
-              </li>);
-          })}
+          {snippets.map((snippet, index) => (
+            <li key={index}>
+              <I18NLink
+                onClick={() => this.props.scrollToPage(snippet.page)}
+                to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${this.props.searchTerm || ''}`}
+              >
+                {snippet.page}
+              </I18NLink>
+              <span dangerouslySetInnerHTML={{ __html: snippet.text }} />
+            </li>))}
         </ul>
       </div>
     );
@@ -128,7 +127,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({searchSnippets}, dispatch);
+  return bindActionCreators({ searchSnippets }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

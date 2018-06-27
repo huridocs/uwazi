@@ -149,8 +149,8 @@ export default {
     uploadsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(2) > a',
     libraryNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(1) > a',
     settingsNavButton: '#app > div.content > header > ul > li.menuActions > ul > li:nth-child(3) > a',
-    spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(1) > a',
-    english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a'
+    spanish: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(2) > a',
+    english: '#app > div.content > header > ul > li.menuActions > ul.menuNav-I18NMenu > li:nth-child(3) > a'
   },
   connections: {
     editButton: '#app > div.content > div > div > div.sidepanel-footer > span > button',
@@ -201,7 +201,7 @@ export default {
       mainSuperpower: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(5) > dd',
       superpowers: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(6) > dd > ul',
       firstSight: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(7) > dd',
-      whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > dl:nth-child(8) > dd > div > div > p'
+      whoIsHe: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div > dl:nth-child(8) > dd > div > p'
     }
   }
 };

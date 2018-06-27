@@ -2,7 +2,7 @@ import { remove as removeAccents } from 'diacritics';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-//import { Icon } from 'app/Layout/Icon';
+import { Icon as CustomIcon } from 'app/Layout/Icon';
 import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
@@ -40,25 +40,28 @@ export default class MultiSelect extends Component {
     this.props.onChange(selectedItems);
   }
 
-  change(value) {
-    let newValues = this.props.value ? this.props.value.slice(0) : [];
-    if (newValues.includes(value)) {
-      newValues = newValues.filter(val => val !== value);
-      return this.props.onChange(newValues);
-    }
-
-    newValues.push(value);
-    this.props.onChange(newValues);
-  }
 
   checked(value) {
     if (!this.props.value) {
       return false;
     }
+
     if (value.options) {
       return value.options.reduce((allIncluded, option) => allIncluded && this.props.value.includes(option[this.props.optionsValue]), true);
     }
     return this.props.value.includes(value);
+  }
+
+  change(value) {
+    let newValues = this.props.value ? this.props.value.slice(0) : [];
+    if (newValues.includes(value)) {
+      newValues = newValues.filter(val => val !== value);
+      this.props.onChange(newValues);
+      return;
+    }
+
+    newValues.push(value);
+    this.props.onChange(newValues);
   }
 
   filter(e) {
@@ -75,35 +78,53 @@ export default class MultiSelect extends Component {
   }
 
   sort(options, optionsValue, optionsLabel) {
-    return options.sort((a, b) => {
+    let sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
         sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
       }
 
-      if (!this.props.sortbyLabel && sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
+      if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
         sorting = a.results > b.results ? -1 : 1;
       }
 
-      if (sorting === 0) {
+      if (sorting === 0 || this.state.showAll || this.state.sortbyLabel) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
       return sorting;
     });
+
+    const noValueOption = sortedOptions.find(opt => opt.noValueKey);
+    if (noValueOption && !this.checked(noValueOption[optionsValue])) {
+      sortedOptions = sortedOptions.filter(opt => !opt.noValueKey);
+      sortedOptions.push(noValueOption);
+    }
+    return sortedOptions;
+  }
+
+  moreLessLabel(totalOptions) {
+    if (this.state.showAll) {
+      return t('System', 'x less');
+    }
+    return (
+      <span>{totalOptions.length - this.props.optionsToShow} {t('System', 'x more')}</span>
+    );
   }
 
   toggleOptions(group, e) {
     e.preventDefault();
     const groupKey = group[this.props.optionsValue];
-    const ui = this.state.ui;
+    const { ui } = this.state;
     ui[groupKey] = !ui[groupKey];
     this.setState({ ui });
   }
 
   showSubOptions(parent) {
     const toggled = this.state.ui[parent.id];
-    return !!(toggled || !!(!this.checked(parent) && parent.options.find(itm => this.checked(itm))));
+    const parentChecked = this.checked(parent);
+    const childChecked = parent.options.find(itm => this.checked(itm[this.props.optionsValue]));
+    return toggled || parentChecked || !!childChecked;
   }
 
   label(option) {
@@ -115,9 +136,7 @@ export default class MultiSelect extends Component {
           <Icon icon="check" className="checkbox-checked" />
         </span>
         <span className="multiselectItem-name">
-          {/*
-            <Icon className="item-icon" data={option.icon}/>
-          */}
+          <CustomIcon className="item-icon" data={option.icon}/>
           {option[optionsLabel]}
         </span>
         <span className="multiselectItem-results">
@@ -135,17 +154,19 @@ export default class MultiSelect extends Component {
   }
 
   renderGroup(group, index) {
+    const { prefix } = this.props;
+    const _group = Object.assign({}, group, { results: `${group.results}` });
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
           <input
             type="checkbox"
             className="group-checkbox multiselectItem-input"
-            id={group.id}
+            id={prefix + group.id}
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
           />
-          {this.label(group)}
+          {this.label(_group)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
@@ -222,7 +243,7 @@ export default class MultiSelect extends Component {
               <input
                 className="form-control"
                 type="text"
-                placeholder={t('System', 'Search item')}
+                placeholder={t('System', 'Search item', null, false)}
                 value={this.state.filter}
                 onChange={this.filter.bind(this)}
               />
@@ -241,7 +262,8 @@ export default class MultiSelect extends Component {
           <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
               <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
-              <span>{this.state.showAll ? t('System', 'x less') : totalOptions.length - this.props.optionsToShow + t('System', 'x more')}</span>
+              <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              {this.moreLessLabel(totalOptions)}
             </button>
           </ShowIf>
         </li>
@@ -261,7 +283,7 @@ MultiSelect.defaultProps = {
   showAll: false,
   hideSearch: false,
   noSort: false,
-  sortbyLabel: true
+  sortbyLabel: false
 };
 
 MultiSelect.propTypes = {

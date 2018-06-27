@@ -10,7 +10,7 @@ import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import fs from 'fs';
-import t from 'app/I18N/t';
+import { t, Translate } from 'app/I18N';
 
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
@@ -24,8 +24,6 @@ import translationsApi from '../api/i18n/translations';
 let assets = {};
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
-  let componentHtml;
-
   let initialStore = store({});
 
   if (isRedux) {
@@ -35,17 +33,14 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   global.window = {};
   //
   t.resetCachedTranslation();
-  try {
-    componentHtml = renderToString(
-      <Provider store={initialStore}>
-        <CustomProvider initialData={initialData} user={user}>
-          <Component {...componentProps} />
-        </CustomProvider>
-      </Provider>
-    );
-  } catch (e) {
-    console.trace(e); // eslint-disable-line
-  }
+  Translate.resetCachedTranslation();
+  const componentHtml = renderToString(
+    <Provider store={initialStore}>
+      <CustomProvider initialData={initialData} user={user}>
+        <Component {...componentProps} />
+      </CustomProvider>
+    </Provider>
+  );
 
   const head = Helmet.rewind();
 
@@ -89,12 +84,8 @@ function handleRoute(res, renderProps, req) {
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
-    try {
-      const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
-      res.status(200).send(wholeHtml);
-    } catch (error) {
-      console.trace(error); // eslint-disable-line
-    }
+    const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
+    res.status(200).send(wholeHtml);
   }
 
   if (routeProps.requestState) {
@@ -180,8 +171,13 @@ function handleRoute(res, renderProps, req) {
       initialData.locale = locale;
       renderPage(initialData, true);
     })
-    .catch((error) => {
-      console.trace(error); // eslint-disable-line
+    .catch((e) => {
+      let error = e;
+      // console.trace(error); // eslint-disable-line
+      if (error instanceof Error) {
+        error = error.stack.split('\n');
+      }
+      console.log(error);
     });
   }
 

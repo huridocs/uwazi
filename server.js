@@ -17,6 +17,21 @@ var error_handling_middleware = require('./app/api/utils/error_handling_middlewa
 var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddleware.js');
 var bodyParser = require('body-parser');
 
+var winston = require('winston'),
+  expressWinston = require('express-winston');
+
+// app.use(expressWinston.logger({
+//       transports: [
+//         new winston.transports.File({
+//           name: 'access',
+//           filename: './log/access.log',
+//           json: false,
+//           handleExceptions: true,
+//           level: 'debug'
+//         })
+//       ]
+//     }));
+
 app.use(error_handling_middleware);
 app.use(compression());
 var oneYear = 31557600;
@@ -32,7 +47,6 @@ app.use('/public', express.static(path.resolve(__dirname, 'public')));
 app.use(bodyParser.json());
 require('./app/api/auth/routes.js')(app);
 app.use(privateInstanceMiddleware);
-app.use('/uploaded_documents', express.static(path.resolve(__dirname, 'uploaded_documents')));
 app.use('/flag-images', express.static(path.resolve(__dirname, 'dist/flags')));
 
 require('./app/api/api.js')(app, http);
@@ -42,6 +56,23 @@ var translations = require('./app/api/i18n/translations.js');
 var systemKeys = require('./app/api/i18n/systemKeys.js');
 var ports = require('./app/api/config/ports.js');
 const port = ports[app.get('env')];
+
+app.use(expressWinston.errorLogger({
+      transports: [
+        new winston.transports.File({
+          name: 'error',
+          filename: './log/error.log',
+          prettyPrint: true,
+          json: false,
+          handleExceptions: true,
+          humanReadableUnhandledException: true,
+          level: 'error'
+        })
+      ]
+    }));
+
+process.on('uncaughtException', err => winston.error('uncaught exception: ', err));
+process.on('unhandledRejection', (reason, p) => winston.error('unhandled rejection: ', reason, p));
 
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;

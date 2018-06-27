@@ -1,18 +1,18 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import createReducer from 'app/BasicReducer';
 
 import template from 'app/Templates/reducers/reducer';
 import page from 'app/Pages/reducers/reducer';
-import {reducer as notificationsReducer} from 'app/Notifications';
+import { reducer as notificationsReducer } from 'app/Notifications';
 
 import thesauri from 'app/Thesauris/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
-import {reducer as connections} from 'app/Connections';
+import { reducer as connections } from 'app/Connections';
 import relationships from 'app/Relationships';
 import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
-import {reducer as attachments} from 'app/Attachments';
+import { reducer as attachments } from 'app/Attachments';
 
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
@@ -22,8 +22,9 @@ import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducers/login';
 import metadata from 'app/Metadata/reducer';
 import locale from 'app/I18N/reducer';
+import inlineEdit from 'app/I18N/inlineEditReducer';
 
-import {modelReducer, formReducer} from 'react-redux-form';
+import { modelReducer, formReducer } from 'react-redux-form';
 
 export default combineReducers({
   notifications: notificationsReducer,
@@ -31,6 +32,9 @@ export default combineReducers({
   uploads: library('uploads'),
   progress,
   locale,
+  inlineEdit,
+  inlineEditForm: formReducer('inlineEditModel', {}),
+  inlineEditModel: modelReducer('inlineEditModel', {}),
   template,
   page,
   thesauri,
@@ -38,8 +42,8 @@ export default combineReducers({
   thesauris: createReducer('thesauris', []),
   dictionaries: createReducer('dictionaries', []),
   relationTypes: createReducer('relationTypes', []),
-  relationType: modelReducer('relationType', {name: ''}),
-  relationTypeForm: formReducer('relationType', {name: ''}),
+  relationType: modelReducer('relationType', { name: '' }),
+  relationTypeForm: formReducer('relationType', { name: '' }),
   templates: createReducer('templates', []),
   translations: createReducer('translations', []),
   translationsForm: modelReducer('translationsForm', []),
@@ -48,7 +52,7 @@ export default combineReducers({
   users: createReducer('users', []),
   documentViewer,
   contextMenu,
-  connections: connections,
+  connections,
   connectionsList: ConnectionsList,
   relationships: relationships.reducer,
   attachments,

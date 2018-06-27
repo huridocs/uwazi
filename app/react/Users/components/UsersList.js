@@ -1,38 +1,37 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {I18NLink} from 'app/I18N';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { I18NLink } from 'app/I18N';
+import { bindActionCreators } from 'redux';
 import { Icon } from "UI";
 
-import {deleteUser} from 'app/Users/actions/actions';
-import {t} from 'app/I18N';
+import { deleteUser } from 'app/Users/actions/actions';
+import { t } from 'app/I18N';
 
 
 export class UsersList extends Component {
-
   deleteUser(user) {
     return this.context.confirm({
       accept: () => {
-        this.props.deleteUser({_id: user.get('_id'), sharedId: user.get('sharedId')});
+        this.props.deleteUser({ _id: user.get('_id'), sharedId: user.get('sharedId') });
       },
-      title: 'Confirm delete user: ' + user.get('username'),
+      title: `Confirm delete user: ${user.get('username')}`,
       message: 'Are you sure you want to delete this user?'
     });
   }
 
   render() {
-    const {users} = this.props;
+    const { users } = this.props;
 
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Users')}</div>
         <ul className="list-group users">
           {users.map((user, index) =>
-            <li key={index} className="list-group-item">
+            (<li key={index} className="list-group-item">
               <span>{user.get('username')}</span>
               <div className="list-group-item-actions">
-                <I18NLink to={'/settings/users/edit/' + user.get('_id')} className="btn btn-default btn-xs">
+                <I18NLink to={`/settings/users/edit/${user.get('_id')}`} className="btn btn-default btn-xs">
                   <Icon icon="pencil-alt" />&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
@@ -41,7 +40,7 @@ export class UsersList extends Component {
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
-            </li>
+             </li>)
           )}
         </ul>
         <div className="settings-footer">
@@ -64,12 +63,12 @@ UsersList.contextTypes = {
   confirm: PropTypes.func
 };
 
-export function mapStateToProps({users}) {
-  return {users};
+export function mapStateToProps({ users }) {
+  return { users };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({deleteUser}, dispatch);
+  return bindActionCreators({ deleteUser }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsersList);

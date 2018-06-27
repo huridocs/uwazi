@@ -49,7 +49,7 @@ export class cejilChart001 extends Component {
 
     if (this.state && this.state.data) {
       processesCount = this.getCount(processesIds);
-      provisionalMeasuresCount = <h2>{this.getCount(provisionalMeasuresIds)}</h2>;
+      provisionalMeasuresCount = this.getCount(provisionalMeasuresIds);
       documentsCount = this.getCount(documentsIds);
     }
 

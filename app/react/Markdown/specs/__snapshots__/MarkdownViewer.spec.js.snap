@@ -1,0 +1,334 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MarkdownViewer render should be able to render properly custom components not separated by \\n\\n 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <MarkdownMedia
+    config="(youtubeUrl)"
+    key="0"
+  />
+  
+
+  <MarkdownMedia
+    config="(mediaUrl)"
+    key="2"
+  />
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should not render html by default 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p
+    key="0"
+  >
+    &lt;div&gt;&lt;h1&gt;should be all a escaped string&lt;/h1&gt;&lt;/div&gt;
+  </p>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should render Link 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <MarkdownLink
+    classname=""
+    key="0"
+    label="this is a label"
+    url="this_is_the_url"
+  />
+  
+
+  <p
+    key="2"
+  >
+    <MarkdownLink
+      classname=""
+      key="0"
+      url="the_url"
+    >
+      label
+    </MarkdownLink>
+  </p>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should render a searchbox 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <SearchBox
+    classname=""
+    key="0"
+    placeholder="this is a placeholder"
+  />
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should render customHook components and show an error for invalid ones 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <customComponent
+    array={
+      Array [
+        Object {
+          "bool": true,
+          "child": Array [
+            "a",
+          ],
+        },
+        Object {
+          "child": Array [
+            "b",
+          ],
+        },
+      ]
+    }
+    component="validcomponent"
+    key="0"
+    prop="a prop"
+  />
+  
+
+  <p
+    key="2"
+  >
+    Should allow markdown between hooks
+  </p>
+  
+
+  <customComponent
+    component="validcomponent"
+    key="4"
+  />
+  
+
+  <p
+    className="error"
+    key="6"
+  >
+    <br />
+    <strong>
+      <i>
+        Custom component markup error: unsuported values! Please check your configuration
+      </i>
+    </strong>
+    <br />
+    Invalid  component
+    <br />
+  </p>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should render list components 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <ItemList
+    items={
+      Array [
+        "items1",
+      ]
+    }
+    key="0"
+    link="/library/param1"
+    options={
+      Object {
+        "option1": "optionValue",
+      }
+    }
+  />
+  
+
+  <ItemList
+    items={
+      Array [
+        "items2",
+      ]
+    }
+    key="2"
+    link="/library/param2"
+    options={Object {}}
+  />
+  
+
+  <ItemList
+    items={
+      Array [
+        "items3",
+      ]
+    }
+    key="4"
+    link="/library/param3"
+    options={Object {}}
+  />
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should render markdown 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <h2
+    key="0"
+  >
+    title
+  </h2>
+  
+
+  <p
+    key="2"
+  >
+    Some text with a 
+    <a
+      href="http://google.com"
+      key="1"
+    >
+      URL
+    </a>
+     inside.
+  </p>
+  
+
+  <p
+    key="4"
+  >
+    Which should be in its own line, separated with TWO line breaks (to create a new &lt;p&gt; Element)
+  </p>
+  
+
+  <pre
+    key="6"
+  >
+    <code
+      className="language-javascript"
+      key="0"
+    >
+      Code
+
+    </code>
+  </pre>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should render media components 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <MarkdownMedia
+    config="(1234, options)"
+    key="0"
+  />
+  
+
+  <MarkdownMedia
+    config="(1234)"
+    key="2"
+  />
+  
+
+  <MarkdownMedia
+    config="(config options)"
+    key="4"
+  />
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer render should support containers with custom classNames 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <div
+    className="test classname"
+    key="0"
+  >
+    <p
+      key="0"
+    >
+      text inside a div
+    </p>
+    
+
+  </div>
+</div>
+`;
+
+exports[`MarkdownViewer render when markdown is empty should not render anything 1`] = `""`;
+
+exports[`MarkdownViewer render when not valid html should not fail 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <div
+    key="0"
+  />
+</div>
+`;
+
+exports[`MarkdownViewer render when passing html true prop should render customComponents nested inside html 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <div
+    key="0"
+  >
+    <ItemList
+      items={
+        Array [
+          "items1",
+        ]
+      }
+      key="0"
+      link="/library/param1"
+      options={
+        Object {
+          "option1": "optionValue",
+        }
+      }
+    />
+    <div
+      key="1"
+    >
+      <MarkdownMedia
+        config="(url)"
+        key="0"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`MarkdownViewer render when passing html true prop should render html 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <div
+    key="0"
+  >
+    <h1
+      key="0"
+    >
+      test
+    </h1>
+  </div>
+</div>
+`;

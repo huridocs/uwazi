@@ -24,8 +24,7 @@ let jasmineConfig = {
 }
 
 let suite = 'nightmare/paths/*.spec.js';
-
-if(process.argv[2]) {
+if(process.argv[2] && process.argv[2] !== '--show') {
     suite = 'nightmare/paths/' + process.argv[2] + '.spec.js';
 }
 
@@ -45,14 +44,14 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 mongoose.connect(dbConfig.development, {useMongoClient: true});
 var db = mongoose.connection;
 db.once('open', function () {
-  exec('cd nightmare/fixtures;./restore.sh', (error) => {
+  return exec('cd nightmare/fixtures;./restore.sh', (error) => {
     if (error) {
       console.log(error);
       return;
     }
     translations.processSystemKeys(systemKeys)
     .then(() => {
-      jasmine.execute();
+      return jasmine.execute();
     })
     .catch(console.log);
   })

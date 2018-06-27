@@ -2,10 +2,16 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
+import { isClient } from 'app/utils';
 import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
 import { Icon } from 'UI';
+
+if (isClient) {
+  require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
+}
+
 
 export default class Map extends Component {
   constructor(props) {

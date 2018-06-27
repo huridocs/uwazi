@@ -17,7 +17,8 @@ import {
   RelationTypesList,
   ThesaurisList,
   TranslationsList,
-  FiltersForm
+  FiltersForm,
+  Customisation
 } from 'app/Settings';
 
 import Pages from 'app/Pages/Pages';
@@ -66,8 +67,8 @@ function getIndexRoute(nextState, callBack) {
   callBack(null, indexRoute);
 }
 
-const routes =
-  (<Route getIndexRoute={getIndexRoute}>
+const routes = (
+  <Route getIndexRoute={getIndexRoute}>
     <Route path="settings" component={Settings}>
       <Route path="account" component={AccountSettings} />
       <Route path="collection" component={CollectionSettings} />
@@ -107,6 +108,7 @@ const routes =
         <Route path="edit/:context" component={EditTranslations} />
       </Route>
       <Route path="filters" component={FiltersForm} />
+      <Route path="customisation" component={Customisation} />
     </Route>
     <Route path="library" component={Library} onEnter={onEnter}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
@@ -117,7 +119,9 @@ const routes =
     <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
     <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>
     <Route path="404" component={NoMatch} />
-   </Route>);
+  </Route>
+);
+
 export default (
   <Route path="/" component={App}>
     {routes}

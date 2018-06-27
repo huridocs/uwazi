@@ -82,7 +82,7 @@ export default class NestedMultiselect extends Component {
             <input
               className="form-control"
               type="text"
-              placeholder={t('System', 'Search item')}
+              placeholder={t('System', 'Search item', null, false)}
               value={this.state.filter}
               onChange={this.filter.bind(this)}
             />

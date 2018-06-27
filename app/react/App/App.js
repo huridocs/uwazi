@@ -5,16 +5,16 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
-import './scss/styles.scss';
-import '../UI/Icon/library.js';
-
 import Notifications from 'app/Notifications';
+import { TranslateForm } from 'app/I18N';
+import { isClient } from 'app/utils';
+import { loadCSS } from 'fg-loadcss';
+import './scss/styles.scss';
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
-import { isClient } from 'app/utils';
-import { loadCSS } from 'fg-loadcss';
+import '../UI/Icon/library.js';
 import { Icon } from 'UI';
 
 class App extends Component {
@@ -78,6 +78,7 @@ class App extends Component {
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
+            <TranslateForm/>
             {this.props.children}
             <GoogleAnalytics/>
           </div>

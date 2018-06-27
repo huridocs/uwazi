@@ -5,7 +5,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import { is } from 'immutable';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
@@ -19,20 +19,12 @@ export class DocumentTypesList extends Component {
     }
 
     if (this.props.storeKey === 'uploads') {
-      items.unshift({ id: 'missing', name: t('System', 'No type') });
+      items.unshift({ id: 'missing', name: 'No type' });
     }
     this.state = {
       items,
       ui: {}
     };
-  }
-
-  checked(item) {
-    if (item.items) {
-      return item.items.reduce((result, _item) => result && this.checked(_item), item.items.length > 0);
-    }
-
-    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
   }
 
   changeAll(item, e) {
@@ -103,6 +95,7 @@ export class DocumentTypesList extends Component {
   }
 
   renderSingleType(item, index) {
+    const context = item.id === 'missing' ? 'System' : item.id;
     return (<li className="multiselectItem" key={index} title={item.name}>
       <input
         type="checkbox"
@@ -120,7 +113,7 @@ export class DocumentTypesList extends Component {
           <Icon icon="square" className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
         </span>
-        <span className="multiselectItem-name">{t(item.id, item.name)}</span>
+        <span className="multiselectItem-name"><Translate context={context}>{item.name}</Translate></span>
       </label>
       <span className="multiselectItem-results">
         {this.aggregations(item)}
@@ -170,6 +163,14 @@ export class DocumentTypesList extends Component {
            !is(this.props.settings, nextProps.settings) ||
            !is(this.props.aggregations, nextProps.aggregations) ||
            this.stateChanged(nextState);
+  }
+
+  checked(item) {
+    if (item.items) {
+      return item.items.reduce((result, _item) => result && this.checked(_item), item.items.length > 0);
+    }
+
+    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
   }
 
   render() {

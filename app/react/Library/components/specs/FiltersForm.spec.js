@@ -25,9 +25,9 @@ describe('FiltersForm', () => {
           type: 'select',
           content: 'thesauri1',
           options: [
-            { label: 'a', value: 'a' },
-            { label: 'b', value: 'b' },
-            { label: 'c', value: 'c', values: [{ label: 'd', value: 'd' }] }
+            { id: 'a', label: 'a', value: 'a', results: 1 },
+            { id: 'b', label: 'b', value: 'b', results: 1 },
+            { id: 'c', label: 'c', value: 'c', results: 1, values: [{ id: 'd', label: 'd', value: 'd', results: 1 }] }
           ]
         },
         {
@@ -36,15 +36,34 @@ describe('FiltersForm', () => {
           type: 'multiselect',
           content: 'thesauri1',
           options: [
-            { label: 'a', value: 'a' },
-            { label: 'b', value: 'b' },
-            { label: 'c', value: 'c', values: [{ label: 'd', value: 'd' }] }
+            { id: 'a', label: 'a', value: 'a', results: 1 },
+            { id: 'b', label: 'b', value: 'b', results: 1 },
+            { id: 'c', label: 'c', value: 'c', values: [{ id: 'd', label: 'd', value: 'd', results: 1 }], results: 1 }
           ]
         }
       ]),
       documentTypes: Immutable({}),
       templates: Immutable([]),
-      aggregations: Immutable({}),
+      aggregations: Immutable({
+        all: {
+          select: {
+            buckets: [
+              { key: 'a', filtered: { doc_count: 1 } },
+              { key: 'b', filtered: { doc_count: 1 } },
+              { key: 'c', filtered: { doc_count: 1 } },
+              { key: 'd', filtered: { doc_count: 1 } }
+            ]
+          },
+          multiselect: {
+            buckets: [
+              { key: 'a', filtered: { doc_count: 1 } },
+              { key: 'b', filtered: { doc_count: 1 } },
+              { key: 'c', filtered: { doc_count: 1 } },
+              { key: 'd', filtered: { doc_count: 1 } }
+            ]
+          }
+        }
+      }),
       search: { searchTerm: 'Batman' },
       storeKey: 'library'
     };

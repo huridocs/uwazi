@@ -4,6 +4,8 @@ import date from 'api/utils/date.js';
 import relationships from 'api/relationships/relationships';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
+import path from 'path';
+import { uploadDocumentsPath } from 'api/config/paths';
 
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
@@ -311,8 +313,17 @@ export default {
 
   deleteFiles(deletedDocs) {
     let filesToDelete = deletedDocs
-    .filter(d => d.file)
-    .map(doc => `./uploaded_documents/${doc.file.filename}`);
+    .reduce((paths, doc) => {
+      if (doc.file) {
+        paths.push(path.normalize(`${uploadDocumentsPath}/${doc.file.filename}`));
+      }
+
+      if (doc.attachments) {
+        doc.attachments.forEach(file => paths.push(path.normalize(`${uploadDocumentsPath}/${file.filename}`)));
+      }
+
+      return paths;
+    }, []);
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
     return deleteFiles(filesToDelete)
     .catch((error) => {
@@ -361,7 +372,7 @@ export default {
     .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
-  deleteEntityFromMetadata(sahredId, propertyContent) {
+  deleteEntityFromMetadata(sharedId, propertyContent) {
     return templates.get({ 'properties.content': propertyContent })
     .then((allTemplates) => {
       const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
@@ -372,7 +383,7 @@ export default {
       selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
         const p = {};
-        p[`metadata.${property.name}`] = sahredId;
+        p[`metadata.${property.name}`] = sharedId;
         selectChanges[`metadata.${property.name}`] = '';
         return p;
       });
@@ -382,8 +393,8 @@ export default {
       multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
         const p = {};
-        p[`metadata.${property.name}`] = sahredId;
-        multiSelectChanges[`metadata.${property.name}`] = sahredId;
+        p[`metadata.${property.name}`] = sharedId;
+        multiSelectChanges[`metadata.${property.name}`] = sharedId;
         return p;
       });
 

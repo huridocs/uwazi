@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Customisation should render Customisation component 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Customisation
+  </div>
+  <div
+    className="panel-body"
+  />
+  <Connect(Form)
+    model="settings.settings"
+    onSubmit={[Function]}
+  >
+    <div
+      className="form-group"
+    >
+      <Modeled(Connect(Field))
+        model=".customCSS"
+      >
+        <label
+          className="form-group-label"
+          htmlFor="custom_css"
+        >
+          Custom CSS
+          <textarea
+            className="form-control"
+            cols="100"
+            id="custom_css"
+            rows="30"
+          />
+        </label>
+      </Modeled(Connect(Field))>
+      <button
+        className="btn btn-success"
+        type="submit"
+      >
+        Update
+      </button>
+    </div>
+  </Connect(Form)>
+</div>
+`;

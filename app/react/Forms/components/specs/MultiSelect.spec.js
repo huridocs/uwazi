@@ -37,14 +37,16 @@ describe('MultiSelect', () => {
     render();
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
-    expect(optionElements.at(3).props().value).toBe('option1');
+    expect(optionElements.at(0).props().value).toBe('option1');
     expect(optionElements.at(4).props().value).toBe('option2');
+    expect(optionElements.at(2).props().value).toBe('group-option1');
+    expect(optionElements.at(3).props().value).toBe('group-option2');
   });
 
   describe('when checking an option', () => {
     it('should call onChange with the new value', () => {
       render();
-      component.find('input[type="checkbox"]').at(3).simulate('change');
+      component.find('input[type="checkbox"]').at(0).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option1']);
     });
 
