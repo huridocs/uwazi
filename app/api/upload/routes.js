@@ -6,7 +6,6 @@ import entities from 'api/entities';
 import fs from 'fs';
 import languages from 'shared/languages';
 import logger from 'shared/logger';
-import path from 'path';
 import relationships from 'api/relationships';
 
 import { uploadDocumentsPath } from '../config/paths';
