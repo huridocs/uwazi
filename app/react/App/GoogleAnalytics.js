@@ -1,7 +1,8 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {isClient} from 'app/utils';
+import React, { Component } from 'react';
+
+import { isClient } from 'app/utils';
 
 export function trackPage() {
   if (isClient && window.ga) {
@@ -10,7 +11,6 @@ export function trackPage() {
 }
 
 export class GoogleAnalytics extends Component {
-
   constructor(props) {
     super(props);
     if (!props.analyticsTrackingId || !isClient) {
@@ -27,15 +27,15 @@ export class GoogleAnalytics extends Component {
     if (!this.props.analyticsTrackingId) {
       return false;
     }
-    return <script async src='https://www.google-analytics.com/analytics.js'></script>;
+    return <script async src="https://www.google-analytics.com/analytics.js" />;
   }
 }
 
 GoogleAnalytics.propTypes = {
-  analyticsTrackingId: PropTypes.string
+  analyticsTrackingId: PropTypes.string.isRequired
 };
 
-export function mapStateToProps({settings}) {
+export function mapStateToProps({ settings }) {
   return {
     analyticsTrackingId: settings.collection.get('analyticsTrackingId')
   };
