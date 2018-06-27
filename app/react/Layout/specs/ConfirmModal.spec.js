@@ -29,6 +29,9 @@ describe('ConfirmModal', () => {
       render();
       component.find('.cancel-button').simulate('click');
       expect(props.onCancel).toHaveBeenCalled();
+
+      component.find('.confirm-button').simulate('click');
+      expect(props.onAccept).toHaveBeenCalled();
     });
   });
 });

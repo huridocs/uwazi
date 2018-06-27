@@ -13,7 +13,7 @@ class ConfirmModal extends Component {
         </Modal.Body>
 
         <Modal.Footer>
-          <button type="button" className="btn btn-default cancel-button" onClick={() => {}}>Cancel</button>
+          <button type="button" className="btn btn-default cancel-button" onClick={this.props.onCancel}>Cancel</button>
           <button type="button" className={`btn confirm-button btn-${this.props.type}`} onClick={this.props.onAccept}>Accept</button>
         </Modal.Footer>
 
