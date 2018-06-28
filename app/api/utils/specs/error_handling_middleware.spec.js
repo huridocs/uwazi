@@ -1,4 +1,5 @@
 import middleware from '../error_handling_middleware.js';
+import errorLog from '../../log/errorLog';
 
 describe('Error handling middleware', function () {
   let next;
@@ -8,6 +9,7 @@ describe('Error handling middleware', function () {
   beforeEach(() => {
     next = jasmine.createSpy('next');
     res = {json: jasmine.createSpy('json'), status: jasmine.createSpy('status')};
+    spyOn(errorLog, 'error'); //just to avoid annoying console output
   });
 
   it('should call next', () => {

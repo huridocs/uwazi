@@ -9,6 +9,7 @@ import search from 'api/search/search';
 import fixtures, { entityId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
+import errorLog from '../../log/errorLog';
 
 describe('upload routes', () => {
   let routes;
@@ -33,6 +34,7 @@ describe('upload routes', () => {
     req = { language: 'es', user: 'admin', headers: {}, body: { document: 'id' }, files: [file], io };
 
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    spyOn(errorLog, 'error'); //just to avoid annoying console output
   });
 
   afterAll((done) => {
