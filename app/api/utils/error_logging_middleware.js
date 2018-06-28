@@ -1,4 +1,4 @@
-import errorLog from 'api/log//errorLog';
+import errorLog from 'api/log/errorLog';
 
 export default function (err, req, res, next) {
   let result = err;

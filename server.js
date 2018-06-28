@@ -47,6 +47,21 @@ const port = ports[app.get('env')];
 var error_logging_middleware = require('./app/api/utils/error_logging_middleware.js');
 app.use(error_logging_middleware);
 
+var errorLog = require('./app/api/log/errorLog.js').createErrorLog();
+
+process.on('unhandledRejection', err => {
+  let result = err;
+  if (err instanceof Error) {
+    result = err.stack.split('\n');
+  }
+
+  if (err.code) {
+    result = err.message;
+  }
+
+  errorLog.error(result);
+});
+
 var mongoose = require('mongoose');
 mongoose.Promise = Promise;
 

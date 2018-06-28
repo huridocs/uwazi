@@ -1,6 +1,8 @@
 export default function formatMessage(info, instanceName) {
-  const message = (typeof info.message === 'object')
-    ? info.message.join('\n') : info.message;
+  let message = info.message;
+  if (info.message && info.message.join) {
+    message = info.message.join('\n');
+  }
 
   const result = `${info.timestamp} [${instanceName}] ${message}`;
 

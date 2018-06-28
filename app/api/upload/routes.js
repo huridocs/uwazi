@@ -1,4 +1,4 @@
-import debugLog from 'api/log//debugLog';
+import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
 import fs from 'fs';
 import path from 'path';
