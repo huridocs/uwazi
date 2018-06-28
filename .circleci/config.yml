@@ -8,7 +8,7 @@ jobs:
     docker:
       - image: circleci/node:8.11.3-browsers
       - image: circleci/mongo:3.4-ram
-      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
+      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
         environment:
           xpack.security.enabled: false
 
@@ -24,14 +24,6 @@ jobs:
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
-      # - run: |
-      #     if [[ ! -e elasticsearch-5.5.1 ]]; then
-      #       wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.tar.gz
-      #       tar -xvf elasticsearch-5.5.1.tar.gz
-      #     fi
-      # - run:
-      #     command: elasticsearch-5.5.1/bin/elasticsearch
-      #     background: true
       - run:
           command: node_modules/.bin/webpack
           background: true
