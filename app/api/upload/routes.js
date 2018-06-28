@@ -1,5 +1,5 @@
-import debugLog from 'shared/debugLog';
-import errorLog from 'shared/errorLog';
+import debugLog from 'api/log//debugLog';
+import errorLog from 'api/log/errorLog';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';

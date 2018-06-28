@@ -17,17 +17,17 @@ describe('errorLog', () => {
 
     anErrorLog.error('a message');
 
-    let calledArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
-    calledArgs = Object.getOwnPropertySymbols(calledArgs).map(s => calledArgs[s]);
+    let fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
+    fileArgs = Object.getOwnPropertySymbols(fileArgs).map(s => fileArgs[s]);
 
-    expect(calledArgs[1]).toContain('a message');
-    expect(calledArgs[1]).toContain('[localhost]');
+    expect(fileArgs[1]).toContain('a message');
+    expect(fileArgs[1]).toContain('[localhost]');
 
-    calledArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
-    calledArgs = Object.getOwnPropertySymbols(calledArgs).map(s => calledArgs[s]);
+    let consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
+    consoleArgs = Object.getOwnPropertySymbols(consoleArgs).map(s => consoleArgs[s]);
 
-    expect(calledArgs[1]).toContain('a message');
-    expect(calledArgs[1]).toContain('[localhost]');
+    expect(consoleArgs[1]).toContain('a message');
+    expect(consoleArgs[1]).toContain('[localhost]');
   });
 
   it('should overwritte logs path from env vars', () => {

@@ -4,7 +4,7 @@ import { match, RouterContext } from 'react-router';
 import { renderToString } from 'react-dom/server';
 import Helmet from 'react-helmet';
 import React from 'react';
-import errorLog from 'shared/errorLog';
+import errorLog from 'api/log/errorLog';
 
 import { I18NUtils, t, Translate } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';

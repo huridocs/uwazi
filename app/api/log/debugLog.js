@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-const LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : `${__dirname}/../../log`;
+const LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : './log';
 
 export default winston.createLogger({
   transports: [

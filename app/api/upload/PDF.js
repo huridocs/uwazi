@@ -3,7 +3,7 @@ import PDFJS from 'pdfjs-dist';
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
-import debugLog from 'shared/debugLog';
+import debugLog from 'api/log//debugLog';
 
 const basename = (filepath = '') => {
   let finalPath = filepath;
