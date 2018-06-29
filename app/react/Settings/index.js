@@ -12,6 +12,8 @@ import TranslationsList from './components/TranslationsList';
 import FiltersForm from './components/FiltersForm';
 import Customisation from './components/Customisation';
 
+export { default as CustomUploads } from './components/CustomUploads';
+
 export {
   Settings,
   SettingsAPI,

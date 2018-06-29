@@ -1,0 +1,164 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CustomUploads should render CustomUploads component with uploaded files 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Custom Uploads
+  </div>
+  <div
+    className="panel-body custom-uploads"
+  >
+    <t
+      className="upload-box"
+      disableClick={false}
+      disablePreview={false}
+      disabled={false}
+      maxSize={Infinity}
+      minSize={0}
+      multiple={true}
+      onDrop={[Function]}
+      preventDropOnDocument={true}
+    >
+      <div
+        className="upload-box_wrapper"
+      >
+        <i
+          className="fa fa-upload"
+        />
+        <button
+          className="upload-box_link"
+        >
+          Browse files to upload
+        </button>
+        <span>
+           or drop your files here.
+        </span>
+      </div>
+      <div
+        className="protip"
+      >
+        <i
+          className="fa fa-lightbulb-o"
+        />
+      </div>
+    </t>
+    <ul>
+      <li
+        key="file1"
+      >
+        <Thumbnail
+          alt=""
+          file="/uploaded_documents/file1"
+        />
+        <div
+          className="info"
+        >
+          URL:
+          <br />
+          <span
+            className="thumbnail-url"
+          >
+            /uploaded_documents/file1
+          </span>
+          <ConfirmButton
+            action={[Function]}
+            message="Are you sure you want to continue?"
+            title="Confirm action"
+          >
+            Delete
+          </ConfirmButton>
+        </div>
+      </li>
+      <li
+        key="file2"
+      >
+        <Thumbnail
+          alt=""
+          file="/uploaded_documents/file2"
+        />
+        <div
+          className="info"
+        >
+          URL:
+          <br />
+          <span
+            className="thumbnail-url"
+          >
+            /uploaded_documents/file2
+          </span>
+          <ConfirmButton
+            action={[Function]}
+            message="Are you sure you want to continue?"
+            title="Confirm action"
+          >
+            Delete
+          </ConfirmButton>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`CustomUploads when upload on progress should render on progress feedback 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Custom Uploads
+  </div>
+  <div
+    className="panel-body custom-uploads"
+  >
+    <t
+      className="upload-box"
+      disableClick={false}
+      disablePreview={false}
+      disabled={false}
+      maxSize={Infinity}
+      minSize={0}
+      multiple={true}
+      onDrop={[Function]}
+      preventDropOnDocument={true}
+    >
+      <div
+        className="upload-box_wrapper"
+      >
+        <i
+          className="fa fa-upload"
+        />
+        <button
+          className="upload-box_link"
+        >
+          Browse files to upload
+        </button>
+        <span>
+           or drop your files here.
+        </span>
+      </div>
+      <div
+        className="protip"
+      >
+        <i
+          className="fa fa-lightbulb-o"
+        />
+      </div>
+    </t>
+    <p
+      className="uploading"
+    >
+      <i
+        className="fas fa-spinner fa-spin"
+      />
+       Uploading ...
+    </p>
+    <ul />
+  </div>
+</div>
+`;

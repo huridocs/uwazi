@@ -1,7 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
 
-import {GoogleAnalytics, trackPage} from '../GoogleAnalytics';
+import { shallow } from 'enzyme';
+
+import { GoogleAnalytics, trackPage } from '../GoogleAnalytics';
 
 describe('GoogleAnalytics', () => {
   let component;
@@ -13,13 +14,13 @@ describe('GoogleAnalytics', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<GoogleAnalytics {...props} />);
   };
 
   it('should define a ga method', () => {
     render();
-    component.instance().constructor(props);
+    // component.instance().constructor(props);
     expect(window.ga).toEqual(jasmine.any(Function));
   });
 
