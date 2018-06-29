@@ -18,7 +18,8 @@ import {
   ThesaurisList,
   TranslationsList,
   FiltersForm,
-  Customisation
+  Customisation,
+  CustomUploads
 } from 'app/Settings';
 
 import Pages from 'app/Pages/Pages';
@@ -109,6 +110,7 @@ const routes = (
       </Route>
       <Route path="filters" component={FiltersForm} />
       <Route path="customisation" component={Customisation} />
+      <Route path="custom-uploads" component={CustomUploads} />
     </Route>
     <Route path="library" component={Library} onEnter={onEnter}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>

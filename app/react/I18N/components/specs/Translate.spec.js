@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Translate, mapStateToProps } from '../Translate';
 
-fdescribe('Translate', () => {
+describe('Translate', () => {
   let component;
   let props;
 
