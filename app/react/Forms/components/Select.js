@@ -13,7 +13,7 @@ export default class Select extends Component {
     const disbaled = Boolean(required);
     return (
       <select className="form-control" onChange={this.props.onChange} value={this.props.value}>
-        <option disbaled={disbaled.toString()} value="" >{placeholder}</option>;
+        <option disbaled={disbaled.toString()} value={undefined} >{placeholder}</option>;
         {sortedOptions.map((option, index) => {
           const key = option._id || option.id || index;
           if (option.options) {
