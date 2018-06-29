@@ -259,12 +259,37 @@
       display: flex;
 
       div.info {
-        margin-left: 15px;
+        display: flex;
+        flex-direction: column;
+        height: 80px;
+        width: calc(100% - 80px);
+        padding-left: 15px;
+        align-items: flex-start;
+        justify-content: space-between;
 
         span {
-          font-style: italic;
           font-weight: bold;
+          font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+          background-color: $c-grey-lighten;
+          padding: 4px 8px;
+          border-radius: 3px;
+          display: block;
+          max-width: 100%;
+          overflow-x: auto;
+          white-space: nowrap;
         }
+      }
+    }
+    button {
+      padding: 1px 5px;
+      font-size: 12px;
+      line-height: 1.5;
+      border-radius: 3px;
+      color: #fff;
+      background-color: #d9534f;
+      border: 1px solid #d43f3a;
+      &:hover {
+        background-color: #cd2d28;
       }
     }
   }
@@ -272,6 +297,7 @@
   .thumbnail {
     width: 80px;
     height: 80px;
+    min-width: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
