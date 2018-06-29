@@ -152,7 +152,6 @@ export default class MultiSelect extends Component {
 
   renderGroup(group, index) {
     const { prefix } = this.props;
-    const _group = Object.assign({}, group, { results: `${group.results}` });
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
@@ -163,7 +162,7 @@ export default class MultiSelect extends Component {
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
           />
-          {this.label(_group)}
+          {this.label(group)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
