@@ -6,9 +6,7 @@ import multer from 'multer';
 
 import ID from 'shared/uniqueID';
 import entities from 'api/entities';
-import fs from 'fs';
 import languages from 'shared/languages';
-import logger from 'shared/logger';
 import relationships from 'api/relationships';
 
 import { uploadDocumentsPath } from '../config/paths';
