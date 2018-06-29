@@ -1,11 +1,12 @@
+import debugLog from 'api/log/debugLog';
+import errorLog from 'api/log/errorLog';
+import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 
 import ID from 'shared/uniqueID';
 import entities from 'api/entities';
-import fs from 'fs';
 import languages from 'shared/languages';
-import logger from 'shared/logger';
 import relationships from 'api/relationships';
 
 import { uploadDocumentsPath } from '../config/paths';
@@ -35,32 +36,35 @@ export default (app) => {
 
   const uploadProcess = (req, res, allLanguages = true) => getDocuments(req.body.document, allLanguages)
   .then((_docs) => {
-    logger.debug('Upload Process for', _docs.map(d => d._id).toString());
-    logger.debug('Original name', fs.existsSync(req.files[0].originalname));
-    logger.debug('File exists', fs.existsSync(req.files[0].path));
+    debugLog.debug(`Upload Process for ${_docs[0]._id.toString()}`);
+    debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
+    debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
+
     const docs = _docs.map((doc) => {
       doc.file = req.files[0];
       doc.uploaded = true;
       return doc;
     });
+
     return entities.saveMultiple(docs);
   })
   .then(() => {
-    logger.debug('Documents saved as uploaded for:', req.files[0].originalname);
+    debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
     res.json(req.files[0]);
 
     const file = req.files[0].destination + req.files[0].filename;
 
     const sessionSockets = req.io.getCurrentSessionSockets();
     sessionSockets.emit('conversionStart', req.body.document);
-    logger.debug('Starting conversion of:', req.files[0].originalname);
+    debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
     return Promise.all([
         new PDF(file, req.files[0].originalname).convert(),
         getDocuments(req.body.document, allLanguages)
     ]);
   })
   .then(([conversion, _docs]) => {
-    logger.debug('Conversion succeeed for:', req.files[0].originalname);
+    debugLog.debug(`Conversion succeeed for: ${req.files[0].originalname}`);
+
     const docs = _docs.map((doc) => {
       doc.processed = true;
       doc.fullText = conversion.fullText;
@@ -68,13 +72,17 @@ export default (app) => {
       doc.toc = [];
       return doc;
     });
-    logger.debug('Saving documents');
+
+    debugLog.debug('Saving documents');
     return entities.saveMultiple(docs).then(() => {
       const sessionSockets = req.io.getCurrentSessionSockets();
       sessionSockets.emit('documentProcessed', req.body.document);
     });
   })
   .catch((err) => {
+    errorLog.error(err.error);
+    debugLog.debug(err.error);
+
     getDocuments(req.body.document, allLanguages)
     .then((_docs) => {
       const docs = _docs.map((doc) => {
@@ -86,7 +94,6 @@ export default (app) => {
 
     const sessionSockets = req.io.getCurrentSessionSockets();
     sessionSockets.emit('conversionFailed', req.body.document);
-    logger.error(err);
   });
 
   app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));
