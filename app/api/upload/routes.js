@@ -3,20 +3,25 @@ import errorLog from 'api/log/errorLog';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
+
 import ID from 'shared/uniqueID';
-import languages from 'shared/languages';
 import entities from 'api/entities';
+import fs from 'fs';
+import languages from 'shared/languages';
+import logger from 'shared/logger';
 import relationships from 'api/relationships';
+
+import { uploadDocumentsPath } from '../config/paths';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
-import { uploadDocumentsPath } from '../config/paths';
+import uploads from './uploads';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, path.normalize(`${uploadDocumentsPath}/`));
   },
   filename(req, file, cb) {
-    cb(null, `${Date.now() + ID()}.pdf`);
+    cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
 });
 
@@ -94,6 +99,27 @@ export default (app) => {
   });
 
   app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));
+
+  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
+    uploads.save(req.files[0])
+    .then((saved) => {
+      res.json(saved);
+    });
+  });
+
+  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
+    uploads.get()
+    .then((result) => {
+      res.json(result);
+    });
+  });
+
+  app.delete('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
+    uploads.delete(req.query._id)
+    .then((result) => {
+      res.json(result);
+    });
+  });
 
   app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => entities.getById(req.body.document)
   .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
