@@ -40,7 +40,9 @@
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch -i",
     "test": "node ./node_modules/.bin/jest",
     "e2e": "node nightmare/nightmare_tests.js",
-    "eslint": "./node_modules/.bin/eslint app --quiet"
+    "eslint": "./node_modules/.bin/eslint app --quiet",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
@@ -139,7 +141,8 @@
     "validate.js": "0.9.0",
     "winston": "3.0.0",
     "world-countries": "2.0.0",
-    "wrap-range-text": "^1.0.1"
+    "wrap-range-text": "^1.0.1",
+    "snyk": "^1.85.0"
   },
   "devDependencies": {
     "assets-webpack-plugin": "Kronuz/assets-webpack-plugin",
@@ -197,5 +200,6 @@
     "webpack-dev-middleware": "2.0.4",
     "webpack-hot-middleware": "^2.21.0",
     "whatwg-fetch": "^0.10.1"
-  }
+  },
+  "snyk": true
 }
