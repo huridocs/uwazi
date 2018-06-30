@@ -44,3 +44,5 @@ const clock = {
   tick: jest.advanceTimersByTime
 };
 jasmine.clock = () => clock;
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
