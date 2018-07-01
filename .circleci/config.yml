@@ -1,9 +1,8 @@
 version: 2.0
 parallelism: 3
-working_directory: ~/huridocs/uwazi
-
 jobs:
   unit_tests:
+    working_directory: ~/huridocs/uwazi
     environment:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
     docker:
@@ -42,6 +41,7 @@ jobs:
       - run: ./node_modules/.bin/jest -i --coverage #run tests
       - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
   eslint:
+    working_directory: ~/huridocs/uwazi
     environment:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
     docker:
@@ -66,6 +66,7 @@ jobs:
       # run tests!
       - run: ./node_modules/.bin/eslint app --quiet #eslint
   e2e_tests:
+    working_directory: ~/huridocs/uwazi
     docker:
       - image: circleci/node:8.11.3-browsers
       - image: circleci/mongo:3.4
@@ -89,9 +90,7 @@ jobs:
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
-      - run:
-          command: node_modules/.bin/webpack
-          background: true
+      - run: node_modules/.bin/webpack
       - save_cache:
           paths:
             - node_modules
