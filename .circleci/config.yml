@@ -1,5 +1,6 @@
 version: 2.0
 parallelism: 3
+working_directory: ~/huridocs/uwazi
 jobs:
   unit_tests:
     environment:
@@ -27,7 +28,7 @@ jobs:
       - run: yarn install
       - save_cache:
           paths:
-            - node_modules
+            - ./node_modules
             - ~/.mongodb-binaries
           key: dependencies-{{ checksum "package.json" }}
 
@@ -57,7 +58,7 @@ jobs:
       - run: yarn install
       - save_cache:
           paths:
-            - node_modules
+            - ./node_modules
             - ~/.mongodb-binaries
           key: dependencies-{{ checksum "package.json" }}
 
@@ -90,7 +91,7 @@ jobs:
       - run: node_modules/.bin/webpack
       - save_cache:
           paths:
-            - node_modules
+            - ./node_modules
             - ~/.mongodb-binaries
           key: dependencies-{{ checksum "package.json" }}
 
