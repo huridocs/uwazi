@@ -1,6 +1,7 @@
 version: 2.0
 parallelism: 3
 working_directory: ~/huridocs/uwazi
+
 jobs:
   unit_tests:
     environment:
@@ -29,7 +30,6 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-            - elasticsearch-5.5.1
             - ~/.mongodb-binaries
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -60,7 +60,6 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-            - elasticsearch-5.5.1
             - ~/.mongodb-binaries
           key: v1-dependencies-{{ checksum "package.json" }}
 
@@ -96,7 +95,6 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-            - elasticsearch-5.5.1
             - ~/.mongodb-binaries
           key: v1-dependencies-{{ checksum "package.json" }}
 
