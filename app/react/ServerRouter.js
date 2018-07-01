@@ -4,13 +4,13 @@ import { match, RouterContext } from 'react-router';
 import { renderToString } from 'react-dom/server';
 import Helmet from 'react-helmet';
 import React from 'react';
+import errorLog from 'api/log/errorLog';
 
-import { I18NUtils } from 'app/I18N';
+import { I18NUtils, t, Translate } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import fs from 'fs';
-import { t, Translate } from 'app/I18N';
 
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
@@ -20,6 +20,7 @@ import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
 import store from './store';
 import translationsApi from '../api/i18n/translations';
+
 
 let assets = {};
 
@@ -173,11 +174,11 @@ function handleRoute(res, renderProps, req) {
     })
     .catch((e) => {
       let error = e;
-      // console.trace(error); // eslint-disable-line
+
       if (error instanceof Error) {
         error = error.stack.split('\n');
       }
-      console.log(error);
+      errorLog.error(error);
     });
   }
 

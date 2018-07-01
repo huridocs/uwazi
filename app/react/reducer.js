@@ -40,6 +40,7 @@ export default combineReducers({
   thesauri,
   entityView,
   thesauris: createReducer('thesauris', []),
+  customUploads: createReducer('customUploads', []),
   dictionaries: createReducer('dictionaries', []),
   relationTypes: createReducer('relationTypes', []),
   relationType: modelReducer('relationType', { name: '' }),
