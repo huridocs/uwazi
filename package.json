@@ -40,7 +40,9 @@
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch -i",
     "test": "node ./node_modules/.bin/jest",
     "e2e": "node nightmare/nightmare_tests.js",
-    "eslint": "./node_modules/.bin/eslint app --quiet"
+    "eslint": "./node_modules/.bin/eslint app --quiet",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
@@ -71,13 +73,13 @@
     "express": "^4.13.3",
     "express-session": "^1.12.1",
     "express-socket.io-session": "^1.3.1",
-    "express-winston": "^2.5.1",
     "extract-text-webpack-plugin": "3.0.2",
     "fg-loadcss": "2.0.1",
     "filesize": "^3.3.0",
     "font-awesome": "^4.5.0",
     "franc": "^3.1.0",
     "get-youtube-id": "^1.0.0",
+    "graylog2": "^0.2.1",
     "history": "4.7.2",
     "html-to-react": "^1.3.3",
     "immutable": "^3.7.6",
@@ -137,14 +139,16 @@
     "swagger-jsdoc": "^1.9.6",
     "tiny-cookie": "2.1.1",
     "validate.js": "0.9.0",
-    "winston": "^2.4.2",
+    "winston": "3.0.0",
     "world-countries": "2.0.0",
-    "wrap-range-text": "^1.0.1"
+    "wrap-range-text": "^1.0.1",
+    "snyk": "^1.85.0"
   },
   "devDependencies": {
     "assets-webpack-plugin": "Kronuz/assets-webpack-plugin",
     "babel-jest": "^22.4.0",
     "babel-plugin-react-transform": "3.0.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.23.0",
     "compression-webpack-plugin": "^1.0.0",
     "copy-webpack-plugin": "^4.2.3",
@@ -196,5 +200,6 @@
     "webpack-dev-middleware": "2.0.4",
     "webpack-hot-middleware": "^2.21.0",
     "whatwg-fetch": "^0.10.1"
-  }
+  },
+  "snyk": true
 }
