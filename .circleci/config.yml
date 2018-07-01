@@ -23,7 +23,7 @@ jobs:
           keys:
           - v1-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
-          - dependencies-
+          - v1-yarn-dependencies-
 
       - run: yarn install
       - save_cache:
@@ -50,7 +50,7 @@ jobs:
           keys:
           - v1-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
-          - dependencies-
+          - v1-yarn-dependencies-
 
       - run: yarn install
       - save_cache:
@@ -81,7 +81,7 @@ jobs:
           keys:
           - v1-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
-          - dependencies-
+          - v1-yarn-dependencies-
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
