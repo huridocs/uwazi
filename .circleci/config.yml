@@ -1,13 +1,57 @@
 version: 2.0
+parallelism: 2
+working_directory: ~/huridocs/uwazi
 jobs:
-  build:
-    working_directory: ~/huridocs/uwazi
-    parallelism: 1
+  unit_tests:
+
     environment:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
     docker:
       - image: circleci/node:8.11.3-browsers
-      - image: circleci/mongo:3.4-ram
+      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+        environment:
+          - discovery.type=single-node
+          - http.host=0.0.0.0
+          - transport.host=127.0.0.1
+          - xpack.security.enabled=false
+          - ES_JAVA_OPTS=-Xms750m -Xmx750m
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+            - elasticsearch-5.5.1
+            - ~/.mongodb-binaries
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      # run tests!
+      - run: ./node_modules/.bin/eslint app --quiet #eslint
+      - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
+      - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
+      - run: ./node_modules/.bin/jest -i --coverage #run tests
+      - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
+      - run: yarn blank-state
+      - run:
+          command: npm run dev-server
+          background: true
+      - run: sleep 15 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:3000/ #check if server is up
+      - run: yarn e2e #run e2e
+  e2e_tests:
+    docker:
+      - image: circleci/node:8.11.3-browsers
+      - image: circleci/mongo:3.4
       - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
         environment:
           - discovery.type=single-node
@@ -38,17 +82,17 @@ jobs:
             - ~/.mongodb-binaries
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - run: chmod +x ./cc-test-reporter
       # run tests!
-      - run: ./node_modules/.bin/eslint app --quiet #eslint
       - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
-      - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
-      - run: ./node_modules/.bin/jest -i --coverage #run tests
-      - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
       - run: yarn blank-state
       - run:
           command: npm run dev-server
           background: true
       - run: sleep 15 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:3000/ #check if server is up
       - run: yarn e2e #run e2e
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "unit_tests"
+      - "e2e_tests"
