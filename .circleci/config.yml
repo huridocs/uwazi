@@ -21,7 +21,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - yarn-dependencies-{{ checksum "package.json" }}
+          - v1-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - dependencies-
 
@@ -30,7 +30,7 @@ jobs:
           paths:
             - ./node_modules
             - ~/.mongodb-binaries
-          key: yarn-dependencies-{{ checksum "package.json" }}
+          key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
@@ -52,7 +52,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - yarn-dependencies-{{ checksum "package.json" }}
+          - v1-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - dependencies-
 
@@ -61,7 +61,7 @@ jobs:
           paths:
             - ./node_modules
             - ~/.mongodb-binaries
-          key: yarn-dependencies-{{ checksum "package.json" }}
+          key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       # run tests!
       - run: ./node_modules/.bin/eslint app --quiet #eslint
@@ -84,7 +84,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - yarn-dependencies-{{ checksum "package.json" }}
+          - v1-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - dependencies-
 
@@ -95,7 +95,7 @@ jobs:
           paths:
             - ./node_modules
             - ~/.mongodb-binaries
-          key: yarn-dependencies-{{ checksum "package.json" }}
+          key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       # run tests!
       - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
