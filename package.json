@@ -41,8 +41,7 @@
     "test": "node ./node_modules/.bin/jest",
     "e2e": "node nightmare/nightmare_tests.js",
     "eslint": "./node_modules/.bin/eslint app --quiet",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",

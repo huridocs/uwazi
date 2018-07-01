@@ -1,16 +1,12 @@
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
-let getInnerText = (selector) => {
-  return document.querySelector(selector).innerText;
-};
+const getInnerText = selector => document.querySelector(selector).innerText;
 
-let getValue = (selector) => {
-  return document.querySelector(selector).value;
-};
+const getValue = selector => document.querySelector(selector).value;
 
 describe('attachments path', () => {
   describe('login', () => {
@@ -42,7 +38,7 @@ describe('attachments path', () => {
       .waitToClick(selectors.documentView.sidePanelInfoTab)
       .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
       .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
-      .then(attachmentName => {
+      .then((attachmentName) => {
         expect(attachmentName).toBe('Batman - Wikipedia.pdf');
         done();
       })
@@ -54,7 +50,7 @@ describe('attachments path', () => {
       .waitToClick(selectors.documentView.sidePanelFirstAttachmentEditTitleButton)
       .wait(selectors.documentView.attachmentFormInput)
       .evaluate(getValue, selectors.documentView.attachmentFormInput)
-      .then(inputValue => {
+      .then((inputValue) => {
         expect(inputValue).toBe('Batman - Wikipedia.pdf');
         done();
       })
@@ -68,7 +64,7 @@ describe('attachments path', () => {
       .waitToClick(selectors.documentView.attachmentFormSubmit)
       .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
       .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
-      .then(attachmentName => {
+      .then((attachmentName) => {
         expect(attachmentName).toBe('Batman - the whole story.pdf');
         done();
       })
@@ -82,14 +78,14 @@ describe('attachments path', () => {
       .type(selectors.documentView.attachmentFormInput, '\u0008\u0008\u0008')
       .insert(selectors.documentView.attachmentFormInput, 'jpg')
       .evaluate(getValue, selectors.documentView.attachmentFormInput)
-      .then(inputValue => {
+      .then((inputValue) => {
         expect(inputValue).toEqual('Batman - the whole story.jpg');
 
         return nightmare
         .waitToClick(selectors.documentView.attachmentFormCancel)
         .wait(selectors.documentView.sidePanelFirstAttachmentTitle)
         .evaluate(getInnerText, selectors.documentView.sidePanelFirstAttachmentTitle)
-        .then(attachmentName => {
+        .then((attachmentName) => {
           expect(attachmentName).toBe('Batman - the whole story.pdf');
           done();
         });
@@ -106,7 +102,7 @@ describe('attachments path', () => {
       .gotoLibrary()
       .openEntityFromLibrary(entityTitle)
       .getInnerText(selectors.entityView.contentHeader)
-      .then(headerText => {
+      .then((headerText) => {
         expect(headerText).toContain(entityTitle);
         done();
       })
@@ -117,7 +113,7 @@ describe('attachments path', () => {
       nightmare
       .wait(selectors.entityView.firstAttachmentTitle)
       .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
-      .then(attachmentName => {
+      .then((attachmentName) => {
         expect(attachmentName).toBe('ManBatCv3.jpg');
         done();
       })
@@ -129,7 +125,7 @@ describe('attachments path', () => {
       .waitToClick(selectors.entityView.firstAttachmentEditTitleButton)
       .wait(selectors.entityView.attachmentFormInput)
       .evaluate(getValue, selectors.entityView.attachmentFormInput)
-      .then(inputValue => {
+      .then((inputValue) => {
         expect(inputValue).toBe('ManBatCv3.jpg');
         done();
       })
@@ -143,7 +139,7 @@ describe('attachments path', () => {
       .waitToClick(selectors.entityView.attachmentFormSubmit)
       .wait(selectors.entityView.firstAttachmentTitle)
       .evaluate(getInnerText, selectors.entityView.firstAttachmentTitle)
-      .then(attachmentName => {
+      .then((attachmentName) => {
         expect(attachmentName).toBe('Only known picture.jpg');
         done();
       })
