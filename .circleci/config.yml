@@ -35,7 +35,6 @@ jobs:
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
       # run tests!
-      - run: ./node_modules/.bin/eslint app --quiet #eslint
       - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
       - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
       - run: ./node_modules/.bin/jest -i --coverage #run tests
