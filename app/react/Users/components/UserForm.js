@@ -6,6 +6,7 @@ import { notEmpty } from 'app/Metadata/helpers/validator';
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
 import Immutable from 'immutable';
+import { Icon } from 'UI';
 
 class UserForm extends Component {
   static formGroup(key, label, type = 'text') {
@@ -26,11 +27,11 @@ class UserForm extends Component {
     return (
       <div className="settings-footer">
         <I18NLink to={backUrl} className="btn btn-default">
-          <i className="fa fa-arrow-left" />
+          <Icon icon="arrow-left" />
           <span className="btn-label">Back</span>
         </I18NLink>
         <button type="submit" className="btn btn-success save-template">
-          <i className="far fa-save" />
+          <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save')}</span>
         </button>
       </div>
@@ -38,7 +39,11 @@ class UserForm extends Component {
   }
 
   static getClassBasedOnRole(role) {
-    return `fa fa-lg fa-fw fa-times ${role === 'admin' ? 'label-success' : 'label-danger'}`;
+    return `${role === 'admin' ? 'label-success' : 'label-danger'}`;
+  }
+  
+  static getIconBasedOnRole(role) {
+    return `${role === 'admin' ? 'check' : 'times'}`;
   }
 
   static permissions(role, label) {
@@ -50,18 +55,18 @@ class UserForm extends Component {
             {t('System', label)}
           </label>
           <hr />
-          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Upload documents and create entities')}</p>
-          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Delete documents and entities')}</p>
-          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
-          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create connections and references')}</p>
-          <p><i className="fa fa-lg fa-fw fa-check label-success" />&nbsp;{t('System', 'Create a table of contents')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Manage site settings and configuration')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Configure filters')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/edit translations')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create document and entity types')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create dictionaries')}</p>
-          <p><i className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Name connections')}</p>
+          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Upload documents and create entities')}</p>
+          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Delete documents and entities')}</p>
+          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
+          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Create connections and references')}</p>
+          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Create a table of contents')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Manage site settings and configuration')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Configure filters')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/edit translations')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create document and entity types')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create dictionaries')}</p>
+          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Name connections')}</p>
         </div>
       </div>
     );

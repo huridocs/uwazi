@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 
 import { deleteUser } from 'app/Users/actions/actions';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 
 export class UsersList extends Component {
@@ -31,11 +32,11 @@ export class UsersList extends Component {
               <span>{user.get('username')}</span>
               <div className="list-group-item-actions">
                 <I18NLink to={`/settings/users/edit/${user.get('_id')}`} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil-alt" />&nbsp;
+                  <Icon icon="pencil-alt" />&nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <a onClick={this.deleteUser.bind(this, user)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash-alt" />&nbsp;
+                  <Icon icon="trash-alt" />&nbsp;
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
@@ -44,7 +45,7 @@ export class UsersList extends Component {
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/users/new" className="btn btn-success">
-            <i className="fa fa-plus" />
+            <Icon icon="plus" />
             <span className="btn-label">{t('System', 'Add user')}</span>
           </I18NLink>
         </div>
