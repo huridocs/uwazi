@@ -4,6 +4,8 @@ import {
   faArrowRight,
   faAngleLeft,
   faAngleRight,
+  faChevronLeft,
+  faChevronRight,
   faBars,
   faCoffee,
   faTimes,
@@ -11,6 +13,7 @@ import {
   faPowerOff,
   faCog,
   faCloudUploadAlt,
+	faFile,
   faFilePdf,
   faPencilAlt,
   faTrashAlt,
@@ -34,7 +37,9 @@ import {
   faQuestionCircle,
   faLightbulb,
   faClock,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faPaperPlane,
+	faMapMarker
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -42,6 +47,8 @@ export default library.add(
   faArrowRight,
   faAngleLeft,
   faAngleRight,
+  faChevronLeft,
+  faChevronRight,
   faBars,
   faCoffee,
   faTimes,
@@ -49,6 +56,7 @@ export default library.add(
   faPowerOff,
   faCog,
   faCloudUploadAlt,
+	faFile,
   faFilePdf,
   faPencilAlt,
   faTrashAlt,
@@ -72,6 +80,8 @@ export default library.add(
   faQuestionCircle,
   faLightbulb,
   faClock,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faPaperPlane,
+	faMapMarker
 );
 

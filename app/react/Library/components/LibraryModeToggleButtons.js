@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { I18NLink, t } from 'app/I18N';
+import { Icon  } from 'UI';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -13,11 +14,11 @@ export class LibraryModeToggleButtons extends Component {
       <div className="list-view-mode">
         <div className="buttons-group">
           <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
-            <i className="fa fa-th" />
+            <Icon icon="th" />
             <span className="tab-link-tooltip">{t('System', 'List view')}</span>
           </I18NLink>
           <I18NLink to={`library/map${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
-            <i className="fa fa-map-marker" />
+            <Icon icon="map-marker" />
             <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
           </I18NLink>
         </div>

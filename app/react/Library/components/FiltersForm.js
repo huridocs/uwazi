@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Immutable, { is } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Icon  } from 'UI';
 
 import { MultiSelect, DateRange, NestedMultiselect, NumericRange, Switcher } from 'app/ReactReduxForms';
 import { activateFilter } from 'app/Library/actions/filterActions';
@@ -195,7 +196,7 @@ export class FiltersForm extends Component {
           if (activeTypes.size > 0 && fields.length === 0) {
             return (
               <div className="blank-state">
-                <i className="fa fa-times" />
+                <Icon icon="times" />
                 <h4>{t('System', 'No common filters')}</h4>
                 <p>The combination of document and entity types doesn&#39;t have any filters in common.</p>
                 <a href="https://github.com/huridocs/uwazi/wiki/Filter" target="_blank" rel="noopener noreferrer">Learn more</a>

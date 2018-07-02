@@ -24,7 +24,7 @@ function getPngSize(size) {
 function getFaSize(size) {
   switch (size) {
   case 'xs':
-    return '';
+    return 'sm';
   case 'sm':
     return 'lg';
   case 'md':
@@ -34,7 +34,7 @@ function getFaSize(size) {
   case 'xlg':
     return '2x';
   default:
-    return '';
+    return 'sm';
   }
 }
 

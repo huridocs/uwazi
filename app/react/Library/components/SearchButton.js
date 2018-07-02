@@ -7,6 +7,7 @@ import {t} from 'app/I18N';
 import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
 import {wrapDispatch} from 'app/Multireducer';
 import {unselectAllDocuments} from '../actions/libraryActions';
+import { Icon  } from 'UI';
 
 export class SearchButton extends Component {
   render() {
@@ -28,11 +29,11 @@ export class SearchButton extends Component {
     return (
       <a href='#' className={'search-button btn ' + activeClass} onClick={toggle}>
         <div className="searchButton-open">
-          <i className="fa fa-search"></i>
+          <Icon icon="search" />
           <span>{t('System', 'Search')}...</span>
         </div>
         <div className="searchButton-close">
-          <i className="fa fa-chevron-right"></i>
+          <Icon icon="chevron-right" />
         </div>
       </a>
     );
