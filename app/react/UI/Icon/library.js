@@ -26,7 +26,8 @@ import {
   faSearch,
   faFont,
   faSitemap,
-  faInfoCircle
+  faInfoCircle,
+  faCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -56,6 +57,7 @@ export default library.add(
   faSearch,
   faFont,
   faSitemap,
-  faInfoCircle
+  faInfoCircle,
+  faCircle
 );
 
