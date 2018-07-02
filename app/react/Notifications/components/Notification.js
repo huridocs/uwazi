@@ -1,32 +1,30 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {removeNotification} from 'app/Notifications';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { removeNotification } from 'app/Notifications';
 import { Icon } from 'UI';
 
 export class Notification extends Component {
-
   close() {
     this.props.removeNotification(this.props.id);
   }
 
   render() {
-    let type = this.props.type || 'success';
-    let cssClass = 'alert alert-' + type;
+    const type = this.props.type || 'success';
+    const cssClass = `alert alert-${type}`;
     let icon = 'check';
     if (type === 'warning' || type === 'danger') {
       icon = 'exclamation-triangle';
     }
 
     return (
-        <div className={cssClass} onClick={this.close.bind(this)}>
-          <Icon icon={icon} />
-          <span>{this.props.message}</span>
-        </div>
+      <div className={cssClass} onClick={this.close.bind(this)}>
+        <Icon icon={icon} />
+        <span>{this.props.message}</span>
+      </div>
     );
   }
-
 }
 
 Notification.propTypes = {
@@ -37,7 +35,7 @@ Notification.propTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({removeNotification}, dispatch);
+  return bindActionCreators({ removeNotification }, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(Notification);
