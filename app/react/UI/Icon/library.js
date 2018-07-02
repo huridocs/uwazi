@@ -49,7 +49,14 @@ import {
   faHome,
   faEnvelope,
   faLanguage,
-  faBook
+  faBook,
+  faLock,
+  faCalendar,
+  faClone,
+  faSort,
+  faList,
+  faCubes,
+  faCalculator
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -102,6 +109,13 @@ export default library.add(
   faHome,
   faEnvelope,
   faLanguage,
-  faBook
+  faBook,
+  faLock,
+  faCalendar,
+  faClone,
+  faSort,
+  faList,
+  faCubes,
+  faCalculator
 );
 

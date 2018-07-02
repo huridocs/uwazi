@@ -5,6 +5,7 @@ import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import PrioritySortingLabel from './PrioritySortingLabel';
+import { Icon } from 'UI';
 
 export class FormConfigInput extends Component {
   render() {
@@ -32,9 +33,10 @@ export class FormConfigInput extends Component {
           &nbsp;
           <label className="property-label" htmlFor={`required${index}`}>
             Required property
-            <i className="property-help fa fa-question-circle">
+            <span className="property-help">
+              <Icon icon="question-circle" />
               <div className="property-description">You won&#8217;t be able to publish a document if this property is empty.</div>
-            </i>
+            </span>
           </label>
         </Field>
         <ShowIf if={this.props.canShowInCard}>
@@ -43,9 +45,10 @@ export class FormConfigInput extends Component {
             &nbsp;
             <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
               Show in cards
-              <i className="property-help fa fa-question-circle">
+              <span className="property-help">
+                <Icon icon="question-circle" />
                 <div className="property-description">Show this property in the cards as part of the basic info.</div>
-              </i>
+              </span>
             </label>
           </Field>
         </ShowIf>
@@ -56,13 +59,14 @@ export class FormConfigInput extends Component {
             &nbsp;
               <label className="property-label" htmlFor={`filter${this.props.index}`}>
               Use as filter
-                <i className="property-help fa fa-question-circle">
+              <span className="property-help">
+                <Icon icon="question-circle" />
                   <div className="property-description">
                   Use this property to filter the library results.
                   When properties match in equal name and field type with other document types, they will be combined for filtering.
                   Also library items will be able to be sorted by this property.
                   </div>
-                </i>
+                </span>
               </label>
             </Field>
           </ShowIf>
@@ -76,12 +80,13 @@ export class FormConfigInput extends Component {
               &nbsp;
               <label className="property-label" htmlFor={`defaultfilter${this.props.index}`}>
                 Default filter
-                <i className="property-help fa fa-question-circle">
+                <span className="property-help">
+                  <Icon icon="question-circle" />
                   <div className="property-description">
                     Use this property as a default filter in the library.
                     When there are no document types selected, this property will show as a default filter for your collection.
                   </div>
-                </i>
+                </span>
               </label>
             </Field>
           </ShowIf>
