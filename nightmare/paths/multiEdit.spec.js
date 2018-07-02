@@ -92,12 +92,9 @@ describe('multi edit path', () => {
     .waitToDisapear('.alert.alert-success')
     .waitToClick(selectors.uploadsView.firstPublishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
-    .wait('.alert.alert-success')
-    .isVisible('.alert.alert-success')
-    .then((result) => {
-      expect(result).toBe(true);
-      done();
-    })
+    .waitToClick('.alert.alert-success')
+    .waitToDisapear('.alert.alert-success')
+    .then(done)
     .catch(catchErrors(done));
   });
 
