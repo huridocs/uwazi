@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {I18NLink, t} from 'app/I18N';
 import {advancedSort} from 'app/utils/advancedSort';
+import { Icon } from "UI";
 
 import {notify} from 'app/Notifications/actions/notificationsActions';
 
@@ -30,7 +31,7 @@ export class TranslationsList extends Component {
               </div>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)} className="btn btn-default btn-xs">
-                  <i className="fa fa-language"></i>
+                  <Icon icon="language" />
                   <span>{t('System', 'Translate')}</span>
                 </I18NLink>
               </div>

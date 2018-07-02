@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { I18NLink, t } from 'app/I18N';
 import { deleteTemplate, checkTemplateCanBeDeleted } from 'app/Templates/actions/templatesActions';
+import { Icon } from "UI";
 
 import { notify } from 'app/Notifications/actions/notificationsActions';
 
@@ -41,11 +42,11 @@ export class DocumentTypesList extends Component {
             <I18NLink to={`/settings/documents/edit/${template._id}`}>{template.name}</I18NLink>
             <div className="list-group-item-actions">
               <I18NLink to={`/settings/documents/edit/${template._id}`} className="btn btn-default btn-xs">
-                <i className="fa fa-pencil-alt" />&nbsp;
+                <Icon icon="pencil-alt" />&nbsp;
                 <span>{t('System', 'Edit')}</span>
               </I18NLink>
               <a onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
-                <i className="fa fa-trash-alt" />&nbsp;
+                <Icon icon="trash-alt" />&nbsp;
                 <span>{t('System', 'Delete')}</span>
               </a>
             </div>
@@ -54,7 +55,7 @@ export class DocumentTypesList extends Component {
       </ul>
       <div className="settings-footer">
         <I18NLink to="/settings/documents/new" className="btn btn-success">
-          <i className="fa fa-plus" />
+          <Icon icon="plus" />
           <span className="btn-label">{t('System', 'Add document type')}</span>
         </I18NLink>
       </div>

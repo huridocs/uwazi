@@ -10,6 +10,7 @@ import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { RadioButtons } from 'app/Forms';
 import { t } from 'app/I18N';
+import { Icon } from "UI";
 
 export class CollectionSettings extends Component {
   constructor(props, context) {
@@ -203,7 +204,7 @@ export class CollectionSettings extends Component {
               </div>
             </div>
             <div className="alert alert-info">
-              <i className="fa fa-home" />
+              <Icon icon="home" />
               <div>
                 The landing page is the first thing users will see when visiting your Uwazi instance.<br />
                 You can use any URL from your Uwazi instance as a landing page, examples:
@@ -238,7 +239,7 @@ export class CollectionSettings extends Component {
               />
             </div>
             <div className="alert alert-info">
-              <i className="fa fa-envelope" />
+              <Icon icon="envelope" />
               <div>
                 This is a JSON configuration object that should match the options values required by Nodemailer,
                 as explained in <a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a><br />
@@ -248,7 +249,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">
-                <i className="far fa-save" />
+                <Icon icon="save" />
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>

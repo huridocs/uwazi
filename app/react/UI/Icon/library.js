@@ -45,7 +45,11 @@ import {
   faMapMarker,
   faTerminal,
   faPlus,
-  faUndo
+  faUndo,
+  faHome,
+  faEnvelope,
+  faLanguage,
+  faBook
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -94,6 +98,10 @@ export default library.add(
   faMapMarker,
   faTerminal,
   faPlus,
-  faUndo
+  faUndo,
+  faHome,
+  faEnvelope,
+  faLanguage,
+  faBook
 );
 

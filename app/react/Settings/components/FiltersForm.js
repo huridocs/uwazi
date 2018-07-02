@@ -8,6 +8,7 @@ import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
+import { Icon } from "UI";
 
 export class FiltersForm extends Component {
   constructor(props) {
@@ -43,7 +44,7 @@ export class FiltersForm extends Component {
         <input type="text" className="form-control" value={group.name} onChange={nameChange.bind(this)} />
         <span className="input-group-btn">
           <button className="btn btn-danger" onClick={this.removeGroup.bind(this, group)} disabled={group.items.length}>
-            <i className="fa fa-trash-alt" />
+            <Icon icon="trash-alt" />
           </button>
         </span>
       </div>
@@ -58,7 +59,7 @@ export class FiltersForm extends Component {
     return (<div>
       <span>{item.name}</span>
       <button className="btn btn-xs btn-danger" onClick={this.removeItem.bind(this, item)}>
-        <i className="fa fa-trash-alt" />
+        <Icon icon="trash-alt" />
       </button>
     </div>);
   }
@@ -129,7 +130,7 @@ export class FiltersForm extends Component {
             <div className="row">
               <div className="col-sm-9">
                 <div className="alert alert-info">
-                  <i className="fa fa-info-circle" />
+                  <Icon icon="info-circle" />
                   <div>
                     <p>By default, users can filter the documents
                            or entities in the library based on the types of documents/entities you have defined.
@@ -165,15 +166,15 @@ export class FiltersForm extends Component {
       </div>
       <div className="settings-footer">
         <button onClick={this.addGroup.bind(this)} className="btn btn-sm btn-primary">
-          <i className="fa fa-plus" />
+          <Icon icon="plus" />
           <span className="btn-label">{t('System', 'Create group')}</span>
         </button>
         <button onClick={this.save.bind(this)} className="btn btn-sm btn-success">
-          <i className="far fa-save" />
+          <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save')}</span>
         </button>
       </div>
-            </div>);
+    </div>);
   }
 }
 
