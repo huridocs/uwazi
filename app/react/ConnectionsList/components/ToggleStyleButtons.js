@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import { Icon } from 'UI';
 
 import {switchView as switchViewAction} from '../actions/actions';
 
@@ -22,10 +23,10 @@ export class ToggleStyleButtons extends Component {
     return (
       <div className="search-list-actions">
         <button onClick={this.switchView('list')} className={`btn ${view !== 'graph' ? 'btn-success' : 'btn-default'}`}>
-          <i className="fa fa-th"></i>
+          <Icon icon="th" />
         </button>
         <button onClick={this.switchView('graph')} className={`btn ${view === 'graph' ? 'btn-success' : 'btn-default'}`}>
-          <i className="fa fa-sitemap fa-rotate-270"></i>
+          <Icon icon="sitemap" transform={{ rotate: 270 }} />
         </button>
       </div>
     );

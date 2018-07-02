@@ -6,6 +6,7 @@ import { Field, Form, actions as formActions } from 'react-redux-form';
 
 import debounce from 'app/utils/debounce';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 import { searchReferences } from '../actions/actions';
 
@@ -42,7 +43,7 @@ export class SearchBar extends Component {
         <Form model="relationships/list/search" onSubmit={this.props.searchReferences} autoComplete="off">
           <div className={`input-group${searchTerm ? ' is-active' : ''}`}>
             <Field model="relationships/list/search.searchTerm">
-              <i className="fa fa-search" />
+              <Icon icon="search" />
               <input
                 type="text"
                 placeholder={t('System', 'Search related entities or documents', null, false)}
@@ -51,7 +52,7 @@ export class SearchBar extends Component {
                 autoComplete="off"
                 value={searchTerm}
               />
-              <i className="fa fa-times" onClick={this.resetSearch.bind(this)} />
+              <Icon icon="times" onClick={this.resetSearch.bind(this)} />
             </Field>
           </div>
         </Form>

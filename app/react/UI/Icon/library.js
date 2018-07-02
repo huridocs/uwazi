@@ -19,7 +19,10 @@ import {
   faCheck,
   faSquare,
   faCaretUp,
-  faCaretDown
+  faCaretDown,
+  faExchangeAlt,
+  faSync,
+  faSearch
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -42,6 +45,9 @@ export default library.add(
   faCheck,
   faSquare,
   faCaretUp,
-  faCaretDown
+  faCaretDown,
+  faExchangeAlt,
+  faSync,
+  faSearch
 );
 

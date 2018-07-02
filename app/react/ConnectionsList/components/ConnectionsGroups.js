@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import { Icon } from 'UI';
 
 import {t} from 'app/I18N';
 
@@ -11,7 +12,7 @@ export class ConnectionsGroups extends Component {
     const {connectionsGroups} = this.props;
 
     let Results = <div className="blank-state">
-                    <i className="fa fa-exchange-alt"></i>
+                    <Icon icon="exchange-alt" />
                     <h4>{t('System', 'No Relationships')}</h4>
                     <p>{t('System', 'No Relationships description')}</p>
                   </div>;
