@@ -7,16 +7,18 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import Notifications from 'app/Notifications';
 import { TranslateForm } from 'app/I18N';
-import { isClient } from 'app/utils';
-import { loadCSS } from 'fg-loadcss';
+
+import { loadIcons } from 'UI/Icon/library';
+import { Icon } from 'UI';
+
 import './scss/styles.scss';
+
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 
-import { loadIcons } from 'UI/Icon/library';
-import { Icon } from 'UI';
+loadIcons();
 
 class App extends Component {
   constructor(props, context) {

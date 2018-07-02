@@ -1,5 +1,5 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { 
+import {
   faArrowLeft,
   faArrowRight,
   faAngleLeft,
@@ -127,11 +127,9 @@ const icons = {
   faParagraph
 };
 
-export const loadIcons = library.add.apply(library, Object.keys(icons).map(function(key) {
-  return icons[key];
-}));
+export const loadIcons = () => {
+  library.add(...Object.keys(icons).map(key => icons[key]));
+};
 
-export const iconNames = Object.keys(icons).map(function(key) {
-  return icons[key].iconName;
-});
+export const iconNames = Object.keys(icons).map(key => icons[key].iconName);
 
