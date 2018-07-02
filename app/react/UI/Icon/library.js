@@ -63,7 +63,7 @@ import {
   faParagraph
 } from '@fortawesome/free-solid-svg-icons';
 
-export default library.add(
+const icons = {
   faArrowLeft,
   faArrowRight,
   faAngleLeft,
@@ -125,5 +125,13 @@ export default library.add(
   faGavel,
   faChartBar,
   faParagraph
-);
+};
+
+export const loadIcons = library.add.apply(library, Object.keys(icons).map(function(key) {
+  return icons[key];
+}));
+
+export const iconNames = Object.keys(icons).map(function(key) {
+  return icons[key].iconName;
+});
 

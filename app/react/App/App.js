@@ -15,7 +15,7 @@ import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 
-import 'UI/Icon/library';
+import { loadIcons } from 'UI/Icon/library';
 import { Icon } from 'UI';
 
 class App extends Component {
