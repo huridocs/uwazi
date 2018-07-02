@@ -10,6 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import { browserHistory } from 'react-router';
 import { scrollToPage } from 'app/Viewer/actions/uiActions';
 import { toUrlParams } from '../../../shared/JSONRequest';
+import { Icon } from 'UI';
 
 export class SearchText extends Component {
   resetSearch() {}
@@ -65,14 +66,14 @@ export class SearchText extends Component {
             <div className="search-box">
               <div className="input-group">
                 <Field model=".searchTerm">
-                  <i className="fa fa-search" />
+                  <Icon icon="search" />
                   <input
                     type="text"
                     placeholder={t('System', 'Search', null, false)}
                     className="form-control"
                     autoComplete="off"
                   />
-                  <i className="fa fa-times" onClick={this.resetSearch.bind(this)}/>
+                  <Icon icon="times" onClick={this.resetSearch.bind(this)}/>
                 </Field>
               </div>
             </div>
@@ -81,7 +82,7 @@ export class SearchText extends Component {
 
         <ShowIf if={!this.props.snippets.size} >
           <div className="blank-state">
-            <i className="fa fa-search" />
+            <Icon icon="search" />
             <h4>{t('System', 'No text match')}</h4>
             <p>{t('System', 'No text match description')}</p>
           </div>

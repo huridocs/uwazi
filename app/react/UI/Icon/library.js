@@ -1,5 +1,6 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { 
+  faArrowLeft,
   faArrowRight,
   faBars,
   faCoffee,
@@ -22,10 +23,14 @@ import {
   faCaretDown,
   faExchangeAlt,
   faSync,
-  faSearch
+  faSearch,
+  faFont,
+  faSitemap,
+  faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
+  faArrowLeft,
   faArrowRight,
   faBars,
   faCoffee,
@@ -48,6 +53,9 @@ export default library.add(
   faCaretDown,
   faExchangeAlt,
   faSync,
-  faSearch
+  faSearch,
+  faFont,
+  faSitemap,
+  faInfoCircle
 );
 

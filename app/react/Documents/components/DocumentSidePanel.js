@@ -13,6 +13,7 @@ import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+import { Icon } from 'UI';
 
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
@@ -94,7 +95,9 @@ export class DocumentSidePanel extends Component {
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
-          <i className="closeSidepanel fa fa-times close-modal" onClick={this.close.bind(this)}/>&nbsp;
+          <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
+            <Icon icon="times" />
+          </button>
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
               {(() => {
@@ -110,7 +113,7 @@ export class DocumentSidePanel extends Component {
                 if (docType !== 'entity') {
                   return (<li>
                     <TabLink to="toc">
-                      <i className="fa fa-font" />
+                      <Icon icon="font" />
                       <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
                     </TabLink>
                           </li>);
@@ -121,7 +124,7 @@ export class DocumentSidePanel extends Component {
                 if (docType !== 'entity') {
                   return (<li>
                     <TabLink to="references">
-                      <i className="fa fa-sitemap" />
+                      <Icon icon="sitemap" />
                       <span className="connectionsNumber">{references.size}</span>
                       <span className="tab-link-tooltip">{t('System', 'References')}</span>
                     </TabLink>
@@ -137,7 +140,7 @@ export class DocumentSidePanel extends Component {
               })()}
               <li>
                 <TabLink to="metadata" default>
-                  <i className="fa fa-info-circle" />
+                  <Icon icon="info-circle" />
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
@@ -145,7 +148,7 @@ export class DocumentSidePanel extends Component {
                 if (!isTargetDoc && !excludeConnectionsTab) {
                   return (<li>
                     <TabLink to="connections">
-                      <i className="fa fa-exchange-alt" />
+                      <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                     </TabLink>
@@ -172,7 +175,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && this.props.tocBeingEdited}>
             <div className="sidepanel-footer">
               <button type="submit" form="tocForm" className="edit-toc btn btn-success">
-                <i className="far fa-save" />
+                <Icon icon="save" />
                 <span className="btn-label">Save</span>
               </button>
             </div>
@@ -183,7 +186,7 @@ export class DocumentSidePanel extends Component {
           <ShowIf if={this.props.tab === 'toc' && !this.props.tocBeingEdited && !readOnly}>
             <div className="sidepanel-footer">
               <button onClick={() => this.props.editToc(this.props.doc.get('toc').toJS() || [])} className="edit-toc btn btn-success">
-                <i className="fa fa-pencil-alt" />
+                <Icon icon="pencil-alt" />
                 <span className="btn-label">Edit</span>
               </button>
             </div>
