@@ -83,7 +83,7 @@ export class NavlinkForm extends Component {
 
         <div>
           <span className="property-name">
-            <Icon icon="bars" />&nbsp;
+            <Icon icon="bars" className="reorder" />&nbsp;
             <Icon icon="link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
           </span>
         </div>

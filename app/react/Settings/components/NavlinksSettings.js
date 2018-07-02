@@ -45,7 +45,7 @@ export class NavlinksSettings extends Component {
             <ul className="list-group">
               <li className="list-group-item">
                 <div className="alert alert-info">
-                  <Icon icon="info-circle" />
+                  <Icon icon="info-circle" size="2x" />
                   <div>
                     If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.<br />
                     If it is an internal URL within this website, be sure to delete the first part ({hostname}),

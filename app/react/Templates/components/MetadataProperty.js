@@ -57,8 +57,7 @@ export class MetadataProperty extends Component {
         <li className="list-group-item">
           <span className="property-name">
             <Icon icon="lock" fixedWidth />
-            <Icon icon={iconClass} fixedWidth />
-            {label}
+            <Icon icon={iconClass} fixedWidth /> {label}
           </span>
           <div className="list-group-item-actions">
             <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
@@ -81,8 +80,7 @@ export class MetadataProperty extends Component {
       <li className={propertyClass}>
         <span className="property-name">
           <Icon icon="bars" fixedWidth />
-          <Icon icon={iconClass} fixedWidth />
-          {label}
+          <Icon icon={iconClass} fixedWidth /> {label}
         </span>
         <div className="list-group-item-actions">
           <ShowIf if={formState.$form.errors[`properties.${index}.label.duplicated`]}>

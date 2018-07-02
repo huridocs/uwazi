@@ -31,8 +31,7 @@ export class TranslationsList extends Component {
               </div>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/translations/edit/' + encodeURIComponent(context.id)} className="btn btn-default btn-xs">
-                  <Icon icon="language" />
-                  <span>{t('System', 'Translate')}</span>
+                  <Icon icon="language" /> {t('System', 'Translate')}
                 </I18NLink>
               </div>
             </li>;

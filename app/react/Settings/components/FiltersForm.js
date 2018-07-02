@@ -130,7 +130,7 @@ export class FiltersForm extends Component {
             <div className="row">
               <div className="col-sm-9">
                 <div className="alert alert-info">
-                  <Icon icon="info-circle" />
+                  <Icon icon="info-circle" size="2x" />
                   <div>
                     <p>By default, users can filter the documents
                            or entities in the library based on the types of documents/entities you have defined.

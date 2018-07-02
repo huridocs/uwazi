@@ -117,7 +117,7 @@ export class ThesauriForm extends Component {
               className="rounded-icon-small"
               alt="move"
               onClick={this.moveToGroup.bind(this, groupIndex)}>
-              <Icon icon="arrow-left" />
+              <Icon icon="arrow-left" size="xs" />
             </button>
           </Field>
         </FormGroup>
@@ -159,7 +159,7 @@ export class ThesauriForm extends Component {
               className="rounded-icon-small"
               alt="move"
               onClick={this.toggleToMove.bind(this, value)}>
-              <Icon icon="check" />
+              <Icon icon="check" size="xs" />
             </button>
           </Field>
         </FormGroup>
@@ -189,7 +189,7 @@ export class ThesauriForm extends Component {
                   <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
                   <ShowIf if={this.props.state.$form.touched && this.props.state.name && this.props.state.name.errors.duplicated}>
                     <div className="validation-error">
-                      <Icon icon="exclamation-triangle" /> Duplicated name
+                      <Icon icon="exclamation-triangle" size="xs" /> Duplicated name
                     </div>
                   </ShowIf>
                 </Field>
@@ -204,7 +204,7 @@ export class ThesauriForm extends Component {
                   className="rounded-icon-small"
                   alt="move"
                   onClick={this.moveToGroup.bind(this)}>
-                  <Icon icon="arrow-left" />
+                  <Icon icon="arrow-left" size="xs"/>
                 </button>
               </li>
               {values.map((value, index) => this.renderValue(value, index))}

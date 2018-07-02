@@ -17,8 +17,7 @@ export class UploadsHeader extends Component {
           <h1 className="item-name">{t('System', 'My Files')}</h1>
           <ShowIf if={this.props.entityTemplatesExists}>
             <button type="button" className="btn btn-success btn-xs" onClick={this.props.newEntity}>
-              <Icon icon="plus"/>
-              <span>{t('System', 'New entity')}</span>
+              <Icon icon="plus"/> {t('System', 'New entity')}
             </button>
           </ShowIf>
         </div>
