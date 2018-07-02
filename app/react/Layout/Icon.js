@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Flag from 'react-flags';
 import { Icon as UIIcon } from 'UI';
 
@@ -40,7 +40,7 @@ function getFaSize(size) {
 
 export class Icon extends Component {
   render() {
-    const {data, className, size} = this.props;
+    const { data, className, size } = this.props;
     let html = null;
     let _data = data;
 
@@ -56,12 +56,14 @@ export class Icon extends Component {
       }
 
       if (_data.type === 'Flags') {
-        icon = <Flag name={_data._id}
-                     format="png"
-                     pngSize={getPngSize(size)}
-                     shiny={true}
-                     alt={`${_data.label} flag`}
-                     basePath="/flag-images" />;
+        icon = (<Flag
+          name={_data._id}
+          format="png"
+          pngSize={getPngSize(size)}
+          shiny
+          alt={`${_data.label} flag`}
+          basePath="/flag-images"
+        />);
       }
 
       html = <span className={className}>{icon}</span>;
