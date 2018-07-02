@@ -3,6 +3,8 @@ import { shallow } from 'enzyme';
 import { fromJS as immutable } from 'immutable';
 import { I18NLink } from 'app/I18N';
 
+import { Icon } from 'UI';
+
 import { MetadataFormButtons } from '../MetadataFormButtons';
 
 describe('MetadataFormButtons', () => {
@@ -104,7 +106,7 @@ describe('MetadataFormButtons', () => {
       const link = component.find(I18NLink);
       expect(link.props().to).toBe('type/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
-      expect(component.find('.edit-metadata').at(0).find('.fa-file-alt').length).toBe(1);
+      expect(component.find('.edit-metadata').at(0).find(Icon).props().icon).toBe('file');
       expect(component.find('.btn-success').length).toBe(0);
       expect(component.find('.delete-metadata').length).toBe(0);
     });
