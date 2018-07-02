@@ -18,6 +18,7 @@ import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import MetadataFormFields from './MetadataFormFields';
+import { Icon } from 'UI';
 
 const sortedTemplates = createSelector(
   s => s.templates,
@@ -157,8 +158,10 @@ export class SelectMultiplePanel extends Component {
     return (
       <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
-          <i className="fa fa-check-square" /> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
-          <i className="closeSidepanel fa fa-times close-modal" onClick={this.close}/>&nbsp;
+          <Icon icon="check" /> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
+          <button className="closeSidepanel close-modal" onClick={this.close}>
+            <Icon icon="times" />
+          </button>
         </div>
         <div className="sidepanel-body">
           <ShowIf if={!editing}>
@@ -178,7 +181,7 @@ export class SelectMultiplePanel extends Component {
             <Form id="multiEdit" model={this.props.formKey} onSubmit={this.save} validators={validation}>
               <FormGroup>
                 <div className="alert alert-warning">
-                  <i className="fa fa-warning" />
+                  <Icon icon="exclamation-triangle" />
                   Warning: you are editing multiple files. Fields marked with a <i className="fa fa-warning" /> will be updated with the same value.
                 </div>
                 <ShowIf if={!!templateOptions.length}>
@@ -220,25 +223,25 @@ export class SelectMultiplePanel extends Component {
         <div className="sidepanel-footer">
           <ShowIf if={!editing}>
             <button onClick={this.edit} className="edit btn btn-primary">
-              <i className="fa fa-pencil-alt" />
+              <Icon icon="pencil-alt" />
               <span className="btn-label">{t('System', 'Edit')}</span>
             </button>
           </ShowIf>
           <ShowIf if={!editing}>
             <button className="delete btn btn-danger" onClick={this.delete}>
-              <i className="fa fa-trash-alt" />
+              <Icon icon="trash-alt" />
               <span className="btn-label">{t('System', 'Delete')}</span>
             </button>
           </ShowIf>
           <ShowIf if={editing}>
             <button onClick={this.cancel} className="cancel-edit-metadata btn btn-primary">
-              <i className="fa fa-times" />
+              <Icon icon="times" />
               <span className="btn-label">{t('System', 'Cancel')}</span>
             </button>
           </ShowIf>
           <ShowIf if={editing}>
             <button type="submit" form="multiEdit" className="btn btn-success">
-              <i className="far fa-save" />
+              <Icon icon="save" />
               <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>
