@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux';
 
 import {deletePage} from 'app/Pages/actions/pageActions';
 import {t} from 'app/I18N';
+import { Icon } from 'UI';
 
 
 export class PagesList extends Component {
@@ -32,12 +33,10 @@ export class PagesList extends Component {
               <I18NLink to={'/settings/pages/edit/' + page.get('sharedId')}>{page.get('title')}</I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink to={'/settings/pages/edit/' + page.get('sharedId')} className="btn btn-default btn-xs">
-                  <i className="fa fa-pencil-alt"></i>&nbsp;
-                  <span>{t('System', 'Edit')}</span>
+                  <Icon icon="pencil-alt" /> <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <a onClick={this.deletePage.bind(this, page)} className="btn btn-danger btn-xs template-remove">
-                  <i className="fa fa-trash-alt"></i>&nbsp;
-                  <span>{t('System', 'Delete')}</span>
+                  <Icon icon="trash-alt" /> <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
             </li>
@@ -45,8 +44,7 @@ export class PagesList extends Component {
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/pages/new" className="btn btn-success">
-            <i className="fa fa-plus"></i>
-            <span className="btn-label">{t('System', 'Add page')}</span>
+            <Icon icon="plus" /> <span className="btn-label">{t('System', 'Add page')}</span>
           </I18NLink>
         </div>
       </div>

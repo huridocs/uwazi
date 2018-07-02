@@ -8,6 +8,7 @@ import { I18NLink } from 'app/I18N';
 import { MarkDown } from 'app/ReactReduxForms';
 import { resetPage, savePage } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 
 import validator from './ValidatePage';
 
@@ -44,7 +45,7 @@ export class PageCreator extends Component {
             <div className="panel-body page-viewer document-viewer">
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
-                  <i className="fa fa-terminal" /> {pageUrl}
+                  <Icon icon="terminal" /> {pageUrl}
                   <a target="_blank" href={pageUrl} className="pull-right">(view page)</a>
                 </div>
               </ShowIf>
@@ -53,7 +54,7 @@ export class PageCreator extends Component {
           </div>
           <div className="settings-footer">
             <I18NLink to={backUrl} className="btn btn-default">
-              <i className="fa fa-arrow-left" />
+              <Icon icon="arrow-left" />
               <span className="btn-label">Back</span>
             </I18NLink>
             <button
@@ -61,7 +62,7 @@ export class PageCreator extends Component {
               className="btn btn-success save-template"
               disabled={!!savingPage}
             >
-              <i className="far fa-save" />
+              <Icon icon="save" />
               <span className="btn-label">Save</span>
             </button>
           </div>

@@ -40,7 +40,9 @@ import {
   faClock,
   faExclamationTriangle,
   faPaperPlane,
-  faMapMarker
+  faMapMarker,
+  faTerminal,
+  faPlus
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -84,6 +86,8 @@ export default library.add(
   faClock,
   faExclamationTriangle,
   faPaperPlane,
-  faMapMarker
+  faMapMarker,
+  faTerminal,
+  faPlus
 );
 
