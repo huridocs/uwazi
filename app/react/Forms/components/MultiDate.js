@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import DatePicker from './DatePicker';
+import { Icon } from 'UI';
 
 export default class MultiDate extends Component {
 
@@ -43,7 +44,7 @@ export default class MultiDate extends Component {
         });
       })()}
       <button className="btn btn-success add" onClick={this.add.bind(this)}>
-        <i className="fa fa-plus"></i>&nbsp;
+        <Icon icon="plus" />&nbsp;
         <span>Add date</span>
       </button>
     </div>;
