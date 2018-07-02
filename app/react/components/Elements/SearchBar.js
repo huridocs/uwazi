@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Icon } from 'UI';
 
 import { events } from '../../utils/index';
 
@@ -22,7 +23,10 @@ class SearchBar extends Component {
       <form onSubmit={this.search.bind(this)}>
         <div className="input-group">
           <span className="input-group-btn">
-            <button className="btn btn-default"><i className="fa fa-search" /><i className="fa fa-times" /></button>
+            <button className="btn btn-default">
+              <Icon icon="search" />
+              <Icon icon="times" />
+            </button>
           </span>
           <input
             ref={ref => this.field = ref}
@@ -33,10 +37,10 @@ class SearchBar extends Component {
             onChange={this.handleChange.bind(this)}
           />
           <div className="search-suggestions">
-            <p> <b>Africa</b> Legal Aid (on behalf of Isaac and Robert Banda) Gambia (The)<i className="fa fa-arrow-left" /></p>
-            <p>149 96 <b>Africa</b> Sir Dawda K. Jawara Gambia (The)<i className="fa fa-arrow-left" /></p>
-            <p>Democratic Republic of Congo Burundi, Rwanda, Uganda, <b>Africa</b><i className="fa fa-arrow-left" /></p>
-            <p id="all-africa-documents" className="search-suggestions-all"><i className="fa fa-search" />See all documents for "africa"</p>
+            <p> <b>Africa</b> Legal Aid (on behalf of Isaac and Robert Banda) Gambia (The)<Icon icon="arrow-left" /></p>
+            <p>149 96 <b>Africa</b> Sir Dawda K. Jawara Gambia (The)<Icon icon="arrow-left" /></p>
+            <p>Democratic Republic of Congo Burundi, Rwanda, Uganda, <b>Africa</b><Icon icon="arrow-left" /></p>
+            <p id="all-africa-documents" className="search-suggestions-all"><Icon icon="search" />See all documents for "africa"</p>
           </div>
         </div>
       </form>
