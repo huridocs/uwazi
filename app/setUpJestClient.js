@@ -1,5 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import * as matchers from 'jest-immutable-matchers';
+import { loadIcons } from 'UI/Icon/library';
+
+loadIcons();
 
 const { configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
