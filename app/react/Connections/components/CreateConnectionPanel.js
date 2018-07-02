@@ -54,7 +54,7 @@ export class CreateConnectionPanel extends Component {
 
         <div className="sidepanel-footer">
           <button className="btn btn-primary" onClick={this.props.closePanel}>
-            <i className="fa fa-times"></i>
+            <Icon icon="times" />
           </button>
           <ShowIf if={connection.type !== 'targetRanged'}>
             <ActionButton action="save" onCreate={(reference) => {

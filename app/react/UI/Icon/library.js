@@ -58,7 +58,9 @@ import {
   faCubes,
   faCalculator,
   faSortAlphaDown,
-  faGavel
+  faGavel,
+  faChartBar,
+  faParagraph
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -120,6 +122,8 @@ export default library.add(
   faCubes,
   faCalculator,
   faSortAlphaDown,
-  faGavel
+  faGavel,
+  faChartBar,
+  faParagraph
 );
 
