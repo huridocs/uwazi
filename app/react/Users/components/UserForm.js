@@ -55,18 +55,54 @@ class UserForm extends Component {
             {t('System', label)}
           </label>
           <hr />
-          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Upload documents and create entities')}</p>
-          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Delete documents and entities')}</p>
-          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Apply properties to documents/entities')}</p>
-          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Create connections and references')}</p>
-          <p><Icon icon="check" className="label-success"/>&nbsp;{t('System', 'Create a table of contents')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Manage site settings and configuration')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/delete users and assign roles')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Configure filters')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Add/edit translations')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create document and entity types')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Create dictionaries')}</p>
-          <p><Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;{t('System', 'Name connections')}</p>
+          <p>
+            <Icon icon="check" className="label-success"/>&nbsp;
+            {t('System', 'Upload documents and create entities')}
+          </p>
+          <p>
+            <Icon icon="check" className="label-success"/>&nbsp;
+            {t('System', 'Delete documents and entities')}
+          </p>
+          <p>
+            <Icon icon="check" className="label-success"/>&nbsp;
+            {t('System', 'Apply properties to documents/entities')}
+          </p>
+          <p>
+            <Icon icon="check" className="label-success"/>&nbsp;
+            {t('System', 'Create connections and references')}
+          </p>
+          <p>
+            <Icon icon="check" className="label-success"/>&nbsp;
+            {t('System', 'Create a table of contents')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Manage site settings and configuration')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Add/delete users and assign roles')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Configure filters')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Add/edit translations')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Create document and entity types')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Create dictionaries')}
+          </p>
+          <p>
+            <Icon icon={UserForm.getIconBasedOnRole(role)} className={UserForm.getClassBasedOnRole(role)} />&nbsp;
+            {t('System', 'Name connections')}
+          </p>
         </div>
       </div>
     );

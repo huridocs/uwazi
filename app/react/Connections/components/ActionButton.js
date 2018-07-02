@@ -39,7 +39,13 @@ export class ActionButton extends Component {
     const connectionValid = !validate(connection, validator);
     const enabled = connectionValid && !this.props.busy;
     const buttonClass = this.props.action === 'save' ? 'btn btn-success' : 'edit-metadata btn btn-success';
-    const buttonIcon = this.props.action === 'save' ? 'save' : this.props.busy ? 'spinner' : 'arrow-right';
+    let buttonIcon = 'arrow-right';
+    if (this.props.busy) {
+      buttonIcon = 'spinner';
+    }
+    if (this.props.action === 'save') {
+      buttonIcon = 'save';
+    }
 
     return (
       <button className={buttonClass}
