@@ -7,6 +7,7 @@ import {bindActionCreators} from 'redux';
 import ShowIf from 'app/App/ShowIf';
 import {NeedAuthorization} from 'app/Auth';
 import {t} from 'app/I18N';
+import { Icon } from 'UI';
 
 import * as actions from '../actions/actions';
 
@@ -31,7 +32,7 @@ export class RelationshipsFormButtons extends Component {
           <ShowIf if={!editing}>
             <button onClick={this.edit(true)}
                     className="edit-metadata btn btn-primary">
-              <i className="fa fa-pencil-alt"></i>
+              <Icon icon="pencil-alt" />
               <span className="btn-label">{t('System', 'Edit')}</span>
             </button>
           </ShowIf>
@@ -40,7 +41,7 @@ export class RelationshipsFormButtons extends Component {
           <ShowIf if={editing}>
             <button onClick={this.edit(false)}
                     className="cancel-edit-metadata btn btn-primary">
-              <i className="fa fa-times"></i>
+              <Icon icon="times" />
               <span className="btn-label">{t('System', 'Cancel')}</span>
             </button>
           </ShowIf>
@@ -50,7 +51,7 @@ export class RelationshipsFormButtons extends Component {
             <button onClick={this.props.save}
                     className="btn btn-success"
                     disabled={saving}>
-              <i className={`fa fa-fw ${!saving ? 'fa-save' : 'fa-spinner fa-pulse fa-spin'}`}></i>
+              <Icon icon={!saving ? 'save' : 'spinner'} pulse={saving ? 'pulse' : false} fixedWidth />
               <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>

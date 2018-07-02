@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map, List } from 'immutable';
 import * as actions from '../actions/actions';
+import { Icon } from 'UI';
 
 import LeftRelationship from './LeftRelationship';
 import RightRelationship from './RightRelationship';
@@ -37,7 +38,7 @@ export class RelationshipsGraphEdit extends Component {
               <div className="leftRelationshipType ">
                 <button className="relationships-new" onClick={addHub}>
                   <span>New relationships group</span>
-                  <i className="fa fa-plus" />
+                  <Icon icon="plus" />
                 </button>
               </div>
             </div>

@@ -6,6 +6,8 @@ import {
   faAngleRight,
   faChevronLeft,
   faChevronRight,
+  faQuoteLeft,
+  faQuoteRight,
   faBars,
   faCoffee,
   faTimes,
@@ -42,7 +44,8 @@ import {
   faPaperPlane,
   faMapMarker,
   faTerminal,
-  faPlus
+  faPlus,
+  faUndo
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -52,6 +55,8 @@ export default library.add(
   faAngleRight,
   faChevronLeft,
   faChevronRight,
+  faQuoteLeft,
+  faQuoteRight,
   faBars,
   faCoffee,
   faTimes,
@@ -88,6 +93,7 @@ export default library.add(
   faPaperPlane,
   faMapMarker,
   faTerminal,
-  faPlus
+  faPlus,
+  faUndo
 );
 
