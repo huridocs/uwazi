@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import Flag from 'react-flags';
+import { Icon as UIIcon } from 'UI';
 
 function getPngSize(size) {
   switch (size) {
@@ -25,13 +26,13 @@ function getFaSize(size) {
   case 'xs':
     return '';
   case 'sm':
-    return 'fa-lg';
+    return 'lg';
   case 'md':
-    return 'fa-2x';
+    return '2x';
   case 'lg':
-    return 'fa-2x';
+    return '2x';
   case 'xlg':
-    return 'fa-2x';
+    return '2x';
   default:
     return '';
   }
@@ -51,7 +52,7 @@ export class Icon extends Component {
       let icon;
 
       if (_data.type === 'Icons') {
-        icon = <i className={`fa fa-${_data._id} ${getFaSize(size)}`}></i>;
+        icon = <UIIcon icon={`${_data._id}`} size={`${getFaSize(size)}`} />;
       }
 
       if (_data.type === 'Flags') {

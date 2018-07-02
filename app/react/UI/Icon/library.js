@@ -30,7 +30,11 @@ import {
   faSitemap,
   faInfoCircle,
   faCircle,
-  faTimesCircle
+  faTimesCircle,
+  faQuestionCircle,
+  faLightbulb,
+  faClock,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -64,6 +68,10 @@ export default library.add(
   faSitemap,
   faInfoCircle,
   faCircle,
-  faTimesCircle
+  faTimesCircle,
+  faQuestionCircle,
+  faLightbulb,
+  faClock,
+  faExclamationTriangle
 );
 
