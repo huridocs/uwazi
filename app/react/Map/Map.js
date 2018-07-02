@@ -6,6 +6,7 @@ import { isClient } from 'app/utils';
 import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
+import { Icon } from 'UI';
 
 if (isClient) {
   require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
@@ -160,9 +161,11 @@ export default class Map extends Component {
       return this.props.renderMarker(marker, onClick);
     }
     return (
-      <i
-        style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
-        className="fa fa-map-marker fa-3x fa-fw map-marker"
+      <Icon
+        style={{ position: 'relative', top: '-25px', right: '15px', color: '#d9534e' }}
+        icon="map-marker"
+        size="2x"
+        fixedWidth
         onClick={onClick}
         onMouseOver={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -223,9 +226,10 @@ export default class Map extends Component {
         >
           {this.renderMarkers()}
           {this.renderPopup()}
-          <i className="mapbox-help fa fa-question-circle">
+          <span className="mapbox-help">
+            <Icon icon="question-circle" />
             <span className="mapbox-tooltip">Hold shift to rotate the map</span>
-          </i>
+          </span>
         </ReactMapGL>
       </div>
     );
