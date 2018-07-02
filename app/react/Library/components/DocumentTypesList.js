@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import { is } from 'immutable';
 import { t, Translate } from 'app/I18N';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 

@@ -9,7 +9,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions } from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
 import { t } from 'app/I18N';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 export class SearchBar extends Component {
   onChange(e) {

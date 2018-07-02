@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { I18NLink, t } from 'app/I18N';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 export class LibraryModeToggleButtons extends Component {
   render() {

@@ -41,7 +41,7 @@ class UserForm extends Component {
   static getClassBasedOnRole(role) {
     return `${role === 'admin' ? 'label-success' : 'label-danger'}`;
   }
-  
+
   static getIconBasedOnRole(role) {
     return `${role === 'admin' ? 'check' : 'times'}`;
   }

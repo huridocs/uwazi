@@ -4,7 +4,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Form} from 'react-redux-form';
 import {isClient} from 'app/utils';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';

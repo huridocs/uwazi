@@ -9,7 +9,7 @@ import FiltersForm from 'app/Library/components/FiltersForm';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
 import { t } from 'app/I18N';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 export class LibraryFilters extends Component {
   reset() {

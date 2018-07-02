@@ -10,7 +10,7 @@ import ShowIf from 'app/App/ShowIf';
 import { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm } from '../actions/actions';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 export class Attachment extends Component {
   deleteAttachment(attachment) {
@@ -46,7 +46,7 @@ export class Attachment extends Component {
     let thumbnail = null;
 
     if (this.getExtension(file.filename) === 'pdf') {
-      thumbnail = <span><Icon icon="file-pdf" /> pdf</span>
+      thumbnail = <span><Icon icon="file-pdf" /> pdf</span>;
     }
 
     if (acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename.toLowerCase())) !== -1) {

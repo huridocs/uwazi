@@ -6,7 +6,7 @@ import { fromJS as Immutable } from 'immutable';
 import { I18NLink } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { t } from 'app/I18N';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 import ShowIf from 'app/App/ShowIf';
 import { deleteReference } from 'app/Viewer/actions/referencesActions';

@@ -38,7 +38,7 @@ export class LeftRelationship extends Component {
         <button
           onClick={this.toggelRemoveLeftRelationship}
           className="relationships-icon">
-          <Icon icon={!hub.get('deleted') ? "trash-alt" : "undo"} />
+          <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
         </button>
       </div>
     );

@@ -6,7 +6,7 @@ import {wrapDispatch} from 'app/Multireducer';
 import {actions} from 'react-redux-form';
 import ShowIf from 'app/App/ShowIf';
 import {t} from 'app/I18N';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 export class SortButtons extends Component {
 

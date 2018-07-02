@@ -7,7 +7,7 @@ import {t} from 'app/I18N';
 import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
 import {wrapDispatch} from 'app/Multireducer';
 import {unselectAllDocuments} from '../actions/libraryActions';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 export class SearchButton extends Component {
   render() {

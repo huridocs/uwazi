@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Immutable, { is } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 import { MultiSelect, DateRange, NestedMultiselect, NumericRange, Switcher } from 'app/ReactReduxForms';
 import { activateFilter } from 'app/Library/actions/filterActions';

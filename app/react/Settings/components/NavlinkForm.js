@@ -9,7 +9,7 @@ import React, { Component } from 'react';
 import { editLink } from 'app/Settings/actions/uiActions';
 import { removeLink } from 'app/Settings/actions/navlinksActions';
 import ShowIf from 'app/App/ShowIf';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 export const LinkSource = {
   beginDrag(props) {

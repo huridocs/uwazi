@@ -135,7 +135,7 @@ export class RightRelationship extends Component {
                       <button
                         onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
                         className="relationships-icon">
-                        <Icon icon={!deleted ? "trash-alt" : "undo" } />
+                        <Icon icon={!deleted ? 'trash-alt' : 'undo'} />
                       </button>
                     </div>
                 )}

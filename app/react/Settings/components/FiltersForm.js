@@ -8,7 +8,7 @@ import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 export class FiltersForm extends Component {
   constructor(props) {

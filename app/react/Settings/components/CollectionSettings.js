@@ -10,7 +10,7 @@ import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { RadioButtons } from 'app/Forms';
 import { t } from 'app/I18N';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 export class CollectionSettings extends Component {
   constructor(props, context) {

@@ -7,7 +7,7 @@ import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 
 export class AccountSettings extends Component {

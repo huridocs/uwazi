@@ -91,7 +91,7 @@ export class Doc extends Component {
                       }
                       {(doc.processed || isEntity) && !doc.published && hasTemplate ?
                         <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
-                          <Icon icon="paper-plane" /> { t('System', 'Publish')  }
+                          <Icon icon="paper-plane" /> { t('System', 'Publish') }
                         </button> : false
                       }
                     </div>;

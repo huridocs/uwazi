@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { I18NLink, t } from 'app/I18N';
 import { deleteThesauri, checkThesauriCanBeDeleted } from 'app/Thesauris/actions/thesaurisActions';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 import { notify } from 'app/Notifications/actions/notificationsActions';
 

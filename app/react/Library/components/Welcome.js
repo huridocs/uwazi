@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {I18NLink} from 'app/I18N';
-import { Icon  } from 'UI';
+import { Icon } from 'UI';
 
 export default class Welcome extends Component {
   render() {

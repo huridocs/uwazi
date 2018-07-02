@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 
 import {saveConnection, selectRangedTarget} from '../actions/actions';
 import validate from 'validate.js';
-import { Icon } from "UI";
+import { Icon } from 'UI';
 
 export class ActionButton extends Component {
 
