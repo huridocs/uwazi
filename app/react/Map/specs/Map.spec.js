@@ -2,6 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
+import { Icon } from 'UI';
+
 import Map from '../Map';
 
 describe('Map', () => {
@@ -48,7 +50,7 @@ describe('Map', () => {
     it('should render a Markers component', () => {
       expect(markers.length).toBe(2);
       expect(firstMarker().props().latitude).toBe(2);
-      expect(firstMarker().find('i').hasClass('map-marker')).toBe(true);
+      expect(firstMarker().find(Icon).props().icon).toBe('map-marker');
       expect(firstMarker().props().longitude).toBe(32);
 
       expect(secondMarker().props().latitude).toBe(23);
@@ -160,7 +162,7 @@ describe('Map', () => {
   describe('clicking on a marker', () => {
     beforeEach(() => {
       render();
-      firstMarker().find('i').first().simulate('click');
+      firstMarker().find(Icon).first().simulate('click');
       component.update();
     });
 
@@ -173,7 +175,7 @@ describe('Map', () => {
     let popup;
     beforeEach(() => {
       render();
-      firstMarker().find('i').first().simulate('mouseOver');
+      firstMarker().find(Icon).first().simulate('mouseOver');
       component.update();
       popup = component.find(Popup);
     });
@@ -183,7 +185,7 @@ describe('Map', () => {
     });
 
     it('should not render a popup when has no info', () => {
-      secondMarker().find('i').first().simulate('mouseOver');
+      secondMarker().find(Icon).first().simulate('mouseOver');
       component.update();
       popup = component.find(Popup);
       expect(popup.length).toBe(0);

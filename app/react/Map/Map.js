@@ -2,11 +2,13 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
+
+import { Icon } from 'UI';
+
 import { isClient } from 'app/utils';
 import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
-import { Icon } from 'UI';
 
 if (isClient) {
   require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
@@ -175,7 +177,7 @@ export default class Map extends Component {
 
   renderPopup() {
     const { selectedMarker } = this.state;
-    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker.properties && selectedMarker.properties.info))) {
+    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))) {
       return (
         <Popup
           tipSize={6}
@@ -188,7 +190,8 @@ export default class Map extends Component {
           <div>
             {this.props.renderPopupInfo ? this.props.renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
           </div>
-        </Popup>);
+        </Popup>
+      );
     }
     return false;
   }
