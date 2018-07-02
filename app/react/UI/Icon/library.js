@@ -56,7 +56,8 @@ import {
   faSort,
   faList,
   faCubes,
-  faCalculator
+  faCalculator,
+  faSortAlphaDown
 } from '@fortawesome/free-solid-svg-icons';
 
 export default library.add(
@@ -116,6 +117,7 @@ export default library.add(
   faSort,
   faList,
   faCubes,
-  faCalculator
+  faCalculator,
+  faSortAlphaDown
 );
 
