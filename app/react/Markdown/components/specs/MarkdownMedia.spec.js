@@ -1,6 +1,6 @@
 import React from 'react';
+import { mount } from 'enzyme';
 import MarkdownMedia from '../MarkdownMedia';
-import {mount} from 'enzyme';
 
 describe('MarkdownMedia', () => {
   let component;
@@ -12,7 +12,7 @@ describe('MarkdownMedia', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = mount(<MarkdownMedia {...props} />);
   };
 
@@ -31,7 +31,7 @@ describe('MarkdownMedia', () => {
         const links = component.find('.timelink');
         expect(links.length).toBe(2);
 
-        const player = component.instance().refs.player;
+        const { player } = component.instance().refs;
         spyOn(player, 'seekTo');
         const firstTimeLink = component.find('.timelink').at(0);
         const secondTimeLink = component.find('.timelink').at(1);
