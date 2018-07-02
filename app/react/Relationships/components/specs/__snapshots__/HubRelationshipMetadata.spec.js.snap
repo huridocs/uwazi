@@ -75,13 +75,21 @@ exports[`HubRelationshipMetadata should render the metadata correctly when text 
         <div
           className="relationship-quote"
         >
-          <i
-            className="quoteIconStart fa fa-quote-left"
-          />
+          <span
+            className="quoteIconStart"
+          >
+            <Component
+              icon="quote-left"
+            />
+          </span>
           Some quoted text
-          <i
-            className="quoteIconEnd fa fa-quote-right"
-          />
+          <span
+            className="quoteIconEnd"
+          >
+            <Component
+              icon="quote-right"
+            />
+          </span>
         </div>
       </dd>
     </dl>
@@ -96,13 +104,21 @@ exports[`HubRelationshipMetadata should render the text quote correctly 1`] = `
   <div
     className="relationship-quote"
   >
-    <i
-      className="quoteIconStart fa fa-quote-left"
-    />
+    <span
+      className="quoteIconStart"
+    >
+      <Component
+        icon="quote-left"
+      />
+    </span>
     Some quoted text
-    <i
-      className="quoteIconEnd fa fa-quote-right"
-    />
+    <span
+      className="quoteIconEnd"
+    >
+      <Component
+        icon="quote-right"
+      />
+    </span>
   </div>
 </div>
 `;
