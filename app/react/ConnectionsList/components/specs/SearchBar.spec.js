@@ -1,8 +1,10 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {Field, Form, actions as formActions} from 'react-redux-form';
+import { shallow } from 'enzyme';
+import { Field, Form, actions as formActions } from 'react-redux-form';
 
-import {SearchBar, mapStateToProps} from '../SearchBar';
+import { Icon } from 'UI';
+
+import { SearchBar, mapStateToProps } from '../SearchBar';
 
 describe('SearchBar (Entities)', () => {
   let component;
@@ -25,7 +27,7 @@ describe('SearchBar (Entities)', () => {
     jasmine.clock().uninstall();
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<SearchBar {...props} />);
     instance = component.instance();
   };
@@ -48,7 +50,7 @@ describe('SearchBar (Entities)', () => {
   it('should render an "X" to reset the search', () => {
     render();
 
-    component.find('.fa.fa-times').simulate('click');
+    component.find(Icon).at(1).simulate('click');
     expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     expect(props.searchReferences).toHaveBeenCalled();
   });
@@ -59,9 +61,9 @@ describe('SearchBar (Entities)', () => {
     });
 
     it('should reset search term when changing the entity', () => {
-      instance.componentWillReceiveProps({entityId: 'id1'});
+      instance.componentWillReceiveProps({ entityId: 'id1' });
       expect(props.searchReferences).not.toHaveBeenCalled();
-      instance.componentWillReceiveProps({entityId: 'id2'});
+      instance.componentWillReceiveProps({ entityId: 'id2' });
       expect(formActions.change).toHaveBeenCalledWith('relationships/list/search.searchTerm', '');
     });
   });
@@ -79,7 +81,7 @@ describe('SearchBar (Entities)', () => {
 
   describe('mapStateToProps', () => {
     it('should map entityId and search from connectionsList', () => {
-      const state = {relationships: {list: {entityId: 'sid', search: 'search'}}};
+      const state = { relationships: { list: { entityId: 'sid', search: 'search' } } };
       expect(mapStateToProps(state).entityId).toBe('sid');
       expect(mapStateToProps(state).search).toBe('search');
     });

@@ -11,6 +11,20 @@ import { Icon } from 'UI';
 import { searchReferences } from '../actions/actions';
 
 export class SearchBar extends Component {
+  componentWillMount() {
+    this.changeSearchTerm = debounce(this.props.searchReferences, 400);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.entityId !== nextProps.entityId) {
+      this.resetSearchTerm();
+    }
+  }
+
+  componentWillUnmount() {
+    this.resetSearchTerm();
+  }
+
   resetSearchTerm() {
     this.props.change('relationships/list/search.searchTerm', '');
   }
@@ -18,20 +32,6 @@ export class SearchBar extends Component {
   resetSearch() {
     this.resetSearchTerm();
     this.props.searchReferences();
-  }
-
-  componentWillMount() {
-    this.changeSearchTerm = debounce(this.props.searchReferences, 400);
-  }
-
-  componentWillUnmount() {
-    this.resetSearchTerm();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.entityId !== nextProps.entityId) {
-      this.resetSearchTerm();
-    }
   }
 
   render() {
