@@ -1,20 +1,23 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+import Immutable, { fromJS } from 'immutable';
 
+// If this is moved, there is probably a circular reference that makes tests fail
 import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { Tabs } from 'react-tabs-redux';
-import Immutable from 'immutable';
+
 
 import * as viewerModule from 'app/Viewer';
 
 describe('DocumentSidePanel', () => {
   let component;
   let props;
-  let context;
+  const context = {
+    confirm: jasmine.createSpy('confirm')
+  };
 
   beforeEach(() => {
     props = {
@@ -38,10 +41,6 @@ describe('DocumentSidePanel', () => {
       ])
     };
   });
-
-  context = {
-    confirm: jasmine.createSpy('confirm')
-  };
 
   const render = () => {
     component = shallow(<DocumentSidePanel {...props}/>, { context });
@@ -104,7 +103,7 @@ describe('DocumentSidePanel', () => {
       it('should confirm', () => {
         props.formDirty = true;
         render();
-        component.find('i.close-modal').simulate('click');
+        component.find('.close-modal').simulate('click');
         expect(context.confirm).toHaveBeenCalled();
       });
     });
@@ -118,7 +117,7 @@ describe('DocumentSidePanel', () => {
         props.formPath = 'formPath';
         render();
 
-        component.find('i.close-modal').simulate('click');
+        component.find('.close-modal').simulate('click');
 
         expect(props.closePanel).toHaveBeenCalled();
         expect(props.resetForm).toHaveBeenCalledWith('formPath');
