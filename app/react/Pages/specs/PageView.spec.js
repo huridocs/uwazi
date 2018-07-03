@@ -1,13 +1,13 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+
 import { actions } from 'app/BasicReducer';
+import { shallow } from 'enzyme';
+import PageViewer from 'app/Pages/components/PageViewer';
+import PagesAPI from 'app/Pages/PagesAPI';
+import RouteHandler from 'app/App/RouteHandler';
+import api from 'app/Search/SearchAPI';
 
 import PageView from '../PageView';
-import api from 'app/Search/SearchAPI';
-import PagesAPI from 'app/Pages/PagesAPI';
-import PageViewer from 'app/Pages/components/PageViewer';
-import RouteHandler from 'app/App/RouteHandler';
-
 import pageItemLists from '../utils/pageItemLists';
 
 describe('PageView', () => {

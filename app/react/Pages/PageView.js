@@ -1,12 +1,12 @@
 import React from 'react';
 import rison from 'rison';
 
+import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
-import PagesAPI from './PagesAPI';
-import {actions} from 'app/BasicReducer';
 
 import PageViewer from './components/PageViewer';
+import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
 
 function prepareLists(page) {
@@ -14,7 +14,7 @@ function prepareLists(page) {
 
   listsData.searchs = listsData.params.map((params, index) => {
     const sanitizedParams = params ? decodeURI(params) : '';
-    const queryDefault = {filters: {}, types: []};
+    const queryDefault = { filters: {}, types: [] };
     let query = queryDefault;
 
     if (sanitizedParams) {
@@ -32,23 +32,20 @@ function prepareLists(page) {
 }
 
 export class PageView extends RouteHandler {
-
-  static requestState({pageId}) {
+  static requestState({ pageId }) {
     return PagesAPI.get(pageId)
-    .then(page => {
+    .then((page) => {
       const listsData = prepareLists(page);
       return Promise.all([page, listsData.params, listsData.options].concat(listsData.searchs));
     })
-    .then(results => {
+    .then((results) => {
       const pageView = results.shift();
       const searchParams = results.shift();
       const searchOptions = results.shift();
-      const itemLists = searchParams.map((params, index) => {
-        return {params, items: results[index].rows, options: searchOptions[index]};
-      });
+      const itemLists = searchParams.map((params, index) => ({ params, items: results[index].rows, options: searchOptions[index] }));
 
       return {
-        page: {pageView, itemLists}
+        page: { pageView, itemLists }
       };
     });
   }
