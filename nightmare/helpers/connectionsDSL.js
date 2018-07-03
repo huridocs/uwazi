@@ -79,7 +79,7 @@ Nightmare.action('connections', {
   clickMoveToGroupButton(groupIndex, done) {
     this.evaluate_now((index) => {
       const helpers = document.__helpers;
-      helpers.querySelectorAll('.insertEntities i')[index].click();
+      helpers.querySelectorAll('.insertEntities button')[index].click();
     }, done, groupIndex)
     .catch(done);
   },
