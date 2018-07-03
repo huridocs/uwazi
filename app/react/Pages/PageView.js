@@ -4,6 +4,7 @@ import rison from 'rison';
 import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
+import { markdownDatasets } from 'app/Markdown';
 
 import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
@@ -12,7 +13,7 @@ import pageItemLists from './utils/pageItemLists';
 function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
 
-  listsData.searchs = listsData.params.map((params, index) => {
+  listsData.searchs = Promise.all(listsData.params.map((params, index) => {
     const sanitizedParams = params ? decodeURI(params) : '';
     const queryDefault = { filters: {}, types: [] };
     let query = queryDefault;
@@ -26,7 +27,7 @@ function prepareLists(page) {
 
     query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
     return api.search(query);
-  });
+  }));
 
   return listsData;
 }
@@ -36,16 +37,13 @@ export class PageView extends RouteHandler {
     return PagesAPI.get(pageId)
     .then((page) => {
       const listsData = prepareLists(page);
-      return Promise.all([page, listsData.params, listsData.options].concat(listsData.searchs));
+      const dataSets = markdownDatasets.fetch(page.metadata.content);
+      return Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
     })
-    .then((results) => {
-      const pageView = results.shift();
-      const searchParams = results.shift();
-      const searchOptions = results.shift();
-      const itemLists = searchParams.map((params, index) => ({ params, items: results[index].rows, options: searchOptions[index] }));
-
+    .then(([pageView, searchParams, searchOptions, datasets, listSearchs]) => {
+      const itemLists = searchParams.map((params, index) => ({ params, items: listSearchs[index].rows, options: searchOptions[index] }));
       return {
-        page: { pageView, itemLists }
+        page: { pageView, itemLists, datasets },
       };
     });
   }
@@ -53,6 +51,7 @@ export class PageView extends RouteHandler {
   setReduxState(state) {
     this.context.store.dispatch(actions.set('page/pageView', state.page.pageView));
     this.context.store.dispatch(actions.set('page/itemLists', state.page.itemLists));
+    this.context.store.dispatch(actions.set('page/datasets', state.page.datasets));
   }
 
   render() {

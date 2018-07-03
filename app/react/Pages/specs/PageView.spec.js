@@ -6,6 +6,7 @@ import PageViewer from 'app/Pages/components/PageViewer';
 import PagesAPI from 'app/Pages/PagesAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
+import { markdownDatasets } from 'app/Markdown';
 
 import PageView from '../PageView';
 import pageItemLists from '../utils/pageItemLists';
@@ -72,6 +73,18 @@ describe('PageView', () => {
       })
       .catch(done.fail);
     });
+
+    it('should request each dataset inside the content', (done) => {
+      const markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
+      spyOn(markdownDatasets, 'fetch').and.returnValue(Promise.resolve(markdownDatasetsResponse));
+
+      PageView.requestState({ pageId: 'abc2' })
+      .then((response) => {
+        expect(response.page.datasets).toEqual(markdownDatasetsResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
   });
 
   describe('setReduxState()', () => {
@@ -82,7 +95,10 @@ describe('PageView', () => {
           return 'PAGE DATA SET';
         case 'page/itemLists':
           return 'ITEM LISTS DATA SET';
+        case 'page/datasets':
+          return 'PAGE DATASETS DATA SET';
         default:
+          return null;
         }
       });
 
@@ -91,6 +107,7 @@ describe('PageView', () => {
       expect(actions.set).toHaveBeenCalledWith('page/itemLists', 'lists');
       expect(context.store.dispatch).toHaveBeenCalledWith('PAGE DATA SET');
       expect(context.store.dispatch).toHaveBeenCalledWith('ITEM LISTS DATA SET');
+      expect(context.store.dispatch).toHaveBeenCalledWith('PAGE DATASETS DATA SET');
     });
   });
 });
