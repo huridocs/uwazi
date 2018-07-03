@@ -1,12 +1,12 @@
 // TEST!!!
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import ShowIf from 'app/App/ShowIf';
-import {NeedAuthorization} from 'app/Auth';
-import {t} from 'app/I18N';
+import { NeedAuthorization } from 'app/Auth';
+import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
 import * as actions from '../actions/actions';
@@ -24,14 +24,16 @@ export class RelationshipsFormButtons extends Component {
   }
 
   render() {
-    const {editing, saving} = this.props;
+    const { editing, saving } = this.props;
 
     return (
       <span>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={!editing}>
-            <button onClick={this.edit(true)}
-                    className="edit-metadata btn btn-primary">
+            <button
+              onClick={this.edit(true)}
+              className="edit-metadata btn btn-primary"
+            >
               <Icon icon="pencil-alt" />
               <span className="btn-label">{t('System', 'Edit')}</span>
             </button>
@@ -39,8 +41,10 @@ export class RelationshipsFormButtons extends Component {
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={editing}>
-            <button onClick={this.edit(false)}
-                    className="cancel-edit-metadata btn btn-primary">
+            <button
+              onClick={this.edit(false)}
+              className="cancel-edit-metadata btn btn-primary"
+            >
               <Icon icon="times" />
               <span className="btn-label">{t('System', 'Cancel')}</span>
             </button>
@@ -48,10 +52,12 @@ export class RelationshipsFormButtons extends Component {
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']}>
           <ShowIf if={editing}>
-            <button onClick={this.props.save}
-                    className="btn btn-success"
-                    disabled={saving}>
-              <Icon icon={!saving ? 'save' : 'spinner'} pulse={saving ? 'pulse' : false} fixedWidth />
+            <button
+              onClick={this.props.save}
+              className="btn btn-success"
+              disabled={saving}
+            >
+              <Icon icon={!saving ? 'save' : 'spinner'} pulse={!!saving} fixedWidth />
               <span className="btn-label">{t('System', 'Save')}</span>
             </button>
           </ShowIf>
@@ -70,14 +76,12 @@ RelationshipsFormButtons.propTypes = {
   searchResults: PropTypes.object
 };
 
-const mapStateToProps = ({relationships}) => {
-  return {
+const mapStateToProps = ({ relationships }) => ({
     editing: relationships.hubActions.get('editing'),
     saving: relationships.hubActions.get('saving'),
     parentEntity: relationships.list.entity,
     searchResults: relationships.list.searchResults
-  };
-};
+});
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
