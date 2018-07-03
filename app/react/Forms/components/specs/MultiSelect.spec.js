@@ -15,7 +15,7 @@ describe('MultiSelect', () => {
       options: [
         { label: 'Option1', value: 'option1', results: 4 },
         { label: 'Option2', value: 'option2', results: 2 },
-        { label: 'Group',
+        { label: 'Sub Group',
           value: 'Group',
           results: 3,
           options: [
@@ -38,9 +38,9 @@ describe('MultiSelect', () => {
     const optionElements = component.find('input[type="checkbox"]');
     expect(optionElements.length).toBe(5);
     expect(optionElements.at(0).props().value).toBe('option1');
-    expect(optionElements.at(4).props().value).toBe('option2');
-    expect(optionElements.at(2).props().value).toBe('group-option1');
-    expect(optionElements.at(3).props().value).toBe('group-option2');
+    expect(optionElements.at(1).props().value).toBe('option2');
+    expect(optionElements.at(3).props().value).toBe('group-option1');
+    expect(optionElements.at(4).props().value).toBe('group-option2');
   });
 
   describe('when checking an option', () => {
@@ -53,7 +53,7 @@ describe('MultiSelect', () => {
     it('it should handle multiple options selected', () => {
       props.value = ['option1'];
       render();
-      component.find('input[type="checkbox"]').at(4).simulate('change');
+      component.find('input[type="checkbox"]').at(1).simulate('change');
       expect(props.onChange).toHaveBeenCalledWith(['option1', 'option2']);
     });
 

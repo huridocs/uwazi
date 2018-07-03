@@ -447,6 +447,35 @@ export default function () {
       };
     },
 
+    aggregationWithGroupsOfOptions(key, should, filters, dictionary) {
+      const aggregation = {
+        filters: { filters: {} },
+        aggregations: {
+          filtered: {
+            filter: {
+              bool: {
+                should,
+                filter: filters
+              }
+            }
+          }
+        }
+      };
+      const addMatch = (value) => {
+        const match = { terms: {} };
+        match.terms[key] = value.values ? value.values.map(v => v.id) : [value.id];
+        aggregation.filters.filters[value.id.toString()] = match;
+        if (value.values) {
+          value.values.forEach(addMatch);
+        }
+      };
+      dictionary.values.forEach(addMatch);
+
+      const missingMatch = { bool: { must_not: { exists: { field: key } } } };
+      aggregation.filters.filters.missing = missingMatch;
+      return aggregation;
+    },
+
     nestedAggregation(property, should, readOnlyFilters) {
       const nestedAggregation = {
         nested: {
@@ -515,7 +544,7 @@ export default function () {
       return nestedAggregation;
     },
 
-    aggregations(properties) {
+    aggregations(properties, dictionaries) {
       properties.forEach((property) => {
         const path = `metadata.${property.name}.raw`;
         let filters = baseQuery.query.bool.filter.filter(match => match &&
@@ -528,7 +557,15 @@ export default function () {
           baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, should, filters);
           return;
         }
-
+        let dictionary;
+        if (property.content) {
+          dictionary = dictionaries.find(d => property.content.toString() === d._id.toString());
+        }
+        const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
+        if (isADictionaryWithGroups) {
+          baseQuery.aggregations.all.aggregations[property.name] = this.aggregationWithGroupsOfOptions(path, should, filters, dictionary);
+          return;
+        }
         baseQuery.aggregations.all.aggregations[property.name] = this.aggregation(path, should, filters);
       });
       return this;

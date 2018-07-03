@@ -2,7 +2,7 @@ import { comonProperties, defaultFilters, allUniqueProperties, textFields } from
 import { detect as detectLanguage } from 'shared/languages';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import languages from 'shared/languagesList';
-import dictionaries from 'api/thesauris/dictionariesModel';
+import dictionariesModel from 'api/thesauris/dictionariesModel';
 
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
@@ -52,7 +52,7 @@ function agregationProperties(properties) {
     if (property.type === 'nested') {
       return { name: property.name, nested: true, nestedProperties: property.nestedProperties };
     }
-    return { name: property.name, nested: false };
+    return { name: property.name, nested: false, content: property.content };
   });
 }
 
@@ -79,15 +79,15 @@ const search = {
     if (query.searchTerm) {
       searchEntitiesbyTitle = entities.get({ $text: { $search: query.searchTerm }, language });
       const regexp = `.*${query.searchTerm}.*`;
-      searchDictionariesByTitle = dictionaries.db.aggregate([
+      searchDictionariesByTitle = dictionariesModel.db.aggregate([
         { $match: { 'values.label': { $regex: regexp, $options: 'i' } } },
         { $unwind: '$values' },
         { $match: { 'values.label': { $regex: regexp, $options: 'i' } } }
       ]);
     }
 
-    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel]) => {
+    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get()])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries]) => {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
@@ -126,7 +126,7 @@ const search = {
 
       documentsQuery.filterMetadataByFullText(textSearchFilters);
       documentsQuery.filterMetadata(filters);
-      documentsQuery.aggregations(aggregations);
+      documentsQuery.aggregations(aggregations, dictionaries);
 
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
@@ -153,6 +153,13 @@ const search = {
           }
           result._id = hit._id;
           return result;
+        });
+        Object.keys(response.aggregations.all).forEach((aggregationKey) => {
+          const aggregation = response.aggregations.all[aggregationKey];
+          if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
+            aggregation.buckets = Object.keys(aggregation.buckets).map(key => Object.assign({ key }, aggregation.buckets[key]));
+          }
+          response.aggregations.all[aggregationKey] = aggregation;
         });
 
         return { rows, totalRows: response.hits.total, aggregations: response.aggregations };

@@ -51,7 +51,6 @@ export function moveValues(valuesToMove, groupIndex) {
       values.splice(-1, 1);
       values = values.concat(valuesToMove);
     }
-
     dispatch(formActions.change('thesauri.data.values', values));
   };
 }
@@ -86,6 +85,7 @@ export function addGroup() {
 }
 
 export function removeValue(index, groupIndex) {
+  console.log(index, groupIndex);
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
     if (groupIndex) {
