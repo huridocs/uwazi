@@ -44,6 +44,20 @@ describe('templates utils', () => {
       const result = getUpdatedNames(oldProperties, newProperties);
       expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
     });
+
+    it('should work for sub values too', () => {
+      const oldProperties = [
+        { id: 1, name: 'my_prop' },
+        { id: 2, name: 'my_prop_two', values: [{ id: 3, name: 'look_at_me' }] },
+      ];
+      const newProperties = [
+        { id: 1, name: 'my_prop' },
+        { id: 2, name: 'my_prop_two', values: [{ id: 3, name: 'I_changed' }] },
+      ];
+
+      const result = getUpdatedNames(oldProperties, newProperties);
+      expect(result).toEqual({ look_at_me: 'I_changed' });
+    });
   });
 
   describe('getDeletedProperties()', () => {
@@ -56,6 +70,19 @@ describe('templates utils', () => {
         { id: 1, name: 'I_just_changed_my_name' }
       ];
 
+      const result = getDeletedProperties(oldProperties, newProperties);
+      expect(result).toEqual(['boromir']);
+    });
+
+    it('should check sub values too', () => {
+      const oldProperties = [
+        { id: 1, name: 'my_prop' },
+        { id: 2, name: 'my_prop_two', values: [{ id: 3, name: 'boromir' }] },
+      ];
+      const newProperties = [
+        { id: 2, name: 'my_prop_two', values: [] },
+        { id: 4, name: 'vip', values: [{ id: 1, name: 'my_prop' }] }
+      ];
       const result = getDeletedProperties(oldProperties, newProperties);
       expect(result).toEqual(['boromir']);
     });
