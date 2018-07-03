@@ -70,7 +70,7 @@ Nightmare.action('connections', {
       const relations = helpers.querySelectorAll('.rightRelationship');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          helpers.querySelector('.moveEntity i', relation).click();
+          helpers.querySelector('.moveEntity button', relation).click();
         }
       });
     }, done, matchingTitle)
