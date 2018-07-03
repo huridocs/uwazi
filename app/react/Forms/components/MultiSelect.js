@@ -132,7 +132,7 @@ export default class MultiSelect extends Component {
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]} >
         <span className="multiselectItem-icon">
-          <Icon icon="square" className="checkbox-empty" />
+          <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
         </span>
         <span className="multiselectItem-name">
