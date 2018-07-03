@@ -110,7 +110,7 @@ export class DocumentTypesList extends Component {
         htmlFor={item.id}
       >
         <span className="multiselectItem-icon">
-          <Icon icon="square" className="checkbox-empty" />
+          <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
         </span>
         <span className="multiselectItem-name"><Translate context={context}>{item.name}</Translate></span>
@@ -133,7 +133,7 @@ export class DocumentTypesList extends Component {
         />
         <label htmlFor={item.id} className="multiselectItem-label">
           <span className="multiselectItem-icon">
-            <Icon icon="square" className="checkbox-empty" />
+            <Icon icon={['far', 'square']} className="checkbox-empty" />
             <Icon icon="check" className="checkbox-checked" />
           </span>
           <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>

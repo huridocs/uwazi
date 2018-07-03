@@ -19,7 +19,7 @@ export class CreateConnectionPanel extends Component {
       return <Icon icon="check" />;
     }
 
-    return <Icon icon="square" />;
+    return <Icon icon={['far', 'square']} />;
   }
 
   render() {

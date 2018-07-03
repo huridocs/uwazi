@@ -106,7 +106,7 @@ export default class NestedMultiselect extends Component {
                 />
                 <label htmlFor={prop} className="multiselectItem-label">
                   <span className="multiselectItem-icon">
-                    <Icon icon="square" className="checkbox-empty" />
+                    <Icon icon={['far', 'square']} className="checkbox-empty" />
                     <Icon icon="check" className="checkbox-checked" />
                   </span>
                   <span className="multiselectItem-name" title={label}><b>{label}</b></span>

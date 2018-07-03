@@ -26,7 +26,6 @@ import {
   faLink,
   faSpinner,
   faCheck,
-  faSquare,
   faCaretUp,
   faCaretDown,
   faExchangeAlt,
@@ -62,6 +61,10 @@ import {
   faChartBar,
   faParagraph
 } from '@fortawesome/free-solid-svg-icons';
+
+import {
+  faSquare
+} from '@fortawesome/free-regular-svg-icons';
 
 const icons = {
   faArrowLeft,
