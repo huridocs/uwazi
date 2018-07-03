@@ -150,7 +150,7 @@ Nightmare.action('connections', {
       const relations = helpers.querySelectorAll('.rightRelationship');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          helpers.querySelector('.removeEntity i', relation).click();
+          helpers.querySelector('.removeEntity button', relation).click();
         }
       });
     }, done, matchingTitle)
