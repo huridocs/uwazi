@@ -107,7 +107,7 @@ export class ThesauriForm extends Component {
               tabIndex={groupIndex + 500}
               type="button"
               className="btn btn-xs btn-danger"
-              onClick={this.props.removeValue.bind(null, groupIndex)}
+              onClick={this.props.removeValue.bind(null, groupIndex, null)}
             >
               <Icon icon="trash-alt" /> Delete Group
             </button>
@@ -116,7 +116,8 @@ export class ThesauriForm extends Component {
               type="button"
               className="rounded-icon-small"
               alt="move"
-              onClick={this.moveToGroup.bind(this, groupIndex)}>
+              onClick={this.moveToGroup.bind(this, groupIndex, null)}
+            >
               <Icon icon="arrow-left" size="xs" />
             </button>
           </Field>
@@ -158,7 +159,8 @@ export class ThesauriForm extends Component {
               type="button"
               className="rounded-icon-small"
               alt="move"
-              onClick={this.toggleToMove.bind(this, value)}>
+              onClick={this.toggleToMove.bind(this, value)}
+            >
               <Icon icon="check" size="xs" />
             </button>
           </Field>
@@ -203,7 +205,8 @@ export class ThesauriForm extends Component {
                   type="button"
                   className="rounded-icon-small"
                   alt="move"
-                  onClick={this.moveToGroup.bind(this)}>
+                  onClick={this.moveToGroup.bind(this, null)}
+                >
                   <Icon icon="arrow-left" size="xs"/>
                 </button>
               </li>

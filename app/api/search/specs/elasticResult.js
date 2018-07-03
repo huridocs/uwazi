@@ -1,8 +1,5 @@
 export default function () {
-
-
-  let hit = () => {
-    return Object.assign({}, {
+  const hit = () => Object.assign({}, {
       _index: 'uwazi',
       _type: 'logs',
       _id: 'id1',
@@ -10,10 +7,9 @@ export default function () {
       _source: {
       },
       highlight: {}
-    });
-  };
+  });
 
-  let result = {
+  const result = {
     took: 7,
     timed_out: false,
     _shards: {
@@ -25,6 +21,9 @@ export default function () {
       total: 10,
       max_score: 0.05050901,
       hits: []
+    },
+    aggregations: {
+      all: {}
     }
   };
 
@@ -36,13 +35,13 @@ export default function () {
     withDocs(docs) {
       result.hits.hits = [];
       docs.forEach((doc) => {
-        let newHit = hit();
+        const newHit = hit();
         newHit._id = doc._id;
         delete doc._id;
 
         newHit._source = doc;
         if (doc.snippets) {
-          newHit.inner_hits = {fullText: doc.snippets};
+          newHit.inner_hits = { fullText: doc.snippets };
           delete doc.snippets;
         }
         result.hits.hits.push(newHit);
