@@ -1,7 +1,7 @@
+import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
 import rison from 'rison';
 
-import HtmlParser from 'htmlparser2/lib/Parser';
 import api from 'app/Search/SearchAPI';
 
 const conformUrl = (url = '') => {
@@ -40,5 +40,17 @@ export default {
     const datasets = parseDatasets(markdown);
 
     return requestDatasets(datasets).then(conformDatasets);
+  },
+
+  getAggregation(state, { property, value, dataset = 'default' }) {
+    const data = state.page.datasets.get(dataset);
+    if (!data) {
+      let undefinedValue;
+      return undefinedValue;
+    }
+
+    return data.getIn(['aggregations', 'all', property, 'buckets'])
+    .find(bucket => bucket.get('key') === value)
+    .getIn(['filtered', 'doc_count']);
   }
 };
