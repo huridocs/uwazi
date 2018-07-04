@@ -98,4 +98,63 @@ describe('markdownDatasets', () => {
       expect(aggregation).toBeUndefined();
     });
   });
+
+  describe('getAggregations', () => {
+    const dataset = {
+      aggregations: {
+        all: {
+          property1: {
+            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }]
+          },
+          property2: {
+            buckets: [{ key: 'id5', filtered: { doc_count: 5 } }, { key: 'id6', filtered: { doc_count: 7 } }]
+          }
+        }
+      }
+    };
+
+    const dataset2 = {
+      aggregations: {
+        all: {
+          property3: {
+            buckets: [{ key: 'id7', filtered: { doc_count: 6 } }, { key: 'id8', filtered: { doc_count: 76 } }]
+          },
+          property4: {
+            buckets: [{ key: 'id36', filtered: { doc_count: 36 } }]
+          }
+        }
+      }
+    };
+
+    const state = {
+      page: {
+        datasets: Immutable.fromJS({
+          default: dataset,
+          another_dataset: dataset2
+        })
+      }
+    };
+
+    it('should get the aggregation for the type/property and value', () => {
+      let aggregations = markdownDatasets.getAggregations(state, { property: 'property1' });
+      expect(aggregations).toEqual(Immutable.fromJS([
+        { key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }
+      ]));
+
+      aggregations = markdownDatasets.getAggregations(state, { property: 'property2' });
+      expect(aggregations).toEqual(Immutable.fromJS([
+        { key: 'id5', filtered: { doc_count: 5 } }, { key: 'id6', filtered: { doc_count: 7 } }
+      ]));
+
+      aggregations = markdownDatasets.getAggregations(state, { property: 'property4', dataset: 'another_dataset' });
+      expect(aggregations).toEqual(Immutable.fromJS([
+        { key: 'id36', filtered: { doc_count: 36 } }
+      ]));
+    });
+
+    it('should return null when dataset do not exists', () => {
+      const aggregations = markdownDatasets.getAggregations(state, { dataset: 'non_existent_dataset' });
+      expect(aggregations).toBeUndefined();
+    });
+  });
 });

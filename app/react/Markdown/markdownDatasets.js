@@ -4,6 +4,8 @@ import rison from 'rison';
 
 import api from 'app/Search/SearchAPI';
 
+let undefinedValue;
+
 const conformUrl = (url = '') => {
   const { q } = queryString.parse(url.substring(url.indexOf('?')));
   if (!q) {
@@ -35,22 +37,25 @@ const requestDatasets = datasets => Promise.all(
 
 const conformDatasets = sets => sets.reduce((memo, set) => Object.assign({}, memo, { [set.name]: set.data }), {});
 
+const getAggregations = (state, { property, dataset = 'default' }) => {
+  const data = state.page.datasets.get(dataset);
+  if (!data) {
+    return undefinedValue;
+  }
+
+  return data.getIn(['aggregations', 'all', property, 'buckets']);
+};
+
 export default {
   async fetch(markdown) {
     const datasets = parseDatasets(markdown);
-
     return requestDatasets(datasets).then(conformDatasets);
   },
 
   getAggregation(state, { property, value, dataset = 'default' }) {
-    const data = state.page.datasets.get(dataset);
-    if (!data) {
-      let undefinedValue;
-      return undefinedValue;
-    }
+    const aggregations = getAggregations(state, { property, dataset });
+    return aggregations ? aggregations.find(bucket => bucket.get('key') === value).getIn(['filtered', 'doc_count']) : undefinedValue;
+  },
 
-    return data.getIn(['aggregations', 'all', property, 'buckets'])
-    .find(bucket => bucket.get('key') === value)
-    .getIn(['filtered', 'doc_count']);
-  }
+  getAggregations,
 };
