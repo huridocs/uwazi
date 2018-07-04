@@ -61,6 +61,10 @@ export default (_markdown, callback, withHtml = false) => {
       return true;
     },
     processNode: (node, children, index) => {
+      if (node.name && node.name.toLowerCase() === 'dataset') {
+        return false;
+      }
+
       const customComponentTypeMatcher = /{(.+)}\(/;
       let type;
       let config;
