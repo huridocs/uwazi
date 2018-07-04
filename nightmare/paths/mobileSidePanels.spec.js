@@ -1,12 +1,12 @@
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
 //iphone 6 measures
 const nightmare = createNightmare(376, 667);
 
-describe('mobile somke test,', () => {
+describe('mobile somke test', () => {
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
@@ -15,7 +15,7 @@ describe('mobile somke test,', () => {
       .wait(selectors.uploadsView.newEntityButtom)
       .url()
       .then((url) => {
-        expect(url.match(config.url + '/uploads')).not.toBe(null);
+        expect(url.match(`${config.url}/uploads`)).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));
@@ -56,11 +56,11 @@ describe('mobile somke test,', () => {
     it('should show attachments', (done) => {
       nightmare
       .gotoLibrary()
-      .waitToClick('#app > div.content > header > i')
+      .waitToClick('#app > div.content > header > button')
       .waitToClick(selectors.libraryView.firstEntityViewButton)
       .wait(selectors.entityView.firstAttachmentTitle)
       .getInnerText(selectors.entityView.firstAttachmentTitle)
-      .then(attachmentName => {
+      .then((attachmentName) => {
         expect(attachmentName).toBeDefined();
         done();
       })

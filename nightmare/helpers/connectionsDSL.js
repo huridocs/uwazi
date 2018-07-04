@@ -162,7 +162,7 @@ Nightmare.action('connections', {
       const relations = helpers.querySelectorAll('.rightRelationshipType');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          relation.nextSibling.querySelector('i').click();
+          relation.nextSibling.querySelector('button').click();
         }
       });
     }, done, matchingTitle)
