@@ -253,6 +253,32 @@ exports[`MarkdownViewer render should render media components 1`] = `
 </div>
 `;
 
+exports[`MarkdownViewer render should render properly a selfclosing XML tags 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p
+    key="0"
+  >
+    test
+  </p>
+  
+
+  <SearchBox
+    classname=""
+    key="2"
+    placeholder=""
+  />
+  
+
+  <div
+    key="4"
+  >
+    test
+  </div>
+</div>
+`;
+
 exports[`MarkdownViewer render should support containers with custom classNames 1`] = `
 <div
   className="markdown-viewer"

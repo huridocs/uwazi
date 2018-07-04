@@ -8,7 +8,7 @@ import CustomComponents from './components';
 const components = Object.keys(CustomComponents).reduce((map, key) => Object.assign({}, map, { [key.toLowerCase()]: CustomComponents[key] }), {});
 const availableComponents = Object.keys(components);
 
-const myParser = new Parser();
+const myParser = new Parser({ xmlMode: true });
 const processNodeDefinitions = new HtmlToReact.ProcessNodeDefinitions(React);
 const customComponentMatcher = '{\\w+}\\(.+\\)\\(.+\\)|{\\w+}\\(.+\\)';
 
@@ -81,8 +81,8 @@ export default (_markdown, callback, withHtml = false) => {
         config = getConfig(node.data);
       }
 
-      if (availableComponents.includes(node.name)) {
-        type = components[node.name];
+      if (availableComponents.includes(node.name ? node.name.toLowerCase() : '')) {
+        type = components[node.name.toLowerCase()];
         config = node.attribs;
       }
 
