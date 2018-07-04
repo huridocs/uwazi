@@ -51,7 +51,6 @@ export function moveValues(valuesToMove, groupIndex) {
       values.splice(-1, 1);
       values = values.concat(valuesToMove);
     }
-
     dispatch(formActions.change('thesauri.data.values', values));
   };
 }

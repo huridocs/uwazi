@@ -73,8 +73,6 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
             _opt.results = getOptionCount(aggregations, _opt.id, property.name);
             return _opt;
           });
-
-          option.results = option.values.reduce((r, o) => o.results > r ? o.results : r, 0);
         }
         return option;
       }).filter(opt => opt.results);

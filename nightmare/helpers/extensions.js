@@ -29,6 +29,12 @@ Nightmare.action('waitFirstDocumentToMatch', function (term, done) {
   .catch(done);
 });
 
+Nightmare.action('waitToDisapear', function (selector, done) {
+  this.wait(_selector => !document.querySelector(_selector), selector)
+  .then(done)
+  .catch(done);
+});
+
 Nightmare.action('librarySearch', function (searchTerm, done) {
   this.write(selectors.libraryView.searchInput, searchTerm)
   .type(selectors.libraryView.searchInput, '\u000d')

@@ -22,7 +22,7 @@ export default class MultiSelect extends Component {
     const selectedItems = this.props.value.slice(0);
     if (e.target.checked) {
       group.options.forEach((_item) => {
-        if (!this.checked(_item[this.props.optionsValue])) {
+        if (!this.checked(_item)) {
           selectedItems.push(_item[this.props.optionsValue]);
         }
       });
@@ -30,7 +30,7 @@ export default class MultiSelect extends Component {
 
     if (!e.target.checked) {
       group.options.forEach((_item) => {
-        if (this.checked(_item[this.props.optionsValue])) {
+        if (this.checked(_item)) {
           const index = selectedItems.indexOf(_item[this.props.optionsValue]);
           selectedItems.splice(index, 1);
         }
@@ -40,15 +40,15 @@ export default class MultiSelect extends Component {
   }
 
 
-  checked(value) {
+  checked(option) {
     if (!this.props.value) {
       return false;
     }
 
-    if (value.options) {
-      return value.options.reduce((allIncluded, option) => allIncluded && this.props.value.includes(option[this.props.optionsValue]), true);
+    if (option.options) {
+      return option.options.reduce((allIncluded, _option) => allIncluded && this.props.value.includes(_option[this.props.optionsValue]), true);
     }
-    return this.props.value.includes(value);
+    return this.props.value.includes(option[this.props.optionsValue]);
   }
 
   change(value) {
@@ -76,18 +76,19 @@ export default class MultiSelect extends Component {
     this.setState({ showAll: !this.state.showAll });
   }
 
-  sort(options, optionsValue, optionsLabel) {
+  sort(options, optionsValue, optionsLabel, isSubGroup = false) {
     let sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
-        sorting = this.checked(b[optionsValue]) - this.checked(a[optionsValue]);
+        sorting = this.checked(b) - this.checked(a);
       }
 
       if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
         sorting = a.results > b.results ? -1 : 1;
       }
 
-      if (sorting === 0 || this.state.showAll || this.state.sortbyLabel) {
+      const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
+      if (sorting === 0 || showingAll || this.state.sortbyLabel || isSubGroup) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
@@ -95,7 +96,7 @@ export default class MultiSelect extends Component {
     });
 
     const noValueOption = sortedOptions.find(opt => opt.noValueKey);
-    if (noValueOption && !this.checked(noValueOption[optionsValue])) {
+    if (noValueOption && !this.checked(noValueOption)) {
       sortedOptions = sortedOptions.filter(opt => !opt.noValueKey);
       sortedOptions.push(noValueOption);
     }
@@ -122,8 +123,8 @@ export default class MultiSelect extends Component {
   showSubOptions(parent) {
     const toggled = this.state.ui[parent.id];
     const parentChecked = this.checked(parent);
-    const childChecked = parent.options.find(itm => this.checked(itm[this.props.optionsValue]));
-    return toggled || parentChecked || !!childChecked;
+    const childChecked = !!parent.options.find(itm => this.checked(itm));
+    return toggled || (!parentChecked && childChecked);
   }
 
   label(option) {
@@ -142,7 +143,7 @@ export default class MultiSelect extends Component {
           </ShowIf>
           {option.options &&
             <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-              <i className={this.state.ui[option.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <i className={this.showSubOptions(option) ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
             </span>
           }
         </span>
@@ -152,7 +153,6 @@ export default class MultiSelect extends Component {
 
   renderGroup(group, index) {
     const { prefix } = this.props;
-    const _group = Object.assign({}, group, { results: `${group.results}` });
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
@@ -163,7 +163,7 @@ export default class MultiSelect extends Component {
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
           />
-          {this.label(_group)}
+          {this.label(group)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
@@ -185,7 +185,7 @@ export default class MultiSelect extends Component {
           value={option[optionsValue]}
           id={prefix + option[optionsValue]}
           onChange={this.change.bind(this, option[optionsValue])}
-          checked={this.checked(option[optionsValue])}
+          checked={this.checked(option)}
         />
         {this.label(option)}
       </li>
@@ -200,14 +200,14 @@ export default class MultiSelect extends Component {
     let options = this.props.options.slice();
     const totalOptions = options.filter((option) => {
       let notDefined;
-      return option.results === notDefined || option.results > 0 || this.checked(option[optionsValue]);
+      return option.results === notDefined || option.results > 0 || this.checked(option);
     });
     options = totalOptions;
     options = options.map((option) => {
       if (option.options) {
         option.options = option.options.filter((_opt) => {
           let notDefined;
-          return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt[optionsValue]);
+          return _opt.results === notDefined || _opt.results > 0 || this.checked(_opt);
         });
       }
 
@@ -226,10 +226,16 @@ export default class MultiSelect extends Component {
     }
 
     if (tooManyOptions) {
-      const numberOfActiveOptions = options.filter(opt => this.checked(opt[optionsValue])).length;
+      const numberOfActiveOptions = options.filter(opt => this.checked(opt)).length;
       const optionsToShow = this.props.optionsToShow > numberOfActiveOptions ? this.props.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
     }
+
+    options.forEach((option) => {
+      if (option.options) {
+        option.options = this.sort(option.options, optionsValue, optionsLabel, true);
+      }
+    });
 
     return (
       <ul className="multiselect is-active">
