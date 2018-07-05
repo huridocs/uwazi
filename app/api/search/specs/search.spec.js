@@ -354,7 +354,15 @@ describe('search', () => {
         .catch(catchErrors(done));
       });
 
-      describe('AND falg', () => {
+      describe('allAggregations', () => {
+        it('should return all aggregations', async () => {
+          const allAggregations = await search.search({ allAggregations: true }, 'en');
+          const aggregationsIncluded = (Object.keys(allAggregations.aggregations.all));
+          expect(aggregationsIncluded).toMatchSnapshot();
+        });
+      });
+
+      describe('AND flag', () => {
         it('should restrict the results to those who have all values of the filter', (done) => {
           search.search(
             {

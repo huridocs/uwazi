@@ -150,5 +150,29 @@ describe('MarkdownViewer', () => {
       render();
       expect(component).toMatchSnapshot();
     });
+
+    it('should render properly a selfclosing XML tags', () => {
+      props.html = true;
+      props.markdown = '' +
+        'test\n\n' +
+        '<SearchBox/>\n' +
+        '<div>test</div>';
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should remove Dataset tags', () => {
+      props.html = true;
+      props.markdown = '' +
+        'test\n\n' +
+        '<Dataset />\n' +
+        '<SearchBox/>\n' +
+        '<Dataset name="test" />\n' +
+        '<div>test</div>';
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
   });
 });

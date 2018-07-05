@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Counter should render a placeholder when count is "null" 1`] = `"-"`;
+
+exports[`Counter should render the count passed by mapStateToProps 1`] = `5`;

@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BarChart Markdown component should render a placeholder when data is undefined 1`] = `
+<div
+  className="PieChart "
+>
+  <Loader />
+</div>
+`;
+
+exports[`BarChart Markdown component should render the data passed by mapStateToProps 1`] = `
+<div
+  className="PieChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={222}
+    width="100%"
+  >
+    <PieChart
+      barCategoryGap="10%"
+      barGap={4}
+      cx="50%"
+      cy="50%"
+      endAngle={360}
+      height={222}
+      innerRadius={0}
+      layout="centric"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      outerRadius="80%"
+      reverseStackOrder={false}
+      stackOffset="none"
+      startAngle={0}
+      width={222}
+    >
+      <Pie
+        animationBegin={400}
+        animationDuration={1500}
+        animationEasing="ease"
+        cx="50%"
+        cy="50%"
+        data={
+          Array [
+            Object {
+              "label": "label2",
+              "results": 33,
+            },
+            Object {
+              "label": "label1",
+              "results": 25,
+            },
+            Object {
+              "label": "label3",
+              "results": 13,
+            },
+          ]
+        }
+        dataKey="results"
+        endAngle={360}
+        fill="#8884d8"
+        hide={false}
+        innerRadius={0}
+        isAnimationActive={true}
+        labelLine={false}
+        legendType="rect"
+        minAngle={0}
+        nameKey="label"
+        outerRadius={105}
+        paddingAngle={0}
+        startAngle={0}
+        stroke="#fff"
+      >
+        <Cell
+          fill="#ffcc00"
+          key="0"
+        />
+        <Cell
+          fill="#ffd633"
+          key="1"
+        />
+        <Cell
+          fill="#ffe066"
+          key="2"
+        />
+      </Pie>
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
+`;
