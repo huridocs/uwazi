@@ -1,133 +1,128 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faArrowLeft,
-  faArrowRight,
-  faAngleLeft,
-  faAngleRight,
-  faChevronLeft,
-  faChevronRight,
-  faQuoteLeft,
-  faQuoteRight,
-  faBars,
-  faCoffee,
-  faTimes,
-  faTh,
-  faPowerOff,
-  faCog,
-  faCloudUploadAlt,
-  faPlay,
-  faFile,
-  faFilePdf,
-  faPencilAlt,
-  faTrashAlt,
-  faSave,
-  faUpload,
-  faPaperclip,
-  faLink,
-  faSpinner,
-  faCheck,
-  faCaretUp,
-  faCaretDown,
-  faExchangeAlt,
-  faSync,
-  faSearch,
-  faFont,
-  faSitemap,
-  faInfoCircle,
-  faCircle,
-  faTimesCircle,
-  faQuestionCircle,
-  faLightbulb,
-  faClock,
-  faExclamationTriangle,
-  faPaperPlane,
-  faMapMarker,
-  faTerminal,
-  faPlus,
-  faUndo,
-  faHome,
-  faEnvelope,
-  faLanguage,
-  faBook,
-  faLock,
-  faCalendar,
-  faClone,
-  faSort,
-  faList,
-  faCubes,
-  faCalculator,
-  faSortAlphaDown,
-  faGavel,
-  faChartBar,
-  faParagraph
-} from '@fortawesome/free-solid-svg-icons';
-
-import {
-  faSquare
-} from '@fortawesome/free-regular-svg-icons';
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
+import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
+import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
+import { faCalculator } from '@fortawesome/free-solid-svg-icons/faCalculator';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons/faCalendar';
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown';
+import { faCaretUp } from '@fortawesome/free-solid-svg-icons/faCaretUp';
+import { faChartBar } from '@fortawesome/free-solid-svg-icons/faChartBar';
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
+import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
+import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
+import { faClone } from '@fortawesome/free-solid-svg-icons/faClone';
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons/faCloudUploadAlt';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee';
+import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
+import { faCubes } from '@fortawesome/free-solid-svg-icons/faCubes';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
+import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
+import { faFile } from '@fortawesome/free-solid-svg-icons/faFile';
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
+import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
+import { faGavel } from '@fortawesome/free-solid-svg-icons/faGavel';
+import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
+import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
+import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
+import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
+import { faList } from '@fortawesome/free-solid-svg-icons/faList';
+import { faLock } from '@fortawesome/free-solid-svg-icons/faLock';
+import { faMapMarker } from '@fortawesome/free-solid-svg-icons/faMapMarker';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
+import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
+import { faParagraph } from '@fortawesome/free-solid-svg-icons/faParagraph';
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
+import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
+import { faPowerOff } from '@fortawesome/free-solid-svg-icons/faPowerOff';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
+import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons/faQuoteLeft';
+import { faQuoteRight } from '@fortawesome/free-solid-svg-icons/faQuoteRight';
+import { faSave } from '@fortawesome/free-solid-svg-icons/faSave';
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faSitemap } from '@fortawesome/free-solid-svg-icons/faSitemap';
+import { faSort } from '@fortawesome/free-solid-svg-icons/faSort';
+import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDown';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
+import { faSquare } from '@fortawesome/free-regular-svg-icons/faSquare';
+import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
+import { faTerminal } from '@fortawesome/free-solid-svg-icons/faTerminal';
+import { faTh } from '@fortawesome/free-solid-svg-icons/faTh';
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt';
+import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
+import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload';
 
 const icons = {
-  faArrowLeft,
-  faArrowRight,
   faAngleLeft,
   faAngleRight,
+  faArrowLeft,
+  faArrowRight,
+  faBars,
+  faBook,
+  faCalculator,
+  faCalendar,
+  faCaretDown,
+  faCaretUp,
+  faChartBar,
+  faCheck,
   faChevronLeft,
   faChevronRight,
-  faQuoteLeft,
-  faQuoteRight,
-  faBars,
-  faCoffee,
-  faTimes,
-  faTh,
-  faPowerOff,
-  faCog,
+  faCircle,
+  faClock,
+  faClone,
   faCloudUploadAlt,
-  faPlay,
+  faCoffee,
+  faCog,
+  faCubes,
+  faEnvelope,
+  faExchangeAlt,
+  faExclamationTriangle,
   faFile,
   faFilePdf,
-  faPencilAlt,
-  faTrashAlt,
-  faSave,
-  faUpload,
-  faPaperclip,
-  faLink,
-  faSpinner,
-  faCheck,
-  faSquare,
-  faCaretUp,
-  faCaretDown,
-  faExchangeAlt,
-  faSync,
-  faSearch,
   faFont,
-  faSitemap,
-  faInfoCircle,
-  faCircle,
-  faTimesCircle,
-  faQuestionCircle,
-  faLightbulb,
-  faClock,
-  faExclamationTriangle,
-  faPaperPlane,
-  faMapMarker,
-  faTerminal,
-  faPlus,
-  faUndo,
-  faHome,
-  faEnvelope,
-  faLanguage,
-  faBook,
-  faLock,
-  faCalendar,
-  faClone,
-  faSort,
-  faList,
-  faCubes,
-  faCalculator,
-  faSortAlphaDown,
   faGavel,
-  faChartBar,
-  faParagraph
+  faHome,
+  faInfoCircle,
+  faLanguage,
+  faLightbulb,
+  faLink,
+  faList,
+  faLock,
+  faMapMarker,
+  faPaperPlane,
+  faPaperclip,
+  faParagraph,
+  faPencilAlt,
+  faPlay,
+  faPlus,
+  faPowerOff,
+  faQuestionCircle,
+  faQuoteLeft,
+  faQuoteRight,
+  faSave,
+  faSearch,
+  faSitemap,
+  faSort,
+  faSortAlphaDown,
+  faSpinner,
+  faSquare,
+  faSync,
+  faTerminal,
+  faTh,
+  faTimes,
+  faTimesCircle,
+  faTrashAlt,
+  faUndo,
+  faUpload,
 };
 
 export const loadIcons = () => {
