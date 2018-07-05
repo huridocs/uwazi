@@ -4,6 +4,7 @@ import MarkdownLink from './MarkdownLink';
 import SearchBox from './SearchBox';
 import Counter from './Counter';
 import BarChart from './BarChart';
+import PieChart from './PieChart';
 
 export default {
   MarkdownMedia,
@@ -12,4 +13,5 @@ export default {
   SearchBox,
   Counter,
   BarChart,
+  PieChart,
 };
