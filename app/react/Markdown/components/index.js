@@ -1,10 +1,12 @@
-import MarkdownMedia from './MarkdownMedia';
+import { Icon } from 'UI';
+
+import BarChart from './BarChart';
+import Counter from './Counter';
 import ItemList from './ItemList';
 import MarkdownLink from './MarkdownLink';
-import SearchBox from './SearchBox';
-import Counter from './Counter';
-import BarChart from './BarChart';
+import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
+import SearchBox from './SearchBox';
 
 export default {
   MarkdownMedia,
@@ -14,4 +16,5 @@ export default {
   Counter,
   BarChart,
   PieChart,
+  Icon,
 };
