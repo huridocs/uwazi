@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { actions as formActions } from 'react-redux-form';
+import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
-import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
@@ -29,7 +28,6 @@ export class RelationTypeForm extends Component {
   }
 
   render() {
-    console.log(this.props.relationTypes.toJS());
     return (
       <div className="relationType">
         <Form
@@ -44,9 +42,10 @@ export class RelationTypeForm extends Component {
                   <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
                   {(() => {
                         if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                          return (<div className="validation-error">
-                            <Icon icon="exclamation-triangle" /> Duplicated name
-                                  </div>);
+                          return (
+                            <div className="validation-error">
+                              <Icon icon="exclamation-triangle" /> Duplicated name
+                            </div>);
                         }
                       })()}
                 </Field>
