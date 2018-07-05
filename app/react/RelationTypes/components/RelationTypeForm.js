@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {actions as formActions} from 'react-redux-form';
-import {bindActionCreators} from 'redux';
-import {Field, Form} from 'react-redux-form';
-import {connect} from 'react-redux';
-import {I18NLink} from 'app/I18N';
+import React, { Component } from 'react';
+import { actions as formActions } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { Field, Form } from 'react-redux-form';
+import { connect } from 'react-redux';
+import { I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import {saveRelationType, resetRelationType} from 'app/RelationTypes/actions/relationTypeActions';
+import { saveRelationType, resetRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 
 export class RelationTypeForm extends Component {
-
   componentWillUnmount() {
     this.props.resetForm('relationType');
     this.props.setInitial('relationType');
@@ -20,53 +19,52 @@ export class RelationTypeForm extends Component {
   validation(relationTypes, id) {
     return {
       name: {
-        required: (val) => val && val.trim() !== '',
+        required: val => val && val.trim() !== '',
         duplicated: (val) => {
-          let name = val || '';
-          return !relationTypes.find((relationType) => {
-            return relationType._id !== id && relationType.name.trim().toLowerCase() === name.trim().toLowerCase();
-          });
+          const name = val || '';
+          return !relationTypes.find(relationType => relationType._id !== id && relationType.name.trim().toLowerCase() === name.trim().toLowerCase());
         }
       }
     };
   }
 
   render() {
+    console.log(this.props.relationTypes.toJS());
     return (
       <div className="relationType">
-          <Form
-            model="relationType"
-            onSubmit={this.props.saveRelationType}
-            validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
-          >
-            <div className="panel panel-default">
-              <div className="panel-heading">
-                <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
-                  <Field model=".name">
-                      <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
-                      {(() => {
+        <Form
+          model="relationType"
+          onSubmit={this.props.saveRelationType}
+          validators={this.validation(this.props.relationTypes.toJS(), this.props.relationType._id)}
+        >
+          <div className="panel panel-default">
+            <div className="panel-heading">
+              <FormGroup {...this.props.state.name} submitFailed={this.props.state.submitFailed}>
+                <Field model=".name">
+                  <input id="relationTypeName" className="form-control" type="text" placeholder="Connection name"/>
+                  {(() => {
                         if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
-                          return <div className="validation-error">
-                                    <Icon icon="exclamation-triangle" /> Duplicated name
-                                </div>;
+                          return (<div className="validation-error">
+                            <Icon icon="exclamation-triangle" /> Duplicated name
+                                  </div>);
                         }
                       })()}
-                  </Field>
-                </FormGroup>
-              </div>
-              <div className="panel-body">Currently connections only need a title.</div>
-              <div className="settings-footer">
-                <I18NLink to="/settings/connections" className="btn btn-default">
-                  <Icon icon="arrow-left" />
-                  <span className="btn-label">Back</span>
-                </I18NLink>
-                <button type="submit" className="btn btn-success save-template">
-                  <Icon icon="save"/>
-                  <span className="btn-label">Save</span>
-                </button>
-              </div>
+                </Field>
+              </FormGroup>
             </div>
-          </Form>
+            <div className="panel-body">Currently connections only need a title.</div>
+            <div className="settings-footer">
+              <I18NLink to="/settings/connections" className="btn btn-default">
+                <Icon icon="arrow-left" />
+                <span className="btn-label">Back</span>
+              </I18NLink>
+              <button type="submit" className="btn btn-success save-template">
+                <Icon icon="save"/>
+                <span className="btn-label">Save</span>
+              </button>
+            </div>
+          </div>
+        </Form>
       </div>
     );
   }
@@ -91,7 +89,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveRelationType, resetRelationType, resetForm: formActions.reset, setInitial: formActions.setInitial}, dispatch);
+  return bindActionCreators({ saveRelationType, resetRelationType, resetForm: formActions.reset, setInitial: formActions.setInitial }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationTypeForm);
