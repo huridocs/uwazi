@@ -120,6 +120,10 @@ const search = {
       let properties = comonProperties(templates, filteringTypes);
       properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
 
+      if (query.allAggregations) {
+        properties = allUniqueProperties(templates);
+      }
+
       const aggregations = agregationProperties(properties);
       const filters = processFiltes(query.filters, properties);
       const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProperties(templates), entitiesMatchedByTitle, dictionariesMatchByLabel);

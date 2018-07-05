@@ -62,5 +62,5 @@ export default combineReducers({
   login,
   settings,
   metadata,
-  searchForm: formReducer('search')
+  searchForm: formReducer('search'),
 });
