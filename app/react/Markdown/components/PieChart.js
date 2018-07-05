@@ -28,12 +28,12 @@ const formatData = (data, property, context, thesauris) => {
 };
 
 export const PieChartComponent = (props) => {
-  const { property, data, classname, context, thesauris } = props;
+  const { property, data, classname, context, colors, thesauris } = props;
   let output = <Loader/>;
 
   if (data) {
     const formattedData = arrayUtils.sortValues(formatData(data, property, context, thesauris));
-    const colors = ['#ffcc00', '#ffd633', '#ffe066', '#ffeb99', '#fff5cc'];
+    const sliceColors = colors.split(',');
     output = (
       <ResponsiveContainer width="100%" height={222}>
         <PieChart width={222} height={222} >
@@ -46,7 +46,7 @@ export const PieChartComponent = (props) => {
             fill="#8884d8"
           >
             {
-              formattedData.map((entry, index) => <Cell key={index} fill={colors[index % colors.length]} />)
+              formattedData.map((entry, index) => <Cell key={index} fill={sliceColors[index % colors.length]} />)
             }
           </Pie>
           <Tooltip />
@@ -61,6 +61,7 @@ export const PieChartComponent = (props) => {
 PieChartComponent.defaultProps = {
   context: 'System',
   classname: '',
+  colors: '#ffcc00,#ffd633,#ffe066,#ffeb99,#fff5cc',
   data: null,
 };
 
@@ -69,6 +70,7 @@ PieChartComponent.propTypes = {
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
   classname: PropTypes.string,
+  colors: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
 };
 
