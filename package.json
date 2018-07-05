@@ -132,6 +132,7 @@
     "reselect": "3.0.1",
     "rison": "Nanonid/rison#e64af6c",
     "sanitize-filename": "^1.6.0",
+    "snyk": "^1.85.0",
     "socket.io": "2.0.4",
     "socket.io-client": "2.0.4",
     "superagent": "3.8.2",
@@ -140,8 +141,7 @@
     "validate.js": "0.9.0",
     "winston": "3.0.0",
     "world-countries": "2.0.0",
-    "wrap-range-text": "^1.0.1",
-    "snyk": "^1.85.0"
+    "wrap-range-text": "^1.0.1"
   },
   "devDependencies": {
     "assets-webpack-plugin": "Kronuz/assets-webpack-plugin",
@@ -193,6 +193,7 @@
     "sass-loader": "6.0.7",
     "socket-io-mock": "^1.0.1",
     "style-loader": "^0.20.3",
+    "uglifyjs-webpack-plugin": "^1.2.7",
     "url-loader": "1.0.1",
     "webpack": "3.5.5",
     "webpack-bundle-analyzer": "^2.11.1",
