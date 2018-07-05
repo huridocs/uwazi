@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import ShowIf from 'app/App/ShowIf';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 import { resetSearch } from '../actions/actions';
 
@@ -17,7 +18,7 @@ export class ResetSearch extends Component {
           onClick={this.props.resetSearch}
           className="btn btn-primary"
         >
-          <i className="fa fa-sync" />
+          <Icon icon="sync" />
           <span className="btn-label">{t('System', 'Reset')}</span>
         </button>
       </ShowIf>

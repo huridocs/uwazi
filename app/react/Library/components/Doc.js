@@ -8,6 +8,7 @@ import ShowIf from 'app/App/ShowIf';
 import {t, I18NLink} from 'app/I18N';
 import {publish} from 'app/Uploads/actions/uploadsActions';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
+import { Icon } from 'UI';
 
 import {Item} from 'app/Layout';
 import {is} from 'immutable';
@@ -26,7 +27,7 @@ export class Doc extends Component {
         {connections.map((connection, index) =>
           <div key={index} className="item-connection">
             <div>
-              <i className="fa fa-exchange-alt"></i>
+              <Icon icon="exchange-alt" />
               <span>
                 {t(connection.context, connection.label)}
                 {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
@@ -35,7 +36,7 @@ export class Doc extends Component {
             <NeedAuthorization roles={['admin', 'editor']}>
               <ShowIf if={connection.sourceType !== 'metadata'}>
                 <button className="btn btn-default btn-hover-danger btn-xs" onClick={e => this.deleteConnection(e, connection)}>
-                  <i className="fa fa-trash-alt"></i>
+                  <Icon icon="trash-alt" />
                 </button>
               </ShowIf>
             </NeedAuthorization>
@@ -85,12 +86,12 @@ export class Doc extends Component {
     const buttons = <div>
                       {doc.processed || isEntity ?
                         <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={(e) => e.stopPropagation()}>
-                          <i className="fa fa-angle-right"></i> { t('System', 'View') }
+                          <Icon icon="angle-right" /> { t('System', 'View') }
                         </I18NLink> : false
                       }
                       {(doc.processed || isEntity) && !doc.published && hasTemplate ?
                         <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
-                          <i className="fa fa-paper-plane"></i> { t('System', 'Publish') }
+                          <Icon icon="paper-plane" /> { t('System', 'Publish') }
                         </button> : false
                       }
                     </div>;

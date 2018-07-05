@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import t from 'app/I18N/t';
+import { Icon } from 'UI';
 
 import {uploadAttachment} from '../actions/actions';
 
@@ -22,7 +23,9 @@ export class UploadAttachment extends Component {
 
     if (this.props.languages.size > 1) {
       uploadToAll = <label htmlFor="upload-attachment-all-input" className="btn btn-success btn-xs add">
-                      <span className="btn-label"><i className="fa fa-link"></i>&nbsp;&nbsp;{t('System', 'Add to all languages')}</span>
+                      <span className="btn-label">
+                        <Icon icon="link" /> {t('System', 'Add to all languages')}
+                      </span>
                       <input onChange={this.onChangeAll.bind(this)} type="file" id="upload-attachment-all-input" style={{display: 'none'}} />
                     </label>;
     }
@@ -30,7 +33,9 @@ export class UploadAttachment extends Component {
     return (
       <div>
         <label htmlFor="upload-attachment-input" className="btn btn-success btn-xs add">
-          <span className="btn-label"><i className="fa fa-paperclip"></i>&nbsp;&nbsp;{t('System', 'Add file')}</span>
+          <span className="btn-label">
+            <Icon icon="paperclip" /> {t('System', 'Add file')}
+          </span>
           <input onChange={this.onChangeSingle.bind(this)} type="file" id="upload-attachment-input" style={{display: 'none'}} />
         </label>
         {uploadToAll}

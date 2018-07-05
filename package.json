@@ -44,6 +44,10 @@
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.0",
+    "@fortawesome/free-regular-svg-icons": "^5.1.0",
+    "@fortawesome/free-solid-svg-icons": "^5.1.0",
+    "@fortawesome/react-fontawesome": "^0.1.0",
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
     "@vimeo/player": "^2.2.1",
     "babel-core": "6.26.0",

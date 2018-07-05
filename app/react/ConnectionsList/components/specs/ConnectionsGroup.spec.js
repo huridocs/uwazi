@@ -35,7 +35,7 @@ describe('ConnectionsGroup', () => {
   it('should render the group multiselect item with checked state, types count and expanded', () => {
     render();
     expect(component.find('input').at(0).props().checked).toBe(false);
-    expect(component.find('.multiselectItem-results').find('span').at(0).text()).toBe('3');
+    expect(component.find('.multiselectItem-results').find('span').at(0).text()).toContain('3');
     expect(component.find(ShowIf).props().if).toBe(true);
   });
 

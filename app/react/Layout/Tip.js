@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Icon } from 'UI';
 
 const Tip = ({ children }) => (
-  <i className="property-help fa fa-question-circle">
+  <span className="property-help">
+    <Icon icon="question-circle" />
     <div className="property-description">
       {children}
     </div>
-  </i>
+  </span>
 );
 
 Tip.propTypes = {

@@ -86,17 +86,12 @@ $nav-height: $header-height;
 .nav-tabs>li>a, .nav-tabs>li>div {
   cursor:pointer;
   line-height: $nav-height;
-  padding: 0;
+  padding: 3px 0 0;
   background-color: transparent;
   color: $c-grey-dark;
   border: 0;
   border-radius: 0;
   white-space: nowrap;
-	
-  .fa {
-    position: relative;
-    top: 3px;
-  }
   
   &:hover .tab-link-tooltip{
     display: block;
@@ -109,14 +104,14 @@ $nav-height: $header-height;
 	color: $c-primary;
 	
 	&:after {
-		content: '';
-		display: block;
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		height: 4px;
-		background: $c-primary;
+	  content: '';
+	  display: block;
+	  position: absolute;
+	  bottom: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 3px;
+	  background: $c-primary;
 	}
 }
 
@@ -126,7 +121,6 @@ $nav-height: $header-height;
 
 .connectionsNumber {
   position: relative;
-  top: 2px;
   font-size: 11px;
   line-height: 1em;
   margin-left: 5px;

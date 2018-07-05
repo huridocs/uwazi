@@ -50,7 +50,7 @@ $c-sidebar: $c-white;
     font-size: $f-size-sm;
   }
 
-  .fa.closeSidepanel {
+  .closeSidepanel {
     position: absolute;
     top: 0;
     right: 0;
@@ -62,6 +62,8 @@ $c-sidebar: $c-white;
     color: $c-grey;
     cursor: pointer;
     z-index: 2;
+    border: 0;
+    background-color: transparent;
     &:hover {
       color: $c-grey-dark;
     }
@@ -272,3 +274,4 @@ $c-sidebar: $c-white;
     cursor: default;
   }
 }
+

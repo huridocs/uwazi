@@ -27,7 +27,7 @@ describe('translations path', () => {
       nightmare
       .waitToClick(selectors.settingsView.translationsButton)
       .wait(selectors.settingsView.liElementsOfSection)
-      .manageItemFromList(selectors.settingsView.liElementsOfSection, 'Test Document', '.fa-language')
+      .manageItemFromList(selectors.settingsView.liElementsOfSection, 'Test Document', '.btn-default')
       .wait(selectors.settingsView.translationsSaveButton)
       .isVisible(selectors.settingsView.translationsSaveButton)
       .then((result) => {

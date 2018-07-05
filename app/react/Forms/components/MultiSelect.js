@@ -2,7 +2,8 @@ import { remove as removeAccents } from 'diacritics';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Icon } from 'app/Layout/Icon';
+import { Icon as CustomIcon } from 'app/Layout/Icon';
+import { Icon } from 'UI';
 import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 
@@ -131,10 +132,12 @@ export default class MultiSelect extends Component {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]} >
-        <i className="multiselectItem-icon far fa-square" />
-        <i className="multiselectItem-icon fa fa-check" />
+        <span className="multiselectItem-icon">
+          <Icon icon={['far', 'square']} className="checkbox-empty" />
+          <Icon icon="check" className="checkbox-checked" />
+        </span>
         <span className="multiselectItem-name">
-          <Icon className="item-icon" data={option.icon}/>
+          <CustomIcon className="item-icon" data={option.icon}/>
           {option[optionsLabel]}
         </span>
         <span className="multiselectItem-results">
@@ -143,7 +146,7 @@ export default class MultiSelect extends Component {
           </ShowIf>
           {option.options &&
             <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-              <i className={this.showSubOptions(option) ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
             </span>
           }
         </span>
@@ -153,6 +156,7 @@ export default class MultiSelect extends Component {
 
   renderGroup(group, index) {
     const { prefix } = this.props;
+    const _group = Object.assign({}, group, { results: `${group.results}` });
     return (
       <li key={index} className="multiselect-group">
         <div className="multiselectItem">
@@ -163,7 +167,7 @@ export default class MultiSelect extends Component {
             onChange={this.changeGroup.bind(this, group)}
             checked={this.checked(group)}
           />
-          {this.label(group)}
+          {this.label(_group)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
@@ -242,7 +246,7 @@ export default class MultiSelect extends Component {
         <li className="multiselectActions">
           <ShowIf if={this.props.options.length > this.props.optionsToShow && !this.props.hideSearch}>
             <div className="form-group">
-              <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)} />
+              <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter.bind(this)} />
               <input
                 className="form-control"
                 type="text"
@@ -264,6 +268,7 @@ export default class MultiSelect extends Component {
         <li className="multiselectActions">
           <ShowIf if={totalOptions.length > this.props.optionsToShow && !this.props.showAll}>
             <button onClick={this.showAll.bind(this)} className="btn btn-xs btn-default">
+              <Icon icon={this.state.showAll ? 'caret-up' : 'caret-down'} />
               <i className={this.state.showAll ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
               {this.moreLessLabel(totalOptions)}
             </button>

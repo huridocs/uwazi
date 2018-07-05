@@ -13,6 +13,7 @@ import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
 import Icons from './Icons';
+import { Icon } from 'UI';
 
 export class MetadataProperty extends Component {
   renderForm() {
@@ -49,18 +50,21 @@ export class MetadataProperty extends Component {
       propertyClass += ' error';
     }
 
-    const iconClass = Icons[this.props.type] || 'fa fa-font';
+    const iconClass = Icons[this.props.type] || 'font';
 
     if (this.props.isCommonProperty) {
       return (
         <li className="list-group-item">
-          <span className="property-name"><i className="fa fa-lock fa-fw" />&nbsp;<i className={iconClass} />&nbsp;{label}</span>
+          <span className="property-name">
+            <Icon icon="lock" fixedWidth />
+            <Icon icon={iconClass} fixedWidth /> {label}
+          </span>
           <div className="list-group-item-actions">
             <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
-              <i className="fa fa-pencil-alt" /> Edit
+              <Icon icon="pencil-alt" /> Edit
             </button>
             <button type="button" className="btn btn-danger btn-xs property-remove" disabled>
-              <i className="fa fa-trash-alt" /> Delete
+              <Icon icon="trash-alt" /> Delete
             </button>
           </div>
           <ShowIf if={editingProperty === localID}>
@@ -74,22 +78,25 @@ export class MetadataProperty extends Component {
 
     const result = connectDropTarget(
       <li className={propertyClass}>
-        <span className="property-name"><i className="fa fa-reorder fa-fw" />&nbsp;<i className={iconClass} />&nbsp;{label}</span>
+        <span className="property-name">
+          <Icon icon="bars" fixedWidth />
+          <Icon icon={iconClass} fixedWidth /> {label}
+        </span>
         <div className="list-group-item-actions">
           <ShowIf if={formState.$form.errors[`properties.${index}.label.duplicated`]}>
             <span className="validation-error">
-              <i className="fa fa-exclamation-triangle" />&nbsp;Duplicated label&nbsp;
+              <Icon icon="exclamation-triangle" /> Duplicated label
             </span>
           </ShowIf>
           <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
-            <i className="fa fa-pencil-alt" /> Edit
+            <Icon icon="pencil-alt" /> Edit
           </button>
           <button
             type="button"
             className="btn btn-danger btn-xs property-remove"
             onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
           >
-            <i className="fa fa-trash-alt" /> Delete
+            <Icon icon="trash-alt" /> Delete
           </button>
         </div>
         <ShowIf if={editingProperty === localID}>

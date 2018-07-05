@@ -16,13 +16,14 @@ import {
 } from 'app/Connections';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
-import { TemplateLabel, Icon } from 'app/Layout';
+import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
 import { t } from 'app/I18N';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+import { Icon } from 'UI';
 
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
@@ -78,7 +79,7 @@ export class EntityViewer extends Component {
 
         <div className="content-header content-header-entity">
           <div className="content-header-title">
-            <Icon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
+            <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
             <h1 className="item-name">{entity.title}</h1>
             <TemplateLabel template={entity.template}/>
           </div>
@@ -93,13 +94,13 @@ export class EntityViewer extends Component {
             <ul className="nav nav-tabs">
               <li>
                 <TabLink to="info">
-                  <i className="fa fa-info-circle" />
+                  <Icon icon="info-circle" />
                   <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                 </TabLink>
               </li>
               <li>
                 <TabLink to="connections">
-                  <i className="fa fa-exchange-alt" />
+                  <Icon icon="exchange-alt" />
                   <span className="connectionsNumber">{summary.totalConnections}</span>
                   <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
                 </TabLink>

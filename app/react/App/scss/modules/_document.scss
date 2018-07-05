@@ -157,9 +157,10 @@ mark, .mark {
   .form-group {
     position: relative;
     margin: 0 -15px;
-    .fa {
+    svg {
       position: absolute;
-      top: 15px;
+      top: 50%;
+      transform: translateY(-50%);
       left: 15px;
       color: $c-black;
       cursor: pointer;

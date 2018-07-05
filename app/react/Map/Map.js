@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 import Immutable from 'immutable';
+
+import { Icon } from 'UI';
+
 import { isClient } from 'app/utils';
 import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
@@ -160,9 +163,11 @@ export default class Map extends Component {
       return this.props.renderMarker(marker, onClick);
     }
     return (
-      <i
-        style={{ position: 'relative', top: '-35px', right: '25px', color: '#d9534e' }}
-        className="fa fa-map-marker fa-3x fa-fw map-marker"
+      <Icon
+        style={{ position: 'relative', top: '-25px', right: '15px', color: '#d9534e' }}
+        icon="map-marker"
+        size="2x"
+        fixedWidth
         onClick={onClick}
         onMouseOver={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -172,7 +177,7 @@ export default class Map extends Component {
 
   renderPopup() {
     const { selectedMarker } = this.state;
-    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker.properties && selectedMarker.properties.info))) {
+    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))) {
       return (
         <Popup
           tipSize={6}
@@ -185,7 +190,8 @@ export default class Map extends Component {
           <div>
             {this.props.renderPopupInfo ? this.props.renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
           </div>
-        </Popup>);
+        </Popup>
+      );
     }
     return false;
   }
@@ -223,9 +229,10 @@ export default class Map extends Component {
         >
           {this.renderMarkers()}
           {this.renderPopup()}
-          <i className="mapbox-help fa fa-question-circle">
+          <span className="mapbox-help">
+            <Icon icon="question-circle" />
             <span className="mapbox-tooltip">Hold shift to rotate the map</span>
-          </i>
+          </span>
         </ReactMapGL>
       </div>
     );

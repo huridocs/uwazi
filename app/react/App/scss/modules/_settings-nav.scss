@@ -11,4 +11,11 @@
     padding-left: 0;
     padding-right: 0;
   }
+  .list-group-item .reorder {
+    color: $c-grey;
+    margin-right: 16px;
+  }
+  .list-group-item:hover .reorder {
+    color: $c-grey-dark;
+  }
 }

@@ -70,7 +70,7 @@ Nightmare.action('connections', {
       const relations = helpers.querySelectorAll('.rightRelationship');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          helpers.querySelector('.moveEntity i', relation).click();
+          helpers.querySelector('.moveEntity button', relation).click();
         }
       });
     }, done, matchingTitle)
@@ -79,7 +79,7 @@ Nightmare.action('connections', {
   clickMoveToGroupButton(groupIndex, done) {
     this.evaluate_now((index) => {
       const helpers = document.__helpers;
-      helpers.querySelectorAll('.insertEntities i')[index].click();
+      helpers.querySelectorAll('.insertEntities button')[index].click();
     }, done, groupIndex)
     .catch(done);
   },
@@ -150,7 +150,7 @@ Nightmare.action('connections', {
       const relations = helpers.querySelectorAll('.rightRelationship');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          helpers.querySelector('.removeEntity i', relation).click();
+          helpers.querySelector('.removeEntity button', relation).click();
         }
       });
     }, done, matchingTitle)
@@ -162,7 +162,7 @@ Nightmare.action('connections', {
       const relations = helpers.querySelectorAll('.rightRelationshipType');
       relations.forEach((relation) => {
         if (relation.innerText.toLowerCase().match(term.toLowerCase())) {
-          relation.nextSibling.querySelector('i').click();
+          relation.nextSibling.querySelector('button').click();
         }
       });
     }, done, matchingTitle)

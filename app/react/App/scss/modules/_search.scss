@@ -573,7 +573,7 @@
   .form-group {
     position: relative;
     display: inline-block;
-    .fa {
+    svg {
       position: absolute;
       top: 5px;
       left: 1px;
@@ -619,85 +619,27 @@
   }
 }
 
-// multiselect is active
-
-.multiselect.is-active {
-
-  .multiselectLabel-icon:first-of-type { display: none; }
-  .multiselectLabel-icon:last-of-type  { display: inline-block; }
-
-  .multiselectItem {
-    line-height: 1.2em;
-    padding: 5px;
-    margin: 0 -5px;
-  }
-
-  .multiselectItem-input:not(:checked) + label .multiselectItem-icon:first-of-type { display: inline-block; }
-  .multiselectItem-input:not(:checked) + label .multiselectItem-icon:last-of-type  { display: none; }
-        .multiselectItem-input:checked + label .multiselectItem-icon:first-of-type { display: none; }
-        .multiselectItem-input:checked + label .multiselectItem-icon:last-of-type  { display: inline-block; }
-
-  .multiselectItem-input:checked + label .multiselectItem-name,
-  .multiselectItem-input:checked + label .multiselectItem-results,
-  .multiselectItem-input:checked ~ .multiselectItem-results {
-    color: $c-black;
-    font-weight: bold;
-  }
-
-  .multiselectItem-input:checked + label .multiselectItem-icon {
-    color: $c-success;
-  }
+.multiselectItem {
+  line-height: 1.2em;
+  padding: 5px 0;
 }
 
-// TODO - rewrite multiselect styles
-// .search__filter:not(.is-active) {
-//   .multiselectItem-input:checked + label .multiselectItem-name,
-//   .multiselectItem-input:checked + label .multiselectItem-icon,
-//   .multiselectItem-input:checked + label .multiselectItem-results,
-//   .multiselectItem-input:checked ~ .multiselectItem-results {
-//     color: $c-grey;
-//     font-weight: bold;
-//   }
-// }
+.multiselectItem-icon {
+  .checkbox-empty { display: block; color: $c-grey; }
+  .checkbox-checked { display: none; color: $c-success; }
+}
+.multiselectItem-input:checked {
 
-// multiselect is not active
-.multiselect:not(.is-active) {
+  & + label {
+    .checkbox-empty { display: none; }
+    .checkbox-checked { display: block; }
 
-  .multiselectLabel-icon:first-of-type { display: inline-block; }
-  .multiselectLabel-icon:last-of-type  { display: none; }
-
-  .multiselectItem {
-    display: inline;
-  }
-  .multiselectItem-icon {
-    display: none;
   }
 
-  .multiselectItem-label {
-    margin: 3px 6px 3px 0;
-    padding: 3px 6px 3px 9px;
-    font-size: $f-size-sm;
-    background: $c-grey-lighten;
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
+    font-weight: bold;
     color: $c-black;
-    border-radius: $border-radius;
-    line-height: 1.7em;
-
-    &:after {
-      content: 'x';
-      display: inline-block;
-      width: 14px;
-      line-height: 13px;
-      padding: 0px 3px 1px 3px;
-      margin-left: 5px;
-      text-align: center;
-      background: $c-black;
-      color: $c-white;
-      border-radius: 50%;
-    }
-  }
-
-  .multiselectItem-input:not(:checked) ~ .multiselectItem-label {
-    display: none;
   }
 }
 /**/
@@ -809,3 +751,4 @@
     // box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }
+

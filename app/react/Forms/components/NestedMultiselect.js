@@ -7,6 +7,7 @@ import advancedSortUtil from 'app/utils/advancedSort';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import { store } from 'app/store';
 import MultiSelect from './MultiSelect';
+import { Icon } from 'UI';
 
 export default class NestedMultiselect extends Component {
   constructor(props) {
@@ -77,7 +78,7 @@ export default class NestedMultiselect extends Component {
       <ul className="multiselect is-active">
         <li className="multiselectActions">
           <div className="form-group">
-            <i className={this.state.filter ? 'fa fa-times-circle' : 'fa fa-search'} onClick={this.resetFilter.bind(this)} />
+            <Icon icon={this.state.filter ? 'times-circle' : 'search'} onClick={this.resetFilter.bind(this)} />
             <input
               className="form-control"
               type="text"
@@ -104,13 +105,15 @@ export default class NestedMultiselect extends Component {
                   onChange={this.selectAnyChange.bind(this, prop)}
                 />
                 <label htmlFor={prop} className="multiselectItem-label">
-                  <i className="multiselectItem-icon far fa-square" />
-                  <i className="multiselectItem-icon fa fa-check" />
+                  <span className="multiselectItem-icon">
+                    <Icon icon={['far', 'square']} className="checkbox-empty" />
+                    <Icon icon="check" className="checkbox-checked" />
+                  </span>
                   <span className="multiselectItem-name" title={label}><b>{label}</b></span>
                 </label>
                 <span className="multiselectItem-results">
                   <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, prop)}>
-                    <i className={this.state[prop] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+                    <Icon icon={this.state[prop] ? 'caret-up' : 'caret-down'} />
                   </span>
                 </span>
               </div>

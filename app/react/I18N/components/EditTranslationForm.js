@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { I18NLink, t, actions } from 'app/I18N';
+import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 
@@ -63,7 +64,7 @@ export class EditTranslationForm extends Component {
         >
           <div className="panel panel-default">
             <div className="panel-heading">
-              {t('System', 'Translations')} <i className="fa fa-angle-right" /> {contextName}
+              {t('System', 'Translations')} <Icon icon="angle-right" /> {contextName}
             </div>
             <ul className="list-group">
               {(() => {
@@ -89,11 +90,11 @@ export class EditTranslationForm extends Component {
             </div>
             <div className="settings-footer">
               <I18NLink to="/settings/translations" className="btn btn-default">
-                <i className="fa fa-arrow-left"></i>
+                <Icon icon="arrow-left" />
                 <span className="btn-label">Back</span>
               </I18NLink>
               <button type="submit" className="btn btn-success save-template">
-                <i className="far fa-save"/>
+                <Icon icon="save" />
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>

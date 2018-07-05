@@ -7,6 +7,7 @@ import {actions as formActions} from 'react-redux-form';
 import {closePanel} from '../actions/uiActions';
 import {hideModal} from 'app/Modals/actions/modalActions';
 import Modal from 'app/Layout/Modal';
+import { Icon } from 'UI';
 
 export class ConfirmCloseForm extends Component {
 
@@ -33,10 +34,10 @@ export class ConfirmCloseForm extends Component {
 
         <Modal.Footer>
           <button type="button" className="btn btn-default cancel-button" onClick={() => this.props.hideModal('ConfirmCloseForm')}>
-            <i className="fa fa-times"></i> Cancel
+            <Icon icon="times" /> Cancel
           </button>
           <button type="button" className="btn btn-danger confirm-button" onClick={() => this.confirm()}>
-            <i className="fa fa-trash-alt"></i> Ok
+            <Icon icon="trash-alt" /> Ok
           </button>
         </Modal.Footer>
 

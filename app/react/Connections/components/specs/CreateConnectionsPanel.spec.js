@@ -1,10 +1,12 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
-
-import {CreateConnectionPanel} from '../CreateConnectionPanel';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 
 import SidePanel from 'app/Layout/SidePanel';
+
+import { Icon } from 'UI';
+
+import { CreateConnectionPanel } from '../CreateConnectionPanel';
 import SearchForm from '../SearchForm';
 import ActionButton from '../ActionButton';
 import SearchResults from '../SearchResults';
@@ -22,9 +24,9 @@ describe('CreateConnectionPanel', () => {
         targetDocument: 'targetId'
       }),
       pdfInfo: Immutable([]),
-      relationTypes: Immutable([{_id: 'rt1', name: 'relationType1'}, {_id: 'rt2', name: 'relationType2'}]),
-      searchResults: Immutable([{_id: 'sr1'}, {_id: 'sr2'}]),
-      uiState: Immutable({searching: true}),
+      relationTypes: Immutable([{ _id: 'rt1', name: 'relationType1' }, { _id: 'rt2', name: 'relationType2' }]),
+      searchResults: Immutable([{ _id: 'sr1' }, { _id: 'sr2' }]),
+      uiState: Immutable({ searching: true }),
       setRelationType: jasmine.createSpy('setRelationType'),
       setTargetDocument: () => {},
       onCreate: jasmine.createSpy('onCreate'),
@@ -40,8 +42,8 @@ describe('CreateConnectionPanel', () => {
     render();
     const options = component.find('.connections-list li');
 
-    expect(options.at(0).text()).toBe('relationType1');
-    expect(options.at(1).text()).toBe('relationType2');
+    expect(options.at(0).text()).toContain('relationType1');
+    expect(options.at(1).text()).toContain('relationType2');
 
     options.at(0).simulate('click');
     expect(props.setRelationType).toHaveBeenCalledWith('rt1');
@@ -60,8 +62,8 @@ describe('CreateConnectionPanel', () => {
 
     render();
     let options = component.find('.connections-list li');
-    expect(options.at(0).find('i').props().className).toBe('fa fa-check');
-    expect(options.at(1).find('i').props().className).not.toBe('fa fa-check');
+    expect(options.at(0).find(Icon).props().icon).toBe('check');
+    expect(options.at(1).find(Icon).props().icon).not.toBe('check');
 
     props.connection = Immutable({
       template: 'rt2',
@@ -72,8 +74,8 @@ describe('CreateConnectionPanel', () => {
 
     render();
     options = component.find('.connections-list li');
-    expect(options.at(0).find('i').props().className).not.toBe('fa fa-check');
-    expect(options.at(1).find('i').props().className).toBe('fa fa-check');
+    expect(options.at(0).find(Icon).props().icon).not.toBe('check');
+    expect(options.at(1).find(Icon).props().icon).toBe('check');
   });
 
   it('should have a search form with the connection type', () => {

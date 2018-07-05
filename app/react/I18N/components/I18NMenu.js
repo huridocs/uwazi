@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { actions } from 'app/I18N';
 import utils from '../utils';
 import { NeedAuthorization } from 'app/Auth';
+import { Icon } from 'UI';
 
 export class I18NMenu extends Component {
   static reload(url) {
@@ -48,7 +49,7 @@ export class I18NMenu extends Component {
             className={this.props.i18nmode ? 'inlineEdit menuNav-btn btn btn-default active' : 'menuNav-btn btn btn-default'}
             onClick={this.props.toggleInlineEdit}
           >
-            <i className="fa fa-language fa-lg"/>
+            <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
         {(() => languages.map((lang) => {

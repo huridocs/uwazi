@@ -7,17 +7,18 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import Notifications from 'app/Notifications';
 import { TranslateForm } from 'app/I18N';
-import { isClient } from 'app/utils';
-import { loadCSS } from 'fg-loadcss';
+
+import { loadIcons } from 'UI/Icon/library';
+import { Icon } from 'UI';
+
 import './scss/styles.scss';
+
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 
-if (isClient) {
-  loadCSS('https://use.fontawesome.com/releases/v5.0.13/css/all.css');
-}
+loadIcons();
 
 class App extends Component {
   constructor(props, context) {
@@ -55,11 +56,11 @@ class App extends Component {
   }
 
   render() {
-    let MenuButtonClass = 'menu-button fa fa-bars';
+    let MenuButtonIcon = 'bars';
     let navClass = 'menuNav';
 
     if (this.state.showmenu) {
-      MenuButtonClass = 'menu-button fa fa-times';
+      MenuButtonIcon = 'times';
       navClass += ' is-active';
     }
 
@@ -71,7 +72,9 @@ class App extends Component {
             <h1><SiteName/></h1>
           </nav>
           <header>
-            <i className={MenuButtonClass} onClick={this.toggleMenu.bind(this)} />
+            <button className="menu-button" onClick={this.toggleMenu.bind(this)}>
+              <Icon icon={MenuButtonIcon} />
+            </button>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
             <Menu location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />

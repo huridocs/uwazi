@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 
 import { t } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 
 import { setFilter } from '../actions/actions';
 
@@ -82,8 +83,10 @@ export class ConnectionsGroup extends Component {
             checked={this.state.selected}
           />
           <label htmlFor={`group${group.key}`} className="multiselectItem-label">
-            <i className="multiselectItem-icon far fa-square" />
-            <i className="multiselectItem-icon fa fa-check" />
+            <span className="multiselectItem-icon">
+              <Icon icon={['far', 'square']} className="checkbox-empty" />
+              <Icon icon="check" className="checkbox-checked" />
+            </span>
             <span className="multiselectItem-name">
               <b>{group.key ?
                   t(group.context, connectionLabel) : t('System', 'No Label')}
@@ -93,7 +96,7 @@ export class ConnectionsGroup extends Component {
           <span className="multiselectItem-results">
             <span>{group.templates.reduce((size, i) => size + i.count, 0)}</span>
             <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
-              <i className={this.state.expanded ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+              <Icon icon={this.state.expanded ? 'caret-up' : 'caret-down'} />
             </span>
           </span>
         </div>
@@ -112,8 +115,10 @@ export class ConnectionsGroup extends Component {
                   className="multiselectItem-label"
                   htmlFor={group.key + template._id}
                 >
-                  <i className="multiselectItem-icon far fa-square" />
-                  <i className="multiselectItem-icon fa fa-check" />
+                  <span className="multiselectItem-icon">
+                    <Icon icon={['far', 'square']} className="checkbox-empty" />
+                    <Icon icon="check" className="checkbox-checked" />
+                  </span>
                   <span className="multiselectItem-name">{t(template._id, template.label)}</span>
                 </label>
                 <span className="multiselectItem-results">

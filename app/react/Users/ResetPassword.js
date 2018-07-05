@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {browserHistory} from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
 import queryString from 'query-string';
+import { Icon } from 'UI';
 
 import auth from 'app/Auth';
 
@@ -26,7 +27,7 @@ export class ResetPassword extends RouteHandler {
     const search = queryString.parse(searchString);
     return search.createAccount !== 'true' ? null :
       <div className="alert alert-info">
-        <i className="fa fa-info-circle"></i>
+        <Icon icon="info-circle" />
         <div>To complete the account creation process, please create a password for your account</div>
       </div>;
   }

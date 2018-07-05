@@ -1,6 +1,6 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 
@@ -19,7 +19,7 @@ describe('FullTextSearch zone', () => {
     .librarySearch('batman and robin')
     .wait(selectors.libraryView.libraryFirstDocumentSnippet)
     .getInnerText(selectors.libraryView.libraryFirstDocumentSnippet)
-    .then(snippet => {
+    .then((snippet) => {
       expect(snippet.toLowerCase()).toContain('batman');
       done();
     })
@@ -32,11 +32,11 @@ describe('FullTextSearch zone', () => {
       .waitToClick(selectors.libraryView.libraryFirstDocumentSnippet)
       .wait(200)
       .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
-      .then(snippet => {
+      .then((snippet) => {
         expect(snippet.toLowerCase()).toContain('batman');
         return nightmare.getInnerText(selectors.libraryView.librarySidePanelSecondSnippet);
       })
-      .then(snippet => {
+      .then((snippet) => {
         expect(snippet.toLowerCase()).toContain('batman');
         done();
       })
@@ -54,11 +54,11 @@ describe('FullTextSearch zone', () => {
     .typeEnter(selectors.documentView.searchTextInput)
     .wait(2000)
     .getInnerText(selectors.libraryView.librarySidePanelFirstSnippet)
-    .then(snippet => {
+    .then((snippet) => {
       expect(snippet.toLowerCase()).toContain('joker');
       return nightmare.getInnerText(selectors.libraryView.librarySidePanelSecondSnippet);
     })
-    .then(snippet => {
+    .then((snippet) => {
       expect(snippet.toLowerCase()).toContain('joker');
       done();
     })

@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import Dropzone from 'react-dropzone';
 import {wrapDispatch} from 'app/Multireducer';
+import { Icon } from 'UI';
 
 import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
 import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
@@ -48,13 +49,11 @@ export class UploadBox extends Component {
       <Dropzone className="upload-box"
                 style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
         <div className="upload-box_wrapper">
-          <i className="fa fa-upload"></i>
-          <a className="upload-box_link">Browse your PDFs to upload</a>
+          <Icon icon="upload" /> <a className="upload-box_link">Browse your PDFs to upload</a>
           <span> or drop your files here.</span>
         </div>
         <div className="protip">
-          <i className="fa fa-lightbulb-o"></i>
-          <b>ProTip!</b>
+          <Icon icon="lightbulb" /> <b>ProTip!</b>
           <span>For better performance, upload your documents in batches of 50 or less.</span>
         </div>
       </Dropzone>

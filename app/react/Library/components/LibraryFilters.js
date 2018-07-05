@@ -9,6 +9,7 @@ import FiltersForm from 'app/Library/components/FiltersForm';
 import DocumentTypesList from 'app/Library/components/DocumentTypesList';
 import SidePanel from 'app/Layout/SidePanel';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 export class LibraryFilters extends Component {
   reset() {
@@ -20,11 +21,11 @@ export class LibraryFilters extends Component {
       <SidePanel className="library-filters" open={this.props.open}>
         <div className="sidepanel-footer">
           <span onClick={this.reset.bind(this)} className="btn btn-primary">
-            <i className="fa fa-sync" />
+            <Icon icon="sync" />
             <span className="btn-label">{t('System', 'Reset')}</span>
           </span>
           <button type="submit" form="filtersForm" className="btn btn-success">
-            <i className="fa fa-search" />
+            <Icon icon="search" />
             <span className="btn-label">{t('System', 'Search')}</span>
           </button>
         </div>

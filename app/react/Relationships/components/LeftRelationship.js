@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component, Fragment } from 'react';
 import { Map } from 'immutable';
+import { Icon } from 'UI';
 
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
@@ -34,10 +35,11 @@ export class LeftRelationship extends Component {
   renderTrashButton(hub) {
     return (this.props.editing &&
       <div key="toggelRemoveLeftRelationship" className="removeHub">
-        <i
+        <button
           onClick={this.toggelRemoveLeftRelationship}
-          className={`relationships-icon fa ${!hub.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
-        />
+          className="relationships-icon">
+          <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
+        </button>
       </div>
     );
   }

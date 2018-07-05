@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { I18NLink, t } from 'app/I18N';
 import { deleteThesauri, checkThesauriCanBeDeleted } from 'app/Thesauris/actions/thesaurisActions';
+import { Icon } from 'UI';
 
 import { notify } from 'app/Notifications/actions/notificationsActions';
 
@@ -37,11 +38,11 @@ export class ThesaurisList extends Component {
           <I18NLink to={`/settings/dictionaries/edit/${dictionary._id}`}>{dictionary.name}</I18NLink>
           <div className="list-group-item-actions">
             <I18NLink to={`/settings/dictionaries/edit/${dictionary._id}`} className="btn btn-default btn-xs">
-              <i className="fa fa-pencil-alt" />&nbsp;
+              <Icon icon="pencil-alt" />&nbsp;
               <span>{t('System', 'Edit')}</span>
             </I18NLink>
             <a onClick={this.deleteThesauri.bind(this, dictionary)} className="btn btn-danger btn-xs template-remove">
-              <i className="fa fa-trash-alt" />&nbsp;
+              <Icon icon="trash-alt" />&nbsp;
               <span>{t('System', 'Delete')}</span>
             </a>
           </div>
@@ -49,7 +50,7 @@ export class ThesaurisList extends Component {
       </ul>
       <div className="settings-footer">
         <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
-          <i className="fa fa-plus" />
+          <Icon icon="plus" />
           <span className="btn-label">{t('System', 'Add thesaurus')}</span>
         </I18NLink>
       </div>

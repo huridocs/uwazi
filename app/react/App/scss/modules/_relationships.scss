@@ -442,13 +442,13 @@ $relationship-type-height: 32px;
 
 .rounded-icon, .relationships-icon {
   position: absolute;
-  border: 1px solid $c-grey;
+  border: 1px solid $c-grey-light;
   color: $c-grey;
   text-align: center;
   border-radius: 50%;
   cursor: pointer;
-  width: 25px;
-  height: 25px;
+  width: 32px;
+  height: 32px;
   padding: 5px;
 }
 
@@ -459,15 +459,18 @@ $relationship-type-height: 32px;
   text-align: center;
   border-radius: 50%;
   cursor: pointer;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   padding: 3px;
   background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .relationships-icon {
   .removeHub & {
-    left: -30px;
+    left: -38px;
   }
 
   &.moving {
@@ -477,7 +480,7 @@ $relationship-type-height: 32px;
 
   .rightRelationship &,
   .removeRightRelationshipGroup & {
-    right: -30px;
+    right: -38px;
   }
 }
 
@@ -492,11 +495,11 @@ $relationship-type-height: 32px;
 .insertEntities {
   position: relative;
   right: -5px;
-  top: 10px;
+  top: 7px;
 }
 
 .moveEntity {
-  top: 30px;
+  top: 34px;
   position: relative;
 }
 

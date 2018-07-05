@@ -6,6 +6,7 @@ import {newEntity} from 'app/Uploads/actions/uploadsActions';
 import {t} from 'app/I18N';
 import {wrapDispatch} from 'app/Multireducer';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 
 export class UploadsHeader extends Component {
 
@@ -16,8 +17,7 @@ export class UploadsHeader extends Component {
           <h1 className="item-name">{t('System', 'My Files')}</h1>
           <ShowIf if={this.props.entityTemplatesExists}>
             <button type="button" className="btn btn-success btn-xs" onClick={this.props.newEntity}>
-              <i className="fa fa-plus"/>&nbsp;
-              <span>{t('System', 'New entity')}</span>
+              <Icon icon="plus"/> {t('System', 'New entity')}
             </button>
           </ShowIf>
         </div>

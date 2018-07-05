@@ -15,6 +15,9 @@
     box-shadow: $box-shadow !important;
     cursor: move;
   }
+  .list-group-item > div {
+    width: 100%;
+  }
   .list-group-item .list-group-item {
     margin-left: 0;
     margin-right: 0;
@@ -32,11 +35,11 @@
     padding: 15px 0;
     border: 1px dashed $c-grey;
   }
-  .fa-reorder {
+  .list-group-item > svg {
     margin: 2px 25px 0 0;
     color: $c-grey;
   }
-  .list-group-item:hover > .fa-reorder {
+  .list-group-item:hover > svg {
     color: $c-grey-dark;
   }
   .fa-reorder + div {

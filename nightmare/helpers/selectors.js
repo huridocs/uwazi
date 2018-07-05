@@ -69,17 +69,17 @@ export default {
     firstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.search-box > form > div.search-suggestions > p:nth-child(1) > a',
     firstDocumentViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(2) > div.item-actions > div:nth-child(2) > a',
     firstEntityViewButton: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1) > div.item-actions > div:nth-child(2) > a',
-    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span',
+    documentTypeFilter: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector > ul > li:nth-child(4) > label > span.multiselectItem-name',
     editEntityButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.edit-metadata.btn.btn-primary',
     saveButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.btn.btn-success',
     deleteButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > button.delete-metadata.btn.btn-danger',
     deleteButtonConfirmation: 'body > div.ReactModalPortal > div > div > div > div.modal-footer > button.btn.confirm-button.btn-danger',
     loadMore: '#app > div.content > div > div > main > div > div > div.row > div:nth-child(2) > button',
     documentAfterLoadMore: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(31)',
-    superVillianType: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label > span',
-    minorVillianType: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label > span',
+    superVillianType: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(2) > label',
+    minorVillianType: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(5) > label',
     resetFilters: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > span',
-    sidePanelCloseButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > i',
+    sidePanelCloseButton: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-header > button',
     sidePanelDocumentType: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > span'
   },
   documentView: {
@@ -155,7 +155,7 @@ export default {
   connections: {
     editButton: '#app > div.content > div > div > div.sidepanel-footer > span > button',
     saveButton: '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success',
-    newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph > div > div > div > button',
+    newRelationshipButton: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.relationships-graph div.leftRelationshipType button.relationships-new',
 
     sortMenu: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.sort-by.centered > div.sort-buttons > div > ul > li.Dropdown-option.is-active > a:nth-child(1)',
     searchInput: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.search-list.centered > div > form > div > div > input',

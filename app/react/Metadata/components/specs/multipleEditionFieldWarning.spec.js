@@ -1,7 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
+import { Icon } from 'UI';
 
-import {MultipleEditionFieldWarning, mapStateToProps} from '../MultipleEditionFieldWarning';
+import { MultipleEditionFieldWarning, mapStateToProps } from '../MultipleEditionFieldWarning';
 
 describe('FormGroup', () => {
   let component;
@@ -11,7 +12,7 @@ describe('FormGroup', () => {
     props = {};
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<MultipleEditionFieldWarning {...props} />);
   };
 
@@ -20,8 +21,7 @@ describe('FormGroup', () => {
       props.multipleEdition = true;
       props.touched = true;
       render();
-      let warning = component.find('.fa-warning');
-      expect(warning.length).toBe(1);
+      expect(component.find(Icon).props().icon).toBe('exclamation-triangle');
     });
   });
 
@@ -30,7 +30,7 @@ describe('FormGroup', () => {
       props.multipleEdition = true;
       props.touched = false;
       render();
-      let warning = component.find('.fa-warning');
+      const warning = component.find('.fa-warning');
       expect(warning.length).toBe(0);
     });
   });
@@ -40,24 +40,24 @@ describe('FormGroup', () => {
       props.multipleEdition = false;
       props.touched = true;
       render();
-      let warning = component.find('.fa-warning');
+      const warning = component.find('.fa-warning');
       expect(warning.length).toBe(0);
     });
   });
 
   describe('mapStateToProps', () => {
     it('should map pristine', () => {
-      let state = {namespace: {$form: {model: 'namespace'}, field: {pristine: false}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(true);
+      let state = { namespace: { $form: { model: 'namespace' }, field: { pristine: false } } };
+      expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(true);
 
-      state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: false}}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(true);
+      state = { namespace: { $form: { model: 'namespace' }, field: { $form: { pristine: false } } } };
+      expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(true);
 
-      state = {namespace: {$form: {model: 'namespace'}, field: {pristine: true}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(false);
+      state = { namespace: { $form: { model: 'namespace' }, field: { pristine: true } } };
+      expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(false);
 
-      state = {namespace: {$form: {model: 'namespace'}, field: {$form: {pristine: true}}}};
-      expect(mapStateToProps(state, {model: 'namespace', field: 'field'}).touched).toEqual(false);
+      state = { namespace: { $form: { model: 'namespace' }, field: { $form: { pristine: true } } } };
+      expect(mapStateToProps(state, { model: 'namespace', field: 'field' }).touched).toEqual(false);
     });
   });
 });

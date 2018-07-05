@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import ShowIf from 'app/App/ShowIf';
 import { is } from 'immutable';
 import { t, Translate } from 'app/I18N';
+import { Icon } from 'UI';
 
 import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 
@@ -108,8 +109,10 @@ export class DocumentTypesList extends Component {
         className="multiselectItem-label"
         htmlFor={item.id}
       >
-        <i className="multiselectItem-icon far fa-square" />
-        <i className="multiselectItem-icon fa fa-check" />
+        <span className="multiselectItem-icon">
+          <Icon icon={['far', 'square']} className="checkbox-empty" />
+          <Icon icon="check" className="checkbox-checked" />
+        </span>
         <span className="multiselectItem-name"><Translate context={context}>{item.name}</Translate></span>
       </label>
       <span className="multiselectItem-results">
@@ -129,14 +132,16 @@ export class DocumentTypesList extends Component {
           checked={this.checked(item)}
         />
         <label htmlFor={item.id} className="multiselectItem-label">
-          <i className="multiselectItem-icon far fa-square" />
-          <i className="multiselectItem-icon fa fa-check" />
+          <span className="multiselectItem-icon">
+            <Icon icon={['far', 'square']} className="checkbox-empty" />
+            <Icon icon="check" className="checkbox-checked" />
+          </span>
           <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>
         </label>
         <span className="multiselectItem-results">
           <span>{this.aggregations(item)}</span>
           <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
-            <i className={this.state.ui[item.id] ? 'fa fa-caret-up' : 'fa fa-caret-down'} />
+            <Icon icon={this.state.ui[item.id] ? 'caret-up' : 'caret-down'} />
           </span>
         </span>
       </div>

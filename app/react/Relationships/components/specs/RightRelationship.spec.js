@@ -86,14 +86,14 @@ describe('RelationshipsGraphEdit', () => {
 
     describe('clicking on the delete button next to a relationship', () => {
       it('should mark that relationship to be deleted', () => {
-        component.find('.removeEntity i').at(0).simulate('click');
+        component.find('.removeEntity button').at(0).simulate('click');
         expect(props.toggleRemoveEntity).toHaveBeenCalledWith(0, 0, 0);
       });
     });
 
     describe('clicking on the delete button next to a right group', () => {
       it('should mark that entire gtoup to be deleted', () => {
-        component.find('.removeRightRelationshipGroup i').at(0).simulate('click');
+        component.find('.removeRightRelationshipGroup button').at(0).simulate('click');
         expect(props.toggleRemoveRightRelationshipGroup).toHaveBeenCalledWith(0, 0);
       });
     });

@@ -2,10 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {t} from 'app/I18N';
+import { Icon } from 'UI';
 
 const SnippetsTab = ({snippets}) => {
   return <div>
-    <i className="fa fa-search"></i>
+    <Icon icon="search" />
     <span className="connectionsNumber">{snippets.size ? snippets.size : ''}</span>
     <span className="tab-link-tooltip">{t('System', 'Search text')}</span>
   </div>;

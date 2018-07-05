@@ -9,6 +9,7 @@ import React, { Component } from 'react';
 import { editLink } from 'app/Settings/actions/uiActions';
 import { removeLink } from 'app/Settings/actions/navlinksActions';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 
 export const LinkSource = {
   beginDrag(props) {
@@ -82,8 +83,8 @@ export class NavlinkForm extends Component {
 
         <div>
           <span className="property-name">
-            <i className="fa fa-reorder" />&nbsp;
-            <i className="fa fa-link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
+            <Icon icon="bars" className="reorder" />&nbsp;
+            <Icon icon="link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
           </span>
         </div>
         <div>
@@ -92,14 +93,14 @@ export class NavlinkForm extends Component {
             className="btn btn-default btn-xs property-edit"
             onClick={() => this.props.editLink(link.localID)}
           >
-            <i className="fa fa-pencil-alt" /> Edit
+            <Icon icon="pencil-alt" /> Edit
           </button>
           <button
             type="button"
             className="btn btn-danger btn-xs property-remove"
             onClick={() => this.props.removeLink(index)}
           >
-            <i className="fa fa-trash-alt" /> Delete
+            <Icon icon="trash-alt" /> Delete
           </button>
         </div>
 

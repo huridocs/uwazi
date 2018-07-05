@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {I18NLink} from 'app/I18N';
+import { Icon } from 'UI';
 
 import api from 'app/Search/SearchAPI';
 
@@ -40,7 +41,7 @@ export class cejilChart001 extends Component {
 
   render() {
     const {title = '', buttons = [], links = []} = this.props;
-    const Loader = <i className="fa fa-spinner fa-pulse fa-fw"></i>;
+    const Loader = <Icon icon="spinner" pulse fixedWidth />;
 
     let processesCount = Loader;
     let provisionalMeasuresCount = Loader;

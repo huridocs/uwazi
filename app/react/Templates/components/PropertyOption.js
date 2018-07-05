@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { DragSource } from 'react-dnd';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Icon } from 'UI';
 
 import { removeProperty } from 'app/Templates/actions/templateActions';
 import Icons from './Icons';
@@ -11,14 +12,14 @@ export class PropertyOption extends Component {
   render() {
     const { connectDragSource } = this.props;
     const { label } = this.props;
-    const iconClass = Icons[this.props.type] || 'fa fa-font';
+    const iconClass = Icons[this.props.type] || 'font';
     const liClass = `list-group-item${this.props.disabled ? ' disabled' : ''}`;
     return (
       connectDragSource(
         <li className={liClass}>
           <span>
-            <i className="fa fa-clone" />
-            <i className={iconClass} />&nbsp;{label}
+            <Icon icon="clone" />
+            <Icon icon={iconClass} /> {label}
           </span>
         </li>
       )

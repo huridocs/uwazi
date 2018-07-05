@@ -10,6 +10,7 @@ import DocumentsAPI from 'app/Documents/DocumentsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import ReferencesAPI from 'app/Viewer/referencesAPI';
 import formater from 'app/Metadata/helpers/formater';
+import { Icon } from 'UI';
 
 import moment from 'moment';
 
@@ -307,7 +308,7 @@ export class TimelineViewer extends Component {
                         </span>
                       </ShowIf>
                       <ShowIf if={reference.additionalData.type === 'judgement'}>
-                        <i className="fa fa-legal" />
+                        <Icon icon="gavel" />
                       </ShowIf>
                     </I18NLink>
                   );

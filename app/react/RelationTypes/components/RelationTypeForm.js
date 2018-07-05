@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {Field, Form} from 'react-redux-form';
 import {connect} from 'react-redux';
 import {I18NLink} from 'app/I18N';
+import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import {saveRelationType, resetRelationType} from 'app/RelationTypes/actions/relationTypeActions';
@@ -46,9 +47,7 @@ export class RelationTypeForm extends Component {
                       {(() => {
                         if (this.props.state.dirty && this.props.state.fields.name && this.props.state.fields.name.errors.duplicated) {
                           return <div className="validation-error">
-                                    <i className="fa fa-exclamation-triangle"></i>
-                                    &nbsp;
-                                    Duplicated name
+                                    <Icon icon="exclamation-triangle" /> Duplicated name
                                 </div>;
                         }
                       })()}
@@ -58,11 +57,11 @@ export class RelationTypeForm extends Component {
               <div className="panel-body">Currently connections only need a title.</div>
               <div className="settings-footer">
                 <I18NLink to="/settings/connections" className="btn btn-default">
-                  <i className="fa fa-arrow-left"></i>
+                  <Icon icon="arrow-left" />
                   <span className="btn-label">Back</span>
                 </I18NLink>
                 <button type="submit" className="btn btn-success save-template">
-                  <i className="far fa-save"/>
+                  <Icon icon="save"/>
                   <span className="btn-label">Save</span>
                 </button>
               </div>

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Icon } from 'UI';
 
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'app/Forms/components/DropdownList';
@@ -73,7 +74,7 @@ export class RightRelationship extends Component {
                        if (relationTypes.find(r => r._id === rightRelationshipGroup.get('template'))) {
                          return rightRelationshipGroup.get('template') ?
                            relationTypes.find(r => r._id === rightRelationshipGroup.get('template')).name :
-                           <i className="fa fa-link" />;
+                           <Icon icon="link" />;
                        }
                        return null;
                      })()}
@@ -97,11 +98,11 @@ export class RightRelationship extends Component {
               <div className="removeRightRelationshipGroup">
                 {(() => {
                   if (rightRelationshipGroup.has('template')) {
-                    return (<i
-                      onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
-                      className={`relationships-icon fa
-                                          ${!rightRelationshipGroup.get('deleted') ? 'fa-trash' : 'fa-undo'}`}
-                    />);
+                    return (<button
+                              onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                              className="relationships-icon">
+                              <Icon icon={!rightRelationshipGroup.get('deleted') ? 'trash-alt' : 'undo'} />
+                            </button>);
                   }
 
                   return <span>&nbsp;</span>;
@@ -131,19 +132,20 @@ export class RightRelationship extends Component {
                   </div>
                   {editing && (
                     <div className="removeEntity">
-                      <i
+                      <button
                         onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                        className={`relationships-icon fa ${!deleted ? 'fa-trash' : 'fa-undo'}`}
-                      />
+                        className="relationships-icon">
+                        <Icon icon={!deleted ? 'trash-alt' : 'undo'} />
+                      </button>
                     </div>
                 )}
                   {editing && (
                     <div className="moveEntity">
-                      <i
+                      <button
                         onClick={this.props.toggleMoveEntity.bind(this, index, rightRelationshipIndex, relationshipIndex)}
-                        className={`relationships-icon fa fa-check ${!move ? '' : 'moving'}`}
-                        alt="move"
-                      />
+                        className={`relationships-icon ${!move ? '' : 'moving'}`}>
+                        <Icon icon="check" />
+                      </button>
                     </div>
                 )}
                 </div>
@@ -160,13 +162,14 @@ export class RightRelationship extends Component {
                       onClick={this.setAddToData(index, rightRelationshipIndex)}
                     >
                       <span>Add entities / documents</span>
-                      <i className="fa fa-plus" />
+                      <Icon icon="plus" />
                     </button>
                     <div className="insertEntities">
-                      <i
+                      <button
                         onClick={this.props.moveEntities.bind(this, index, rightRelationshipIndex)}
-                        className="relationships-icon fa fa-arrow-left"
-                      />
+                        className="relationships-icon">
+                        <Icon icon="arrow-left" />
+                      </button>
                     </div>
                   </div>
                 );

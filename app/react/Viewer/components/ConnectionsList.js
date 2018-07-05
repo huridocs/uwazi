@@ -6,6 +6,7 @@ import { fromJS as Immutable } from 'immutable';
 import { I18NLink } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 import ShowIf from 'app/App/ShowIf';
 import { deleteReference } from 'app/Viewer/actions/referencesActions';
@@ -68,7 +69,7 @@ export class ConnectionsList extends Component {
     if (!this.props.references.size && this.props.referencesSection === 'references') {
       return (
         <div className="blank-state">
-          <i className="fa fa-sitemap" />
+          <Icon icon="sitemap" />
           <h4>{t('System', 'No References')}</h4>
           <p>{t('System', 'No References description')}</p>
         </div>
@@ -78,7 +79,7 @@ export class ConnectionsList extends Component {
     if (!this.props.references.size) {
       return (
         <div className="blank-state">
-          <i className="fa fa-sitemap" />
+          <Icon icon="sitemap" />
           <h4>{t('System', 'No Connections')}</h4>
           <p>{t('System', 'No Connections description')}</p>
         </div>
@@ -129,7 +130,7 @@ export class ConnectionsList extends Component {
                     <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
                       <NeedAuthorization roles={['admin', 'editor']}>
                         <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteReference.bind(this, reference)}>
-                          <i className="fa fa-trash-alt" />
+                          <Icon icon="trash-alt" />
                         </a>
                       </NeedAuthorization>
                     </ShowIf>
@@ -140,7 +141,7 @@ export class ConnectionsList extends Component {
                         onClick={e => e.stopPropagation()}
                         className="item-shortcut btn btn-default"
                       >
-                        <i className="far fa-file-alt" />
+                        <Icon icon="file" />
                       </I18NLink>
                     </ShowIf>
                   </div>

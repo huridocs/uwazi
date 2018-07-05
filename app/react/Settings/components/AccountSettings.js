@@ -7,6 +7,7 @@ import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 
 
 export class AccountSettings extends Component {
@@ -102,7 +103,7 @@ export class AccountSettings extends Component {
               {(() => {
                 if (this.state.passwordError) {
                   return (<div className="validation-error validation-error-centered">
-                    <i className="fa fa-exclamation-triangle" />
+                    <Icon icon="exclamation-triangle" />
                             &nbsp;
                     {t('System', 'bothFieldsRequired', 'Both fields are required and should match.')}
                           </div>);
@@ -114,7 +115,7 @@ export class AccountSettings extends Component {
         </div>
         <div className="settings-footer">
           <a href="/logout" className="btn btn-danger">
-            <i className="fa fa-sign-out-alt" />
+            <Icon icon="power-off" />
             <span className="btn-label">{t('System', 'Logout')}</span>
           </a>
         </div>

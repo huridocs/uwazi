@@ -8,6 +8,7 @@ import {closePanel} from '../actions/uiActions';
 import SidePanel from 'app/Layout/SidePanel';
 import SearchForm from './SearchEntitiesForm';
 import SearchResults from 'app/Connections/components/SearchResults';
+import { Icon } from 'UI';
 
 import * as actions from '../actions/actions';
 
@@ -29,7 +30,9 @@ export class AddEntities extends Component {
       <SidePanel open={open} className="create-reference">
         <div className="sidepanel-header">
           <h1>Add entities / documents</h1>
-          <i className="closeSidepanel fa fa-times close-modal" onClick={this.props.closePanel}></i>
+          <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
+            <Icon icon="times" />
+          </button>
 
           <div className="search-form">
             <SearchForm />

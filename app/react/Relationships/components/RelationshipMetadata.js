@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fromJS as Immutable } from 'immutable';
 import { createSelector } from 'reselect';
+import { Icon } from 'UI';
 
 import { ShowMetadata, MetadataFormButtons } from 'app/Metadata';
 import SidePanel from 'app/Layout/SidePanel';
@@ -13,7 +14,9 @@ export class RelationshipMetadata extends Component {
   render() {
     return (
       <SidePanel open={this.props.selectedConnection} className="connections-metadata">
-        <i className="closeSidepanel fa fa-times close-modal" onClick={this.props.unselectConnection} />
+        <button className="closeSidepanel close-modal" onClick={this.props.unselectConnection}>
+          <Icon icon="times" />
+        </button>
         <div className="sidepanel-body">
           <ShowMetadata entity={this.props.entity} showTitle showType />
         </div>

@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Flag from 'react-flags';
+import { Icon as UIIcon } from 'UI';
 
 function getPngSize(size) {
   switch (size) {
@@ -23,23 +24,23 @@ function getPngSize(size) {
 function getFaSize(size) {
   switch (size) {
   case 'xs':
-    return '';
+    return 'sm';
   case 'sm':
-    return 'fa-lg';
+    return 'lg';
   case 'md':
-    return 'fa-2x';
+    return '2x';
   case 'lg':
-    return 'fa-2x';
+    return '2x';
   case 'xlg':
-    return 'fa-2x';
+    return '2x';
   default:
-    return '';
+    return 'sm';
   }
 }
 
 export class Icon extends Component {
   render() {
-    const {data, className, size} = this.props;
+    const { data, className, size } = this.props;
     let html = null;
     let _data = data;
 
@@ -51,16 +52,18 @@ export class Icon extends Component {
       let icon;
 
       if (_data.type === 'Icons') {
-        icon = <i className={`fa fa-${_data._id} ${getFaSize(size)}`}></i>;
+        icon = <UIIcon icon={`${_data._id}`} size={`${getFaSize(size)}`} />;
       }
 
       if (_data.type === 'Flags') {
-        icon = <Flag name={_data._id}
-                     format="png"
-                     pngSize={getPngSize(size)}
-                     shiny={true}
-                     alt={`${_data.label} flag`}
-                     basePath="/flag-images" />;
+        icon = (<Flag
+          name={_data._id}
+          format="png"
+          pngSize={getPngSize(size)}
+          shiny
+          alt={`${_data.label} flag`}
+          basePath="/flag-images"
+        />);
       }
 
       html = <span className={className}>{icon}</span>;

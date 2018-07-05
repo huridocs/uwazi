@@ -1,10 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { Attachment, mapStateToProps } from '../Attachment';
 import { NeedAuthorization } from 'app/Auth';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
+
+import { Icon } from 'UI';
+
+import { Attachment, mapStateToProps } from '../Attachment';
 
 describe('Attachment', () => {
   let component;
@@ -102,8 +105,8 @@ describe('Attachment', () => {
   it('should hold a thumbnail for PDFs and valid images', () => {
     props.file.filename = 'document.pdf';
     render();
-    expect(component.find('.attachment-thumbnail i').props().className).toContain('fa-file-pdf');
-    expect(component.find('.attachment-thumbnail > span').text()).toBe(' pdf');
+    expect(component.find('.attachment-thumbnail').find(Icon).props().icon).toContain('file-pdf');
+    expect(component.find('.attachment-thumbnail > span').text()).toContain(' pdf');
 
     props.file.filename = 'image.jpg';
     render();

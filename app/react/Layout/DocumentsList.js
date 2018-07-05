@@ -10,6 +10,7 @@ import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
+import { Icon } from 'UI';
 
 export default class DocumentsList extends Component {
   constructor(props, context) {
@@ -127,8 +128,7 @@ export default class DocumentsList extends Component {
             })()}
             <NeedAuthorization>
               <div className="col-sm-12 text-center protip">
-                <i className="fa fa-lightbulb-o" />
-                <b>ProTip!</b>
+                <Icon icon="lightbulb" /> <b>ProTip!</b>
                 <span>Use <span className="protip-key">cmd</span> or <span className="protip-key">shift</span>&nbsp;
                 + click to select multiple files.
                 </span>

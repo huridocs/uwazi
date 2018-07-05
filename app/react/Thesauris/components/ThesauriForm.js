@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { I18NLink } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import { notEmpty } from 'app/Metadata/helpers/validator';
+import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
@@ -108,15 +109,17 @@ export class ThesauriForm extends Component {
               className="btn btn-xs btn-danger"
               onClick={this.props.removeValue.bind(null, groupIndex, null)}
             >
-              <i className="fa fa-trash" /> Delete Group
+              <Icon icon="trash-alt" /> Delete Group
             </button>
             <button
               tabIndex={groupIndex + 500}
               type="button"
-              className="rounded-icon-small fa fa-arrow-left"
+              className="rounded-icon-small"
               alt="move"
               onClick={this.moveToGroup.bind(this, groupIndex, null)}
-            />
+            >
+              <Icon icon="arrow-left" size="xs" />
+            </button>
           </Field>
         </FormGroup>
         <ul className="">
@@ -149,15 +152,17 @@ export class ThesauriForm extends Component {
               className="btn btn-xs btn-danger"
               onClick={this.props.removeValue.bind(null, index, groupIndex)}
             >
-              <i className="fa fa-trash" /> Delete
+              <Icon icon="trash-alt" /> Delete
             </button>
             <button
               tabIndex={index + 500}
               type="button"
-              className="rounded-icon-small fa fa-check"
+              className="rounded-icon-small"
               alt="move"
               onClick={this.toggleToMove.bind(this, value)}
-            />
+            >
+              <Icon icon="check" size="xs" />
+            </button>
           </Field>
         </FormGroup>
       </li>
@@ -186,7 +191,7 @@ export class ThesauriForm extends Component {
                   <input id="thesauriName" className="form-control" type="text" placeholder="Thesauri name" />
                   <ShowIf if={this.props.state.$form.touched && this.props.state.name && this.props.state.name.errors.duplicated}>
                     <div className="validation-error">
-                      <i className="fa fa-exclamation-triangle" />&nbsp;Duplicated name
+                      <Icon icon="exclamation-triangle" size="xs" /> Duplicated name
                     </div>
                   </ShowIf>
                 </Field>
@@ -198,28 +203,30 @@ export class ThesauriForm extends Component {
                 <button
                   tabIndex={500}
                   type="button"
-                  className="rounded-icon-small fa fa-arrow-left"
+                  className="rounded-icon-small"
                   alt="move"
                   onClick={this.moveToGroup.bind(this, null)}
-                />
+                >
+                  <Icon icon="arrow-left" size="xs"/>
+                </button>
               </li>
               {values.map((value, index) => this.renderValue(value, index))}
             </ul>
             <div className="settings-footer">
               <I18NLink to="/settings/dictionaries" className="btn btn-default">
-                <i className="fa fa-arrow-left" />
+                <Icon icon="arrow-left" />
                 <span className="btn-label">Back</span>
               </I18NLink>
               <a className="btn btn-primary" onClick={this.props.addGroup}>
-                <i className="fa fa-plus" />
+                <Icon icon="plus" />
                 <span className="btn-label">Add group</span>
               </a>
               <a className="btn btn-primary" onClick={this.props.sortValues}>
-                <i className="fa fa-sort-alpha-down" />
+                <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
               <button className="btn btn-success save-template">
-                <i className="fa fa-save"/>
+                <Icon icon="save"/>
                 <span className="btn-label">Save</span>
               </button>
             </div>
