@@ -2,22 +2,19 @@
 
 exports[`Customisation should render Customisation component 1`] = `
 <div
-  className="panel panel-default"
+  className="panel panel-default settings-custom-css"
 >
   <div
     className="panel-heading"
   >
-    Customisation
+    Custom styles
   </div>
   <div
     className="panel-body"
-  />
-  <Connect(Form)
-    model="settings.settings"
-    onSubmit={[Function]}
   >
-    <div
-      className="form-group"
+    <Connect(Form)
+      model="settings.settings"
+      onSubmit={[Function]}
     >
       <Modeled(Connect(Field))
         model=".customCSS"
@@ -29,19 +26,28 @@ exports[`Customisation should render Customisation component 1`] = `
           Custom CSS
           <textarea
             className="form-control"
-            cols="100"
             id="custom_css"
-            rows="30"
           />
         </label>
       </Modeled(Connect(Field))>
-      <button
-        className="btn btn-success"
-        type="submit"
+      <div
+        className="settings-footer"
       >
-        Update
-      </button>
-    </div>
-  </Connect(Form)>
+        <button
+          className="btn btn-success"
+          type="submit"
+        >
+          <Component
+            icon="save"
+          />
+          <span
+            className="btn-label"
+          >
+            Update
+          </span>
+        </button>
+      </div>
+    </Connect(Form)>
+  </div>
 </div>
 `;
