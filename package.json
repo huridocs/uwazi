@@ -40,8 +40,7 @@
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch -i",
     "test": "node ./node_modules/.bin/jest",
     "e2e": "node nightmare/nightmare_tests.js",
-    "eslint": "./node_modules/.bin/eslint app --quiet",
-    "snyk-protect": "snyk protect"
+    "eslint": "./node_modules/.bin/eslint app --quiet"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
@@ -138,7 +137,6 @@
     "reselect": "3.0.1",
     "rison": "Nanonid/rison#e64af6c",
     "sanitize-filename": "^1.6.0",
-    "snyk": "^1.85.0",
     "socket.io": "2.0.4",
     "socket.io-client": "2.0.4",
     "superagent": "3.8.2",
@@ -205,6 +203,5 @@
     "webpack-dev-middleware": "2.0.4",
     "webpack-hot-middleware": "^2.21.0",
     "whatwg-fetch": "^0.10.1"
-  },
-  "snyk": true
+  }
 }
