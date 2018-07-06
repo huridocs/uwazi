@@ -26,8 +26,8 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
       <div
         className="upload-box_wrapper"
       >
-        <i
-          className="fa fa-upload"
+        <Component
+          icon="upload"
         />
         <button
           className="upload-box_link"
@@ -37,13 +37,6 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
         <span>
            or drop your files here.
         </span>
-      </div>
-      <div
-        className="protip"
-      >
-        <i
-          className="fa fa-lightbulb-o"
-        />
       </div>
     </t>
     <ul>
@@ -130,8 +123,8 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
       <div
         className="upload-box_wrapper"
       >
-        <i
-          className="fa fa-upload"
+        <Component
+          icon="upload"
         />
         <button
           className="upload-box_link"
@@ -143,21 +136,15 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
         </span>
       </div>
       <div
-        className="protip"
+        className="uploading"
       >
-        <i
-          className="fa fa-lightbulb-o"
+        <Component
+          icon="spinner"
+          spin={true}
         />
+         Uploading ...
       </div>
     </t>
-    <p
-      className="uploading"
-    >
-      <i
-        className="fas fa-spinner fa-spin"
-      />
-       Uploading ...
-    </p>
     <ul />
   </div>
 </div>

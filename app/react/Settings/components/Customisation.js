@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Icon } from 'UI';
 
 import { t } from 'app/I18N';
 
@@ -16,19 +17,23 @@ export class Customisation extends Component {
 
   render() {
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Customisation')}</div>
-        <div className="panel-body" />
-        <Form model="settings.settings" onSubmit={this.props.saveSettings}>
-          <div className="form-group">
+      <div className="panel panel-default settings-custom-css">
+        <div className="panel-heading">{t('System', 'Custom styles')}</div>
+        <div className="panel-body">
+          <Form model="settings.settings" onSubmit={this.props.saveSettings}>
             <Field model=".customCSS">
               <label className="form-group-label" htmlFor="custom_css">{t('System', 'Custom CSS')}
-                <textarea className="form-control" id="custom_css" rows="30" cols="100" />
+                <textarea className="form-control" id="custom_css" />
               </label>
             </Field>
-            <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
-          </div>
-        </Form>
+            <div className="settings-footer">
+              <button type="submit" className="btn btn-success">
+                <Icon icon="save" />
+                <span className="btn-label">{t('System', 'Update')}</span>
+              </button>
+            </div>
+          </Form>
+        </div>
       </div>
     );
   }

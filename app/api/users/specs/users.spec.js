@@ -1,11 +1,11 @@
-import users from '../users.js';
+import { createError } from 'api/utils';
 import SHA256 from 'crypto-js/sha256';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
+import db from 'api/utils/testing_db';
 
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
-import db from 'api/utils/testing_db';
-import { createError } from 'api/utils';
+import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 
 describe('Users', () => {
@@ -172,14 +172,14 @@ describe('Users', () => {
 
     describe('when something fails with the mailer', () => {
       it('should reject the promise and return the error', (done) => {
-        spyOn(mailer, 'send').and.callFake(() => Promise.reject({ Error: 'some error' }));
+        spyOn(mailer, 'send').and.callFake(() => Promise.reject(new Error('some error')));
 
         users.recoverPassword('test@email.com')
         .then(() => {
           done.fail('should not have resolved');
         })
         .catch((error) => {
-          expect(error.Error).toBe('some error');
+          expect(error.message).toBe('some error');
           done();
         });
       });
