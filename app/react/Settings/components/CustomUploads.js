@@ -10,6 +10,7 @@ import { actions } from 'app/BasicReducer';
 import { t } from 'app/I18N';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
+import { Icon } from 'UI';
 
 import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsActions';
 
@@ -44,15 +45,12 @@ export class CustomUploads extends RouteHandler {
             onDrop={this.onDrop}
           >
             <div className="upload-box_wrapper">
-              <i className="fa fa-upload" />
+              <Icon icon="upload" />
               <button className="upload-box_link">Browse files to upload</button>
               <span> or drop your files here.</span>
             </div>
-            <div className="protip">
-              <i className="fa fa-lightbulb-o" />
-            </div>
+            {this.props.progress && <div className="uploading"><Icon icon="spinner" spin /> Uploading ...</div>}
           </Dropzone>
-          {this.props.progress && <p className="uploading"><i className="fas fa-spinner fa-spin" />&nbsp;Uploading ...</p>}
           <ul>
             {this.props.customUploads.map(upload => (
               <li key={upload.get('filename')}>

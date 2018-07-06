@@ -14,13 +14,16 @@
     color: $c-grey-dark;
     border: 2px dashed $c-grey-light;
     
-    .fa {
+    svg {
       color: $c-grey-dark;
       margin-right: 10px;
     }
     
-    a {
+    a, button {
+      border: 0;
       border-bottom: 1px dotted $c-grey-dark;
+      background-color: transparent;
+      padding: 0;
       cursor: pointer;
       color: $c-grey-dark;
       
@@ -38,34 +41,36 @@
 }
 
 .is-uploaded {
-	opacity: 0;
-	transition: all 300ms;
-	position: relative;
-	top: 15px;
-	&.is-active {
-		opacity: 1;
-		top: 0;
-	}
+  opacity: 0;
+  transition: all 300ms;
+  position: relative;
+  top: 15px;
+
+  &.is-active {
+    opacity: 1;
+    top: 0;
+  }
 }
 
 .is-uploading {
-	position: absolute;
-	opacity: 0;
-	transition: all 300ms;
-	text-align: center;
-	font-size: $f-size-lg;
-	color: $c-grey-dark;
-	width: 600px;
-	&.is-active {
-		opacity: 0.4;
-	}
+  position: absolute;
+  opacity: 0;
+  transition: all 300ms;
+  text-align: center;
+  font-size: $f-size-lg;
+  color: $c-grey-dark;
+  width: 600px;
+
+  &.is-active {
+    opacity: 0.4;
+  }
 }
 
 .required {
-	position: relative;
-	top: -3px;
-	right: -3px;
-	color: red;
+  position: relative;
+  top: -3px;
+  right: -3px;
+  color: red;
 }
 
 .content-header ~ .library-filters{
