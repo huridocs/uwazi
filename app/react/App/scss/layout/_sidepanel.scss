@@ -159,6 +159,7 @@ $c-sidebar: $c-white;
   
   .search-box {
     width: calc(100% - 10px);
+    max-width: 100%;
     margin: 5px;
     z-index: 1;
     
