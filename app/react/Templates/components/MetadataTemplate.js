@@ -34,7 +34,6 @@ export class MetadataTemplate extends Component {
   render() {
     const { connectDropTarget } = this.props;
     const commonProperties = this.props.commonProperties || [];
-
     return (
       <div>
         <RemovePropertyConfirm />
@@ -129,13 +128,16 @@ const dropTarget = DropTarget('METADATA_OPTION', target, connector => ({
 
 export { dropTarget };
 
-const mapStateToProps = ({ template, templates }) => ({
+const mapStateToProps = ({ template, templates, relationTypes }, props) => {
+  const _templates = props.relationType ? relationTypes : templates;
+  return {
     _id: template.data._id,
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
-    templates,
+    templates: _templates,
     savingTemplate: template.uiState.get('savingTemplate')
-});
+  };
+};
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ inserted, addProperty, setErrors: formActions.setErrors }, dispatch);

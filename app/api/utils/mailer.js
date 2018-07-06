@@ -1,7 +1,5 @@
-// TEST entire implementation
 import nodemailer from 'nodemailer';
 import mailerConfig from 'api/config/mailer';
-
 import settings from 'api/settings/settings';
 
 let transporterOptions = {
@@ -24,7 +22,7 @@ export default {
 
     return new Promise((resolve, reject) => {
       settings.get()
-      .then(config => {
+      .then((config) => {
         try {
           transporter = nodemailer.createTransport(config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions);
           transporter.sendMail(mailOptions, (error, info) => {

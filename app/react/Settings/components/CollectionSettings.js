@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import { isClient } from 'app/utils';
+import { Link } from 'react-router';
 
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -246,6 +247,24 @@ export class CollectionSettings extends Component {
                 This setting takes precedence over all other mailer configuration.<br />
                 If left blank, then the configuration file in /api/config/mailer.js will be used.
               </div>
+            </div>
+            <h2>{t('System', 'Advanced customizations')}</h2>
+            <div>
+              <Link
+                to="/settings/customisation"
+                href="/settings/customisation"
+                className="btn btn-default"
+              >
+                {t('System', 'Custom Styles')}
+              </Link>
+              &nbsp;
+              <Link
+                to="/settings/custom-uploads"
+                href="/settings/custom-uploads"
+                className="btn btn-default"
+              >
+                {t('System', 'Custom Uploads')}
+              </Link>
             </div>
             <div className="settings-footer">
               <button type="submit" className="btn btn-success">
