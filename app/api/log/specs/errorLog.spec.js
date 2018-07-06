@@ -60,11 +60,13 @@ describe('errorLog', () => {
 
   it('should add GrayLog transport if defined as env var', () => {
     process.env.USE_GRAYLOG = 'server_address';
+    process.env.DATABASE_NAME = 'another instance';
 
     const anErrorLog = createErrorLog();
 
     expect(anErrorLog.transports[2].constructor.name).toBe('GrayLogTransport');
     expect(anErrorLog.transports.length).toBe(3);
     expect(anErrorLog.transports[2].graylog.config.servers[0].host).toBe('server_address');
+    expect(anErrorLog.transports[2].instanceName).toBe('another instance');
   });
 });
