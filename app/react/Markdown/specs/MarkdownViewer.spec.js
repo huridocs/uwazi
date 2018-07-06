@@ -39,6 +39,18 @@ describe('MarkdownViewer', () => {
       expect(component).toMatchSnapshot();
     });
 
+    it('should remove whitespaces between table tags (to prevent react warning)', () => {
+      props.markdown = `
+| cadh | cbdp | cidfp | cipst |
+| - | - | - | - |
+| 1.1,25.1 |  |  |  |
+| 1.1,21.1,21.2,25,1 |  |  |  |
+      `;
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
     it('should support containers with custom classNames', () => {
       props.markdown = '::: test classname \ntext inside a div';
 
