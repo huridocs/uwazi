@@ -181,8 +181,11 @@ export class SelectMultiplePanel extends Component {
             <Form id="multiEdit" model={this.props.formKey} onSubmit={this.save} validators={validation}>
               <FormGroup>
                 <div className="alert alert-warning">
-                  <Icon icon="exclamation-triangle" />
-                  Warning: you are editing multiple files. Fields marked with a <i className="fa fa-warning" /> will be updated with the same value.
+                  <Icon icon="exclamation-triangle" size="2x" />
+                  <p>
+                    Warning: you are editing multiple files.
+                    Fields marked with a <Icon icon="exclamation-triangle" /> will be updated with the same value.
+                  </p>
                 </div>
                 <ShowIf if={!!templateOptions.length}>
                   <FormGroup>

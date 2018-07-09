@@ -1,88 +1,11 @@
 import Immutable from 'immutable';
+import Map from 'app/Map/Map';
 
 import { formatMetadata } from '../../selectors';
 import formater from '../formater';
-import { fromJS } from 'immutable';
-import Map from 'app/Map/Map';
+import { doc, templates, thesauris } from './fixtures';
 
 describe('metadata formater', () => {
-  let doc;
-  let templates;
-  let thesauris;
-
-  beforeEach(() => {
-    doc = {
-      template: 'templateID',
-      title: 'Corte Interamericana de Derechos Humanos',
-      creationDate: 0,
-      metadata: {
-        text: 'text content',
-        date: 10,
-        multiselect: ['value1', 'value2', 'value5'],
-        multidate: [10, 1000000],
-        daterange: { from: 10, to: 1000000 },
-        multidaterange: [{ from: 10, to: 1000000 }, { from: 2000000, to: 3000000 }],
-        markdown: 'markdown content',
-        select: 'value3',
-        relationship1: ['value1', 'value2'],
-        relationship2: ['value1', 'value2', 'value4'],
-        geolocation: { lat: 2, lon: 3 },
-        nested: [],
-        select2: ''
-      }
-    };
-
-    templates = fromJS([
-      { _id: 'template' },
-      { _id: 'template2' },
-      {
-        _id: 'templateID',
-        name: 'Mecanismo',
-        isEntity: true,
-        properties: [
-          { name: 'text', type: 'text', label: 'Text', showInCard: true },
-          { name: 'date', type: 'date', label: 'Date' },
-          { name: 'multiselect', content: 'thesauriId', type: 'multiselect', label: 'Multiselect' },
-          { name: 'multidate', type: 'multidate', label: 'Multi Date' },
-          { name: 'daterange', type: 'daterange', label: 'Date Range' },
-          { name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range' },
-          { name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true },
-          { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
-          { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
-          { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
-          { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
-          { name: 'nested', type: 'nested', label: 'Nested' }
-        ]
-      }
-    ]);
-
-    thesauris = Immutable.fromJS([
-      {
-        _id: 'thesauriId',
-        name: 'Multiselect',
-        type: 'template',
-        values: [
-          { label: 'Value 1', id: 'value1', _id: 'value1' },
-          { label: 'Value 2', id: 'value2', _id: 'value2' },
-          {
-            label: 'Value 3',
-            id: 'value3',
-            _id: 'value3',
-            values: [
-              { label: 'Value 5', id: 'value5', _id: 'value5' },
-              { label: 'Value 6', id: 'value6', _id: 'value6' },
-            ] }
-        ]
-      },
-      {
-        _id: 'thesauriId2',
-        name: 'Multiselect2',
-        type: 'template',
-        values: [{ label: 'Value 4', id: 'value4', _id: 'value4' }]
-      }
-    ]);
-  });
-
   function assessBasicProperties(element, [label, name, translateContext, value]) {
     expect(element.label).toBe(label);
     expect(element.name).toBe(name);
@@ -115,13 +38,13 @@ describe('metadata formater', () => {
     let geolocation;
     let nested;
 
-    beforeEach(() => {
+    beforeAll(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, relationship1, relationship2, geolocation, nested]
         = data.metadata;
     });
 
-    const formatValue = value => ({ icon: undefined, url: `/entity/${value.toLowerCase().replace(/ /g, '')}`, value });
+    const formatValue = (value, type = 'entity') => ({ icon: undefined, url: `/${type}/${value.toLowerCase().replace(/ /g, '')}`, value });
 
     it('should maintain doc original data untouched', () => {
       expect(data.title).toBe(doc.title);
@@ -182,13 +105,13 @@ describe('metadata formater', () => {
     it('should process bound relationship types', () => {
       assessBasicProperties(relationship1, ['Relationship', 'relationship1', 'templateID']);
       expect(relationship1.value.length).toBe(2);
-      assessMultiValues(relationship1, [formatValue('Value 1'), formatValue('Value 2')]);
+      assessMultiValues(relationship1, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document')]);
     });
 
     it('should process free relationsip types', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
-      assessMultiValues(relationship2, [formatValue('Value 1'), formatValue('Value 2'), formatValue('Value 4')]);
+      assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);
     });
 
     it('should not fail when field do not exists on the document', () => {
@@ -213,14 +136,9 @@ describe('metadata formater', () => {
     let creationDate;
     let geolocation;
 
-    beforeEach(() => {
+    beforeAll(() => {
       data = formater.prepareMetadataForCard(doc, templates, thesauris);
       [text, markdown, geolocation] = data.metadata;
-    });
-
-    it('should maintain doc original data untouched', () => {
-      expect(data.title).toBe(doc.title);
-      expect(data.template).toBe(doc.template);
     });
 
     it('should process text type', () => {
@@ -276,23 +194,23 @@ describe('metadata formater', () => {
 
       describe('when sort property does not exists in the metadata', () => {
         it('should return a property with null as value', () => {
-          templates = templates.push(Immutable.fromJS({
+          const _templates = templates.push(Immutable.fromJS({
             _id: 'otherTemplate',
             properties: [{ name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }]
           }));
 
-          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.nonexistent');
+          data = formater.prepareMetadataForCard(doc, _templates, thesauris, 'metadata.nonexistent');
           const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
           assessBasicProperties(nonexistent, ['NonExistentLabel', 'nonexistent', 'otherTemplate']);
           expect(nonexistent.type).toBe(null);
         });
 
         it('should ignore non metadata properties', () => {
-          templates = templates.push(Immutable.fromJS({
+          const _templates = templates.push(Immutable.fromJS({
             properties: [{ name: 'nonexistent', type: 'date', label: 'NonExistentLabel' }]
           }));
 
-          data = formater.prepareMetadataForCard(doc, templates, thesauris, 'nonexistent');
+          data = formater.prepareMetadataForCard(doc, _templates, thesauris, 'nonexistent');
           const nonexistent = data.metadata.find(p => p.name === 'nonexistent');
           expect(nonexistent).not.toBeDefined();
         });

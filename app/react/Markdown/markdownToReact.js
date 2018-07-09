@@ -27,6 +27,7 @@ const dynamicCustomContainersConfig = {
 
 const markdownIt = instanceMarkdownIt().use(mdContainer, 'dynamic', dynamicCustomContainersConfig);
 const markdownItWithHtml = instanceMarkdownIt({ html: true }).use(mdContainer, 'dynamic', dynamicCustomContainersConfig);
+const customComponentTypeMatcher = /{(.+)}\(/;
 
 const getConfig = (string) => {
   const customComponentOptionsMatcher = /{\w+}(\(.+\)\(.+\))|{\w+}(\(.+\))/g;
@@ -39,6 +40,10 @@ const getConfig = (string) => {
   return config;
 };
 
+const removeWhitespacesInsideTableTags = html => html
+.replace(/((\/)?(table|thead|tbody|tr|th|td)>)[\s\n]+(<(\/)?(table|thead|tbody|tr|th|td))/g, '$1$4')
+.replace(/((\/)?(table|thead|tbody|tr|th|td)>)[\s\n]+(<(\/)?(table|thead|tbody|tr|th|td))/g, '$1$4');
+
 export default (_markdown, callback, withHtml = false) => {
   let renderer = markdownIt;
   if (withHtml) {
@@ -46,7 +51,9 @@ export default (_markdown, callback, withHtml = false) => {
   }
 
   const markdown = _markdown.replace(new RegExp(`(${customComponentMatcher})`, 'g'), '$1\n');
-  const html = renderer.render(markdown).replace(new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'), '<placeholder>$1</placeholder>');
+
+  const html = removeWhitespacesInsideTableTags(renderer.render(markdown)
+  .replace(new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'), '<placeholder>$1</placeholder>'));
 
   const isValidNode = (node) => {
     const isBadNode = node.type === 'tag' && node.name.match(/<|>/g);
@@ -65,10 +72,8 @@ export default (_markdown, callback, withHtml = false) => {
         return false;
       }
 
-      const customComponentTypeMatcher = /{(.+)}\(/;
       let type;
-      let config;
-
+      let config = node.attribs;
       const isCustomComponentPlaceholder = node.name === 'placeholder'
         && node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
 
@@ -87,7 +92,6 @@ export default (_markdown, callback, withHtml = false) => {
 
       if (availableComponents.includes(node.name ? node.name.toLowerCase() : '')) {
         type = components[node.name.toLowerCase()];
-        config = node.attribs;
       }
 
       let newNode = callback(type, config, index, children);

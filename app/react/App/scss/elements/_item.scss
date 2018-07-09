@@ -321,7 +321,9 @@ $item-padding: 15px;
     }
 
     &.item-current-sort {
-      font-style: italic;
+      background-color: #dee7ff;
+      padding: 3px 3px 1px;
+      margin-left: -3px;
     }
   }
   .item-icon {
