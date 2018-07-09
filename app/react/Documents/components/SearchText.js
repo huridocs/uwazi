@@ -80,7 +80,15 @@ export class SearchText extends Component {
           </ShowIf>
         </LocalForm>
 
-        <ShowIf if={!this.props.snippets.size} >
+        <ShowIf if={this.props.searchTerm === ''} >
+          <div className="blank-state">
+            <Icon icon="search" />
+            <h4>{t('System', 'Search text')}</h4>
+            <p>{t('System', 'Search text description')}</p>
+          </div>
+        </ShowIf>
+
+        <ShowIf if={!this.props.snippets.size && this.props.searchTerm !== ''} >
           <div className="blank-state">
             <Icon icon="search" />
             <h4>{t('System', 'No text match')}</h4>

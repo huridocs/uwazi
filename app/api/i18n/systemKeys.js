@@ -140,6 +140,7 @@ export default [
 { key: 'Search item', label: 'Search item' },
 { key: 'Search related entities or documents', label: 'Search related entities or documents' },
 { key: 'Search text', label: 'Search text' },
+{ key: 'Search text description', label: 'Type something in the search box to get some results.' },
 { key: 'Select list', label: 'Select list' },
 { key: 'Send recovery email', label: 'Send recovery email' },
 { key: 'Separator', label: 'Separator' },
