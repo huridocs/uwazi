@@ -1,4 +1,3 @@
-import Immutable from 'immutable';
 import moment from 'moment';
 import React from 'react';
 
@@ -8,23 +7,27 @@ import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedPro
 import t from 'app/I18N/t';
 import Map from 'app/Map/Map';
 
-const getOption = (_thesauri, id) => {
-  const thesauri = _thesauri.toJS();
+const getOption = (thesauri, id) => {
   let option;
-  thesauri.values.forEach((value) => {
-    if (value.id === id) {
-      return option = value;
+  thesauri.get('values').forEach((value) => {
+    if (value.get('id') === id) {
+      option = value;
     }
 
-    if (value.values) {
-      value.values.forEach((_value) => {
-        if (_value.id === id) {
-          return option = _value;
+    if (value.get('values')) {
+      value.get('values').forEach((subValue) => {
+        if (subValue.get('id') === id) {
+          option = subValue;
         }
       });
     }
   });
-  return Immutable.fromJS(option);
+
+  if (option) {
+    option = option.set('type', thesauri.get('isEntity') ? 'entity' : 'document');
+  }
+
+  return option;
 };
 
 const addSortedProperty = (templates, sortedProperty) => templates.reduce((_property, template) => {
@@ -78,7 +81,7 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
 
 export default {
 
-  date(property, timestamp, thesauris, showInCard) {
+  date(property, timestamp, thesauris, { showInCard }) {
     const value = moment.utc(timestamp, 'X').format('ll');
     return { label: property.get('label'), name: property.get('name'), value, timestamp, showInCard };
   },
@@ -95,28 +98,28 @@ export default {
     return `${from} ~ ${to}`;
   },
 
-  daterange(property, daterange, thesauris, showInCard) {
+  daterange(property, daterange, thesauris, { showInCard }) {
     return { label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange), showInCard };
   },
 
-  multidate(property, timestamps = [], thesauris, showInCard) {
+  multidate(property, timestamps = [], thesauris, { showInCard }) {
     const value = timestamps.map(timestamp => ({ timestamp, value: moment.utc(timestamp, 'X').format('ll') }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
-  multidaterange(property, dateranges = [], thesauris, showInCard) {
+  multidaterange(property, dateranges = [], thesauris, { showInCard }) {
     const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
-  geolocation(property, value, thesauris, showInCard, renderForCard) {
+  geolocation(property, value, thesauris, { showInCard, onlyForCards }) {
     const markers = [];
     let _value;
     if (value.lat && value.lon) {
       _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
       markers.push({ latitude: value.lat, longitude: value.lon });
     }
-    if (!renderForCard) {
+    if (!onlyForCards) {
       _value = <Map latitude={value.lat} height={370} longitude={value.lon} markers={markers}/>;
     }
 
@@ -133,53 +136,48 @@ export default {
 
     let url;
     if (option && thesauri.get('type') === 'template') {
-      url = `/entity/${option.get('id')}`;
+      url = `/${option.get('type') ? option.get('type') : 'entity'}/${option.get('id')}`;
     }
 
     return { value, url, icon };
   },
 
-  select(property, thesauriValue, thesauris, showInCard) {
+  select(property, thesauriValue, thesauris, { showInCard }) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
     const { value, url, icon } = this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri);
     return { label: property.get('label'), name: property.get('name'), value, icon, url, showInCard };
   },
 
-  multiselect(property, thesauriValues, thesauris, showInCard) {
+  multiselect(property, thesauriValues, thesauris, { showInCard }) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
     const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
   },
 
-  relationship(property, thesauriValues, thesauris, showInCard) {
+  relationship(property, thesauriValues, thesauris, { showInCard }) {
     const allEntitiesThesauriValues = thesauris
     .filter(_thesauri => _thesauri.get('type') === 'template')
     .reduce((result, _thesauri) => {
       if (result) {
-        return result.concat(_thesauri.get('values'));
+        return result.concat(this.getThesauriValues(thesauriValues, _thesauri));
       }
 
-      return _thesauri.get('values');
+      return this.getThesauriValues(thesauriValues, _thesauri);
     }, null);
 
-    const thesauri = Immutable.fromJS({
-      values: allEntitiesThesauriValues,
-      type: 'template'
-    });
-
-    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
+    const sortedValues = advancedSort(allEntitiesThesauriValues, { property: 'value' });
 
     return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
   },
 
   getThesauriValues(thesauriValues, thesauri) {
     return advancedSort(
-      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)),
+      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)).filter(v => v.value),
       { property: 'value' }
     );
   },
 
-  nested(property, rows, thesauris, showInCard) {
+  nested(property, rows, thesauris, { showInCard }) {
     if (!rows[0]) {
       return { label: property.get('label'), name: property.get('name'), value: '', showInCard };
     }
@@ -191,10 +189,11 @@ export default {
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
     result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
 
-    return this.markdown(property, result, thesauris, showInCard);
+    // return this.markdown(property, result, thesauris,  showInCard);
+    return this.markdown(property, result, thesauris, { showInCard });
   },
 
-  markdown(property, value, thesauris, showInCard) {
+  markdown(property, value, thesauris, { showInCard }) {
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
@@ -215,25 +214,27 @@ export default {
     }
 
     let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
-    .map((property) => {
-      const value = doc.metadata[property.get('name')];
-      const showInCard = property.get('showInCard');
-
-      const type = property.get('type');
-
-      if (this[type] && value) {
-        return Object.assign(
-          this[type](property, value, thesauris, showInCard, options.onlyForCards),
-          { type: type === 'nested' ? 'markdown' : type, translateContext: template.get('_id') }
-        );
-      }
-
-      return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
-    });
+    .map(property => this.applyTransformation(property, { doc, thesauris, options, template }));
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
+  },
+
+  applyTransformation(property, { doc, thesauris, options, template }) {
+    const value = doc.metadata[property.get('name')];
+    const showInCard = property.get('showInCard');
+
+    const type = property.get('type');
+
+    if (this[type] && value) {
+      return Object.assign(
+        this[type](property, value, thesauris, { ...options, showInCard }),
+        { type: type === 'nested' ? 'markdown' : type, translateContext: template.get('_id') }
+      );
+    }
+
+    return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
   },
 
   filterProperties(template, onlyForCards, sortedProperty) {
