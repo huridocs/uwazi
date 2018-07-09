@@ -63,6 +63,87 @@ exports[`MarkdownViewer render should remove Dataset tags 1`] = `
 </div>
 `;
 
+exports[`MarkdownViewer render should remove whitespaces between table tags (to prevent react warning) 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <table
+    key="0"
+  >
+    <thead
+      key="0"
+    >
+      <tr
+        key="0"
+      >
+        <th
+          key="0"
+        >
+          cadh
+        </th>
+        <th
+          key="1"
+        >
+          cbdp
+        </th>
+        <th
+          key="2"
+        >
+          cidfp
+        </th>
+        <th
+          key="3"
+        >
+          cipst
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      key="1"
+    >
+      <tr
+        key="0"
+      >
+        <td
+          key="0"
+        >
+          1.1,25.1
+        </td>
+        <td
+          key="1"
+        />
+        <td
+          key="2"
+        />
+        <td
+          key="3"
+        />
+      </tr>
+      <tr
+        key="1"
+      >
+        <td
+          key="0"
+        >
+          1.1,21.1,21.2,25,1
+        </td>
+        <td
+          key="1"
+        />
+        <td
+          key="2"
+        />
+        <td
+          key="3"
+        />
+      </tr>
+    </tbody>
+  </table>
+  
+
+</div>
+`;
+
 exports[`MarkdownViewer render should render Link 1`] = `
 <div
   className="markdown-viewer"
