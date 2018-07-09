@@ -19,6 +19,11 @@ describe('MarkdownViewer', () => {
     component = shallow(<MarkdownViewer {...props} />);
   };
 
+  const matchSnapshot = () => {
+    render();
+    expect(component).toMatchSnapshot();
+  };
+
   describe('render', () => {
     describe('when markdown is empty', () => {
       it('should not render anything', () => {
@@ -35,8 +40,7 @@ describe('MarkdownViewer', () => {
         \n\n\`\`\`javascript\nCode\n\`\`\`
       `;
 
-      render();
-      expect(component).toMatchSnapshot();
+      matchSnapshot();
     });
 
     it('should remove whitespaces between table tags (to prevent react warning)', () => {
@@ -47,15 +51,13 @@ describe('MarkdownViewer', () => {
 | 1.1,21.1,21.2,25,1 |  |  |  |
       `;
 
-      render();
-      expect(component).toMatchSnapshot();
+      matchSnapshot();
     });
 
     it('should support containers with custom classNames', () => {
       props.markdown = '::: test classname \ntext inside a div';
 
-      render();
-      expect(component).toMatchSnapshot();
+      matchSnapshot();
     });
 
     it('should render media components', () => {
@@ -64,8 +66,7 @@ describe('MarkdownViewer', () => {
       \n\n{media}(config options)
       `;
 
-      render();
-      expect(component).toMatchSnapshot();
+      matchSnapshot();
     });
 
     it('should render list components', () => {
