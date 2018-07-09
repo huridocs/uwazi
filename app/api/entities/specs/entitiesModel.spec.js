@@ -42,7 +42,7 @@ describe('entitiesModel', () => {
   ])
   .then(([es, none, ar, ka, sr]) => {
     expect(es.length).toBe(1);
-    expect(none.length).toBe(1);
+    expect(none.length).toBe(3);
     expect(ar.length).toBe(0);
     expect(ka.length).toBe(0);
     expect(sr.length).toBe(0);
