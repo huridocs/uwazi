@@ -20,7 +20,7 @@
   position: relative;
   border-radius: 0;
 
-  svg:first-child {
+  & > svg:first-child {
     margin-right: 15px;
   }
   .fa-times {
@@ -46,21 +46,21 @@
 }
 .alert-success {
   border-left: 5px solid $c-success;
-  .fa:first-child,
+  & > svg:first-child,
   .alert-title {
     color: $c-success;
   }
 }
 .alert-warning {
   border-left: 5px solid $c-warning;
-  .fa:first-child,
+  & > svg:first-child,
   .alert-title {
     color: $c-warning;
   }
 }
 .alert-danger {
   border-left: 5px solid $c-danger;
-  .fa:first-child,
+  & > svg:first-child,
   .alert-title {
     color: $c-danger;
   }
