@@ -189,7 +189,8 @@ export default {
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
     result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
 
-    return this.markdown(property, result, thesauris, showInCard);
+    // return this.markdown(property, result, thesauris,  showInCard);
+    return this.markdown(property, result, thesauris, { showInCard });
   },
 
   markdown(property, value, thesauris, { showInCard }) {

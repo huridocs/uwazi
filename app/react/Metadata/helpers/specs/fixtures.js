@@ -16,7 +16,7 @@ export const doc = {
     relationship1: ['value1', 'value2'],
     relationship2: ['value1', 'value2', 'value4'],
     geolocation: { lat: 2, lon: 3 },
-    nested: [],
+    nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
   }
 };
