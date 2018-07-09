@@ -6,7 +6,6 @@ import { t, I18NLink } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { highlightSearch } from 'app/Viewer/actions/uiActions';
-import ShowIf from 'app/App/ShowIf';
 import { browserHistory } from 'react-router';
 import { scrollToPage } from 'app/Viewer/actions/uiActions';
 import { toUrlParams } from '../../../shared/JSONRequest';
@@ -62,7 +61,7 @@ export class SearchText extends Component {
           getDispatch={dispatch => this.attachDispatch(dispatch)}
           autoComplete="off"
         >
-          <ShowIf if={this.props.storeKey === 'documentViewer'} >
+          {this.props.storeKey === 'documentViewer' &&
             <div className="search-box">
               <div className="input-group">
                 <Field model=".searchTerm">
@@ -77,24 +76,16 @@ export class SearchText extends Component {
                 </Field>
               </div>
             </div>
-          </ShowIf>
+          }
         </LocalForm>
 
-        <ShowIf if={this.props.searchTerm === ''} >
+        {!this.props.snippets.size &&
           <div className="blank-state">
             <Icon icon="search" />
-            <h4>{t('System', 'Search text')}</h4>
-            <p>{t('System', 'Search text description')}</p>
+            <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
+            <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
           </div>
-        </ShowIf>
-
-        <ShowIf if={!this.props.snippets.size && this.props.searchTerm !== ''} >
-          <div className="blank-state">
-            <Icon icon="search" />
-            <h4>{t('System', 'No text match')}</h4>
-            <p>{t('System', 'No text match description')}</p>
-          </div>
-        </ShowIf>
+        }
 
         <ul className="snippet-list">
           {snippets.map((snippet, index) => (
@@ -124,6 +115,7 @@ SearchText.propTypes = {
 };
 
 SearchText.defaultProps = {
+  searchTerm: '',
   scrollToPage
 };
 
