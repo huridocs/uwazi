@@ -40,6 +40,7 @@ export const createErrorLog = () => {
         winston.format.timestamp(),
         formatter
       ),
+      instance_name: DATABASE_NAME,
       server: process.env.USE_GRAYLOG
     }));
   }
