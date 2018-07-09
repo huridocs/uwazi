@@ -51,8 +51,6 @@ export default (_markdown, callback, withHtml = false) => {
   }
 
   const markdown = _markdown.replace(new RegExp(`(${customComponentMatcher})`, 'g'), '$1\n');
-  // const html = renderer.render(markdown)
-  // .replace(new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'), '<placeholder>$1</placeholder>');
 
   const html = removeWhitespacesInsideTableTags(renderer.render(markdown)
   .replace(new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'), '<placeholder>$1</placeholder>'));
