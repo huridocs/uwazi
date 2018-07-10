@@ -51,7 +51,7 @@ const schema = mongoose.model('entities', entitySchema);
 const Model = instanceModel(schema);
 
 const { save } = Model;
-const unsuportedLanguages = ['ar'];
+const unsuportedLanguages = ['ar', 'sr', 'ka'];
 
 const setMongoLanguage = (doc) => {
   if (!doc.language) {
