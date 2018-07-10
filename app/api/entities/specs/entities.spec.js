@@ -225,8 +225,8 @@ describe('entities', () => {
 
     it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
       const doc = { _id: syncPropertiesEntityId,
-sharedId: 'shared1',
-template: templateId,
+        sharedId: 'shared1',
+        template: templateId,
         metadata: {
           text: 'changedText',
           select: 'select',
@@ -234,7 +234,7 @@ template: templateId,
           date: 'date',
           multidate: [1234],
           multidaterange: [{ from: 1, to: 2 }]
-}
+        }
       };
 
       entities.save(doc, { language: 'en' })
@@ -317,10 +317,10 @@ template: templateId,
     it('should sanitize multidates, removing non valid dates', (done) => {
       const doc = {
         _id: batmanFinishesId,
-sharedId: 'shared',
+        sharedId: 'shared',
         metadata: { multidate: [null, 1234, null, 5678] },
         published: false,
-template: templateId
+        template: templateId
       };
 
       entities.save(doc, { language: 'en' })
@@ -339,6 +339,30 @@ template: templateId
       .catch(catchErrors(done));
     });
 
+    it('should sanitize select, removing empty values', (done) => {
+      const doc = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        metadata: { select: ''},
+        published: false,
+        template: templateId
+      };
+
+      entities.save(doc, { language: 'en' })
+      .then((updatedDoc) => {
+        expect(updatedDoc.language).toBe('en');
+        return Promise.all([
+          entities.getById('shared', 'es'),
+          entities.getById('shared', 'en')
+        ]);
+      })
+      .then(([docES, docEN]) => {
+        expect(docES.metadata.select).toEqual(null);
+        expect(docEN.metadata.select).toEqual(null);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
     it('should sanitize daterange, removing non valid dates', (done) => {
       const doc1 = { _id: batmanFinishesId, sharedId: 'shared', metadata: { daterange: { from: 1, to: 2 } }, template: templateId };
       const doc2 = { _id: batmanFinishesId, sharedId: 'shared', metadata: { daterange: { from: null, to: 2 } }, template: templateId };
@@ -367,16 +391,16 @@ template: templateId
 
     it('should sanitize multidaterange, removing non valid dates', (done) => {
       const doc = { _id: batmanFinishesId,
-sharedId: 'shared',
-metadata: { multidaterange: [
-        { from: 1, to: 2 },
-        { from: null, to: null },
-        { from: null, to: 2 },
-        { from: 2, to: null },
-        { from: null, to: null }
-] },
-published: false,
-template: templateId };
+        sharedId: 'shared',
+        metadata: { multidaterange: [
+          { from: 1, to: 2 },
+          { from: null, to: null },
+          { from: null, to: 2 },
+          { from: 2, to: null },
+          { from: null, to: null }
+        ] },
+        published: false,
+        template: templateId };
 
       entities.save(doc, { language: 'en' })
       .then((updatedDoc) => {
@@ -540,10 +564,10 @@ template: templateId };
     it('should update property names on entities based on the changes to the template', (done) => {
       spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const template = { _id: templateChangingNames,
-properties: [
-        { id: '1', type: 'text', name: 'property1', label: 'new name1' },
-        { id: '2', type: 'text', name: 'property2', label: 'new name2' },
-        { id: '3', type: 'text', name: 'property3', label: 'property3' }
+        properties: [
+          { id: '1', type: 'text', name: 'property1', label: 'new name1' },
+          { id: '2', type: 'text', name: 'property2', label: 'new name2' },
+          { id: '3', type: 'text', name: 'property3', label: 'property3' }
         ] };
 
       entities.updateMetadataProperties(template, currentTemplate)
@@ -569,8 +593,8 @@ properties: [
 
     it('should delete and rename properties passed', (done) => {
       const template = { _id: templateChangingNames,
-properties: [
-        { id: '2', type: 'text', name: 'property2', label: 'new name' }
+        properties: [
+          { id: '2', type: 'text', name: 'property2', label: 'new name' }
         ] };
 
       entities.updateMetadataProperties(template, currentTemplate)
@@ -592,8 +616,8 @@ properties: [
 
     it('should delete missing properties', (done) => {
       const template = { _id: templateChangingNames,
-properties: [
-        { id: '2', type: 'text', name: 'property2', label: 'property2' }
+        properties: [
+          { id: '2', type: 'text', name: 'property2', label: 'property2' }
         ] };
 
       entities.updateMetadataProperties(template, currentTemplate)
@@ -663,21 +687,21 @@ properties: [
     });
 
     it('should delete the document from the search', done => entities.delete('shared')
-    .then(() => {
-      const argumnets = search.delete.calls.allArgs();
-      expect(search.delete).toHaveBeenCalled();
-      expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-      done();
-    })
-    .catch(catchErrors(done)));
+      .then(() => {
+        const argumnets = search.delete.calls.allArgs();
+        expect(search.delete).toHaveBeenCalled();
+        expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should delete the document relationships', done => entities.delete('shared')
-    .then(() => relationships.get({ entity: 'shared' }))
-    .then((refs) => {
-      expect(refs.length).toBe(0);
-      done();
-    })
-    .catch(catchErrors(done)));
+      .then(() => relationships.get({ entity: 'shared' }))
+      .then((refs) => {
+        expect(refs.length).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should delete the original file', (done) => {
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));
