@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchText blankState when there is no search term should render a blank state message 1`] = `
+<div
+  className="blank-state"
+>
+  <Component
+    icon="search"
+  />
+  <h4>
+    Search text
+  </h4>
+  <p>
+    Search text description
+  </p>
+</div>
+`;
+
+exports[`SearchText blankState when there is search term should render a no matching text message 1`] = `
+<div
+  className="blank-state"
+>
+  <Component
+    icon="search"
+  />
+  <h4>
+    No text match
+  </h4>
+  <p>
+    No text match description
+  </p>
+</div>
+`;
