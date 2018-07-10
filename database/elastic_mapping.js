@@ -207,8 +207,20 @@ languages.getAll().forEach((language) => {
       type: 'text',
       index: 'analyzed',
       omit_norms: true,
-      analyzer: language,
-      term_vector: 'with_positions_offsets'
+      analyzer: 'other',
+      term_vector: 'with_positions_offsets',
+      fields: {
+        stop: {
+          type: 'text',
+          analyzer: language,
+          term_vector: 'with_positions_offsets',
+        },
+        exact: {
+          type: 'text',
+          analyzer: 'other',
+          term_vector: 'with_positions_offsets',
+        }
+      }
     }
   };
 

@@ -78,63 +78,74 @@ export default function () {
       if (!term) {
         return this;
       }
+      const exactMatch = term[0] === '"' && term[term.length - 1] === '"';
+      if (exactMatch) {
+        term = term.substring(1, term.length - 1);
+      }
       const should = [];
       const includeFullText = fieldsToSearch.includes('fullText');
       const fields = fieldsToSearch.filter(field => field !== 'fullText');
-
+      const pfraseMatchType = exactMatch ? 'phrase' : 'phrase_prefix';
       if (fields.length) {
         should.push({
             multi_match: {
               query: term,
-              type: 'phrase_prefix',
+              type: pfraseMatchType,
               fields,
-              boost: 6
+              boost: 3
           }
         });
       }
 
       if (includeFullText) {
-        should.unshift(
-          {
-            has_child: {
-              type: 'fullText',
-              score_mode: 'max',
-              inner_hits: {
-                _source: false,
-                highlight: {
-                  order: 'score',
-                  pre_tags: ['<b>'],
-                  post_tags: ['</b>'],
-                  fields: {
-                    'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
-                  }
+        const fullTextQuery = {
+          has_child: {
+            type: 'fullText',
+            score_mode: 'max',
+            inner_hits: {
+              _source: false,
+              highlight: {
+                order: 'score',
+                pre_tags: ['<b>'],
+                post_tags: ['</b>'],
+                fields: {
+                  'fullText_*.exact': { number_of_fragments, type, fragment_size, fragmenter: 'span' },
+                  'fullText_*.stop': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
                 }
-              },
-              query: {
-                bool: {
-                  should: [
-                    {
-                      multi_match: {
-                        query: term,
-                        type: 'best_fields',
-                        fuzziness: 0,
-                        fields: ['fullText*']
-                      }
-                    },
-                    {
-                      multi_match: {
-                        query: term,
-                        type: 'phrase_prefix',
-                        fields: ['fullText*'],
-                        boost: 3
-                      }
+              }
+            },
+            query: {
+              bool: {
+                should: [
+                  {
+                    multi_match: {
+                      query: term,
+                      type: 'best_fields',
+                      fuzziness: 0,
+                      fields: ['fullText*.stop']
                     }
-                  ]
-                }
+                  },
+                  {
+                    multi_match: {
+                      query: term,
+                      type: pfraseMatchType,
+                      slop: 0,
+                      fields: ['fullText*.exact'],
+                      boost: 3
+                    }
+                  }
+                ]
               }
             }
           }
-        );
+        };
+        if (exactMatch) {
+          fullTextQuery.has_child.query.bool.should.splice(0, 1);
+        }
+        if (!exactMatch) {
+          delete fullTextQuery.has_child.inner_hits.highlight.fields['fullText_*'];
+        }
+        should.unshift(fullTextQuery);
       }
 
       addFullTextFilter({ bool: { should } });

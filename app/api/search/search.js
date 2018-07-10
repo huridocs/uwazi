@@ -135,7 +135,7 @@ const search = {
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
-
+      console.log(JSON.stringify(documentsQuery.query(), null, 4));
       return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
       .then((response) => {
         const rows = response.hits.hits.map((hit) => {
@@ -146,14 +146,15 @@ const search = {
             const regex = /\[\[(\d+)\]\]/g;
 
             const highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
-
-            result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
-              const matches = regex.exec(snippet);
-              return {
-                text: snippet.replace(regex, ''),
-                page: matches ? Number(matches[1]) : 0
-              };
-            });
+            if (highlights) {
+              result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
+                const matches = regex.exec(snippet);
+                return {
+                  text: snippet.replace(regex, ''),
+                  page: matches ? Number(matches[1]) : 0
+                };
+              });
+            }
           }
           result._id = hit._id;
           return result;
