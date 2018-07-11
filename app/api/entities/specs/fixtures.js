@@ -44,46 +44,46 @@ export default {
   ],
   templates: [
     { _id: templateId,
-name: 'template_test',
-properties: [
-      { type: 'text', name: 'text' },
-      { type: 'select', name: 'select' },
-      { type: 'multiselect', name: 'multiselect' },
-      { type: 'date', name: 'date' },
-      { type: 'multidate', name: 'multidate' },
-      { type: 'multidaterange', name: 'multidaterange' },
-      { type: 'daterange', name: 'daterange' },
-      { type: 'relationship', name: 'friends', relationType: 'relation1' }
-] },
+      name: 'template_test',
+      properties: [
+        { type: 'text', name: 'text' },
+        { type: 'select', name: 'select' },
+        { type: 'multiselect', name: 'multiselect' },
+        { type: 'date', name: 'date' },
+        { type: 'multidate', name: 'multidate' },
+        { type: 'multidaterange', name: 'multidaterange' },
+        { type: 'daterange', name: 'daterange' },
+        { type: 'relationship', name: 'friends', relationType: 'relation1' }
+      ] },
     { _id: templateWithOnlyMultiselect,
-name: 'templateWithOnlyMultiSelectSelect',
-properties: [
-      { type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString() }
-] },
+      name: 'templateWithOnlyMultiSelectSelect',
+      properties: [
+        { type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString() }
+      ] },
     { _id: templateWithOnlySelect,
-name: 'templateWithOnlySelect',
-properties: [
-      { type: 'select', name: 'select', content: templateChangingNames.toString() }
-] },
+      name: 'templateWithOnlySelect',
+      properties: [
+        { type: 'select', name: 'select', content: templateChangingNames.toString() }
+      ] },
     { _id: templateWithEntityAsThesauri,
-name: 'template_with_thesauri_as_template',
-properties: [
-      { type: 'select', name: 'select', content: templateId.toString() },
-      { type: 'multiselect', name: 'multiselect', content: templateId.toString() }
-] },
+      name: 'template_with_thesauri_as_template',
+      properties: [
+        { type: 'select', name: 'select', content: templateId.toString() },
+        { type: 'multiselect', name: 'multiselect', content: templateId.toString() }
+      ] },
     { _id: templateWithEntityAsThesauri2,
-name: 'template_with_thesauri_as_template',
-properties: [
-      { type: 'select', name: 'select2', content: templateId.toString() },
-      { type: 'multiselect', name: 'multiselect2', content: templateId.toString() }
-] },
+      name: 'template_with_thesauri_as_template',
+      properties: [
+        { type: 'select', name: 'select2', content: templateId.toString() },
+        { type: 'multiselect', name: 'multiselect2', content: templateId.toString() }
+      ] },
     { _id: templateChangingNames,
-name: 'template_changing_names',
-properties: [
-      { id: '1', type: 'text', name: 'property1' },
-      { id: '2', type: 'text', name: 'property2' },
-      { id: '3', type: 'text', name: 'property3' }
-] }
+      name: 'template_changing_names',
+      properties: [
+        { id: '1', type: 'text', name: 'property1' },
+        { id: '2', type: 'text', name: 'property2' },
+        { id: '3', type: 'text', name: 'property3' }
+      ] }
   ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1, language: 'en' },

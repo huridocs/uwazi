@@ -75,14 +75,14 @@ function createEntity(doc, languages, sharedId) {
 function getEntityTemplate(doc, language) {
   return new Promise((resolve) => {
     if (!doc.sharedId && !doc.template) {
-      resolve(null);
+      return resolve(null);
     }
 
     if (doc.template) {
       return templates.getById(doc.template).then(resolve);
     }
 
-    this.getById(doc.sharedId, language)
+    return this.getById(doc.sharedId, language)
     .then((storedDoc) => {
       if (!storedDoc) {
         return null;
@@ -92,38 +92,48 @@ function getEntityTemplate(doc, language) {
   });
 }
 
+const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
+
 function sanitize(doc, template) {
+  let undefinedValue;
   if (!template) {
-    delete doc.metadata;
-    return doc;
+    return Object.assign(doc, { metadata: undefinedValue });
   }
 
   if (!doc.metadata) {
     return doc;
   }
 
-  return template.properties.reduce((sanitizedDoc, property) => {
-    const type = property.type;
-    if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedDoc.metadata[property.name])) {
-      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+  const metadata = template.properties.reduce((sanitizedMetadata, property) => {
+    const { type, name } = property;
+    if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedMetadata[name])) {
+      return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
-    if (type === 'relationship' && Array.isArray(sanitizedDoc.metadata[property.name])) {
-      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+
+    if (type === 'multidate' && sanitizedMetadata[name]) {
+      return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value) });
     }
-    if (type === 'multidate' && sanitizedDoc.metadata[property.name]) {
-      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter(value => value);
+
+    if (type === 'multidaterange' && sanitizedMetadata[name]) {
+      return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
-    if (type === 'multidaterange' && sanitizedDoc.metadata[property.name]) {
-      sanitizedDoc.metadata[property.name] = sanitizedDoc.metadata[property.name].filter(value => value.from || value.to);
+
+    if (type === 'select' && !sanitizedMetadata[property.name]) {
+      return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
     }
-    if (type === 'daterange' && sanitizedDoc.metadata[property.name]) {
-      const value = sanitizedDoc.metadata[property.name];
+
+    if (type === 'daterange' && sanitizedMetadata[name]) {
+      const value = sanitizedMetadata[name];
       if (!value.to && !value.from) {
-        delete sanitizedDoc.metadata[property.name];
+        const { [name]: dateRange, ...withoutDateRange } = sanitizedMetadata;
+        return withoutDateRange;
       }
     }
-    return sanitizedDoc;
-  }, doc);
+
+    return sanitizedMetadata;
+  }, doc.metadata);
+
+  return Object.assign(doc, { metadata });
 }
 
 export default {
