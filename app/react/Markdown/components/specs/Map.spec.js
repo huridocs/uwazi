@@ -2,11 +2,11 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import Map from 'app/Map/Map';
 
 import { mapStateToProps, MapComponent } from '../Map.js';
 import markdownDatasets from '../../markdownDatasets';
 
-import Map from 'app/Map/Map';
 
 describe('Map Markdown component', () => {
   const state = {
