@@ -6,7 +6,7 @@ import attachmentsRoutes from '../routes';
 import entities from '../../entities';
 import fixtures, { entityId, entityIdEn, entityIdPt, toDeleteId, attachmentToEdit } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import paths, { attachmentsPath } from '../../config/paths';
+import paths from '../../config/paths';
 
 describe('Attachments Routes', () => {
   let routes;
@@ -15,7 +15,6 @@ describe('Attachments Routes', () => {
   beforeEach((done) => {
     spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachmentsPath;
-    paths.attachmentsPath = `${__dirname}/uploads/`;
     routes = instrumentRoutes(attachmentsRoutes);
 
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
@@ -33,10 +32,16 @@ describe('Attachments Routes', () => {
     it('should download the document with the titile as file name (replacing extension with file ext)', (done) => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
+      paths.attachmentsPath = `${__dirname}/uploads`;
 
       routes.get('/api/attachments/download', req, res)
       .then(() => {
-        expect(res.download).toHaveBeenCalledWith(attachmentsPath + req.query.file, 'common name 2.doc');
+        expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
+        paths.attachmentsPath = `${__dirname}/uploads/`;
+        return routes.get('/api/attachments/download', req, res);
+      })
+      .then(() => {
+        expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
         done();
       })
       .catch(catchErrors(done));
