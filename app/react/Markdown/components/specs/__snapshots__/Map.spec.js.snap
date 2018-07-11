@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Map Markdown component renderPopupInfo should have a correct function for rendering popus 1`] = `
+<div>
+  <Connect(TemplateLabel)
+    template="t1"
+  />
+   
+  title
+</div>
+`;
+
+exports[`Map Markdown component renderPopupInfo should have a correct function for rendering popus 2`] = `
+<div>
+  <Connect(TemplateLabel)
+    template="t2"
+  />
+   
+  another title
+</div>
+`;
+
+exports[`Map Markdown component should render a placeholder when data is undefined 1`] = `
+<div
+  className="Map "
+>
+  <Loader />
+</div>
+`;
+
+exports[`Map Markdown component should render empty map on no rows 1`] = `
+<div
+  className="Map custom-class"
+>
+  <Map
+    autoCenter={true}
+    clickOnCluster={[Function]}
+    clickOnMarker={[Function]}
+    cluster={true}
+    height={null}
+    hoverOnMarker={[Function]}
+    latitude={null}
+    longitude={null}
+    markers={Array []}
+    onClick={[Function]}
+    renderMarker={null}
+    renderPopupInfo={[Function]}
+    width={null}
+    zoom={1}
+  />
+</div>
+`;
+
+exports[`Map Markdown component should render the data passed by mapStateToProps 1`] = `
+<div
+  className="Map custom-class"
+>
+  <Map
+    autoCenter={true}
+    clickOnCluster={[Function]}
+    clickOnMarker={[Function]}
+    cluster={true}
+    height={null}
+    hoverOnMarker={[Function]}
+    latitude={null}
+    longitude={null}
+    markers={
+      Array [
+        Object {
+          "latitude": 7,
+          "longitude": 13,
+          "properties": Object {
+            "color": 0,
+            "entity": Object {
+              "metadata": Object {
+                "geoProperty": Object {
+                  "lat": 7,
+                  "lon": 13,
+                },
+              },
+              "template": "t1",
+            },
+          },
+        },
+        Object {
+          "latitude": 5,
+          "longitude": 22,
+          "properties": Object {
+            "color": 0,
+            "entity": Object {
+              "metadata": Object {
+                "geoProperty": Object {
+                  "lat": 5,
+                  "lon": 22,
+                },
+              },
+              "template": "t1",
+            },
+          },
+        },
+        Object {
+          "latitude": 2018,
+          "longitude": 6,
+          "properties": Object {
+            "color": 1,
+            "entity": Object {
+              "metadata": Object {
+                "anotherGeoProperty": Object {
+                  "lat": 2018,
+                  "lon": 6,
+                },
+              },
+              "template": "t2",
+            },
+          },
+        },
+      ]
+    }
+    onClick={[Function]}
+    renderMarker={null}
+    renderPopupInfo={[Function]}
+    width={null}
+    zoom={1}
+  />
+</div>
+`;
