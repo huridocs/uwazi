@@ -52,7 +52,7 @@ export default (app) => {
     .then((response) => {
       const file = response.attachments.find(a => a.filename === req.query.file);
       const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
-      res.download(attachmentsPath + file.filename, sanitize(newName));
+      res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
     })
     .catch(error => res.json({ error }, 500));
   });
