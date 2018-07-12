@@ -9,32 +9,10 @@ import markdownDatasets from '../../markdownDatasets';
 
 
 describe('Map Markdown component', () => {
-  const state = {
-    templates: Immutable.fromJS([{
-      _id: 't1',
-      properties: [
-        { type: 'geolocation', name: 'geoProperty' },
-      ]
-    }, {
-      _id: 't2',
-      properties: [
-        { type: 'geolocation', name: 'anotherGeoProperty' },
-      ]
-    }, {
-      _id: 't3',
-      properties: [
-        { type: 'notGeolocation', name: 'notGeo' },
-      ]
-    }]),
-  };
+  const state = {};
 
   it('should render the data passed by mapStateToProps', () => {
-    spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([
-      { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
-      { template: 't1', metadata: { geoProperty: { lat: 5, lon: 22 } } },
-      { template: 't3', metadata: { notGeo: { lat: 1977, lon: 7 } } },
-      { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
-    ]));
+    spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS(['passed entities']));
 
     const props = mapStateToProps(state, { prop1: 'propValue' });
     const component = shallow(<MapComponent {...props} classname="custom-class" />);

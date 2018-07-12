@@ -47,7 +47,6 @@ MapComponent.propTypes = {
 
 export const mapStateToProps = (state, props) => ({
     data: markdownDatasets.getRows(state, props),
-    templates: state.templates,
 });
 
 export default connect(mapStateToProps)(MapComponent);

@@ -35,42 +35,7 @@ exports[`Map Markdown component should render the data passed by mapStateToProps
   <Connect(Component)
     entities={
       Immutable.List [
-        Immutable.Map {
-          "template": "t1",
-          "metadata": Immutable.Map {
-            "geoProperty": Immutable.Map {
-              "lat": 7,
-              "lon": 13,
-            },
-          },
-        },
-        Immutable.Map {
-          "template": "t1",
-          "metadata": Immutable.Map {
-            "geoProperty": Immutable.Map {
-              "lat": 5,
-              "lon": 22,
-            },
-          },
-        },
-        Immutable.Map {
-          "template": "t3",
-          "metadata": Immutable.Map {
-            "notGeo": Immutable.Map {
-              "lat": 1977,
-              "lon": 7,
-            },
-          },
-        },
-        Immutable.Map {
-          "template": "t2",
-          "metadata": Immutable.Map {
-            "anotherGeoProperty": Immutable.Map {
-              "lat": 2018,
-              "lon": 6,
-            },
-          },
-        },
+        "passed entities",
       ]
     }
   />
