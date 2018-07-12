@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Map, Markers } from 'app/Map';
+import { Markers } from 'app/Map';
 import Immutable from 'immutable';
 import { MapView } from '../MapView';
 
