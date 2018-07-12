@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import Map from 'app/Map/Map';
+import { Markers } from 'app/Map';
 
 import { mapStateToProps, MapComponent } from '../Map.js';
 import markdownDatasets from '../../markdownDatasets';
@@ -38,18 +38,11 @@ describe('Map Markdown component', () => {
 
     const props = mapStateToProps(state, { prop1: 'propValue' });
     const component = shallow(<MapComponent {...props} classname="custom-class" />);
+    const map = component.find(Markers).props().children([{ value: 'markers' }]);
 
     expect(markdownDatasets.getRows).toHaveBeenCalledWith(state, { prop1: 'propValue' });
     expect(component).toMatchSnapshot();
-  });
-
-  it('should render empty map on no rows', () => {
-    spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([]));
-
-    const props = mapStateToProps(state, {});
-    const component = shallow(<MapComponent {...props} classname="custom-class" />);
-
-    expect(component).toMatchSnapshot();
+    expect(map).toMatchSnapshot();
   });
 
   it('should render a placeholder when data is undefined', () => {
@@ -74,9 +67,9 @@ describe('Map Markdown component', () => {
       const marker1 = { properties: { entity: { template: 't1', title: 'title' } } };
       const marker2 = { properties: { entity: { template: 't2', title: 'another title' } } };
 
-      const popUp1 = shallow(component.find(Map).props().renderPopupInfo(marker1));
+      const popUp1 = component.find(Markers).props().children([{ value: 'markers' }]).props.renderPopupInfo(marker1);
       expect(popUp1).toMatchSnapshot();
-      const popUp2 = shallow(component.find(Map).props().renderPopupInfo(marker2));
+      const popUp2 = component.find(Markers).props().children([{ value: 'markers' }]).props.renderPopupInfo(marker2);
       expect(popUp2).toMatchSnapshot();
     });
   });
