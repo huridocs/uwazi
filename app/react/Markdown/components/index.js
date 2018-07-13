@@ -7,6 +7,7 @@ import MarkdownLink from './MarkdownLink';
 import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
 import SearchBox from './SearchBox';
+import Map from './Map';
 
 export default {
   MarkdownMedia,
@@ -17,4 +18,5 @@ export default {
   BarChart,
   PieChart,
   Icon,
+  Map,
 };
