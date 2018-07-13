@@ -175,10 +175,13 @@ function handleRoute(res, renderProps, req) {
     .catch((e) => {
       let error = e;
 
-      if (error instanceof Error) {
-        error = error.stack.split('\n');
+      if (!error.status || error.status !== 404) {
+        if (error instanceof Error) {
+          error = error.stack.split('\n');
+        }
+
+        errorLog.error(error);
       }
-      errorLog.error(error);
     });
   }
 
