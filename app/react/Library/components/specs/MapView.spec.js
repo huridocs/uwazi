@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Map from 'app/Map/Map';
+import { Markers } from 'app/Map';
 import Immutable from 'immutable';
 import { MapView } from '../MapView';
 
@@ -41,16 +41,12 @@ describe('MapView', () => {
 
   describe('render()', () => {
     it('should render a map', () => {
-      expect(component.find(Map).length).toBe(1);
+      const map = component.find(Markers).props().children([{ value: 'markers' }]);
+      expect(map).toMatchSnapshot();
     });
 
-    it('should pass the markers', () => {
-      const expectedMarkers = [
-        { latitude: 1, longitude: 2, properties: { entity: documents.rows[0], color: 0 } },
-        { latitude: 3, longitude: 4, properties: { entity: documents.rows[2], color: 1 } },
-        { latitude: 1, longitude: 2, properties: { entity: documents.rows[3], color: 1 } }
-      ];
-      expect(component.find(Map).props().markers).toEqual(expectedMarkers);
+    it('should pass the entities', () => {
+      expect(component.find(Markers).props().entities).toMatchSnapshot();
     });
   });
 

@@ -44,58 +44,49 @@ describe('markdownDatasets', () => {
         dataset2: { key: 'value', limit: 0 },
       });
     });
+
+    it('should allow fetching geolocation data', async () => {
+      const markdown = `
+      <div>
+        <Dataset />
+        <Dataset url="url?q=(key:value,limit:50)" name="dataset2" geolocation="true" />
+      </div>
+      <Dataset name="dataset1" url="url2?q=(key:value2)"/>
+      <Dataset name="dataset3" geolocation="true"/>
+      `;
+
+      const datasets = await markdownDatasets.fetch(markdown);
+
+      expect(datasets).toEqual({
+        default: { allAggregations: true, limit: 0 },
+        dataset1: { key: 'value2', limit: 0 },
+        dataset2: { key: 'value', limit: 0, geolocation: true },
+        dataset3: { allAggregations: true, limit: 0, geolocation: true },
+      });
+    });
   });
 
-  describe('getAggregation', () => {
-    const dataset = {
-      aggregations: {
-        all: {
-          types: {
-            buckets: [{ key: 'id1', filtered: { doc_count: 1 } }, { key: 'id2', filtered: { doc_count: 25 } }]
-          },
-          property1: {
-            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }]
-          }
-        }
-      }
-    };
-
-    const dataset2 = {
-      aggregations: {
-        all: {
-          types: {
-            buckets: [{ key: 'id5', filtered: { doc_count: 6 } }, { key: 'id7', filtered: { doc_count: 76 } }]
-          },
-          property4: {
-            buckets: [{ key: 'id36', filtered: { doc_count: 36 } }]
-          }
-        }
-      }
-    };
+  describe('getRows', () => {
+    const dataset1 = { rows: 'rows dataset 1' };
+    const dataset2 = { rows: 'rows dataset 2' };
 
     const state = {
       page: {
-        datasets: Immutable.fromJS({
-          default: dataset,
-          another_dataset: dataset2
-        })
+        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
       }
     };
 
-    it('should get the aggregation for the type/property and value', () => {
-      let aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id2' });
-      expect(aggregation).toBe(25);
+    it('should get the rows for the default dataset', () => {
+      let rows = markdownDatasets.getRows(state, { });
+      expect(rows).toBe('rows dataset 1');
 
-      aggregation = markdownDatasets.getAggregation(state, { property: 'property1', value: 'id3' });
-      expect(aggregation).toBe(5);
-
-      aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id5', dataset: 'another_dataset' });
-      expect(aggregation).toBe(6);
+      rows = markdownDatasets.getRows(state, { dataset: 'another_dataset' });
+      expect(rows).toBe('rows dataset 2');
     });
 
     it('should return null when dataset do not exists', () => {
-      const aggregation = markdownDatasets.getAggregation(state, { dataset: 'non_existent_dataset' });
-      expect(aggregation).toBeUndefined();
+      const rows = markdownDatasets.getRows(state, { dataset: 'non_existent_dataset' });
+      expect(rows).toBeUndefined();
     });
   });
 
@@ -155,6 +146,59 @@ describe('markdownDatasets', () => {
     it('should return null when dataset do not exists', () => {
       const aggregations = markdownDatasets.getAggregations(state, { dataset: 'non_existent_dataset' });
       expect(aggregations).toBeUndefined();
+    });
+  });
+
+  describe('getAggregation', () => {
+    const dataset = {
+      aggregations: {
+        all: {
+          types: {
+            buckets: [{ key: 'id1', filtered: { doc_count: 1 } }, { key: 'id2', filtered: { doc_count: 25 } }]
+          },
+          property1: {
+            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }]
+          }
+        }
+      }
+    };
+
+    const dataset2 = {
+      aggregations: {
+        all: {
+          types: {
+            buckets: [{ key: 'id5', filtered: { doc_count: 6 } }, { key: 'id7', filtered: { doc_count: 76 } }]
+          },
+          property4: {
+            buckets: [{ key: 'id36', filtered: { doc_count: 36 } }]
+          }
+        }
+      }
+    };
+
+    const state = {
+      page: {
+        datasets: Immutable.fromJS({
+          default: dataset,
+          another_dataset: dataset2
+        })
+      }
+    };
+
+    it('should get the aggregation for the type/property and value', () => {
+      let aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id2' });
+      expect(aggregation).toBe(25);
+
+      aggregation = markdownDatasets.getAggregation(state, { property: 'property1', value: 'id3' });
+      expect(aggregation).toBe(5);
+
+      aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id5', dataset: 'another_dataset' });
+      expect(aggregation).toBe(6);
+    });
+
+    it('should return null when dataset do not exists', () => {
+      const aggregation = markdownDatasets.getAggregation(state, { dataset: 'non_existent_dataset' });
+      expect(aggregation).toBeUndefined();
     });
   });
 });
