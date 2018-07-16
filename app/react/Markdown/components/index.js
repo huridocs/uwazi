@@ -6,6 +6,7 @@ import ItemList from './ItemList';
 import MarkdownLink from './MarkdownLink';
 import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
+import ListChart from './ListChart';
 import SearchBox from './SearchBox';
 import Map from './Map';
 
@@ -17,6 +18,7 @@ export default {
   Counter,
   BarChart,
   PieChart,
+  ListChart,
   Icon,
   Map,
 };
