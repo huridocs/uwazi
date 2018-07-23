@@ -50,9 +50,11 @@ export class ThesauriForm extends Component {
       this.firstLoad = false;
       return;
     }
-    const addedValue = this.props.thesauri.values.length > previousProps.thesauri.values.length;
-    const lasValueIsGroup = this.props.thesauri.values[this.props.thesauri.values.length - 1].values;
-    const previousLasValueWasGroup = previousProps.thesauri.values[previousProps.thesauri.values.length - 1].values;
+    const { values } = this.props.thesauri;
+    const previousValues = previousProps.thesauri.values;
+    const addedValue = values.length > previousProps.thesauri.values.length;
+    const lasValueIsGroup = values.length && values[values.length - 1].values;
+    const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
     if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
       this.groups[this.groups.length - 1].focus();
     }
