@@ -74,25 +74,19 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'plain', fragment_size = 200) {
       if (!term) {
         return this;
-      }
-      const exactMatch = term[0] === '"' && term[term.length - 1] === '"';
-      if (exactMatch) {
-        term = term.substring(1, term.length - 1);
       }
       const should = [];
       const includeFullText = fieldsToSearch.includes('fullText');
       const fields = fieldsToSearch.filter(field => field !== 'fullText');
-      const pfraseMatchType = exactMatch ? 'phrase' : 'phrase_prefix';
       if (fields.length) {
         should.push({
-            multi_match: {
+            query_string: {
               query: term,
-              type: pfraseMatchType,
               fields,
-              boost: 3
+              boost: 2
           }
         });
       }
@@ -109,42 +103,18 @@ export default function () {
                 pre_tags: ['<b>'],
                 post_tags: ['</b>'],
                 fields: {
-                  'fullText_*.exact': { number_of_fragments, type, fragment_size, fragmenter: 'span' },
-                  'fullText_*.stop': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
+                  'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' },
                 }
               }
             },
             query: {
-              bool: {
-                should: [
-                  {
-                    multi_match: {
-                      query: term,
-                      type: 'best_fields',
-                      fuzziness: 0,
-                      fields: ['fullText*.stop']
-                    }
-                  },
-                  {
-                    multi_match: {
-                      query: term,
-                      type: pfraseMatchType,
-                      slop: 0,
-                      fields: ['fullText*.exact'],
-                      boost: 3
-                    }
-                  }
-                ]
+              query_string: {
+                query: term,
+                fields: ['fullText_*']
               }
             }
           }
         };
-        if (exactMatch) {
-          fullTextQuery.has_child.query.bool.should.splice(0, 1);
-        }
-        if (!exactMatch) {
-          delete fullTextQuery.has_child.inner_hits.highlight.fields['fullText_*'];
-        }
         should.unshift(fullTextQuery);
       }
 
