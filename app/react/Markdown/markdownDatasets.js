@@ -2,7 +2,8 @@ import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
 import rison from 'rison';
 
-import api from 'app/Search/SearchAPI';
+import searchApi from 'app/Search/SearchAPI';
+import entitiesApi from 'app/Entities/EntitiesAPI';
 
 let undefinedValue;
 
@@ -16,6 +17,7 @@ const conformUrl = ({ url = '', geolocation = false }) => {
 
     return defaultValue;
   }
+
   const params = rison.decode(q);
   params.limit = 0;
 
@@ -26,12 +28,15 @@ const conformUrl = ({ url = '', geolocation = false }) => {
   return params;
 };
 
+const conformValues = attribs => attribs.entity ? attribs : conformUrl(attribs);
+
 const parseDatasets = (markdown) => {
   const result = {};
   const parser = new HtmlParser({
       onopentag(name, attribs) {
       if (name === 'dataset') {
-        result[attribs.name || 'default'] = conformUrl(attribs);
+        console.log('Attribs:', attribs);
+        result[attribs.name || 'default'] = conformValues(attribs);
       }
     }
   }, { decodeEntities: true });
@@ -41,19 +46,22 @@ const parseDatasets = (markdown) => {
 };
 
 const requestDatasets = datasets => Promise.all(
-  Object.keys(datasets).map(name => api.search(datasets[name])
-  .then(searchData => ({ data: searchData, name })))
+  Object.keys(datasets)
+  .map(
+    (name) => {
+      const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
+      const params = datasets[name].entity ? datasets[name].entity : datasets[name];
+      const postAction = datasets[name].entity ? d => d[0] : d => d;
+      return apiAction(params).then(postAction).then(data => ({ data, name }));
+    }
+  )
 );
 
 const conformDatasets = sets => sets.reduce((memo, set) => Object.assign({}, memo, { [set.name]: set.data }), {});
 
 const getAggregations = (state, { property, dataset = 'default' }) => {
   const data = state.page.datasets.get(dataset);
-  if (!data) {
-    return undefinedValue;
-  }
-
-  return data.getIn(['aggregations', 'all', property, 'buckets']);
+  return !data ? undefinedValue : data.getIn(['aggregations', 'all', property, 'buckets']);
 };
 
 export default {
