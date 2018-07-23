@@ -35,7 +35,6 @@ const parseDatasets = (markdown) => {
   const parser = new HtmlParser({
       onopentag(name, attribs) {
       if (name === 'dataset') {
-        console.log('Attribs:', attribs);
         result[attribs.name || 'default'] = conformValues(attribs);
       }
     }
