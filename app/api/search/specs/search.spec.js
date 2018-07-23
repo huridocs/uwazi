@@ -186,6 +186,24 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
+    it('should limit the results', (done) => {
+      search.search({ searchTerm: '', limit: 1, sort: 'title' }, 'en')
+      .then(({ rows }) => {
+        expect(rows.length).toBe(1);
+        expect(rows[0].title).toBe('template1 title en');
+        done();
+      });
+    });
+
+    it('should return results from a given number', (done) => {
+      search.search({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en')
+      .then(({ rows }) => {
+        expect(rows.length).toBe(1);
+        expect(rows[0].title).toBe('Something');
+        done();
+      });
+    });
+
     it('should filter by templates', (done) => {
       Promise.all([
         search.search({ types: [ids.template1] }, 'es'),
