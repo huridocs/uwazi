@@ -169,7 +169,7 @@ const search = {
 
         return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
       })
-      .catch((error) => {
+      .catch(() => {
         throw createError('Query error', 400);
       });
     });
