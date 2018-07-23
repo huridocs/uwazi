@@ -102,6 +102,24 @@ describe('ThesauriForm', () => {
       instance.componentDidUpdate(previousProps);
       expect(instance.groups[1].focus).toHaveBeenCalled();
     });
+
+    it('should do nothing when thesauri is empty', () => {
+      props = {
+        thesauri: {
+          _id: '123',
+          name: 'thesauri name',
+          values: []
+        }
+      };
+      instance.firstLoad = false;
+      instance.props = props;
+      instance.groups = [
+        { focus: jasmine.createSpy('focus') },
+        { focus: jasmine.createSpy('focus') }
+      ];
+      instance.componentDidUpdate(props);
+      expect(instance.groups[1].focus).not.toHaveBeenCalled();
+    });
   });
 
   describe('mapStateToProps', () => {
