@@ -205,4 +205,31 @@ describe('markdownDatasets', () => {
       expect(aggregation).toBeUndefined();
     });
   });
+
+  describe('getMetadataValue', () => {
+    const dataset1 = {
+      title: 'Entity 1',
+      metadata: { progress: '3.5', otherProperty: '2' },
+    };
+
+    const dataset2 = {
+      title: 'Entity 2',
+      metadata: { progress: '1.5', otherProperty: '4' },
+    };
+
+    const state = {
+      page: {
+        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
+      }
+    };
+
+    it('should get the value for the property', () => {
+      expect(markdownDatasets.getMetadataValue(state, { property: 'progress' })).toBe(3.5);
+      expect(markdownDatasets.getMetadataValue(state, { property: 'otherProperty', dataset: 'another_dataset' })).toBe(4);
+    });
+
+    it('should return undefined when dataset does not exist', () => {
+      expect(markdownDatasets.getMetadataValue(state, { dataset: 'non_existent_dataset' })).toBeUndefined();
+    });
+  });
 });

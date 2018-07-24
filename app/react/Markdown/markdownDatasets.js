@@ -81,4 +81,9 @@ export default {
     const aggregations = getAggregations(state, { property, dataset });
     return aggregations ? aggregations.find(bucket => bucket.get('key') === value).getIn(['filtered', 'doc_count']) : undefinedValue;
   },
+
+  getMetadataValue(state, { property, dataset = 'default' }) {
+    const data = state.page.datasets.get(dataset);
+    return !data ? undefinedValue : Number(data.getIn(['metadata', property]));
+  }
 };
