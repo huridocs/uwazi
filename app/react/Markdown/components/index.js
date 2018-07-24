@@ -7,6 +7,7 @@ import MarkdownLink from './MarkdownLink';
 import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
 import ListChart from './ListChart';
+import GaugeChart from './GaugeChart';
 import SearchBox from './SearchBox';
 import Map from './Map';
 
@@ -19,6 +20,7 @@ export default {
   BarChart,
   PieChart,
   ListChart,
+  GaugeChart,
   Icon,
   Map,
 };
