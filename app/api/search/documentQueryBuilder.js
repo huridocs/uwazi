@@ -74,7 +74,7 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'plain', fragment_size = 200) {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 300) {
       if (!term) {
         return this;
       }
@@ -103,7 +103,12 @@ export default function () {
                 pre_tags: ['<b>'],
                 post_tags: ['</b>'],
                 fields: {
-                  'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' },
+                  'fullText_*': {
+                    number_of_fragments,
+                    type,
+                    fragment_size,
+                    fragmenter: 'span'
+                  },
                 }
               }
             },

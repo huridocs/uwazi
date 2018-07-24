@@ -63,14 +63,15 @@ const config = {
           match: '*',
           match_mapping_type: 'string',
           mapping: {
-            type: 'string',
+            type: 'text',
             index: 'analyzed',
             omit_norms: true,
             analyzer: 'tokenizer',
             fields: {
               raw: { type: 'keyword' },
               sort: { type: 'text', fielddata: true, analyzer: 'string_sorter' }
-            }
+            },
+            term_vector: 'with_positions_offsets'
           }
         }
       }, {
@@ -192,10 +193,17 @@ languages.getAll().forEach((language) => {
     filters.push(`${language}_stemmer`);
   }
 
-  config.settings.analysis.analyzer[language] = {
+  config.settings.analysis.analyzer[`stop_${language}`] = {
     type: 'custom',
     tokenizer: 'standard',
     filter: ['lowercase', 'asciifolding', `${language}_stop`].concat(filters),
+    char_filter: ['remove_annotation']
+  };
+
+  config.settings.analysis.analyzer[`fulltext_${language}`] = {
+    type: 'custom',
+    tokenizer: 'standard',
+    filter: ['lowercase', 'asciifolding'].concat(filters),
     char_filter: ['remove_annotation']
   };
 
@@ -207,9 +215,9 @@ languages.getAll().forEach((language) => {
       type: 'text',
       index: 'analyzed',
       omit_norms: true,
-      analyzer: 'other',
-      search_analyzer: language,
-      search_quote_analyzer: 'other',
+      analyzer: `fulltext_${language}`,
+      search_analyzer: `stop_${language}`,
+      search_quote_analyzer: `fulltext_${language}`,
       term_vector: 'with_positions_offsets'
     }
   };
