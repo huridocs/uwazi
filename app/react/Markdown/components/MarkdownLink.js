@@ -2,9 +2,10 @@ import { Link } from 'react-router';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const MarkdownLink = ({ url, classname, children }) => (
-  <Link to={url} className={classname} href={url}>{children}</Link>
-);
+const MarkdownLink = ({ url, classname, children }) => {
+  console.warn('MarkdownLink is deprecated, use <Link to="url"></Link> instead');
+  return <Link to={url} className={classname} href={url}>{children}</Link>;
+};
 
 MarkdownLink.defaultProps = {
   children: '',

@@ -3,6 +3,9 @@ import { shallow } from 'enzyme';
 import MarkdownLink from '../MarkdownLink.js';
 
 describe('Link', () => {
+  beforeEach(() => {
+    spyOn(console, 'warn');
+  });
   it('should render a react-router Link', () => {
     const component = shallow(<MarkdownLink url="url">label</MarkdownLink>);
     expect(component).toMatchSnapshot();
