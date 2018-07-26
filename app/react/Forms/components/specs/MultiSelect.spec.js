@@ -88,8 +88,10 @@ describe('MultiSelect', () => {
       render();
       component.setState({ filter: '1' });
       const optionElements = component.find('input[type="checkbox"]');
-      expect(optionElements.length).toBe(1);
+      expect(optionElements.length).toBe(4);
       expect(optionElements.first().props().value).toBe('option1');
+      expect(optionElements.at(2).props().value).toBe('group-option1');
+      expect(optionElements.at(3).props().value).toBe('group-option2');
     });
   });
 
