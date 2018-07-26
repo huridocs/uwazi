@@ -5,9 +5,10 @@ import { bindActionCreators } from 'redux';
 import { I18NLink, t } from 'app/I18N';
 import { deleteThesauri, checkThesauriCanBeDeleted } from 'app/Thesauris/actions/thesaurisActions';
 import { Icon } from 'UI';
-import sortThesauri from '../utils/sortThesauri';
 
 import { notify } from 'app/Notifications/actions/notificationsActions';
+
+import sortThesauri from '../utils/sortThesauri';
 
 export class ThesaurisList extends Component {
   deleteThesauri(thesauri) {
