@@ -36,6 +36,11 @@ const config = {
         type: 'entity'
       }
     },
+    relationship: {
+      _parent: {
+        type: 'entity'
+      }
+    },
     _default_: {
       _all: { enabled: true, omit_norms: true },
       dynamic_templates: [{

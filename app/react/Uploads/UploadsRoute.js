@@ -49,7 +49,12 @@ export default class Uploads extends RouteHandler {
 
     return api.search(query)
     .then((documents) => {
-      const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS(), globalResources.thesauris.toJS());
+      const filterState = libraryHelpers.URLQueryToState(
+        query,
+        globalResources.templates.toJS(),
+        globalResources.thesauris.toJS(),
+        globalResources.relationTypes.toJS()
+      );
       return {
         uploads: {
           documents,

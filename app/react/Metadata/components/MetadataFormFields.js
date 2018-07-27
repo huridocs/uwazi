@@ -66,18 +66,21 @@ export class MetadataFormFields extends Component {
       return <MultiDateRange model={_model} format={this.props.dateFormat}/>;
     case 'geolocation':
       return <Geolocation model={_model} />;
-    default:
+    case 'text':
       return <Field model={_model}><input className="form-control"/></Field>;
+    default:
+      return false;
     }
   }
 
   render() {
     const thesauris = this.props.thesauris.toJS();
-    const template = this.props.template.toJS();
+    const fields = this.props.fields.toJS();
+    const templateID = this.props.template.get('_id');
 
     return (
       <div>
-        {template.properties.map(property => (
+        {fields.map(property => (
           <FormGroup key={property.name} model={`.metadata.${property.name}`}>
             <ul className="search__filter is-active">
               <li>
@@ -87,7 +90,7 @@ export class MetadataFormFields extends Component {
                     model={this.props.model}
                     field={`metadata.${property.name}`}
                   />
-                  {t(template._id, property.label)}
+                  {t(templateID, property.label)}
                   {property.required ? <span className="required">*</span> : ''}
                 </label>
               </li>
@@ -109,12 +112,14 @@ MetadataFormFields.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
+  fields: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string
 };
 
-export const mapStateToProps = state => ({
-    dateFormat: state.settings.collection.get('dateFormat')
+export const mapStateToProps = (state, props) => ({
+    dateFormat: state.settings.collection.get('dateFormat'),
+    fields: props.template.get('properties').filter(p => p.get('type') !== 'relationshipfilter')
 });
 
 export default connect(mapStateToProps)(MetadataFormFields);

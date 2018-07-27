@@ -215,11 +215,11 @@ describe('search', () => {
       ])
       .then(([template1es, template2es, template1en, allTemplatesEn, onlyMissing, template1AndMissing]) => {
         expect(template1es.rows.length).toBe(2);
-        expect(template1en.rows.length).toBe(2);
+        expect(template1en.rows.length).toBe(3);
         expect(template2es.rows.length).toBe(1);
-        expect(allTemplatesEn.rows.length).toBe(3);
+        expect(allTemplatesEn.rows.length).toBe(4);
         expect(onlyMissing.rows.length).toBe(2);
-        expect(template1AndMissing.rows.length).toBe(4);
+        expect(template1AndMissing.rows.length).toBe(5);
         done();
       })
       .catch(catchErrors(done));
@@ -262,6 +262,14 @@ describe('search', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should filter by relationships metadata', async () => {
+      const response = await search.search({
+        types: [ids.template1],
+        filters: { status_relationship_filter: { status: { values: ['open'] } } }
+      }, 'en');
+      expect(response.rows.length).toBe(2);
     });
 
     it('should filter by fullText, and return template aggregations based on the filter the language and the published status', (done) => {

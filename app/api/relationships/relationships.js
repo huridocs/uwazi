@@ -1,5 +1,4 @@
 import { fromJS } from 'immutable';
-
 import templatesAPI from 'api/templates';
 import relationtypes from 'api/relationtypes';
 import { generateNamesAndIds } from '../templates/utils';
@@ -118,8 +117,22 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
 };
 
 export default {
-  get(query) {
-    return model.get(query);
+  get(query, select, pagination) {
+    return model.get(query, select, pagination);
+  },
+
+  indexRelationships(query, limit = 200) {
+    const index = (offset, totalRows) => {
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get(query, null, { skip: offset, limit })
+      .then(relationships => search.bulkIndexRelationships(relationships))
+      .then(() => index(offset + limit, totalRows));
+    };
+    return this.count(query)
+    .then(totalRows => index(0, totalRows));
   },
 
   getById(id) {
@@ -194,6 +207,12 @@ export default {
     return model.get({ sharedId });
   },
 
+  indexAndSave(relationship) {
+    return model.save(relationship)
+    .then(_relationship => search.indexRelationship(_relationship)
+    .then(() => _relationship));
+  },
+
   updateRelationship(relationship) {
     return Promise.all([relationtypes.getById(relationship.template), model.get({ sharedId: relationship.sharedId })])
     .then(([template, relationshipsVersions]) => {
@@ -207,13 +226,13 @@ export default {
       relationship.metadata = relationship.metadata || {};
       const updateRelationships = relationshipsVersions.map((relation) => {
         if (relationship._id.toString() === relation._id.toString()) {
-          return model.save(relationship);
+          return this.indexAndSave(relationship);
         }
         toSyncProperties.map((propertyName) => {
           relation.metadata = relation.metadata || {};
           relation.metadata[propertyName] = relationship.metadata[propertyName];
         });
-        return model.save(relation);
+        return this.indexAndSave(relation);
       });
       return Promise.all(updateRelationships).then(relations => relations.find(r => r.language === relationship.language));
     });
@@ -234,13 +253,12 @@ export default {
         }
         const _relationship = Object.assign({}, relationship);
         _relationship.language = entity.language;
-        return model.save(_relationship);
+        return this.indexAndSave(_relationship);
       });
       return Promise.all(relationshipsCreation).then(relations => relations.find(r => r.language === relationship.language));
     });
   },
 
-  // TEST!!!!
   bulk(bulkData, language) {
     const saveActions = bulkData.save.map(reference => this.save(reference, language), false);
     const deleteActions = bulkData.delete.map(reference => this.delete(reference, language), false);
@@ -474,5 +492,7 @@ export default {
     }
 
     return model.db.updateMany({ template }, actions);
-  }
+  },
+
+  count: model.count
 };

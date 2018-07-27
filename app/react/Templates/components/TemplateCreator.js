@@ -54,6 +54,9 @@ export class TemplateCreator extends Component {
                       <ShowIf if={!this.props.relationType}>
                         <PropertyOption label="Relationship" type="relationship" disabled={this.props.noRelationtypes} />
                       </ShowIf>
+                      <ShowIf if={!this.props.relationType}>
+                        <PropertyOption label="Relationship filter" type="relationshipfilter" disabled={this.props.noRelationtypes} />
+                      </ShowIf>
                       <PropertyOption label="Date" type="date"/>
                       <PropertyOption label="Date Range" type="daterange"/>
                       <PropertyOption label="Multi Date" type="multidate"/>

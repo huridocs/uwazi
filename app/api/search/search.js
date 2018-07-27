@@ -1,27 +1,25 @@
-import { comonProperties, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
+import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
 import { detect as detectLanguage } from 'shared/languages';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
-
+import relationtypes from 'api/relationtypes';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
 
+
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
     const property = properties.find(p => p.name === propertyName);
-    let type = 'text';
+    let { type } = property;
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
     if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
-    }
-    if (property.type === 'nested') {
-      type = 'nested';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
@@ -87,8 +85,8 @@ const search = {
       ]);
     }
 
-    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get()])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries]) => {
+    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get(), relationtypes.get()])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes]) => {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
@@ -118,7 +116,7 @@ const search = {
 
       const allTemplates = templates.map(t => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      let properties = comonProperties(templates, filteringTypes);
+      let properties = comonFilters(templates, relationTypes, filteringTypes);
       properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
 
       if (query.allAggregations) {
@@ -142,7 +140,7 @@ const search = {
           const result = hit._source;
           result._explanation = hit._explanation;
           result.snippets = [];
-          if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+          if (hit.inner_hits && hit.inner_hits.fullText && hit.inner_hits.fullText.hits.hits.length) {
             const regex = /\[\[(\d+)\]\]/g;
 
             const highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
@@ -209,6 +207,34 @@ const search = {
         };
       });
     });
+  },
+
+  async indexRelationship(relationship) {
+    const entity = await entities.get({ sharedId: relationship.entity, language: relationship.language });
+    return elastic.index({ index: elasticIndex, type: 'relationship', parent: entity._id, body: relationship, id: relationship._id });
+  },
+
+  async bulkIndexRelationships(relationships) {
+    const body = [];
+    let allEntities = await entities.get({ sharedId: { $in: relationships.map(r => r.entity) } });
+    allEntities = allEntities.reduce((result, entity) => {
+      result[entity.sharedId + entity.language] = entity._id;
+      return result;
+    }, {});
+    relationships.forEach(((relationship) => {
+      body.push({
+        index: {
+          _index: elasticIndex,
+          _type: 'relationship',
+          parent: allEntities[relationship.entity + relationship.language],
+          _id: relationship._id
+        }
+      });
+      delete relationship._id;
+      body.push(relationship);
+    }));
+
+    return elastic.bulk({ body });
   },
 
   index(_entity) {

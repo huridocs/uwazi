@@ -179,6 +179,25 @@ export class FiltersForm extends Component {
     );
   }
 
+  relationshipFilter(property, propertyClass, translationContext) {
+    return (
+      <ul className={propertyClass} key={property._id}>
+        <li>
+          <label>
+            {t(translationContext, property.label)}
+            {property.required ? <span className="required">*</span> : ''}
+          </label>
+        </li>
+        <li className="wide">
+          {property.filters.map((prop) => {
+            prop.name = `${property.name}.${prop.name}`;
+            return this.defaultFilter(prop, propertyClass, property.relationType);
+          })}
+        </li>
+      </ul>
+    );
+  }
+
   render() {
     const { templates, documentTypes } = this.props;
 
@@ -215,6 +234,9 @@ export class FiltersForm extends Component {
             }
             if (property.type === 'nested') {
               return this.nestedFilter(property, propertyClass, translationContext);
+            }
+            if (property.type === 'relationshipfilter') {
+              return this.relationshipFilter(property, propertyClass, translationContext);
             }
             if (property.type === 'date' || property.type === 'multidate' || property.type === 'multidaterange' || property.type === 'daterange') {
               return this.dateFilter(property, propertyClass, translationContext);

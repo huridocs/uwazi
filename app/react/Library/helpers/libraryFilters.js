@@ -1,4 +1,4 @@
-import { comonProperties, defaultFilters } from 'shared/comonProperties';
+import { comonFilters, defaultFilters } from 'shared/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 function getOptions(property, thesauris) {
@@ -23,9 +23,8 @@ export function populateOptions(filters, thesauris) {
   });
 }
 
-function URLQueryToState(query, templates, thesauris) {
-  let properties = comonProperties(templates, query.types)
-  .filter(prop => prop.filter);
+function URLQueryToState(query, templates, thesauris, relationTypes) {
+  let properties = comonFilters(templates, relationTypes, query.types);
 
   if (!query.types || !query.types.length) {
     properties = defaultFilters(templates);

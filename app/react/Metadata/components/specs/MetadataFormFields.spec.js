@@ -21,6 +21,7 @@ describe('MetadataFormFields', () => {
     props = {
       metadata: { _id: 'docId', template: 'templateId', title: 'testTitle', metadata: { field1: 'field1value', field2: 'field2value' } },
       template: fromJS({ name: 'template1', _id: 'templateId', properties: fieldsTemplate }),
+      fields: fromJS(fieldsTemplate),
       thesauris: fromJS([{ _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] }]),
       dateFormat: '',
       model: 'metadata'
