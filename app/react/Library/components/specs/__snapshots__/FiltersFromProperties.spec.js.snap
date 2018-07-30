@@ -3,7 +3,7 @@
 exports[`FiltersFromProperties should concat the modelPrefix with the model 1`] = `
 <TextFilter
   label="textLabel"
-  model=".prefix.filters.textFilter"
+  model=".filters.prefix.textFilter"
   onChange={[Function]}
 />
 `;
@@ -70,6 +70,18 @@ exports[`FiltersFromProperties when type is relationshipFilter should render a r
   label="relationshipfilterLabel"
   model=".filters.relationshipfilter"
   onChange={[Function]}
+  property={
+    Object {
+      "filters": Array [
+        Object {
+          "name": "filter",
+        },
+      ],
+      "label": "relationshipfilterLabel",
+      "name": "relationshipfilter",
+      "type": "relationshipfilter",
+    }
+  }
   storeKey="library"
   translationContext=""
 />

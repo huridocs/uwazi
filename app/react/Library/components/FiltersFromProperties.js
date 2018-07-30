@@ -27,7 +27,7 @@ const translatedOptions = property => property.options.map((option) => {
 export const FiltersFromProperties = ({ onChange, properties, translationContext, modelPrefix = '', ...props }) => (
   <React.Fragment>
     {properties.map((property) => {
-      const commonProps = { model: `${modelPrefix}.filters.${property.name}`, label: t(translationContext, property.label), onChange };
+      const commonProps = { model: `.filters${modelPrefix}.${property.name}`, label: t(translationContext, property.label), onChange };
 
       let filter = <TextFilter {...commonProps} />;
 
