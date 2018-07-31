@@ -56,7 +56,7 @@ function agregationProperties(properties) {
   });
 }
 
-function snippetsFromSearcHit(hit) {
+function snippetsFromSearchHit(hit) {
   let snippets = [];
   if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
     const regex = /\[\[(\d+)\]\]/g;
@@ -172,7 +172,7 @@ const search = {
         const rows = response.hits.hits.map((hit) => {
           const result = hit._source;
           result._explanation = hit._explanation;
-          result.snippets = snippetsFromSearcHit(hit);
+          result.snippets = snippetsFromSearchHit(hit);
           result._id = hit._id;
           return result;
         });
@@ -209,7 +209,7 @@ const search = {
         if (response.hits.hits.length === 0) {
           return [];
         }
-        return snippetsFromSearcHit(response.hits.hits[0]);
+        return snippetsFromSearchHit(response.hits.hits[0]);
       });
     });
   },
