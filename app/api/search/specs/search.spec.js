@@ -264,12 +264,17 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    it('should filter by relationships metadata', async () => {
+    fit('should filter by relationships metadata', async () => {
       const response = await search.search({
         types: [ids.template1],
         filters: { status_relationship_filter: { status: { values: ['open'] } } }
       }, 'en');
       expect(response.rows.length).toBe(2);
+      const matchesAggs = response.aggregations.all.status_relationship_filter;
+      const openValueAggregation = matchesAggs.status.buckets[0].filtered.total.filtered.doc_count;
+      const closedValueAggregation = matchesAggs.status.buckets[1].filtered.total.filtered.doc_count;
+      expect(openValueAggregation).toBe(2);
+      expect(closedValueAggregation).toBe(1);
     });
 
     it('should filter by fullText, and return template aggregations based on the filter the language and the published status', (done) => {
@@ -415,7 +420,7 @@ describe('search', () => {
       });
 
       describe('nested', () => {
-        it('should search by nested and calculate nested aggregations of fields when filtering by types', (done) => {
+        fit('should search by nested and calculate nested aggregations of fields when filtering by types', (done) => {
           Promise.all([
             search.search({ types: [ids.templateMetadata2] }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],

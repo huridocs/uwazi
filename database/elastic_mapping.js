@@ -36,11 +36,6 @@ const config = {
         type: 'entity'
       }
     },
-    relationship: {
-      _parent: {
-        type: 'entity'
-      }
-    },
     _default_: {
       _all: { enabled: true, omit_norms: true },
       dynamic_templates: [{
@@ -146,6 +141,11 @@ const config = {
           match_mapping_type: 'object',
           path_match: 'metadata.*',
           path_unmatch: 'metadata.*.*',
+          mapping: { type: 'nested' }
+        }
+      }, {
+        relationships_fields: {
+          path_match: 'relationships',
           mapping: { type: 'nested' }
         }
       }],

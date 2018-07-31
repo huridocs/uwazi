@@ -176,17 +176,17 @@ export default {
   },
 
   bulkProcessMetadataFromRelationships(query, language, limit = 200) {
-    const index = (offset, totalRows) => {
+    const process = (offset, totalRows) => {
       if (offset >= totalRows) {
         return Promise.resolve();
       }
 
       return this.get(query, 'sharedId', { skip: offset, limit })
       .then(entities => this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language))
-      .then(() => index(offset + limit, totalRows));
+      .then(() => process(offset + limit, totalRows));
     };
     return this.count(query)
-    .then(totalRows => index(0, totalRows));
+    .then(totalRows => process(0, totalRows));
   },
 
   indexEntities(query, select, limit = 200) {
@@ -196,7 +196,12 @@ export default {
       }
 
       return this.get(query, select, { skip: offset, limit })
-      .then(docs => search.bulkIndex(docs))
+      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId, language: entity.language })
+      .then((relations) => {
+        entity.relationships = relations;
+        return entity;
+      }))))
+      .then(entities => search.bulkIndex(entities))
       .then(() => index(offset + limit, totalRows));
     };
     return this.count(query)
@@ -211,6 +216,7 @@ export default {
     return model.get(query, select, pagination)
     .then(entities => Promise.all(entities.map(entity => relationships.getByDocument(entity.sharedId, entity.language)
     .then((relations) => {
+      console.log(relations);
       entity.relationships = relations;
       return entity;
     }))));

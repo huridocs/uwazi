@@ -59,7 +59,7 @@ const allUniqueProperties = templates => templates.reduce((filters, template) =>
     }
   });
   return filters;
-}, []);
+}, []).filter(p => p.type !== 'relationshipfilter');
 
 const textFields = templates => allUniqueProperties(templates)
 .filter(property => property.type === 'text' || property.type === 'markdown');

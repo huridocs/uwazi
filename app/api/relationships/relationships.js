@@ -207,12 +207,6 @@ export default {
     return model.get({ sharedId });
   },
 
-  indexAndSave(relationship) {
-    return model.save(relationship)
-    .then(_relationship => search.indexRelationship(_relationship)
-    .then(() => _relationship));
-  },
-
   updateRelationship(relationship) {
     return Promise.all([relationtypes.getById(relationship.template), model.get({ sharedId: relationship.sharedId })])
     .then(([template, relationshipsVersions]) => {
@@ -226,13 +220,13 @@ export default {
       relationship.metadata = relationship.metadata || {};
       const updateRelationships = relationshipsVersions.map((relation) => {
         if (relationship._id.toString() === relation._id.toString()) {
-          return this.indexAndSave(relationship);
+          return model.save(relationship);
         }
         toSyncProperties.map((propertyName) => {
           relation.metadata = relation.metadata || {};
           relation.metadata[propertyName] = relationship.metadata[propertyName];
         });
-        return this.indexAndSave(relation);
+        return model.save(relation);
       });
       return Promise.all(updateRelationships).then(relations => relations.find(r => r.language === relationship.language));
     });
@@ -253,7 +247,7 @@ export default {
         }
         const _relationship = Object.assign({}, relationship);
         _relationship.language = entity.language;
-        return this.indexAndSave(_relationship);
+        return model.save(_relationship);
       });
       return Promise.all(relationshipsCreation).then(relations => relations.find(r => r.language === relationship.language));
     });
@@ -494,5 +488,6 @@ export default {
     return model.db.updateMany({ template }, actions);
   },
 
-  count: model.count
+  count: model.count,
+  get: model.get
 };

@@ -46,13 +46,8 @@ function agregationProperties(properties) {
   .filter(property => property.type === 'select' ||
     property.type === 'multiselect' ||
     property.type === 'relationship' ||
-    property.type === 'nested')
-  .map((property) => {
-    if (property.type === 'nested') {
-      return { name: property.name, nested: true, nestedProperties: property.nestedProperties };
-    }
-    return { name: property.name, nested: false, content: property.content };
-  });
+    property.type === 'relationshipfilter' ||
+    property.type === 'nested');
 }
 
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
@@ -207,34 +202,6 @@ const search = {
         };
       });
     });
-  },
-
-  async indexRelationship(relationship) {
-    const entity = await entities.get({ sharedId: relationship.entity, language: relationship.language });
-    return elastic.index({ index: elasticIndex, type: 'relationship', parent: entity._id, body: relationship, id: relationship._id });
-  },
-
-  async bulkIndexRelationships(relationships) {
-    const body = [];
-    let allEntities = await entities.get({ sharedId: { $in: relationships.map(r => r.entity) } });
-    allEntities = allEntities.reduce((result, entity) => {
-      result[entity.sharedId + entity.language] = entity._id;
-      return result;
-    }, {});
-    relationships.forEach(((relationship) => {
-      body.push({
-        index: {
-          _index: elasticIndex,
-          _type: 'relationship',
-          parent: allEntities[relationship.entity + relationship.language],
-          _id: relationship._id
-        }
-      });
-      delete relationship._id;
-      body.push(relationship);
-    }));
-
-    return elastic.bulk({ body });
   },
 
   index(_entity) {

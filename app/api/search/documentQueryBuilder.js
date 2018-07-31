@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
+import propertyToAggregation from './metadataAggregations';
 
 export default function () {
   const baseQuery = {
@@ -202,146 +203,9 @@ export default function () {
       return this;
     },
 
-    aggregation(key, should, filters) {
-      return {
-        terms: {
-          field: key,
-          missing: 'missing',
-          size: 9999
-        },
-        aggregations: {
-          filtered: {
-            filter: {
-              bool: {
-                should,
-                filter: filters
-              }
-            }
-          }
-        }
-      };
-    },
-
-    aggregationWithGroupsOfOptions(key, should, filters, dictionary) {
-      const aggregation = {
-        filters: { filters: {} },
-        aggregations: {
-          filtered: {
-            filter: {
-              bool: {
-                should,
-                filter: filters
-              }
-            }
-          }
-        }
-      };
-      const addMatch = (value) => {
-        const match = { terms: {} };
-        match.terms[key] = value.values ? value.values.map(v => v.id) : [value.id];
-        aggregation.filters.filters[value.id.toString()] = match;
-        if (value.values) {
-          value.values.forEach(addMatch);
-        }
-      };
-      dictionary.values.forEach(addMatch);
-
-      const missingMatch = { bool: { must_not: { exists: { field: key } } } };
-      aggregation.filters.filters.missing = missingMatch;
-      return aggregation;
-    },
-
-    nestedAggregation(property, should, readOnlyFilters) {
-      const nestedAggregation = {
-        nested: {
-          path: `metadata.${property.name}`
-        },
-        aggregations: {}
-      };
-      baseQuery.aggregations[property.name] = nestedAggregation;
-
-      property.nestedProperties.forEach((prop) => {
-        const nestedFilters = readOnlyFilters.filter(match => match.nested)
-        .map(nestedFilter => nestedFilter.nested.query.bool.must)
-        .reduce((result, propFilters) => result.concat(propFilters), []);
-
-        const path = `metadata.${property.name}.${prop}.raw`;
-        const filters = JSON.parse(JSON.stringify(readOnlyFilters)).map((match) => {
-          if (match.bool && match.bool.must && match.bool.must[0] && match.bool.must[0].nested) {
-            match.bool.must = match.bool.must.filter(nestedMatcher => !nestedMatcher.nested ||
-              !nestedMatcher.nested.query.bool.must ||
-              !nestedMatcher.nested.query.bool.must[0].terms ||
-              !nestedMatcher.nested.query.bool.must[0].terms[path] ||
-              !nestedMatcher.nested.query.bool.must_not ||
-              !nestedMatcher.nested.query.bool.must_not[0].exists ||
-              !nestedMatcher.nested.query.bool.must[0].exists.field[path]);
-
-            if (!match.bool.must.length) {
-              return;
-            }
-          }
-          return match;
-        }).filter(f => f);
-
-        nestedAggregation.aggregations[prop] = {
-          terms: {
-            field: path,
-            missing: 'missing',
-            size: 9999
-          },
-          aggregations: {
-            filtered: {
-              filter: {
-                bool: {
-                  must: nestedFilters
-                }
-              },
-              aggregations: {
-                total: {
-                  reverse_nested: {},
-                  aggregations: {
-                    filtered: {
-                      filter: {
-                        bool: {
-                          should,
-                          must: filters
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        };
-      });
-
-      return nestedAggregation;
-    },
-
     aggregations(properties, dictionaries) {
       properties.forEach((property) => {
-        const path = `metadata.${property.name}.raw`;
-        let filters = baseQuery.query.bool.filter.filter(match => match &&
-          (!match.terms || match.terms && !match.terms[path]) &&
-          (!match.bool || !match.bool.should || !match.bool.should[1].terms[path]));
-        filters = filters.concat(baseQuery.query.bool.must);
-
-        const { should } = baseQuery.query.bool;
-        if (property.nested) {
-          baseQuery.aggregations.all.aggregations[property.name] = this.nestedAggregation(property, should, filters);
-          return;
-        }
-        let dictionary;
-        if (property.content) {
-          dictionary = dictionaries.find(d => property.content.toString() === d._id.toString());
-        }
-        const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
-        if (isADictionaryWithGroups) {
-          baseQuery.aggregations.all.aggregations[property.name] = this.aggregationWithGroupsOfOptions(path, should, filters, dictionary);
-          return;
-        }
-        baseQuery.aggregations.all.aggregations[property.name] = this.aggregation(path, should, filters);
+        baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(property, dictionaries, baseQuery);
       });
       return this;
     },

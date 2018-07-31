@@ -76,10 +76,10 @@ connect()
   .then(() => {
     process.stdout.write(`Indexing documents and entities... - ${docsIndexed} indexed\r\n`);
   })
-  .then(() => relationships.count().then(totalRows => indexRelationships(0, totalRows)))
+  // .then(() => relationships.count().then(totalRows => indexRelationships(0, totalRows)))
   .then(() => {
     const end = Date.now();
-    process.stdout.write(`Indexing relationships... - ${relationshipsIndexed} indexed\r\n`);
+    // process.stdout.write(`Indexing relationships... - ${relationshipsIndexed} indexed\r\n`);
     process.stdout.write(`Done, took ${(end - start) / 1000} seconds\n`);
     return disconnect();
   })

@@ -10,7 +10,6 @@ import search from '../../search/search';
 
 describe('relationships', () => {
   beforeEach((done) => {
-    spyOn(search, 'indexRelationship').and.returnValue(Promise.resolve());
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
@@ -168,18 +167,6 @@ describe('relationships', () => {
           expect(result.entityData.published).toBe(true);
 
           expect(result._id).toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-
-      it('should index the relationship', (done) => {
-        relationships.save({ entity: 'entity3', hub: hub1 }, 'en')
-        .then(() => {
-          expect(search.indexRelationship).toHaveBeenCalled();
-          const indexedRelationship = search.indexRelationship.calls.mostRecent().args[0];
-          expect(indexedRelationship.entity).toBe('entity3');
-          expect(indexedRelationship.hub.toString()).toBe(hub1.toString());
           done();
         })
         .catch(catchErrors(done));

@@ -1,16 +1,16 @@
-const textFilter = (filter) => {
+const textFilter = (filter, path = 'metadata') => {
   const match = { match: {} };
-  match.match[`metadata.${filter.name}`] = filter.value;
+  match.match[`${path}.${filter.name}`] = filter.value;
   return match;
 };
 
-const rangeFilter = (filter) => {
+const rangeFilter = (filter, path = 'metadata') => {
   const match = { range: {} };
-  match.range[`metadata.${filter.name}`] = { gte: filter.value.from, lte: filter.value.to };
+  match.range[`${path}.${filter.name}`] = { gte: filter.value.from, lte: filter.value.to };
   return match;
 };
 
-const multiselectFilter = (filter) => {
+const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
   const { values } = filterValue;
   let match;
@@ -24,7 +24,7 @@ const multiselectFilter = (filter) => {
               must_not: [
                 {
                   exists: {
-                    field: `metadata.${filter.name}.raw`
+                    field: `${path}.${filter.name}.raw`
                   }
                 }
               ]
@@ -37,29 +37,29 @@ const multiselectFilter = (filter) => {
         ]
       }
     };
-    match.bool.should[1].terms[`metadata.${filter.name}.raw`] = _values;
+    match.bool.should[1].terms[`${path}.${filter.name}.raw`] = _values;
     return match;
   }
   if (!values.includes('missing') && !filterValue.and) {
     match = { terms: {} };
-    match.terms[`metadata.${filter.name}.raw`] = values;
+    match.terms[`${path}.${filter.name}.raw`] = values;
   }
 
   if (filterValue.and) {
     match = { bool: { must: [] } };
     match.bool.must = values.map((value) => {
       const m = { term: {} };
-      m.term[`metadata.${filter.name}.raw`] = value;
+      m.term[`${path}.${filter.name}.raw`] = value;
       return m;
     });
   }
   return match;
 };
 
-const nestedrangeFilter = (filter) => {
+const nestedrangeFilter = (filter, path = 'metadata') => {
   const match = {
     nested: {
-      path: `metadata.${filter.name}`,
+      path: `${path}.${filter.name}`,
       query: {
         bool: {
           should: []
@@ -68,9 +68,9 @@ const nestedrangeFilter = (filter) => {
     }
   };
   const fromMatch = { range: {} };
-  fromMatch.range[`metadata.${filter.name}.from`] = { gte: filter.value.from, lte: filter.value.to };
+  fromMatch.range[`${path}.${filter.name}.from`] = { gte: filter.value.from, lte: filter.value.to };
   const toMatch = { range: {} };
-  toMatch.range[`metadata.${filter.name}.to`] = { gte: filter.value.from, lte: filter.value.to };
+  toMatch.range[`${path}.${filter.name}.to`] = { gte: filter.value.from, lte: filter.value.to };
 
   match.nested.query.bool.should.push(fromMatch);
   match.nested.query.bool.should.push(toMatch);
@@ -189,40 +189,35 @@ const nestedFilter = (filter) => {
 
 const relationshipfilter = (filter) => {
   const match = {
-    has_child: {
-      type: 'relationship',
-      score_mode: 'max',
-      inner_hits: {
-        _source: false
-      },
+    nested: {
+      path: 'relationships',
       query: {
         bool: {
-          filter: filter.filters.map((fil) => {
+          must: filter.filters.map((fil) => {
             fil.value = filter.value[fil.name];
             if (fil.value) {
-              return filterToMatch(fil);
+              return filterToMatch(fil, 'relationships.metadata'); //eslint-disable-line
             }
           }).filter(m => m)
         }
       }
     }
   };
-
   return match;
 };
 
-const filterToMatch = (filter) => {
+const filterToMatch = (filter, path = 'metadata') => {
   let match;
   if (filter.type === 'text') {
-    match = textFilter(filter);
+    match = textFilter(filter, path);
   }
 
   if (filter.type === 'range') {
-    match = rangeFilter(filter);
+    match = rangeFilter(filter, path);
   }
 
-  if (filter.type === 'multiselect' || filter.type === 'relationship') {
-    match = multiselectFilter(filter);
+  if (filter.type === 'multiselect' || filter.type === 'select' || filter.type === 'relationship') {
+    match = multiselectFilter(filter, path);
   }
 
   if (filter.type === 'nested' && filter.value.strict) {
@@ -234,13 +229,12 @@ const filterToMatch = (filter) => {
   }
 
   if (filter.type === 'nestedrange') {
-    match = nestedrangeFilter(filter);
+    match = nestedrangeFilter(filter, path);
   }
 
   if (filter.type === 'relationshipfilter') {
     match = relationshipfilter(filter);
   }
-
   return match;
 };
 
