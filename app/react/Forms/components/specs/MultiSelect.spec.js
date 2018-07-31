@@ -84,12 +84,40 @@ describe('MultiSelect', () => {
   });
 
   describe('filtering', () => {
+    beforeEach(() => {
+      props = {
+        label: 'input label',
+        value: [],
+        options: [
+          { label: 'Option1', value: 'option1', results: 4 },
+          { label: 'Option2', value: 'option2', results: 2 },
+          { label: 'Sub Group',
+            value: 'Group',
+            results: 3,
+            options: [
+              { label: 'Group option', value: 'group-option1', results: 2 },
+              { label: 'Group option2', value: 'group-option2', results: 1 }
+            ]
+          }
+        ],
+        onChange: jasmine.createSpy('onChange')
+      };
+    });
     it('should render only options matching the filter', () => {
       render();
       component.setState({ filter: '1' });
       const optionElements = component.find('input[type="checkbox"]');
       expect(optionElements.length).toBe(1);
       expect(optionElements.first().props().value).toBe('option1');
+    });
+    it('should render group if children match filter', () => {
+      render();
+      component.setState({ filter: '2' });
+      const optionElements = component.find('input[type="checkbox"]');
+      expect(optionElements.length).toBe(4);
+      expect(optionElements.first().props().value).toBe('option2');
+      expect(optionElements.at(2).props().value).toBe('group-option1');
+      expect(optionElements.at(3).props().value).toBe('group-option2');
     });
   });
 
