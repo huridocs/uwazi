@@ -56,6 +56,37 @@ function agregationProperties(properties) {
   });
 }
 
+function snippetsFromSearcHit(hit) {
+  let snippets = [];
+  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+    const regex = /\[\[(\d+)\]\]/g;
+
+    const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+
+    snippets = fullTextHighlights[Object.keys(fullTextHighlights)[0]].map((snippet) => {
+      const matches = regex.exec(snippet);
+      return {
+        text: snippet.replace(regex, ''),
+        page: matches ? Number(matches[1]) : 0
+      };
+    });
+  }
+  if (hit.highlight) {
+    const metadataHighlights = hit.highlight;
+    const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
+      const fieldSnippets = metadataHighlights[field].map(snippet => (
+        {
+          text: snippet,
+          page: field.startsWith('metadata.') ? field.slice(9) : field
+        }
+      ));
+      return [...foundSnippets, ...fieldSnippets];
+    }, []);
+    snippets = [...snippets, ...metadataSnippets];
+  }
+  return snippets;
+}
+
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.limit(9999);
   const geolocationProperties = [];
@@ -141,36 +172,7 @@ const search = {
         const rows = response.hits.hits.map((hit) => {
           const result = hit._source;
           result._explanation = hit._explanation;
-          result.snippets = [];
-          if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-            const regex = /\[\[(\d+)\]\]/g;
-
-            const highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
-
-            result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
-              const matches = regex.exec(snippet);
-              return {
-                text: snippet.replace(regex, ''),
-                page: matches ? Number(matches[1]) : 0
-              };
-            });
-          }
-          if (hit.highlight) {
-            const metadataHighlights = hit.highlight;
-            const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
-              const fieldSnippets = metadataHighlights[field].map(snippet => (
-                {
-                  text: snippet,
-                  page: field.startsWith('metadata.') ? field.slice(9) : field
-                }
-              ));
-              return [...foundSnippets, ...fieldSnippets];
-            }, []);
-            if (result.sharedId === 'r7efp1hoqh4u0udi') {
-              console.log('hit', hit);
-            }
-            result.snippets = [...result.snippets, ...metadataSnippets];
-          }
+          result.snippets = snippetsFromSearcHit(hit);
           result._id = hit._id;
           return result;
         });
@@ -207,39 +209,7 @@ const search = {
         if (response.hits.hits.length === 0) {
           return [];
         }
-
-        if (!response.hits.hits[0].inner_hits) {
-          return [];
-        }
-
-        let snippets = [];
-        if (response.hits.hits[0].inner_hits.fullText.hits.total > 0) {
-          const fullTextHighlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
-
-          const regex = /\[\[(\d+)\]\]/g;
-          const fullTextSnippets = fullTextHighlights[Object.keys(fullTextHighlights)[0]].map((snippet) => {
-            const matches = regex.exec(snippet);
-            return {
-              text: snippet.replace(regex, ''),
-              page: matches ? Number(matches[1]) : 0
-            };
-          });
-          snippets = [...snippets, ...fullTextSnippets];
-        }
-        if (response.hits.hits[0].highlight) {
-          const metadataHighlights = response.hits.hits[0].highlight;
-          const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
-            const fieldSnippets = metadataHighlights[field].map(snippet => (
-              {
-                text: snippet,
-                page: field.startsWith('metadata.') ? field.slice(9) : field
-              }
-            ));
-            return [...foundSnippets, ...fieldSnippets];
-          }, []);
-          snippets = [...snippets, ...metadataSnippets];
-        }
-        return snippets;
+        return snippetsFromSearcHit(response.hits.hits[0]);
       });
     });
   },
