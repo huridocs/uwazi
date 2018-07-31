@@ -91,6 +91,13 @@ export default function () {
               boost: 6
           }
         });
+
+        baseQuery.highlight = {
+          order: 'score',
+          pre_tags: ['<b>'],
+          post_tags: ['</b>'],
+          fields: fields.map(field => ({ [field]: {} }))
+        };
       }
 
       if (includeFullText) {
