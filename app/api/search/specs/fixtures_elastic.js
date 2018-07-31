@@ -164,17 +164,18 @@ export default {
       _id: relationType,
       name: 'relation',
       properties: [
-        { name: 'status', type: 'select', filter: true }
+        { name: 'status', type: 'select', filter: true },
+        { name: 'description', type: 'text', filter: true }
       ]
     }
     ],
   connections: [
-    { entity: batmanFinishes, template: relationType, metadata: { status: 'open' }, language: 'en' },
-    { entity: 'shared3', template: relationType, metadata: { status: 'open' }, language: 'en' },
-    { entity: batmanFinishes, template: relationType, metadata: { status: 'closed' }, language: 'en' },
-    { entity: batmanFinishes, template: relationType, metadata: { status: 'open' }, language: 'es' },
-    { entity: 'shared3', template: relationType, metadata: { status: 'open' }, language: 'es' },
-    { entity: batmanFinishes, template: relationType, metadata: { status: 'closed' }, language: 'es' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
+    { entity: 'shared3', template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'closed', description: 'yellow' }, language: 'en' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'es' },
+    { entity: 'shared3', template: relationType, metadata: { status: 'open', description: 'red' }, language: 'es' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'closed', description: 'yellow' }, language: 'es' },
   ]
 };
 

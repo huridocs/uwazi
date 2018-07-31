@@ -189,7 +189,7 @@ export default {
     .then(totalRows => process(0, totalRows));
   },
 
-  indexEntities(query, select, limit = 200) {
+  indexEntities(query, select, limit = 200, batchCallback = () => {}) {
     const index = (offset, totalRows) => {
       if (offset >= totalRows) {
         return Promise.resolve();
@@ -198,10 +198,10 @@ export default {
       return this.get(query, select, { skip: offset, limit })
       .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId, language: entity.language })
       .then((relations) => {
-        entity.relationships = relations;
+        entity.relationships = relations || [];
         return entity;
       }))))
-      .then(entities => search.bulkIndex(entities))
+      .then(entities => search.bulkIndex(entities).then(() => batchCallback(entities.length, totalRows)))
       .then(() => index(offset + limit, totalRows));
     };
     return this.count(query)

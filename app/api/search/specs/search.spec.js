@@ -264,7 +264,7 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should filter by relationships metadata', async () => {
+    fit('should filter by relationships metadata selects', async () => {
       const response = await search.search({
         types: [ids.template1],
         filters: { status_relationship_filter: { status: { values: ['open'] } } }
@@ -275,6 +275,14 @@ describe('search', () => {
       const closedValueAggregation = matchesAggs.status.buckets[1].filtered.total.filtered.doc_count;
       expect(openValueAggregation).toBe(2);
       expect(closedValueAggregation).toBe(1);
+    });
+
+    fit('should filter by relationships metadata text', async () => {
+      const response = await search.search({
+        types: [ids.template1],
+        filters: { status_relationship_filter: { description: 'red' } }
+      }, 'en');
+      expect(response.rows.length).toBe(2);
     });
 
     it('should filter by fullText, and return template aggregations based on the filter the language and the published status', (done) => {
