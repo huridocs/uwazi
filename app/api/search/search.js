@@ -155,6 +155,22 @@ const search = {
               };
             });
           }
+          if (hit.highlight) {
+            const metadataHighlights = hit.highlight;
+            const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
+              const fieldSnippets = metadataHighlights[field].map(snippet => (
+                {
+                  text: snippet,
+                  page: field.startsWith('metadata.') ? field.slice(9) : field
+                }
+              ));
+              return [...foundSnippets, ...fieldSnippets];
+            }, []);
+            if (result.sharedId === 'r7efp1hoqh4u0udi') {
+              console.log('hit', hit);
+            }
+            result.snippets = [...result.snippets, ...metadataSnippets];
+          }
           result._id = hit._id;
           return result;
         });
