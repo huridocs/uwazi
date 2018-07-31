@@ -176,32 +176,54 @@ const search = {
   },
 
   searchSnippets(searchTerm, sharedId, language) {
-    const query = documentQueryBuilder()
-    .fullTextSearch(searchTerm, ['fullText'], 9999)
-    .includeUnpublished()
-    .filterById(sharedId)
-    .language(language)
-    .query();
+    return Promise.all([templatesModel.get()])
+    .then(([templates]) => {
+      const searchFields = textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
+      const query = documentQueryBuilder()
+      .fullTextSearch(searchTerm, searchFields, 9999)
+      .includeUnpublished()
+      .filterById(sharedId)
+      .language(language)
+      .query();
 
-    return elastic.search({ index: elasticIndex, body: query })
-    .then((response) => {
-      if (response.hits.hits.length === 0) {
-        return [];
-      }
+      return elastic.search({ index: elasticIndex, body: query })
+      .then((response) => {
+        if (response.hits.hits.length === 0) {
+          return [];
+        }
 
-      if (!response.hits.hits[0].inner_hits) {
-        return [];
-      }
+        if (!response.hits.hits[0].inner_hits) {
+          return [];
+        }
 
-      const highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
+        let snippets = [];
+        if (response.hits.hits[0].inner_hits.fullText.hits.total > 0) {
+          const fullTextHighlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
 
-      const regex = /\[\[(\d+)\]\]/g;
-      return highlights[Object.keys(highlights)[0]].map((snippet) => {
-        const matches = regex.exec(snippet);
-        return {
-          text: snippet.replace(regex, ''),
-          page: matches ? Number(matches[1]) : 0
-        };
+          const regex = /\[\[(\d+)\]\]/g;
+          const fullTextSnippets = fullTextHighlights[Object.keys(fullTextHighlights)[0]].map((snippet) => {
+            const matches = regex.exec(snippet);
+            return {
+              text: snippet.replace(regex, ''),
+              page: matches ? Number(matches[1]) : 0
+            };
+          });
+          snippets = [...snippets, ...fullTextSnippets];
+        }
+        if (response.hits.hits[0].highlight) {
+          const metadataHighlights = response.hits.hits[0].highlight;
+          const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
+            const fieldSnippets = metadataHighlights[field].map(snippet => (
+              {
+                text: snippet,
+                page: field.startsWith('metadata.') ? field.slice(9) : field
+              }
+            ));
+            return [...foundSnippets, ...fieldSnippets];
+          }, []);
+          snippets = [...snippets, ...metadataSnippets];
+        }
+        return snippets;
       });
     });
   },
