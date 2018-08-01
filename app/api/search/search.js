@@ -62,8 +62,8 @@ function snippetsFromSearchHit(hit) {
     const regex = /\[\[(\d+)\]\]/g;
 
     const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
-
-    snippets = fullTextHighlights[Object.keys(fullTextHighlights)[0]].map((snippet) => {
+    const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
+    snippets = fullTextHighlights[fullTextLanguageKey].map((snippet) => {
       const matches = regex.exec(snippet);
       return {
         text: snippet.replace(regex, ''),
