@@ -118,11 +118,14 @@ describe('search', () => {
         search.search({ searchTerm: 'spanish' }, 'es'),
         search.search({ searchTerm: 'english' }, 'es'),
         search.search({ searchTerm: 'english' }, 'en'),
-        search.search({ searchTerm: 'Batman finishes' }, 'en'),
-        search.search({ searchTerm: 'Batman begins' }, 'es'),
-        search.search({ searchTerm: 'Batman' }, 'en')
+        search.search({ searchTerm: 'finishes' }, 'en'),
+        search.search({ searchTerm: 'Batman begins NOT finishes' }, 'es'),
+        search.search({ searchTerm: 'begins OR finishes' }, 'es'),
+        search.search({ searchTerm: 'Batman' }, 'en'),
+        search.search({ searchTerm: 'document english' }, 'en'),
+        search.search({ searchTerm: '"document english"' }, 'en')
       ])
-      .then(([spanish, none, english, batmanFinishes, batmanBegins, batman]) => {
+      .then(([spanish, none, english, batmanFinishes, batmanBegins, batmanOR, batman, fullTextNormal, fullTextExactMatch]) => {
         expect(english.rows.find(r => r.snippets[0].text.match('<b>english</b> document <b>english</b>')).snippets[0].page).toBe(12);
         expect(english.rows.find(r => r.snippets[0].text.match('<b>english</b> another')).snippets[0].page).toBe(2);
         expect(english.rows.length).toBe(2);
@@ -131,7 +134,10 @@ describe('search', () => {
         expect(none.rows.length).toBe(0);
         expect(batmanFinishes.rows.length).toBe(1);
         expect(batmanBegins.rows.length).toBe(1);
+        expect(batmanOR.rows.length).toBe(2);
         expect(batman.rows.length).toBe(2);
+        expect(fullTextNormal.rows.length).toBe(2);
+        expect(fullTextExactMatch.rows.length).toBe(1);
         done();
       })
       .catch(catchErrors(done));
@@ -178,6 +184,24 @@ describe('search', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should limit the results', (done) => {
+      search.search({ searchTerm: '', limit: 1, sort: 'title' }, 'en')
+      .then(({ rows }) => {
+        expect(rows.length).toBe(1);
+        expect(rows[0].title).toBe('template1 title en');
+        done();
+      });
+    });
+
+    it('should return results from a given number', (done) => {
+      search.search({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en')
+      .then(({ rows }) => {
+        expect(rows.length).toBe(1);
+        expect(rows[0].title).toBe('Something');
+        done();
+      });
     });
 
     it('should filter by templates', (done) => {

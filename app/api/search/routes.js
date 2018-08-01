@@ -1,12 +1,11 @@
-import search from './search';
 import entities from 'api/entities';
+import search from './search';
 import needsAuthorization from '../auth/authMiddleware';
+
 export default (app) => {
-  app.get('/api/search/count_by_template', (req, res) => {
-    return entities.countByTemplate(req.query.templateId)
-    .then(results => res.json(results))
-    .catch(res.error);
-  });
+  app.get('/api/search/count_by_template', (req, res) => entities.countByTemplate(req.query.templateId)
+  .then(results => res.json(results))
+  .catch(res.error));
 
   app.get('/api/search', (req, res) => {
     if (req.query.filters) {
@@ -27,15 +26,13 @@ export default (app) => {
     .catch(res.error);
   });
 
-  app.get('/api/search_snippets', (req, res) => {
-    return search.searchSnippets(req.query.searchTerm, req.query.id, req.language)
-    .then(results => res.json(results))
-    .catch(res.error);
-  });
+  app.get('/api/search_snippets', (req, res) => search.searchSnippets(req.query.searchTerm, req.query.id, req.language)
+  .then(results => res.json(results))
+  .catch(res.error));
 
   app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res) => {
     search.getUploadsByUser(req.user, req.language)
-    .then(response => res.json({rows: response}))
+    .then(response => res.json({ rows: response }))
     .catch(res.error);
   });
 };
