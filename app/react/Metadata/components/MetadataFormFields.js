@@ -116,7 +116,7 @@ MetadataFormFields.propTypes = {
   dateFormat: PropTypes.string
 };
 
-export const mapStateToProps = (state, props) => ({
+export const mapStateToProps = state => ({
     dateFormat: state.settings.collection.get('dateFormat')
 });
 
