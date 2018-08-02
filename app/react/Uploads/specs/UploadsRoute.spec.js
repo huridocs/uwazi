@@ -3,9 +3,6 @@ import { shallow } from 'enzyme';
 import rison from 'rison';
 
 import UploadsRoute from 'app/Uploads/UploadsRoute';
-import DocumentsList from 'app/Library/components/DocumentsList';
-// import LibraryCharts from 'app/Charts/components/LibraryCharts';
-// import ListChartToggleButtons from 'app/Charts/components/ListChartToggleButtons';
 import RouteHandler from 'app/App/RouteHandler';
 import * as actionTypes from 'app/Library/actions/actionTypes.js';
 import { fromJS as Immutable } from 'immutable';

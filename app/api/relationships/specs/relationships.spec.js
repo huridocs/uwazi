@@ -430,7 +430,14 @@ describe('relationships', () => {
     });
 
     it('should return the matching entities with their relationships and the current entity with the respective relationships', (done) => {
-      const searchResponse = Promise.resolve({ rows: [{ sharedId: 'entity1' }, { sharedId: 'entity3' }, { sharedId: 'doc4' }, { sharedId: 'doc5' }] });
+      const searchResponse = Promise.resolve(
+        { rows: [
+          { sharedId: 'entity1' },
+          { sharedId: 'entity3' },
+          { sharedId: 'doc4' },
+          { sharedId: 'doc5' }
+        ] }
+      );
       spyOn(search, 'search').and.returnValue(searchResponse);
       relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en')
       .then((result) => {
