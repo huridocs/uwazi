@@ -20,7 +20,7 @@ export default combineReducers({
   sidepanel: combineReducers({
     metadata: modelReducer('documentViewer.sidepanel.metadata'),
     metadataForm: formReducer('documentViewer.sidepanel.metadata'),
-    snippets: createReducer('documentViewer.sidepanel.snippets', []),
+    snippets: createReducer('documentViewer.sidepanel.snippets', { count: 0, metadata: [], fullText: [] }),
     tab: createReducer('viewer.sidepanel.tab', '')
   })
 });

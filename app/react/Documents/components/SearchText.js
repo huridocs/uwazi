@@ -10,6 +10,7 @@ import { browserHistory } from 'react-router';
 import { scrollToPage } from 'app/Viewer/actions/uiActions';
 import { toUrlParams } from '../../../shared/JSONRequest';
 import { Icon } from 'UI';
+import SnippetList from './SnippetList';
 
 export class SearchText extends Component {
   resetSearch() {}
@@ -52,7 +53,7 @@ export class SearchText extends Component {
   render() {
     const snippets = this.props.snippets.toJS();
     const documentViewUrl = `/document/${this.props.doc.get('sharedId')}`;
-
+    console.log('SNIPPETS', snippets);
     return (
       <div>
         <LocalForm
@@ -79,26 +80,19 @@ export class SearchText extends Component {
           }
         </LocalForm>
 
-        {!this.props.snippets.size &&
+        {!this.props.snippets.count &&
           <div className="blank-state">
             <Icon icon="search" />
             <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
             <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
           </div>
         }
-
-        <ul className="snippet-list">
-          {snippets.map((snippet, index) => (
-            <li key={index}>
-              <I18NLink
-                onClick={() => this.props.scrollToPage(snippet.page)}
-                to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${this.props.searchTerm || ''}`}
-              >
-                {snippet.page}
-              </I18NLink>
-              <span dangerouslySetInnerHTML={{ __html: snippet.text }} />
-            </li>))}
-        </ul>
+        <SnippetList
+          snippets={snippets}
+          scrollToPage={this.props.scrollToPage}
+          searchTerm={this.props.searchTerm}
+          documentViewUrl={documentViewUrl}
+        />
       </div>
     );
   }
