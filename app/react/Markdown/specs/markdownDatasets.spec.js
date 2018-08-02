@@ -1,13 +1,15 @@
 import Immutable from 'immutable';
 
-import api from 'app/Search/SearchAPI';
+import searchApi from 'app/Search/SearchAPI';
+import entitiesApi from 'app/Entities/EntitiesAPI';
 
 import markdownDatasets from '../markdownDatasets';
 
 describe('markdownDatasets', () => {
   describe('request', () => {
     beforeEach(() => {
-      spyOn(api, 'search').and.callFake(params => Promise.resolve(params));
+      spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true }, params)));
+      spyOn(entitiesApi, 'get').and.callFake(_id => Promise.resolve([{ isEntity: true, _id }]));
     });
 
     it('should not fetch anything if no datasets defined', async () => {
@@ -15,7 +17,7 @@ describe('markdownDatasets', () => {
 
       const datasets = await markdownDatasets.fetch(markdown);
 
-      expect(api.search).not.toHaveBeenCalled();
+      expect(searchApi.search).not.toHaveBeenCalled();
       expect(datasets).toEqual({});
     });
 
@@ -24,7 +26,7 @@ describe('markdownDatasets', () => {
 
       const datasets = await markdownDatasets.fetch(markdown);
 
-      expect(datasets).toEqual({ default: { allAggregations: true, limit: 0 } });
+      expect(datasets).toEqual({ default: { allAggregations: true, limit: 0, isSearch: true } });
     });
 
     it('should fetch named datasets and return it indexed by name attrib key', async () => {
@@ -32,6 +34,7 @@ describe('markdownDatasets', () => {
       <div>
         <Dataset />
         <Dataset url="url?q=(key:value,limit:50)" name="dataset2"/>
+        <Dataset entity="entityId" name="entityDataset"/>
       </div>
       <Dataset name="dataset1" url="url2?q=(key:value2)"/>
       `;
@@ -39,9 +42,10 @@ describe('markdownDatasets', () => {
       const datasets = await markdownDatasets.fetch(markdown);
 
       expect(datasets).toEqual({
-        default: { allAggregations: true, limit: 0 },
-        dataset1: { key: 'value2', limit: 0 },
-        dataset2: { key: 'value', limit: 0 },
+        default: { allAggregations: true, limit: 0, isSearch: true },
+        dataset1: { key: 'value2', limit: 0, isSearch: true },
+        dataset2: { key: 'value', limit: 0, isSearch: true },
+        entityDataset: { _id: 'entityId', isEntity: true },
       });
     });
 
@@ -58,10 +62,10 @@ describe('markdownDatasets', () => {
       const datasets = await markdownDatasets.fetch(markdown);
 
       expect(datasets).toEqual({
-        default: { allAggregations: true, limit: 0 },
-        dataset1: { key: 'value2', limit: 0 },
-        dataset2: { key: 'value', limit: 0, geolocation: true },
-        dataset3: { allAggregations: true, limit: 0, geolocation: true },
+        default: { allAggregations: true, limit: 0, isSearch: true },
+        dataset1: { key: 'value2', limit: 0, isSearch: true },
+        dataset2: { key: 'value', limit: 0, geolocation: true, isSearch: true },
+        dataset3: { allAggregations: true, limit: 0, geolocation: true, isSearch: true },
       });
     });
   });
@@ -199,6 +203,33 @@ describe('markdownDatasets', () => {
     it('should return null when dataset do not exists', () => {
       const aggregation = markdownDatasets.getAggregation(state, { dataset: 'non_existent_dataset' });
       expect(aggregation).toBeUndefined();
+    });
+  });
+
+  describe('getMetadataValue', () => {
+    const dataset1 = {
+      title: 'Entity 1',
+      metadata: { progress: '3.5', otherProperty: '2' },
+    };
+
+    const dataset2 = {
+      title: 'Entity 2',
+      metadata: { progress: '1.5', otherProperty: '4' },
+    };
+
+    const state = {
+      page: {
+        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
+      }
+    };
+
+    it('should get the value for the property', () => {
+      expect(markdownDatasets.getMetadataValue(state, { property: 'progress' })).toBe(3.5);
+      expect(markdownDatasets.getMetadataValue(state, { property: 'otherProperty', dataset: 'another_dataset' })).toBe(4);
+    });
+
+    it('should return undefined when dataset does not exist', () => {
+      expect(markdownDatasets.getMetadataValue(state, { dataset: 'non_existent_dataset' })).toBeUndefined();
     });
   });
 });
