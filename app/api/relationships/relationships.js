@@ -488,6 +488,5 @@ export default {
     return model.db.updateMany({ template }, actions);
   },
 
-  count: model.count,
-  get: model.get
+  count: model.count
 };

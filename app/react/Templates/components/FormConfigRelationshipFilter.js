@@ -8,9 +8,6 @@ import { Select } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
 import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 
-import PropertyConfigOption from './PropertyConfigOption';
-import Tip from '../../Layout/Tip';
-
 export class FormConfigRelationship extends Component {
   static contentValidation() {
     return { required: val => val && val.trim() !== '' };

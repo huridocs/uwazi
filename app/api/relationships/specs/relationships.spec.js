@@ -446,7 +446,13 @@ describe('relationships', () => {
     });
 
     it('should retrun number of hubs (total and requested) and allow limiting the number of HUBs returned', (done) => {
-      const searchResponse = Promise.resolve({ rows: [{ sharedId: 'entity1' }, { sharedId: 'entity3' }, { sharedId: 'doc4' }, { sharedId: 'doc5' }] });
+      const searchResponse = Promise.resolve(
+        { rows: [
+          { sharedId: 'entity1' },
+          { sharedId: 'entity3' },
+          { sharedId: 'doc4' },
+          { sharedId: 'doc5' }
+        ] });
       spyOn(search, 'search').and.returnValue(searchResponse);
 
       relationships.search('entity2', { filter: {}, searchTerm: 'something', limit: 2 }, 'en')
@@ -474,13 +480,14 @@ describe('relationships', () => {
   });
 
   describe('delete()', () => {
-    it('should delete the relationship in all languages and dont leave lone connection in the hub', done => relationships.delete({ _id: connectionID1 }, 'en')
-    .then(() => relationships.get({ hub: hub7 }))
-    .then((result) => {
-      expect(result).toEqual([]);
-      done();
-    })
-    .catch(catchErrors(done)));
+    it('should delete the relationship in all languages and dont leave lone connection in the hub', done =>
+      relationships.delete({ _id: connectionID1 }, 'en')
+      .then(() => relationships.get({ hub: hub7 }))
+      .then((result) => {
+        expect(result).toEqual([]);
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should call entities top update the metadata', (done) => {
       relationships.delete({ entity: 'bruceWayne' }, 'en')
@@ -490,13 +497,14 @@ describe('relationships', () => {
       });
     });
 
-    it('should delete all the relationships for a given entity', done => relationships.delete({ entity: 'entity2' })
-    .then(() => relationships.get({ entity: 'entity2' }))
-    .then((result) => {
-      expect(result).toEqual([]);
-      done();
-    })
-    .catch(catchErrors(done)));
+    it('should delete all the relationships for a given entity', done =>
+      relationships.delete({ entity: 'entity2' })
+      .then(() => relationships.get({ entity: 'entity2' }))
+      .then((result) => {
+        expect(result).toEqual([]);
+        done();
+      })
+      .catch(catchErrors(done)));
 
     describe('when there is no condition', () => {
       it('should throw an error', (done) => {
