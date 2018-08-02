@@ -74,21 +74,19 @@ export default function () {
       return this;
     },
 
-    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 200) {
+    fullTextSearch(term, fieldsToSearch = ['title', 'fullText'], number_of_fragments = 1, type = 'fvh', fragment_size = 300) {
       if (!term) {
         return this;
       }
       const should = [];
       const includeFullText = fieldsToSearch.includes('fullText');
       const fields = fieldsToSearch.filter(field => field !== 'fullText');
-
       if (fields.length) {
         should.push({
-            multi_match: {
+            query_string: {
               query: term,
-              type: 'phrase_prefix',
               fields,
-              boost: 6
+              boost: 2
           }
         });
 
@@ -101,47 +99,35 @@ export default function () {
       }
 
       if (includeFullText) {
-        should.unshift(
-          {
-            has_child: {
-              type: 'fullText',
-              score_mode: 'max',
-              inner_hits: {
-                _source: false,
-                highlight: {
-                  order: 'score',
-                  pre_tags: ['<b>'],
-                  post_tags: ['</b>'],
-                  fields: {
-                    'fullText_*': { number_of_fragments, type, fragment_size, fragmenter: 'span' }
-                  }
+        const fullTextQuery = {
+          has_child: {
+            type: 'fullText',
+            score_mode: 'max',
+            inner_hits: {
+              _source: false,
+              highlight: {
+                order: 'score',
+                pre_tags: ['<b>'],
+                post_tags: ['</b>'],
+                fields: {
+                  'fullText_*': {
+                    number_of_fragments,
+                    type,
+                    fragment_size,
+                    fragmenter: 'span'
+                  },
                 }
-              },
-              query: {
-                bool: {
-                  should: [
-                    {
-                      multi_match: {
-                        query: term,
-                        type: 'best_fields',
-                        fuzziness: 0,
-                        fields: ['fullText*']
-                      }
-                    },
-                    {
-                      multi_match: {
-                        query: term,
-                        type: 'phrase_prefix',
-                        fields: ['fullText*'],
-                        boost: 3
-                      }
-                    }
-                  ]
-                }
+              }
+            },
+            query: {
+              query_string: {
+                query: term,
+                fields: ['fullText_*']
               }
             }
           }
-        );
+        };
+        should.unshift(fullTextQuery);
       }
 
       addFullTextFilter({ bool: { should } });

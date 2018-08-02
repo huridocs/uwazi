@@ -3,6 +3,7 @@ import { detect as detectLanguage } from 'shared/languages';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
+import { createError } from 'api/utils';
 
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
@@ -166,7 +167,6 @@ const search = {
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
-
       return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
       .then((response) => {
         const rows = response.hits.hits.map((hit) => {
@@ -185,6 +185,10 @@ const search = {
         });
 
         return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
+      })
+      .catch((error) => {
+        console.log(error);
+        throw createError('Query error', 400);
       });
     });
   },
