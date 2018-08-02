@@ -75,7 +75,7 @@ export class MetadataFormFields extends Component {
 
   render() {
     const thesauris = this.props.thesauris.toJS();
-    const fields = this.props.fields.toJS();
+    const fields = this.props.template.get('properties').toJS();
     const templateID = this.props.template.get('_id');
 
     return (
@@ -112,14 +112,12 @@ MetadataFormFields.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
-  fields: PropTypes.instanceOf(Immutable.List).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string
 };
 
 export const mapStateToProps = (state, props) => ({
-    dateFormat: state.settings.collection.get('dateFormat'),
-    fields: props.template.get('properties').filter(p => p.get('type') !== 'relationshipfilter')
+    dateFormat: state.settings.collection.get('dateFormat')
 });
 
 export default connect(mapStateToProps)(MetadataFormFields);

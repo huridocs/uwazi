@@ -51,9 +51,14 @@ db.once('open', function () {
     }
     translations.processSystemKeys(systemKeys)
     .then(() => {
-      return jasmine.execute();
+      jasmine.execute();
     })
     .catch(console.log);
   })
   .stdout.pipe(process.stdout);
+});
+
+process.on('SIGINT', () => {
+    exec('pkill nightmare');
+    process.exit();
 });
