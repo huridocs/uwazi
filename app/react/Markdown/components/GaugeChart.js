@@ -68,15 +68,13 @@ GaugeChartComponent.propTypes = {
   value: PropTypes.number,
   max: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  label: PropTypes.bool,
+  label: PropTypes.string,
 };
 
-export const mapStateToProps = (state, props) => {
-  return ({
+export const mapStateToProps = (state, props) => ({
     value: markdownDatasets.getMetadataValue(state, props),
     max: Number(props.max) || 100,
     height: Number(props.height) || 110,
-  });
-};
+});
 
 export default connect(mapStateToProps)(GaugeChartComponent);

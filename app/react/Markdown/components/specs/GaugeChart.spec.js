@@ -30,7 +30,7 @@ describe('GaugeChart Markdown component', () => {
 
   it('should allow personalizing values', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(4);
-    const ownProps = { property: 'progress', max: '12', height: '300', label: 'false', classname: 'custom-class', colors: '#f00,#0f0' };
+    const ownProps = { property: 'progress', max: '12', height: '300', label: 'notTrue', classname: 'custom-class', colors: '#f00,#0f0' };
     const props = mapStateToProps(state, ownProps);
     const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)} />);
 
