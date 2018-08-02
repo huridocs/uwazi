@@ -9,41 +9,6 @@ import languages from 'shared/languages';
 describe('search', () => {
   const elasticTesting = instanceElasticTesting('search_index_test');
 
-  describe('indexRelationship', () => {
-    it('should index the relationship as a child of an entity', (done) => {
-      spyOn(elastic, 'index').and.returnValue(Promise.resolve());
-      const relationship = { entity: 1, hub: 2, _id: 3 };
-      search.indexRelationship(relationship)
-      .then(() => {
-        expect(elastic.index)
-        .toHaveBeenCalledWith({ index: elasticIndex, type: 'relationship', parent: relationship.entity, body: relationship, id: relationship._id });
-        done();
-      });
-    });
-  });
-
-  describe('bulkIndexRelationships', () => {
-    it('should index relationships using the bulk functionality', (done) => {
-      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ items: [] }));
-      const toIndex = [
-        { _id: 'id1', entity: '1', hub: '3' },
-        { _id: 'id2', entity: '2', hub: '3' }
-      ];
-
-      search.bulkIndexRelationships(toIndex)
-      .then(() => {
-        expect(elastic.bulk).toHaveBeenCalledWith({ body: [
-          { index: { _index: elasticIndex, _type: 'relationship', _id: 'id1', parent: '1' } },
-          { entity: '1', hub: '3' },
-          { index: { _index: elasticIndex, _type: 'relationship', _id: 'id2', parent: '2' } },
-          { entity: '2', hub: '3' }
-        ] });
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
-
   describe('index', () => {
     it('should index the document (omitting pdfInfo), without side effects on the sent element', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());

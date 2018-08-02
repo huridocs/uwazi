@@ -121,20 +121,6 @@ export default {
     return model.get(query, select, pagination);
   },
 
-  indexRelationships(query, limit = 200) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return this.get(query, null, { skip: offset, limit })
-      .then(relationships => search.bulkIndexRelationships(relationships))
-      .then(() => index(offset + limit, totalRows));
-    };
-    return this.count(query)
-    .then(totalRows => index(0, totalRows));
-  },
-
   getById(id) {
     return model.getById(id);
   },
