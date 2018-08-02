@@ -58,32 +58,39 @@ function agregationProperties(properties) {
 }
 
 function snippetsFromSearchHit(hit) {
-  let snippets = [];
+  let snippets = {
+    count: 0,
+    metadata: [],
+    fullText: []
+  };
+
+  if (hit.highlight) {
+    const metadataHighlights = hit.highlight;
+    const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
+      const fieldSnippets = { field, texts: metadataHighlights[field] };
+      return {
+        count: foundSnippets.count + fieldSnippets.texts.length,
+        snippets: [...foundSnippets.snippets, fieldSnippets]
+      };
+    }, { count: 0, snippets: [] });
+    snippets.count += metadataSnippets.count;
+    snippets.metadata = metadataSnippets.snippets;
+  }
+
   if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
     const regex = /\[\[(\d+)\]\]/g;
 
     const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
     const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
-    snippets = fullTextHighlights[fullTextLanguageKey].map((snippet) => {
+    const fullTextSnippets = fullTextHighlights[fullTextLanguageKey].map((snippet) => {
       const matches = regex.exec(snippet);
       return {
         text: snippet.replace(regex, ''),
         page: matches ? Number(matches[1]) : 0
       };
     });
-  }
-  if (hit.highlight) {
-    const metadataHighlights = hit.highlight;
-    const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
-      const fieldSnippets = metadataHighlights[field].map(snippet => (
-        {
-          text: snippet,
-          page: field.startsWith('metadata.') ? field.slice(9) : field
-        }
-      ));
-      return [...foundSnippets, ...fieldSnippets];
-    }, []);
-    snippets = [...snippets, ...metadataSnippets];
+    snippets.count += fullTextSnippets.length;
+    snippets.fullText = fullTextSnippets;
   }
   return snippets;
 }
@@ -211,7 +218,11 @@ const search = {
       return elastic.search({ index: elasticIndex, body: query })
       .then((response) => {
         if (response.hits.hits.length === 0) {
-          return [];
+          return {
+            count: 0,
+            metadata: [],
+            fullText: []
+          };
         }
         return snippetsFromSearchHit(response.hits.hits[0]);
       });

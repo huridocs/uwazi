@@ -76,11 +76,15 @@ describe('search', () => {
           .then(() => elasticTesting.refresh())
           .then(() => search.searchSnippets('조', entity.sharedId, 'en'))
           .then((snippets) => {
-            expect(snippets.length).toBe(1);
+            expect(snippets.fullText.length).toBe(1);
             return search.searchSnippets('nothing', entity.sharedId, 'en');
           })
           .then((snippets) => {
-            expect(snippets.length).toBe(0);
+            expect(snippets).toEqual({
+              count: 0,
+              metadata: [],
+              fullText: []
+            });
             done();
           })
           .catch((e) => {
