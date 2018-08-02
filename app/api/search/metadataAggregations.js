@@ -53,7 +53,7 @@ const nestedMatcherIsAggregationProperty = (nestedMatcher, nestedPropPath) => !n
   !nestedMatcher.nested.query.bool.must_not[0].exists ||
   !nestedMatcher.nested.query.bool.must[0].exists.field[nestedPropPath];
 
-const nestedAggregation = (property, should, readOnlyFilters, path) => {
+const nestedAggregation = (property, should, readOnlyFilters, path, missing = true) => {
   const nestedPath = path || `metadata.${property.name}`;
   const agg = {
     nested: {
@@ -61,7 +61,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path) => {
     },
     aggregations: {}
   };
-  const nestedFilters = readOnlyFilters.filter(match => match.nested && match.nested.path === nestedPath)
+  let nestedFilters = readOnlyFilters.filter(match => match.nested && match.nested.path === nestedPath)
   .map(nestedFilter => nestedFilter.nested.query.bool.must)
   .reduce((result, propFilters) => result.concat(propFilters), []);
 
@@ -75,16 +75,18 @@ const nestedAggregation = (property, should, readOnlyFilters, path) => {
           return;
         }
       }
-      if (match.nested && nestedMatcherIsAggregationProperty(match, nestedPropPath)) {
+      if (match.nested) {
         return;
       }
       return match;
     }).filter(f => f);
 
+    nestedFilters = nestedFilters.filter(filter => !filter.terms || !filter.terms[nestedPropPath]);
+
     agg.aggregations[prop] = {
       terms: {
         field: nestedPropPath,
-        missing: 'missing',
+        missing: missing ? 'missing' : undefined,
         size: 9999
       },
       aggregations: {
@@ -118,9 +120,8 @@ const nestedAggregation = (property, should, readOnlyFilters, path) => {
 };
 
 const relationshipAggregation = (property, should, readOnlyFilters) => {
-  const filters = readOnlyFilters.filter(m => !m.nested || m.nested.path !== 'relationships');
   property.nestedProperties = property.filters.map(f => f.name);
-  return nestedAggregation(property, should, filters, 'relationships');
+  return nestedAggregation(property, should, readOnlyFilters, 'relationships', false);
 };
 
 const propertyToAggregation = (property, dictionaries, baseQuery) => {

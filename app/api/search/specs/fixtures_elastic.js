@@ -171,6 +171,7 @@ export default {
     ],
   connections: [
     { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
+    { entity: 'shared4', template: 'anotherone', metadata: { status: 'open', description: 'red' }, language: 'en' },
     { entity: 'shared3', template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
     { entity: batmanFinishes, template: relationType, metadata: { status: 'closed', description: 'yellow' }, language: 'en' },
     { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'es' },

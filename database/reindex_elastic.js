@@ -1,17 +1,13 @@
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import request from '../app/shared/JSONRequest';
-import search from '../app/api/search/search';
 import elasticMapping from './elastic_mapping';
 
 import indexConfig from '../app/api/config/elasticIndexes';
 import entities from '../app/api/entities/entities';
-import relationships from '../app/api/relationships/relationships';
 
 connect()
 .then(() => {
-  const limit = 200;
   let docsIndexed = 0;
-  const relationshipsIndexed = 0;
   let pos = 0;
   const spinner = ['|', '/', '-', '\\'];
 

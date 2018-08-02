@@ -264,20 +264,20 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should filter by relationships metadata selects', async () => {
+    it('should filter by relationships metadata selects', async () => {
       const response = await search.search({
         types: [ids.template1],
         filters: { status_relationship_filter: { status: { values: ['open'] } } }
       }, 'en');
       expect(response.rows.length).toBe(2);
-      const matchesAggs = response.aggregations.all.status_relationship_filter;
-      const openValueAggregation = matchesAggs.status.buckets[0].filtered.total.filtered.doc_count;
-      const closedValueAggregation = matchesAggs.status.buckets[1].filtered.total.filtered.doc_count;
+      const matchesAggs = response.aggregations.all.status;
+      const openValueAggregation = matchesAggs.buckets[0].filtered.doc_count;
+      const closedValueAggregation = matchesAggs.buckets[1].filtered.doc_count;
       expect(openValueAggregation).toBe(2);
       expect(closedValueAggregation).toBe(1);
     });
 
-    fit('should filter by relationships metadata text', async () => {
+    it('should filter by relationships metadata text', async () => {
       const response = await search.search({
         types: [ids.template1],
         filters: { status_relationship_filter: { description: 'red' } }
@@ -428,7 +428,7 @@ describe('search', () => {
       });
 
       describe('nested', () => {
-        fit('should search by nested and calculate nested aggregations of fields when filtering by types', (done) => {
+        it('should search by nested and calculate nested aggregations of fields when filtering by types', (done) => {
           Promise.all([
             search.search({ types: [ids.templateMetadata2] }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],

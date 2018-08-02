@@ -157,7 +157,17 @@ const search = {
           if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
             aggregation.buckets = Object.keys(aggregation.buckets).map(key => Object.assign({ key }, aggregation.buckets[key]));
           }
-          response.aggregations.all[aggregationKey] = aggregation;
+          if (aggregation.buckets) {
+            response.aggregations.all[aggregationKey] = aggregation;
+          }
+          if (!aggregation.buckets) {
+            Object.keys(aggregation).forEach((key) => {
+              if (aggregation[key].buckets) {
+                const buckets = aggregation[key].buckets.map(option => Object.assign({ key: option.key }, option.filtered.total));
+                response.aggregations.all[key] = { doc_count: aggregation[key].doc_count, buckets };
+              }
+            });
+          }
         });
 
         return { rows, totalRows: response.hits.total, aggregations: response.aggregations };

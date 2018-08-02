@@ -188,17 +188,19 @@ const nestedFilter = (filter) => {
 };
 
 const relationshipfilter = (filter) => {
+  const filters = filter.filters.map((fil) => {
+    fil.value = filter.value[fil.name];
+    if (fil.value) {
+      return filterToMatch(fil, 'relationships.metadata'); //eslint-disable-line
+    }
+  }).filter(m => m);
+  filters.push({ term: { 'relationships.template': filter.relationType } });
   const match = {
     nested: {
       path: 'relationships',
       query: {
         bool: {
-          must: filter.filters.map((fil) => {
-            fil.value = filter.value[fil.name];
-            if (fil.value) {
-              return filterToMatch(fil, 'relationships.metadata'); //eslint-disable-line
-            }
-          }).filter(m => m)
+          must: filters
         }
       }
     }

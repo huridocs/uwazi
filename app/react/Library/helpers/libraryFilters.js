@@ -19,6 +19,10 @@ export function populateOptions(filters, thesauris) {
       });
     }
 
+    if (!property.content && property.type === 'relationshipfilter') {
+      property.filters = populateOptions(property.filters, thesauris);
+    }
+
     return property;
   });
 }
@@ -75,6 +79,9 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
         }
         return option;
       }).filter(opt => opt.results);
+    }
+    if (property.filters) {
+      property.filters = parseWithAggregations(property.filters, aggregations, showNoValue);
     }
     return property;
   });

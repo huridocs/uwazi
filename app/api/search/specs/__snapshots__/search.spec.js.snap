@@ -7,5 +7,7 @@ Array [
   "types",
   "multiselect1",
   "nestedField",
+  "nested2",
+  "nested1",
 ]
 `;

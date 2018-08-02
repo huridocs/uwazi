@@ -216,7 +216,6 @@ export default {
     return model.get(query, select, pagination)
     .then(entities => Promise.all(entities.map(entity => relationships.getByDocument(entity.sharedId, entity.language)
     .then((relations) => {
-      console.log(relations);
       entity.relationships = relations;
       return entity;
     }))));
