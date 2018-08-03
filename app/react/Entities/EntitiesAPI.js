@@ -8,68 +8,50 @@ export default {
     }
 
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   countByTemplate(templateId) {
-    let url = `entities/count_by_template?templateId=${templateId}`;
+    const url = `entities/count_by_template?templateId=${templateId}`;
     return api.get(url)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   uploads() {
-    let url = 'entities/uploads';
+    const url = 'entities/uploads';
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   search(filters) {
-    let url = 'entities/search';
+    const url = 'entities/search';
     return api.get(url, filters)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   getSuggestions(searchTerm) {
-    let url = 'entities/match_title?searchTerm=' + (searchTerm || '');
+    const url = `entities/match_title?searchTerm=${searchTerm || ''}`;
     return api.get(url)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   save(entity) {
     return api.post('entities', entity)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   multipleUpdate(ids, values) {
-    return api.post('entities/multipleupdate', {ids, values})
-    .then((response) => {
-      return response.json;
-    });
+    return api.post('entities/multipleupdate', { ids, values })
+    .then(response => response.json);
   },
 
   delete(entity) {
-    return api.delete('entities', {sharedId: entity.sharedId})
-    .then((response) => {
-      return response.json;
-    });
+    return api.delete('entities', { sharedId: entity.sharedId })
+    .then(response => response.json);
   },
 
   deleteMultiple(entities) {
-    return api.delete('entities/multiple', {sharedIds: entities.map((entity) => entity.sharedId)})
-    .then((response) => {
-      return response.json;
-    });
+    return api.delete('entities/multiple', { sharedIds: entities.map(entity => entity.sharedId) })
+    .then(response => response.json);
   }
 };
