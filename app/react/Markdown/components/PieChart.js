@@ -46,7 +46,7 @@ export const PieChartComponent = (props) => {
             fill="#8884d8"
           >
             {
-              formattedData.map((entry, index) => <Cell key={index} fill={sliceColors[index % colors.length]} />)
+              formattedData.map((entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
             }
           </Pie>
           <Tooltip />
