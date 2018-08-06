@@ -8,7 +8,7 @@ import Loader from 'app/components/Elements/Loader';
 import markdownDatasets from '../markdownDatasets';
 
 export const GaugeChartComponent = (props) => {
-  const { label, value, max, height, classname, colors } = props;
+  const { label, value, max, height, classname, colors, suffix } = props;
   let output = <Loader/>;
 
 
@@ -43,7 +43,7 @@ export const GaugeChartComponent = (props) => {
                 textAnchor="middle"
                 fill={sliceColors[0]}
               >
-                { value }
+                { value }{ suffix }
               </text>
             </g>
           )}
@@ -60,6 +60,7 @@ GaugeChartComponent.defaultProps = {
   colors: '#000099,#ccc',
   value: null,
   label: 'true',
+  suffix: '',
 };
 
 GaugeChartComponent.propTypes = {
@@ -69,6 +70,7 @@ GaugeChartComponent.propTypes = {
   max: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   label: PropTypes.string,
+  suffix: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => ({
