@@ -5,11 +5,33 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { t, I18NLink } from 'app/I18N';
 
-export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl }) => {
+function getFieldLabel(field, template) {
+  if (field === 'title') {
+    return t('System', 'Title');
+  }
+  if (field.startsWith('metadata.') && template) {
+    const name = field.split('.')[1];
+    console.log('template exists', template);
+    const property = template.get('properties').find(p => p.get('name') === name)
+    if (property) {
+      return property.get('label');
+    }
+    console.log('property not found', field, template);
+  }
+  if (field.startsWith('metadata') && !template) {
+    console.log('field no tpl', template);
+  }
+  return field;
+}
+
+export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template}) => {
+  console.log('document view url', documentViewUrl, fieldSnippets);
   return (
     <React.Fragment>
       <li>
-        <span>{ fieldSnippets.field }</span>
+        <I18NLink to={documentViewUrl}>
+            { getFieldLabel(fieldSnippets.field, template) }
+        </I18NLink>
       </li>
       <li>
         {fieldSnippets.texts.map((snippet, index) => (
@@ -21,6 +43,7 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl }) => {
 };
 
 export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => {
+  console.log('document viewurl contnet', documentViewUrl);
   return (
     <React.Fragment>
       <li>
@@ -41,10 +64,15 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
   );
 };
 
-export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPage }) => (
+export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPage, template }) => (
   <ul className="snippet-list">
     {snippets.metadata.map(fieldSnippets => (
-      <MetadataFieldSnippets key={fieldSnippets.field} fieldSnippets={fieldSnippets} />
+      <MetadataFieldSnippets
+        key={fieldSnippets.field}
+        fieldSnippets={fieldSnippets}
+        template={template}
+        documentViewUrl={documentViewUrl}
+      />
     ))}
     {snippets.fullText.length ? (
       <DocumentContentSnippets
@@ -58,6 +86,7 @@ export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPag
 );
 
 SnippetList.propTypes = {
+  doc: PropTypes.string.isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   scrollToPage: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
@@ -65,7 +94,18 @@ SnippetList.propTypes = {
     count: PropTypes.number,
     metadata: PropTypes.array,
     fullText: PropTypes.array
-  }).isRequired
+  }).isRequired,
+  template: PropTypes.string.isRequired
 };
 
-export default connect()(SnippetList);
+export const mapStateToProps = (state, ownProps) => {
+  const template = state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'));
+  if (!template) {
+    console.log('state tpls', ownProps.doc, template);
+  }
+  return {
+    template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'))
+  };
+};
+
+export default connect(mapStateToProps)(SnippetList);

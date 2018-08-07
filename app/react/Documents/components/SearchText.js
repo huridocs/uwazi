@@ -52,8 +52,9 @@ export class SearchText extends Component {
 
   render() {
     const snippets = this.props.snippets.toJS();
-    const documentViewUrl = `/document/${this.props.doc.get('sharedId')}`;
-    console.log('SNIPPETS', snippets);
+    const { doc } = this.props;
+    const documentViewUrl = doc.get('type') === 'document' ?
+      `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
     return (
       <div>
         <LocalForm
@@ -88,6 +89,7 @@ export class SearchText extends Component {
           </div>
         }
         <SnippetList
+          doc={this.props.doc}
           snippets={snippets}
           scrollToPage={this.props.scrollToPage}
           searchTerm={this.props.searchTerm}

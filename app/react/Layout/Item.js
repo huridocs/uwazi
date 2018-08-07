@@ -21,6 +21,7 @@ export class Item extends Component {
       <ItemSnippet
         onSnippetClick={this.props.onSnippetClick}
         snippets={doc.snippets}
+        doc={doc}
       />
     );
   }

@@ -3,12 +3,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import t from '../I18N/t';
 
-export const ItemSnippet = ({ snippets, onSnippetClick }) => {
+function getFieldLabel(field, template) {
+  if (field === 'title') {
+    return t('System', 'Title');
+  }
+  if (field.startsWith('metadata.')) {
+    const name = field.split('.')[1];
+    return template.get('properties').find(p => p.get('name') === name).get('label');
+  }
+  return field;
+}
+
+export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   let content;
   let source;
-
   if (snippets.metadata.length) {
-    source = snippets.metadata[0].field;
+    source = getFieldLabel(snippets.metadata[0].field, template);
     [content] = snippets.metadata[0].texts;
   } else {
     source = t('System', 'Document contents');
@@ -41,8 +51,16 @@ export const ItemSnippet = ({ snippets, onSnippetClick }) => {
 };
 
 ItemSnippet.propTypes = {
-  snippets: PropTypes.object,
-  onSnippetClick: PropTypes.func
+  snippets: PropTypes.object.isRequired,
+  onSnippetClick: PropTypes.func.isRequired,
+  doc: PropTypes.object.isRequired,
+  template: PropTypes.object.isRequired
 };
 
-export default connect()(ItemSnippet);
+export const mapStateToProps = (state, ownProps) => {
+  return {
+    template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.template)
+  };
+};
+
+export default connect(mapStateToProps)(ItemSnippet);
