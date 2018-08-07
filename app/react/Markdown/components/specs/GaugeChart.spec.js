@@ -28,33 +28,19 @@ describe('GaugeChart Markdown component', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('should allow personalizing values', () => {
+  it('should allow rendering value with prefix, suffix, and personalizing values', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(4);
     const ownProps = {
+      dataset: 'custom dataset',
       property: 'progress',
       max: '12',
       height: '300',
-      label: 'notTrue',
       classname: 'custom-class',
       colors: '#f00,#0f0'
     };
 
     const props = mapStateToProps(state, ownProps);
-    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)} />);
-
-    expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith(state, ownProps);
-    expect(component).toMatchSnapshot();
-  });
-
-  it('should allow setting suffix to the value', () => {
-    spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(4);
-    const ownProps = {
-      property: 'progress',
-      suffix: '%'
-    };
-
-    const props = mapStateToProps(state, ownProps);
-    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)} />);
+    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)}>Pre <div /> Suf</GaugeChartComponent>);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith(state, ownProps);
     expect(component).toMatchSnapshot();
