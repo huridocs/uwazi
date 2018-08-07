@@ -11,12 +11,7 @@ export const GaugeChartComponent = (props) => {
   const { dataset, property, value, max, height, classname, colors, children } = props;
   let output = <Loader/>;
 
-  const propedChildren = React.Children.map(children, (child) => {
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, { dataset, property });
-    }
-    return child;
-  });
+  const propedChildren = React.Children.map(children, c => React.isValidElement(c) ? React.cloneElement(c, { dataset, property }) : c);
 
   if (value !== null) {
     const formattedData = [{ label: 'progress', results: value }, { label: '', results: max - value }];
@@ -41,14 +36,7 @@ export const GaugeChartComponent = (props) => {
           </Pie>
           {propedChildren.length && (
             <g>
-              <text
-                x="50%"
-                y={height}
-                dy={-1}
-                style={{ fontSize: `${height / 2}px` }}
-                textAnchor="middle"
-                fill={sliceColors[0]}
-              >
+              <text x="50%" y={height} dy={-1} style={{ fontSize: `${height / 2}px` }} textAnchor="middle" fill={sliceColors[0]}>
                 {propedChildren}
               </text>
             </g>
