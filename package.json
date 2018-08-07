@@ -116,7 +116,7 @@
     "react-datepicker": "0.46.0",
     "react-dnd": "2.5.1",
     "react-dnd-html5-backend": "2.5.1",
-    "react-dom": "16.2.0",
+    "react-dom": "16.2.1",
     "react-dropzone": "4.2.9",
     "react-flags": "daneryl/react-flags",
     "react-helmet": "^5.2.0",
