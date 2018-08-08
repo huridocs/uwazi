@@ -16,9 +16,6 @@ function getFieldLabel(field, template) {
       return t(template.get('_id'), property.get('label'));
     }
   }
-  if (field.startsWith('metadata') && !template) {
-    console.log('field no tpl', template);
-  }
   return field;
 }
 
@@ -119,14 +116,8 @@ SnippetList.propTypes = {
   template: PropTypes.object
 };
 
-export const mapStateToProps = (state, ownProps) => {
-  const template = state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'));
-  if (!template) {
-    console.log('state tpl undefined', ownProps.doc, template);
-  }
-  return {
-    template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'))
-  };
-};
+export const mapStateToProps = (state, ownProps) => ({
+  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'))
+});
 
 export default connect(mapStateToProps)(SnippetList);
