@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t, I18NLink } from 'app/I18N';
+import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { highlightSearch } from 'app/Viewer/actions/uiActions';
@@ -81,27 +81,31 @@ export class SearchText extends Component {
           }
         </LocalForm>
 
-        {!this.props.snippets.count &&
+        {!snippets.count &&
           <div className="blank-state">
             <Icon icon="search" />
             <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
             <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
           </div>
         }
-        <SnippetList
-          doc={this.props.doc}
-          snippets={snippets}
-          scrollToPage={this.props.scrollToPage}
-          searchTerm={this.props.searchTerm}
-          documentViewUrl={documentViewUrl}
-        />
+        {doc.size ?
+          (<SnippetList
+            doc={this.props.doc}
+            snippets={snippets}
+            scrollToPage={this.props.scrollToPage}
+            searchTerm={this.props.searchTerm}
+            documentViewUrl={documentViewUrl}
+          />) : ''
+        }
       </div>
     );
   }
 }
 
 SearchText.propTypes = {
-  snippets: PropTypes.object,
+  snippets: PropTypes.shape({
+    toJS: PropTypes.func
+  }),
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
@@ -112,7 +116,12 @@ SearchText.propTypes = {
 
 SearchText.defaultProps = {
   searchTerm: '',
-  scrollToPage
+  scrollToPage,
+  snippets: {
+    count: 0,
+    metadata: [],
+    fullText: []
+  }
 };
 
 function mapStateToProps(state, props) {

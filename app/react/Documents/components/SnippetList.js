@@ -39,6 +39,21 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template
   );
 };
 
+MetadataFieldSnippets.propTypes = {
+  fieldSnippets: PropTypes.shape({
+    texts: PropTypes.array,
+    field: PropTypes.string
+  }).isRequired,
+  documentViewUrl: PropTypes.string.isRequired,
+  template: PropTypes.shape({
+    get: PropTypes.func
+  })
+};
+
+MetadataFieldSnippets.defaultProps = {
+  template: undefined
+};
+
 export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => {
   return (
     <React.Fragment>
@@ -58,6 +73,16 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
       ))}
     </React.Fragment>
   );
+};
+
+DocumentContentSnippets.propTypes = {
+  scrollToPage: PropTypes.func.isRequired,
+  documentSnippets: PropTypes.arrayOf(PropTypes.shape({
+    page: PropTypes.number,
+    text: PropTypes.string
+  })).isRequired,
+  documentViewUrl: PropTypes.string.isRequired,
+  searchTerm: PropTypes.string.isRequired
 };
 
 export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPage, template }) => (

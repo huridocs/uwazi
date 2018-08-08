@@ -48,11 +48,15 @@ export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
         <a onClick={onSnippetClick}>{t('System', 'Show more')}</a>
       </div>
     </div>
-  );  
+  );
 };
 
 ItemSnippet.propTypes = {
-  snippets: PropTypes.object.isRequired,
+  snippets: PropTypes.shape({
+    count: PropTypes.number,
+    metadata: PropTypes.array,
+    fullText: PropTypes.array
+  }).isRequired,
   onSnippetClick: PropTypes.func.isRequired,
   doc: PropTypes.object.isRequired,
   template: PropTypes.object.isRequired
