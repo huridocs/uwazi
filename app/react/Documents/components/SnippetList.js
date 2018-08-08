@@ -43,7 +43,6 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template
 };
 
 export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => {
-  console.log('document viewurl contnet', documentViewUrl);
   return (
     <React.Fragment>
       <li>
