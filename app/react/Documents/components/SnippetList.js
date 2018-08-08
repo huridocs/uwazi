@@ -11,12 +11,10 @@ function getFieldLabel(field, template) {
   }
   if (field.startsWith('metadata.') && template) {
     const name = field.split('.')[1];
-    console.log('template exists', template);
-    const property = template.get('properties').find(p => p.get('name') === name)
+    const property = template.get('properties').find(p => p.get('name') === name);
     if (property) {
-      return property.get('label');
+      return t(template.get('_id'), property.get('label'));
     }
-    console.log('property not found', field, template);
   }
   if (field.startsWith('metadata') && !template) {
     console.log('field no tpl', template);
@@ -25,12 +23,11 @@ function getFieldLabel(field, template) {
 }
 
 export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template}) => {
-  console.log('document view url', documentViewUrl, fieldSnippets);
   return (
     <React.Fragment>
       <li>
         <I18NLink to={documentViewUrl}>
-            { getFieldLabel(fieldSnippets.field, template) }
+          { getFieldLabel(fieldSnippets.field, template) }
         </I18NLink>
       </li>
       <li>
@@ -85,7 +82,7 @@ export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPag
 );
 
 SnippetList.propTypes = {
-  doc: PropTypes.string.isRequired,
+  doc: PropTypes.object.isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   scrollToPage: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
@@ -94,13 +91,13 @@ SnippetList.propTypes = {
     metadata: PropTypes.array,
     fullText: PropTypes.array
   }).isRequired,
-  template: PropTypes.string.isRequired
+  template: PropTypes.object
 };
 
 export const mapStateToProps = (state, ownProps) => {
   const template = state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'));
   if (!template) {
-    console.log('state tpls', ownProps.doc, template);
+    console.log('state tpl undefined', ownProps.doc, template);
   }
   return {
     template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'))

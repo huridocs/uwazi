@@ -9,7 +9,8 @@ function getFieldLabel(field, template) {
   }
   if (field.startsWith('metadata.')) {
     const name = field.split('.')[1];
-    return template.get('properties').find(p => p.get('name') === name).get('label');
+    const label = template.get('properties').find(p => p.get('name') === name).get('label');
+    return t(template.get('_id'), label);
   }
   return field;
 }
