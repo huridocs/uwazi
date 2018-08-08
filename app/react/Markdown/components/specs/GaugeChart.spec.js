@@ -28,11 +28,19 @@ describe('GaugeChart Markdown component', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('should allow personalizing values', () => {
+  it('should allow rendering value with prefix, suffix, and personalizing values', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(4);
-    const ownProps = { property: 'progress', max: '12', height: '300', label: 'notTrue', classname: 'custom-class', colors: '#f00,#0f0' };
+    const ownProps = {
+      dataset: 'custom dataset',
+      property: 'progress',
+      max: '12',
+      height: '300',
+      classname: 'custom-class',
+      colors: '#f00,#0f0'
+    };
+
     const props = mapStateToProps(state, ownProps);
-    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)} />);
+    const component = shallow(<GaugeChartComponent {...Object.assign({}, ownProps, props)}>Pre <div /> Suf</GaugeChartComponent>);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith(state, ownProps);
     expect(component).toMatchSnapshot();
@@ -41,6 +49,7 @@ describe('GaugeChart Markdown component', () => {
   it('should render a placeholder when data is undefined', () => {
     let undefinedValue;
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(undefinedValue);
+
     const props = mapStateToProps(state, { prop2: 'propValue' });
     const component = shallow(<GaugeChartComponent {...props} property="prop2"/>);
 
