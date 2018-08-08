@@ -128,12 +128,7 @@ export class DocumentSidePanel extends Component {
                 }
                 return <span/>;
               })()}
-              {(() => {
-                if (docType !== 'entity') {
-                  return <li className="tab-separator" />;
-                }
-                return <span/>;
-              })()}
+              <li className="tab-separator" />
               <li>
                 <TabLink to="metadata" default>
                   <Icon icon="info-circle" />
