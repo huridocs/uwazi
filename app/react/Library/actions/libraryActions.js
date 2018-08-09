@@ -123,8 +123,21 @@ export function processFilters(readOnlySearch, filters, limit) {
   search.filters = {};
 
   filters.properties.forEach((property) => {
-    if (!filterIsEmpty(readOnlySearch.filters[property.name])) {
+    if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
       search.filters[property.name] = readOnlySearch.filters[property.name];
+    }
+
+    if (property.filters) {
+      const searchFilter = Object.assign({}, readOnlySearch.filters[property.name]);
+      property.filters.forEach((filter) => {
+        if (filterIsEmpty(searchFilter[filter.name])) {
+          delete searchFilter[filter.name];
+        }
+      });
+
+      if (Object.keys(searchFilter).length) {
+        search.filters[property.name] = searchFilter;
+      }
     }
   });
 

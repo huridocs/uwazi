@@ -17,7 +17,8 @@ describe('HubRelationshipMetadata', () => {
       _id: 't1',
       properties: [
         { name: 'propertyA', label: 'labelA' },
-        { name: 'propertyB', label: 'labelB' }
+        { name: 'propertyB', label: 'labelB' },
+        { name: 'propertyC', label: 'labelC' }
       ]
     }]);
 
@@ -29,7 +30,7 @@ describe('HubRelationshipMetadata', () => {
     );
 
     range = { text: 'Some quoted text' };
-    metadata = { propertyA: 'Value B', propertyB: 'Value B' };
+    metadata = { propertyA: 'Value B', propertyB: 'Value B', propertyC: [{ value: 'Value C1' }, { value: 'Value C2' }] };
   });
 
   function testSnapshot() {

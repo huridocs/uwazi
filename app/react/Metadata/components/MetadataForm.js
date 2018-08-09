@@ -1,52 +1,47 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {Form, Field} from 'react-redux-form';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Form, Field } from 'react-redux-form';
 
 import validator from '../helpers/validator';
-import {FormGroup, IconSelector} from 'app/ReactReduxForms';
-import {Select as SimpleSelect} from 'app/Forms';
+import { FormGroup, IconSelector } from 'app/ReactReduxForms';
+import { Select as SimpleSelect } from 'app/Forms';
 import MetadataFormFields from './MetadataFormFields';
-import {createSelector} from 'reselect';
-import {filterBaseProperties} from 'app/Entities/utils/filterBaseProperties';
+import { createSelector } from 'reselect';
+import { filterBaseProperties } from 'app/Entities/utils/filterBaseProperties';
 import t from 'app/I18N/t';
 
 const selectTemplateOptions = createSelector(
   [s => s.templates, (s, isEntity) => isEntity],
-  (templates, isEntity) => {
-    return templates.filter(template => {
-      if (isEntity) {
-        return template.get('isEntity');
-      }
-      return !template.get('isEntity');
-    })
-    .map((tmpl) => {
-      return {label: tmpl.get('name'), value: tmpl.get('_id')};
-    });
-  }
+  (templates, isEntity) => templates.filter((template) => {
+    if (isEntity) {
+      return template.get('isEntity');
+    }
+    return !template.get('isEntity');
+  })
+  .map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
 export class MetadataForm extends Component {
-
   onSubmit(metadata) {
     this.props.onSubmit(filterBaseProperties(metadata), this.props.model);
   }
 
   render() {
-    const {model, template, templateOptions} = this.props;
+    const { model, template, templateOptions } = this.props;
 
     if (!template) {
       return <div />;
     }
 
     return (
-      <Form id='metadataForm' model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
+      <Form id="metadataForm" model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
 
-        <FormGroup model={'.title'}>
+        <FormGroup model=".title">
           <ul className="search__filter">
             <li><label>{t('System', 'Title')} <span className="required">*</span></label></li>
             <li className="wide">
-              <Field model={'.title'}>
+              <Field model=".title">
                 <textarea className="form-control"/>
               </Field>
             </li>
@@ -64,8 +59,7 @@ export class MetadataForm extends Component {
                 onChange={(e) => {
                   this.props.changeTemplate(model, e.target.value);
                 }}
-              >
-              </SimpleSelect>
+              />
             </li>
           </ul>
         </FormGroup>
@@ -74,7 +68,7 @@ export class MetadataForm extends Component {
           <ul className="search__filter">
             <li><label>{t('System', 'Icon')} / {t('System', 'Flag')}</label></li>
             <li className="wide">
-              <IconSelector model={'.icon'}/>
+              <IconSelector model=".icon"/>
             </li>
           </ul>
         </FormGroup>
@@ -93,11 +87,9 @@ MetadataForm.propTypes = {
   onSubmit: PropTypes.func
 };
 
-export const mapStateToProps = (state, ownProps) => {
-  return {
+export const mapStateToProps = (state, ownProps) => ({
     template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId),
     templateOptions: selectTemplateOptions(state, ownProps.isEntity)
-  };
-};
+});
 
 export default connect(mapStateToProps)(MetadataForm);

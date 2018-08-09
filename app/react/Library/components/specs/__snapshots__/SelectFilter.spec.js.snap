@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SelectFilter should render a text filter field with a label and passing the model 1`] = `
+<ul
+  className="search__filter is-active"
+>
+  <li>
+    label
+  </li>
+  <li
+    className="wide"
+  >
+    <MultiSelect
+      model="model.values"
+      onChange={[Function]}
+      options={
+        Array [
+          "options",
+        ]
+      }
+      optionsValue="id"
+      prefix=""
+    />
+  </li>
+</ul>
+`;
+
+exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1`] = `
+<ul
+  className="search__filter is-active"
+>
+  <li>
+    label
+    <Switcher
+      model="model.and"
+      onChange={[Function]}
+      prefix="prefix"
+    />
+  </li>
+  <li
+    className="wide"
+  >
+    <MultiSelect
+      model="model.values"
+      onChange={[Function]}
+      options={
+        Array [
+          "options",
+        ]
+      }
+      optionsValue="id"
+      prefix="prefix"
+    />
+  </li>
+</ul>
+`;

@@ -98,7 +98,7 @@
 
       //jsx-a11y
       "jsx-a11y/anchor-is-valid": ["warn"],
-      "jsx-a11y/label-has-for": ["warn"],
+      "jsx-a11y/label-has-for": ["off"],
       "jsx-a11y/html-has-lang": ["warn"],
       "jsx-a11y/iframe-has-title": ["warn"],
       "jsx-a11y/tabindex-no-positive": ["warn"],

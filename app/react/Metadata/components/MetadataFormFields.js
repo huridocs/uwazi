@@ -66,18 +66,21 @@ export class MetadataFormFields extends Component {
       return <MultiDateRange model={_model} format={this.props.dateFormat}/>;
     case 'geolocation':
       return <Geolocation model={_model} />;
-    default:
+    case 'text':
       return <Field model={_model}><input className="form-control"/></Field>;
+    default:
+      return false;
     }
   }
 
   render() {
     const thesauris = this.props.thesauris.toJS();
-    const template = this.props.template.toJS();
+    const fields = this.props.template.get('properties').toJS();
+    const templateID = this.props.template.get('_id');
 
     return (
       <div>
-        {template.properties.map(property => (
+        {fields.map(property => (
           <FormGroup key={property.name} model={`.metadata.${property.name}`}>
             <ul className="search__filter is-active">
               <li>
@@ -87,7 +90,7 @@ export class MetadataFormFields extends Component {
                     model={this.props.model}
                     field={`metadata.${property.name}`}
                   />
-                  {t(template._id, property.label)}
+                  {t(templateID, property.label)}
                   {property.required ? <span className="required">*</span> : ''}
                 </label>
               </li>

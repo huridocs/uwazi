@@ -65,7 +65,7 @@ export class FormConfigRelationship extends Component {
         </div>
 
         <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
-          <Tip>You won't be able to publish a document if this property is empty.</Tip>
+          <Tip>You won&#39;t be able to publish a document if this property is empty.</Tip>
         </PropertyConfigOption>
 
         <PropertyConfigOption label="Show in cards" model={`template.data.properties[${index}].showInCard`}>

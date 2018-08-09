@@ -7,28 +7,22 @@ export default (elasticIndex) => {
   elasticConfig.index = elasticIndex;
   return {
     resetIndex() {
-      return elastic.indices.delete({index: elasticIndex, ignore_unavailable: true})
-      .then(() => {
-        return elastic.indices.create({
+      return elastic.indices.delete({ index: elasticIndex, ignore_unavailable: true })
+      .then(() => elastic.indices.create({
           index: elasticIndex,
           body: elasticMapping
-        });
-      })
+      }))
       .then(() => null);
     },
     reindex() {
       return this.resetIndex()
-      .then(() => {
-        return entities.indexEntities({}, '+fullText');
-      })
-      .then(() => {
-        return elastic.indices.refresh({index: elasticIndex});
-      })
+      .then(() => entities.indexEntities({}, '+fullText'))
+      .then(() => elastic.indices.refresh({ index: elasticIndex }))
       .then(() => null);
     },
 
     refresh() {
-      return elastic.indices.refresh({index: elasticIndex});
+      return elastic.indices.refresh({ index: elasticIndex });
     }
   };
 };
