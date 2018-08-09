@@ -25,7 +25,7 @@ export default class PDF extends EventEmitter {
 
   async extractFormatted() {
     const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
-    return result.stdout.split('\f');
+    return result.stdout.split('\f').slice(0, -1).reduce((memo, page, index) => ({ ...memo, [index + 1]: page }), {});
   }
 
   extractText() {

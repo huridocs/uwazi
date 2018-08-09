@@ -48,18 +48,20 @@ describe('upload routes', () => {
       iosocket.emit.and.callFake((eventName) => {
         if (eventName === 'documentProcessed') {
           return Promise.all([
-            documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-            documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+            documents.get({ sharedId: 'id', language: 'es' }, '+fullText +formattedPlainTextPages'),
+            documents.get({ sharedId: 'id', language: 'en' }, '+fullText +formattedPlainTextPages')
           ])
           .then(([docES, docEN]) => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
             expect(docEN[0].processed).toBe(true);
             expect(docEN[0].fullText).toMatch(/Test\[\[1\]\] file/);
+            expect(docEN[0].formattedPlainTextPages[1]).toMatch('Test file');
             expect(docEN[0].language).toBe('en');
 
             expect(docES[0].processed).toBe(true);
             expect(docES[0].fullText).toMatch(/Test\[\[1\]\] file/);
+            expect(docES[0].formattedPlainTextPages[1]).toMatch('Test file');
             expect(docES[0].language).toBe('es');
             done();
           })
@@ -105,6 +107,7 @@ describe('upload routes', () => {
             ])
             .then(([docES, docEN]) => {
               expect(docEN[0].file.language).toBe('spa');
+              expect(docEN[0].file.originalname).toBeDefined();
               expect(docES[0].file.language).toBe('spa');
               done();
             })

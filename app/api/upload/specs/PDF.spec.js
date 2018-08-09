@@ -36,9 +36,11 @@ describe('PDF', () => {
       const conversion = await pdf.convert();
       const pages = conversion.formatted;
 
-      expect(pages[0]).toMatch('Page 1');
-      expect(pages[1]).toMatch('Page 2');
-      expect(pages[2]).toMatch('Page 3');
+      expect(Object.keys(pages).length).toBe(11);
+
+      expect(pages[1]).toMatch('Page 1');
+      expect(pages[2]).toMatch('Page 2');
+      expect(pages[3]).toMatch('Page 3');
     });
 
     describe('when there is a conversion error', () => {
