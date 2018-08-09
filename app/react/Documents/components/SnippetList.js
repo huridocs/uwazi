@@ -22,16 +22,16 @@ function getFieldLabel(field, template) {
 export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template}) => {
   return (
     <React.Fragment>
-      <li>
+      <li className="snippet-list-item-header metadata-snippet-header">
         <I18NLink to={documentViewUrl}>
           { getFieldLabel(fieldSnippets.get('field'), template) }
         </I18NLink>
       </li>
-      <li>
-        {fieldSnippets.get('texts').map((snippet, index) => (
-          <span key={index} dangerouslySetInnerHTML={{ __html: snippet }} />
-        ))}
-      </li>
+      {fieldSnippets.get('texts').map((snippet, index) => (
+        <li key={index} className="snippet-list-item metadata-snippet">
+          <span dangerouslySetInnerHTML={{ __html: snippet }} />
+        </li>
+      ))}
     </React.Fragment>
   );
 };
@@ -54,11 +54,11 @@ MetadataFieldSnippets.defaultProps = {
 export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => {
   return (
     <React.Fragment>
-      <li>
+      <li className="snippet-list-item-header fulltext-snippet-header">
         {t('System', 'Document contents')}
       </li>
       {documentSnippets.map((snippet, index) => (
-        <li key={index}>
+        <li key={index} className="snippet-list-item fulltext-snippet">
           <I18NLink
             onClick={() => scrollToPage(snippet.get('page'))}
             to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}

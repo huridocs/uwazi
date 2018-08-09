@@ -2,10 +2,13 @@
 
 exports[`SnippetList should render all document snippets 1`] = `
 <React.Fragment>
-  <li>
+  <li
+    className="snippet-list-item-header fulltext-snippet-header"
+  >
     Document contents
   </li>
   <li
+    className="snippet-list-item fulltext-snippet"
     key="0"
   >
     <Connect(I18NLink)
@@ -23,6 +26,7 @@ exports[`SnippetList should render all document snippets 1`] = `
     />
   </li>
   <li
+    className="snippet-list-item fulltext-snippet"
     key="1"
   >
     <Connect(I18NLink)
@@ -40,6 +44,7 @@ exports[`SnippetList should render all document snippets 1`] = `
     />
   </li>
   <li
+    className="snippet-list-item fulltext-snippet"
     key="2"
   >
     <Connect(I18NLink)

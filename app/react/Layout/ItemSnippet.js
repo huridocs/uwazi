@@ -57,7 +57,7 @@ ItemSnippet.propTypes = {
     metadata: PropTypes.array,
     fullText: PropTypes.array
   }).isRequired,
-  onSnippetClick: PropTypes.func.isRequired,
+  onSnippetClick: PropTypes.func,
   doc: PropTypes.object.isRequired,
   template: PropTypes.object.isRequired
 };

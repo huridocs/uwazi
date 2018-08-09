@@ -2,29 +2,37 @@
 
 exports[`SnippetList should properly render title snippets with Title label as heading 1`] = `
 <React.Fragment>
-  <li>
+  <li
+    className="snippet-list-item-header metadata-snippet-header"
+  >
     <Connect(I18NLink)
       to="/document/sharedId"
     >
       Summary
     </Connect(I18NLink)>
   </li>
-  <li>
+  <li
+    className="snippet-list-item metadata-snippet"
+    key="0"
+  >
     <span
       dangerouslySetInnerHTML={
         Object {
           "__html": "title <b>snippet m1</b> found",
         }
       }
-      key="0"
     />
+  </li>
+  <li
+    className="snippet-list-item metadata-snippet"
+    key="1"
+  >
     <span
       dangerouslySetInnerHTML={
         Object {
           "__html": "title <b>snippet m2</b> found",
         }
       }
-      key="1"
     />
   </li>
 </React.Fragment>
@@ -32,29 +40,37 @@ exports[`SnippetList should properly render title snippets with Title label as h
 
 exports[`SnippetList should render all metadata snippets with the field label as heading 1`] = `
 <React.Fragment>
-  <li>
+  <li
+    className="snippet-list-item-header metadata-snippet-header"
+  >
     <Connect(I18NLink)
       to="/document/sharedId"
     >
       Summary
     </Connect(I18NLink)>
   </li>
-  <li>
+  <li
+    className="snippet-list-item metadata-snippet"
+    key="0"
+  >
     <span
       dangerouslySetInnerHTML={
         Object {
           "__html": "metadata <b>snippet m1</b> found",
         }
       }
-      key="0"
     />
+  </li>
+  <li
+    className="snippet-list-item metadata-snippet"
+    key="1"
+  >
     <span
       dangerouslySetInnerHTML={
         Object {
           "__html": "metadata <b>snippet m2</b> found",
         }
       }
-      key="1"
     />
   </li>
 </React.Fragment>
