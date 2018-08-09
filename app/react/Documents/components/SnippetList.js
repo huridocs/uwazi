@@ -63,7 +63,7 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
             onClick={() => scrollToPage(snippet.get('page'))}
             to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
           >
-            {snippet.page}
+            {snippet.get('page')}
           </I18NLink>
           <span dangerouslySetInnerHTML={{ __html: snippet.get('text') }} />
         </li>
