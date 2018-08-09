@@ -32,6 +32,9 @@ export class MetadataProperty extends Component {
     if (this.props.type === 'geolocation') {
       return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false}/>;
     }
+    if (this.props.type === 'markdown') {
+      return <FormConfigInput type={this.props.type} index={this.props.index} canPreview/>;
+    }
     return <FormConfigInput type={this.props.type} index={this.props.index} />;
   }
 

@@ -39,19 +39,34 @@ export class FormConfigInput extends Component {
             </span>
           </label>
         </Field>
-        <ShowIf if={this.props.canShowInCard}>
-          <Field model={`template.data.properties[${index}].showInCard`}>
-            <input id={`showInCard${this.props.index}`} type="checkbox"/>
-            &nbsp;
-            <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
-              Show in cards
-              <span className="property-help">
-                <Icon icon="question-circle" />
-                <div className="property-description">Show this property in the cards as part of the basic info.</div>
-              </span>
-            </label>
-          </Field>
-        </ShowIf>
+        <div>
+          <ShowIf if={this.props.canShowInCard}>
+            <Field className="filter" model={`template.data.properties[${index}].showInCard`}>
+              <input id={`showInCard${this.props.index}`} type="checkbox"/>
+              &nbsp;
+              <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
+                Show in cards
+                <span className="property-help">
+                  <Icon icon="question-circle" />
+                  <div className="property-description">Show this property in the cards as part of the basic info.</div>
+                </span>
+              </label>
+            </Field>
+          </ShowIf>
+          <ShowIf if={this.props.canPreview && property.showInCard}>
+            <Field className="filter" model={`template.data.properties[${index}].preview`}>
+              <input id={`preview${this.props.index}`} type="checkbox"/>
+              &nbsp;
+              <label className="property-label" htmlFor={`preview${this.props.index}`}>
+                Show as preview
+                <span className="property-help">
+                  <Icon icon="question-circle" />
+                  <div className="property-description">This property will be shown at the top of the card.</div>
+                </span>
+              </label>
+            </Field>
+          </ShowIf>
+        </div>
         <div>
           <ShowIf if={this.props.canBeFilter}>
             <Field className="filter" model={`template.data.properties[${index}].filter`}>
@@ -59,8 +74,8 @@ export class FormConfigInput extends Component {
             &nbsp;
               <label className="property-label" htmlFor={`filter${this.props.index}`}>
               Use as filter
-              <span className="property-help">
-                <Icon icon="question-circle" />
+                <span className="property-help">
+                  <Icon icon="question-circle" />
                   <div className="property-description">
                   Use this property to filter the library results.
                   When properties match in equal name and field type with other document types, they will be combined for filtering.
@@ -107,11 +122,13 @@ export class FormConfigInput extends Component {
 
 FormConfigInput.defaultProps = {
   canBeFilter: true,
-  canShowInCard: true
+  canShowInCard: true,
+  canPreview: false
 };
 
 FormConfigInput.propTypes = {
   canBeFilter: PropTypes.bool,
+  canPreview: PropTypes.bool,
   canShowInCard: PropTypes.bool,
   property: PropTypes.instanceOf(Object).isRequired,
   index: PropTypes.number.isRequired,
