@@ -145,15 +145,19 @@ describe('Viewer uiActions', () => {
       document.body.appendChild(container);
       Marker.init('div.main-wrapper');
 
-      let snippets = Immutable.fromJS([
-        {text: 'unique', page: 1},
-        {text: 'unique', page: 2},
-        {text: 'snippet <b>marked</b> (with) multiple spaces', page: 3},
-        {text: 'snippet <b>marked</b>\nnew line', page: 4},
-        {text: 'page not in range 5', page: 5},
-        {text: 'page not in range 6', page: 6},
-        {text: 'page not in range 7', page: 7}
-      ]);
+      let snippets = Immutable.fromJS({
+        count: 7,
+        metadata: [],
+        fullText: [
+          {text: 'unique', page: 1},
+          {text: 'unique', page: 2},
+          {text: 'snippet <b>marked</b> (with) multiple spaces', page: 3},
+          {text: 'snippet <b>marked</b>\nnew line', page: 4},
+          {text: 'page not in range 5', page: 5},
+          {text: 'page not in range 6', page: 6},
+          {text: 'page not in range 7', page: 7}
+        ]
+      });
 
       const pages = [1, 2, 3, 4];
 
@@ -167,7 +171,11 @@ describe('Viewer uiActions', () => {
       expect(marks[4].innerHTML).toBe('snippet marked ');
       expect(marks[5].innerHTML).toBe('new line');
 
-      actions.highlightSnippets(Immutable.fromJS([]));
+      actions.highlightSnippets(Immutable.fromJS({
+        count: 0,
+        metadata: [],
+        fullText: []
+      }));
       marks = document.querySelectorAll('mark');
       expect(marks.length).toBe(0);
 
