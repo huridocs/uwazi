@@ -744,6 +744,18 @@
   li:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
+
+  li.snippet-list-item-header {
+    float: left;
+    width: 100%;
+    font-weight: 300;
+    font-style: normal;
+    font-family: $f-special;
+    margin-bottom: 5px;
+    min-width: 30px;
+    line-height: 50px;
+    font-size: $f-size;
+  }
   a {
     min-width: 30px;
     line-height: 50px;
