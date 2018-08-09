@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SnippetList should properly render title snippets with Title label as heading 1`] = `
+<React.Fragment>
+  <li>
+    <Connect(I18NLink)
+      to="/document/sharedId"
+    >
+      Summary
+    </Connect(I18NLink)>
+  </li>
+  <li>
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "title <b>snippet m1</b> found",
+        }
+      }
+      key="0"
+    />
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "title <b>snippet m2</b> found",
+        }
+      }
+      key="1"
+    />
+  </li>
+</React.Fragment>
+`;
+
+exports[`SnippetList should render all metadata snippets with the field label as heading 1`] = `
+<React.Fragment>
+  <li>
+    <Connect(I18NLink)
+      to="/document/sharedId"
+    >
+      Summary
+    </Connect(I18NLink)>
+  </li>
+  <li>
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "metadata <b>snippet m1</b> found",
+        }
+      }
+      key="0"
+    />
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "metadata <b>snippet m2</b> found",
+        }
+      }
+      key="1"
+    />
+  </li>
+</React.Fragment>
+`;
