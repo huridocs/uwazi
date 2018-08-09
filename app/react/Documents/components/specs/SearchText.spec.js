@@ -2,7 +2,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
-import { I18NLink } from 'app/I18N';
 import { actions as formActions } from 'react-redux-form';
 import { browserHistory } from 'react-router';
 import { SearchText } from '../SearchText.js';
