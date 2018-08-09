@@ -51,8 +51,7 @@ export class SearchText extends Component {
   }
 
   render() {
-    const snippets = this.props.snippets.toJS();
-    const { doc } = this.props;
+    const { doc, snippets } = this.props;
     const documentViewUrl = doc.get('type') === 'document' ?
       `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
     return (
@@ -81,7 +80,7 @@ export class SearchText extends Component {
           }
         </LocalForm>
 
-        {!snippets.count &&
+        {!snippets.get('count') &&
           <div className="blank-state">
             <Icon icon="search" />
             <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>

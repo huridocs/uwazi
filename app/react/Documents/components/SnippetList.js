@@ -24,11 +24,11 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template
     <React.Fragment>
       <li>
         <I18NLink to={documentViewUrl}>
-          { getFieldLabel(fieldSnippets.field, template) }
+          { getFieldLabel(fieldSnippets.get('field'), template) }
         </I18NLink>
       </li>
       <li>
-        {fieldSnippets.texts.map((snippet, index) => (
+        {fieldSnippets.get('texts').map((snippet, index) => (
           <span key={index} dangerouslySetInnerHTML={{ __html: snippet }} />
         ))}
       </li>
@@ -60,12 +60,12 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
       {documentSnippets.map((snippet, index) => (
         <li key={index}>
           <I18NLink
-            onClick={() => scrollToPage(snippet.page)}
-            to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${searchTerm || ''}`}
+            onClick={() => scrollToPage(snippet.get('page'))}
+            to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
           >
             {snippet.page}
           </I18NLink>
-          <span dangerouslySetInnerHTML={{ __html: snippet.text }} />
+          <span dangerouslySetInnerHTML={{ __html: snippet.get('text') }} />
         </li>
       ))}
     </React.Fragment>
@@ -74,27 +74,26 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
 
 DocumentContentSnippets.propTypes = {
   scrollToPage: PropTypes.func.isRequired,
-  documentSnippets: PropTypes.arrayOf(PropTypes.shape({
-    page: PropTypes.number,
-    text: PropTypes.string
-  })).isRequired,
+  documentSnippets: PropTypes.shape({
+    map: PropTypes.func
+  }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   searchTerm: PropTypes.string.isRequired
 };
 
 export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPage, template }) => (
   <ul className="snippet-list">
-    {snippets.metadata.map(fieldSnippets => (
+    {snippets.get('metadata').map(fieldSnippets => (
       <MetadataFieldSnippets
-        key={fieldSnippets.field}
+        key={fieldSnippets.get('field')}
         fieldSnippets={fieldSnippets}
         template={template}
         documentViewUrl={documentViewUrl}
       />
     ))}
-    {snippets.fullText.length ? (
+    {snippets.get('fullText').size ? (
       <DocumentContentSnippets
-        documentSnippets={snippets.fullText}
+        documentSnippets={snippets.get('fullText')}
         documentViewUrl={documentViewUrl}
         scrollToPage={scrollToPage}
         searchTerm={searchTerm}
@@ -109,9 +108,7 @@ SnippetList.propTypes = {
   scrollToPage: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   snippets: PropTypes.shape({
-    count: PropTypes.number,
-    metadata: PropTypes.array,
-    fullText: PropTypes.array
+    get: PropTypes.func
   }).isRequired,
   template: PropTypes.object
 };
