@@ -10,6 +10,7 @@ import { RowList, ItemFooter } from '../Lists';
 import DocumentLanguage from '../DocumentLanguage';
 import * as Icon from '../Icon';
 import TemplateLabel from '../TemplateLabel';
+import ItemSnippet from '../ItemSnippet';
 
 describe('Item', () => {
   let component;
@@ -65,13 +66,6 @@ describe('Item', () => {
 
     component.find(RowList.Item).simulate('mouseLeave');
     expect(props.onMouseLeave).toHaveBeenCalled();
-  });
-
-  it('should call onSnippetClick when clicking on the snippet', () => {
-    props.doc = Immutable({ _id: 'id', snippets: [{ text: 'snippet', page: 1 }] });
-    render();
-    component.find('.item-snippet').simulate('click');
-    expect(props.onSnippetClick).toHaveBeenCalled();
   });
 
   it('should include a header if present', () => {
@@ -142,18 +136,22 @@ describe('Item', () => {
   });
 
   describe('when doc have snippets', () => {
-    it('should render the first snippet of the document if exists', () => {
+    it('should render ItemSnippet including doc, snippets and onSnippetClick props', () => {
       props.doc = Immutable({
         type: 'entity',
         icon: { _id: 'icon', type: 'Icons' },
         title: 'doc title',
         template: 'templateId',
         creationDate: 123,
-        snippets: [{ text: '<span>snippet!</span>', page: 1 }]
+        snippets: {
+          count: 1,
+          metadata: [],
+          fullText: [{ text: '<span>snippet!</span>', page: 1 }]
+        }
       });
 
       render();
-      expect(component.find('.item-snippet').html()).toContain('<span>snippet!</span>');
+      expect(component.find(ItemSnippet)).toMatchSnapshot();
     });
   });
 

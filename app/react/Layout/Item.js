@@ -10,7 +10,6 @@ import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
 import ItemSnippet from './ItemSnippet';
-import t from '../I18N/t';
 
 export class Item extends Component {
   getSearchSnipett(doc) {
