@@ -1,16 +1,16 @@
+import { actions as formActions } from 'react-redux-form';
 import React from 'react';
 
+import { actions } from 'app/BasicReducer';
+import { isClient } from 'app/utils';
+import { setReferences } from 'app/Viewer/actions/referencesActions';
 import RouteHandler from 'app/App/RouteHandler';
-import {setReferences} from 'app/Viewer/actions/referencesActions';
 import Viewer from 'app/Viewer/components/Viewer';
-import {actions} from 'app/BasicReducer';
-import {actions as formActions} from 'react-redux-form';
-
-import {requestViewerState, setViewerState} from './actions/routeActions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
-export default class ViewDocument extends RouteHandler {
+import { requestViewerState, setViewerState } from './actions/routeActions';
 
+class ViewDocument extends RouteHandler {
   constructor(props, context) {
     //Force client state even if is rendered from server to force the pdf character count process
     RouteHandler.renderedFromServer = props.renderedFromServer || false;
@@ -18,8 +18,8 @@ export default class ViewDocument extends RouteHandler {
     super(props, context);
   }
 
-  static requestState({documentId, lang}, query, globalResources) {
-    return requestViewerState(documentId, lang, globalResources);
+  static requestState(routeParams, query, globalResources) {
+    return requestViewerState(Object.assign(routeParams, { raw: routeParams.raw || !isClient }), globalResources);
   }
 
   componentWillUnmount() {
@@ -45,6 +45,7 @@ export default class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.unset('viewer/templates'));
     this.context.store.dispatch(actions.unset('viewer/thesauris'));
     this.context.store.dispatch(actions.unset('viewer/relationTypes'));
+    this.context.store.dispatch(actions.unset('viewer/rawText'));
     this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
@@ -56,6 +57,18 @@ export default class ViewDocument extends RouteHandler {
   }
 
   render() {
-    return <Viewer page={Number(this.props.location.query.page)} searchTerm={this.props.location.query.searchTerm}/>;
+    return (
+      <Viewer
+        raw={this.props.params.raw || !isClient}
+        page={Number(this.props.location.query.page)}
+        searchTerm={this.props.location.query.searchTerm}
+      />
+    );
   }
 }
+
+ViewDocument.defaultProps = {
+  params: {}
+};
+
+export default ViewDocument;
