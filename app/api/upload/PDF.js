@@ -1,5 +1,7 @@
 import PDFJS from 'pdfjs-dist';
 
+import { spawn } from 'child-process-promise';
+
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
@@ -19,6 +21,11 @@ export default class PDF extends EventEmitter {
     this.logFile = `${__dirname}/../../../log/${basename(originalName)}.log`;
     this.filepath = filepath;
     this.optimizedPath = filepath;
+  }
+
+  async extractFormatted() {
+    const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
+    return result.stdout.split('\f');
   }
 
   extractText() {
@@ -76,8 +83,11 @@ export default class PDF extends EventEmitter {
   }
 
   convert() {
-    return this.extractText()
+    return Promise.all([
+      this.extractText(),
+      this.extractFormatted()
+    ])
     .catch(() => Promise.reject({ error: 'conversion_error' }))
-    .then(fullText => ({ fullText }));
+    .then(([fullText, formatted]) => ({ fullText, formatted }));
   }
 }

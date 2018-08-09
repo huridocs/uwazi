@@ -9,16 +9,13 @@ describe('PDF', () => {
       pdf = new PDFObject(filepath);
     });
 
-    it('should extract the text of the pdf by page, every word on every page should have appended the page number in between [[]]', (done) => {
-      pdf.extractText()
-      .then((text) => {
-        const lines = text.split(/\f/);
-        expect(lines[0]).toBe('Page[[1]] 1[[1]]');
-        expect(lines[1]).toBe('Page[[2]] 2[[2]]');
-        expect(lines[2]).toBe('Page[[3]] 3[[3]]');
-        done();
-      })
-      .catch(done.fail);
+    it('should extract the text of the pdf by page, every word on every page should have appended the page number in between [[]]', async () => {
+      const text = await pdf.extractText();
+      const lines = text.split(/\f/);
+
+      expect(lines[0]).toBe('Page[[1]] 1[[1]]');
+      expect(lines[1]).toBe('Page[[2]] 2[[2]]');
+      expect(lines[2]).toBe('Page[[3]] 3[[3]]');
     });
   });
 
@@ -28,16 +25,20 @@ describe('PDF', () => {
       pdf = new PDFObject(filepath);
     });
 
-    it('should optimize and extract html and text', (done) => {
-      pdf.convert()
-      .then((conversion) => {
-        const lines = conversion.fullText.split(/\f/);
+    it('should extract text with apended page in every word for elastic search purposes', async () => {
+      const conversion = await pdf.convert();
+      const lines = conversion.fullText.split(/\f/);
 
-        expect(lines[0]).toBe('Page[[1]] 1[[1]]');
-        //expect(conversion.fullText).toMatch('Page\[\[1\]\] 1');
-        done();
-      })
-      .catch(done.fail);
+      expect(lines[0]).toBe('Page[[1]] 1[[1]]');
+    });
+
+    it('should extract pseudo formated plain text per page', async () => {
+      const conversion = await pdf.convert();
+      const pages = conversion.formatted;
+
+      expect(pages[0]).toMatch('Page 1');
+      expect(pages[1]).toMatch('Page 2');
+      expect(pages[2]).toMatch('Page 3');
     });
 
     describe('when there is a conversion error', () => {
