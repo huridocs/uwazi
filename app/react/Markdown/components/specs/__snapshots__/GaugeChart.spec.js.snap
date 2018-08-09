@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GaugeChart Markdown component should allow personalizing values 1`] = `
+exports[`GaugeChart Markdown component should allow rendering value with prefix, suffix, and personalizing values 1`] = `
 <div
   className="GaugeChart custom-class"
 >
@@ -74,6 +74,28 @@ exports[`GaugeChart Markdown component should allow personalizing values 1`] = `
           key="1"
         />
       </Pie>
+      <g>
+        <text
+          dy={-1}
+          fill="#f00"
+          style={
+            Object {
+              "fontSize": "150px",
+            }
+          }
+          textAnchor="middle"
+          x="50%"
+          y={300}
+        >
+          Pre 
+          <div
+            dataset="custom dataset"
+            key=".1"
+            property="progress"
+          />
+           Suf
+        </text>
+      </g>
     </PieChart>
   </ResponsiveContainer>
 </div>
@@ -173,9 +195,7 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
           textAnchor="middle"
           x="50%"
           y={110}
-        >
-          4
-        </text>
+        />
       </g>
     </PieChart>
   </ResponsiveContainer>

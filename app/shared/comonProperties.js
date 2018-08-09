@@ -28,6 +28,21 @@ const comonProperties = (templates, documentTypes = []) => {
   return properties;
 };
 
+const comonFilters = (templates, relationTypes, documentTypes = []) => {
+  const result = [];
+  comonProperties(templates, documentTypes)
+  .filter(prop => prop.filter || prop.type === 'relationshipfilter')
+  .forEach((property) => {
+    if (property.type === 'relationshipfilter') {
+      const relationType = relationTypes.find(template => template._id.toString() === property.relationType.toString());
+      property.filters = relationType.properties.filter(prop => prop.filter);
+    }
+    result.push(property);
+  });
+
+  return result;
+};
+
 const defaultFilters = templates => templates.reduce((filters, template) => {
   template.properties.forEach((prop) => {
     if (prop.filter && prop.defaultfilter && !filters.find(_prop => sameProperty(prop, _prop))) {
@@ -44,13 +59,14 @@ const allUniqueProperties = templates => templates.reduce((filters, template) =>
     }
   });
   return filters;
-}, []);
+}, []).filter(p => p.type !== 'relationshipfilter');
 
 const textFields = templates => allUniqueProperties(templates)
 .filter(property => property.type === 'text' || property.type === 'markdown');
 
 export default {
   comonProperties,
+  comonFilters,
   defaultFilters,
   allUniqueProperties,
   textFields

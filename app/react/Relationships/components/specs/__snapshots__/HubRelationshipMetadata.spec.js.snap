@@ -31,6 +31,17 @@ exports[`HubRelationshipMetadata should render the metadata correctly 1`] = `
         Value B
       </dd>
     </dl>
+    <dl
+      className="item-property-default"
+      key="propertyC"
+    >
+      <dt>
+        labelC
+      </dt>
+      <dd>
+        Value C1, Value C2
+      </dd>
+    </dl>
   </div>
 </div>
 `;
@@ -62,6 +73,17 @@ exports[`HubRelationshipMetadata should render the metadata correctly when text 
       </dt>
       <dd>
         Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyC"
+    >
+      <dt>
+        labelC
+      </dt>
+      <dd>
+        Value C1, Value C2
       </dd>
     </dl>
     <dl

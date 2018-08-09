@@ -11,6 +11,7 @@ const template1 = db.id();
 const template2 = db.id();
 const templateMetadata1 = db.id();
 const templateMetadata2 = db.id();
+const relationType = db.id();
 
 export default {
   entities: [
@@ -21,6 +22,7 @@ export default {
     { _id: db.id(), sharedId: 'unpublished', template, language: 'es', title: 'unpublished', published: false, user: userId },
     { _id: db.id(), sharedId: 'shared3', template: template1, language: 'en', title: 'template1 title en', published: true, user: userId },
     { _id: db.id(), sharedId: 'shared3', template: template1, language: 'es', title: 'template1 title es', published: true, user: userId },
+    { _id: db.id(), sharedId: 'shared4', template: template1, language: 'en', title: 'shared 4template1 title en', published: true, user: userId },
     //metadata filters
     {
       _id: db.id(),
@@ -120,28 +122,33 @@ export default {
   ],
   templates: [
     { _id: template, properties: [] },
-    { _id: template1, properties: [] },
+    {
+      _id: template1,
+      properties: [
+        { name: 'status_relationship_filter', type: 'relationshipfilter', relationType }
+      ]
+    },
     { _id: template2, properties: [] },
     {
       _id: templateMetadata1,
       properties: [
-        { name: 'field1', type: 'text' },
-        { name: 'field2', type: 'text' },
-        { name: 'select1', type: 'select' },
-        { name: 'multiselect1', type: 'multiselect' },
-        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'] },
-        { name: 'city_geolocation', type: 'geolocation' }
+        { name: 'field1', type: 'text', filter: true },
+        { name: 'field2', type: 'text', filter: true },
+        { name: 'select1', type: 'select', filter: true },
+        { name: 'multiselect1', type: 'multiselect', filter: true },
+        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
+        { name: 'city_geolocation', type: 'geolocation', filter: true }
       ]
     },
     {
       _id: templateMetadata2,
       properties: [
-        { name: 'field1', type: 'text' },
-        { name: 'field3', type: 'text' },
-        { name: 'select1', type: 'select' },
-        { name: 'multiselect1', type: 'multiselect' },
-        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'] },
-        { name: 'country_geolocation', type: 'geolocation' }
+        { name: 'field1', type: 'text', filter: true },
+        { name: 'field3', type: 'text', filter: true },
+        { name: 'select1', type: 'select', filter: true },
+        { name: 'multiselect1', type: 'multiselect', filter: true },
+        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
+        { name: 'country_geolocation', type: 'geolocation', filter: true }
       ]
     }
   ],
@@ -163,6 +170,25 @@ export default {
           }
         ]
       }
+  ],
+  relationtypes: [
+    {
+      _id: relationType,
+      name: 'relation',
+      properties: [
+        { name: 'status', type: 'select', filter: true },
+        { name: 'description', type: 'text', filter: true }
+      ]
+    }
+    ],
+  connections: [
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
+    { entity: 'shared4', template: 'anotherone', metadata: { status: 'open', description: 'red' }, language: 'en' },
+    { entity: 'shared3', template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'closed', description: 'yellow' }, language: 'en' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'es' },
+    { entity: 'shared3', template: relationType, metadata: { status: 'open', description: 'red' }, language: 'es' },
+    { entity: batmanFinishes, template: relationType, metadata: { status: 'closed', description: 'yellow' }, language: 'es' },
   ]
 };
 

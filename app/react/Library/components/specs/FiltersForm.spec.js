@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 import { Form } from 'react-redux-form';
-import FormGroup from 'app/DocumentForm/components/FormGroup';
 
+import FiltersFromProperties from '../FiltersFromProperties';
 
 import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
 
@@ -42,7 +42,7 @@ describe('FiltersForm', () => {
           ]
         }
       ]),
-      documentTypes: Immutable({}),
+      documentTypes: Immutable([]),
       templates: Immutable([]),
       aggregations: Immutable({
         all: {
@@ -79,8 +79,8 @@ describe('FiltersForm', () => {
 
   describe('render()', () => {
     it('should render diferent type fileds', () => {
-      const fields = component.find(FormGroup);
-      expect(fields.length).toBe(6);
+      const fields = component.find(FiltersFromProperties);
+      expect(fields).toMatchSnapshot();
     });
   });
 

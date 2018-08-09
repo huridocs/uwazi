@@ -8,9 +8,10 @@ import Loader from 'app/components/Elements/Loader';
 import markdownDatasets from '../markdownDatasets';
 
 export const GaugeChartComponent = (props) => {
-  const { label, value, max, height, classname, colors } = props;
+  const { dataset, property, value, max, height, classname, colors, children } = props;
   let output = <Loader/>;
 
+  const propedChildren = React.Children.map(children, c => React.isValidElement(c) ? React.cloneElement(c, { dataset, property }) : c);
 
   if (value !== null) {
     const formattedData = [{ label: 'progress', results: value }, { label: '', results: max - value }];
@@ -33,17 +34,10 @@ export const GaugeChartComponent = (props) => {
               formattedData.map((entry, index) => <Cell key={index} fill={sliceColors[index % sliceColors.length]} />)
             }
           </Pie>
-          {label === 'true' && (
+          {propedChildren.length && (
             <g>
-              <text
-                x="50%"
-                y={height}
-                dy={-1}
-                style={{ fontSize: `${height / 2}px` }}
-                textAnchor="middle"
-                fill={sliceColors[0]}
-              >
-                { value }
+              <text x="50%" y={height} dy={-1} style={{ fontSize: `${height / 2}px` }} textAnchor="middle" fill={sliceColors[0]}>
+                {propedChildren}
               </text>
             </g>
           )}
@@ -56,19 +50,26 @@ export const GaugeChartComponent = (props) => {
 };
 
 GaugeChartComponent.defaultProps = {
+  dataset: undefined,
   classname: '',
   colors: '#000099,#ccc',
   value: null,
-  label: 'true',
+  children: '',
 };
 
 GaugeChartComponent.propTypes = {
+  dataset: PropTypes.string,
+  property: PropTypes.string.isRequired,
   classname: PropTypes.string,
   colors: PropTypes.string,
   value: PropTypes.number,
   max: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  label: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+    PropTypes.string,
+  ]),
 };
 
 export const mapStateToProps = (state, props) => ({

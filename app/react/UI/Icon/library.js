@@ -25,6 +25,7 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
 import { faFile } from '@fortawesome/free-solid-svg-icons/faFile';
+import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
 import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
 import { faGavel } from '@fortawesome/free-solid-svg-icons/faGavel';
@@ -89,6 +90,7 @@ const icons = {
   faExchangeAlt,
   faExclamationTriangle,
   faFile,
+  faFilter,
   faFilePdf,
   faFont,
   faGavel,
@@ -132,4 +134,3 @@ export const loadIcons = () => {
 };
 
 export const iconNames = Object.keys(icons).map(key => icons[key].iconName);
-

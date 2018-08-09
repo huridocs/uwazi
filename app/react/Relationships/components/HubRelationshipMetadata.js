@@ -22,7 +22,7 @@ const conformQuote = text => (
 const conformDl = ({ label, name, value }) => (
   <dl className="item-property-default" key={name}>
     <dt>{label}</dt>
-    <dd>{value}</dd>
+    <dd>{Array.isArray(value) ? value.map(v => v.value).join(', ') : value}</dd>
   </dl>
 );
 

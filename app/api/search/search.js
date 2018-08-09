@@ -1,27 +1,25 @@
-import { comonProperties, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
+import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
 import { detect as detectLanguage } from 'shared/languages';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
-
+import relationtypes from 'api/relationtypes';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
 
+
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
     const property = properties.find(p => p.name === propertyName);
-    let type = 'text';
+    let { type } = property;
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
     if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
-    }
-    if (property.type === 'nested') {
-      type = 'nested';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
@@ -48,13 +46,8 @@ function agregationProperties(properties) {
   .filter(property => property.type === 'select' ||
     property.type === 'multiselect' ||
     property.type === 'relationship' ||
-    property.type === 'nested')
-  .map((property) => {
-    if (property.type === 'nested') {
-      return { name: property.name, nested: true, nestedProperties: property.nestedProperties };
-    }
-    return { name: property.name, nested: false, content: property.content };
-  });
+    property.type === 'relationshipfilter' ||
+    property.type === 'nested');
 }
 
 function snippetsFromSearchHit(hit) {
@@ -125,8 +118,8 @@ const search = {
       ]);
     }
 
-    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get()])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries]) => {
+    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get(), relationtypes.get()])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes]) => {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
@@ -156,7 +149,7 @@ const search = {
 
       const allTemplates = templates.map(t => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      let properties = comonProperties(templates, filteringTypes);
+      let properties = comonFilters(templates, relationTypes, filteringTypes);
       properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
 
       if (query.allAggregations) {
@@ -188,7 +181,17 @@ const search = {
           if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
             aggregation.buckets = Object.keys(aggregation.buckets).map(key => Object.assign({ key }, aggregation.buckets[key]));
           }
-          response.aggregations.all[aggregationKey] = aggregation;
+          if (aggregation.buckets) {
+            response.aggregations.all[aggregationKey] = aggregation;
+          }
+          if (!aggregation.buckets) {
+            Object.keys(aggregation).forEach((key) => {
+              if (aggregation[key].buckets) {
+                const buckets = aggregation[key].buckets.map(option => Object.assign({ key: option.key }, option.filtered.total));
+                response.aggregations.all[key] = { doc_count: aggregation[key].doc_count, buckets };
+              }
+            });
+          }
         });
 
         return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
