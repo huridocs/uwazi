@@ -36,7 +36,7 @@ describe('FullTextSearch zone', () => {
         expect(snippet.toLowerCase()).toContain('robin');
         return nightmare.evaluate(() => document.querySelectorAll(
           '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item'
-        )[1].innerText).end();
+        )[1].innerText);
       })
       .then((snippet) => {
         expect(snippet.toLowerCase()).toContain('batman');
@@ -60,7 +60,7 @@ describe('FullTextSearch zone', () => {
       expect(snippet.toLowerCase()).toContain('joker');
       return nightmare.evaluate(() => document.querySelectorAll(
         '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul.snippet-list > li.snippet-list-item'
-      )[1].innerText).end();
+      )[1].innerText);
     })
     .then((snippet) => {
       expect(snippet.toLowerCase()).toContain('joker');
