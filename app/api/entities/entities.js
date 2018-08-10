@@ -370,7 +370,8 @@ export default {
   },
 
   async getRawPage(sharedId, language, pageNumber) {
-
+    const entity = await model.get({ sharedId, language }, { [`formattedPlainTextPages.${pageNumber}`]: true });
+    return entity[0].formattedPlainTextPages[pageNumber];
   },
 
   removeValuesFromEntities(properties, template) {

@@ -77,6 +77,21 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    describe('get_raw_page', () => {
+      it('should return getRawPage', async () => {
+        spyOn(entities, 'getRawPage').and.returnValue(Promise.resolve('page text'));
+
+        const request = {
+          query: { sharedId: 'sharedId', pageNumber: 2 },
+          language: 'lang'
+        };
+
+        const response = await routes.get('/api/entities/get_raw_page', request);
+        expect(entities.getRawPage).toHaveBeenCalledWith('sharedId', 'lang', 2);
+        expect(response.data).toBe('page text');
+      });
+    });
+
     describe('/entities/multipleupdate', () => {
       beforeEach(() => {
         req = {
