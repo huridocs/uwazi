@@ -50,7 +50,7 @@ describe('Viewer routeActions', () => {
         expect(state.relationTypes).toEqual(relationTypes.rows);
 
         expect(entitiesApi.getRawPage).toHaveBeenCalledWith('documentId', 3);
-        expect(state.documentViewer.rawPage).toEqual('text');
+        expect(state.documentViewer.rawText).toEqual('text');
         done();
       })
       .catch(done.fail);

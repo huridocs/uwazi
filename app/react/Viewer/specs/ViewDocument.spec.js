@@ -4,9 +4,9 @@ import { shallow } from 'enzyme';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Viewer from 'app/Viewer/components/Viewer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
+import * as utils from 'app/utils';
 
 import * as routeActions from '../actions/routeActions';
-import * as utils from 'app/utils';
 
 describe('ViewDocument', () => {
   let component;
@@ -43,14 +43,14 @@ describe('ViewDocument', () => {
   });
 
   it('should pass down raw prop', () => {
-    props.params = { raw: true };
+    props.location = { query: { raw: true } };
     render();
     expect(component.find(Viewer).props().raw).toBe(true);
   });
 
   describe('when on server', () => {
     it('should always pass raw true', () => {
-      props.params = { raw: false };
+      props.location = { query: { raw: false } };
       utils.isClient = false;
       render();
       expect(component.find(Viewer).props().raw).toBe(true);
@@ -59,14 +59,16 @@ describe('ViewDocument', () => {
 
   describe('static requestState', () => {
     it('should call on requestViewerState', () => {
-      ViewDocument.requestState({ documentId: 'documentId', lang: 'es', raw: true }, null, 'globalResources');
+      const query = { raw: true, page: 4 };
+      ViewDocument.requestState({ documentId: 'documentId', lang: 'es' }, query, 'globalResources');
 
-      expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'documentId', lang: 'es', raw: true }, 'globalResources');
+      expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'documentId', lang: 'es', raw: true, page: 4 }, 'globalResources');
     });
 
     it('should modify raw to true if is server side rendered', () => {
       utils.isClient = false;
-      ViewDocument.requestState({ documentId: 'documentId', lang: 'es', raw: false }, null, 'globalResources');
+      const query = { raw: false };
+      ViewDocument.requestState({ documentId: 'documentId', lang: 'es' }, query, 'globalResources');
       expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'documentId', lang: 'es', raw: true }, 'globalResources');
     });
   });

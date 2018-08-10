@@ -34,12 +34,6 @@ export default class Library extends RouteHandler {
     wrapDispatch(this.context.store.dispatch, 'library')(enterLibrary());
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.location.query.q !== this.props.location.query.q) {
-      this.superComponentWillReceiveProps(nextProps);
-    }
-  }
-
   render() {
     return (
       <LibraryLayout>

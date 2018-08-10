@@ -18,8 +18,8 @@ class ViewDocument extends RouteHandler {
     super(props, context);
   }
 
-  static requestState(routeParams, query, globalResources) {
-    return requestViewerState(Object.assign(routeParams, { raw: routeParams.raw || !isClient }), globalResources);
+  static requestState(routeParams, query = {}, globalResources) {
+    return requestViewerState({ ...routeParams, raw: query.raw || !isClient, page: query.page }, globalResources);
   }
 
   componentWillUnmount() {
@@ -31,14 +31,6 @@ class ViewDocument extends RouteHandler {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }
   }
-
-  //
-  componentWillReceiveProps(props) {
-    if (props.params.documentId !== this.props.params.documentId) {
-      return super.componentWillReceiveProps(props);
-    }
-  }
-  //
 
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
@@ -57,9 +49,10 @@ class ViewDocument extends RouteHandler {
   }
 
   render() {
+    const { query = {} } = this.props.location;
     return (
       <Viewer
-        raw={this.props.params.raw || !isClient}
+        raw={query.raw || !isClient}
         page={Number(this.props.location.query.page)}
         searchTerm={this.props.location.query.searchTerm}
       />

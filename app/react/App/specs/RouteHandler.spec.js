@@ -78,6 +78,14 @@ describe('RouteHandler', () => {
   });
 
   describe('componentWillReceiveProps', () => {
+    describe('when query change', () => {
+       it('should request the clientState', () => {
+        spyOn(instance, 'getClientState');
+        instance.componentWillReceiveProps({ params: { id: '456' }, location: { pathname: '/es', query: 'newQuery' } });
+        expect(instance.getClientState).toHaveBeenCalledWith({ params: { id: '456' }, location: { pathname: '/es', query: 'newQuery'} });
+      });
+    });
+
     describe('when params change', () => {
       it('should request the clientState', () => {
         spyOn(instance, 'getClientState');
@@ -95,7 +103,7 @@ describe('RouteHandler', () => {
     describe('when params are the same', () => {
       it('should NOT request the clientState', () => {
         spyOn(instance, 'getClientState');
-        instance.componentWillReceiveProps({ params: routeParams });
+        instance.componentWillReceiveProps({ params: routeParams, location });
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });

@@ -1,36 +1,33 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import { Link } from 'react-router';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import {bindActionCreators} from 'redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
+import { ConnectionsList } from 'app/ConnectionsList';
+import { CreateConnectionPanel } from 'app/Connections';
+import { RelationshipsFormButtons } from 'app/Relationships';
+import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
+import { actions } from 'app/BasicReducer';
+import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import ContextMenu from 'app/ContextMenu';
-import {actions} from 'app/BasicReducer';
+import Footer from 'app/App/Footer';
+import Marker from 'app/Viewer/utils/Marker';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
+import ShowIf from 'app/App/ShowIf';
 
-import {loadDefaultViewerMenu, loadTargetDocument} from '../actions/documentActions';
-import {openPanel} from '../actions/uiActions';
-import {addReference} from '../actions/referencesActions';
-import {selectDoc} from '../selectors';
-import SourceDocument from './SourceDocument';
+import { addReference } from '../actions/referencesActions';
+import { loadDefaultViewerMenu, loadTargetDocument } from '../actions/documentActions';
+import { openPanel } from '../actions/uiActions';
+import { selectDoc } from '../selectors';
+import ConfirmCloseForm from './ConfirmCloseForm';
 import TargetDocument from './TargetDocument';
-import {CreateConnectionPanel} from 'app/Connections';
 import ViewMetadataPanel from './ViewMetadataPanel';
-
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
-import ConfirmCloseForm from './ConfirmCloseForm';
-import Footer from 'app/App/Footer';
-import ShowIf from 'app/App/ShowIf';
-import {TemplateLabel, Icon as PropertyIcon} from 'app/Layout';
-import Marker from 'app/Viewer/utils/Marker';
-
-import {ConnectionsList} from 'app/ConnectionsList';
-import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
-import {RelationshipsFormButtons} from 'app/Relationships';
-import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 
 export class Viewer extends Component {
-
   componentWillMount() {
     this.context.store.dispatch(openPanel('viewMetadataPanel'));
     // TEST!!!
@@ -45,7 +42,7 @@ export class Viewer extends Component {
   }
 
   render() {
-    const {doc, sidepanelTab} = this.props;
+    const { doc, sidepanelTab } = this.props;
 
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
@@ -67,16 +64,19 @@ export class Viewer extends Component {
               <PropertyIcon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
               <h1 className="item-name">{doc.get('title')}</h1>
               <TemplateLabel template={doc.get('template')}/>
+              <Link to="/en/document/669dcbff73n?raw=true">raw</Link>
             </div>
           </div>
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
-              <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
+              <pre>
+                {this.props.pageText}
+              </pre>
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
-              <ConnectionsList hideFooter={true} searchCentered={true} />
+              <ConnectionsList hideFooter searchCentered />
             </ShowIf>
             <TargetDocument />
             <Footer/>
@@ -84,10 +84,12 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel storeKey={'documentViewer'} searchTerm={this.props.searchTerm}/>
-        <CreateConnectionPanel containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
-                               onCreate={this.props.addReference}
-                               onRangedConnect={this.props.loadTargetDocument} />
+        <ViewMetadataPanel storeKey="documentViewer" searchTerm={this.props.searchTerm}/>
+        <CreateConnectionPanel
+          containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
+          onCreate={this.props.addReference}
+          onRangedConnect={this.props.loadTargetDocument}
+        />
 
         <ShowIf if={sidepanelTab === 'connections'}>
           <RelationshipMetadata />
@@ -103,10 +105,10 @@ export class Viewer extends Component {
           </div>
         </ShowIf>
 
-        <ContextMenu align="bottom" overrideShow={true} show={!this.props.panelIsOpen}>
+        <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
           <ViewerDefaultMenu/>
         </ContextMenu>
-        <ContextMenu align="center" overrideShow={true} show={this.props.showTextSelectMenu}>
+        <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
           <ViewerTextSelectedMenu/>
         </ContextMenu>
       </div>
@@ -136,9 +138,10 @@ Viewer.contextTypes = {
 
 
 const mapStateToProps = (state) => {
-  const {documentViewer} = state;
-  let uiState = documentViewer.uiState.toJS();
+  const { documentViewer } = state;
+  const uiState = documentViewer.uiState.toJS();
   return {
+    pageText: documentViewer.rawText,
     doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
@@ -149,8 +152,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({addReference, loadTargetDocument}, dispatch);
-};
+const mapDispatchToProps = dispatch => bindActionCreators({ addReference, loadTargetDocument }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Viewer);

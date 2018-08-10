@@ -81,7 +81,7 @@ class RouteHandler extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (props.params !== this.props.params) {
+    if (props.params !== this.props.params || props.location.query !== this.props.location.query) {
       this.emptyState();
       this.setLocale(props);
       this.getClientState(props);

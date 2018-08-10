@@ -15,12 +15,12 @@ export function requestViewerState({ documentId, raw, page }, globalResources) {
     relationships.requestState(documentId, globalResources.templates),
     raw ? entitiesAPI.getRawPage(documentId, page) : ''
   ])
-  .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawPage]) => ({
+  .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => ({
     documentViewer: {
       doc,
       references,
       relationTypes,
-      rawPage,
+      rawText,
     },
     relationships: {
       list: {
