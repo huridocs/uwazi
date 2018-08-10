@@ -117,6 +117,7 @@ function handleRoute(res, renderProps, req) {
           Promise.resolve({ json: { languages: [], private: settingsData.private } }),
           translationsApi.get().then(onlySystemTranslations),
           Promise.resolve({ json: { rows: [] } }),
+          Promise.resolve({ json: { rows: [] } }),
           Promise.resolve({ json: { rows: [] } })
         ]);
       }
