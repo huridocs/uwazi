@@ -41,7 +41,7 @@ describe('Private instance', () => {
       .waitToClick(selectors.settingsView.logoutButton)
       .url()
       .then((url) => {
-        expect(url).toBe(`${config.url}/en/login`);
+        expect(url).toBe(`${config.host}/login`);
         done();
       })
       .catch(catchErrors(done));
