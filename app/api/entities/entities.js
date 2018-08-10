@@ -369,6 +369,10 @@ export default {
     .then(() => docs));
   },
 
+  async getRawPage(sharedId, language, pageNumber) {
+
+  },
+
   removeValuesFromEntities(properties, template) {
     const query = { template, $or: [] };
     const changes = {};

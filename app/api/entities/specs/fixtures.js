@@ -19,7 +19,25 @@ const hub5 = db.id();
 
 export default {
   entities: [
-    { _id: batmanFinishesId, sharedId: 'shared', type: 'entity', template: templateId, language: 'en', title: 'Batman finishes', published: true, metadata: { property1: 'value1' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
+    {
+      _id: batmanFinishesId,
+      sharedId: 'shared',
+      type: 'entity',
+      template: templateId,
+      language: 'en',
+      title: 'Batman finishes',
+      published: true,
+      formattedPlainTextPages: {
+        1: 'page 1',
+        2: 'page 2',
+      },
+      metadata: {
+        property1: 'value1'
+      },
+      file: {
+        filename: '8202c463d6158af8065022d9b5014cc1.pdf'
+      }
+    },
     { _id: db.id(), sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }] },
     { _id: db.id(), sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
     { _id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: { property1: 'value1' } },
