@@ -244,10 +244,7 @@ export default {
         return true;
       }
 
-      if (p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`) {
-        return true;
-      }
-      return false;
+      return (p.get('showInCard') && !p.get('preview')) || sortedProperty === `metadata.${p.get('name')}`;
     });
   }
 };

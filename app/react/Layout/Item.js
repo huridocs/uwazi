@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 
 import { FormatMetadata } from 'app/Metadata';
 import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
+import ItemPreview from 'app/Library/components/ItemPreview';
 
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
@@ -57,6 +58,7 @@ export class Item extends Component {
             <span>{doc[this.props.titleProperty]}</span>
             <DocumentLanguage doc={this.props.doc} />
           </div>
+          <ItemPreview entity={doc}/>
           {Snippet}
           {this.getSearchSnipett(doc)}
         </div>

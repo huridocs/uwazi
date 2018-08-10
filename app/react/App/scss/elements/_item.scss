@@ -246,6 +246,11 @@ $item-padding: 15px;
   font-family: $f-special;
 }
 
+.item-preview {
+  margin: 0 -15px;
+  text-align: center;
+}
+
 .item-snippet {
   display: inline;
   font-size: $f-size-sm;

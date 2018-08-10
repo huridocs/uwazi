@@ -12,6 +12,7 @@ const propertiesSchema = new mongoose.Schema({
   required: Boolean,
   sortable: Boolean,
   showInCard: Boolean,
+  preview: Boolean,
   prioritySorting: Boolean,
   nestedProperties: [String]
 });
@@ -31,5 +32,5 @@ const templateSchema = new mongoose.Schema({
   commonProperties: [commonPropertiesSchema]
 });
 
-let Model = mongoose.model('templates', templateSchema);
+const Model = mongoose.model('templates', templateSchema);
 export default Model;
