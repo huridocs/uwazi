@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
+<div>
+  <Connect(I18NLink)
+    to="url?page=4"
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+  <div>
+    5 / 25
+  </div>
+  <Connect(I18NLink)
+    to="url?page=6"
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+</div>
+`;
+
+exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
+<div>
+  <Connect(I18NLink)
+    to="url?param=value&page=2"
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+  <div>
+    3 / 25
+  </div>
+  <Connect(I18NLink)
+    to="url?param=value&page=4"
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+</div>
+`;
+
+exports[`Paginator when on first page should disable the prev link 1`] = `
+<div>
+  <Connect(I18NLink)
+    className="disabled"
+    rel="nofollow"
+    to="url?page=0"
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+  <div>
+    1 / 25
+  </div>
+  <Connect(I18NLink)
+    to="url?page=2"
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+</div>
+`;
+
+exports[`Paginator when on last page should disable the next link 1`] = `
+<div>
+  <Connect(I18NLink)
+    to="url?page=24"
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+  <div>
+    25 / 25
+  </div>
+  <Connect(I18NLink)
+    className="disabled"
+    rel="nofollow"
+    to="url?page=26"
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </Connect(I18NLink)>
+</div>
+`;

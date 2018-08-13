@@ -53,7 +53,7 @@ class ViewDocument extends RouteHandler {
     return (
       <Viewer
         raw={query.raw || !isClient}
-        page={Number(this.props.location.query.page)}
+        page={Number(this.props.location.query.page || 1)}
         searchTerm={this.props.location.query.searchTerm}
       />
     );

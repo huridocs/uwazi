@@ -1,13 +1,13 @@
+import { fromJS as Immutable } from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
 
+import { CreateConnectionPanel } from 'app/Connections';
+import { Viewer } from 'app/Viewer/components/Viewer';
+import { shallow } from 'enzyme';
+import ContextMenu from 'app/ContextMenu';
+import ShowIf from 'app/App/ShowIf';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import TargetDocument from 'app/Viewer/components/TargetDocument';
-import ContextMenu from 'app/ContextMenu';
-import {CreateConnectionPanel} from 'app/Connections';
-import {Viewer} from 'app/Viewer/components/Viewer';
-import ShowIf from 'app/App/ShowIf';
 
 describe('Viewer', () => {
   let component;
@@ -16,16 +16,16 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({_id: 'id', sharedId: 'sharedId'}),
+      doc: Immutable({ _id: 'id', sharedId: 'sharedId' }),
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {}
     };
   });
 
-  let render = () => {
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
-    component = shallow(<Viewer {...props}/>, {context});
+  const render = () => {
+    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    component = shallow(<Viewer {...props}/>, { context });
   };
 
   it('should add "connections" className when showConnections', () => {
@@ -101,7 +101,7 @@ describe('Viewer', () => {
     it('should loadDefaultViewerMenu()', () => {
       render();
       component.instance().componentDidMount();
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'LOAD_DEFAULT_VIEWER_MENU'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
     });
   });
 });

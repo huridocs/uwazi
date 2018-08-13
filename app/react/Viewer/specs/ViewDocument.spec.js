@@ -48,6 +48,12 @@ describe('ViewDocument', () => {
     expect(component.find(Viewer).props().raw).toBe(true);
   });
 
+  it('should pass down page number 1 as default', () => {
+    props.location = { query: { raw: true } };
+    render();
+    expect(component.find(Viewer).props().page).toBe(1);
+  });
+
   describe('when on server', () => {
     it('should always pass raw true', () => {
       props.location = { query: { raw: false } };

@@ -26,11 +26,12 @@ import TargetDocument from './TargetDocument';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
+import Paginator from './Paginator';
 
 export class Viewer extends Component {
   componentWillMount() {
     this.context.store.dispatch(openPanel('viewMetadataPanel'));
-    // TEST!!!
+    // !!!! TEST!!!
     if (this.props.sidepanelTab === 'connections') {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
@@ -64,7 +65,11 @@ export class Viewer extends Component {
               <PropertyIcon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
               <h1 className="item-name">{doc.get('title')}</h1>
               <TemplateLabel template={doc.get('template')}/>
-              <Link to="/en/document/669dcbff73n?raw=true">raw</Link>
+              <Paginator
+                page={this.props.page}
+                totalPages="10"
+                baseUrl={`/document/${doc.get('sharedId')}?raw=true`}
+              />
             </div>
           </div>
         </ShowIf>
