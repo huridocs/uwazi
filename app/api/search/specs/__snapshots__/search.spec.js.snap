@@ -6,6 +6,7 @@ Array [
   "select1",
   "types",
   "multiselect1",
+  "groupedDictionary",
   "nestedField",
   "nested2",
   "nested1",

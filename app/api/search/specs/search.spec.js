@@ -379,6 +379,10 @@ describe('search', () => {
           expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
 
+          const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
+          expect(template1groupedAggs.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
+          expect(template1groupedAggs.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
+
           const template2Aggs = template2.aggregations.all.multiselect1.buckets;
           expect(template2Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(0);
           expect(template2Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(1);
