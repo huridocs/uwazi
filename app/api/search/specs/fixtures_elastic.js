@@ -50,7 +50,7 @@ export default {
       title: 'metadata1 es',
       published: true,
       user: userId,
-      metadata: { field1: 'joker',  field2: 'bane', city_geolocation: { lat: 1, lon: 2 } },
+      metadata: { field1: 'joker', field2: 'bane', city_geolocation: { lat: 1, lon: 2 } },
     },
     {
       _id: db.id(),
