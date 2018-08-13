@@ -9,6 +9,10 @@ import languages from 'shared/languages';
 describe('search', () => {
   const elasticTesting = instanceElasticTesting('search_index_test');
 
+  beforeAll((done) => {
+    db.clearAllAndLoad({}).then(done);
+  });
+
   describe('index', () => {
     it('should index the document (omitting pdfInfo), without side effects on the sent element', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());
