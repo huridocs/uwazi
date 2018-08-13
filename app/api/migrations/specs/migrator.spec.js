@@ -37,8 +37,9 @@ describe('migrator', () => {
         expect(migration1.up).toHaveBeenCalled();
         expect(migration2.up).toHaveBeenCalled();
         expect(migration10.up).toHaveBeenCalled();
-        expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
-        expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
+
+        expect(migration1.up.mock.invocationCallOrder[0]).toBeLessThan(migration2.up.mock.invocationCallOrder[0]);
+        expect(migration2.up.mock.invocationCallOrder[0]).toBeLessThan(migration10.up.mock.invocationCallOrder[0]);
         done();
       })
       .catch(catchErrors(done));
@@ -64,7 +65,7 @@ describe('migrator', () => {
         expect(migration1.up).not.toHaveBeenCalled();
         expect(migration2.up).toHaveBeenCalled();
         expect(migration10.up).toHaveBeenCalled();
-        expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
+        expect(migration2.up.mock.invocationCallOrder[0]).toBeLessThan(migration10.up.mock.invocationCallOrder[0]);
         done();
       })
       .catch(catchErrors(done));

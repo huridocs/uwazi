@@ -116,8 +116,10 @@ export default {
       settings.get()
     ])
     .then(([_user, _settings]) => {
+      console.log(_user);
       const user = _user[0];
       if (user) {
+        console.log('recovering for user...', user);
         return passwordRecoveriesModel.save({ key, user: user._id })
         .then(() => {
           const mailOptions = { from: '"Uwazi" <no-reply@uwazi.io>', to: email };
