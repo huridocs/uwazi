@@ -17,6 +17,7 @@ const entitySchema = new mongoose.Schema({
     language: String
   },
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
+  totalPages: Number,
   icon: new mongoose.Schema({
     _id: String,
     label: String,

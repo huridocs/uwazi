@@ -63,6 +63,7 @@ export default (app) => {
         ...doc,
         processed: true,
         fullText: conversion.fullText,
+        totalPages: conversion.totalPages,
         formattedPlainTextPages: conversion.formatted,
         file: { ...doc.file, language: languages.detect(Object.values(conversion.fullText).join(''), 'franc') },
         toc: [],
