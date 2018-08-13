@@ -19,10 +19,6 @@ describe('migrator', () => {
     testingDB.disconnect().then(done);
   });
 
-  function expectToHaveBeenCalledBefore(mock1, mock2) {
-    expect(mock1.mock.invocationCallOrder[0]).toBeLessThan(mock2.mock.invocationCallOrder[0]);
-  }
-
   it('should have migrations directory configured', () => {
     expect(migrator.migrationsDir).toBe(path.normalize(`${__dirname}/../migrations/`));
   });
@@ -42,8 +38,8 @@ describe('migrator', () => {
         expect(migration2.up).toHaveBeenCalled();
         expect(migration10.up).toHaveBeenCalled();
 
-        expectToHaveBeenCalledBefore(migration1.up, migration2.up);
-        expectToHaveBeenCalledBefore(migration2.up, migration10.up);
+        expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
+        expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
         done();
       })
       .catch(catchErrors(done));
@@ -69,7 +65,7 @@ describe('migrator', () => {
         expect(migration1.up).not.toHaveBeenCalled();
         expect(migration2.up).toHaveBeenCalled();
         expect(migration10.up).toHaveBeenCalled();
-        expectToHaveBeenCalledBefore(migration2.up, migration10.up);
+        expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
         done();
       })
       .catch(catchErrors(done));
