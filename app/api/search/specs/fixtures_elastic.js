@@ -11,6 +11,7 @@ const template1 = db.id();
 const template2 = db.id();
 const templateMetadata1 = db.id();
 const templateMetadata2 = db.id();
+const countriesDictionaryID = db.id();
 const relationType = db.id();
 
 export default {
@@ -37,6 +38,7 @@ export default {
         field2: 'bane',
         select1: 'selectValue1',
         multiselect1: ['multiValue1', 'multiValue2'],
+        groupedDictionary: ['spainID'],
         nestedField: [{ nested1: ['1', '2', '3'] }],
         city_geolocation: { lat: 1, lon: 2 }
       }
@@ -59,7 +61,7 @@ export default {
       title: 'Metadata2',
       published: true,
       user: userId,
-      metadata: { field1: 'joker', field2: 'penguin', select1: 'selectValue1', multiselect1: ['multiValue1'] }
+      metadata: { field1: 'joker', field2: 'penguin', select1: 'selectValue1', multiselect1: ['multiValue1'], groupedDictionary: ['spainID'] }
     },
     {
       _id: db.id(),
@@ -137,7 +139,8 @@ export default {
         { name: 'select1', type: 'select', filter: true },
         { name: 'multiselect1', type: 'multiselect', filter: true },
         { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
-        { name: 'city_geolocation', type: 'geolocation', filter: true }
+        { name: 'city_geolocation', type: 'geolocation', filter: true },
+        { name: 'groupedDictionary', type: 'multiselect', filter: true, content: countriesDictionaryID },
       ]
     },
     {
@@ -154,6 +157,7 @@ export default {
   ],
     dictionaries: [
       {
+        _id: countriesDictionaryID,
         name: 'Contries Dcitionary',
         values: [
           {
@@ -162,11 +166,19 @@ export default {
           },
           {
             label: 'Chile',
-            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc4'
           },
           {
             label: 'Egypto',
             id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+          },
+          {
+            label: 'Europe',
+            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc5',
+            values: [
+              { label: 'Spain', id: 'spainID' },
+              { label: 'France', id: 'franceID' },
+            ]
           }
         ]
       }
