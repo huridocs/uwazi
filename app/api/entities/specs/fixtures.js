@@ -27,7 +27,7 @@ export default {
       language: 'en',
       title: 'Batman finishes',
       published: true,
-      formattedPlainTextPages: {
+      fullText: {
         1: 'page 1',
         2: 'page 2',
       },
