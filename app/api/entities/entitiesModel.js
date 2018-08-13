@@ -17,7 +17,6 @@ const entitySchema = new mongoose.Schema({
     language: String
   },
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
-  formattedPlainTextPages: { type: mongoose.Schema.Types.Mixed, select: false },
   icon: new mongoose.Schema({
     _id: String,
     label: String,
