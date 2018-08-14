@@ -57,13 +57,17 @@ ItemSnippet.propTypes = {
     metadata: PropTypes.array,
     fullText: PropTypes.array
   }).isRequired,
-  onSnippetClick: PropTypes.func.isRequired,
+  onSnippetClick: PropTypes.func,
   doc: PropTypes.shape({
     template: PropTypes.string
   }).isRequired,
   template: PropTypes.shape({
     get: PropTypes.func
   }).isRequired
+};
+
+ItemSnippet.defaultProps = {
+  onSnippetClick: undefined
 };
 
 export const mapStateToProps = (state, ownProps) => ({
