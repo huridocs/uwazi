@@ -28,8 +28,8 @@ export default {
       title: 'Batman finishes',
       published: true,
       fullText: {
-        1: 'page 1',
-        2: 'page 2',
+        1: 'page[[1]] 1[[1]]',
+        2: 'page[[2]] 2[[2]]',
       },
       metadata: {
         property1: 'value1'

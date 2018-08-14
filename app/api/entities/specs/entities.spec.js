@@ -14,7 +14,6 @@ import fixtures, { batmanFinishesId, templateId, templateChangingNames, syncProp
 describe('entities', () => {
   beforeEach((done) => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
-    spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
@@ -674,7 +673,7 @@ describe('entities', () => {
     });
 
     describe('getRawePage', () => {
-      it('should return the page text', async () => {
+      fit('should return the page text', async () => {
         const pageNumber = 2;
         const page = await entities.getRawPage('shared', 'en', pageNumber);
 
