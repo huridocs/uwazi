@@ -10,6 +10,7 @@ import Viewer from 'app/Viewer/components/Viewer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
 import { requestViewerState, setViewerState } from './actions/routeActions';
+import entitiesAPI from 'app/Entities/EntitiesAPI';
 
 class ViewDocument extends RouteHandler {
   constructor(props, context) {
@@ -30,6 +31,17 @@ class ViewDocument extends RouteHandler {
   componentWillMount() {
     if (this.props.location.query.searchTerm) {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
+    }
+  }
+
+  componentWillReceiveProps(props) {
+    super.componentWillReceiveProps(props);
+    const { query = {} } = props.location;
+    if (query.page !== this.props.location.query.page && query.raw) {
+      entitiesAPI.getRawPage(props.params.documentId, query.page)
+      .then((pageText) => {
+        this.context.store.dispatch(actions.set('viewer/rawText', pageText));
+      });
     }
   }
 
