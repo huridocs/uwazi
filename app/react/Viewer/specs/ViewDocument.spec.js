@@ -8,6 +8,7 @@ import * as utils from 'app/utils';
 
 import * as routeActions from '../actions/routeActions';
 
+
 describe('ViewDocument', () => {
   let component;
   let instance;
@@ -54,6 +55,21 @@ describe('ViewDocument', () => {
     expect(component.find(Viewer).props().page).toBe(1);
   });
 
+  describe('when raw', () => {
+    it('should render link canonical to the not raw version', () => {
+      props.location = { query: { raw: true, page: 1 }, pathname: 'pathname' };
+      render();
+      expect(component.find('link')).toMatchSnapshot();
+    });
+  });
+
+  describe('when not raw', () => {
+    it('should ot render link canonical', () => {
+      props.location = { query: { raw: false, page: 1 }, pathname: 'pathname' };
+      render();
+      expect(component.find('link').length).toBe(0);
+    });
+  });
   describe('when on server', () => {
     it('should always pass raw true', () => {
       props.location = { query: { raw: false } };

@@ -67,7 +67,7 @@ export class Viewer extends Component {
               <TemplateLabel template={doc.get('template')}/>
               <Paginator
                 page={this.props.page}
-                totalPages="10"
+                totalPages={doc.get('totalPages')}
                 baseUrl={`/document/${doc.get('sharedId')}?raw=true`}
               />
             </div>

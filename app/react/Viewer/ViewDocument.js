@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet';
 import { actions as formActions } from 'react-redux-form';
 import React from 'react';
 
@@ -49,13 +50,20 @@ class ViewDocument extends RouteHandler {
   }
 
   render() {
-    const { query = {} } = this.props.location;
+    const { query = {}, pathname } = this.props.location;
+    const raw = query.raw || !isClient;
+    const page = Number(query.page || 1);
     return (
-      <Viewer
-        raw={query.raw || !isClient}
-        page={Number(this.props.location.query.page || 1)}
-        searchTerm={this.props.location.query.searchTerm}
-      />
+      <React.Fragment>
+        <Helmet>
+          {raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}
+        </Helmet>
+        <Viewer
+          raw={raw}
+          page={page}
+          searchTerm={this.props.location.query.searchTerm}
+        />
+      </React.Fragment>
     );
   }
 }
