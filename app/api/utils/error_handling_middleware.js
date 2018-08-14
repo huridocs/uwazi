@@ -2,7 +2,6 @@ import errorLog from 'api/log/errorLog';
 
 export default function (req, res, next) {
   res.error = (error) => {
-
     let result = error;
     if (error instanceof Error) {
       result = error.stack.split('\n');
