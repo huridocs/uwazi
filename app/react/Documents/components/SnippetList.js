@@ -19,22 +19,20 @@ function getFieldLabel(field, template) {
   return field;
 }
 
-export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template}) => {
-  return (
-    <React.Fragment>
-      <li className="snippet-list-item-header metadata-snippet-header">
-        <I18NLink to={documentViewUrl}>
-          { getFieldLabel(fieldSnippets.get('field'), template) }
-        </I18NLink>
+export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template }) => (
+  <React.Fragment>
+    <li className="snippet-list-item-header metadata-snippet-header">
+      <I18NLink to={documentViewUrl}>
+        { getFieldLabel(fieldSnippets.get('field'), template) }
+      </I18NLink>
+    </li>
+    {fieldSnippets.get('texts').map((snippet, index) => (
+      <li key={index} className="snippet-list-item metadata-snippet">
+        <span dangerouslySetInnerHTML={{ __html: snippet }} />
       </li>
-      {fieldSnippets.get('texts').map((snippet, index) => (
-        <li key={index} className="snippet-list-item metadata-snippet">
-          <span dangerouslySetInnerHTML={{ __html: snippet }} />
-        </li>
-      ))}
-    </React.Fragment>
-  );
-};
+    ))}
+  </React.Fragment>
+);
 
 MetadataFieldSnippets.propTypes = {
   fieldSnippets: PropTypes.shape({
@@ -51,26 +49,24 @@ MetadataFieldSnippets.defaultProps = {
   template: undefined
 };
 
-export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => {
-  return (
-    <React.Fragment>
-      <li className="snippet-list-item-header fulltext-snippet-header">
-        {t('System', 'Document contents')}
+export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => (
+  <React.Fragment>
+    <li className="snippet-list-item-header fulltext-snippet-header">
+      {t('System', 'Document contents')}
+    </li>
+    {documentSnippets.map((snippet, index) => (
+      <li key={index} className="snippet-list-item fulltext-snippet">
+        <I18NLink
+          onClick={() => scrollToPage(snippet.get('page'))}
+          to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
+        >
+          {snippet.get('page')}
+        </I18NLink>
+        <span dangerouslySetInnerHTML={{ __html: snippet.get('text') }} />
       </li>
-      {documentSnippets.map((snippet, index) => (
-        <li key={index} className="snippet-list-item fulltext-snippet">
-          <I18NLink
-            onClick={() => scrollToPage(snippet.get('page'))}
-            to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
-          >
-            {snippet.get('page')}
-          </I18NLink>
-          <span dangerouslySetInnerHTML={{ __html: snippet.get('text') }} />
-        </li>
-      ))}
-    </React.Fragment>
-  );
-};
+    ))}
+  </React.Fragment>
+);
 
 DocumentContentSnippets.propTypes = {
   scrollToPage: PropTypes.func.isRequired,
@@ -103,14 +99,22 @@ export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPag
 );
 
 SnippetList.propTypes = {
-  doc: PropTypes.object.isRequired,
+  doc: PropTypes.shape({
+    get: PropTypes.func
+  }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   scrollToPage: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   snippets: PropTypes.shape({
     get: PropTypes.func
   }).isRequired,
-  template: PropTypes.object
+  template: PropTypes.shape({
+    get: PropTypes.func
+  })
+};
+
+SnippetList.defaultProps = {
+  template: undefined
 };
 
 export const mapStateToProps = (state, ownProps) => ({

@@ -50,13 +50,8 @@ function agregationProperties(properties) {
     property.type === 'nested');
 }
 
-function snippetsFromSearchHit(hit) {
-  let snippets = {
-    count: 0,
-    metadata: [],
-    fullText: []
-  };
-
+function metadataSnippetsFromSearchHit(hit) {
+  const defaultSnippets = { count: 0, snippets: [] };
   if (hit.highlight) {
     const metadataHighlights = hit.highlight;
     const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
@@ -65,11 +60,13 @@ function snippetsFromSearchHit(hit) {
         count: foundSnippets.count + fieldSnippets.texts.length,
         snippets: [...foundSnippets.snippets, fieldSnippets]
       };
-    }, { count: 0, snippets: [] });
-    snippets.count += metadataSnippets.count;
-    snippets.metadata = metadataSnippets.snippets;
+    }, defaultSnippets);
+    return metadataSnippets;
   }
+  return defaultSnippets;
+}
 
+function fullTextSnippetsFromSearchHit(hit) {
   if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
     const regex = /\[\[(\d+)\]\]/g;
 
@@ -82,9 +79,24 @@ function snippetsFromSearchHit(hit) {
         page: matches ? Number(matches[1]) : 0
       };
     });
-    snippets.count += fullTextSnippets.length;
-    snippets.fullText = fullTextSnippets;
+    return fullTextSnippets;
   }
+  return [];
+}
+
+function snippetsFromSearchHit(hit) {
+  const snippets = {
+    count: 0,
+    metadata: [],
+    fullText: []
+  };
+
+  const metadataSnippets = metadataSnippetsFromSearchHit(hit);
+  const fullTextSnippets = fullTextSnippetsFromSearchHit(hit);
+  snippets.count = metadataSnippets.count + fullTextSnippets.length;
+  snippets.metadata = metadataSnippets.snippets;
+  snippets.fullText = fullTextSnippets;
+
   return snippets;
 }
 

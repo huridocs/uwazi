@@ -57,15 +57,17 @@ ItemSnippet.propTypes = {
     metadata: PropTypes.array,
     fullText: PropTypes.array
   }).isRequired,
-  onSnippetClick: PropTypes.func,
-  doc: PropTypes.object.isRequired,
-  template: PropTypes.object.isRequired
+  onSnippetClick: PropTypes.func.isRequired,
+  doc: PropTypes.shape({
+    template: PropTypes.string
+  }).isRequired,
+  template: PropTypes.shape({
+    get: PropTypes.func
+  }).isRequired
 };
 
-export const mapStateToProps = (state, ownProps) => {
-  return {
-    template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.template)
-  };
-};
+export const mapStateToProps = (state, ownProps) => ({
+  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.template)
+});
 
 export default connect(mapStateToProps)(ItemSnippet);

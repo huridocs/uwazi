@@ -36,7 +36,7 @@ describe('SnippetList', () => {
   });
 
   it('should scrollToPage when click on a snippet link', () => {
-    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document'});
+    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
     props.scrollToPage = jest.fn();
     render();
     component.find(I18NLink).at(1).simulate('click');
