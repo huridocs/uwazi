@@ -13,7 +13,7 @@ const conformUrl = (baseUrl, page) => baseUrl.match(/\?/g) ? `${baseUrl}&page=${
 const Paginator = ({ page, totalPages, baseUrl }) => (
   <div>
     <I18NLink to={conformUrl(baseUrl, page - 1)} {...disableButton(page, 1)}><Translate>Previous</Translate></I18NLink>
-    <div>{`${page} / ${totalPages}`}</div>
+    <span>{` ${page} / ${totalPages} `}</span>
     <I18NLink to={conformUrl(baseUrl, page + 1)} {...disableButton(page, totalPages)}><Translate>Next</Translate></I18NLink>
   </div>
 );
