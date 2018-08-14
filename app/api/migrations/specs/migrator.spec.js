@@ -37,6 +37,7 @@ describe('migrator', () => {
         expect(migration1.up).toHaveBeenCalled();
         expect(migration2.up).toHaveBeenCalled();
         expect(migration10.up).toHaveBeenCalled();
+
         expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
         expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
         done();
