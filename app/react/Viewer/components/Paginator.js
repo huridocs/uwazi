@@ -19,12 +19,13 @@ const Paginator = ({ page, totalPages, baseUrl }) => (
 );
 
 Paginator.defaultProps = {
-  page: 1
+  page: 1,
+  totalPages: 1
 };
 
 Paginator.propTypes = {
   page: PropTypes.number,
-  totalPages: PropTypes.number.isRequired,
+  totalPages: PropTypes.number,
   baseUrl: PropTypes.string.isRequired,
 };
 

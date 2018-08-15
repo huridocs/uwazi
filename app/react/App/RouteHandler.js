@@ -82,7 +82,8 @@ class RouteHandler extends Component {
   }
 
   componentWillReceiveProps(props) {
-    const sameParams = Object.keys(props.params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
+    const { params = {} } = props;
+    const sameParams = Object.keys(params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
     if (!sameParams) {
       this.emptyState();
       this.setLocale(props);
