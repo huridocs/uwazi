@@ -25,7 +25,7 @@ describe('Viewer', () => {
 
   const render = () => {
     context = { store: { dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<Viewer {...props}/>, { context });
+    component = shallow(<Viewer {...props}/>, { context, disableLifecycleMethods: true });
   };
 
   it('should add "connections" className when showConnections', () => {
@@ -53,11 +53,12 @@ describe('Viewer', () => {
     expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
   });
 
-  it('should render Document and ContextMenu', () => {
+  it('should render Document after component did mount', () => {
     props.panelIsOpen = true;
     props.showTextSelectMenu = false;
 
     render();
+    component.update();
 
     expect(component.find(ContextMenu).length).toBe(2);
     expect(component.find(SourceDocument).length).toBe(1);
@@ -76,6 +77,18 @@ describe('Viewer', () => {
 
     expect(component.find(ContextMenu).at(0).props().show).toBe(true);
     expect(component.find(ContextMenu).at(1).props().show).toBe(true);
+  });
+
+  fit('should render plain text always, if raw is false should render SourceDocument on update', () => {
+    render();
+
+    expect(component.find('pre').length).toBe(1);
+    component.instance().componentDidMount();
+    component.update();
+    expect(component.find(SourceDocument).length).toBe(1);
+
+    component.setProps({ raw: true });
+    expect(component.find('pre').length).toBe(1);
   });
 
   describe('createConnectionPanel', () => {

@@ -1,4 +1,3 @@
-import { Link } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
@@ -22,13 +21,19 @@ import { loadDefaultViewerMenu, loadTargetDocument } from '../actions/documentAc
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
+import Paginator from './Paginator';
+import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
-import Paginator from './Paginator';
 
 export class Viewer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { firstRender: true };
+  }
+
   componentWillMount() {
     this.context.store.dispatch(openPanel('viewMetadataPanel'));
     // !!!! TEST!!!
@@ -40,6 +45,7 @@ export class Viewer extends Component {
   componentDidMount() {
     this.context.store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
+    this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
 
   render() {
@@ -68,7 +74,7 @@ export class Viewer extends Component {
               <Paginator
                 page={this.props.page}
                 totalPages={doc.get('totalPages')}
-                baseUrl={`/document/${doc.get('sharedId')}?raw=true`}
+                baseUrl={`/document/${doc.get('sharedId')}${this.props.raw ? '?raw=true' : ''}`}
               />
             </div>
           </div>
@@ -76,9 +82,10 @@ export class Viewer extends Component {
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
-              <pre>
-                {this.props.pageText}
-              </pre>
+              {this.props.raw || this.state.firstRender ?
+                <pre>{this.props.pageText}</pre> :
+                <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
+              }
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
               <ConnectionsList hideFooter searchCentered />
@@ -124,6 +131,7 @@ export class Viewer extends Component {
 Viewer.propTypes = {
   doc: PropTypes.object,
   searchTerm: PropTypes.string,
+  pageText: PropTypes.string,
   page: PropTypes.number,
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
