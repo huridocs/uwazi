@@ -13,10 +13,6 @@ describe('search', () => {
     db.clearAllAndLoad({}).then(done);
   });
 
-  afterAll((done) => {
-    db.disconnect().then(done);
-  });
-
   describe('index', () => {
     it('should index the document (omitting pdfInfo), without side effects on the sent element', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());
