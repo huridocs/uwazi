@@ -15,7 +15,7 @@ export class ItemPreview extends Component {
       return false;
     }
     return (
-      <div className="item-preview">
+      <div className="preview">
         <MarkdownViewer markdown={value}/>
       </div>
     );

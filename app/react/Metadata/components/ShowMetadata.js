@@ -8,6 +8,7 @@ import { TemplateLabel, DocumentLanguage } from 'app/Layout';
 import { caseTemplate, matterTemplate } from 'app/Timeline/utils/timelineFixedData';
 import ShowIf from 'app/App/ShowIf';
 import TimelineViewer from 'app/Timeline/components/TimelineViewer';
+import ItemPreview from 'app/Library/components/ItemPreview';
 
 import FormatMetadata from '../containers/FormatMetadata';
 
@@ -32,6 +33,10 @@ export class ShowMetadata extends Component {
       header = <div className="item-info">{title}{type}</div>;
     }
 
+    if (!Object.keys(entity).length) {
+      return <div className="view"/>;
+    }
+
     return (
       <div className="view">
         {header}
@@ -41,6 +46,7 @@ export class ShowMetadata extends Component {
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
         </ShowIf>
+        <ItemPreview entity={entity}/>
         <FormatMetadata entity={entity} />
       </div>
     );

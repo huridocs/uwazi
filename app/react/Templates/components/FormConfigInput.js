@@ -39,34 +39,34 @@ export class FormConfigInput extends Component {
             </span>
           </label>
         </Field>
-        <div>
-          <ShowIf if={this.props.canShowInCard}>
-            <Field className="filter" model={`template.data.properties[${index}].showInCard`}>
-              <input id={`showInCard${this.props.index}`} type="checkbox"/>
-              &nbsp;
-              <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
-                Show in cards
-                <span className="property-help">
-                  <Icon icon="question-circle" />
-                  <div className="property-description">Show this property in the cards as part of the basic info.</div>
-                </span>
-              </label>
-            </Field>
-          </ShowIf>
-          <ShowIf if={this.props.canPreview && property.showInCard}>
-            <Field className="filter" model={`template.data.properties[${index}].preview`}>
-              <input id={`preview${this.props.index}`} type="checkbox"/>
-              &nbsp;
-              <label className="property-label" htmlFor={`preview${this.props.index}`}>
-                Show as preview
-                <span className="property-help">
-                  <Icon icon="question-circle" />
-                  <div className="property-description">This property will be shown at the top of the card.</div>
-                </span>
-              </label>
-            </Field>
-          </ShowIf>
-        </div>
+        <ShowIf if={this.props.canShowInCard}>
+          <Field model={`template.data.properties[${index}].showInCard`}>
+            <input id={`showInCard${this.props.index}`} type="checkbox"/>
+            &nbsp;
+            <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
+              Show in cards
+              <span className="property-help">
+                <Icon icon="question-circle" />
+                <div className="property-description">Show this property in the cards as part of the basic info.</div>
+              </span>
+            </label>
+          </Field>
+        </ShowIf>
+        <ShowIf if={this.props.canPreview}>
+          <Field className="filter" model={`template.data.properties[${index}].preview`}>
+            <input id={`preview${this.props.index}`} type="checkbox"/>
+            &nbsp;
+            <label className="property-label" htmlFor={`preview${this.props.index}`}>
+              Show as preview
+              <span className="property-help">
+                <Icon icon="question-circle" />
+                <div className="property-description">This property will be shown at the top of the card.
+                Only one property will be shown as preview.
+                </div>
+              </span>
+            </label>
+          </Field>
+        </ShowIf>
         <div>
           <ShowIf if={this.props.canBeFilter}>
             <Field className="filter" model={`template.data.properties[${index}].filter`}>

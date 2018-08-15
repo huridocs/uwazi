@@ -246,9 +246,14 @@ $item-padding: 15px;
   font-family: $f-special;
 }
 
-.item-preview {
-  margin: 0 -15px;
+.preview {
   text-align: center;
+}
+
+.item .preview {
+  max-height: 220px;
+  margin: 0 -15px;
+  overflow: hidden;
 }
 
 .item-snippet {
