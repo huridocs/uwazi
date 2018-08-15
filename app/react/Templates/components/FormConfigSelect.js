@@ -56,7 +56,7 @@ export class FormConfigSelect extends Component {
             Required property
             <span className="property-help">
               <Icon icon="question-circle" />
-              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+              <div className="property-description">You won&#39;t be able to publish a document if this property is empty.</div>
             </span>
           </label>
         </Field>

@@ -1,12 +1,11 @@
-import {applyMiddleware, createStore} from 'redux';
-import reducer from './reducer';
-// import createLogger from 'redux-logger';
+import { isClient } from 'app/utils';
 import thunk from 'redux-thunk';
-import {isClient} from 'app/utils';
-import {composeWithDevTools} from 'redux-devtools-extension';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
-let data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
+import { applyMiddleware, createStore } from 'redux';
+import reducer from './reducer';
 
+const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store;
 
 export default function create(initialData = data) {
@@ -14,7 +13,6 @@ export default function create(initialData = data) {
     reducer,
     initialData,
     composeWithDevTools(
-      // applyMiddleware(createLogger()),
       applyMiddleware(thunk)
     )
   );
@@ -37,4 +35,4 @@ if (!store) {
   store = create();
 }
 
-export {store};
+export { store };

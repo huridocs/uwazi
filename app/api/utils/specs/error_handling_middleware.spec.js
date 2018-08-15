@@ -1,14 +1,14 @@
 import middleware from '../error_handling_middleware.js';
 import errorLog from '../../log/errorLog';
 
-describe('Error handling middleware', function () {
+describe('Error handling middleware', () => {
   let next;
   let res;
   const req = {};
 
   beforeEach(() => {
     next = jasmine.createSpy('next');
-    res = {json: jasmine.createSpy('json'), status: jasmine.createSpy('status')};
+    res = { json: jasmine.createSpy('json'), status: jasmine.createSpy('status') };
     spyOn(errorLog, 'error'); //just to avoid annoying console output
   });
 
@@ -23,37 +23,37 @@ describe('Error handling middleware', function () {
       const error = new Error('error');
       res.error(error);
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({error: error.stack.split('\n')});
+      expect(res.json).toHaveBeenCalledWith({ error: error.stack.split('\n') });
     });
   });
 
   describe('when error is uwazi error (handeled object with message and code)', () => {
     it('should respond the error message with the status', () => {
       middleware(req, res, next);
-      const error = {message: 'error', code: '345'};
+      const error = { message: 'error', code: '345' };
       res.error(error);
       expect(res.status).toHaveBeenCalledWith('345');
-      expect(res.json).toHaveBeenCalledWith({error: 'error'});
+      expect(res.json).toHaveBeenCalledWith({ error: 'error' });
     });
   });
 
   describe('when error is a MongoError', () => {
     it('should respond the error message with the status 500', () => {
       middleware(req, res, next);
-      const error = {name: 'MongoError', message: 'error', code: '345'};
+      const error = { name: 'MongoError', message: 'error', code: '345' };
       res.error(error);
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({error: 'error'});
+      expect(res.json).toHaveBeenCalledWith({ error: 'error' });
     });
   });
 
   describe('when error code is a Mailer EAUTH error', () => {
     it('should respond the error message with the status 500', () => {
       middleware(req, res, next);
-      const error = {name: 'MongoError', message: 'error', code: 'EAUTH'};
+      const error = { name: 'MongoError', message: 'error', code: 'EAUTH' };
       res.error(error);
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({error: 'error'});
+      expect(res.json).toHaveBeenCalledWith({ error: 'error' });
     });
   });
 });

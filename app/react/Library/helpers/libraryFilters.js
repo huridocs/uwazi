@@ -1,4 +1,4 @@
-import { comonProperties, defaultFilters } from 'shared/comonProperties';
+import { comonFilters, defaultFilters } from 'shared/comonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 function getOptions(property, thesauris) {
@@ -19,13 +19,16 @@ export function populateOptions(filters, thesauris) {
       });
     }
 
+    if (!property.content && property.type === 'relationshipfilter') {
+      property.filters = populateOptions(property.filters, thesauris);
+    }
+
     return property;
   });
 }
 
-function URLQueryToState(query, templates, thesauris) {
-  let properties = comonProperties(templates, query.types)
-  .filter(prop => prop.filter);
+function URLQueryToState(query, templates, thesauris, relationTypes) {
+  let properties = comonFilters(templates, relationTypes, query.types);
 
   if (!query.types || !query.types.length) {
     properties = defaultFilters(templates);
@@ -76,6 +79,9 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
         }
         return option;
       }).filter(opt => opt.results);
+    }
+    if (property.filters) {
+      property.filters = parseWithAggregations(property.filters, aggregations, showNoValue);
     }
     return property;
   });

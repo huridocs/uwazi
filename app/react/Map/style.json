@@ -1692,7 +1692,7 @@
         "source": "markers",
         "filter": ["has", "point_count"],
         "paint": {
-            "circle-color": "#c2baa4",
+            "circle-color": "#ef8c8c",
             "circle-radius": [
                 "step",
                 ["get", "point_count"],

@@ -1,5 +1,4 @@
 import { fromJS } from 'immutable';
-
 import templatesAPI from 'api/templates';
 import relationtypes from 'api/relationtypes';
 import { generateNamesAndIds } from '../templates/utils';
@@ -118,8 +117,8 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
 };
 
 export default {
-  get(query) {
-    return model.get(query);
+  get(query, select, pagination) {
+    return model.get(query, select, pagination);
   },
 
   getById(id) {
@@ -240,7 +239,6 @@ export default {
     });
   },
 
-  // TEST!!!!
   bulk(bulkData, language) {
     const saveActions = bulkData.save.map(reference => this.save(reference, language), false);
     const deleteActions = bulkData.delete.map(reference => this.delete(reference, language), false);
@@ -474,5 +472,7 @@ export default {
     }
 
     return model.db.updateMany({ template }, actions);
-  }
+  },
+
+  count: model.count
 };

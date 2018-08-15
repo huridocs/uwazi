@@ -11,6 +11,7 @@ import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
 import ListChart from './ListChart';
 import GaugeChart from './GaugeChart';
+import Value from './Value';
 import SearchBox from './SearchBox';
 
 export default {
@@ -23,6 +24,7 @@ export default {
   PieChart,
   ListChart,
   GaugeChart,
+  Value,
   Icon,
   Map,
   Link

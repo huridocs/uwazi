@@ -30,7 +30,12 @@ export default function requestState(params, _query = {}, globalResources, key =
 
   return api.search(query)
   .then((response) => {
-    const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS(), globalResources.thesauris.toJS());
+    const filterState = libraryHelpers.URLQueryToState(
+      query,
+      globalResources.templates.toJS(),
+      globalResources.thesauris.toJS(),
+      globalResources.relationTypes.toJS()
+    );
     const state = {
       library: {
         filters: { documentTypes: query.types || [], properties: filterState.properties },

@@ -33,6 +33,7 @@ export default {
     saveDocumentButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveEntityButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveConnectionButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
+    saveCollectionButton: '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div.settings-footer > button',
     dictionaryNameForm: '#thesauriName',
     connectionNameForm: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
     entityNameForm: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
@@ -42,7 +43,8 @@ export default {
     translationsButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(6)',
     translationInputEn: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(2) > div > div > input',
     translationInputEs: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > ul > li:nth-child(3) > div:nth-child(3) > div > div > input',
-    translationsSaveButton: '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button'
+    translationsSaveButton: '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button',
+    privateInstance: '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div:nth-child(2) > div > label'
   },
   libraryView: {
     libraryFirstDocument: '#app > div.content > div > div > main > div > div > div.item-group > div:nth-child(1)',

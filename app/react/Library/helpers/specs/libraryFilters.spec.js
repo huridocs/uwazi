@@ -85,7 +85,15 @@ describe('library helper', () => {
       const filters = [
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
         { name: 'date', filter: true, type: 'text' },
-        { name: 'country', filter: true, type: 'relationship' }
+        { name: 'country', filter: true, type: 'relationship' },
+        {
+          name: 'friend',
+          filter: true,
+          type: 'relationshipfilter',
+          filters: [
+            { name: 'pepinillos', filter: true, type: 'select', content: 'abc1' }
+          ]
+        }
       ];
 
       const populatedFilters = libraryHelper.populateOptions(filters, thesauris);
@@ -97,6 +105,7 @@ describe('library helper', () => {
         { id: 5, value: 'value5' },
         { id: 6, value: 'value6' }
       ]);
+      expect(populatedFilters[3].filters[0].options).toEqual([{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }]);
     });
   });
 
