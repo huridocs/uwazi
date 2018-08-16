@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 const userId = db.id();
 const batmanBegins = 'shared2';
 const batmanFinishes = 'shared';
+const metadataSnippets = 'metadataSnippets';
 
 const template = db.id();
 const template1 = db.id();
@@ -109,6 +110,17 @@ export default {
     { _id: db.id(), sharedId: 'entityWithEgypt', template, language: 'en', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['abc123'] } },
     { _id: db.id(), sharedId: 'entityWithEgyptDictionary', template, language: 'en', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'] } },
     { _id: db.id(), sharedId: 'unsuportedLanguage', template, language: 'ar', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['bce629bf-efc1-40dd-9af0-0542422dcbc3'] } },
+    // snippets in metadata
+    {
+      _id: db.id(),
+      sharedId: metadataSnippets,
+      language: 'en',
+      title: 'Document about gargoyles',
+      metadata: {
+        field1: 'This is some text containing the word gargoyles.'
+      },
+      fullText: 'Once upon a time[[1]] gargoyles lived on building ledges[[13]]'
+    }
   ],
   templates: [
     { _id: template, properties: [] },
@@ -195,6 +207,7 @@ export default {
 export const ids = {
     batmanBegins,
     batmanFinishes,
+    metadataSnippets,
     userId,
     template1: template1.toString(),
     template2: template2.toString(),

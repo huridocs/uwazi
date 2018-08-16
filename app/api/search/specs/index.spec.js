@@ -9,6 +9,14 @@ import languages from 'shared/languages';
 describe('search', () => {
   const elasticTesting = instanceElasticTesting('search_index_test');
 
+  beforeAll((done) => {
+    db.clearAllAndLoad({}).then(done);
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('index', () => {
     it('should index the document (omitting pdfInfo), without side effects on the sent element', (done) => {
       spyOn(elastic, 'index').and.returnValue(Promise.resolve());
@@ -76,11 +84,15 @@ describe('search', () => {
           .then(() => elasticTesting.refresh())
           .then(() => search.searchSnippets('조', entity.sharedId, 'en'))
           .then((snippets) => {
-            expect(snippets.length).toBe(1);
+            expect(snippets.fullText.length).toBe(1);
             return search.searchSnippets('nothing', entity.sharedId, 'en');
           })
           .then((snippets) => {
-            expect(snippets.length).toBe(0);
+            expect(snippets).toEqual({
+              count: 0,
+              metadata: [],
+              fullText: []
+            });
             done();
           })
           .catch((e) => {

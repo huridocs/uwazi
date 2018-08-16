@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SnippetList should render all document snippets 1`] = `
+<React.Fragment>
+  <li
+    className="snippet-list-item-header fulltext-snippet-header"
+  >
+    Document contents
+  </li>
+  <li
+    className="snippet-list-item fulltext-snippet"
+    key="0"
+  >
+    <Connect(I18NLink)
+      onClick={[Function]}
+      to="/document/sharedId?page=1&searchTerm=snippet"
+    >
+      1
+    </Connect(I18NLink)>
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "first <b>snippet 1</b> found",
+        }
+      }
+    />
+  </li>
+  <li
+    className="snippet-list-item fulltext-snippet"
+    key="1"
+  >
+    <Connect(I18NLink)
+      onClick={[Function]}
+      to="/document/sharedId?page=2&searchTerm=snippet"
+    >
+      2
+    </Connect(I18NLink)>
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "second <b>snippet 3</b> found",
+        }
+      }
+    />
+  </li>
+  <li
+    className="snippet-list-item fulltext-snippet"
+    key="2"
+  >
+    <Connect(I18NLink)
+      onClick={[Function]}
+      to="/document/sharedId?page=3&searchTerm=snippet"
+    >
+      3
+    </Connect(I18NLink)>
+    <span
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "third <b>snippet 3</b> found",
+        }
+      }
+    />
+  </li>
+</React.Fragment>
+`;

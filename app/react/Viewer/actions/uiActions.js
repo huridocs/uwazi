@@ -55,7 +55,7 @@ export function goToActive(value = true) {
 }
 
 export function highlightSnippets(snippets, pagesBeingRendered = []) {
-  let highlights = snippets
+  let highlights = snippets.get('fullText')
   .filter((s) => pagesBeingRendered.includes(s.get('page')))
   .map((snippet) => {
     return snippet.get('text')

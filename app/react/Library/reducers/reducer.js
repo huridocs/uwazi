@@ -37,7 +37,7 @@ export default storeKey => combineReducers({
       multipleEdit: modelReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
       multipleEditForm: formReducer(`${storeKey}.sidepanel.multipleEdit`, {}),
       references: createReducer(`${storeKey}.sidepanel.references`, []),
-      snippets: createReducer(`${storeKey}.sidepanel.snippets`, []),
+      snippets: createReducer(`${storeKey}.sidepanel.snippets`, { count: 0, metadata: [], fullText: [] }),
       tab: createReducer(`${storeKey}.sidepanel.tab`, '')
     })
 });

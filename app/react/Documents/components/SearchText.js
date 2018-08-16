@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { t, I18NLink } from 'app/I18N';
+import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { highlightSearch } from 'app/Viewer/actions/uiActions';
@@ -10,6 +10,7 @@ import { browserHistory } from 'react-router';
 import { scrollToPage } from 'app/Viewer/actions/uiActions';
 import { toUrlParams } from '../../../shared/JSONRequest';
 import { Icon } from 'UI';
+import SnippetList from './SnippetList';
 
 export class SearchText extends Component {
   resetSearch() {}
@@ -50,9 +51,9 @@ export class SearchText extends Component {
   }
 
   render() {
-    const snippets = this.props.snippets.toJS();
-    const documentViewUrl = `/document/${this.props.doc.get('sharedId')}`;
-
+    const { doc, snippets } = this.props;
+    const documentViewUrl = doc.get('type') === 'document' ?
+      `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
     return (
       <div>
         <LocalForm
@@ -79,33 +80,31 @@ export class SearchText extends Component {
           }
         </LocalForm>
 
-        {!this.props.snippets.size &&
+        {!snippets.get('count') &&
           <div className="blank-state">
             <Icon icon="search" />
             <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
             <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
           </div>
         }
-
-        <ul className="snippet-list">
-          {snippets.map((snippet, index) => (
-            <li key={index}>
-              <I18NLink
-                onClick={() => this.props.scrollToPage(snippet.page)}
-                to={`${documentViewUrl}?page=${snippet.page}&searchTerm=${this.props.searchTerm || ''}`}
-              >
-                {snippet.page}
-              </I18NLink>
-              <span dangerouslySetInnerHTML={{ __html: snippet.text }} />
-            </li>))}
-        </ul>
+        {doc.size ?
+          (<SnippetList
+            doc={this.props.doc}
+            snippets={snippets}
+            scrollToPage={this.props.scrollToPage}
+            searchTerm={this.props.searchTerm}
+            documentViewUrl={documentViewUrl}
+          />) : ''
+        }
       </div>
     );
   }
 }
 
 SearchText.propTypes = {
-  snippets: PropTypes.object,
+  snippets: PropTypes.shape({
+    toJS: PropTypes.func
+  }),
   storeKey: PropTypes.string,
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
@@ -116,7 +115,12 @@ SearchText.propTypes = {
 
 SearchText.defaultProps = {
   searchTerm: '',
-  scrollToPage
+  scrollToPage,
+  snippets: {
+    count: 0,
+    metadata: [],
+    fullText: []
+  }
 };
 
 function mapStateToProps(state, props) {

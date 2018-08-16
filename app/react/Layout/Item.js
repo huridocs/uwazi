@@ -9,31 +9,19 @@ import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
 import TemplateLabel from './TemplateLabel';
-import t from '../I18N/t';
+import ItemSnippet from './ItemSnippet';
 
 export class Item extends Component {
   getSearchSnipett(doc) {
-    if (!doc.snippets || !doc.snippets.length) {
+    if (!doc.snippets || !doc.snippets.count) {
       return false;
     }
-
-    const snippetElement = (<div
-      onClick={this.props.onSnippetClick}
-      className="item-snippet"
-      dangerouslySetInnerHTML={{ __html: `${doc.snippets[0].text} ...` }}
-    />);
-
-    if (doc.snippets.length === 1) {
-      return <div className="item-snippet-wrapper">{snippetElement}</div>;
-    }
-
     return (
-      <div className="item-snippet-wrapper">
-        {snippetElement}
-        <div>
-          <a onClick={this.props.onSnippetClick}>{t('System', 'Show more')}</a>
-        </div>
-      </div>
+      <ItemSnippet
+        onSnippetClick={this.props.onSnippetClick}
+        snippets={doc.snippets}
+        doc={doc}
+      />
     );
   }
 
