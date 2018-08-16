@@ -45,18 +45,6 @@ describe('PDF', () => {
       expect(PDFJS.getDocument.calls.count()).toBe(1);
     });
 
-    it('should call scrollToPage if the page is different', () => {
-      props.scrollToPage = jasmine.createSpy('scrollToPage');
-      props.page = 5;
-
-      render();
-
-      component.setProps({ page: 6 });
-      expect(props.scrollToPage).toHaveBeenCalledWith(6);
-      component.setProps({ page: 6 });
-      expect(props.scrollToPage.calls.count()).toBe(1);
-    });
-
     it('should get the new PDF if filename changed', (done) => {
       render();
       instance.componentWillReceiveProps({ filename: 'newfile.pdf' });

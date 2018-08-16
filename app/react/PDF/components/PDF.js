@@ -29,9 +29,6 @@ class PDF extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.page !== this.props.page) {
-      this.props.scrollToPage(nextProps.page);
-    }
     if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
       this.pagesLoaded = {};
       this.setState({ pdf: { numPages: 0 } }, () => {

@@ -3,6 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Paginator from '../Paginator';
+import { I18NLink } from 'app/I18N';
 
 describe('Paginator', () => {
   it('should render a previous button and next button based on the current page and total pages', () => {
@@ -52,6 +53,25 @@ describe('Paginator', () => {
 
       const component = shallow(<Paginator {...props}/>);
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('when passing onPageChange callback', () => {
+    it('should execute callback on prev/next passing the page selecte', () => {
+      const props = {
+        page: 5,
+        totalPages: 25,
+        baseUrl: 'url',
+        onPageChange: jasmine.createSpy('onPageChange'),
+      };
+
+      const component = shallow(<Paginator {...props}/>);
+
+      component.find(I18NLink).at(0).simulate('click');
+      expect(props.onPageChange).toHaveBeenCalledWith(4);
+
+      component.find(I18NLink).at(1).simulate('click');
+      expect(props.onPageChange).toHaveBeenCalledWith(6);
     });
   });
 });

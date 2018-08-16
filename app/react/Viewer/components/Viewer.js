@@ -18,7 +18,7 @@ import ShowIf from 'app/App/ShowIf';
 
 import { addReference } from '../actions/referencesActions';
 import { loadDefaultViewerMenu, loadTargetDocument } from '../actions/documentActions';
-import { openPanel } from '../actions/uiActions';
+import { openPanel, scrollToPage } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import Paginator from './Paginator';
@@ -75,6 +75,7 @@ export class Viewer extends Component {
                 page={this.props.page}
                 totalPages={doc.get('totalPages')}
                 baseUrl={`/document/${doc.get('sharedId')}${this.props.raw ? '?raw=true' : ''}`}
+                onPageChange={scrollToPage}
               />
             </div>
           </div>
@@ -129,6 +130,7 @@ export class Viewer extends Component {
 }
 
 Viewer.propTypes = {
+  raw: PropTypes.bool.isRequired,
   doc: PropTypes.object,
   searchTerm: PropTypes.string,
   pageText: PropTypes.string,

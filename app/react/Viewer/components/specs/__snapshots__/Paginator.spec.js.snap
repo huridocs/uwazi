@@ -3,6 +3,7 @@
 exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
 <div>
   <Connect(I18NLink)
+    onClick={[Function]}
     to="url?page=4"
   >
     <Connect(Translate)>
@@ -13,6 +14,7 @@ exports[`Paginator should render a previous button and next button based on the 
      5 / 25 
   </span>
   <Connect(I18NLink)
+    onClick={[Function]}
     to="url?page=6"
   >
     <Connect(Translate)>
@@ -25,6 +27,7 @@ exports[`Paginator should render a previous button and next button based on the 
 exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
 <div>
   <Connect(I18NLink)
+    onClick={[Function]}
     to="url?param=value&page=2"
   >
     <Connect(Translate)>
@@ -35,6 +38,7 @@ exports[`Paginator when base Url already has the query string "?" should add the
      3 / 25 
   </span>
   <Connect(I18NLink)
+    onClick={[Function]}
     to="url?param=value&page=4"
   >
     <Connect(Translate)>
@@ -48,6 +52,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
 <div>
   <Connect(I18NLink)
     className="disabled"
+    onClick={[Function]}
     rel="nofollow"
     to="url?page=0"
   >
@@ -59,6 +64,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
      1 / 25 
   </span>
   <Connect(I18NLink)
+    onClick={[Function]}
     to="url?page=2"
   >
     <Connect(Translate)>
@@ -71,6 +77,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
 exports[`Paginator when on last page should disable the next link 1`] = `
 <div>
   <Connect(I18NLink)
+    onClick={[Function]}
     to="url?page=24"
   >
     <Connect(Translate)>
@@ -82,6 +89,7 @@ exports[`Paginator when on last page should disable the next link 1`] = `
   </span>
   <Connect(I18NLink)
     className="disabled"
+    onClick={[Function]}
     rel="nofollow"
     to="url?page=26"
   >
