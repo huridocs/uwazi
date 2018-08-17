@@ -148,9 +148,12 @@ describe('relationships', () => {
   });
 
   describe('bulk()', () => {
-    it('should call save and delete and then ask entities to update the ones affected by the changes', (done) => {
+    beforeEach(() => {
       spyOn(relationships, 'save').and.returnValue(Promise.resolve());
       spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
+    });
+
+    it('should call save and delete and then ask entities to update the ones affected by the changes', (done) => {
       const data = {
         save: [{ entity: 'entity3', hub: hub2, template: relation2, range: { text: 'english' }, language: 'en', sharedId: sharedId1 }],
         delete: [{ hub: hub1, entity: '123' }, { hub: hub1, entity: '456' }]
@@ -299,6 +302,20 @@ describe('relationships', () => {
         .then(([result]) => {
           expect(result.entity).toBe('entity1');
           expect(result._id.equals(connectionID1)).toBe(true);
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('should update correctly if template is null', (done) => {
+        relationships.getById(connectionID1)
+        .then((reference) => {
+          reference.template = { _id: null };
+          return relationships.save(reference, 'en');
+        })
+        .then(([result]) => {
+          expect(result.entity).toBe('entity_id');
+          expect(result.template).toBe(null);
           done();
         })
         .catch(catchErrors(done));
