@@ -5,7 +5,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import db from 'api/utils/testing_db';
 import fixtures, { connectionID1, hub1, hub7, hub2, sharedId1 } from './fixtures';
-import { relation1, relation2, template } from './fixtures';
+import { relation1, relation2, template, sharedId4 } from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
@@ -44,6 +44,15 @@ describe('relationships', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should set template to null if no template found', (done) => {
+      relationships.getByDocument('entity2', 'en')
+      .then((results) => {
+        const noTemplateConnection = results.find(connection => connection.sharedId.toString() === sharedId4.toString());
+        expect(noTemplateConnection.template).toBe(null);
+        done();
+      });
     });
   });
 

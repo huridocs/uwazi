@@ -152,7 +152,9 @@ export default {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return relationships.map((relationship) => {
+        return relationships.map((_relationship) => {
+          const relationship = Object.assign({}, { template: null }, _relationship);
+
           if (withEntityData) {
             return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
           }
@@ -405,6 +407,7 @@ export default {
           );
           results.rows.push(entity);
         }
+
 
         return limitRelationshipResults(results, entitySharedId, hubsLimit);
       });
