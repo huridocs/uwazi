@@ -18,6 +18,8 @@ class PDF extends Component {
         this.setState({ pdf });
       });
     }
+
+    this.pages = {};
   }
 
   componentDidMount() {
@@ -89,6 +91,23 @@ class PDF extends Component {
     this.loaded();
   }
 
+  onPageVisible(page, visibility) {
+    this.pages[page] = visibility;
+
+    const pageWithMostVisibility = Object.keys(this.pages).reduce((memo, key) => {
+      if (!this.pages[key - 1] || this.pages[key] > this.pages[key - 1]) {
+        return key;
+      }
+      return memo;
+    }, 1);
+
+    this.props.onPageChange(Number(pageWithMostVisibility));
+  }
+
+  onPageHidden(page) {
+    delete this.pages[page];
+  }
+
   render() {
     return (
       <div ref={(ref) => { this.pdfContainer = ref; }}style={this.props.style}>
@@ -98,6 +117,8 @@ class PDF extends Component {
             pages.push(<PDFPage
               onUnload={this.pageUnloaded.bind(this)}
               onLoading={this.pageLoading.bind(this)}
+              onVisible={this.onPageVisible.bind(this)}
+              onHidden={this.onPageHidden.bind(this)}
               key={page}
               page={page}
               pdf={this.state.pdf}
@@ -113,10 +134,12 @@ class PDF extends Component {
 PDF.defaultProps = {
   scrollToPage,
   page: null,
-  filename: null
+  filename: null,
+  onPageChange: () => {},
 };
 
 PDF.propTypes = {
+  onPageChange: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,

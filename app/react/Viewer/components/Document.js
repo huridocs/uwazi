@@ -1,16 +1,24 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-
-import Text from 'app/Viewer/utils/Text';
-import Loader from 'app/components/Elements/Loader';
 import 'app/Viewer/scss/conversion_base.scss';
 import 'app/Viewer/scss/document.scss';
+
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+
+import { highlightSnippets } from 'app/Viewer/actions/uiActions';
+import Loader from 'app/components/Elements/Loader';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
-import {highlightSnippets} from 'app/Viewer/actions/uiActions';
-import {APIURL} from '../../config.js';
+import Text from 'app/Viewer/utils/Text';
+
+import { APIURL } from '../../config.js';
 
 export class Document extends Component {
+  constructor(props) {
+    super(props);
+    this.pages = { 1: 0 };
+    this.previousMostVisible = props.page;
+  }
+
   handleMouseUp() {
     if (this.props.disableTextSelection) {
       return;
@@ -101,25 +109,28 @@ export class Document extends Component {
 
     return (
       <div>
-        <div className={'_' + doc._id + ' document ' + this.props.className} >
+        <div className={`_${doc._id} document ${this.props.className}`} >
           <Header/>
-          <div className="pages"
-               ref={(ref) => this.pagesContainer = ref}
-               onMouseUp={this.handleMouseUp.bind(this)}
-               onTouchEnd={this.handleMouseUp.bind(this)}
-               onClick={this.handleClick.bind(this)}
-               onMouseOver={this.handleOver.bind(this)}
+          <div
+            className="pages"
+            ref={ref => this.pagesContainer = ref}
+            onMouseUp={this.handleMouseUp.bind(this)}
+            onTouchEnd={this.handleMouseUp.bind(this)}
+            onClick={this.handleClick.bind(this)}
+            onMouseOver={this.handleOver.bind(this)}
           >
             <ShowIf if={!doc._id || !doc.pdfInfo}>
               <Loader />
             </ShowIf>
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
+                onPageChange={this.props.onPageChange}
                 pdfInfo={doc.pdfInfo}
                 page={this.props.page}
                 onLoad={this.pdfLoaded.bind(this)}
                 file={`${APIURL}documents/download?_id=${doc._id}`}
-                filename={doc.file ? doc.file.filename : null}/>
+                filename={doc.file ? doc.file.filename : null}
+              />
             </ShowIf>
           </div>
         </div>
@@ -129,10 +140,12 @@ export class Document extends Component {
 }
 
 Document.defaultProps = {
-  highlightSnippets
+  highlightSnippets,
+  onScrollToPage: () => {},
 };
 
 Document.propTypes = {
+  onPageChange: PropTypes.func,
   doc: PropTypes.object,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
@@ -154,7 +167,7 @@ Document.propTypes = {
   onClick: PropTypes.func,
   executeOnClickHandler: PropTypes.bool,
   disableTextSelection: PropTypes.bool,
-  forceSimulateSelection: PropTypes.bool
+  forceSimulateSelection: PropTypes.bool,
 };
 
 export default Document;

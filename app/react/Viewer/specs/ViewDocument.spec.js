@@ -39,20 +39,30 @@ describe('ViewDocument', () => {
     spyOn(routeActions, 'setViewerState').and.returnValue({ type: 'setViewerState' });
   });
 
-  it('should render the Viewer', () => {
-    expect(component.find(Viewer).length).toBe(1);
-  });
-
-  it('should pass down raw prop', () => {
-    props.location = { query: { raw: true } };
+  it('should pass down the route location', () => {
+    props.location = { query: { raw: true, page: 2 } };
     render();
-    expect(component.find(Viewer).props().raw).toBe(true);
+    expect(component.find(Viewer).props().location).toEqual(props.location);
   });
 
   it('should pass down page number 1 as default', () => {
-    props.location = { query: { raw: true } };
+    props.location = { query: { } };
     render();
-    expect(component.find(Viewer).props().page).toBe(1);
+    expect(component.find(Viewer).props().location.query.page).toBe(1);
+  });
+
+  describe('when on server', () => {
+    it('should always pass raw true', () => {
+      props.location = { query: { raw: false } };
+      utils.isClient = false;
+      render();
+      expect(component.find(Viewer).props().location.query.raw).toBe(true);
+      utils.isClient = true;
+    });
+  });
+
+  it('should render the Viewer', () => {
+    expect(component.find(Viewer).length).toBe(1);
   });
 
   describe('when raw', () => {
@@ -64,18 +74,10 @@ describe('ViewDocument', () => {
   });
 
   describe('when not raw', () => {
-    it('should ot render link canonical', () => {
+    it('should not render link canonical', () => {
       props.location = { query: { raw: false, page: 1 }, pathname: 'pathname' };
       render();
       expect(component.find('link').length).toBe(0);
-    });
-  });
-  describe('when on server', () => {
-    it('should always pass raw true', () => {
-      props.location = { query: { raw: false } };
-      utils.isClient = false;
-      render();
-      expect(component.find(Viewer).props().raw).toBe(true);
     });
   });
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Paginator from '../Paginator';
-import { I18NLink } from 'app/I18N';
+import { Link } from 'react-router';
 
 describe('Paginator', () => {
   it('should render a previous button and next button based on the current page and total pages', () => {
@@ -67,10 +67,10 @@ describe('Paginator', () => {
 
       const component = shallow(<Paginator {...props}/>);
 
-      component.find(I18NLink).at(0).simulate('click');
+      component.find(Link).at(0).simulate('click');
       expect(props.onPageChange).toHaveBeenCalledWith(4);
 
-      component.find(I18NLink).at(1).simulate('click');
+      component.find(Link).at(1).simulate('click');
       expect(props.onPageChange).toHaveBeenCalledWith(6);
     });
   });

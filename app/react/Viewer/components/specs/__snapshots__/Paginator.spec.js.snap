@@ -2,100 +2,108 @@
 
 exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
 <div>
-  <Connect(I18NLink)
+  <Link
     onClick={[Function]}
-    to="url?page=4"
+    onlyActiveOnIndex={false}
+    style={Object {}}
   >
     <Connect(Translate)>
       Previous
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
   <span>
      5 / 25 
   </span>
-  <Connect(I18NLink)
+  <Link
     onClick={[Function]}
-    to="url?page=6"
+    onlyActiveOnIndex={false}
+    style={Object {}}
   >
     <Connect(Translate)>
       Next
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
 </div>
 `;
 
 exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
 <div>
-  <Connect(I18NLink)
+  <Link
     onClick={[Function]}
-    to="url?param=value&page=2"
+    onlyActiveOnIndex={false}
+    style={Object {}}
   >
     <Connect(Translate)>
       Previous
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
   <span>
      3 / 25 
   </span>
-  <Connect(I18NLink)
+  <Link
     onClick={[Function]}
-    to="url?param=value&page=4"
+    onlyActiveOnIndex={false}
+    style={Object {}}
   >
     <Connect(Translate)>
       Next
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
 </div>
 `;
 
 exports[`Paginator when on first page should disable the prev link 1`] = `
 <div>
-  <Connect(I18NLink)
+  <Link
     className="disabled"
     onClick={[Function]}
+    onlyActiveOnIndex={false}
     rel="nofollow"
-    to="url?page=0"
+    style={Object {}}
   >
     <Connect(Translate)>
       Previous
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
   <span>
      1 / 25 
   </span>
-  <Connect(I18NLink)
+  <Link
     onClick={[Function]}
-    to="url?page=2"
+    onlyActiveOnIndex={false}
+    style={Object {}}
   >
     <Connect(Translate)>
       Next
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
 </div>
 `;
 
 exports[`Paginator when on last page should disable the next link 1`] = `
 <div>
-  <Connect(I18NLink)
+  <Link
     onClick={[Function]}
-    to="url?page=24"
+    onlyActiveOnIndex={false}
+    style={Object {}}
   >
     <Connect(Translate)>
       Previous
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
   <span>
      25 / 25 
   </span>
-  <Connect(I18NLink)
+  <Link
     className="disabled"
     onClick={[Function]}
+    onlyActiveOnIndex={false}
     rel="nofollow"
-    to="url?page=26"
+    style={Object {}}
   >
     <Connect(Translate)>
       Next
     </Connect(Translate)>
-  </Connect(I18NLink)>
+  </Link>
 </div>
 `;

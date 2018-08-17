@@ -27,6 +27,8 @@ import TargetDocument from './TargetDocument';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
+import { browserHistory } from 'react-router';
+import { toUrlParams } from 'shared/JSONRequest';
 
 export class Viewer extends Component {
   constructor(props) {
@@ -62,6 +64,11 @@ export class Viewer extends Component {
       className += ' connections';
     }
 
+    const { query } = this.props.location;
+    const { raw } = query;
+    const { page, ...queryWithoutPage } = query;
+    queryWithoutPage.raw = queryWithoutPage.raw || undefined;
+
     return (
       <div className="row">
         <Helmet title={doc.get('title') ? doc.get('title') : 'Document'} />
@@ -72,9 +79,9 @@ export class Viewer extends Component {
               <h1 className="item-name">{doc.get('title')}</h1>
               <TemplateLabel template={doc.get('template')}/>
               <Paginator
-                page={this.props.page}
+                page={page}
                 totalPages={doc.get('totalPages')}
-                baseUrl={`/document/${doc.get('sharedId')}${this.props.raw ? '?raw=true' : ''}`}
+                baseUrl={`${this.props.location.pathname}${toUrlParams(queryWithoutPage)}`}
                 onPageChange={scrollToPage}
               />
             </div>
@@ -83,9 +90,11 @@ export class Viewer extends Component {
         <main className={className}>
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
-              {this.props.raw || this.state.firstRender ?
+              {raw || this.state.firstRender ?
                 <pre>{this.props.pageText}</pre> :
-                <SourceDocument page={this.props.page} searchTerm={this.props.searchTerm}/>
+                <SourceDocument onPageChange={(page) => {
+                  browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page })}`);
+                }} page={page} searchTerm={this.props.searchTerm}/>
               }
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
@@ -130,11 +139,9 @@ export class Viewer extends Component {
 }
 
 Viewer.propTypes = {
-  raw: PropTypes.bool.isRequired,
+  location: PropTypes.object,
   doc: PropTypes.object,
-  searchTerm: PropTypes.string,
   pageText: PropTypes.string,
-  page: PropTypes.number,
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,

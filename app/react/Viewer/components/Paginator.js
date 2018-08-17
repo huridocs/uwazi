@@ -1,24 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { I18NLink, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
+import { Link } from 'react-router';
 
 const disableButton = (page, pageToDisable) => ({
     className: page === pageToDisable ? 'disabled' : undefined,
     rel: page === pageToDisable ? 'nofollow' : undefined
 });
 
-const conformUrl = (baseUrl, page) => baseUrl.match(/\?/g) ? `${baseUrl}&page=${page}` : `${baseUrl}?page=${page}`;
-
-const Paginator = ({ page, totalPages, baseUrl, onPageChange }) => (
+const Paginator = ({ page, totalPages, onPageChange }) => (
   <div>
-    <I18NLink onClick={() => onPageChange(page - 1)} to={conformUrl(baseUrl, page - 1)} {...disableButton(page, 1)}>
+    <Link onClick={() => onPageChange(page - 1)} {...disableButton(page, 1)}>
       <Translate>Previous</Translate>
-    </I18NLink>
+    </Link>
     <span>{` ${page} / ${totalPages} `}</span>
-    <I18NLink onClick={() => onPageChange(page + 1)} to={conformUrl(baseUrl, page + 1)} {...disableButton(page, totalPages)}>
+    <Link onClick={() => onPageChange(page + 1)} {...disableButton(page, totalPages)}>
       <Translate>Next</Translate>
-    </I18NLink>
+    </Link>
   </div>
 );
 

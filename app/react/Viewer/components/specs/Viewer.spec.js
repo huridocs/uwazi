@@ -19,7 +19,8 @@ describe('Viewer', () => {
       doc: Immutable({ _id: 'id', sharedId: 'sharedId' }),
       targetDoc: false,
       addReference: () => {},
-      loadTargetDocument: () => {}
+      loadTargetDocument: () => {},
+      location: { query: {} },
     };
   });
 
@@ -50,6 +51,8 @@ describe('Viewer', () => {
   it('should not render SourceDocument when targetDocument loaded', () => {
     props.targetDoc = true;
     render();
+    component.instance().componentDidMount();
+    component.update();
     expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
   });
 
@@ -58,6 +61,7 @@ describe('Viewer', () => {
     props.showTextSelectMenu = false;
 
     render();
+    component.instance().componentDidMount();
     component.update();
 
     expect(component.find(ContextMenu).length).toBe(2);
@@ -79,7 +83,7 @@ describe('Viewer', () => {
     expect(component.find(ContextMenu).at(1).props().show).toBe(true);
   });
 
-  fit('should render plain text always, if raw is false should render SourceDocument on update', () => {
+  it('should render plain text always, if raw is false should render SourceDocument on update', () => {
     render();
 
     expect(component.find('pre').length).toBe(1);
@@ -87,7 +91,7 @@ describe('Viewer', () => {
     component.update();
     expect(component.find(SourceDocument).length).toBe(1);
 
-    component.setProps({ raw: true });
+    component.setProps({ location: { query: { raw: true } } });
     expect(component.find('pre').length).toBe(1);
   });
 

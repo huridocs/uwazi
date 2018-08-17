@@ -59,6 +59,76 @@ describe('PDF', () => {
     });
   });
 
+  describe('pageVisibility', () => {
+    it('should save page and visibility and execute onPageChange', () => {
+      props.onPageChange = jasmine.createSpy('onPageChange');
+
+      render();
+      const page = 2;
+      const visibility = 500;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(2);
+    });
+
+    it('should call pageChange when visibility is the highest', () => {
+      props.onPageChange = jasmine.createSpy('onPageChange');
+
+      render();
+      instance.pages = { 2: null };
+
+      let page = 3;
+      let visibility = 555;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(3);
+
+      props.onPageChange.calls.reset();
+      page = 4;
+      visibility = 550;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(3);
+
+      props.onPageChange.calls.reset();
+      page = 4;
+      visibility = 560;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(4);
+    });
+
+    describe('in case of equal visibility', () => {
+      it('should use the smallest one', () => {
+        props.onPageChange = jasmine.createSpy('onPageChange');
+        render();
+
+        let page = 30;
+        let visibility = 10;
+        instance.onPageVisible(page, visibility);
+        expect(props.onPageChange).toHaveBeenCalledWith(30);
+
+        props.onPageChange.calls.reset();
+        page = 31;
+        visibility = 10;
+        instance.onPageVisible(page, visibility);
+        expect(props.onPageChange).toHaveBeenCalledWith(30);
+
+        props.onPageChange.calls.reset();
+        page = 29;
+        visibility = 10;
+        instance.onPageVisible(page, visibility);
+        expect(props.onPageChange).toHaveBeenCalledWith(29);
+      });
+    });
+
+    describe('when pageHidden', () => {
+      it('should remove page key from pages map', () => {
+        render();
+        instance.pages = { 1: 10, 2: 20 };
+        instance.onPageHidden(1);
+
+        expect(instance.pages).toEqual({ 2: 20 });
+      });
+    });
+  });
+
   describe('render', () => {
     it('should render a pdfPage for each page', () => {
       render();

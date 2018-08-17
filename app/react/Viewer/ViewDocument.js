@@ -65,16 +65,13 @@ class ViewDocument extends RouteHandler {
     const { query = {}, pathname } = this.props.location;
     const raw = query.raw || !isClient;
     const page = Number(query.page || 1);
+    const location = { ...this.props.location, query: { ...query, page, raw: !!raw } };
     return (
       <React.Fragment>
         <Helmet>
           {raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}
         </Helmet>
-        <Viewer
-          raw={raw}
-          page={page}
-          searchTerm={this.props.location.query.searchTerm}
-        />
+        <Viewer location={location} />
       </React.Fragment>
     );
   }
