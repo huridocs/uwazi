@@ -20,7 +20,7 @@ describe('PDFPage', () => {
       onLoading: jasmine.createSpy('onLoading'),
       onUnload: jasmine.createSpy('onUnload'),
       page: 2,
-      viewportContainer: container,
+      getViewportContainer: () => container,
       pdf: {
         getPage: jest.fn().mockReturnValueOnce(Promise.resolve({ getViewport: jest.fn() }))
       }
@@ -112,7 +112,6 @@ describe('PDFPage', () => {
           expect(instance.rendered).toBe(true);
           expect(pdfPageViewPrototype.setPdfPage).toHaveBeenCalled();
           expect(pdfPageViewPrototype.draw).toHaveBeenCalled();
-          //console.log(instance.pdfPageView);
           done();
         });
       });
@@ -133,7 +132,7 @@ describe('PDFPage', () => {
         props.onVisible = jasmine.createSpy('onVisible');
 
         render();
-        component.setProps({ viewportContainer: { getBoundingClientRect: () => ({ top: 100, height: 500, bottom: 600 }) } });
+        component.setProps({ getViewportContainer: () => ({ getBoundingClientRect: () => ({ top: 100, height: 500, bottom: 600 }) }) });
 
         instance.pageContainer = { getBoundingClientRect: () => ({ top: 100, height: 1000, bottom: 1100 }) };
         instance.pageShouldRender();

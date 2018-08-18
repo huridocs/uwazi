@@ -12,14 +12,14 @@ class PDFPage extends Component {
       this.renderPage();
     }
 
-    this.props.viewportContainer.addEventListener('scroll', this.scrollCallback);
+    this.props.getViewportContainer().addEventListener('scroll', this.scrollCallback);
   }
 
   componentWillUnmount() {
     if (this.pdfPageView) {
       this.pdfPageView.destroy();
     }
-    this.props.viewportContainer.removeEventListener('scroll', this.scrollCallback);
+    this.props.getViewportContainer().removeEventListener('scroll', this.scrollCallback);
   }
 
   scroll() {
@@ -49,7 +49,7 @@ class PDFPage extends Component {
   }
 
   checkVisibility(pageRectangle) {
-    const viewportRect = this.props.viewportContainer.getBoundingClientRect();
+    const viewportRect = this.props.getViewportContainer().getBoundingClientRect();
 
     const relativeElementRect = {
       top: pageRectangle.top - viewportRect.top,
@@ -111,13 +111,13 @@ class PDFPage extends Component {
 }
 
 PDFPage.defaultProps = {
-  viewportContainer: isClient ? document.querySelector('.document-viewer') : null,
+  getViewportContainer: () => isClient ? document.querySelector('.document-viewer') : null,
   onVisible: () => {},
   onHidden: () => {},
 };
 
 PDFPage.propTypes = {
-  viewportContainer: PropTypes.object,
+  getViewportContainer: PropTypes.func,
   page: PropTypes.number.isRequired,
   onVisible: PropTypes.func,
   onHidden: PropTypes.func,
