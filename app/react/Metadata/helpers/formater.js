@@ -240,9 +240,14 @@ export default {
   filterProperties(template, onlyForCards, sortedProperty) {
     return template.get('properties')
     .filter((p) => {
-      if (!onlyForCards && !p.get('preview')) {
+      if (p.get('preview')) {
+        return false;
+      }
+
+      if (!onlyForCards) {
         return true;
       }
+
 
       return p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`;
     });

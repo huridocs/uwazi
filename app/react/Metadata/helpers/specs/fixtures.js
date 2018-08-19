@@ -40,7 +40,8 @@ export const templates = Immutable.fromJS([
       { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
       { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
-      { name: 'nested', type: 'nested', label: 'Nested' }
+      { name: 'nested', type: 'nested', label: 'Nested' },
+      { name: 'markdown preview', type: 'markdown', label: 'Mark Down Preview', showInCard: true, preview: true },
     ]
   }
 ]);
