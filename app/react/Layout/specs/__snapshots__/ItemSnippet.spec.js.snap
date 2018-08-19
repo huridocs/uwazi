@@ -1,0 +1,151 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ItemSnippet should first metadata snippet if exists 1`] = `
+<div
+  className="item-snippet-wrapper"
+>
+  <React.Fragment>
+    <div
+      className="item-snippet-source"
+    >
+      Title
+    </div>
+    <div
+      className="item-snippet"
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "title 1 <b>snippet</b> found ...",
+        }
+      }
+      onClick={[MockFunction]}
+    />
+  </React.Fragment>
+  <div>
+    <a
+      onClick={[MockFunction]}
+    >
+      Show more
+    </a>
+  </div>
+</div>
+`;
+
+exports[`ItemSnippet should first metadata snippet if metadata only has metadata field snippets 1`] = `
+<div
+  className="item-snippet-wrapper"
+>
+  <React.Fragment>
+    <div
+      className="item-snippet-source"
+    >
+      Summary
+    </div>
+    <div
+      className="item-snippet"
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "metadata 1 <b>snippet</b> found ...",
+        }
+      }
+      onClick={[MockFunction]}
+    />
+  </React.Fragment>
+  <div>
+    <a
+      onClick={[MockFunction]}
+    >
+      Show more
+    </a>
+  </div>
+</div>
+`;
+
+exports[`ItemSnippet should first metadata snippet when there are no document content snippets 1`] = `
+<div
+  className="item-snippet-wrapper"
+>
+  <React.Fragment>
+    <div
+      className="item-snippet-source"
+    >
+      Title
+    </div>
+    <div
+      className="item-snippet"
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "title 1 <b>snippet</b> found ...",
+        }
+      }
+      onClick={[MockFunction]}
+    />
+  </React.Fragment>
+  <div>
+    <a
+      onClick={[MockFunction]}
+    >
+      Show more
+    </a>
+  </div>
+</div>
+`;
+
+exports[`ItemSnippet should first title snippet if metadata only has title snippets 1`] = `
+<div
+  className="item-snippet-wrapper"
+>
+  <React.Fragment>
+    <div
+      className="item-snippet-source"
+    >
+      Title
+    </div>
+    <div
+      className="item-snippet"
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "title 1 <b>snippet</b> found ...",
+        }
+      }
+      onClick={[MockFunction]}
+    />
+  </React.Fragment>
+  <div>
+    <a
+      onClick={[MockFunction]}
+    >
+      Show more
+    </a>
+  </div>
+</div>
+`;
+
+exports[`ItemSnippet should show first document snippet if there are not metadata snippets 1`] = `
+<div
+  className="item-snippet-wrapper"
+>
+  <React.Fragment>
+    <div
+      className="item-snippet-source"
+    >
+      Document contents
+    </div>
+    <div
+      className="item-snippet"
+      dangerouslySetInnerHTML={
+        Object {
+          "__html": "doc <b>snippet</b> found ...",
+        }
+      }
+      onClick={[MockFunction]}
+    />
+  </React.Fragment>
+  <div>
+    <a
+      onClick={[MockFunction]}
+    >
+      Show more
+    </a>
+  </div>
+</div>
+`;

@@ -2,6 +2,7 @@ export default {
   checkbox: 'check',
   numeric: 'calculator',
   relationship: 'link',
+  relationshipfilter: 'filter',
   select: 'sort',
   multiselect: 'list',
   date: 'calendar',

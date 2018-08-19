@@ -117,6 +117,7 @@ function handleRoute(res, renderProps, req) {
           Promise.resolve({ json: { languages: [], private: settingsData.private } }),
           translationsApi.get().then(onlySystemTranslations),
           Promise.resolve({ json: { rows: [] } }),
+          Promise.resolve({ json: { rows: [] } }),
           Promise.resolve({ json: { rows: [] } })
         ]);
       }
@@ -126,23 +127,26 @@ function handleRoute(res, renderProps, req) {
         api.get('settings'),
         api.get('translations'),
         api.get('templates'),
-        api.get('thesauris')
+        api.get('thesauris'),
+        api.get('relationTypes')
       ]);
     })
-    .then(([user, settings, translations, templates, thesauris]) => {
+    .then(([user, settings, translations, templates, thesauris, relationTypes]) => {
       const globalResources = {
         user: user.json,
         settings: { collection: settings.json },
         translations: translations.json.rows,
         templates: templates.json.rows,
-        thesauris: thesauris.json.rows
+        thesauris: thesauris.json.rows,
+        relationTypes: relationTypes.json.rows
       };
 
       globalResources.settings.collection.links = globalResources.settings.collection.links || [];
 
       return Promise.all([routeProps.requestState(renderProps.params, query, {
         templates: Immutable(globalResources.templates),
-        thesauris: Immutable(globalResources.thesauris)
+        thesauris: Immutable(globalResources.thesauris),
+        relationTypes: Immutable(globalResources.relationTypes)
       }), globalResources]);
     })
     .catch((error) => {
@@ -169,6 +173,7 @@ function handleRoute(res, renderProps, req) {
       initialData.translations = globalResources.translations;
       initialData.templates = globalResources.templates;
       initialData.thesauris = globalResources.thesauris;
+      initialData.relationTypes = globalResources.relationTypes;
       initialData.locale = locale;
       renderPage(initialData, true);
     })

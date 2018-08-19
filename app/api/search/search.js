@@ -1,27 +1,25 @@
-import { comonProperties, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
+import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
 import { detect as detectLanguage } from 'shared/languages';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
-
+import relationtypes from 'api/relationtypes';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
 
+
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
     const property = properties.find(p => p.name === propertyName);
-    let type = 'text';
+    let { type } = property;
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
     if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
-    }
-    if (property.type === 'nested') {
-      type = 'nested';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
@@ -48,13 +46,58 @@ function agregationProperties(properties) {
   .filter(property => property.type === 'select' ||
     property.type === 'multiselect' ||
     property.type === 'relationship' ||
-    property.type === 'nested')
-  .map((property) => {
-    if (property.type === 'nested') {
-      return { name: property.name, nested: true, nestedProperties: property.nestedProperties };
-    }
-    return { name: property.name, nested: false, content: property.content };
-  });
+    property.type === 'relationshipfilter' ||
+    property.type === 'nested');
+}
+
+function metadataSnippetsFromSearchHit(hit) {
+  const defaultSnippets = { count: 0, snippets: [] };
+  if (hit.highlight) {
+    const metadataHighlights = hit.highlight;
+    const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
+      const fieldSnippets = { field, texts: metadataHighlights[field] };
+      return {
+        count: foundSnippets.count + fieldSnippets.texts.length,
+        snippets: [...foundSnippets.snippets, fieldSnippets]
+      };
+    }, defaultSnippets);
+    return metadataSnippets;
+  }
+  return defaultSnippets;
+}
+
+function fullTextSnippetsFromSearchHit(hit) {
+  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+    const regex = /\[\[(\d+)\]\]/g;
+
+    const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+    const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
+    const fullTextSnippets = fullTextHighlights[fullTextLanguageKey].map((snippet) => {
+      const matches = regex.exec(snippet);
+      return {
+        text: snippet.replace(regex, ''),
+        page: matches ? Number(matches[1]) : 0
+      };
+    });
+    return fullTextSnippets;
+  }
+  return [];
+}
+
+function snippetsFromSearchHit(hit) {
+  const snippets = {
+    count: 0,
+    metadata: [],
+    fullText: []
+  };
+
+  const metadataSnippets = metadataSnippetsFromSearchHit(hit);
+  const fullTextSnippets = fullTextSnippetsFromSearchHit(hit);
+  snippets.count = metadataSnippets.count + fullTextSnippets.length;
+  snippets.metadata = metadataSnippets.snippets;
+  snippets.fullText = fullTextSnippets;
+
+  return snippets;
 }
 
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
@@ -87,8 +130,8 @@ const search = {
       ]);
     }
 
-    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get()])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries]) => {
+    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get(), relationtypes.get()])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes]) => {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
@@ -118,7 +161,7 @@ const search = {
 
       const allTemplates = templates.map(t => t._id);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      let properties = comonProperties(templates, filteringTypes);
+      let properties = comonFilters(templates, relationTypes, filteringTypes);
       properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
 
       if (query.allAggregations) {
@@ -141,21 +184,7 @@ const search = {
         const rows = response.hits.hits.map((hit) => {
           const result = hit._source;
           result._explanation = hit._explanation;
-          result.snippets = [];
-          if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
-            const regex = /\[\[(\d+)\]\]/g;
-
-            const highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
-            if (highlights) {
-              result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
-                const matches = regex.exec(snippet);
-                return {
-                  text: snippet.replace(regex, ''),
-                  page: matches ? Number(matches[1]) : 0
-                };
-              });
-            }
-          }
+          result.snippets = snippetsFromSearchHit(hit);
           result._id = hit._id;
           return result;
         });
@@ -164,7 +193,17 @@ const search = {
           if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
             aggregation.buckets = Object.keys(aggregation.buckets).map(key => Object.assign({ key }, aggregation.buckets[key]));
           }
-          response.aggregations.all[aggregationKey] = aggregation;
+          if (aggregation.buckets) {
+            response.aggregations.all[aggregationKey] = aggregation;
+          }
+          if (!aggregation.buckets) {
+            Object.keys(aggregation).forEach((key) => {
+              if (aggregation[key].buckets) {
+                const buckets = aggregation[key].buckets.map(option => Object.assign({ key: option.key }, option.filtered.total));
+                response.aggregations.all[key] = { doc_count: aggregation[key].doc_count, buckets };
+              }
+            });
+          }
         });
 
         return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
@@ -181,32 +220,26 @@ const search = {
   },
 
   searchSnippets(searchTerm, sharedId, language) {
-    const query = documentQueryBuilder()
-    .fullTextSearch(searchTerm, ['fullText'], 9999)
-    .includeUnpublished()
-    .filterById(sharedId)
-    .language(language)
-    .query();
+    return Promise.all([templatesModel.get()])
+    .then(([templates]) => {
+      const searchFields = textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
+      const query = documentQueryBuilder()
+      .fullTextSearch(searchTerm, searchFields, 9999)
+      .includeUnpublished()
+      .filterById(sharedId)
+      .language(language)
+      .query();
 
-    return elastic.search({ index: elasticIndex, body: query })
-    .then((response) => {
-      if (response.hits.hits.length === 0) {
-        return [];
-      }
-
-      if (!response.hits.hits[0].inner_hits) {
-        return [];
-      }
-
-      const highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
-
-      const regex = /\[\[(\d+)\]\]/g;
-      return highlights[Object.keys(highlights)[0]].map((snippet) => {
-        const matches = regex.exec(snippet);
-        return {
-          text: snippet.replace(regex, ''),
-          page: matches ? Number(matches[1]) : 0
-        };
+      return elastic.search({ index: elasticIndex, body: query })
+      .then((response) => {
+        if (response.hits.hits.length === 0) {
+          return {
+            count: 0,
+            metadata: [],
+            fullText: []
+          };
+        }
+        return snippetsFromSearchHit(response.hits.hits[0]);
       });
     });
   },

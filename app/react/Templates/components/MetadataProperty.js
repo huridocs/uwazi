@@ -7,13 +7,15 @@ import { editProperty } from 'app/Templates/actions/uiActions';
 import { showModal } from 'app/Modals/actions/modalActions';
 import { reorderProperty, addProperty } from 'app/Templates/actions/templateActions';
 import ShowIf from 'app/App/ShowIf';
+import { Icon } from 'UI';
 import FormConfigInput from './FormConfigInput';
 import FormConfigSelect from './FormConfigSelect';
 import FormConfigRelationship from './FormConfigRelationship';
+import FormConfigRelationshipFilter from './FormConfigRelationshipFilter';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
 import Icons from './Icons';
-import { Icon } from 'UI';
+
 
 export class MetadataProperty extends Component {
   renderForm() {
@@ -22,6 +24,9 @@ export class MetadataProperty extends Component {
     }
     if (this.props.type === 'relationship') {
       return <FormConfigRelationship index={this.props.index} />;
+    }
+    if (this.props.type === 'relationshipfilter') {
+      return <FormConfigRelationshipFilter index={this.props.index} />;
     }
     if (this.props.type === 'select' || this.props.type === 'multiselect') {
       return <FormConfigSelect index={this.props.index} />;

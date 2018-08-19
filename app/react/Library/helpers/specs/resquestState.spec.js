@@ -12,10 +12,17 @@ describe('static requestState()', () => {
     { name: 'Decision', _id: 'abc1', properties: [{ name: 'p', filter: true, type: 'text', prioritySorting: true }] },
     { name: 'Ruling', _id: 'abc2', properties: [] }
   ];
+  const relationTypes = [
+    { name: 'Victim', _id: 'abc3', properties: [{ name: 'p', filter: true, type: 'text' }] }
+  ];
 
   const thesauris = [{ name: 'countries', _id: '1', values: [] }];
   const documents = { rows: [{ title: 'Something to publish' }, { title: 'My best recipes' }], totalRows: 2, aggregations };
-  const globalResources = { templates: Immutable.fromJS(templates), thesauris: Immutable.fromJS(thesauris) };
+  const globalResources = {
+    templates: Immutable.fromJS(templates),
+    thesauris: Immutable.fromJS(thesauris),
+    relationTypes: Immutable.fromJS(relationTypes)
+  };
 
   beforeEach(() => {
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
@@ -47,7 +54,7 @@ describe('static requestState()', () => {
     const query = { q: rison.encode(q) };
     requestState({}, query, globalResources)
     .then((state) => {
-      expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris);
+      expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris, relationTypes);
       expect(state.library.filters.documentTypes).toEqual(['type1']);
       expect(state.library.filters.properties).toBe('properties');
       expect(state.library.search).toBe('search');

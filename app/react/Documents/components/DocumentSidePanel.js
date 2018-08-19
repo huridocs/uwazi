@@ -100,15 +100,11 @@ export class DocumentSidePanel extends Component {
           </button>
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
-              {(() => {
-                if (docType !== 'entity') {
-                  return (<li>
-                    <TabLink to="text-search">
-                      <SnippetsTab storeKey={this.props.storeKey} />
-                    </TabLink>
-                          </li>);
-                }
-              })()}
+              <li>
+                <TabLink to="text-search">
+                  <SnippetsTab storeKey={this.props.storeKey} />
+                </TabLink>
+              </li>
               {(() => {
                 if (docType !== 'entity') {
                   return (<li>
@@ -132,12 +128,7 @@ export class DocumentSidePanel extends Component {
                 }
                 return <span/>;
               })()}
-              {(() => {
-                if (docType !== 'entity') {
-                  return <li className="tab-separator" />;
-                }
-                return <span/>;
-              })()}
+              <li className="tab-separator" />
               <li>
                 <TabLink to="metadata" default>
                   <Icon icon="info-circle" />

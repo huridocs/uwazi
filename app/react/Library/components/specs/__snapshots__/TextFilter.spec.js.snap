@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextFilter should render a text filter field with a label and passing the model 1`] = `
+<Modeled(Connect(Field))
+  model="model"
+>
+  <ul
+    className="search__filter is-active"
+  >
+    <li>
+      <label>
+        label
+      </label>
+    </li>
+    <li
+      className="wide"
+    >
+      <input
+        className="form-control"
+        onChange={[Function]}
+      />
+    </li>
+  </ul>
+</Modeled(Connect(Field))>
+`;

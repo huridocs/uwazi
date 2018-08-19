@@ -143,6 +143,11 @@ const config = {
           path_unmatch: 'metadata.*.*',
           mapping: { type: 'nested' }
         }
+      }, {
+        relationships_fields: {
+          path_match: 'relationships',
+          mapping: { type: 'nested' }
+        }
       }],
       properties: {
         '@timestamp': { type: 'date', doc_values: true },

@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DateFilter should render a date filter field with a label and passing the model and format 1`] = `
+<ul
+  className="search__filter is-active"
+>
+  <li>
+    <label>
+      label
+    </label>
+  </li>
+  <li
+    className="wide"
+  >
+    <DateRange
+      format="format"
+      model="model"
+      onChange={[Function]}
+    />
+  </li>
+</ul>
+`;
