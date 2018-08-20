@@ -21,7 +21,8 @@ class ViewDocument extends RouteHandler {
     RouteHandler.renderedFromServer = props.renderedFromServer || false;
     //
     super(props, context);
-    this.onPageChange = this.onPageChange.bind(this);
+    this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
+    this.changePage = this.changePage.bind(this);
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
@@ -66,7 +67,15 @@ class ViewDocument extends RouteHandler {
     this.context.store.dispatch(setViewerState(state));
   }
 
-  onPageChange(newPage) {
+  changePage(nextPage) {
+    if (!this.props.location.query.raw) {
+      return scrollToPage(nextPage);
+    }
+
+    return this.changeBrowserHistoryPage(nextPage);
+  }
+
+  changeBrowserHistoryPage(newPage) {
     const { query: { page, ...queryWithoutPage } } = this.props.location;
     queryWithoutPage.raw = queryWithoutPage.raw || undefined;
     browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`);
@@ -90,8 +99,9 @@ class ViewDocument extends RouteHandler {
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}
-          onPageChange={this.onPageChange}
+          onPageChange={this.changeBrowserHistoryPage}
           onDocumentReady={this.onDocumentReady}
+          changePage={this.changePage}
         />
       </React.Fragment>
     );

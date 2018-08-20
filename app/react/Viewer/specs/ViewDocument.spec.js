@@ -110,18 +110,46 @@ describe('ViewDocument', () => {
     });
   });
 
-  describe('onPageChange', () => {
+  describe('changePage', () => {
+    describe('when raw', () => {
+      it('should changeBrowserHistoryPage', () => {
+        props.location = { query: { raw: true, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+        spyOn(uiActions, 'scrollToPage');
+        render();
+        spyOn(instance, 'changeBrowserHistoryPage');
+
+        instance.changePage(16);
+        expect(instance.changeBrowserHistoryPage).toHaveBeenCalledWith(16);
+        expect(uiActions.scrollToPage).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when not raw', () => {
+      it('should scrollToPage', () => {
+        props.location = { query: { raw: false, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+        spyOn(uiActions, 'scrollToPage');
+        render();
+        spyOn(instance, 'changeBrowserHistoryPage');
+
+        instance.changePage(16);
+        expect(instance.changeBrowserHistoryPage).not.toHaveBeenCalled();
+        expect(uiActions.scrollToPage).toHaveBeenCalledWith(16);
+      });
+    });
+  });
+
+  describe('changeBrowserHistoryPage', () => {
     it('should push new browserHistory with new page', () => {
       props.location = { query: { raw: true, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
       spyOn(browserHistory, 'push');
       render();
 
-      instance.onPageChange(16);
+      instance.changeBrowserHistoryPage(16);
       expect(browserHistory.push).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
 
       component.setProps({ location: { query: { raw: false, page: 15 }, pathname: 'pathname' } });
       component.update();
-      instance.onPageChange(16);
+      instance.changeBrowserHistoryPage(16);
       expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
     });
   });

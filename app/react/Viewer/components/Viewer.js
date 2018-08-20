@@ -76,7 +76,7 @@ export class Viewer extends Component {
               <TemplateLabel template={doc.get('template')}/>
               <PaginatorWithPage
                 totalPages={doc.get('totalPages')}
-                onPageChange={scrollToPage}
+                onPageChange={this.props.changePage}
               />
             </div>
           </div>
@@ -134,6 +134,7 @@ Viewer.defaultProps = {
   searchTerm: '',
   raw: false,
   onPageChange: () => {},
+  changePage: () => {},
   onDocumentReady: () => {},
 };
 
@@ -141,6 +142,7 @@ Viewer.propTypes = {
   searchTerm: PropTypes.string,
   raw: PropTypes.bool,
   onPageChange: PropTypes.func,
+  changePage: PropTypes.func,
   onDocumentReady: PropTypes.func,
   location: PropTypes.object,
   doc: PropTypes.object,
