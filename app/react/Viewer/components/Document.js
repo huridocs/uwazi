@@ -125,8 +125,8 @@ export class Document extends Component {
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
                 onPageChange={this.props.onPageChange}
+                onPDFReady={this.props.onDocumentReady}
                 pdfInfo={doc.pdfInfo}
-                page={this.props.page}
                 onLoad={this.pdfLoaded.bind(this)}
                 file={`${APIURL}documents/download?_id=${doc._id}`}
                 filename={doc.file ? doc.file.filename : null}

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { browserHistory } from 'react-router';
 import { shallow } from 'enzyme';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Viewer from 'app/Viewer/components/Viewer';
@@ -7,6 +8,7 @@ import * as relationships from 'app/Relationships/utils/routeUtils';
 import * as utils from 'app/utils';
 
 import * as routeActions from '../actions/routeActions';
+import * as uiActions from '../actions/uiActions';
 
 
 describe('ViewDocument', () => {
@@ -39,16 +41,10 @@ describe('ViewDocument', () => {
     spyOn(routeActions, 'setViewerState').and.returnValue({ type: 'setViewerState' });
   });
 
-  it('should pass down the route location', () => {
+  it('should pass down raw property', () => {
     props.location = { query: { raw: true, page: 2 } };
     render();
-    expect(component.find(Viewer).props().location).toEqual(props.location);
-  });
-
-  it('should pass down page number 1 as default', () => {
-    props.location = { query: { } };
-    render();
-    expect(component.find(Viewer).props().location.query.page).toBe(1);
+    expect(component.find(Viewer).props().raw).toEqual(true);
   });
 
   describe('when on server', () => {
@@ -56,7 +52,7 @@ describe('ViewDocument', () => {
       props.location = { query: { raw: false } };
       utils.isClient = false;
       render();
-      expect(component.find(Viewer).props().location.query.raw).toBe(true);
+      expect(component.find(Viewer).props().raw).toBe(true);
       utils.isClient = true;
     });
   });
@@ -97,6 +93,38 @@ describe('ViewDocument', () => {
     });
   });
 
+  describe('onDocumentReady', () => {
+    it('should scrollToPage on the query when not on raw mode', () => {
+      spyOn(uiActions, 'scrollToPage');
+      props.location = { query: { raw: false, page: 15 }, pathname: 'pathname' };
+      render();
+
+      instance.onDocumentReady();
+      expect(uiActions.scrollToPage).toHaveBeenCalledWith(15);
+
+      component.setProps({ location: { query: { raw: true, page: 15 }, pathname: 'pathname' } });
+      component.update();
+      uiActions.scrollToPage.calls.reset();
+      instance.onDocumentReady();
+      expect(uiActions.scrollToPage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onPageChange', () => {
+    it('should push new browserHistory with new page', () => {
+      props.location = { query: { raw: true, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+      spyOn(browserHistory, 'push');
+      render();
+
+      instance.onPageChange(16);
+      expect(browserHistory.push).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
+
+      component.setProps({ location: { query: { raw: false, page: 15 }, pathname: 'pathname' } });
+      component.update();
+      instance.onPageChange(16);
+      expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
+    });
+  });
 
   describe('setReduxState()', () => {
     it('should dispatch setViewerState', () => {

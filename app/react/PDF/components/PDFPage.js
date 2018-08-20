@@ -60,6 +60,7 @@ class PDFPage extends Component {
     const offsetBottom = pageRectangle.bottom - viewportRect.bottom > 0 ? pageRectangle.bottom - viewportRect.bottom : 0;
     const visibility = pageRectangle.height - offsetTop - offsetBottom;
 
+
     if (visibility > 0) {
       this.props.onVisible(this.props.page, visibility);
     }

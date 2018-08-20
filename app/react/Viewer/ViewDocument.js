@@ -1,16 +1,19 @@
 import { Helmet } from 'react-helmet';
+import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import React from 'react';
 
 import { actions } from 'app/BasicReducer';
 import { isClient } from 'app/utils';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
+import { toUrlParams } from 'shared/JSONRequest';
 import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
+import entitiesAPI from 'app/Entities/EntitiesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
+import { scrollToPage } from './actions/uiActions';
 
 import { requestViewerState, setViewerState } from './actions/routeActions';
-import entitiesAPI from 'app/Entities/EntitiesAPI';
 
 class ViewDocument extends RouteHandler {
   constructor(props, context) {
@@ -18,6 +21,8 @@ class ViewDocument extends RouteHandler {
     RouteHandler.renderedFromServer = props.renderedFromServer || false;
     //
     super(props, context);
+    this.onPageChange = this.onPageChange.bind(this);
+    this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
   static requestState(routeParams, query = {}, globalResources) {
@@ -61,17 +66,33 @@ class ViewDocument extends RouteHandler {
     this.context.store.dispatch(setViewerState(state));
   }
 
+  onPageChange(newPage) {
+    const { query: { page, ...queryWithoutPage } } = this.props.location;
+    queryWithoutPage.raw = queryWithoutPage.raw || undefined;
+    browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`);
+  }
+
+  onDocumentReady() {
+    if (!this.props.location.query.raw && this.props.location.query.page) {
+      scrollToPage(this.props.location.query.page);
+    }
+  }
+
   render() {
     const { query = {}, pathname } = this.props.location;
     const raw = query.raw || !isClient;
     const page = Number(query.page || 1);
-    const location = { ...this.props.location, query: { ...query, page, raw: !!raw } };
     return (
       <React.Fragment>
         <Helmet>
           {raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}
         </Helmet>
-        <Viewer location={location} />
+        <Viewer
+          raw={raw}
+          searchTerm={query.searchTerm}
+          onPageChange={this.onPageChange}
+          onDocumentReady={this.onDocumentReady}
+        />
       </React.Fragment>
     );
   }

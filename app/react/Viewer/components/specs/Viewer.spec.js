@@ -91,7 +91,7 @@ describe('Viewer', () => {
     component.update();
     expect(component.find(SourceDocument).length).toBe(1);
 
-    component.setProps({ location: { query: { raw: true } } });
+    component.setProps({ raw: true });
     expect(component.find('pre').length).toBe(1);
   });
 

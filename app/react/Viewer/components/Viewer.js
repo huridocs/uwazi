@@ -21,14 +21,12 @@ import { loadDefaultViewerMenu, loadTargetDocument } from '../actions/documentAc
 import { openPanel, scrollToPage } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
-import Paginator from './Paginator';
+import { PaginatorWithPage } from './Paginator';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
-import { browserHistory } from 'react-router';
-import { toUrlParams } from 'shared/JSONRequest';
 
 export class Viewer extends Component {
   constructor(props) {
@@ -50,6 +48,7 @@ export class Viewer extends Component {
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
 
+
   render() {
     const { doc, sidepanelTab } = this.props;
 
@@ -64,10 +63,7 @@ export class Viewer extends Component {
       className += ' connections';
     }
 
-    const { query } = this.props.location;
-    const { raw } = query;
-    const { page, ...queryWithoutPage } = query;
-    queryWithoutPage.raw = queryWithoutPage.raw || undefined;
+    const { raw, searchTerm } = this.props;
 
     return (
       <div className="row">
@@ -78,10 +74,8 @@ export class Viewer extends Component {
               <PropertyIcon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
               <h1 className="item-name">{doc.get('title')}</h1>
               <TemplateLabel template={doc.get('template')}/>
-              <Paginator
-                page={page}
+              <PaginatorWithPage
                 totalPages={doc.get('totalPages')}
-                baseUrl={`${this.props.location.pathname}${toUrlParams(queryWithoutPage)}`}
                 onPageChange={scrollToPage}
               />
             </div>
@@ -92,9 +86,7 @@ export class Viewer extends Component {
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               {raw || this.state.firstRender ?
                 <pre>{this.props.pageText}</pre> :
-                <SourceDocument onPageChange={(page) => {
-                  browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page })}`);
-                }} page={page} searchTerm={this.props.searchTerm}/>
+                <SourceDocument onPageChange={this.props.onPageChange} onDocumentReady={this.props.onDocumentReady}/>
               }
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
@@ -106,7 +98,7 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel storeKey="documentViewer" searchTerm={this.props.searchTerm}/>
+        <ViewMetadataPanel storeKey="documentViewer" searchTerm={searchTerm}/>
         <CreateConnectionPanel
           containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
           onCreate={this.props.addReference}
@@ -138,7 +130,18 @@ export class Viewer extends Component {
   }
 }
 
+Viewer.defaultProps = {
+  searchTerm: '',
+  raw: false,
+  onPageChange: () => {},
+  onDocumentReady: () => {},
+};
+
 Viewer.propTypes = {
+  searchTerm: PropTypes.string,
+  raw: PropTypes.bool,
+  onPageChange: PropTypes.func,
+  onDocumentReady: PropTypes.func,
   location: PropTypes.object,
   doc: PropTypes.object,
   pageText: PropTypes.string,
