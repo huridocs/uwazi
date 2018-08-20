@@ -6,6 +6,31 @@ describe('privateInstanceMiddleware', () => {
   let res;
   let next;
 
+  const expectUnauthorized = (done) => {
+    middleWare(req, res, next)
+    .then(() => {
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(next).not.toHaveBeenCalled();
+      done();
+    });
+  };
+
+  const expectNext = () => {
+    middleWare(req, res, next);
+    expect(res.redirect).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  };
+
+  const expectNextPromise = (done) => {
+    middleWare(req, res, next)
+    .then(() => {
+      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
+      done();
+    });
+  };
+
   beforeEach(() => {
     req = { url: '' };
     res = {
@@ -15,7 +40,6 @@ describe('privateInstanceMiddleware', () => {
     };
     next = jasmine.createSpy('next');
   });
-
 
   it('should redirect to "/login" when there is no user in the request and the instance is configured as private', (done) => {
     spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
@@ -28,41 +52,36 @@ describe('privateInstanceMiddleware', () => {
   });
 
   describe('Api calls', () => {
-    const expectUnauthorized = (done) => {
-      middleWare(req, res, next)
-      .then(() => {
-        expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
-        expect(next).not.toHaveBeenCalled();
-        done();
-      });
-    };
-
-    const expectNext = (done) => {
-      middleWare(req, res, next)
-      .then(() => {
-        expect(res.status).not.toHaveBeenCalled();
-        expect(next).toHaveBeenCalled();
-        done();
-      });
-    };
+    beforeEach(() => {
+      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+    });
 
     it('should return an unauthorized error when there is no user, the instance is configured as private and the call is to the api', (done) => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
       req.url = 'host:port/api/someendpoint';
       expectUnauthorized(done);
     });
 
     it('should allow the recoverpassword endpoint', (done) => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
       req.url = 'host:port/api/recoverpassword';
-      expectNext(done);
+      expectNextPromise(done);
     });
 
     it('should allow the resetpassword endpoint', (done) => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
       req.url = 'host:port/api/resetpassword';
-      expectNext(done);
+      expectNextPromise(done);
+    });
+  });
+
+  describe('Other private-related calls', () => {
+    beforeEach(() => {
+      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+      req.url = 'host:port/uploaded_documents/somefile.png';
+    });
+
+    describe('uploaded_documents', () => {
+      it('should return an unauthorized error when there is no user', (done) => {
+        expectUnauthorized(done);
+      });
     });
   });
 
@@ -87,12 +106,6 @@ describe('privateInstanceMiddleware', () => {
   });
 
   describe('Routes', () => {
-    const expectNext = () => {
-      middleWare(req, res, next);
-      expect(res.redirect).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalled();
-    };
-
     beforeEach(() => {
       spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
     });
