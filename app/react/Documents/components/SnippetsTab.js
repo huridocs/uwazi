@@ -7,7 +7,7 @@ import { Icon } from 'UI';
 const SnippetsTab = ({snippets}) => {
   return <div>
     <Icon icon="search" />
-    <span className="connectionsNumber">{snippets.size ? snippets.size : ''}</span>
+    <span className="connectionsNumber">{snippets.get('count') ? snippets.get('count') : ''}</span>
     <span className="tab-link-tooltip">{t('System', 'Search text')}</span>
   </div>;
 };

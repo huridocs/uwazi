@@ -59,10 +59,27 @@ describe('search', () => {
       it('perform a search on fullText of the document passed and return the snippets', (done) => {
         search.searchSnippets('spanish', ids.batmanFinishes, 'es')
         .then((snippets) => {
-          expect(snippets.length).toBe(1);
-          expect(snippets[0].page).toBe(34);
-          expect(snippets[0].text).toMatch('spanish');
-          expect(snippets[0].text).not.toMatch('[[34]]');
+          expect(snippets.fullText.length).toBe(1);
+          expect(snippets.fullText[0].page).toBe(34);
+          expect(snippets.fullText[0].text).toMatch('spanish');
+          expect(snippets.fullText[0].text).not.toMatch('[[34]]');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+
+      it('perform a search on metadata and fullText and return the snippets', (done) => {
+        search.searchSnippets('gargoyles', ids.metadataSnippets, 'en')
+        .then((snippets) => {
+          const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
+          const fieldSnippet = snippets.metadata.find(snippet => snippet.field === 'metadata.field1');
+          expect(snippets.count).toBe(3);
+          expect(snippets.metadata.length).toBe(2);
+          expect(titleSnippet.texts.length).toBe(1);
+          expect(titleSnippet.texts[0]).toMatch('gargoyles');
+          expect(fieldSnippet.texts.length).toBe(1);
+          expect(fieldSnippet.texts[0]).toMatch('gargoyles');
+          expect(snippets.fullText.length).toBe(1);
           done();
         })
         .catch(catchErrors(done));
@@ -71,17 +88,21 @@ describe('search', () => {
       it('should perform the search on unpublished documents also', (done) => {
         search.searchSnippets('unpublished', 'unpublishedSharedId', 'en')
         .then((snippets) => {
-          expect(snippets.length).toBe(1);
+          expect(snippets.fullText.length).toBe(1);
           done();
         })
         .catch(catchErrors(done));
       });
 
       describe('when document is not matched', () => {
-        it('should return empty array', (done) => {
+        it('should return snippet object with 0 count and empty arrays', (done) => {
           search.searchSnippets('not matching string', ids.batmanFinishes, 'es')
           .then((snippets) => {
-            expect(snippets.length).toBe(0);
+            expect(snippets).toEqual({
+              count: 0,
+              metadata: [],
+              fullText: []
+            });
             done();
           })
           .catch(catchErrors(done));
@@ -92,7 +113,7 @@ describe('search', () => {
         it('should return empty array', (done) => {
           search.searchSnippets('', ids.batmanFinishes, 'es')
           .then((snippets) => {
-            expect(snippets.length).toBe(0);
+            expect(snippets.fullText.length).toBe(0);
             done();
           })
           .catch(catchErrors(done));
@@ -378,6 +399,10 @@ describe('search', () => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
           expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
+
+          const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
+          expect(template1groupedAggs.find(a => a.key === 'spainID').filtered.doc_count).toBe(2);
+          expect(template1groupedAggs.find(a => a.key === 'franceID').filtered.doc_count).toBe(0);
 
           const template2Aggs = template2.aggregations.all.multiselect1.buckets;
           expect(template2Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(0);

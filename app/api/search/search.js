@@ -50,6 +50,56 @@ function agregationProperties(properties) {
     property.type === 'nested');
 }
 
+function metadataSnippetsFromSearchHit(hit) {
+  const defaultSnippets = { count: 0, snippets: [] };
+  if (hit.highlight) {
+    const metadataHighlights = hit.highlight;
+    const metadataSnippets = Object.keys(metadataHighlights).reduce((foundSnippets, field) => {
+      const fieldSnippets = { field, texts: metadataHighlights[field] };
+      return {
+        count: foundSnippets.count + fieldSnippets.texts.length,
+        snippets: [...foundSnippets.snippets, fieldSnippets]
+      };
+    }, defaultSnippets);
+    return metadataSnippets;
+  }
+  return defaultSnippets;
+}
+
+function fullTextSnippetsFromSearchHit(hit) {
+  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length) {
+    const regex = /\[\[(\d+)\]\]/g;
+
+    const fullTextHighlights = hit.inner_hits.fullText.hits.hits[0].highlight;
+    const fullTextLanguageKey = Object.keys(fullTextHighlights)[0];
+    const fullTextSnippets = fullTextHighlights[fullTextLanguageKey].map((snippet) => {
+      const matches = regex.exec(snippet);
+      return {
+        text: snippet.replace(regex, ''),
+        page: matches ? Number(matches[1]) : 0
+      };
+    });
+    return fullTextSnippets;
+  }
+  return [];
+}
+
+function snippetsFromSearchHit(hit) {
+  const snippets = {
+    count: 0,
+    metadata: [],
+    fullText: []
+  };
+
+  const metadataSnippets = metadataSnippetsFromSearchHit(hit);
+  const fullTextSnippets = fullTextSnippetsFromSearchHit(hit);
+  snippets.count = metadataSnippets.count + fullTextSnippets.length;
+  snippets.metadata = metadataSnippets.snippets;
+  snippets.fullText = fullTextSnippets;
+
+  return snippets;
+}
+
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.limit(9999);
   const geolocationProperties = [];
@@ -134,21 +184,7 @@ const search = {
         const rows = response.hits.hits.map((hit) => {
           const result = hit._source;
           result._explanation = hit._explanation;
-          result.snippets = [];
-          if (hit.inner_hits && hit.inner_hits.fullText && hit.inner_hits.fullText.hits.hits.length) {
-            const regex = /\[\[(\d+)\]\]/g;
-
-            const highlights = hit.inner_hits.fullText.hits.hits[0].highlight;
-            if (highlights) {
-              result.snippets = highlights[Object.keys(highlights)[0]].map((snippet) => {
-                const matches = regex.exec(snippet);
-                return {
-                  text: snippet.replace(regex, ''),
-                  page: matches ? Number(matches[1]) : 0
-                };
-              });
-            }
-          }
+          result.snippets = snippetsFromSearchHit(hit);
           result._id = hit._id;
           return result;
         });
@@ -184,32 +220,26 @@ const search = {
   },
 
   searchSnippets(searchTerm, sharedId, language) {
-    const query = documentQueryBuilder()
-    .fullTextSearch(searchTerm, ['fullText'], 9999)
-    .includeUnpublished()
-    .filterById(sharedId)
-    .language(language)
-    .query();
+    return Promise.all([templatesModel.get()])
+    .then(([templates]) => {
+      const searchFields = textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
+      const query = documentQueryBuilder()
+      .fullTextSearch(searchTerm, searchFields, 9999)
+      .includeUnpublished()
+      .filterById(sharedId)
+      .language(language)
+      .query();
 
-    return elastic.search({ index: elasticIndex, body: query })
-    .then((response) => {
-      if (response.hits.hits.length === 0) {
-        return [];
-      }
-
-      if (!response.hits.hits[0].inner_hits) {
-        return [];
-      }
-
-      const highlights = response.hits.hits[0].inner_hits.fullText.hits.hits[0].highlight;
-
-      const regex = /\[\[(\d+)\]\]/g;
-      return highlights[Object.keys(highlights)[0]].map((snippet) => {
-        const matches = regex.exec(snippet);
-        return {
-          text: snippet.replace(regex, ''),
-          page: matches ? Number(matches[1]) : 0
-        };
+      return elastic.search({ index: elasticIndex, body: query })
+      .then((response) => {
+        if (response.hits.hits.length === 0) {
+          return {
+            count: 0,
+            metadata: [],
+            fullText: []
+          };
+        }
+        return snippetsFromSearchHit(response.hits.hits[0]);
       });
     });
   },

@@ -4,12 +4,14 @@ import db from 'api/utils/testing_db';
 const userId = db.id();
 const batmanBegins = 'shared2';
 const batmanFinishes = 'shared';
+const metadataSnippets = 'metadataSnippets';
 
 const template = db.id();
 const template1 = db.id();
 const template2 = db.id();
 const templateMetadata1 = db.id();
 const templateMetadata2 = db.id();
+const countriesDictionaryID = db.id();
 const relationType = db.id();
 
 export default {
@@ -36,6 +38,7 @@ export default {
         field2: 'bane',
         select1: 'selectValue1',
         multiselect1: ['multiValue1', 'multiValue2'],
+        groupedDictionary: ['spainID'],
         nestedField: [{ nested1: ['1', '2', '3'] }],
         city_geolocation: { lat: 1, lon: 2 }
       }
@@ -58,7 +61,7 @@ export default {
       title: 'Metadata2',
       published: true,
       user: userId,
-      metadata: { field1: 'joker', field2: 'penguin', select1: 'selectValue1', multiselect1: ['multiValue1'] }
+      metadata: { field1: 'joker', field2: 'penguin', select1: 'selectValue1', multiselect1: ['multiValue1'], groupedDictionary: ['spainID'] }
     },
     {
       _id: db.id(),
@@ -107,6 +110,17 @@ export default {
     { _id: db.id(), sharedId: 'entityWithEgypt', template, language: 'en', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['abc123'] } },
     { _id: db.id(), sharedId: 'entityWithEgyptDictionary', template, language: 'en', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'] } },
     { _id: db.id(), sharedId: 'unsuportedLanguage', template, language: 'ar', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['bce629bf-efc1-40dd-9af0-0542422dcbc3'] } },
+    // snippets in metadata
+    {
+      _id: db.id(),
+      sharedId: metadataSnippets,
+      language: 'en',
+      title: 'Document about gargoyles',
+      metadata: {
+        field1: 'This is some text containing the word gargoyles.'
+      },
+      fullText: 'Once upon a time[[1]] gargoyles lived on building ledges[[13]]'
+    }
   ],
   templates: [
     { _id: template, properties: [] },
@@ -125,7 +139,8 @@ export default {
         { name: 'select1', type: 'select', filter: true },
         { name: 'multiselect1', type: 'multiselect', filter: true },
         { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
-        { name: 'city_geolocation', type: 'geolocation', filter: true }
+        { name: 'city_geolocation', type: 'geolocation', filter: true },
+        { name: 'groupedDictionary', type: 'multiselect', filter: true, content: countriesDictionaryID },
       ]
     },
     {
@@ -142,6 +157,7 @@ export default {
   ],
     dictionaries: [
       {
+        _id: countriesDictionaryID,
         name: 'Contries Dcitionary',
         values: [
           {
@@ -150,11 +166,19 @@ export default {
           },
           {
             label: 'Chile',
-            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc4'
           },
           {
             label: 'Egypto',
             id: 'bce629bf-efc1-40dd-9af0-0542422dcbc3'
+          },
+          {
+            label: 'Europe',
+            id: 'bce629bf-efc1-40dd-9af0-0542422dcbc5',
+            values: [
+              { label: 'Spain', id: 'spainID' },
+              { label: 'France', id: 'franceID' },
+            ]
           }
         ]
       }
@@ -183,6 +207,7 @@ export default {
 export const ids = {
     batmanBegins,
     batmanFinishes,
+    metadataSnippets,
     userId,
     template1: template1.toString(),
     template2: template2.toString(),

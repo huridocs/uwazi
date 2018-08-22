@@ -152,7 +152,9 @@ export default {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return relationships.map((relationship) => {
+        return relationships.map((_relationship) => {
+          const relationship = Object.assign({}, { template: null }, _relationship);
+
           if (withEntityData) {
             return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
           }
@@ -194,7 +196,8 @@ export default {
   },
 
   updateRelationship(relationship) {
-    return Promise.all([relationtypes.getById(relationship.template), model.get({ sharedId: relationship.sharedId })])
+    const getTemplate = relationship.template && relationship.template._id === null ? null : relationtypes.getById(relationship.template);
+    return Promise.all([getTemplate, model.get({ sharedId: relationship.sharedId })])
     .then(([template, relationshipsVersions]) => {
       let toSyncProperties = [];
       if (template && template.properties) {
@@ -206,6 +209,9 @@ export default {
       relationship.metadata = relationship.metadata || {};
       const updateRelationships = relationshipsVersions.map((relation) => {
         if (relationship._id.toString() === relation._id.toString()) {
+          if (relationship.template && relationship.template._id === null) {
+            relationship.template = null;
+          }
           return model.save(relationship);
         }
         toSyncProperties.map((propertyName) => {
@@ -252,7 +258,6 @@ export default {
     }).filter(unique);
 
     const hubsAffectedByDelete = bulkData.delete.map(item => item.hub).filter(unique);
-
     const hubsAffected = hubsAffectedBySave.concat(hubsAffectedByDelete).filter(unique);
     const entitiesAffectedByDelete = bulkData.delete.map(item => item.entity).filter(unique);
 
@@ -300,7 +305,8 @@ export default {
           }
           return normalizeConnectedDocumentData(result, connectedEntity);
         });
-      }));
+      })
+    );
   },
 
   updateEntitiesMetadataByHub(hubId, language) {
@@ -405,6 +411,7 @@ export default {
           );
           results.rows.push(entity);
         }
+
 
         return limitRelationshipResults(results, entitySharedId, hubsLimit);
       });

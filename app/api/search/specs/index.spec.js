@@ -7,6 +7,13 @@ import instanceElasticTesting from 'api/utils/elastic_testing';
 
 describe('search', () => {
   const elasticTesting = instanceElasticTesting('search_index_test');
+  beforeAll((done) => {
+    db.clearAllAndLoad({}).then(done);
+  });
+
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
 
   describe('when language is not supported (korean in this case)', () => {
     it('should index the fullText as child as "other" language (so searches can be performed)', (done) => {
@@ -33,9 +40,7 @@ describe('search', () => {
         expect(snippets.length).toBe(0);
         done();
       })
-      .catch((e) => {
-        done.fail(e);
-      });
+      .catch((e) => { done.fail(e); });
     });
   });
 
