@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
-<div>
+<div
+  className="paginator"
+>
   <Link
     className="btn"
     onClick={[Function]}
@@ -29,7 +31,9 @@ exports[`Paginator should render a previous button and next button based on the 
 `;
 
 exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
-<div>
+<div
+  className="paginator"
+>
   <Link
     className="btn"
     onClick={[Function]}
@@ -57,7 +61,9 @@ exports[`Paginator when base Url already has the query string "?" should add the
 `;
 
 exports[`Paginator when on first page should disable the prev link 1`] = `
-<div>
+<div
+  className="paginator"
+>
   <Link
     className="btn disabled"
     onClick={[Function]}
@@ -86,7 +92,9 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
 `;
 
 exports[`Paginator when on last page should disable the next link 1`] = `
-<div>
+<div
+  className="paginator"
+>
   <Link
     className="btn"
     onClick={[Function]}
