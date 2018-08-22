@@ -10,6 +10,16 @@ exports[`Link should overwrite url query with query params passed (without mutat
 </Link>
 `;
 
+exports[`Link should remove props when they are an empty string 1`] = `
+<Link
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="pathanem?param=value&test=false"
+>
+  text
+</Link>
+`;
+
 exports[`Link should render a link with current location as the url 1`] = `
 <Link
   onlyActiveOnIndex={false}

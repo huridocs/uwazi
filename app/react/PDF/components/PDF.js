@@ -18,7 +18,7 @@ class PDF extends Component {
       });
     }
 
-    this.currentPage = 1;
+    this.currentPage = '1';
     this.pages = {};
     this.pdfReady = false;
 

@@ -23,6 +23,12 @@ describe('Link', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('should remove props when they are an empty string', () => {
+    props.queryParams = { param2: '', test: false };
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
   it('should overwrite url query with query params passed (without mutating query)', () => {
     props.queryParams = { param2: 'new value', test: 'test' };
     render();

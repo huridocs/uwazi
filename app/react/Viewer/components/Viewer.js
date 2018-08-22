@@ -65,7 +65,6 @@ export class Viewer extends Component {
     }
 
     const { raw, searchTerm } = this.props;
-
     return (
       <div className="row">
         <Helmet title={doc.get('title') ? doc.get('title') : 'Document'} />
@@ -79,7 +78,9 @@ export class Viewer extends Component {
                 totalPages={doc.get('totalPages')}
                 onPageChange={this.props.changePage}
               />
-              <CurrentLocationLink queryParams={{raw: true}}>Plain</CurrentLocationLink>
+              <CurrentLocationLink queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}>
+                { raw || this.state.firstRender ? 'Normal' : 'Plain' }
+              </CurrentLocationLink>
             </div>
           </div>
         </ShowIf>
