@@ -33,6 +33,7 @@ export class Viewer extends Component {
   constructor(props) {
     super(props);
     this.state = { firstRender: true };
+    this.handlePlainTextClick = this.handlePlainTextClick.bind(this);
   }
 
   componentWillMount() {
@@ -41,6 +42,10 @@ export class Viewer extends Component {
     if (this.props.sidepanelTab === 'connections') {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
+  }
+
+  handlePlainTextClick() {
+    this.props.showTab('metadata');
   }
 
   componentDidMount() {
@@ -71,13 +76,22 @@ export class Viewer extends Component {
         <ShowIf if={!this.props.targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
-              <PaginatorWithPage
-                totalPages={doc.get('totalPages')}
-                onPageChange={this.props.changePage}
-              />
-              <CurrentLocationLink className="btn btn-default" queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}>
-                { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
-              </CurrentLocationLink>
+              {sidepanelTab !== 'connections'
+                  &&
+                  <React.Fragment>
+                    <PaginatorWithPage
+                      totalPages={doc.get('totalPages')}
+                      onPageChange={this.props.changePage}
+                    />
+                    <CurrentLocationLink
+                      onClick={!raw ? this.handlePlainTextClick : () => {}}
+                      className="btn btn-default"
+                      queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}
+                    >
+                      { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
+                    </CurrentLocationLink>
+                  </React.Fragment>
+              }
             </div>
           </div>
         </ShowIf>
@@ -98,34 +112,34 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel storeKey="documentViewer" searchTerm={searchTerm}/>
+        <ViewMetadataPanel raw={raw} storeKey="documentViewer" searchTerm={searchTerm}/>
         <CreateConnectionPanel
           containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
           onCreate={this.props.addReference}
           onRangedConnect={this.props.loadTargetDocument}
         />
 
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <RelationshipMetadata />
-        </ShowIf>
+      <ShowIf if={sidepanelTab === 'connections'}>
+        <RelationshipMetadata />
+      </ShowIf>
 
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <AddEntitiesPanel />
-        </ShowIf>
+      <ShowIf if={sidepanelTab === 'connections'}>
+        <AddEntitiesPanel />
+      </ShowIf>
 
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <div className="sidepanel-footer">
-            <RelationshipsFormButtons />
-          </div>
-        </ShowIf>
+      <ShowIf if={sidepanelTab === 'connections'}>
+        <div className="sidepanel-footer">
+          <RelationshipsFormButtons />
+        </div>
+      </ShowIf>
 
-        <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
-          <ViewerDefaultMenu/>
-        </ContextMenu>
-        <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
-          <ViewerTextSelectedMenu/>
-        </ContextMenu>
-      </div>
+      <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
+        <ViewerDefaultMenu/>
+      </ContextMenu>
+      <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
+        <ViewerTextSelectedMenu/>
+      </ContextMenu>
+    </div>
     );
   }
 }
@@ -155,7 +169,8 @@ Viewer.propTypes = {
   showConnections: PropTypes.bool,
   showTextSelectMenu: PropTypes.bool,
   selectedConnection: PropTypes.bool,
-  selectedConnectionMetadata: PropTypes.object
+  selectedConnectionMetadata: PropTypes.object,
+  showTab: PropTypes.func
 };
 
 Viewer.contextTypes = {
@@ -178,6 +193,10 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({ addReference, loadTargetDocument }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({
+  addReference,
+  loadTargetDocument,
+  showTab: tab => actions.set('viewer.sidepanel.tab', tab),
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Viewer);

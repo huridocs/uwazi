@@ -101,7 +101,7 @@ export class DocumentSidePanel extends Component {
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
               {(() => {
-                if (docType !== 'entity') {
+                if (docType !== 'entity' && !this.props.raw) {
                   return (<li>
                     <TabLink to="text-search">
                       <SnippetsTab storeKey={this.props.storeKey} />
@@ -110,7 +110,7 @@ export class DocumentSidePanel extends Component {
                 }
               })()}
               {(() => {
-                if (docType !== 'entity') {
+                if (docType !== 'entity' && !this.props.raw) {
                   return (<li>
                     <TabLink to="toc">
                       <Icon icon="font" />
@@ -121,7 +121,7 @@ export class DocumentSidePanel extends Component {
                 return <span/>;
               })()}
               {(() => {
-                if (docType !== 'entity') {
+                if (docType !== 'entity' && !this.props.raw) {
                   return (<li>
                     <TabLink to="references">
                       <Icon icon="sitemap" />
@@ -133,7 +133,7 @@ export class DocumentSidePanel extends Component {
                 return <span/>;
               })()}
               {(() => {
-                if (docType !== 'entity') {
+                if (docType !== 'entity' && !this.props.raw) {
                   return <li className="tab-separator" />;
                 }
                 return <span/>;
@@ -298,7 +298,8 @@ DocumentSidePanel.propTypes = {
   isTargetDoc: PropTypes.bool,
   readOnly: PropTypes.bool,
   excludeConnectionsTab: PropTypes.bool.isRequired,
-  storeKey: PropTypes.string.isRequired
+  storeKey: PropTypes.string.isRequired,
+  raw: PropTypes.bool,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -308,7 +309,8 @@ DocumentSidePanel.contextTypes = {
 DocumentSidePanel.defaultProps = {
   tocFormComponent: () => false,
   DocumentForm: () => false,
-  EntityForm: () => false
+  EntityForm: () => false,
+  raw: false,
 };
 
 export const mapStateToProps = (state, ownProps) => {
