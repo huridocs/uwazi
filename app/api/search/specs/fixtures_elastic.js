@@ -16,9 +16,34 @@ const relationType = db.id();
 
 export default {
   entities: [
-    { _id: db.id(), sharedId: batmanFinishes, template: template1, language: 'en', title: 'Batman finishes en', fullText: { 1: 'english[[12]]', 2: 'document[[2]]', 3: 'english[[123]]', }, published: true, user: userId },
+    {
+      _id: db.id(),
+      sharedId: batmanFinishes,
+      template: template1,
+      language: 'en',
+      title: 'Batman finishes en',
+      fullText: {
+        1: 'english[[12]]',
+        2: 'document[[2]]',
+        3: 'english[[123]]',
+      },
+      published: true,
+      user: userId
+    },
     { _id: db.id(), sharedId: batmanFinishes, template: template1, language: 'es', title: 'Batman finishes es', fullText: { 1: 'spanish[[34]]', 2: 'document[[4]]' }, published: true, user: userId },
-    { _id: db.id(), sharedId: batmanBegins, template: template2, language: 'en', title: 'Batman begins en', fullText: { 1: 'english[[2]]', 2: 'another[[5]]', }, published: true, user: userId },
+    {
+      _id: db.id(),
+      sharedId: batmanBegins,
+      template: template2,
+      language: 'en',
+      title: 'Batman begins en',
+      fullText: {
+        1: 'english[[2]]',
+        2: 'another[[5]]',
+      },
+      published: true,
+      user: userId
+    },
     { _id: db.id(), sharedId: batmanBegins, template: template2, language: 'es', title: 'Batman begins es', published: true, user: userId },
     { _id: db.id(), sharedId: 'unpublished', template, language: 'es', title: 'unpublished', published: false, user: userId },
     { _id: db.id(), sharedId: 'shared3', template: template1, language: 'en', title: 'template1 title en', published: true, user: userId },
@@ -119,7 +144,10 @@ export default {
       metadata: {
         field1: 'This is some text containing the word gargoyles.'
       },
-      fullText: 'Once upon a time[[1]] gargoyles lived on building ledges[[13]]'
+      fullText: {
+        1: 'Once upon a time[[1]]',
+        2: ' gargoyles lived on building ledges[[13]]',
+      }
     }
   ],
   templates: [
