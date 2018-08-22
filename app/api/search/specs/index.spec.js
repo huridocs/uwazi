@@ -4,7 +4,6 @@ import { index as elasticIndex } from 'api/config/elasticIndexes';
 import { search, elastic } from 'api/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
-import languages from 'shared/languages';
 
 describe('search', () => {
   const elasticTesting = instanceElasticTesting('search_index_test');

@@ -141,11 +141,13 @@ export class Document extends Component {
 
 Document.defaultProps = {
   highlightSnippets,
-  onScrollToPage: () => {},
+  onDocumentReady: () => {},
+  onPageChange: () => {},
 };
 
 Document.propTypes = {
   onPageChange: PropTypes.func,
+  onDocumentReady: PropTypes.func,
   doc: PropTypes.object,
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
