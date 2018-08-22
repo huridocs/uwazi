@@ -27,6 +27,7 @@ import TargetDocument from './TargetDocument';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
+import { CurrentLocationLink } from 'app/Layout';
 
 export class Viewer extends Component {
   constructor(props) {
@@ -78,6 +79,7 @@ export class Viewer extends Component {
                 totalPages={doc.get('totalPages')}
                 onPageChange={this.props.changePage}
               />
+              <CurrentLocationLink queryParams={{raw: true}}>Plain</CurrentLocationLink>
             </div>
           </div>
         </ShowIf>
@@ -144,7 +146,6 @@ Viewer.propTypes = {
   onPageChange: PropTypes.func,
   changePage: PropTypes.func,
   onDocumentReady: PropTypes.func,
-  location: PropTypes.object,
   doc: PropTypes.object,
   pageText: PropTypes.string,
   panelIsOpen: PropTypes.bool,

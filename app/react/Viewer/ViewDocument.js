@@ -27,7 +27,7 @@ class ViewDocument extends RouteHandler {
   }
 
   static requestState(routeParams, query = {}, globalResources) {
-    return requestViewerState({ ...routeParams, raw: query.raw || !isClient, page: query.page }, globalResources);
+    return requestViewerState({ ...routeParams, raw: query.raw === 'true' || !isClient, page: query.page }, globalResources);
   }
 
   componentWillUnmount() {
@@ -43,8 +43,8 @@ class ViewDocument extends RouteHandler {
   componentWillReceiveProps(props) {
     super.componentWillReceiveProps(props);
     const { query = {} } = props.location;
-    if (query.page !== this.props.location.query.page && query.raw) {
-      entitiesAPI.getRawPage(props.params.documentId, query.page)
+    if ((query.page !== this.props.location.query.page || query.raw !== this.props.location.query.raw) && query.raw === 'true') {
+      return entitiesAPI.getRawPage(props.params.documentId, query.page)
       .then((pageText) => {
         this.context.store.dispatch(actions.set('viewer/rawText', pageText));
       });
@@ -82,14 +82,14 @@ class ViewDocument extends RouteHandler {
   }
 
   onDocumentReady() {
-    if (!this.props.location.query.raw && this.props.location.query.page) {
+    if (this.props.location.query.raw !== 'true' && this.props.location.query.page) {
       scrollToPage(this.props.location.query.page);
     }
   }
 
   render() {
     const { query = {}, pathname } = this.props.location;
-    const raw = query.raw || !isClient;
+    const raw = query.raw === 'true' || !isClient;
     const page = Number(query.page || 1);
     return (
       <React.Fragment>
