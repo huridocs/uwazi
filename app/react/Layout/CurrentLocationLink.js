@@ -14,9 +14,16 @@ const newParams = (oldQuery, newQuery) => {
   }, {});
 };
 
-const CurrentLocationLink = ({ children, location, queryParams }) => (
+const validProps = (props) => {
+  const { to, ...valid } = props;
+  return valid;
+};
+
+const CurrentLocationLink = ({ children, location, queryParams, ...otherProps }) => (
   // eslint-disable-next-line jsx-a11y/anchor-is-valid
-  <Link to={`${location.pathname}${toUrlParams(newParams(location.query, queryParams))}`}>{children}</Link>
+  <Link to={`${location.pathname}${toUrlParams(newParams(location.query, queryParams))}`} {...validProps(otherProps)}>
+    {children}
+  </Link>
 );
 
 CurrentLocationLink.defaultProps = {
@@ -25,7 +32,10 @@ CurrentLocationLink.defaultProps = {
 };
 
 CurrentLocationLink.propTypes = {
-  children: PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.node
+  ]),
   queryParams: PropTypes.object, // eslint-disable-line react/forbid-prop-types
   location: PropTypes.shape({
     pathanem: PropTypes.string,

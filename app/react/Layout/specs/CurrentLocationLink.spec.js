@@ -23,6 +23,16 @@ describe('Link', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('should pass all other props to Link', () => {
+    props.queryParams = { param2: '', test: false };
+    props.to = 'not to be passed';
+    props.className = 'className';
+    props.prop = 'value';
+
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
   it('should remove props when they are an empty string', () => {
     props.queryParams = { param2: '', test: false };
     render();

@@ -1,9 +1,9 @@
+import { Link } from 'react-router';
 import React from 'react';
 
 import { shallow } from 'enzyme';
 
 import Paginator from '../Paginator';
-import { Link } from 'react-router';
 
 describe('Paginator', () => {
   it('should render a previous button and next button based on the current page and total pages', () => {

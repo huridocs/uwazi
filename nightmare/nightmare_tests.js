@@ -39,7 +39,7 @@ jasmine.addReporter(new reporters.TerminalReporter({
   showStack: true
 }));
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
 mongoose.connect(dbConfig.development, {useMongoClient: true});
 var db = mongoose.connection;

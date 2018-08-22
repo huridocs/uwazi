@@ -81,10 +81,14 @@ class RouteHandler extends Component {
     });
   }
 
-  componentWillReceiveProps(props) {
+  urlHasChanged(props) {
     const { params = {} } = props;
     const sameParams = Object.keys(params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
-    if (!sameParams) {
+    return !sameParams;
+  }
+
+  componentWillReceiveProps(props) {
+    if (this.urlHasChanged(props)) {
       this.emptyState();
       this.setLocale(props);
       this.getClientState(props);

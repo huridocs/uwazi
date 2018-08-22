@@ -5,12 +5,12 @@ import { Translate } from 'app/I18N';
 import { Link, withRouter } from 'react-router';
 
 const disableButton = (page, pageToDisable) => ({
-    className: page === pageToDisable ? 'disabled' : undefined,
+    className: page === pageToDisable ? 'btn disabled' : 'btn',
     rel: page === pageToDisable ? 'nofollow' : undefined
 });
 
 const Paginator = ({ page, totalPages, onPageChange }) => (
-  <div>
+  <div className="paginator">
     <Link onClick={() => onPageChange(page - 1)} {...disableButton(page, 1)}>
       <Translate>Previous</Translate>
     </Link>

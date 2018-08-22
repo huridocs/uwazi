@@ -6,8 +6,9 @@ import React, { Component } from 'react';
 
 import { ConnectionsList } from 'app/ConnectionsList';
 import { CreateConnectionPanel } from 'app/Connections';
+import { CurrentLocationLink } from 'app/Layout';
 import { RelationshipsFormButtons } from 'app/Relationships';
-import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
+import { Translate } from 'app/I18N';
 import { actions } from 'app/BasicReducer';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import ContextMenu from 'app/ContextMenu';
@@ -16,18 +17,17 @@ import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
 
+import { PaginatorWithPage } from './Paginator';
 import { addReference } from '../actions/referencesActions';
 import { loadDefaultViewerMenu, loadTargetDocument } from '../actions/documentActions';
-import { openPanel, scrollToPage } from '../actions/uiActions';
+import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
-import { PaginatorWithPage } from './Paginator';
 import SourceDocument from './SourceDocument';
 import TargetDocument from './TargetDocument';
 import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
-import { CurrentLocationLink } from 'app/Layout';
 
 export class Viewer extends Component {
   constructor(props) {
@@ -71,15 +71,12 @@ export class Viewer extends Component {
         <ShowIf if={!this.props.targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
-              <PropertyIcon className="item-icon item-icon-center" data={doc.get('icon') ? doc.get('icon').toJS() : {}} size="sm"/>
-              <h1 className="item-name">{doc.get('title')}</h1>
-              <TemplateLabel template={doc.get('template')}/>
               <PaginatorWithPage
                 totalPages={doc.get('totalPages')}
                 onPageChange={this.props.changePage}
               />
-              <CurrentLocationLink queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}>
-                { raw || this.state.firstRender ? 'Normal' : 'Plain' }
+              <CurrentLocationLink className="btn btn-default" queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}>
+                { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
               </CurrentLocationLink>
             </div>
           </div>
