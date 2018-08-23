@@ -13,6 +13,16 @@ export class LibraryModeToggleButtons extends Component {
     return (
       <div className="list-view-mode">
         <div className="buttons-group">
+          <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default">
+            <Icon icon="search-plus" />
+            <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
+          </I18NLink>
+          <I18NLink to={`library/map${this.props.searchUrl}`} className="btn btn-default">
+            <Icon icon="search-minus" />
+            <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
+          </I18NLink>
+        </div>
+        <div className="buttons-group">
           <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
             <Icon icon="th" />
             <span className="tab-link-tooltip">{t('System', 'List view')}</span>
