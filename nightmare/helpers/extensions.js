@@ -368,7 +368,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
       found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
-  // .wait(elementToSelect => document.querySelector(elementToSelect).innerText, selectors.documentView.contentHeader)
+  .waitForText(selectors.documentView.sidePanelTitle)
   .then(done);
 });
 
