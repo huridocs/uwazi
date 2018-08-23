@@ -26,6 +26,7 @@ jobs:
           - v1-yarn-dependencies-
 
       - run: yarn install
+      - run: sudo apt-get install poppler-utils
       - save_cache:
           paths:
             - ./node_modules
@@ -85,6 +86,7 @@ jobs:
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
+      - run: sudo apt-get install poppler-utils
       - run: node_modules/.bin/webpack
       - save_cache:
           paths:
