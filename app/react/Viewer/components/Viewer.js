@@ -112,7 +112,7 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel raw={raw} storeKey="documentViewer" searchTerm={searchTerm}/>
+        <ViewMetadataPanel raw={raw || this.state.firstRender} storeKey="documentViewer" searchTerm={searchTerm}/>
         <CreateConnectionPanel
           containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
           onCreate={this.props.addReference}
