@@ -7,11 +7,9 @@ import { Icon } from 'UI';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
-    if (!this.props.showGeolocation) {
-      return false;
-    }
     return (
       <div className="list-view-mode">
+        { true &&
         <div className="buttons-group">
           <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default">
             <Icon icon="search-plus" />
@@ -22,6 +20,8 @@ export class LibraryModeToggleButtons extends Component {
             <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
           </I18NLink>
         </div>
+        }
+        { this.props.showGeolocation &&
         <div className="buttons-group">
           <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
             <Icon icon="th" />
@@ -32,6 +32,7 @@ export class LibraryModeToggleButtons extends Component {
             <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
           </I18NLink>
         </div>
+        }
       </div>
     );
   }
