@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { advancedSort } from 'app/utils/advancedSort';
-import { scrollToPage } from 'app/Viewer/actions/uiActions';
 
 import { isClient } from '../../utils';
 import PDFJS from '../PDFJS';
@@ -18,6 +17,15 @@ class PDF extends Component {
         this.setState({ pdf });
       });
     }
+
+    this.currentPage = '1';
+    this.pages = {};
+    this.pdfReady = false;
+
+    this.pageUnloaded = this.pageUnloaded.bind(this);
+    this.pageLoading = this.pageLoading.bind(this);
+    this.onPageVisible = this.onPageVisible.bind(this);
+    this.onPageHidden = this.onPageHidden.bind(this);
   }
 
   componentDidMount() {
@@ -36,6 +44,50 @@ class PDF extends Component {
           this.setState({ pdf });
         });
       });
+    }
+  }
+
+  onPageVisible(page, visibility) {
+    this.pages[page] = visibility;
+
+    const pageWithMostVisibility = Object.keys(this.pages).reduce((memo, key) => {
+      if (!this.pages[key - 1] || this.pages[key] > this.pages[key - 1]) {
+        return key;
+      }
+      return memo;
+    }, 1);
+
+    if (this.currentPage !== pageWithMostVisibility) {
+      this.currentPage = pageWithMostVisibility;
+      this.props.onPageChange(Number(pageWithMostVisibility));
+    }
+  }
+
+  onPageHidden(page) {
+    delete this.pages[page];
+  }
+
+  pageUnloaded(numPage) {
+    delete this.pagesLoaded[numPage];
+    this.loaded();
+  }
+
+  pageLoading(numPage) {
+    this.pagesLoaded[numPage] = false;
+  }
+
+  pageLoaded(numPage) {
+    this.pagesLoaded[numPage] = true;
+    const allPagesLoaded = Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0;
+    if (allPagesLoaded) {
+      this.loaded();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.pdf.numPages && !this.pdfReady) {
+      this.pdfReady = true;
+      this.props.onPDFReady();
     }
   }
 
@@ -62,42 +114,20 @@ class PDF extends Component {
         end: end.chars,
         pages
       });
-
-      if (!this.initialized) {
-        if (this.props.page) {
-          this.props.scrollToPage(this.props.page);
-        }
-        this.initialized = true;
-      }
     }
-  }
-
-  pageLoaded(numPage) {
-    this.pagesLoaded[numPage] = true;
-    const allPagesLoaded = Object.keys(this.pagesLoaded).map(p => this.pagesLoaded[p]).filter(p => !p).length === 0;
-    if (allPagesLoaded) {
-      this.loaded();
-    }
-  }
-
-  pageLoading(numPage) {
-    this.pagesLoaded[numPage] = false;
-  }
-
-  pageUnloaded(numPage) {
-    delete this.pagesLoaded[numPage];
-    this.loaded();
   }
 
   render() {
     return (
-      <div ref={(ref) => { this.pdfContainer = ref; }}style={this.props.style}>
+      <div ref={(ref) => { this.pdfContainer = ref; }} style={this.props.style}>
         {(() => {
           const pages = [];
           for (let page = 1; page <= this.state.pdf.numPages; page += 1) {
             pages.push(<PDFPage
-              onUnload={this.pageUnloaded.bind(this)}
-              onLoading={this.pageLoading.bind(this)}
+              onUnload={this.pageUnloaded}
+              onLoading={this.pageLoading}
+              onVisible={this.onPageVisible}
+              onHidden={this.onPageHidden}
               key={page}
               page={page}
               pdf={this.state.pdf}
@@ -111,19 +141,20 @@ class PDF extends Component {
 }
 
 PDF.defaultProps = {
-  scrollToPage,
-  page: null,
-  filename: null
+  filename: null,
+  onPageChange: () => {},
+  onPDFReady: () => {},
+  style: {},
 };
 
 PDF.propTypes = {
+  onPageChange: PropTypes.func,
+  onPDFReady: PropTypes.func,
   file: PropTypes.string.isRequired,
   filename: PropTypes.string,
   onLoad: PropTypes.func.isRequired,
   pdfInfo: PropTypes.object,
-  page: PropTypes.number,
   style: PropTypes.object,
-  scrollToPage: PropTypes.func
 };
 
 export default PDF;

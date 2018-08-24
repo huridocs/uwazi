@@ -26,6 +26,10 @@ export default (app) => {
   .then(response => res.json(response))
   .catch(res.error));
 
+  app.get('/api/entities/get_raw_page', (req, res) => entities.getRawPage(req.query.sharedId, req.language, req.query.pageNumber)
+  .then(data => res.json({ data }))
+  .catch(res.error));
+
   app.get('/api/entities', (req, res) => {
     entities.getWithRelationships({ sharedId: req.query._id, language: req.language })
     .then((_entities) => {

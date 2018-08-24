@@ -77,7 +77,8 @@ describe('PublishDocument', () => {
       .click(selectors.navigation.libraryNavButton)
       .waitForTheEntityToBeIndexed()
       .openDocumentFromLibrary(title)
-      .getInnerText(selectors.documentView.contentHeader)
+      .waitForText(selectors.documentView.sidePanelTitle)
+      .getInnerText(selectors.documentView.sidePanelTitle)
       .then((headerText) => {
         expect(headerText).toContain(title);
         done();

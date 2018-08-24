@@ -92,7 +92,7 @@ export default {
     viewerFirstDocumentSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(1)',
     viewerSidePanelFirstSnippet: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > ul > li:nth-child(2)',
     viewer: '#app > div.content > div > div > main',
-    contentHeader: '#app > div.content > div > div > div.content-header.content-header-document > div > h1',
+    sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div',
     documentPage: '.page',
     documentPageFirstParagraph: '#pageContainer1 > div.textLayer > div:nth-child(1)',
     createParagraphLinkButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(1)',
