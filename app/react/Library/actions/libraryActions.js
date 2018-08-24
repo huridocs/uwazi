@@ -19,7 +19,6 @@ export function initializeFiltersForm(values = {}) {
 }
 
 export function selectDocument(doc) {
-  console.log(doc);
   let document = doc;
   if (doc.toJS) {
     document = doc.toJS();
