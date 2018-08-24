@@ -5,7 +5,6 @@ import { fromJS as Immutable } from 'immutable';
 import { ItemList } from '../ItemList';
 import { RowList } from 'app/Layout/Lists';
 import Slider from '../slider';
-import Doc from 'app/Library/components/Doc';
 import { I18NLink } from 'app/I18N';
 
 describe('ItemList', () => {
