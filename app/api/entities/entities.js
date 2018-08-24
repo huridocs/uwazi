@@ -369,6 +369,12 @@ export default {
     .then(() => docs));
   },
 
+  async getRawPage(sharedId, language, pageNumber) {
+    const entity = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
+    const pageNumberMatch = /\[\[(\d+)\]\]/g;
+    return entity[0].fullText[pageNumber].replace(pageNumberMatch, '');
+  },
+
   removeValuesFromEntities(properties, template) {
     const query = { template, $or: [] };
     const changes = {};

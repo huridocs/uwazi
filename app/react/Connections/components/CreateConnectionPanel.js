@@ -1,17 +1,17 @@
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
 
-import {closePanel} from '../actions/uiActions';
-import {setRelationType, setTargetDocument} from '../actions/actions';
-
+import { Icon } from 'UI';
+import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+
+import { closePanel } from '../actions/uiActions';
+import { setRelationType, setTargetDocument } from '../actions/actions';
+import ActionButton from './ActionButton';
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
-import ActionButton from './ActionButton';
-import ShowIf from 'app/App/ShowIf';
-import { Icon } from 'UI';
 
 export class CreateConnectionPanel extends Component {
   renderCheckType(template) {
@@ -23,7 +23,7 @@ export class CreateConnectionPanel extends Component {
   }
 
   render() {
-    const {uiState, searchResults} = this.props;
+    const { uiState, searchResults } = this.props;
     const connection = this.props.connection.toJS();
     const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
     const open = Boolean(this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument);
@@ -39,12 +39,10 @@ export class CreateConnectionPanel extends Component {
           </button>
 
           <ul className="connections-list">
-            {this.props.relationTypes.map((template) => {
-              return <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
-                {this.renderCheckType(template)}
-                {template.get('name')}
-              </li>;
-            })}
+            {this.props.relationTypes.map(template => (<li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
+              {this.renderCheckType(template)}
+              {template.get('name')}
+                                                       </li>))}
           </ul>
 
           <div className="search-form">
@@ -57,9 +55,12 @@ export class CreateConnectionPanel extends Component {
             <Icon icon="times" />
           </button>
           <ShowIf if={connection.type !== 'targetRanged'}>
-            <ActionButton action="save" onCreate={(reference) => {
+            <ActionButton
+              action="save"
+              onCreate={(reference) => {
               this.props.onCreate(reference, pdfInfo);
-            }}/>
+            }}
+            />
           </ShowIf>
           <ShowIf if={connection.type === 'targetRanged'}>
             <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect}/>
@@ -71,7 +72,8 @@ export class CreateConnectionPanel extends Component {
             results={searchResults}
             searching={uiState.get('searching')}
             selected={connection.targetDocument}
-            onClick={this.props.setTargetDocument}/>
+            onClick={this.props.setTargetDocument}
+          />
         </div>
       </SidePanel>
     );
@@ -93,18 +95,16 @@ CreateConnectionPanel.propTypes = {
   closePanel: PropTypes.func
 };
 
-export const mapStateToProps = ({connections, relationTypes, documentViewer}) => {
-  return {
+export const mapStateToProps = ({ connections, relationTypes, documentViewer }) => ({
     uiState: connections.uiState,
     pdfInfo: documentViewer.doc.get('pdfInfo'),
     connection: connections.connection,
     searchResults: connections.searchResults,
-    relationTypes: relationTypes
-  };
-};
+    relationTypes
+});
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setRelationType, setTargetDocument, closePanel}, dispatch);
+  return bindActionCreators({ setRelationType, setTargetDocument, closePanel }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateConnectionPanel);
