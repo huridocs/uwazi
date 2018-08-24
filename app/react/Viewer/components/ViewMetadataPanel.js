@@ -20,13 +20,9 @@ export const mapStateToProps = (state) => {
   const documentViewer = state.documentViewer;
   const templates = state.templates;
   let doc = documentViewer.doc;
-  // TEST!!! Removed
-  // let references = documentViewer.references;
 
   if (documentViewer.targetDoc.get('_id')) {
     doc = documentViewer.targetDoc;
-    // TEST!!! Removed
-    // references = documentViewer.targetDocReferences;
   }
 
   const tocForm = documentViewer.tocForm || [];
@@ -39,8 +35,6 @@ export const mapStateToProps = (state) => {
     docBeingEdited: !!documentViewer.sidepanel.metadata._id,
     formDirty: !documentViewer.sidepanel.metadataForm.$form.pristine,
     tab: documentViewer.sidepanel.tab,
-    // TEST!!! Removed
-    // references,
     tocFormComponent,
     tocForm,
     tocFormLength: tocForm.length,
