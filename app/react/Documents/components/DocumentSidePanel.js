@@ -100,13 +100,17 @@ export class DocumentSidePanel extends Component {
           </button>
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="text-search">
-                  <SnippetsTab storeKey={this.props.storeKey} />
-                </TabLink>
-              </li>
               {(() => {
-                if (docType !== 'entity') {
+                if (!this.props.raw) {
+                  return (<li>
+                    <TabLink to="text-search">
+                      <SnippetsTab storeKey={this.props.storeKey} />
+                    </TabLink>
+                          </li>);
+                }
+              })()}
+              {(() => {
+                if (docType !== 'entity' && !this.props.raw) {
                   return (<li>
                     <TabLink to="toc">
                       <Icon icon="font" />
@@ -117,7 +121,7 @@ export class DocumentSidePanel extends Component {
                 return <span/>;
               })()}
               {(() => {
-                if (docType !== 'entity') {
+                if (docType !== 'entity' && !this.props.raw) {
                   return (<li>
                     <TabLink to="references">
                       <Icon icon="sitemap" />
@@ -128,7 +132,12 @@ export class DocumentSidePanel extends Component {
                 }
                 return <span/>;
               })()}
-              <li className="tab-separator" />
+              {(() => {
+                if (!this.props.raw) {
+                  return <li className="tab-separator" />;
+                }
+                return <span/>;
+              })()}
               <li>
                 <TabLink to="metadata" default>
                   <Icon icon="info-circle" />
@@ -289,7 +298,8 @@ DocumentSidePanel.propTypes = {
   isTargetDoc: PropTypes.bool,
   readOnly: PropTypes.bool,
   excludeConnectionsTab: PropTypes.bool.isRequired,
-  storeKey: PropTypes.string.isRequired
+  storeKey: PropTypes.string.isRequired,
+  raw: PropTypes.bool,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -299,7 +309,8 @@ DocumentSidePanel.contextTypes = {
 DocumentSidePanel.defaultProps = {
   tocFormComponent: () => false,
   DocumentForm: () => false,
-  EntityForm: () => false
+  EntityForm: () => false,
+  raw: false,
 };
 
 export const mapStateToProps = (state, ownProps) => {

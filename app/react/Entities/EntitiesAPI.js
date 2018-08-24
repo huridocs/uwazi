@@ -17,6 +17,11 @@ export default {
     .then(response => response.json);
   },
 
+  async getRawPage(sharedId, pageNumber = 1) {
+    const response = await api.get('entities/get_raw_page', { sharedId, pageNumber });
+    return response.json.data;
+  },
+
   uploads() {
     const url = 'entities/uploads';
     return api.get(url)

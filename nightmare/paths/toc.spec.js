@@ -39,7 +39,7 @@ describe('toc path', () => {
       selectors.documentView.secondTocEntry = '#pageContainer3 > div.textLayer > div:nth-child(11)';
       selectors.documentView.secondTocSubEntry = '#pageContainer3 > div.textLayer > div:nth-child(108)';
       selectors.documentView.secondTocSubEntry2 = '#pageContainer4 > div.textLayer > div:nth-child(20)';
-      selectors.documentView.thirdTocEntry = '#pageContainer5 > div.textLayer > div:nth-child(27)';
+      selectors.documentView.thirdTocEntry = '#pageContainer5 > div.textLayer > div:nth-child(55)';
 
       selectors.documentView.addToTocButton = '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(3)';
       selectors.documentView.saveTocButton = '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button';

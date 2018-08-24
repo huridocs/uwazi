@@ -34,21 +34,15 @@ describe('Library', () => {
     expect(component.find(DocumentsList).props().storeKey).toBe('library');
   });
 
-  describe('componentWillReceiveProps()', () => {
-    beforeEach(() => {
-      instance.superComponentWillReceiveProps = jasmine.createSpy('superComponentWillReceiveProps');
-    });
-
-    it('should update if "q" has changed', () => {
+  describe('urlHasChanged', () => {
+    it('return true when q has changed', () => {
       const nextProps = { location: { query: { q: '(a:2)' } } };
-      instance.componentWillReceiveProps(nextProps);
-      expect(instance.superComponentWillReceiveProps).toHaveBeenCalledWith(nextProps);
+      expect(instance.urlHasChanged(nextProps)).toBe(true);
     });
 
     it('should not update if "q" is the same', () => {
       const nextProps = { location: { query: { q: '(a:1)' } } };
-      instance.componentWillReceiveProps(nextProps);
-      expect(instance.superComponentWillReceiveProps).not.toHaveBeenCalled();
+      expect(instance.urlHasChanged(nextProps)).toBe(false);
     });
   });
 });
