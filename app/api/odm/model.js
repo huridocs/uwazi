@@ -1,16 +1,15 @@
 import mongoose from 'mongoose';
 
 const generateID = mongoose.Types.ObjectId;
-export {generateID};
+export { generateID };
 
-export default (MongooseModel) => {
-  return {
+export default MongooseModel => ({
     db: MongooseModel,
     save: (data) => {
       if (Array.isArray(data)) {
-        let promises = data.map((entry) => {
+        const promises = data.map((entry) => {
           if (entry._id) {
-            return MongooseModel.findOneAndUpdate({_id: entry._id}, entry, {new: true, lean: true});
+            return MongooseModel.findOneAndUpdate({ _id: entry._id }, entry, { new: true, lean: true });
           }
           return MongooseModel.create(entry).then(saved => saved.toObject());
         });
@@ -18,29 +17,22 @@ export default (MongooseModel) => {
       }
 
       if (data._id) {
-        return MongooseModel.findOneAndUpdate({_id: data._id}, data, {new: true, lean: true});
+        return MongooseModel.findOneAndUpdate({ _id: data._id }, data, { new: true, lean: true });
       }
       return MongooseModel.create(data).then(saved => saved.toObject());
     },
 
-    get: (query, select = '', pagination = {}) => {
-      return MongooseModel.find(query, select, Object.assign({lean: true}, pagination));
-    },
+    get: (query, select = '', pagination = {}) => MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)),
 
-    count: (condition) => {
-      return MongooseModel.count(condition);
-    },
+    count: condition => MongooseModel.count(condition),
 
-    getById: (id) => {
-      return MongooseModel.findById(id, {}, {lean: true});
-    },
+    getById: id => MongooseModel.findById(id, {}, { lean: true }),
 
     delete: (condition) => {
       let cond = condition;
       if (mongoose.Types.ObjectId.isValid(condition)) {
-        cond = {_id: condition};
+        cond = { _id: condition };
       }
       return MongooseModel.remove(cond);
     }
-  };
-};
+});

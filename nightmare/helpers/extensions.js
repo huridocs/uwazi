@@ -242,6 +242,13 @@ Nightmare.action('scrollElement', function (selector, height, done) {
   .then(done);
 });
 
+Nightmare.action('waitForText', function (selector, done) {
+  this.wait((elementToSelect) => {
+    return document.__helpers.querySelector(elementToSelect).innerText;
+  }, selector)
+  .then(done);
+});
+
 Nightmare.action('getInnerText', function (selector, done) {
   this.wait(selector)
   .evaluate_now((elementToSelect) => {
@@ -361,7 +368,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
       found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
-  .wait(elementToSelect => document.querySelector(elementToSelect).innerText, selectors.documentView.contentHeader)
+  .waitForText(selectors.documentView.sidePanelTitle)
   .then(done);
 });
 

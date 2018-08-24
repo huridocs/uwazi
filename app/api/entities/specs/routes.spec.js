@@ -77,6 +77,21 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    describe('get_raw_page', () => {
+      it('should return getRawPage', async () => {
+        spyOn(entities, 'getRawPage').and.returnValue(Promise.resolve('page text'));
+
+        const request = {
+          query: { sharedId: 'sharedId', pageNumber: 2 },
+          language: 'lang'
+        };
+
+        const response = await routes.get('/api/entities/get_raw_page', request);
+        expect(entities.getRawPage).toHaveBeenCalledWith('sharedId', 'lang', 2);
+        expect(response.data).toBe('page text');
+      });
+    });
+
     describe('/entities/multipleupdate', () => {
       beforeEach(() => {
         req = {
@@ -160,6 +175,21 @@ describe('entities', () => {
       });
     });
   });
+
+  // describe('/api/entities/get_raw_page', () => {
+  //   it('should return formattedPlainTextPages page requested', (done) => {
+  //     spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
+  //     const req = { query: { templateId: 'templateId' } };
+
+  //     routes.get('/api/entities/count_by_template', req)
+  //     .then((response) => {
+  //       expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
+  //       expect(response).toEqual(2);
+  //       done();
+  //     })
+  //     .catch(catchErrors(done));
+  //   });
+  // });
 
   describe('/api/entities/count_by_template', () => {
     it('should return count of entities using a specific template', (done) => {

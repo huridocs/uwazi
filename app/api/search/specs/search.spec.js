@@ -147,10 +147,9 @@ describe('search', () => {
         search.search({ searchTerm: '"document english"' }, 'en')
       ])
       .then(([spanish, none, english, batmanFinishes, batmanBegins, batmanOR, batman, fullTextNormal, fullTextExactMatch]) => {
-        expect(english.rows.find(r => r.snippets.fullText[0].text.match('<b>english</b> document <b>english</b>'))
-        .snippets.fullText[0].page).toBe(12);
-        expect(english.rows.find(r => r.snippets.fullText[0].text.match('<b>english</b> another'))
-        .snippets.fullText[0].page).toBe(2);
+        expect(english.rows.find(r => r.snippets.fullText[0].text.match('<b>english</b>\fdocument\f<b>english</b>')).snippets.fullText[0].page)
+        .toBe(12);
+        expect(english.rows.find(r => r.snippets.fullText[0].text.match('<b>english</b>\fanother')).snippets.fullText[0].page).toBe(2);
         expect(english.rows.length).toBe(2);
 
         expect(spanish.rows.length).toBe(1);
