@@ -55,11 +55,13 @@ describe('upload routes', () => {
             expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
             expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
             expect(docEN[0].processed).toBe(true);
-            expect(docEN[0].fullText).toMatch(/Test\[\[1\]\] file/);
+            expect(docEN[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
+            expect(docEN[0].totalPages).toBe(1);
             expect(docEN[0].language).toBe('en');
 
             expect(docES[0].processed).toBe(true);
-            expect(docES[0].fullText).toMatch(/Test\[\[1\]\] file/);
+            expect(docES[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
+            expect(docES[0].totalPages).toBe(1);
             expect(docES[0].language).toBe('es');
             done();
           })
@@ -105,6 +107,7 @@ describe('upload routes', () => {
             ])
             .then(([docES, docEN]) => {
               expect(docEN[0].file.language).toBe('spa');
+              expect(docEN[0].file.originalname).toBeDefined();
               expect(docES[0].file.language).toBe('spa');
               done();
             })

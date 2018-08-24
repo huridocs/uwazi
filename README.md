@@ -35,6 +35,7 @@ Intallation guide
 - **Elasticsearch 5.5.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.5, some sections of the instructions use 5.x which would install a different version)
 - **MongoDB 3.4.x** https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
 - **Yarn** https://yarnpkg.com/en/docs/install
+- **pdftotext** 0.67.0 https://poppler.freedesktop.org/
 
 Before anything else you will need to install the application dependencies running:
 ```

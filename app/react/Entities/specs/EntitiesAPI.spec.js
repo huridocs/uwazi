@@ -7,12 +7,16 @@ describe('EntitiesAPI', () => {
   let searchResponse = [{entities: 'search'}];
   let filteredSearchResult = [{entities: 'Alfred'}];
   let singleResponse = [{entities: 'single'}];
+  const page2Text = { data: 'page 2 text' };
+  const page1Text = { data: 'page 1 text' };
 
   beforeEach(() => {
     backend.restore();
     backend
     .get(APIURL + 'entities', {body: JSON.stringify({rows: arrayResponse})})
     .get(APIURL + 'entities/search', {body: JSON.stringify(searchResponse)})
+    .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=2`, { body: JSON.stringify(page2Text) })
+    .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=1`, { body: JSON.stringify(page1Text) })
     .get(APIURL + 'entities/uploads', {body: JSON.stringify({rows: 'uploads'})})
     .get(APIURL + 'entities/count_by_template?templateId=templateId', {body: JSON.stringify(1)})
     .get(APIURL + 'entities/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
@@ -34,6 +38,18 @@ describe('EntitiesAPI', () => {
         done();
       })
       .catch(done.fail);
+    });
+  });
+
+  describe('pageRawText', () => {
+    it('should get page_raw_page and return the text', async () => {
+      const text = await entitiesAPI.getRawPage('sharedId', 2);
+      expect(text).toBe(page2Text.data);
+    });
+
+    it('should get page 1 by default', async () => {
+      const text = await entitiesAPI.getRawPage('sharedId');
+      expect(text).toBe(page1Text.data);
     });
   });
 

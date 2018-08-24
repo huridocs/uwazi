@@ -47,13 +47,14 @@ describe('search filters path', () => {
     it('should only show entities of that type', (done) => {
       nightmare
       .library.clickFilter(selectors.libraryView.superVillianType)
+      .wait(10000)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Scarecrow');
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 30000);
   });
 
   describe('filter by more types', () => {
