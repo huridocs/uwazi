@@ -83,7 +83,7 @@ class ViewDocument extends RouteHandler {
 
   onDocumentReady() {
     if (this.props.location.query.raw !== 'true' && this.props.location.query.page) {
-      scrollToPage(this.props.location.query.page);
+      scrollToPage(this.props.location.query.page, 0);
     }
   }
 
