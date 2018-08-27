@@ -1,7 +1,7 @@
 import { uploadDocumentsPath } from 'api/config/paths';
 import PDF from 'api/upload/PDF';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
 export default {
   delta: 3,
@@ -25,7 +25,7 @@ export default {
           return;
         }
 
-        if(!fs.existsSync(path.join(uploadDocumentsPath, entity.file.filename))) {
+        if (!fs.existsSync(path.join(uploadDocumentsPath, entity.file.filename))) {
           process.stdout.write(`processed -> ${index}\r`);
           index += 1;
           cursor.resume();

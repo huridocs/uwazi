@@ -5,8 +5,6 @@ import Marker from 'app/Viewer/utils/Marker.js';
 import scroller from 'app/Viewer/utils/Scroller';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-import document from '../components/Document';
-
 export function closePanel() {
   return {
     type: types.CLOSE_PANEL
