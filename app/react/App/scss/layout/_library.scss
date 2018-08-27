@@ -9,7 +9,7 @@ $c6: calc(16.666% - 15px);
   min-width: 265px;
 
   .item-group-zoom-0 & {
-    @media(min-width: 564px) {
+    @media(min-width: 600px) {
       width: $c2;
     }
     @media(min-width: 872px) {
@@ -33,7 +33,7 @@ $c6: calc(16.666% - 15px);
   }
   
   .item-group-zoom-1 & {
-    @media(min-width: 564px) {
+    @media(min-width: 600px) {
       width: $c1;
     }
     @media(min-width: 1280px) {
@@ -51,7 +51,7 @@ $c6: calc(16.666% - 15px);
   }
   
   .item-group-zoom-2 & {
-    @media(min-width: 564px) {
+    @media(min-width: 600px) {
       width: $c1;
     }
     @media(min-width: 1560px) {
@@ -66,7 +66,7 @@ $c6: calc(16.666% - 15px);
   }
   
   .item-group-zoom-3 & {
-    @media(min-width: 564px) {
+    @media(min-width: 600px) {
       width: $c1;
     }
     @media(min-width: 1850px) {
@@ -77,7 +77,7 @@ $c6: calc(16.666% - 15px);
     }
   }
   .item-group-zoom-4 & {
-    @media(min-width: 564px) {
+    @media(min-width: 600px) {
       width: $c1;
     }
     @media(min-width: 2120px) {
