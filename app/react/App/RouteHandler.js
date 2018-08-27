@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
 import { Component } from 'react';
-import JSONUtils from 'shared/JSONUtils';
-import { actions } from 'app/BasicReducer';
-import { I18NUtils } from 'app/I18N';
-import api from 'app/utils/api';
+import PropTypes from 'prop-types';
 import moment from 'moment';
+
+import { I18NUtils } from 'app/I18N';
+import { actions } from 'app/BasicReducer';
+import JSONUtils from 'shared/JSONUtils';
+import api from 'app/utils/api';
 
 class RouteHandler extends Component {
   static requestState() {
@@ -80,8 +81,14 @@ class RouteHandler extends Component {
     });
   }
 
+  urlHasChanged(props) {
+    const { params = {} } = props;
+    const sameParams = Object.keys(params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
+    return !sameParams;
+  }
+
   componentWillReceiveProps(props) {
-    if (props.params !== this.props.params) {
+    if (this.urlHasChanged(props)) {
       this.emptyState();
       this.setLocale(props);
       this.getClientState(props);

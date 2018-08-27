@@ -76,7 +76,7 @@ export function highlightSnippets(snippets, pagesBeingRendered = []) {
 }
 
 export function scrollToPage(page) {
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 100, dividerOffset: 1});
+  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 0, dividerOffset: 1});
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {

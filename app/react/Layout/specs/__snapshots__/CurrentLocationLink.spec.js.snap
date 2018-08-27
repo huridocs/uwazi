@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Link should overwrite url query with query params passed (without mutating query) 1`] = `
+<Link
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="pathanem?param=value&param2=new%20value&test=test"
+>
+  text
+</Link>
+`;
+
+exports[`Link should pass all other props to Link 1`] = `
+<Link
+  className="className"
+  onlyActiveOnIndex={false}
+  prop="value"
+  style={Object {}}
+  to="pathanem?param=value&test=false"
+>
+  text
+</Link>
+`;
+
+exports[`Link should remove props when they are an empty string 1`] = `
+<Link
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="pathanem?param=value&test=false"
+>
+  text
+</Link>
+`;
+
+exports[`Link should render a link with current location as the url 1`] = `
+<Link
+  onlyActiveOnIndex={false}
+  style={Object {}}
+  to="pathanem?param=value&param2=value2"
+>
+  text
+</Link>
+`;

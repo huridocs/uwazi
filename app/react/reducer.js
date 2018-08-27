@@ -9,7 +9,7 @@ import thesauri from 'app/Thesauris/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
-import { reducer as connections } from 'app/Connections';
+import connections from 'app/Connections/reducers/reducer';
 import relationships from 'app/Relationships';
 import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
 import { reducer as attachments } from 'app/Attachments';

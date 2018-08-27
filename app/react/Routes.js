@@ -117,7 +117,7 @@ const routes = (
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />
-    <Route path="document/:documentId" component={ViewDocument} onEnter={onEnter}/>
+    <Route path="document/:documentId*" component={ViewDocument} onEnter={onEnter}/>
     <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
     <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>
     <Route path="404" component={NoMatch} />

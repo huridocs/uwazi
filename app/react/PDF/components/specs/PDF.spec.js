@@ -38,6 +38,22 @@ describe('PDF', () => {
     });
   });
 
+  describe('onPDFReady', () => {
+    it('should be called on the first render of the PDF pages (only once)', () => {
+      props.onPDFReady = jasmine.createSpy('onPDFReady');
+      render();
+      instance.componentDidUpdate();
+      expect(props.onPDFReady).not.toHaveBeenCalled();
+
+      component.setState({ pdf: { numPages: 5 } });
+      expect(props.onPDFReady).toHaveBeenCalled();
+
+      props.onPDFReady.calls.reset();
+      component.setState({ pdf: { numPages: 5 } });
+      expect(props.onPDFReady).not.toHaveBeenCalled();
+    });
+  });
+
   describe('on componentWillReceiveProps', () => {
     it('should not attempt to get the PDF if filname remains unchanged', () => {
       render();
@@ -55,6 +71,70 @@ describe('PDF', () => {
         expect(instance.setState.calls.count()).toBe(3);
         expect(instance.setState).toHaveBeenCalledWith({ pdf: pdfObject });
         done();
+      });
+    });
+  });
+
+  describe('pageVisibility', () => {
+    it('should save page and visibility and execute onPageChange', () => {
+      props.onPageChange = jasmine.createSpy('onPageChange');
+
+      render();
+      const page = 2;
+      const visibility = 500;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(2);
+    });
+
+    it('should call pageChange when visibility is the highest and the page is diferent from before', () => {
+      props.onPageChange = jasmine.createSpy('onPageChange');
+
+      render();
+      instance.pages = { 2: null };
+
+      let page = 3;
+      let visibility = 555;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(3);
+
+      props.onPageChange.calls.reset();
+      page = 4;
+      visibility = 550;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).not.toHaveBeenCalled();
+
+      props.onPageChange.calls.reset();
+      page = 4;
+      visibility = 560;
+      instance.onPageVisible(page, visibility);
+      expect(props.onPageChange).toHaveBeenCalledWith(4);
+    });
+
+    describe('in case of equal visibility', () => {
+      it('should use the smallest one', () => {
+        props.onPageChange = jasmine.createSpy('onPageChange');
+        render();
+
+        let page = 30;
+        let visibility = 10;
+        instance.onPageVisible(page, visibility);
+        expect(props.onPageChange).toHaveBeenCalledWith(30);
+
+        props.onPageChange.calls.reset();
+        page = 29;
+        visibility = 10;
+        instance.onPageVisible(page, visibility);
+        expect(props.onPageChange).toHaveBeenCalledWith(29);
+      });
+    });
+
+    describe('when pageHidden', () => {
+      it('should remove page key from pages map', () => {
+        render();
+        instance.pages = { 1: 10, 2: 20 };
+        instance.onPageHidden(1);
+
+        expect(instance.pages).toEqual({ 2: 20 });
       });
     });
   });
@@ -91,27 +171,27 @@ describe('PDF', () => {
   });
 
   describe('scrollToPage', () => {
-    it('should be called on the first onLoad when page prop is passed', () => {
-      props.scrollToPage = jasmine.createSpy('scrollToPage');
-      props.pdfInfo = {
-        1: { chars: 10 },
-        2: { chars: 20 }
-      };
-      render();
-      instance.setState({ pdf: { numPages: 5 } });
-      instance.pageLoaded(1);
-      instance.pageLoading(2);
-      instance.pageLoaded(2);
-      expect(props.scrollToPage).not.toHaveBeenCalled();
+    // it('should be called on the first onLoad when page prop is passed', () => {
+    //   props.scrollToPage = jasmine.createSpy('scrollToPage');
+    //   props.pdfInfo = {
+    //     1: { chars: 10 },
+    //     2: { chars: 20 }
+    //   };
+    //   render();
+    //   instance.setState({ pdf: { numPages: 5 } });
+    //   instance.pageLoaded(1);
+    //   instance.pageLoading(2);
+    //   instance.pageLoaded(2);
+    //   expect(props.scrollToPage).not.toHaveBeenCalled();
 
-      props.page = 5;
-      render();
-      instance.setState({ pdf: { numPages: 5 } });
-      instance.pageLoaded(1);
-      instance.pageLoading(2);
-      instance.pageLoaded(2);
-      expect(props.scrollToPage).toHaveBeenCalledWith(5);
-    });
+    //   props.page = 5;
+    //   render();
+    //   instance.setState({ pdf: { numPages: 5 } });
+    //   instance.pageLoaded(1);
+    //   instance.pageLoading(2);
+    //   instance.pageLoaded(2);
+    //   expect(props.scrollToPage).toHaveBeenCalledWith(5);
+    // });
   });
 
   describe('onLoad', () => {
