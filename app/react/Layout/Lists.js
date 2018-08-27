@@ -48,7 +48,7 @@ const ItemLabel = ({ children, status }) => {
 ItemFooter.Label = ItemLabel;
 ItemFooter.ProgressBar = ProgressBar;
 
-const RowList = ({ children }) => <div className="item-group">{children}</div>;
+const RowList = ({ children }) => <div className="item-group item-group-zoom-0">{children}</div>;
 
 const RowListItem = ({ children, status, onClick, onMouseEnter, onMouseLeave, active, className }) => {
   let activeClass = '';

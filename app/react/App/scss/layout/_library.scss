@@ -1,0 +1,90 @@
+$c1: calc(100%);
+$c2: calc(50% - 15px);
+$c3: calc(33.333% - 15px);
+$c4: calc(25% - 15px);
+$c5: calc(20% - 15px);
+$c6: calc(16.666% - 15px);
+
+.item { 
+  min-width: 265px;
+
+  .item-group-zoom-0 & {
+    @media(min-width: 564px) {
+      width: $c2;
+    }
+    @media(min-width: 872px) {
+      width: $c3;
+    }
+    @media(min-width: 1024px) {
+      width: $c2;
+    }
+    @media(min-width: 1280px) {
+      width: $c3;
+    }
+    @media(min-width: 1560px) {
+      width: $c4;
+    }
+    @media(min-width: 1850px) {
+      width: $c5;
+    }
+    @media(min-width: 2120px) {
+      width: $c6;
+    }
+  }
+  
+  .item-group-zoom-1 & {
+    @media(min-width: 564px) {
+      width: $c1;
+    }
+    @media(min-width: 1280px) {
+      width: $c2;
+    }
+    @media(min-width: 1560px) {
+      width: $c3;
+    }
+    @media(min-width: 1850px) {
+      width: $c4;
+    }
+    @media(min-width: 2120px) {
+      width: $c5;
+    }
+  }
+  
+  .item-group-zoom-2 & {
+    @media(min-width: 564px) {
+      width: $c1;
+    }
+    @media(min-width: 1560px) {
+      width: $c2;
+    }
+    @media(min-width: 1850px) {
+      width: $c3;
+    }
+    @media(min-width: 2120px) {
+      width: $c4;
+    }
+  }
+  
+  .item-group-zoom-3 & {
+    @media(min-width: 564px) {
+      width: $c1;
+    }
+    @media(min-width: 1850px) {
+      width: $c2;
+    }
+    @media(min-width: 2120px) {
+      width: $c3;
+    }
+  }
+  .item-group-zoom-4 & {
+    @media(min-width: 564px) {
+      width: $c1;
+    }
+    @media(min-width: 2120px) {
+      width: $c2;
+    }
+  }
+  .item-group-zoom-5 & {
+    width: $c1;
+  }  
+}
