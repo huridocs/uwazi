@@ -13,8 +13,12 @@
 .search-box {
   position: relative;
   display: block;
-  max-width: calc(100% - 200px);
+  max-width: calc(100% - 110px);
   width: 632px;
+
+  @media(min-width: 1024px) {
+    max-width: calc(100% - 210px);
+  }
 
   .input-group {
     width: 100%;

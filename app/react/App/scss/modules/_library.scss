@@ -88,11 +88,6 @@
 .library-map-layout {
   padding: 0;
 
-  .list-view-mode .buttons-group {
-    top: 15px;
-    right: 15px;
-  }
-
   .search-list {
     margin: 0;
     position: relative;
@@ -135,6 +130,14 @@
     .btn.is-active {
       background-color: $c-type-9;
       color: white;
+    }
+  }
+
+  .list-view-mode-zoom {
+    display: none;
+
+    @media(min-width: 1024px) {
+      display: block;
     }
   }
 }

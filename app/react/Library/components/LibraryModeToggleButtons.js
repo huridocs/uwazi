@@ -10,7 +10,7 @@ export class LibraryModeToggleButtons extends Component {
     return (
       <div className="list-view-mode">
         { true &&
-        <div className="buttons-group">
+        <div className="list-view-mode-zoom buttons-group">
           <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default">
             <Icon icon="search-plus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
@@ -22,7 +22,7 @@ export class LibraryModeToggleButtons extends Component {
         </div>
         }
         { this.props.showGeolocation &&
-        <div className="buttons-group">
+        <div className="list-view-mode-map buttons-group">
           <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
             <Icon icon="th" />
             <span className="tab-link-tooltip">{t('System', 'List view')}</span>
