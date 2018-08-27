@@ -22,9 +22,13 @@ export class ItemPreview extends Component {
   }
 }
 
+ItemPreview.defaultProps = {
+  template: Immutable.fromJS({ properties: [] })
+};
+
 ItemPreview.propTypes = {
   entity: PropTypes.instanceOf(Object).isRequired,
-  template: PropTypes.instanceOf(Immutable.Map).isRequired
+  template: PropTypes.instanceOf(Immutable.Map)
 };
 
 
