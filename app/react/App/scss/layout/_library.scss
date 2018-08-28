@@ -36,6 +36,12 @@ $c6: calc(16.666% - 15px);
     @media(min-width: 600px) {
       width: $c1;
     }
+    @media(min-width: 872px) {
+      width: $c2;
+    }
+    @media(min-width: 1024px) {
+      width: $c1;
+    }
     @media(min-width: 1280px) {
       width: $c2;
     }
@@ -87,4 +93,43 @@ $c6: calc(16.666% - 15px);
   .item-group-zoom-5 & {
     width: $c1;
   }  
+}
+
+@mixin disableButton() {
+  opacity: .3;
+  pointer-events: none;
+}
+
+.list-view-buttons-zoom {
+  &-0 .zoom-out {
+    @include disableButton();
+  }
+  &-1 .zoom-in {
+    @media(max-width: 871px) {
+      @include disableButton();
+    }
+  }
+  &-1 .zoom-in {
+    @media(min-width:1024px) and (max-width: 1279px) {
+      @include disableButton();
+    }
+  }
+  &-2 .zoom-in {
+    @media(max-width: 1559px) {
+      @include disableButton();
+    }
+  }
+  &-3 .zoom-in {
+    @media(max-width: 1849px) {
+      @include disableButton();
+    }
+  }
+  &-4 .zoom-in {
+    @media(max-width: 2119px) {
+      @include disableButton();
+    }
+  }
+  &-5 .zoom-in {
+    @include disableButton();
+  }
 }
