@@ -97,6 +97,14 @@ export function setOverSuggestions(boolean) {
   return { type: types.OVER_SUGGESTIONS, hover: boolean };
 }
 
+export function zoomIn() {
+  return { type: types.ZOOM_IN };
+}
+
+export function zoomOut() {
+  return { type: types.ZOOM_OUT };
+}
+
 export function filterIsEmpty(value) {
   if (value && value.values && !value.values.length) {
     return true;
