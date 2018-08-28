@@ -32,6 +32,10 @@ export class Settings extends RouteHandler {
     this.context.store.dispatch(actions.set('settings/collection', state.settings.collection));
   }
 
+  urlHasChanged() { // eslint-disable-line class-method-use-this
+    return true;
+  }
+
   render() {
     return (
       <div className="row settings">

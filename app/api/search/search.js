@@ -244,35 +244,6 @@ const search = {
     });
   },
 
-  index(_entity) {
-    const entity = Object.assign({}, _entity);
-    const id = entity._id.toString();
-    delete entity._id;
-    delete entity._rev;
-    delete entity.pdfInfo;
-
-    const body = entity;
-    let fullTextIndex = Promise.resolve();
-    if (entity.fullText) {
-      const fullText = {};
-      let language;
-      if (!entity.file || entity.file && !entity.file.language) {
-        language = detectLanguage(entity.fullText);
-      }
-      if (entity.file && entity.file.language) {
-        language = languages(entity.file.language);
-      }
-
-      fullText[`fullText_${language}`] = entity.fullText;
-      fullTextIndex = elastic.index({ index: elasticIndex, type: 'fullText', parent: id, body: fullText, id: `${id}_fullText` });
-      delete entity.fullText;
-    }
-    return Promise.all([
-      elastic.index({ index: elasticIndex, type: 'entity', id, body }),
-      fullTextIndex
-    ]);
-  },
-
   bulkIndex(docs, _action = 'index') {
     const type = 'entity';
     const body = [];
@@ -292,21 +263,24 @@ const search = {
       body.push(action);
       body.push(_doc);
 
+
       if (doc.fullText) {
+        const fullText = Object.values(doc.fullText).join('\f');
+
         action = {};
         action[_action] = { _index: elasticIndex, _type: 'fullText', parent: id, _id: `${id}_fullText` };
         body.push(action);
 
-        const fullText = {};
+        const fullTextQuery = {};
         let language;
         if (!doc.file || doc.file && !doc.file.language) {
-          language = detectLanguage(doc.fullText);
+          language = detectLanguage(fullText);
         }
         if (doc.file && doc.file.language) {
           language = languages(doc.file.language);
         }
-        fullText[`fullText_${language}`] = doc.fullText;
-        body.push(fullText);
+        fullTextQuery[`fullText_${language}`] = fullText;
+        body.push(fullTextQuery);
         delete doc.fullText;
       }
     });

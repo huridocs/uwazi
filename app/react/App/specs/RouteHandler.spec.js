@@ -95,7 +95,7 @@ describe('RouteHandler', () => {
     describe('when params are the same', () => {
       it('should NOT request the clientState', () => {
         spyOn(instance, 'getClientState');
-        instance.componentWillReceiveProps({ params: routeParams });
+        instance.componentWillReceiveProps({ params: { ...routeParams }, location });
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });

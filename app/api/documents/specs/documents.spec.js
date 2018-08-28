@@ -15,7 +15,6 @@ import { uploadDocumentsPath } from '../../config/paths';
 describe('documents', () => {
   beforeEach((done) => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
-    spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     mockID();

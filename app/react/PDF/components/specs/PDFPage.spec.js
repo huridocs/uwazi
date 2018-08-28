@@ -15,12 +15,12 @@ describe('PDFPage', () => {
   beforeEach(() => {
     container = document.createElement('div');
     container.className = 'document-viewer';
-    document.body.appendChild(container);
     spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdfObject));
     props = {
       onLoading: jasmine.createSpy('onLoading'),
       onUnload: jasmine.createSpy('onUnload'),
       page: 2,
+      getViewportContainer: () => container,
       pdf: {
         getPage: jest.fn().mockReturnValueOnce(Promise.resolve({ getViewport: jest.fn() }))
       }
@@ -49,6 +49,14 @@ describe('PDFPage', () => {
       render();
       instance.pageContainer = { getBoundingClientRect: () => ({}) };
       expect(instance.pageShouldRender()).toBe(true);
+    });
+
+    it('should call onHidden when not being rendered', () => {
+      props.onHidden = jasmine.createSpy('onHidden');
+      render();
+      instance.pageContainer = { getBoundingClientRect: () => ({ right: -1 }) };
+      instance.pageShouldRender();
+      expect(props.onHidden).toHaveBeenCalledWith(2);
     });
 
     it('should return false when page is not in viewport with a 500px offset', () => {
@@ -104,7 +112,6 @@ describe('PDFPage', () => {
           expect(instance.rendered).toBe(true);
           expect(pdfPageViewPrototype.setPdfPage).toHaveBeenCalled();
           expect(pdfPageViewPrototype.draw).toHaveBeenCalled();
-          //console.log(instance.pdfPageView);
           done();
         });
       });
@@ -113,14 +120,51 @@ describe('PDFPage', () => {
 
   describe('scroll', () => {
     describe('when pageShouldRender', () => {
-      it('should render page if pageShouldRender', () => {
+      it('should render page', () => {
         render();
         spyOn(instance, 'pageShouldRender').and.returnValue(true);
         spyOn(instance, 'renderPage');
         instance.scroll();
         expect(instance.renderPage).toHaveBeenCalled();
       });
+
+      it('should calculate page visibility and if visible call onVisible callback', () => {
+        props.onVisible = jasmine.createSpy('onVisible');
+
+        render();
+        component.setProps({ getViewportContainer: () => ({ getBoundingClientRect: () => ({ top: 100, height: 500, bottom: 600 }) }) });
+
+        instance.pageContainer = { getBoundingClientRect: () => ({ top: 100, height: 1000, bottom: 1100 }) };
+        instance.pageShouldRender();
+
+        let expectedPage = 2;
+        let pageVisibility = 500;
+        expect(props.onVisible).toHaveBeenCalledWith(expectedPage, pageVisibility);
+
+        instance.pageContainer = { getBoundingClientRect: () => ({ top: -600, height: 1000, bottom: 400 }) };
+        component.update();
+        instance.pageShouldRender();
+
+        expectedPage = 2;
+        pageVisibility = 300;
+        expect(props.onVisible).toHaveBeenCalledWith(expectedPage, pageVisibility);
+      });
+
+      it('should call pageHidden when there is no visibility', () => {
+        props.onVisible = jasmine.createSpy('onVisible');
+        props.onHidden = jasmine.createSpy('onHidden');
+
+        render();
+        component.setProps({ viewportContainer: { getBoundingClientRect: () => ({ top: 100, height: 500, bottom: 600 }) } });
+
+        instance.pageContainer = { getBoundingClientRect: () => ({ top: -2100, height: 1000, bottom: 1100 }) };
+        instance.pageShouldRender();
+
+        expect(props.onVisible).not.toHaveBeenCalled();
+        expect(props.onHidden).toHaveBeenCalledWith(2);
+      });
     });
+
 
     describe('when not pageShouldRender', () => {
       it('should check if its rendered and unload and set rendered property to false', () => {
@@ -132,6 +176,7 @@ describe('PDFPage', () => {
         expect(instance.pdfPageView.destroy).toHaveBeenCalled();
         expect(instance.rendered).toBe(false);
       });
+
       describe('when its rendered', () => {
         it('should call onUnload with the pageNumber and set rendered property to false', () => {
           render();
