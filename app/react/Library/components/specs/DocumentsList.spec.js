@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
 
-import DocumentsList from 'app/Layout/DocumentsList';
 import { clickOnDocument, mapStateToProps } from '../DocumentsList';
+import DocumentsList from '../../../Layout/DocumentsList';
 
 describe('Library DocumentsList container', () => {
   let component;
@@ -83,7 +83,7 @@ totalRows: 3 });
         library: {
           documents,
           filters,
-          ui: fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'] }),
+          ui: fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
           search: { sort: 'sortProperty' }
         },
         user: fromJS({ _id: 'uid' })
@@ -98,6 +98,7 @@ totalRows: 3 });
         selectedDocuments: store.library.ui.get('selectedDocuments'),
         multipleSelected: false,
         authorized: true,
+        rowListZoomLevel: 2,
         clickOnDocument
       });
     });
