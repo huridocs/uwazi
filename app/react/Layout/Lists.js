@@ -1,3 +1,4 @@
+// TEST!!! Entire file is untested
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Icon } from 'UI';
@@ -48,7 +49,7 @@ const ItemLabel = ({ children, status }) => {
 ItemFooter.Label = ItemLabel;
 ItemFooter.ProgressBar = ProgressBar;
 
-const RowList = ({ children }) => <div className="item-group item-group-zoom-0">{children}</div>;
+const RowList = ({ children, zoomLevel }) => <div className={`item-group item-group-zoom-${zoomLevel}`}>{children}</div>;
 
 const RowListItem = ({ children, status, onClick, onMouseEnter, onMouseLeave, active, className }) => {
   let activeClass = '';
@@ -65,7 +66,7 @@ const RowListItem = ({ children, status, onClick, onMouseEnter, onMouseLeave, ac
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      >
+    >
       {children}
     </div>
   );
@@ -80,7 +81,17 @@ const childrenType = PropTypes.oneOfType([
 ]);
 
 List.propTypes = { children: childrenType };
-RowList.propTypes = { children: childrenType };
+
+RowList.defaultProps = {
+  children: '',
+  zoomLevel: 0,
+};
+
+RowList.propTypes = {
+  children: childrenType,
+  zoomLevel: PropTypes.number,
+};
+
 RowListItem.propTypes = {
   children: childrenType,
   status: PropTypes.string,
