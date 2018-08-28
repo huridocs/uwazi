@@ -20,13 +20,13 @@ export default class DocumentsList extends Component {
     this.loadMoreDocuments = this.loadMoreDocuments.bind(this);
   }
 
+  componentWillReceiveProps() {
+    this.setState({ loading: false });
+  }
+
   loadMoreDocuments() {
     this.setState({ loading: true });
     this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + this.props.loadMoreAmmount);
-  }
-
-  componentWillReceiveProps() {
-    this.setState({ loading: false });
   }
 
   clickOnDocument() {
@@ -37,7 +37,7 @@ export default class DocumentsList extends Component {
 
   render() {
     const { documents, connections, GraphView, view, searchCentered, hideFooter,
-           connectionsGroups, LoadMoreButton, loadMoreAmmount } = this.props;
+            connectionsGroups, LoadMoreButton, loadMoreAmmount, rowListZoomLevel } = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> <Translate>documents</Translate></span>;
     if (connections) {
       const summary = connectionsGroups.reduce((summaryData, g) => {
@@ -46,9 +46,11 @@ export default class DocumentsList extends Component {
         });
         return summaryData;
       }, { totalConnections: 0 });
-      counter = (<span>
-        <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
-      </span>);
+      counter = (
+        <span>
+          <b>{summary.totalConnections}</b> {t('System', 'connections')}, <b>{documents.get('totalRows')}</b> {t('System', 'documents')}
+        </span>
+      );
     }
 
     const Search = this.props.SearchBar;
@@ -76,24 +78,28 @@ export default class DocumentsList extends Component {
           </div>
           {(() => {
             if (view !== 'graph') {
-              return (<RowList>
-                {documents.get('rows').map((doc, index) =>
-                        (<Doc
-                          doc={doc}
-                          storeKey={this.props.storeKey}
-                          key={index}
-                          onClick={this.clickOnDocument}
-                          onSnippetClick={this.props.onSnippetClick}
-                          deleteConnection={this.props.deleteConnection}
-                          searchParams={this.props.search}
-                        />)
-                      )}
-                      </RowList>);
+              return (
+                <RowList zoomLevel={rowListZoomLevel}>
+                  {documents.get('rows').map((doc, index) => (
+                    <Doc
+                      doc={doc}
+                      storeKey={this.props.storeKey}
+                      key={index}
+                      onClick={this.clickOnDocument}
+                      onSnippetClick={this.props.onSnippetClick}
+                      deleteConnection={this.props.deleteConnection}
+                      searchParams={this.props.search}
+                    />
+                  ))}
+                </RowList>
+              );
             }
 
             if (view === 'graph') {
               return <GraphView clickOnDocument={this.clickOnDocument}/>;
             }
+
+            return null;
           })()}
           <div className="row">
             {(() => {
@@ -105,6 +111,7 @@ export default class DocumentsList extends Component {
                   </p>
                 );
               }
+              return null;
             })()}
             {(() => {
               if (LoadMoreButton) {
@@ -144,7 +151,8 @@ export default class DocumentsList extends Component {
 
 DocumentsList.defaultProps = {
   SearchBar,
-  loadMoreAmmount: 30
+  loadMoreAmmount: 30,
+  rowListZoomLevel: 0,
 };
 
 DocumentsList.propTypes = {
@@ -167,6 +175,7 @@ DocumentsList.propTypes = {
     PropTypes.func,
     PropTypes.object
   ]),
+  rowListZoomLevel: PropTypes.number,
   // TEST!!!
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
