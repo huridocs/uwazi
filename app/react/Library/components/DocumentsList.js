@@ -53,7 +53,7 @@ export function clickOnDocument(e, doc, active) {
     return this.props.selectDocuments(docsToSelect.toJS());
   }
 
-  this.props.selectDocument(doc);
+  return this.props.selectDocument(doc);
 }
 
 export function mapStateToProps(state, props) {
