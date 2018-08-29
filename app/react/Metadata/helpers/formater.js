@@ -189,7 +189,6 @@ export default {
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
     result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
 
-    // return this.markdown(property, result, thesauris,  showInCard);
     return this.markdown(property, result, thesauris, { showInCard });
   },
 
@@ -224,6 +223,7 @@ export default {
   applyTransformation(property, { doc, thesauris, options, template }) {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
+    const preview = property.get('preview');
 
     const type = property.get('type');
 
@@ -234,20 +234,22 @@ export default {
       );
     }
 
-    return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
+    return { label: property.get('label'), name: property.get('name'), value, showInCard, preview, translateContext: template.get('_id') };
   },
 
   filterProperties(template, onlyForCards, sortedProperty) {
     return template.get('properties')
     .filter((p) => {
+      if (p.get('preview')) {
+        return false;
+      }
+
       if (!onlyForCards) {
         return true;
       }
 
-      if (p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`) {
-        return true;
-      }
-      return false;
+
+      return p.get('showInCard') || sortedProperty === `metadata.${p.get('name')}`;
     });
   }
 };

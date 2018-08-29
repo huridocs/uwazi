@@ -243,9 +243,7 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 });
 
 Nightmare.action('waitForText', function (selector, done) {
-  this.wait((elementToSelect) => {
-    return document.__helpers.querySelector(elementToSelect).innerText;
-  }, selector)
+  this.wait(selector).wait(elementToSelect => document.__helpers.querySelector(elementToSelect).innerText, selector)
   .then(done);
 });
 
