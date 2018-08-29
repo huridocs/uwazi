@@ -90,7 +90,7 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.ZOOM_OUT) {
-    const minLevel = 0;
+    const minLevel = -5;
     return state.set('zoomLevel', Math.max(state.get('zoomLevel') - 1, minLevel));
   }
 
