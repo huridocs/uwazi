@@ -38,7 +38,6 @@ export class Viewer extends Component {
 
   componentWillMount() {
     this.context.store.dispatch(openPanel('viewMetadataPanel'));
-    // !!!! TEST!!!
     if (this.props.sidepanelTab === 'connections') {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
@@ -69,7 +68,7 @@ export class Viewer extends Component {
       className += ' connections';
     }
 
-    const { raw, searchTerm } = this.props;
+    const { raw, searchTerm, pageText } = this.props;
     return (
       <div className="row">
         <Helmet title={doc.get('title') ? doc.get('title') : 'Document'} />
@@ -99,7 +98,7 @@ export class Viewer extends Component {
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               {raw || this.state.firstRender ?
-                <pre>{this.props.pageText}</pre> :
+                <pre>{pageText}</pre> :
                 <SourceDocument onPageChange={this.props.onPageChange} onDocumentReady={this.props.onDocumentReady}/>
               }
             </ShowIf>
@@ -119,27 +118,27 @@ export class Viewer extends Component {
           onRangedConnect={this.props.loadTargetDocument}
         />
 
-      <ShowIf if={sidepanelTab === 'connections'}>
-        <RelationshipMetadata />
-      </ShowIf>
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <RelationshipMetadata />
+        </ShowIf>
 
-      <ShowIf if={sidepanelTab === 'connections'}>
-        <AddEntitiesPanel />
-      </ShowIf>
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <AddEntitiesPanel />
+        </ShowIf>
 
-      <ShowIf if={sidepanelTab === 'connections'}>
-        <div className="sidepanel-footer">
-          <RelationshipsFormButtons />
-        </div>
-      </ShowIf>
+        <ShowIf if={sidepanelTab === 'connections'}>
+          <div className="sidepanel-footer">
+            <RelationshipsFormButtons />
+          </div>
+        </ShowIf>
 
-      <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
-        <ViewerDefaultMenu/>
-      </ContextMenu>
-      <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
-        <ViewerTextSelectedMenu/>
-      </ContextMenu>
-    </div>
+        <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
+          <ViewerDefaultMenu/>
+        </ContextMenu>
+        <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
+          <ViewerTextSelectedMenu/>
+        </ContextMenu>
+      </div>
     );
   }
 }

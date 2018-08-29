@@ -27,7 +27,7 @@ class ViewDocument extends RouteHandler {
   }
 
   static requestState(routeParams, query = {}, globalResources) {
-    return requestViewerState({ ...routeParams, raw: query.raw === 'true' || !isClient, page: query.page }, globalResources);
+    return requestViewerState({ ...routeParams, raw: query.raw || !isClient, page: query.page }, globalResources);
   }
 
   componentWillUnmount() {
