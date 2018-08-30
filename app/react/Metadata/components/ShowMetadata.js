@@ -37,7 +37,7 @@ export class ShowMetadata extends Component {
         {header}
 
         <ShowIf if={entity.template === caseTemplate || entity.template === matterTemplate}>
-          <dl>
+          <dl className="metadata-timeline-viewer">
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
         </ShowIf>
