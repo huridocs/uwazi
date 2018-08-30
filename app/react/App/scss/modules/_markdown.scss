@@ -200,3 +200,26 @@
 .page-viewer .video-container{
   padding-bottom: 36%;
 }
+
+.side-panel,
+.entity-viewer {
+  .markdown-viewer {
+    p, li {
+      font-size: $f-size;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: bold;
+      letter-spacing: 0;
+      text-transform: none;
+      margin: 10px 0 20px;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: $f-size-xxl;
+    }
+    h2 {
+      font-size: 28px;
+    }
+  }
+}
