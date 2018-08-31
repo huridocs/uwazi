@@ -1,21 +1,21 @@
 import request from '../../shared/JSONRequest';
-import {isClient} from 'app/utils';
-import {APIURL} from '../config.js';
-import {browserHistory} from 'react-router';
-import {notify} from 'app/Notifications/actions/notificationsActions';
-import {store} from 'app/store';
+import { isClient } from 'app/utils';
+import { APIURL } from '../config.js';
+import { browserHistory } from 'react-router';
+import { notify } from 'app/Notifications/actions/notificationsActions';
+import { store } from 'app/store';
 import loadingBar from 'app/App/LoadingProgressBar';
 
 let cookie;
 let locale;
 let API_URL = APIURL;
 
-let doneLoading = (data) => {
+const doneLoading = (data) => {
   loadingBar.done();
   return data;
 };
 
-let handleError = (error) => {
+const handleError = (url, method, error) => {
   if (!isClient) {
     return Promise.reject(error);
   }
@@ -37,7 +37,7 @@ let handleError = (error) => {
     return Promise.reject(error);
   }
 
-  console.log(error);
+  console.log(`API error without status code when calling to ${method} ${API_URL}${url}`);
   store.dispatch(notify(error.json.error, 'danger'));
   return Promise.reject(error);
 };
@@ -45,23 +45,23 @@ let handleError = (error) => {
 export default {
   get: (url, data) => {
     loadingBar.start();
-    return request.get(API_URL + url, data, {'Content-language': locale, Cookie: cookie})
+    return request.get(API_URL + url, data, { 'Content-language': locale, Cookie: cookie })
     .then(doneLoading)
-    .catch(handleError);
+    .catch(handleError.bind(null, url, 'GET'));
   },
 
   post: (url, data) => {
     loadingBar.start();
-    return request.post(API_URL + url, data, {'Content-language': locale})
+    return request.post(API_URL + url, data, { 'Content-language': locale })
     .then(doneLoading)
-    .catch(handleError);
+    .catch(handleError.bind(null, url, 'POST'));
   },
 
   delete: (url, data) => {
     loadingBar.start();
-    return request.delete(API_URL + url, data, {'Content-language': locale})
+    return request.delete(API_URL + url, data, { 'Content-language': locale })
     .then(doneLoading)
-    .catch(handleError);
+    .catch(handleError.bind(null, url, 'DELETE'));
   },
 
   cookie(c) {
