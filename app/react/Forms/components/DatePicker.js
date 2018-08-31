@@ -12,12 +12,20 @@ export default class DatePicker extends Component {
     if (props.value) {
       this.state.value = moment.utc(props.value, 'X');
     }
+    this.onChange = this.onChange.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.value) {
       this.setState({ value: moment.utc(newProps.value, 'X') });
     }
+  }
+
+
+  shouldComponentUpdate(nextProps) {
+    const { nextValue = null } = nextProps;
+    const { value = null } = this.props;
+    return nextValue !== value;
   }
 
   onChange(value) {
@@ -36,12 +44,11 @@ export default class DatePicker extends Component {
   render() {
     const locale = this.props.locale || 'en';
     const format = this.props.format || 'DD/MM/YYYY';
-
     return (
       <DatePickerComponent
         dateFormat={format}
         className="form-control"
-        onChange={this.onChange.bind(this)}
+        onChange={this.onChange}
         selected={this.state.value}
         locale={locale}
         placeholderText={format}
