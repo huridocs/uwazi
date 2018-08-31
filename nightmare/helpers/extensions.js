@@ -85,7 +85,7 @@ Nightmare.action('login', function (name, password, done) {
   .write('input[name="username"]', name)
   .write('input[name="password"]', password)
   .click('button[type="submit"]')
-  .wait(selectors.navigation.settingsNavButton, 1000)
+  .wait(selectors.navigation.settingsNavButton, 1200)
   .then(done)
   .catch((error) => {
     console.error(error);
