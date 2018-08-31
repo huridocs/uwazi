@@ -69,16 +69,27 @@ Nightmare.action('goToUploads', function (done) {
   .then(done);
 });
 
+Nightmare.action('log', function (message, done) {
+  this.wait((text) => {
+    console.log(text);
+    return true;
+  }, message)
+  .then(done);
+});
+
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
-  .wait(selectors.navigation.loginNavButton)
-  .click(selectors.navigation.loginNavButton)
+  .waitToClick(selectors.navigation.loginNavButton)
+  .wait()
   .wait('#username')
   .write('input[name="username"]', name)
   .write('input[name="password"]', password)
   .click('button[type="submit"]')
-  .wait(selectors.navigation.settingsNavButton)
-  .then(done);
+  .wait(selectors.navigation.settingsNavButton, 1000)
+  .then(done)
+  .catch((error) => {
+    console.error(error);
+  });
 });
 
 Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
@@ -243,9 +254,7 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 });
 
 Nightmare.action('waitForText', function (selector, done) {
-  this.wait((elementToSelect) => {
-    return document.__helpers.querySelector(elementToSelect).innerText;
-  }, selector)
+  this.wait(elementToSelect => document.__helpers.querySelector(elementToSelect).innerText, selector)
   .then(done);
 });
 
