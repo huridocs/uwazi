@@ -7,6 +7,7 @@ import PagesAPI from 'app/Pages/PagesAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/Search/SearchAPI';
 import { markdownDatasets } from 'app/Markdown';
+import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 
 import PageView from '../PageView';
 import pageItemLists from '../utils/pageItemLists';
@@ -36,6 +37,11 @@ describe('PageView', () => {
 
   it('should render a PageViewer', () => {
     expect(component.find(PageViewer).length).toBe(1);
+  });
+
+  it('should render a ViewMetadataPanel', () => {
+    expect(component.find(ViewMetadataPanel).length).toBe(1);
+    expect(component.find(ViewMetadataPanel).props().storeKey).toBe('library');
   });
 
   describe('static requestState()', () => {
