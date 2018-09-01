@@ -1,7 +1,11 @@
 /*eslint no-console: 0*/
+import './LibraryDSL.js';
+import './connectionsDSL.js';
+import './extensions.js';
+
 import Nightmare from 'nightmare';
-import realMouse from 'nightmare-real-mouse';
 import nightmareUpload from 'nightmare-upload';
+import realMouse from 'nightmare-real-mouse';
 
 realMouse(Nightmare);
 nightmareUpload(Nightmare);
@@ -27,7 +31,7 @@ export default function createNightmare(width = 1100, height = 600) {
 
   nightmare.on('console', (type, message) => {
     //if (message.match(/Unknown prop `storeSubscription`/)) {
-      //return;
+    //return;
     //}
     if (type === 'error') {
       fail(message);

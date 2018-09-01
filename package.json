@@ -39,7 +39,8 @@
     "migrate": "node run.js ./app/api/migrations/migrate.js",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch -i",
     "test": "node ./node_modules/.bin/jest",
-    "e2e": "node nightmare/nightmare_tests.js",
+    "e2e": "yarn e2e-restore-fixtures; jest --projects nightmare/jest.e2e.config.js -i --verbose true",
+    "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet"
   },
   "dependencies": {
