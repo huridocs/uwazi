@@ -7,7 +7,7 @@ Nightmare.action('clearInput', function (selector, done) {
   for (let i = 0; i < 50; i += 1) {
     backSpaces.push('\u0008');
   }
-  this.wait(selector)
+  this.wait(selector, 1000)
   .type(selector, backSpaces.join(''))
   .then(done);
 });
@@ -38,12 +38,12 @@ Nightmare.action('waitToDisapear', function (selector, done) {
 Nightmare.action('librarySearch', function (searchTerm, done) {
   this.write(selectors.libraryView.searchInput, searchTerm)
   .type(selectors.libraryView.searchInput, '\u000d')
-  .wait('.item-snippet')
+  .wait('.item-snippet', 1000)
   .then(done);
 });
 
 Nightmare.action('write', function (selector, text, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   // to prevet fails from multiple renders :(
   .wait(300)
   // to prevet fails from multiple renders :(
@@ -54,7 +54,7 @@ Nightmare.action('write', function (selector, text, done) {
 Nightmare.action('gotoLibrary', function (done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.libraryNavButton)
-  .wait(selectors.libraryView.libraryFirstDocument)
+  .wait(selectors.libraryView.libraryFirstDocument, 1000)
   .then(done);
 });
 
@@ -65,13 +65,13 @@ Nightmare.action('countFiltersResults', function (done) {
 Nightmare.action('goToUploads', function (done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.uploadsNavButton)
-  .wait(selectors.libraryView.libraryFirstDocument)
+  .wait(selectors.libraryView.libraryFirstDocument, 1000)
   .then(done);
 });
 
 Nightmare.action('log', function (message, done) {
   this.wait((text) => {
-    console.log(text);
+    console.log(text); // eslint-disable-line no-console
     return true;
   }, message)
   .then(done);
@@ -80,15 +80,14 @@ Nightmare.action('log', function (message, done) {
 Nightmare.action('login', function (name, password, done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.loginNavButton)
-  .wait()
-  .wait('#username')
+  .wait('#username', 1000)
   .write('input[name="username"]', name)
   .write('input[name="password"]', password)
   .click('button[type="submit"]')
   .wait(selectors.navigation.settingsNavButton, 800)
   .then(done)
   .catch((error) => {
-    console.error(error);
+    console.error(error); // eslint-disable-line no-console
   });
 });
 
@@ -98,14 +97,14 @@ Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
 });
 
 Nightmare.action('waitToClick', function (selector, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .click(selector)
   .then(done)
   .catch(done);
 });
 
 Nightmare.action('ctrlClick', function (selector, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .evaluate((elementToClick) => {
     const e = new MouseEvent('click', {
       ctrlKey: true,
@@ -119,7 +118,7 @@ Nightmare.action('ctrlClick', function (selector, done) {
 });
 
 Nightmare.action('shiftClick', function (selector, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .evaluate((elementToClick) => {
     const e = new MouseEvent('click', {
       shiftKey: true,
@@ -133,7 +132,7 @@ Nightmare.action('shiftClick', function (selector, done) {
 });
 
 Nightmare.action('isVisible', function (selector, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .evaluate_now((elementSelector) => {
     const selectorMatches = document.querySelectorAll(elementSelector);
     const element = selectorMatches[0];
@@ -236,7 +235,7 @@ Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
 
 Nightmare.action('editItemFromList', function (liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.btn-default')
-  .wait('.settings form')
+  .wait('.settings form', 1000)
   .then(done);
 });
 
@@ -246,7 +245,7 @@ Nightmare.action('clickMultiselectOption', function (liElement, targetText, done
 });
 
 Nightmare.action('scrollElement', function (selector, height, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .evaluate((elementToScroll, scrollHeight) => {
     document.querySelector(elementToScroll).scrollTop = scrollHeight;
   }, selector, height)
@@ -259,7 +258,7 @@ Nightmare.action('waitForText', function (selector, done) {
 });
 
 Nightmare.action('getInnerText', function (selector, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .evaluate_now((elementToSelect) => {
     const helpers = document.__helpers;
     return helpers.querySelector(elementToSelect).innerText;
@@ -267,7 +266,7 @@ Nightmare.action('getInnerText', function (selector, done) {
 });
 
 Nightmare.action('selectText', function (selector, done) {
-  this.wait(selector)
+  this.wait(selector, 1000)
   .evaluate((elementToSelect) => {
     const range = document.createRange();
     range.selectNodeContents(document.querySelector(elementToSelect));
@@ -383,37 +382,37 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
 
 Nightmare.action('editEntityFromEntityViewer', function (done) {
   this.waitToClick(selectors.entityView.editButton)
-  .wait(selectors.entityView.metadataForm)
+  .wait(selectors.entityView.metadataForm, 1000)
   .then(done);
 });
 
 Nightmare.action('editDocumentFromDocumentViewer', function (done) {
   this.waitToClick(selectors.documentView.editButton)
-  .wait(selectors.documentView.metadataForm)
+  .wait(selectors.documentView.metadataForm, 1000)
   .then(done);
 });
 
 Nightmare.action('saveEntityFromEntityViewer', function (done) {
   this.waitToClick(selectors.entityView.saveButton)
-  .wait(selectors.entityView.editButton)
+  .wait(selectors.entityView.editButton, 1000)
   .then(done);
 });
 
 Nightmare.action('saveFromDocumentViewer', function (done) {
   this.waitToClick(selectors.documentView.saveButton)
-  .wait(selectors.documentView.editButton)
+  .wait(selectors.documentView.editButton, 1000)
   .then(done);
 });
 
 Nightmare.action('openSidePanelOnDocumentViewer', function (done) {
   this.waitToClick(selectors.documentView.openSidePanelButton)
-  .wait(selectors.documentView.sidePanelTitle)
+  .wait(selectors.documentView.sidePanelTitle, 1000)
   .then(done);
 });
 
 Nightmare.action('pickToday', function (input, done) {
   this.waitToClick(input)
-  .wait(selectors.datePicker.today)
+  .wait(selectors.datePicker.today, 1000)
   .click(selectors.datePicker.today)
   .wait(elementToSelect => document.querySelector(elementToSelect).value, input)
   .then(done);
