@@ -94,9 +94,9 @@ describe('multi edit path', () => {
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
     .waitToDisapear('.alert.alert-success')
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
-  });
+  }, 10000);
 
   it('should go to the library', () => {
     nightmare
@@ -181,7 +181,7 @@ describe('multi edit path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

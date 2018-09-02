@@ -85,14 +85,14 @@ describe('toc path', () => {
   it('should go back to english', (done) => {
     nightmare
     .waitToClick(selectors.navigation.english)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

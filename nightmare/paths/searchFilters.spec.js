@@ -117,15 +117,15 @@ describe('search filters path', () => {
     );
 
     it('should filter by a range (120)', (done) => {
-      expectNumberOfPlanetsToShow('Daneryl', 120).then(done).catch(catchErrors(done));
+      expectNumberOfPlanetsToShow('Daneryl', 120).then(() => { done() }).catch(catchErrors(done));
     });
 
     it('should filter by a range (400)', (done) => {
-      expectNumberOfPlanetsToShow('Thanos', 140).then(done).catch(catchErrors(done));
+      expectNumberOfPlanetsToShow('Thanos', 140).then(() => { done() }).catch(catchErrors(done));
     });
 
     it('should filter by a range (600)', (done) => {
-      expectNumberOfPlanetsToShow('Scarecrow', 600, selectors.libraryView.filters.planetsConqueredTo).then(done).catch(catchErrors(done));
+      expectNumberOfPlanetsToShow('Scarecrow', 600, selectors.libraryView.filters.planetsConqueredTo).then(() => { done() }).catch(catchErrors(done));
     });
 
     it('should filter by a range', (done) => {
@@ -146,11 +146,11 @@ describe('search filters path', () => {
       expectFilterToShowResult(date, expected, selector)
     );
     it('should filter by a date for Daneryl', (done) => {
-      expectFilterDateToShow('Daneryl', '18/05/1984').then(done).catch(catchErrors(done));
+      expectFilterDateToShow('Daneryl', '18/05/1984').then(() => { done() }).catch(catchErrors(done));
     });
 
     it('should filter by a date for Thanos', (done) => {
-      expectFilterDateToShow('Thanos', '30/06/1939', selectors.libraryView.filters.dobTo).then(done).catch(catchErrors(done));
+      expectFilterDateToShow('Thanos', '30/06/1939', selectors.libraryView.filters.dobTo).then(() => { done() }).catch(catchErrors(done));
     });
 
     it('should filter by a range of dates for Daneryl', (done) => {
@@ -169,7 +169,7 @@ describe('search filters path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

@@ -45,7 +45,7 @@ describe('translations path', () => {
       .write(selectors.settingsView.translationInputEs, 'Documento')
       .waitToClick(selectors.settingsView.translationsSaveButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     });
 
@@ -80,7 +80,7 @@ describe('translations path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

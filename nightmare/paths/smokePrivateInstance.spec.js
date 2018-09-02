@@ -29,7 +29,7 @@ describe('Private instance', () => {
       .waitToClick(selectors.settingsView.privateInstance)
       .waitToClick(selectors.settingsView.saveCollectionButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     });
   });
@@ -51,7 +51,7 @@ describe('Private instance', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

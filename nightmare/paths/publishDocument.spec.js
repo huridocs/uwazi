@@ -113,7 +113,7 @@ describe('PublishDocument', () => {
       .then((text) => {
         expect(text).toBe('regeneration\n');
       })
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     }, 20000);
   });
@@ -136,14 +136,14 @@ describe('PublishDocument', () => {
       .click(selectors.libraryView.deleteButton)
       .waitToClick(selectors.libraryView.deleteButtonConfirmation)
       .waitForTheEntityToBeIndexed()
-      .then(done);
+      .then(() => { done() });
     });
   }, 10000);
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

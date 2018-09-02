@@ -10,7 +10,7 @@ describe('FullTextSearch zone', () => {
   it('should go to library', (done) => {
     nightmare
     .goto(config.url)
-    .then(done)
+    .then(() => {done()})
     .catch(catchErrors(done));
   });
 
@@ -72,7 +72,7 @@ describe('FullTextSearch zone', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

@@ -11,8 +11,11 @@ describe('filters path', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
+      .wait(300)
       .waitToClick(selectors.navigation.settingsNavButton)
-      .wait(selectors.settingsView.settingsHeader)
+      .wait(200)
+      .wait(selectors.settingsView.settingsHeader, 1000)
+      .wait(200)
       .url()
       .then((url) => {
         expect(url).toBe(`${config.url}/settings/account`);
@@ -67,7 +70,7 @@ describe('filters path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

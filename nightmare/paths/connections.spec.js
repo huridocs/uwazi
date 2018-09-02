@@ -8,7 +8,7 @@ describe('Connections', () => {
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     }, 10000);
   });
@@ -19,7 +19,7 @@ describe('Connections', () => {
     .waitFirstDocumentToMatch('Gotham attack')
     .waitToClick(selectors.libraryView.libraryFirstDocumentLink)
     .waitToClick(selectors.entityView.connectionsListView)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -28,14 +28,14 @@ describe('Connections', () => {
     .connections.edit()
     .connections.addNewRelationship()
     .connections.selectLeftHandRelation(selectors.connections.eventOption, 0)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
   it('should add new relation group (perpetrator)', (done) => {
     nightmare
     .connections.selectRightHandRelation(selectors.connections.rightHandPerpetratorOption, 0)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -47,14 +47,14 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('robin')
     .connections.sidePanelSearchAndSelect('Talia al Ghul')
     .connections.sidePanelSearchAndSelect('Cluemaster Wikipedia')
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
   it('should add new relation group (heros)', (done) => {
     nightmare
     .connections.selectRightHandRelation(selectors.connections.rightHandHerosOption, 1)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -62,14 +62,14 @@ describe('Connections', () => {
     nightmare
     .connections.sidePanelSearchAndSelect('batman')
     .connections.sidePanelSearchAndSelect('alfred pennyworth')
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
   it('should save the relations', (done) => {
     nightmare
     .connections.save()
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -77,14 +77,14 @@ describe('Connections', () => {
     nightmare
     .connections.edit()
     .connections.moveRelationship('robin', 0)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
   it('should save the relations', (done) => {
     nightmare
     .connections.save()
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -99,7 +99,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -116,7 +116,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -136,7 +136,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -146,7 +146,7 @@ describe('Connections', () => {
     .connections.addNewRelationship()
     .connections.selectLeftHandRelation(selectors.connections.eventOption, 1)
     .connections.selectRightHandRelation(selectors.connections.interpretationOption, 3)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -156,7 +156,7 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('batman eternal')
     .connections.sidePanelSearchAndSelect('batman arkham city')
     .connections.save()
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -176,7 +176,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
@@ -195,7 +195,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -210,7 +210,7 @@ describe('Connections', () => {
         Interpretation: { Event: ['Gotham attack'] }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -232,7 +232,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -252,7 +252,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -269,7 +269,7 @@ describe('Connections', () => {
           }
         });
       })
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     });
   });
@@ -287,7 +287,7 @@ describe('Connections', () => {
           }
         });
       })
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     });
   });
@@ -305,7 +305,7 @@ describe('Connections', () => {
           }
         });
       })
-      .then(done)
+      .then(() => { done() })
       .catch(catchErrors(done));
     });
   });
@@ -313,7 +313,7 @@ describe('Connections', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });

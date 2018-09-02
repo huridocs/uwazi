@@ -3,7 +3,7 @@ import selectors from './selectors.js';
 
 Nightmare.action('connections', {
   waitForRelationHubs(done) {
-    this.wait('.relationshipsHub').then(done);
+    this.wait('.relationshipsHub').then(() => { done() });
   },
   sortBy(orderByText, done) {
     this.waitToClick(selectors.connections.sortMenu)
@@ -18,11 +18,11 @@ Nightmare.action('connections', {
       });
     }, orderByText)
     .wait(300)
-    .then(done);
+    .then(() => { done() });
   },
   edit(done) {
     this.waitToClick(selectors.connections.editButton)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   save(done) {
@@ -32,12 +32,12 @@ Nightmare.action('connections', {
       return !element;
     })
     .connections.waitForSave()
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   addNewRelationship(done) {
     this.waitToClick(selectors.connections.newRelationshipButton)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   selectRelationOption(optionSelector, relationsSelector, relationshipNumber, done) {
@@ -51,7 +51,7 @@ Nightmare.action('connections', {
       }
       return false;
     }, optionSelector, relationsSelector, relationshipNumber)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   selectRightHandRelation(optionSelector, number, done) {
@@ -61,7 +61,7 @@ Nightmare.action('connections', {
       helpers.querySelector('button', relation).click();
     }, optionSelector, number)
     .connections.selectRelationOption(optionSelector, 'div.rightRelationshipsTypeGroup > div.rightRelationshipType', number)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   clickMoveRelationButton(matchingTitle, done) {
@@ -86,7 +86,7 @@ Nightmare.action('connections', {
   moveRelationship(matchingTitle, relationGtoupIndex, done) {
     this.connections.clickMoveRelationButton(matchingTitle)
     .connections.clickMoveToGroupButton(relationGtoupIndex)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   selectLeftHandRelation(optionSelector, number, done) {
@@ -96,26 +96,26 @@ Nightmare.action('connections', {
       helpers.querySelector('button', relation).click();
     }, optionSelector, number)
     .connections.selectRelationOption(optionSelector, 'div.leftRelationshipType', number)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   search(term, done) {
     this.write(selectors.connections.searchInput, term)
     .type(selectors.connections.searchInput, '\u000d')
     .wait(300)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   sidePanelSearchAndSelect(term, done) {
     this.connections.sidepanelSearch(term)
     .connections.sidepanelSelect(term)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   sidepanelSearch(term, done) {
     this.clearInput(selectors.connections.sidePanelSearchInput)
     .write(selectors.connections.sidePanelSearchInput, term)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   sidepanelSelect(matchingTitle, done) {
@@ -141,7 +141,7 @@ Nightmare.action('connections', {
       });
       found.click();
     }, matchingTitle, selectors.connections.sidePanelDocuments)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   clickRemoveRelationButton(matchingTitle, done) {
@@ -170,22 +170,22 @@ Nightmare.action('connections', {
   },
   removeRelationGroup(matchingTitle, done) {
     this.connections.clickRemoveRelationGroupButton(matchingTitle)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   undoRemoveRelationGroup(matchingTitle, done) {
     this.connections.clickRemoveRelationGroupButton(matchingTitle)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   removeRelation(matchingTitle, done) {
     this.connections.clickRemoveRelationButton(matchingTitle)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   undoRemoveRelation(matchingTitle, done) {
     this.connections.clickRemoveRelationButton(matchingTitle)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   goTo(matchingTitle, done) {
@@ -199,7 +199,7 @@ Nightmare.action('connections', {
         }
       });
     }, matchingTitle)
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
   waitForSave(done) {
@@ -208,7 +208,7 @@ Nightmare.action('connections', {
       return deleteButtons.length === 0;
     })
     .wait('.leftRelationshipType .rw-input')
-    .then(done)
+    .then(() => { done() })
     .catch(done);
   },
 

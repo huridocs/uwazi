@@ -10,15 +10,17 @@ describe('Library zone', () => {
   it('should go to library', (done) => {
     nightmare
     .goto(config.url)
-    .then(done)
+    .then(() => { done() })
     .catch(catchErrors(done));
   });
 
   describe('Load more documents', () => {
     it('should Load more', (done) => {
       nightmare
+      .wait(400)
       .waitToClick(selectors.libraryView.loadMore)
-      .wait(selectors.libraryView.documentAfterLoadMore)
+      .wait(selectors.libraryView.documentAfterLoadMore, 1000)
+      .wait(200)
       .exists(selectors.libraryView.documentAfterLoadMore)
       .then((exists) => {
         expect(exists).toBe(true);
@@ -31,7 +33,7 @@ describe('Library zone', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(done);
+      .then(() => { done() });
     });
   });
 });
