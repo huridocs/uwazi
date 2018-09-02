@@ -1,6 +1,6 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 
@@ -10,7 +10,7 @@ describe('Library zone', () => {
   it('should go to library', (done) => {
     nightmare
     .goto(config.url)
-    .then(() => { done() })
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -33,7 +33,7 @@ describe('Library zone', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

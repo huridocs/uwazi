@@ -1,6 +1,6 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
@@ -42,7 +42,8 @@ describe('toc path', () => {
       selectors.documentView.thirdTocEntry = '#pageContainer5 > div.textLayer > div:nth-child(55)';
 
       selectors.documentView.addToTocButton = '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(3)';
-      selectors.documentView.saveTocButton = '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > button';
+      selectors.documentView.saveTocButton = '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active'
+                                            + '> div.sidepanel-footer > button';
 
       const doc = selectors.documentView;
 
@@ -85,14 +86,14 @@ describe('toc path', () => {
   it('should go back to english', (done) => {
     nightmare
     .waitToClick(selectors.navigation.english)
-    .then(() => { done() })
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

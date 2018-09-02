@@ -1,6 +1,6 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 
 //iphone 6 measures
@@ -71,7 +71,7 @@ describe('mobile somke test', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

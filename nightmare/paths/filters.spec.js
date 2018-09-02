@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -70,7 +70,7 @@ describe('filters path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

@@ -43,7 +43,7 @@ describe('pages path', () => {
         expect(text).toContain('/page');
         expect(text).toContain('(view page)');
       })
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -61,7 +61,7 @@ describe('pages path', () => {
           expect(text).toContain('Page contents');
         });
       })
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -69,7 +69,7 @@ describe('pages path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

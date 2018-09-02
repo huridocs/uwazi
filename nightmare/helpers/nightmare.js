@@ -1,11 +1,13 @@
 /*eslint no-console: 0*/
-import './LibraryDSL.js';
-import './connectionsDSL.js';
-import './extensions.js';
 
+/* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 import Nightmare from 'nightmare';
 import nightmareUpload from 'nightmare-upload';
 import realMouse from 'nightmare-real-mouse';
+
+import './LibraryDSL.js';
+import './connectionsDSL.js';
+import './extensions.js';
 
 realMouse(Nightmare);
 nightmareUpload(Nightmare);

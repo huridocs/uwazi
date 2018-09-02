@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import config from '../helpers/config.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -94,7 +94,7 @@ describe('multi edit path', () => {
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
     .waitToDisapear('.alert.alert-success')
-    .then(() => { done() })
+    .then(() => { done(); })
     .catch(catchErrors(done));
   }, 10000);
 
@@ -181,7 +181,7 @@ describe('multi edit path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

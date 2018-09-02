@@ -1,6 +1,6 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 
 const nightmare = createNightmare();
 
@@ -150,7 +150,7 @@ describe('attachments path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

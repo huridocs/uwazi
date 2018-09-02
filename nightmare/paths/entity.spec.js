@@ -37,7 +37,7 @@ describe('Entity zone', () => {
       .clearInput(selectors.entityView.metadataFormTitle)
       .write(selectors.entityView.metadataFormTitle, 'Man-bat')
       .saveEntityFromEntityViewer())
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -114,7 +114,7 @@ describe('Entity zone', () => {
       .then((text) => {
         expect(text.match('Jekyll and Hyde story')).not.toBe(null);
       })
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     }, 20000);
   });
@@ -122,7 +122,7 @@ describe('Entity zone', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

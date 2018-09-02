@@ -1,12 +1,11 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+
 
 const nightmare = createNightmare();
 
-let getInnerText = (selector) => {
-  return document.querySelector(selector).innerText;
-};
+const getInnerText = selector => document.querySelector(selector).innerText;
 
 describe('references path', () => {
   describe('login', () => {
@@ -92,7 +91,7 @@ describe('references path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });

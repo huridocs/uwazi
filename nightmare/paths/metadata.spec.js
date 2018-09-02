@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 
 const nightmare = createNightmare();
@@ -43,7 +43,7 @@ describe('metadata path', () => {
       .write(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -61,7 +61,7 @@ describe('metadata path', () => {
       .write(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     }, 13000);
 
@@ -70,7 +70,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     }, 10000);
   });
@@ -94,7 +94,7 @@ describe('metadata path', () => {
       .write(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
       .waitToClick('.alert.alert-success')
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -118,7 +118,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.documentsBackButton)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -170,7 +170,7 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -221,7 +221,7 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(() => { done() })
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -229,7 +229,7 @@ describe('metadata path', () => {
   describe('closing browser', () => {
     it('should close the browser', (done) => {
       nightmare.end()
-      .then(() => { done() });
+      .then(() => { done(); });
     });
   });
 });
