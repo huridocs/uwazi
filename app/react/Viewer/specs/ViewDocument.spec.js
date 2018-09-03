@@ -102,7 +102,7 @@ describe('ViewDocument', () => {
       render();
 
       instance.onDocumentReady();
-      expect(uiActions.scrollToPage).toHaveBeenCalledWith(15);
+      expect(uiActions.scrollToPage).toHaveBeenCalledWith(15, 0);
 
       props.location = { query: { raw: 'true', page: 15 }, pathname: 'pathname' };
       render();

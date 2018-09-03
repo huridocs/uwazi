@@ -3,6 +3,7 @@ import rison from 'rison';
 
 import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
+import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import api from 'app/Search/SearchAPI';
 import { markdownDatasets } from 'app/Markdown';
 
@@ -55,7 +56,12 @@ export class PageView extends RouteHandler {
   }
 
   render() {
-    return <PageViewer />;
+    return (
+      <React.Fragment>
+        <PageViewer />
+        <ViewMetadataPanel storeKey="library"/>
+      </React.Fragment>
+    );
   }
 }
 

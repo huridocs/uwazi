@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Translate } from 'app/I18N';
-import { Link, withRouter } from 'react-router';
+import { withRouter } from 'react-router';
+import { CurrentLocationLink } from 'app/Layout';
 
 const disableButton = (page, pageToDisable) => ({
     className: page === pageToDisable ? 'btn disabled' : 'btn',
@@ -11,13 +12,27 @@ const disableButton = (page, pageToDisable) => ({
 
 const Paginator = ({ page, totalPages, onPageChange }) => (
   <div className="paginator">
-    <Link onClick={() => onPageChange(page - 1)} {...disableButton(page, 1)}>
+    <CurrentLocationLink
+      queryParams={{ page }}
+      onClick={(e) => {
+        e.preventDefault();
+        onPageChange(page - 1);
+      }}
+      {...disableButton(page, 1)}
+    >
       <Translate>Previous</Translate>
-    </Link>
+    </CurrentLocationLink>
     <span>{` ${page} / ${totalPages} `}</span>
-    <Link onClick={() => onPageChange(page + 1)} {...disableButton(page, totalPages)}>
+    <CurrentLocationLink
+      queryParams={{ page }}
+      onClick={(e) => {
+        e.preventDefault();
+        onPageChange(page + 1);
+      }}
+      {...disableButton(page, totalPages)}
+    >
       <Translate>Next</Translate>
-    </Link>
+    </CurrentLocationLink>
   </div>
 );
 

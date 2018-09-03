@@ -1,11 +1,15 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
+import insertFixtures from '../helpers/insertFixtures';
+
+const nightmare = createNightmare();
 
 describe('translations path', () => {
-  const nightmare = createNightmare();
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
@@ -19,7 +23,7 @@ describe('translations path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 20000);
+    });
   });
 
   describe('Translations tests', () => {
@@ -45,7 +49,7 @@ describe('translations path', () => {
       .write(selectors.settingsView.translationInputEs, 'Documento')
       .waitToClick(selectors.settingsView.translationsSaveButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -74,13 +78,6 @@ describe('translations path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });

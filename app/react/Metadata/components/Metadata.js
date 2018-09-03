@@ -37,7 +37,7 @@ const removeEmptyValues = (p) => {
 const Metadata = ({ metadata, compact }) => (
   <React.Fragment>
     {metadata.filter(removeEmptyValues).map(prop => (
-      <dl key={prop.label}>
+      <dl className={`metadata-type-${prop.type ? prop.type : 'default'}`} key={prop.label}>
         <dt>{t(prop.translateContext, prop.label)}</dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
           {showByType(prop, compact)}
