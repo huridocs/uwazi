@@ -55,10 +55,10 @@ describe('search filters path', () => {
       })
       .catch(catchErrors(done));
     }, 30000);
-  });
+  }, 10000);
 
   describe('filter by more types', () => {
-    it('should show entities of those type', (done) => {
+    it('should show entities of those types', (done) => {
       nightmare.gotoLibrary()
       .library.clickFilter(selectors.libraryView.superVillianType)
       .library.clickFilter(selectors.libraryView.minorVillianType)
