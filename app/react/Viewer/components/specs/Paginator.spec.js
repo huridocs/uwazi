@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { CurrentLocationLink } from 'app/Layout';
 import React from 'react';
 
 import { shallow } from 'enzyme';
@@ -67,10 +67,10 @@ describe('Paginator', () => {
 
       const component = shallow(<Paginator {...props}/>);
 
-      component.find(Link).at(0).simulate('click');
+      component.find(CurrentLocationLink).at(0).simulate('click', { preventDefault: () => {} });
       expect(props.onPageChange).toHaveBeenCalledWith(4);
 
-      component.find(Link).at(1).simulate('click');
+      component.find(CurrentLocationLink).at(1).simulate('click', { preventDefault: () => {} });
       expect(props.onPageChange).toHaveBeenCalledWith(6);
     });
   });
