@@ -1,16 +1,20 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('Connections', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   it('should find "Gotham attack" story and open it', (done) => {
@@ -19,7 +23,7 @@ describe('Connections', () => {
     .waitFirstDocumentToMatch('Gotham attack')
     .waitToClick(selectors.libraryView.libraryFirstDocumentLink)
     .waitToClick(selectors.entityView.connectionsListView)
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -28,14 +32,14 @@ describe('Connections', () => {
     .connections.edit()
     .connections.addNewRelationship()
     .connections.selectLeftHandRelation(selectors.connections.eventOption, 0)
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
   it('should add new relation group (perpetrator)', (done) => {
     nightmare
     .connections.selectRightHandRelation(selectors.connections.rightHandPerpetratorOption, 0)
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -47,14 +51,14 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('robin')
     .connections.sidePanelSearchAndSelect('Talia al Ghul')
     .connections.sidePanelSearchAndSelect('Cluemaster Wikipedia')
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should add new relation group (heros)', (done) => {
     nightmare
     .connections.selectRightHandRelation(selectors.connections.rightHandHerosOption, 1)
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -62,14 +66,14 @@ describe('Connections', () => {
     nightmare
     .connections.sidePanelSearchAndSelect('batman')
     .connections.sidePanelSearchAndSelect('alfred pennyworth')
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should save the relations', (done) => {
     nightmare
     .connections.save()
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -77,16 +81,16 @@ describe('Connections', () => {
     nightmare
     .connections.edit()
     .connections.moveRelationship('robin', 0)
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should save the relations', (done) => {
     nightmare
     .connections.save()
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should render the relations properly after a save', (done) => {
     nightmare
@@ -99,7 +103,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -116,7 +120,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -136,7 +140,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -146,7 +150,7 @@ describe('Connections', () => {
     .connections.addNewRelationship()
     .connections.selectLeftHandRelation(selectors.connections.eventOption, 1)
     .connections.selectRightHandRelation(selectors.connections.interpretationOption, 3)
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -156,9 +160,9 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('batman eternal')
     .connections.sidePanelSearchAndSelect('batman arkham city')
     .connections.save()
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should render the relations properly after a reload', (done) => {
     nightmare
@@ -176,7 +180,7 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -195,9 +199,9 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should remove Interpretation group', (done) => {
     nightmare
@@ -210,9 +214,9 @@ describe('Connections', () => {
         Interpretation: { Event: ['Gotham attack'] }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should go to "gotham attack" and check the new interpretations', (done) => {
     nightmare
@@ -232,9 +236,9 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should remove perpetrator and interpretations and undo the remove on perpetrator', (done) => {
     nightmare
@@ -252,9 +256,9 @@ describe('Connections', () => {
         }
       });
     })
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   describe('when sorting by title a-z', () => {
     it('should sort the connected entitites a to z', (done) => {
@@ -269,7 +273,7 @@ describe('Connections', () => {
           }
         });
       })
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -287,7 +291,7 @@ describe('Connections', () => {
           }
         });
       })
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -305,15 +309,8 @@ describe('Connections', () => {
           }
         });
       })
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });

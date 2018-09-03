@@ -1,20 +1,31 @@
-import React, {Component} from 'react';
-import {fromJS as Immutable} from 'immutable';
+import React, { Component } from 'react';
+import { fromJS as Immutable } from 'immutable';
 import PropTypes from 'prop-types';
 import queryString from 'query-string';
 
-import {RowList} from 'app/Layout/Lists';
+import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import {t, I18NLink} from 'app/I18N';
+import { t, I18NLink } from 'app/I18N';
+import { selectSingleDocument } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import Slider from './slider';
 
 export class ItemList extends Component {
   render() {
-    const {items, link} = this.props;
+    const { items, link } = this.props;
     const sort = queryString.parse(link.substring(link.indexOf('?'))).sort;
-    const searchParams = sort ? {sort} : {sort: 'title'};
+    const searchParams = sort ? { sort } : { sort: 'title' };
 
-    const toRenderItems = items.map((item, index) => <Doc doc={Immutable(item)} key={index} searchParams={searchParams} />);
+    const mapDispatchToProps = dispatch => bindActionCreators({
+        onClick: (e, item) => selectSingleDocument(item)
+    }, wrapDispatch(dispatch, 'library'));
+
+    const toRenderItems = items.map((item, index) => {
+      const ConnectedItem = connect(null, mapDispatchToProps)(Doc);
+      return <ConnectedItem key={index} doc={Immutable(item)} searchParams={searchParams}/>;
+    });
 
     let list = <RowList>{toRenderItems}</RowList>;
 

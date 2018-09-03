@@ -1,36 +1,35 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {wrapDispatch} from 'app/Multireducer';
-import {connect} from 'react-redux';
-import {NeedAuthorization} from 'app/Auth';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
+import { connect } from 'react-redux';
+import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import {t, I18NLink} from 'app/I18N';
-import {publish} from 'app/Uploads/actions/uploadsActions';
+import { t, I18NLink } from 'app/I18N';
+import { publish } from 'app/Uploads/actions/uploadsActions';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import { Icon } from 'UI';
 
-import {Item} from 'app/Layout';
-import {is} from 'immutable';
+import { Item } from 'app/Layout';
+import { is } from 'immutable';
 
 export class Doc extends Component {
-
   deleteConnection(e, connection) {
     e.stopPropagation();
-    const {_id, sourceType} = connection;
-    this.props.deleteConnection({_id, sourceType});
+    const { _id, sourceType } = connection;
+    this.props.deleteConnection({ _id, sourceType });
   }
 
   getConnections(connections) {
     return (
       <div>
         {connections.map((connection, index) =>
-          <div key={index} className="item-connection">
+          (<div key={index} className="item-connection">
             <div>
               <Icon icon="exchange-alt" />
               <span>
                 {t(connection.context, connection.label)}
-                {connection.type === 'metadata' ? ' ' + t('System', 'in') + '...' : ''}
+                {connection.type === 'metadata' ? ` ${t('System', 'in')}...` : ''}
               </span>
             </div>
             <NeedAuthorization roles={['admin', 'editor']}>
@@ -40,7 +39,7 @@ export class Doc extends Component {
                 </button>
               </ShowIf>
             </NeedAuthorization>
-          </div>
+           </div>)
         )}
       </div>
     );
@@ -71,43 +70,44 @@ export class Doc extends Component {
   }
 
   render() {
-    const {className, additionalText} = this.props;
+    const { className, additionalText } = this.props;
     const doc = this.props.doc.toJS();
-    const {sharedId, type, template} = doc;
+    const { sharedId, type, template } = doc;
     const isEntity = type === 'entity';
     const hasTemplate = !!template;
-    let documentViewUrl = `/${type}/${sharedId}`;
+    const documentViewUrl = `/${type}/${sharedId}`;
 
     let itemConnections = null;
     if (doc.connections && doc.connections.length) {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = <div>
-                      {doc.processed || isEntity ?
-                        <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={(e) => e.stopPropagation()}>
-                          <Icon icon="angle-right" /> { t('System', 'View') }
-                        </I18NLink> : false
+    const buttons = (<div>
+      {doc.processed || isEntity ?
+        <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={e => e.stopPropagation()}>
+          <Icon icon="angle-right" /> { t('System', 'View') }
+        </I18NLink> : false
                       }
-                      {(doc.processed || isEntity) && !doc.published && hasTemplate ?
-                        <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
-                          <Icon icon="paper-plane" /> { t('System', 'Publish') }
-                        </button> : false
+      {(doc.processed || isEntity) && !doc.published && hasTemplate ?
+        <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
+          <Icon icon="paper-plane" /> { t('System', 'Publish') }
+        </button> : false
                       }
-                    </div>;
+                     </div>);
 
-    return <Item onClick={this.onClick.bind(this)}
-                 onSnippetClick={this.props.onSnippetClick}
-                 active={this.props.active}
-                 doc={this.props.doc}
-                 additionalText={additionalText}
-                 searchParams={this.props.searchParams}
-                 deleteConnection={this.props.deleteConnection}
-                 itemHeader={itemConnections}
-                 buttons={buttons}
-                 labels={<UploadEntityStatus doc={this.props.doc}/>}
-                 className={className}
-            />;
+    return (<Item
+      onClick={this.onClick.bind(this)}
+      onSnippetClick={this.props.onSnippetClick}
+      active={this.props.active}
+      doc={this.props.doc}
+      additionalText={additionalText}
+      searchParams={this.props.searchParams}
+      deleteConnection={this.props.deleteConnection}
+      itemHeader={itemConnections}
+      buttons={buttons}
+      labels={<UploadEntityStatus doc={this.props.doc}/>}
+      className={className}
+    />);
   }
 }
 
@@ -130,7 +130,7 @@ Doc.contextTypes = {
 
 export function mapStateToProps(state, ownProps) {
   const active = ownProps.storeKey ? !!state[ownProps.storeKey].ui.get('selectedDocuments')
-  .find((doc) => doc.get('_id') === ownProps.doc.get('_id')) : false;
+  .find(doc => doc.get('_id') === ownProps.doc.get('_id')) : false;
 
   return {
     active
@@ -138,7 +138,7 @@ export function mapStateToProps(state, ownProps) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({publish}, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators({ publish }, wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Doc);

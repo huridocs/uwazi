@@ -1,14 +1,17 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import insertFixtures from '../helpers/insertFixtures';
+
 
 const nightmare = createNightmare();
 
-let getInnerText = (selector) => {
-  return document.querySelector(selector).innerText;
-};
+const getInnerText = selector => document.querySelector(selector).innerText;
 
 describe('references path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare
@@ -17,7 +20,7 @@ describe('references path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('search for document', () => {
@@ -55,7 +58,7 @@ describe('references path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should select a word from the second document then click the save button', (done) => {
       nightmare
@@ -86,13 +89,6 @@ describe('references path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });
