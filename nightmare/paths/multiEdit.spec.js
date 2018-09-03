@@ -20,7 +20,7 @@ describe('multi edit path', () => {
           done();
         })
         .catch(catchErrors(done));
-      }, 10000);
+      });
     });
 
     it('should create 3 new entities and publish them', (done) => {
@@ -96,7 +96,7 @@ describe('multi edit path', () => {
     .waitToDisapear('.alert.alert-success')
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should go to the library', () => {
     nightmare

@@ -43,7 +43,7 @@ describe('PublishDocument', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   it('should fill a document metadata and publish it', (done) => {
@@ -84,7 +84,7 @@ describe('PublishDocument', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should allow changing the different template\'s properties', (done) => {
       nightmare
@@ -115,7 +115,7 @@ describe('PublishDocument', () => {
       })
       .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 20000);
+    });
   });
 
   it('should go to library and change the document type', (done) => {
@@ -138,7 +138,7 @@ describe('PublishDocument', () => {
       .waitForTheEntityToBeIndexed()
       .then(() => { done(); });
     });
-  }, 10000);
+  });
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {

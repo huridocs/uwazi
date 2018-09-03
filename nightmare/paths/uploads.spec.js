@@ -14,7 +14,7 @@ describe('Uploads', () => {
       done();
     })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   describe('when uploading a pdf', () => {
     it('should create the new document and show a "no type state"', (done) => {

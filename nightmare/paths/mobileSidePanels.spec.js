@@ -19,7 +19,7 @@ describe('mobile somke test', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('uploads view', () => {

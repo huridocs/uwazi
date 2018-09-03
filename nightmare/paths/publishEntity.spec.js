@@ -19,7 +19,7 @@ describe('publish entity path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   it('should create a new entity and publish it', (done) => {
@@ -96,7 +96,7 @@ describe('publish entity path', () => {
       done();
     })
     .catch(done.fail);
-  }, 10000);
+  });
 
   it('should refresh and check the values', (done) => {
     nightmare
@@ -135,7 +135,7 @@ describe('publish entity path', () => {
       done();
     })
     .catch(done.fail);
-  }, 10000);
+  });
 
   describe('closing browser', () => {
     it('should close the browser', (done) => {

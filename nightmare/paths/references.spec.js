@@ -16,7 +16,7 @@ describe('references path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('search for document', () => {
@@ -54,7 +54,7 @@ describe('references path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should select a word from the second document then click the save button', (done) => {
       nightmare

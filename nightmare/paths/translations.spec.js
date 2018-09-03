@@ -19,7 +19,7 @@ describe('translations path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Translations tests', () => {

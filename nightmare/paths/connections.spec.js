@@ -10,7 +10,7 @@ describe('Connections', () => {
       nightmare.login('admin', 'admin')
       .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   it('should find "Gotham attack" story and open it', (done) => {
@@ -49,7 +49,7 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('Cluemaster Wikipedia')
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should add new relation group (heros)', (done) => {
     nightmare
@@ -64,7 +64,7 @@ describe('Connections', () => {
     .connections.sidePanelSearchAndSelect('alfred pennyworth')
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should save the relations', (done) => {
     nightmare
@@ -79,14 +79,14 @@ describe('Connections', () => {
     .connections.moveRelationship('robin', 0)
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should save the relations', (done) => {
     nightmare
     .connections.save()
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should render the relations properly after a save', (done) => {
     nightmare
@@ -158,7 +158,7 @@ describe('Connections', () => {
     .connections.save()
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should render the relations properly after a reload', (done) => {
     nightmare
@@ -197,7 +197,7 @@ describe('Connections', () => {
     })
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should remove Interpretation group', (done) => {
     nightmare
@@ -212,7 +212,7 @@ describe('Connections', () => {
     })
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should go to "gotham attack" and check the new interpretations', (done) => {
     nightmare
@@ -234,7 +234,7 @@ describe('Connections', () => {
     })
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   it('should remove perpetrator and interpretations and undo the remove on perpetrator', (done) => {
     nightmare
@@ -254,7 +254,7 @@ describe('Connections', () => {
     })
     .then(() => { done(); })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   describe('when sorting by title a-z', () => {
     it('should sort the connected entitites a to z', (done) => {

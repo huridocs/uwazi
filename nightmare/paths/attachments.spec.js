@@ -17,7 +17,7 @@ describe('attachments path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('main document pdf', () => {

@@ -26,7 +26,7 @@ describe('pages path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Pages', () => {

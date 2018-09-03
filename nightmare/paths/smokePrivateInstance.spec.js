@@ -19,7 +19,7 @@ describe.skip('Private instance', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Set as private', () => {

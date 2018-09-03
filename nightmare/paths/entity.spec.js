@@ -19,7 +19,7 @@ describe('Entity zone', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should allow changing the entity\'s title and template (common properties)', (done) => {
       nightmare

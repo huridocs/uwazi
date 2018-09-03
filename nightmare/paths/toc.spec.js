@@ -15,7 +15,7 @@ describe('toc path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('search for document', () => {

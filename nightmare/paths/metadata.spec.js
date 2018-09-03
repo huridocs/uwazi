@@ -19,7 +19,7 @@ describe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Dictionaries tests', () => {
@@ -63,7 +63,7 @@ describe('metadata path', () => {
       .waitToClick('.alert.alert-success')
       .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 13000);
+    });
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
@@ -72,7 +72,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
       .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Documents tests', () => {

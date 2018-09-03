@@ -47,15 +47,15 @@ describe('search filters path', () => {
     it('should only show entities of that type', (done) => {
       nightmare
       .library.clickFilter(selectors.libraryView.superVillianType)
-      .wait(10000)
+      .wait(3000)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Scarecrow');
         done();
       })
       .catch(catchErrors(done));
-    }, 30000);
-  }, 10000);
+    });
+  });
 
   describe('filter by more types', () => {
     it('should show entities of those types', (done) => {
@@ -93,7 +93,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 7000);
+    });
 
     describe('AND switch', () => {
       it('should filter entities having all the values selected', (done) => {
@@ -107,7 +107,7 @@ describe('search filters path', () => {
           done();
         })
         .catch(catchErrors(done));
-      }, 10000);
+      });
     });
   });
 
@@ -140,7 +140,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('date filters', () => {
@@ -165,7 +165,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 100000);
+    });
   });
 
   describe('closing browser', () => {
