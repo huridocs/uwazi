@@ -13,6 +13,8 @@ describe('Library zone', () => {
 
   it('should go to library', (done) => {
     nightmare
+    // wait for documents to index
+    .wait(2000)
     .goto(config.url)
     .then(() => { done(); })
     .catch(catchErrors(done));
@@ -22,9 +24,7 @@ describe('Library zone', () => {
     it('should Load more', (done) => {
       nightmare
       .waitToClick(selectors.libraryView.loadMore)
-      .wait(500)
-      .wait(selectors.libraryView.documentAfterLoadMore, 1000)
-      .wait(300)
+      .wait(selectors.libraryView.documentAfterLoadMore)
       .exists(selectors.libraryView.documentAfterLoadMore)
       .then((exists) => {
         expect(exists).toBe(true);
