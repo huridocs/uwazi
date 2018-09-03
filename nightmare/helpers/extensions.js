@@ -89,9 +89,9 @@ Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
 });
 
 Nightmare.action('waitToClick', function (selector, done) {
-  this.wait(200)
+  this.wait(selector, 1000)
+  .wait(300)
   .wait(selector, 1000)
-  .wait(200)
   .click(selector)
   .then(() => { done(); })
   .catch(done);
