@@ -61,3 +61,21 @@
     font-weight: bold;
   }
 }
+
+.entity-viewer {
+  .view {
+    display: block;
+    overflow: auto;
+    dl {
+      width: auto;
+      float: left;
+      min-width: 120px;
+      padding: 30px 15px;
+    }
+    .metadata-type-markdown,
+    .metadata-type-geolocation,
+    .metadata-timeline-viewer {
+      width: 100%;
+    }
+  }
+}

@@ -2,10 +2,14 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('Uploads', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   it('should log in as admin', (done) => {
     nightmare
     .login('admin', 'admin')
@@ -14,7 +18,7 @@ describe('Uploads', () => {
       done();
     })
     .catch(catchErrors(done));
-  }, 10000);
+  });
 
   describe('when uploading a pdf', () => {
     it('should create the new document and show a "no type state"', (done) => {
@@ -47,13 +51,6 @@ describe('Uploads', () => {
         })
         .catch(catchErrors(done));
       });
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });

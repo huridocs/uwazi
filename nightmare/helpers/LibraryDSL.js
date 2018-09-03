@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 import Nightmare from 'nightmare';
 
 let currentState;
@@ -7,7 +8,7 @@ Nightmare.action('library', {
     this.library.setCurrentState()
     .waitToClick(selector)
     .library.waitForSearchToFinish()
-    .then(done);
+    .then(() => { done(); });
   },
 
   typeFilter(selector, text, done) {
@@ -17,7 +18,7 @@ Nightmare.action('library', {
     .write(selector, text)
     .type(selector, enter)
     .library.waitForSearchToFinish()
-    .then(done);
+    .then(() => { done(); });
   },
 
   waitForSearchToFinish(done) {
@@ -30,7 +31,7 @@ Nightmare.action('library', {
 
       return state !== previousState;
     }, currentState)
-    .then(done)
+    .then(() => { done(); })
     .catch(done);
   },
 
