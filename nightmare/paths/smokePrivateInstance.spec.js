@@ -3,10 +3,14 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('Private instance', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
@@ -19,7 +23,7 @@ describe('Private instance', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Set as private', () => {
@@ -29,7 +33,7 @@ describe('Private instance', () => {
       .waitToClick(selectors.settingsView.privateInstance)
       .waitToClick(selectors.settingsView.saveCollectionButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -45,13 +49,6 @@ describe('Private instance', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });

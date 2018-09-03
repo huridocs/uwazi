@@ -1,8 +1,8 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import { catchErrors } from 'api/utils/jasmineHelpers';
-
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
+import insertFixtures from '../helpers/insertFixtures';
 
 selectors.libraryView.filters = {
   firstPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
@@ -43,22 +43,25 @@ const filterBySuperPowers = superPower => (
 );
 
 describe('search filters path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
       nightmare
       .library.clickFilter(selectors.libraryView.superVillianType)
-      .wait(10000)
+      .wait(3000)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Scarecrow');
         done();
       })
       .catch(catchErrors(done));
-    }, 30000);
+    });
   });
 
   describe('filter by more types', () => {
-    it('should show entities of those type', (done) => {
+    it('should show entities of those types', (done) => {
       nightmare.gotoLibrary()
       .library.clickFilter(selectors.libraryView.superVillianType)
       .library.clickFilter(selectors.libraryView.minorVillianType)
@@ -93,7 +96,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 7000);
+    });
 
     describe('AND switch', () => {
       it('should filter entities having all the values selected', (done) => {
@@ -107,7 +110,7 @@ describe('search filters path', () => {
           done();
         })
         .catch(catchErrors(done));
-      }, 10000);
+      });
     });
   });
 
@@ -117,15 +120,17 @@ describe('search filters path', () => {
     );
 
     it('should filter by a range (120)', (done) => {
-      expectNumberOfPlanetsToShow('Daneryl', 120).then(done).catch(catchErrors(done));
+      expectNumberOfPlanetsToShow('Daneryl', 120).then(() => { done(); }).catch(catchErrors(done));
     });
 
     it('should filter by a range (400)', (done) => {
-      expectNumberOfPlanetsToShow('Thanos', 140).then(done).catch(catchErrors(done));
+      expectNumberOfPlanetsToShow('Thanos', 140).then(() => { done(); }).catch(catchErrors(done));
     });
 
     it('should filter by a range (600)', (done) => {
-      expectNumberOfPlanetsToShow('Scarecrow', 600, selectors.libraryView.filters.planetsConqueredTo).then(done).catch(catchErrors(done));
+      expectNumberOfPlanetsToShow('Scarecrow', 600, selectors.libraryView.filters.planetsConqueredTo)
+      .then(() => { done(); })
+      .catch(catchErrors(done));
     });
 
     it('should filter by a range', (done) => {
@@ -138,7 +143,7 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('date filters', () => {
@@ -146,11 +151,11 @@ describe('search filters path', () => {
       expectFilterToShowResult(date, expected, selector)
     );
     it('should filter by a date for Daneryl', (done) => {
-      expectFilterDateToShow('Daneryl', '18/05/1984').then(done).catch(catchErrors(done));
+      expectFilterDateToShow('Daneryl', '18/05/1984').then(() => { done(); }).catch(catchErrors(done));
     });
 
     it('should filter by a date for Thanos', (done) => {
-      expectFilterDateToShow('Thanos', '30/06/1939', selectors.libraryView.filters.dobTo).then(done).catch(catchErrors(done));
+      expectFilterDateToShow('Thanos', '30/06/1939', selectors.libraryView.filters.dobTo).then(() => { done(); }).catch(catchErrors(done));
     });
 
     it('should filter by a range of dates for Daneryl', (done) => {
@@ -163,13 +168,6 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 100000);
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });

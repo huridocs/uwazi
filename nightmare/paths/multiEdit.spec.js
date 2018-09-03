@@ -1,12 +1,16 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import config from '../helpers/config.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('multi edit path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('creating entities for the test', () => {
     describe('login', () => {
       it('it should create 3 entities', (done) => {
@@ -20,7 +24,7 @@ describe('multi edit path', () => {
           done();
         })
         .catch(catchErrors(done));
-      }, 10000);
+      });
     });
 
     it('should create 3 new entities and publish them', (done) => {
@@ -94,7 +98,7 @@ describe('multi edit path', () => {
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .waitToClick('.alert.alert-success')
     .waitToDisapear('.alert.alert-success')
-    .then(done)
+    .then(() => { done(); })
     .catch(catchErrors(done));
   });
 
@@ -175,13 +179,6 @@ describe('multi edit path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });

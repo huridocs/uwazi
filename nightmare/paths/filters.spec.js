@@ -1,25 +1,32 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('filters path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
       .login('admin', 'admin')
+      .wait(300)
       .waitToClick(selectors.navigation.settingsNavButton)
-      .wait(selectors.settingsView.settingsHeader)
+      .wait(200)
+      .wait(selectors.settingsView.settingsHeader, 1000)
+      .wait(200)
       .url()
       .then((url) => {
         expect(url).toBe(`${config.url}/settings/account`);
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Filters tests', () => {
@@ -61,13 +68,6 @@ describe('filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });
