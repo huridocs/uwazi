@@ -1,9 +1,9 @@
-import * as types from 'app/Viewer/actions/actionTypes';
-import {actions} from 'app/BasicReducer';
-import scroller from 'app/Viewer/utils/Scroller';
-import {setTargetSelection} from 'app/Viewer/actions/selectionActions';
-import {events} from 'app/utils';
+import { actions } from 'app/BasicReducer';
+import { events } from 'app/utils';
+import { setTargetSelection } from 'app/Viewer/actions/selectionActions';
 import Marker from 'app/Viewer/utils/Marker.js';
+import scroller from 'app/Viewer/utils/Scroller';
+import * as types from 'app/Viewer/actions/actionTypes';
 
 export function closePanel() {
   return {
@@ -20,7 +20,7 @@ export function openPanel(panel) {
 
 export function resetReferenceCreation() {
   return function (dispatch) {
-    dispatch({type: types.RESET_REFERENCE_CREATION});
+    dispatch({ type: types.RESET_REFERENCE_CREATION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
@@ -55,54 +55,48 @@ export function goToActive(value = true) {
 }
 
 export function highlightSnippets(snippets, pagesBeingRendered = []) {
-  let highlights = snippets.get('fullText')
-  .filter((s) => pagesBeingRendered.includes(s.get('page')))
-  .map((snippet) => {
-    return snippet.get('text')
-    .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
-    .replace(/<[^>]*>/g, '')
-    .replace(/\s+/g, '\\s*')
-    .replace(/\n/g, '\\s*');
-  })
-  .filter((elem, pos, arr) => {
-    return arr.indexOf(elem) === pos;
-  });
+  const highlights = snippets.get('fullText')
+  .filter(s => pagesBeingRendered.includes(s.get('page')))
+  .map(snippet => snippet.get('text')
+  .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
+  .replace(/<[^>]*>/g, '')
+  .replace(/\s+/g, '\\s*')
+  .replace(/\n/g, '\\s*'))
+  .filter((elem, pos, arr) => arr.indexOf(elem) === pos);
 
   Marker.unmark();
   highlights.forEach((highlightRegExp) => {
-    let regexp = new RegExp(highlightRegExp);
-    Marker.markRegExp(regexp, {separateWordSearch: false, acrossElements: true});
+    const regexp = new RegExp(highlightRegExp);
+    Marker.markRegExp(regexp, { separateWordSearch: false, acrossElements: true });
   });
 }
 
-export function scrollToPage(page) {
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 0, dividerOffset: 1});
+export function scrollToPage(page, duration = 100) {
+  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1 });
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {
   //
-  let page = Object.keys(docInfo).find((pageNumber) => {
-    return docInfo[pageNumber].chars >= reference.range.start;
-  });
+  const page = Object.keys(docInfo).find(pageNumber => docInfo[pageNumber].chars >= reference.range.start);
   //
 
-  if (document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')) {
-    scroller.to(`.document-viewer a[data-id="${reference._id}"]`, '.document-viewer', {duration: 100});
+  if (window.document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')) {
+    scroller.to(`.document-viewer a[data-id="${reference._id}"]`, '.document-viewer', { duration: 100 });
   } else {
-    let scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {duration: 0, dividerOffset: 1});
+    const scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration: 0, dividerOffset: 1 });
 
     events.on('referenceRendered', (renderedReference) => {
       if (renderedReference._id === reference._id &&
-          document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')
-         ) {
+          window.document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')
+      ) {
         window.clearInterval(scroll);
-        scroller.to(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer', {duration: 100});
+        scroller.to(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer', { duration: 100 });
         events.removeAllListeners('referenceRendered');
       }
     });
   }
 
-  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', {duration: 100});
+  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 100 });
 }
 
 export function activateReference(reference, docInfo, tab) {
@@ -110,8 +104,8 @@ export function activateReference(reference, docInfo, tab) {
   events.removeAllListeners('referenceRendered');
 
   return function (dispatch) {
-    dispatch({type: types.ACTIVE_REFERENCE, reference: reference._id});
-    dispatch({type: types.OPEN_PANEL, panel: 'viewMetadataPanel'});
+    dispatch({ type: types.ACTIVE_REFERENCE, reference: reference._id });
+    dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
 
     setTimeout(() => {

@@ -27,7 +27,7 @@ class ViewDocument extends RouteHandler {
   }
 
   static requestState(routeParams, query = {}, globalResources) {
-    return requestViewerState({ ...routeParams, raw: query.raw === 'true' || !isClient, page: query.page }, globalResources);
+    return requestViewerState({ ...routeParams, raw: (query.raw === 'true') || !isClient, page: query.page }, globalResources);
   }
 
   componentWillUnmount() {
@@ -83,7 +83,7 @@ class ViewDocument extends RouteHandler {
 
   onDocumentReady() {
     if (this.props.location.query.raw !== 'true' && this.props.location.query.page) {
-      scrollToPage(this.props.location.query.page);
+      scrollToPage(this.props.location.query.page, 0);
     }
   }
 

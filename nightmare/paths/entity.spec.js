@@ -2,10 +2,14 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('Entity zone', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('metadata editing', () => {
     it('should log in as admin and go into the entity viewer for the desired entity', (done) => {
       const entityTitle = 'Man-bat';
@@ -19,7 +23,7 @@ describe('Entity zone', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should allow changing the entity\'s title and template (common properties)', (done) => {
       nightmare
@@ -37,7 +41,7 @@ describe('Entity zone', () => {
       .clearInput(selectors.entityView.metadataFormTitle)
       .write(selectors.entityView.metadataFormTitle, 'Man-bat')
       .saveEntityFromEntityViewer())
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -114,15 +118,8 @@ describe('Entity zone', () => {
       .then((text) => {
         expect(text.match('Jekyll and Hyde story')).not.toBe(null);
       })
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     }, 20000);
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
-    });
   });
 });

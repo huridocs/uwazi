@@ -1,12 +1,16 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('metadata path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
       nightmare
@@ -19,7 +23,7 @@ describe('metadata path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Dictionaries tests', () => {
@@ -43,7 +47,7 @@ describe('metadata path', () => {
       .write(selectors.settingsView.secondDictionaryValForm, 'tests value 2')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -61,18 +65,18 @@ describe('metadata path', () => {
       .write(selectors.settingsView.secondDictionaryValForm, 'edited')
       .waitToClick(selectors.settingsView.saveDictionaryButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 13000);
+    });
 
     it('should go back to dictionaries then delete the created dictionary', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.dictionariesBackButton)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('Documents tests', () => {
@@ -94,7 +98,7 @@ describe('metadata path', () => {
       .write(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
       .waitToClick('.alert.alert-success')
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
 
@@ -118,7 +122,7 @@ describe('metadata path', () => {
       .waitToClick(selectors.settingsView.documentsBackButton)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -170,7 +174,7 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
     });
   });
@@ -221,15 +225,8 @@ describe('metadata path', () => {
       .wait(selectors.settingsView.liElementsOfSection)
       .deleteItemFromList(selectors.settingsView.liElementsOfSection, 'edited')
       .waitToClick(selectors.settingsView.deleteButtonConfirmation)
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
     });
   });
 });
