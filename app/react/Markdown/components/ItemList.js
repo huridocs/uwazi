@@ -15,7 +15,7 @@ import Slider from './slider';
 export class ItemList extends Component {
   render() {
     const { items, link } = this.props;
-    const sort = queryString.parse(link.substring(link.indexOf('?'))).sort;
+    const { sort } = queryString.parse(link.substring(link.indexOf('?')));
     const searchParams = sort ? { sort } : { sort: 'title' };
 
     const mapDispatchToProps = dispatch => bindActionCreators({
