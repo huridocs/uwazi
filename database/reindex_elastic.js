@@ -43,6 +43,6 @@ connect()
   })
   .catch((error) => {
     console.log('Migration error: ', error);
-    process.exit();
+    process.exit(1);
   });
 });

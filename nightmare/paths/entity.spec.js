@@ -2,10 +2,14 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('Entity zone', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('metadata editing', () => {
     it('should log in as admin and go into the entity viewer for the desired entity', (done) => {
       const entityTitle = 'Man-bat';
@@ -117,12 +121,5 @@ describe('Entity zone', () => {
       .then(() => { done(); })
       .catch(catchErrors(done));
     }, 20000);
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(() => { done(); });
-    });
   });
 });

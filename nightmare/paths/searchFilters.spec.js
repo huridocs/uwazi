@@ -1,8 +1,8 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import { catchErrors } from 'api/utils/jasmineHelpers';
-
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
+import insertFixtures from '../helpers/insertFixtures';
 
 selectors.libraryView.filters = {
   firstPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
@@ -43,6 +43,9 @@ const filterBySuperPowers = superPower => (
 );
 
 describe('search filters path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
       nightmare
@@ -165,13 +168,6 @@ describe('search filters path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(() => { done(); });
     });
   });
 });

@@ -3,10 +3,14 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import config from '../helpers/config.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('multi edit path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('creating entities for the test', () => {
     describe('login', () => {
       it('it should create 3 entities', (done) => {
@@ -175,13 +179,6 @@ describe('multi edit path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(() => { done(); });
     });
   });
 });

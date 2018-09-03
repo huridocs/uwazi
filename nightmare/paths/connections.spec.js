@@ -1,10 +1,14 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import selectors from '../helpers/selectors.js';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('Connections', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin', (done) => {
       nightmare.login('admin', 'admin')
@@ -307,13 +311,6 @@ describe('Connections', () => {
       })
       .then(() => { done(); })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(() => { done(); });
     });
   });
 });

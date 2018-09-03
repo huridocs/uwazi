@@ -3,6 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
+import insertFixtures from '../helpers/insertFixtures';
 
 const localSelectors = {
   pagesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(5)',
@@ -11,8 +12,11 @@ const localSelectors = {
   pageContentsInput: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea'
 };
 
+const nightmare = createNightmare();
+
 describe('pages path', () => {
-  const nightmare = createNightmare();
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
@@ -63,13 +67,6 @@ describe('pages path', () => {
       })
       .then(() => { done(); })
       .catch(catchErrors(done));
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(() => { done(); });
     });
   });
 });

@@ -3,6 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
@@ -31,6 +32,9 @@ selectors.doc = {
 const comicCharacter = '58ad7d240d44252fee4e61fd';
 
 describe('PublishDocument', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   // missing test for actually upload and publish a document
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
@@ -136,13 +140,6 @@ describe('PublishDocument', () => {
       .click(selectors.libraryView.deleteButton)
       .waitToClick(selectors.libraryView.deleteButtonConfirmation)
       .waitForTheEntityToBeIndexed()
-      .then(() => { done(); });
-    });
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
       .then(() => { done(); });
     });
   });
