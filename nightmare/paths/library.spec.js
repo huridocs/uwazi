@@ -21,10 +21,10 @@ describe('Library zone', () => {
   describe('Load more documents', () => {
     it('should Load more', (done) => {
       nightmare
-      .wait(400)
       .waitToClick(selectors.libraryView.loadMore)
+      .wait(500)
       .wait(selectors.libraryView.documentAfterLoadMore, 1000)
-      .wait(200)
+      .wait(300)
       .exists(selectors.libraryView.documentAfterLoadMore)
       .then((exists) => {
         expect(exists).toBe(true);
