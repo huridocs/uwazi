@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`users routes POST /recoverpassword should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "email": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;

@@ -7,7 +7,7 @@ import { ConfirmButton } from 'app/Layout';
 
 import { CustomUploads, mapStateToProps } from '../CustomUploads';
 
-fdescribe('CustomUploads', () => {
+describe('CustomUploads', () => {
   let component;
   let props;
   let context;

@@ -1,11 +1,12 @@
 import SHA256 from 'crypto-js/sha256';
-import mailer from '../utils/mailer';
+
+import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
 
+import mailer from '../utils/mailer';
 import model from './usersModel';
-import settings from '../settings/settings';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
-import { createError } from 'api/utils';
+import settings from '../settings/settings';
 
 const encryptPassword = password => SHA256(password).toString();
 

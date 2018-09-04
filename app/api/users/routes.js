@@ -1,8 +1,12 @@
+import Joi from 'joi';
+
+import { validateRequest } from 'api/utils';
+
 import needsAuthorization from '../auth/authMiddleware';
 import users from './users';
 
-const getDomain = (req) => req.protocol + '://' + req.get('host');
-export default app => {
+const getDomain = req => `${req.protocol}://${req.get('host')}`;
+export default (app) => {
   app.post('/api/users', needsAuthorization(['admin', 'editor']), (req, res) => {
     users.save(req.body, req.user, getDomain(req))
     .then(response => res.json(response))
@@ -15,11 +19,17 @@ export default app => {
     .catch(res.error);
   });
 
-  app.post('/api/recoverpassword', (req, res) => {
-    users.recoverPassword(req.body.email, getDomain(req))
-    .then(() => res.json('OK'))
-    .catch(res.error);
-  });
+  app.post(
+    '/api/recoverpassword',
+    validateRequest(Joi.object().keys({
+      email: Joi.string().required(),
+    })),
+    (req, res) => {
+      users.recoverPassword(req.body.email, getDomain(req))
+      .then(() => res.json('OK'))
+      .catch(res.error);
+    }
+  );
 
   app.post('/api/resetpassword', (req, res) => {
     users.resetPassword(req.body)
