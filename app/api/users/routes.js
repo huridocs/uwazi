@@ -13,7 +13,7 @@ export default (app) => {
       username: Joi.string(),
       email: Joi.string(),
       password: Joi.string(),
-      role: Joi.string()
+      role: Joi.string().valid('admin', 'editor')
     })),
     (req, res) => {
       users.save(req.body, req.user, getDomain(req))
@@ -25,7 +25,8 @@ export default (app) => {
     needsAuthorization(),
     validateRequest(Joi.object().keys({
       username: Joi.string().required(),
-      email: Joi.string().required()
+      email: Joi.string().required(),
+      role: Joi.string().valid('admin', 'editor').required()
     })),
     (req, res) => {
       users.newUser(req.body, getDomain(req))

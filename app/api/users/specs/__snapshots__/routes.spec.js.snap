@@ -1,9 +1,131 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`users routes DELETE should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`users routes POST /recoverpassword should have a validation schema 1`] = `
 Object {
   "children": Object {
     "email": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`users routes POST /resetpassword should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "key": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`users routes POST /users should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "email": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "password": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "role": Object {
+      "flags": Object {
+        "allowOnly": true,
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+      "valids": Array [
+        "admin",
+        "editor",
+      ],
+    },
+    "username": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`users routes POST /users/new should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "email": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "role": Object {
+      "flags": Object {
+        "allowOnly": true,
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+      "valids": Array [
+        "admin",
+        "editor",
+      ],
+    },
+    "username": Object {
       "flags": Object {
         "presence": "required",
       },

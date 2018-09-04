@@ -13,6 +13,10 @@ describe('users routes', () => {
 
   describe('POST', () => {
     describe('/users', () => {
+      it('should have a validation schema', () => {
+        expect(routes.post.validation('/api/users')).toMatchSnapshot();
+      });
+
       it('should call users save with the body', (done) => {
         spyOn(users, 'save').and.returnValue(Promise.resolve());
         const req = { body: 'changes', user: { _id: 'currentUser' }, protocol: 'http', get: () => 'localhost' };
@@ -26,6 +30,10 @@ describe('users routes', () => {
     });
 
     describe('/users/new', () => {
+      it('should have a validation schema', () => {
+        expect(routes.post.validation('/api/users/new')).toMatchSnapshot();
+      });
+
       it('should call users newUser with the body', (done) => {
         spyOn(users, 'newUser').and.returnValue(Promise.resolve());
         const req = { body: 'changes', user: { _id: 'currentUser' }, protocol: 'http', get: () => 'localhost' };
@@ -68,6 +76,10 @@ describe('users routes', () => {
     });
 
     describe('/resetpassword', () => {
+      it('should have a validation schema', () => {
+        expect(routes.post.validation('/api/resetpassword')).toMatchSnapshot();
+      });
+
       it('should call users update with the body', (done) => {
         spyOn(users, 'resetPassword').and.returnValue(Promise.resolve());
         const req = { body: 'changes' };
@@ -116,6 +128,10 @@ describe('users routes', () => {
     beforeEach(() => {
       req = { query: { _id: 123, username: 'Nooooooo!' }, user: { _id: 'currentUser' } };
       spyOn(users, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/users')).toMatchSnapshot();
     });
 
     it('should need authorization', () => {
