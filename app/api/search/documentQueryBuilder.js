@@ -28,7 +28,7 @@ export default function () {
       all: {
         global: {},
         aggregations: {
-          types: {
+          _types: {
             terms: {
               field: 'template.raw',
               missing: 'missing',
@@ -54,7 +54,7 @@ export default function () {
 
   const { aggregations } = baseQuery.aggregations.all;
   const fullTextBool = baseQuery.query.bool.must[0];
-  const aggregationsFullTextBool = aggregations.types.aggregations.filtered.filter.bool.must[0];
+  const aggregationsFullTextBool = aggregations._types.aggregations.filtered.filter.bool.must[0];
   function addFullTextFilter(filter) {
     fullTextBool.bool.should.push(filter);
     aggregationsFullTextBool.bool.should.push(filter);
@@ -62,7 +62,7 @@ export default function () {
 
   function addFilter(filter) {
     baseQuery.query.bool.filter.push(filter);
-    baseQuery.aggregations.all.aggregations.types.aggregations.filtered.filter.bool.filter.push(filter);
+    baseQuery.aggregations.all.aggregations._types.aggregations.filtered.filter.bool.filter.push(filter);
   }
 
   return {
@@ -146,13 +146,13 @@ export default function () {
     language(language) {
       const match = { term: { language } };
       baseQuery.query.bool.filter.push(match);
-      aggregations.types.aggregations.filtered.filter.bool.must.push(match);
+      aggregations._types.aggregations.filtered.filter.bool.must.push(match);
       return this;
     },
 
     unpublished() {
       baseQuery.query.bool.filter[0].term.published = false;
-      aggregations.types.aggregations.filtered.filter.bool.filter[0].match.published = false;
+      aggregations._types.aggregations.filtered.filter.bool.filter[0].match.published = false;
       return this;
     },
 
@@ -188,8 +188,7 @@ export default function () {
         }
       };
       filters.forEach((filter) => {
-        let _match;
-        _match = multiselectFilter(filter);
+        const _match = multiselectFilter(filter);
         if (_match) {
           match.bool.should.push(_match);
         }
