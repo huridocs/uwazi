@@ -48,7 +48,7 @@ describe('uploads', () => {
   });
 
   describe('delete', () => {
-    fit('should delete the file', async () => {
+    it('should delete the file', async () => {
       fs.writeFileSync(path.join(uploadDocumentsPath, 'upload.filename'));
 
       expect(fs.existsSync(path.join(uploadDocumentsPath, 'upload.filename'))).toBe(true);
