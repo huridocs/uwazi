@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { actions as actionCreators } from 'app/BasicReducer';
 
-import DocumentsList from 'app/Layout/DocumentsList';
 import {
   searchDocuments,
   loadMoreDocuments,
@@ -12,6 +11,7 @@ import {
   unselectAllDocuments,
   selectDocuments
 } from 'app/Library/actions/libraryActions';
+import DocumentsList from '../../Layout/DocumentsList';
 
 export function clickOnDocument(e, doc, active) {
   const canSelectMultiple = this.props.authorized;
@@ -53,7 +53,7 @@ export function clickOnDocument(e, doc, active) {
     return this.props.selectDocuments(docsToSelect.toJS());
   }
 
-  this.props.selectDocument(doc);
+  return this.props.selectDocument(doc);
 }
 
 export function mapStateToProps(state, props) {
@@ -65,6 +65,7 @@ export function mapStateToProps(state, props) {
     authorized: !!state.user.get('_id'),
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     multipleSelected: state[props.storeKey].ui.get('selectedDocuments').size > 1,
+    rowListZoomLevel: state[props.storeKey].ui.get('zoomLevel'),
     clickOnDocument
   };
 }

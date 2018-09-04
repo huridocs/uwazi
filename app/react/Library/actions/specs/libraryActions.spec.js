@@ -57,7 +57,7 @@ describe('libraryActions', () => {
     });
   });
 
-  describe('enterLirabry', () => {
+  describe('enterLibrary', () => {
     it('should return a ENTER_LIBRARY action ', () => {
       const action = actions.enterLibrary();
       expect(action).toEqual({ type: types.ENTER_LIBRARY });
@@ -98,6 +98,13 @@ describe('libraryActions', () => {
     });
     it('should allow returning a rison query value, not appending the ?q= when other options may be found in the URL', () => {
       expect(actions.encodeSearch({ a: 1, b: 'z' }, false)).toBe('(a:1,b:z)');
+    });
+  });
+
+  describe('Zoom functions', () => {
+    it('should zoom in and out', () => {
+      expect(actions.zoomIn()).toEqual({ type: types.ZOOM_IN });
+      expect(actions.zoomOut()).toEqual({ type: types.ZOOM_OUT });
     });
   });
 
