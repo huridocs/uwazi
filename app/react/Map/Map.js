@@ -14,6 +14,18 @@ if (isClient) {
   require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
 }
 
+const noop = () => {};
+
+export const TRANSITION_PROPS = {
+  transitionDuration: 0,
+  transitionEasing: t => t,
+  transitionInterruption: 1,
+  onTransitionStart: noop,
+  onTransitionInterrupt: noop,
+  onTransitionEnd: noop,
+  onViewportChange: noop,
+  onStateChange: noop
+};
 
 export default class Map extends Component {
   constructor(props) {
@@ -37,6 +49,13 @@ export default class Map extends Component {
     this._onViewportChange = (viewport) => {
       this.setState({ viewport });
     };
+    this._onViewStateChange = (viewport) => {
+      this.setState({ viewport });
+    };
+
+    this.zoom = this.zoom.bind(this);
+    this.zoomIn = this.zoomIn.bind(this);
+    this.zoomOut = this.zoomOut.bind(this);
 
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
@@ -129,6 +148,18 @@ export default class Map extends Component {
     map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5 }, { autoCentered: true });
   }
 
+  zoom(amount) {
+    if (!this.map) {
+      return;
+    }
+    const map = this.map.getMap();
+    this._onViewStateChange(Object.assign({}, this.state.viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, { transitionDuration: 500 }));
+  }
+
+  zoomIn() { this.zoom(+1); }
+
+  zoomOut() { this.zoom(-1); }
+
   updateMapStyle(props) {
     if (!this.props.cluster) {
       return;
@@ -219,11 +250,12 @@ export default class Map extends Component {
     return (
       <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%', height: '100%' }}>
         <ReactMapGL
-          ref={ref => this.map = ref}
+          ref={(ref) => { this.map = ref; }}
           {...viewport}
           dragRotate
           mapStyle={this.mapStyle}
           onViewportChange={this._onViewportChange}
+          onViewStateChange={this._onViewStateChange}
           onClick={this.onClick}
           onHover={this.onHover}
         >

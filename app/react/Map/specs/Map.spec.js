@@ -4,7 +4,7 @@ import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
 import { Icon } from 'UI';
 
-import Map from '../Map';
+import Map, { TRANSITION_PROPS } from '../Map';
 
 describe('Map', () => {
   let component;
@@ -22,7 +22,6 @@ describe('Map', () => {
       longitude: -63,
       zoom: 8,
       markers: [{ latitude: 2, longitude: 32, properties: { info: 'Some info' } }, { latitude: 23, longitude: 21 }]
-
     };
   });
 
@@ -31,6 +30,7 @@ describe('Map', () => {
     instance = component.instance();
     instance.container = { style: {}, offsetWidth: 400, offsetHeight: 300, childNodes: [{ style: {} }] };
     map = jasmine.createSpyObj(['on', 'fitBounds', 'getZoom', 'stop']);
+    map.getZoom.and.returnValue(5);
     instance.map = { getMap: () => map };
     markers = component.find(Marker);
   };
@@ -103,16 +103,26 @@ describe('Map', () => {
   });
 
   describe('when map moves', () => {
-    it('should update it throught viewport change', () => {
+    let newViewport;
+
+    beforeEach(() => {
       render();
-      const newViewport = {
+      newViewport = {
         latitude: 1,
         longitude: 2,
         width: 100,
         height: 100,
         zoom: 7,
       };
+    });
+
+    it('should update it throught viewport change', () => {
       instance._onViewportChange(newViewport);
+      expect(component.state().viewport).toBe(newViewport);
+    });
+
+    it('should update it throught view statechange', () => {
+      instance._onViewStateChange(newViewport);
       expect(component.state().viewport).toBe(newViewport);
     });
   });
@@ -156,6 +166,26 @@ describe('Map', () => {
       expect(instance.setViweport).not.toHaveBeenCalled();
       callback({ autoCentered: true });
       expect(instance.setViweport).toHaveBeenCalled();
+    });
+  });
+
+  describe('zoom behavior', () => {
+    it('should zoom in and out', () => {
+      render();
+      spyOn(instance, '_onViewStateChange');
+      expect(instance._onViewStateChange).not.toHaveBeenCalled();
+      instance.zoomIn();
+      expect(instance._onViewStateChange.calls.mostRecent().args[0].zoom).toBe(6);
+      instance.zoomOut();
+      expect(instance._onViewStateChange.calls.mostRecent().args[0].zoom).toBe(4);
+
+      Object.keys(TRANSITION_PROPS).forEach((prop) => {
+        if (prop !== 'transitionDuration') {
+          expect(instance._onViewStateChange.calls.mostRecent().args[0][prop]).toBe(TRANSITION_PROPS[prop]);
+        } else {
+          expect(instance._onViewStateChange.calls.mostRecent().args[0][prop]).toBe(500);
+        }
+      });
     });
   });
 
