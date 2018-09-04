@@ -13,6 +13,9 @@ Object {
       "type": "string",
     },
   },
+  "flags": Object {
+    "presence": "required",
+  },
   "type": "object",
 }
 `;
@@ -30,6 +33,9 @@ Object {
       "type": "string",
     },
   },
+  "flags": Object {
+    "presence": "required",
+  },
   "type": "object",
 }
 `;
@@ -46,6 +52,9 @@ Object {
       ],
       "type": "string",
     },
+  },
+  "flags": Object {
+    "presence": "required",
   },
   "type": "object",
 }
@@ -95,6 +104,9 @@ Object {
       "type": "string",
     },
   },
+  "flags": Object {
+    "presence": "required",
+  },
   "type": "object",
 }
 `;
@@ -134,6 +146,9 @@ Object {
       ],
       "type": "string",
     },
+  },
+  "flags": Object {
+    "presence": "required",
   },
   "type": "object",
 }

@@ -14,7 +14,7 @@ export default (app) => {
       email: Joi.string(),
       password: Joi.string(),
       role: Joi.string().valid('admin', 'editor')
-    })),
+    }).required()),
     (req, res) => {
       users.save(req.body, req.user, getDomain(req))
       .then(response => res.json(response))
@@ -27,7 +27,7 @@ export default (app) => {
       username: Joi.string().required(),
       email: Joi.string().required(),
       role: Joi.string().valid('admin', 'editor').required()
-    })),
+    }).required()),
     (req, res) => {
       users.newUser(req.body, getDomain(req))
       .then(response => res.json(response))
@@ -38,7 +38,7 @@ export default (app) => {
     '/api/recoverpassword',
     validateRequest(Joi.object().keys({
       email: Joi.string().required(),
-    })),
+    }).required()),
     (req, res) => {
       users.recoverPassword(req.body.email, getDomain(req))
       .then(() => res.json('OK'))
@@ -49,7 +49,7 @@ export default (app) => {
   app.post('/api/resetpassword',
     validateRequest(Joi.object().keys({
       key: Joi.string().required()
-    })),
+    }).required()),
     (req, res) => {
       users.resetPassword(req.body)
       .then(response => res.json(response))
@@ -67,7 +67,7 @@ export default (app) => {
     needsAuthorization(),
     validateRequest(Joi.object().keys({
       _id: Joi.string().required()
-    }), 'query'),
+    }).required(), 'query'),
     (req, res) => {
       users.delete(req.query._id, req.user)
       .then(response => res.json(response))
