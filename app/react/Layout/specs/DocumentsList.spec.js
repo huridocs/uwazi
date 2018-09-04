@@ -1,31 +1,33 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import DocumentsList from 'app/Layout/DocumentsList';
 import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
 import Footer from 'app/App/Footer';
+
+import DocumentsList from '../DocumentsList';
+import { RowList } from '../Lists';
 
 describe('DocumentsList', () => {
   let component;
   let instance;
   let props;
-  let documents = Immutable.fromJS({rows: [{title: 'Document one', _id: '1'}, {title: 'Document two', _id: '2'}], totalRows: 2});
+  const documents = Immutable.fromJS({ rows: [{ title: 'Document one', _id: '1' }, { title: 'Document two', _id: '2' }], totalRows: 2 });
 
   beforeEach(() => {
     props = {
-      documents: documents,
-      search: {sort: 'sort'},
-      filters: Immutable.fromJS({documentTypes: []}),
-      clickOnDocument: {apply: jasmine.createSpy('clickOnDocumentApply')},
+      documents,
+      search: { sort: 'sort' },
+      filters: Immutable.fromJS({ documentTypes: [] }),
+      clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       searchDocuments: () => {},
       deleteConnection: () => {}
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<DocumentsList {...props} />);
     instance = component.instance();
   };
@@ -35,11 +37,18 @@ describe('DocumentsList', () => {
       render();
     });
 
+    it('should pass to RowList the zoom level passed to component', () => {
+      expect(component.find(RowList).props().zoomLevel).toBe(0);
+      props.rowListZoomLevel = 3;
+      render();
+      expect(component.find(RowList).props().zoomLevel).toBe(3);
+    });
+
     it('should render a Doc element for each document, passing the search options', () => {
-      let docs = component.find(Doc);
+      const docs = component.find(Doc);
       expect(docs.length).toBe(2);
       expect(docs.first().props().doc.get('title')).toBe('Document one');
-      expect(docs.first().props().searchParams).toEqual({sort: 'sort'});
+      expect(docs.first().props().searchParams).toEqual({ sort: 'sort' });
       expect(docs.first().props().deleteConnection).toBe(props.deleteConnection);
     });
 
@@ -79,7 +88,7 @@ describe('DocumentsList', () => {
     render();
     expect(component.find('.search-list-actions').length).toBe(0);
 
-    let ActionButtons = () => <div>action buttons</div>;
+    const ActionButtons = () => <div>action buttons</div>;
     props.ActionButtons = ActionButtons;
 
     render();

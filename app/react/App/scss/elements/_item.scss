@@ -4,6 +4,13 @@
   list-style-type: none;
   padding: 0;
   justify-content: flex-start;
+  margin-right: -15px;
+
+  .item {
+    margin-right: 15px;
+    margin-bottom: 15px;
+    //width: calc(33.33% - 15px);
+  }
 }
 
 .item {
@@ -13,8 +20,6 @@
   width: 100%;
   min-height: 100px;
   padding: 0 0 30px 0;
-  margin-right: 15px;
-  margin-bottom: 15px;
   top: 0;
   background: $c-white;
   border-radius: $border-radius;
