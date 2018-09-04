@@ -4,29 +4,29 @@ describe('routesMock', () => {
   function middleware1() {}
   function middleware2() {}
 
-  let testingRoute = app => {
+  let testingRoute = (app) => {
     app.get('/routeWith/middleware', middleware1, middleware2, (req, res) => {
-      res.json({response: 'middleware route'});
+      res.json({ response: 'middleware route' });
     });
 
     app.post('/routeWith/middleware', middleware1, middleware2, (req, res) => {
-      res.json({response: 'middleware route'});
+      res.json({ response: 'middleware route' });
     });
 
     app.delete('/routeWith/middleware', middleware1, middleware2, (req, res) => {
-      res.json({response: 'middleware route'});
+      res.json({ response: 'middleware route' });
     });
 
     app.get('/test/route', (req, res) => {
-      res.json({response: 'get'});
+      res.json({ response: 'get' });
     });
 
     app.delete('/test/route', (req, res) => {
-      res.json({response: 'delete'});
+      res.json({ response: 'delete' });
     });
 
     app.post('/test/route', (req, res) => {
-      res.json({response: 'post'});
+      res.json({ response: 'post' });
     });
   };
 
@@ -39,7 +39,7 @@ describe('routesMock', () => {
   it('should execute get routes in a promise way', (done) => {
     route.get('/test/route')
     .then((response) => {
-      expect(response).toEqual({response: 'get'});
+      expect(response).toEqual({ response: 'get' });
       done();
     })
     .catch(done.fail);
@@ -48,7 +48,7 @@ describe('routesMock', () => {
   it('should execute delete routes in a promise way', (done) => {
     route.delete('/test/route')
     .then((response) => {
-      expect(response).toEqual({response: 'delete'});
+      expect(response).toEqual({ response: 'delete' });
       done();
     })
     .catch(done.fail);
@@ -57,7 +57,7 @@ describe('routesMock', () => {
   it('should execute post routes in a promise way', (done) => {
     route.post('/test/route')
     .then((response) => {
-      expect(response).toEqual({response: 'post'});
+      expect(response).toEqual({ response: 'post' });
       done();
     })
     .catch(done.fail);
@@ -67,7 +67,7 @@ describe('routesMock', () => {
     it('should execute the route function correctly', (done) => {
       route.get('/routeWith/middleware')
       .then((response) => {
-        expect(response).toEqual({response: 'middleware route'});
+        expect(response).toEqual({ response: 'middleware route' });
         done();
       })
       .catch(done.fail);
@@ -81,32 +81,32 @@ describe('routesMock', () => {
   });
 
   it('should pass req to the route function', (done) => {
-    testingRoute = app => {
+    testingRoute = (app) => {
       app.get('/test/route', (req, res) => {
         res.json(req);
       });
     };
     route = instrumentRoutes(testingRoute);
 
-    route.get('/test/route', {request: 'request'})
+    route.get('/test/route', { request: 'request' })
     .then((response) => {
-      expect(response).toEqual({request: 'request'});
+      expect(response).toEqual({ request: 'request' });
       done();
     })
     .catch(done.fail);
   });
 
   it('should put the status in the response', (done) => {
-    testingRoute = app => {
+    testingRoute = (app) => {
       app.get('/test/route', (req, res) => {
         res.status(404);
-        res.json({response: 'get'});
+        res.json({ response: 'get' });
       });
     };
 
     route = instrumentRoutes(testingRoute);
 
-    route.get('/test/route', {request: 'request'})
+    route.get('/test/route', { request: 'request' })
     .then((response) => {
       expect(response.status).toBe(404);
       done();
@@ -123,7 +123,7 @@ describe('routesMock', () => {
 
   describe('when route function is not defined', () => {
     beforeEach(() => {
-      testingRoute = app => {
+      testingRoute = (app) => {
         app.get('/test/route');
       };
       route = instrumentRoutes(testingRoute);

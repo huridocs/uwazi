@@ -1,12 +1,13 @@
 import Joi from 'joi';
+
+import { validateRequest } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
-import validateRequest from '../utils/validateRequest';
 import users from './users';
 
-const getDomain = req => req.protocol + '://' + req.get('host');
+const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default (app) => {
   app.post('/api/users',
-    needsAuthorization(['admin', 'editor']), 
+    needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
       _id: Joi.string().required(),
       username: Joi.string(),
@@ -32,15 +33,17 @@ export default (app) => {
       .catch(res.error);
     });
 
-  app.post('/api/recoverpassword',
+  app.post(
+    '/api/recoverpassword',
     validateRequest(Joi.object().keys({
-      email: Joi.string().required()
+      email: Joi.string().required(),
     })),
     (req, res) => {
       users.recoverPassword(req.body.email, getDomain(req))
       .then(() => res.json('OK'))
       .catch(res.error);
-    });
+    }
+  );
 
   app.post('/api/resetpassword',
     validateRequest(Joi.object().keys({
@@ -50,7 +53,8 @@ export default (app) => {
       users.resetPassword(req.body)
       .then(response => res.json(response))
       .catch(res.error);
-    });
+    }
+  );
 
   app.get('/api/users', needsAuthorization(), (req, res) => {
     users.get()
@@ -67,5 +71,6 @@ export default (app) => {
       users.delete(req.query._id, req.user)
       .then(response => res.json(response))
       .catch(res.error);
-    });
+    }
+  );
 };
