@@ -57,7 +57,7 @@ export default (route, io) => {
   utils.validateRequest = originalValidateRequest;
 
   const get = (routePath, req, res = {}) => executeRoute('get', routePath, req, res, app);
-  get.validation = (routePath, req, res = {}) => executeRoute('get', routePath, req, res, app, false);
+  get.validation = (routePath, req, res = {}) => executeRoute('get', routePath, req, res, app, false).validation;
 
   const post = (routePath, req, res = {}) => executeRoute('post', routePath, req, res, app);
   post.validation = (routePath, req, res = {}) => executeRoute('post', routePath, req, res, app, false).validation;
