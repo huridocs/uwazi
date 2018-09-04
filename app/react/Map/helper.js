@@ -29,4 +29,17 @@ const markersToStyleFormat = markers => markers.map((marker, index) => {
   };
 });
 
-export { getMarkersBoudingBox, markersToStyleFormat };
+const noop = () => {};
+
+const TRANSITION_PROPS = {
+  transitionDuration: 0,
+  transitionEasing: t => t,
+  transitionInterruption: 1,
+  onTransitionStart: noop,
+  onTransitionInterrupt: noop,
+  onTransitionEnd: noop,
+  onViewportChange: noop,
+  onStateChange: noop
+};
+
+export { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS };

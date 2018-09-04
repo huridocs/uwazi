@@ -8,54 +8,34 @@ import { Icon } from 'UI';
 import { isClient } from 'app/utils';
 import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
-import { getMarkersBoudingBox, markersToStyleFormat } from './helper';
+import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
 if (isClient) {
   require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
 }
 
-const noop = () => {};
-
-export const TRANSITION_PROPS = {
-  transitionDuration: 0,
-  transitionEasing: t => t,
-  transitionInterruption: 1,
-  onTransitionStart: noop,
-  onTransitionInterrupt: noop,
-  onTransitionEnd: noop,
-  onViewportChange: noop,
-  onStateChange: noop
-};
+const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
+  viewport: { latitude: latitude || 46, longitude: longitude || 6, width: width || 250, height: height || 200, zoom },
+  selectedMarker: null
+});
 
 export default class Map extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      viewport: {
-        latitude: props.latitude || 46,
-        longitude: props.longitude || 6,
-        width: props.width || 250,
-        height: props.height || 200,
-        zoom: props.zoom,
-      },
-      selectedMarker: null
-    };
+    this.state = getStateDefaults(props);
     this.mapStyle = Immutable.fromJS(_style);
     this.supercluster = supercluster({
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
+
     this.updateMapStyle(props);
-    this._onViewportChange = (viewport) => {
-      this.setState({ viewport });
-    };
-    this._onViewStateChange = (viewport) => {
-      this.setState({ viewport });
-    };
+    this._onViewportChange = (viewport) => { this.setState({ viewport }); };
+    this._onViewStateChange = (viewport) => { this.setState({ viewport }); };
 
     this.zoom = this.zoom.bind(this);
-    this.zoomIn = this.zoomIn.bind(this);
-    this.zoomOut = this.zoomOut.bind(this);
+    this.zoomIn = () => this.zoom(+1);
+    this.zoomOut = () => this.zoom(-1);
 
     this.setSize = this.setSize.bind(this);
     this.onClick = this.onClick.bind(this);
@@ -149,16 +129,10 @@ export default class Map extends Component {
   }
 
   zoom(amount) {
-    if (!this.map) {
-      return;
-    }
+    if (!this.map) { return; }
     const map = this.map.getMap();
     this._onViewStateChange(Object.assign({}, this.state.viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, { transitionDuration: 500 }));
   }
-
-  zoomIn() { this.zoom(+1); }
-
-  zoomOut() { this.zoom(-1); }
 
   updateMapStyle(props) {
     if (!this.props.cluster) {
@@ -209,15 +183,9 @@ export default class Map extends Component {
   renderPopup() {
     const { selectedMarker } = this.state;
     if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))) {
+      const { longitude, latitude } = selectedMarker;
       return (
-        <Popup
-          tipSize={6}
-          anchor="bottom"
-          longitude={selectedMarker.longitude}
-          latitude={selectedMarker.latitude}
-          offsetTop={-20}
-          closeButton={false}
-        >
+        <Popup tipSize={6} anchor="bottom" longitude={longitude} latitude={latitude} offsetTop={-20} closeButton={false}>
           <div>
             {this.props.renderPopupInfo ? this.props.renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
           </div>

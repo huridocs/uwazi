@@ -4,7 +4,8 @@ import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
 import { Icon } from 'UI';
 
-import Map, { TRANSITION_PROPS } from '../Map';
+import Map from '../Map';
+import { TRANSITION_PROPS } from '../helper';
 
 describe('Map', () => {
   let component;
