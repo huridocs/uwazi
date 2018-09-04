@@ -20,6 +20,10 @@ describe('thesauris routes', () => {
   });
 
   describe('GET', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/thesauris')).toMatchSnapshot();
+    });
+
     it('should return all thesauris by default, passing user', (done) => {
       spyOn(thesauris, 'get').and.returnValue(Promise.resolve('response'));
       routes.get('/api/thesauris', { language: 'es', user: 'user' })
@@ -48,6 +52,10 @@ describe('thesauris routes', () => {
     });
 
     describe('dictionaries', () => {
+      it('should have a validation schema', () => {
+        expect(routes.get.validation('/api/dictionaries')).toMatchSnapshot();
+      });
+
       it('should return all dictionaries by default', (done) => {
         spyOn(thesauris, 'dictionaries').and.returnValue(Promise.resolve('response'));
         routes.get('/api/dictionaries')
@@ -74,6 +82,10 @@ describe('thesauris routes', () => {
   });
 
   describe('DELETE', () => {
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/thesauris')).toMatchSnapshot();
+    });
+
     it('should delete a thesauri', (done) => {
       spyOn(thesauris, 'delete').and.returnValue(Promise.resolve());
       const req = { query: { _id: 'abc', _rev: '123' } };
@@ -87,6 +99,10 @@ describe('thesauris routes', () => {
   });
 
   describe('POST', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/thesauris')).toMatchSnapshot();
+    });
+
     it('should create a thesauri', (done) => {
       spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
       const req = { body: { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] } };
