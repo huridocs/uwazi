@@ -12,8 +12,9 @@ export default {
 
   up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    return new Promise((resolve, reject) => {
-      const cursor = db.collection('entities').find({ type: 'document' }, { _id: 1, file: 1 });
+    const cursor = db.collection('entities').find({ type: 'document' }, { _id: 1, file: 1 });
+    return db.collection('entities').count({ type: 'document' })
+    .then(totalDocuments => new Promise((resolve, reject) => {
       let index = 1;
       cursor.on('data', (entity) => {
         cursor.pause();
@@ -21,6 +22,9 @@ export default {
         if (!entity.file || (entity.file && !entity.file.filename)) {
           process.stdout.write(`processed -> ${index}\r`);
           index += 1;
+          if (index - 1 === totalDocuments) {
+            return resolve();
+          }
           cursor.resume();
           return;
         }
@@ -28,6 +32,9 @@ export default {
         if (!fs.existsSync(path.join(uploadDocumentsPath, entity.file.filename))) {
           process.stdout.write(`processed -> ${index}\r`);
           index += 1;
+          if (index - 1 === totalDocuments) {
+            return resolve();
+          }
           cursor.resume();
           return;
         }
@@ -37,16 +44,15 @@ export default {
           db.collection('entities').findOneAndUpdate(entity, { $set: { ...conversion } }, () => {
             process.stdout.write(`processed -> ${index}\r`);
             index += 1;
+            if (index - 1 === totalDocuments) {
+              return resolve();
+            }
             cursor.resume();
           });
         });
       });
 
       cursor.on('err', reject);
-      cursor.on('end', () => {
-        process.stdout.write(`processed -> ${index}\r\n`);
-        resolve();
-      });
-    });
+    }));
   }
 };
