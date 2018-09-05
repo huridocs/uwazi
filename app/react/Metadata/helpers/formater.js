@@ -112,6 +112,18 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
+  multimedia(property, value, thesauris, showInCard) {
+    return {
+      type: 'multimedia',
+      label: property.get('label'),
+      name: property.get('name'),
+      style: property.get('style') || 'contain',
+      noLabel: Boolean(property.get('noLabel')),
+      value,
+      showInCard
+    };
+  },
+
   geolocation(property, value, thesauris, { showInCard, onlyForCards }) {
     const markers = [];
     let _value;
