@@ -7,11 +7,14 @@ export default (app) => {
   app.post('/api/thesauris',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
+      _id: Joi.string(),
+      __v: Joi.number(),
       name: Joi.string().required(),
       values: Joi.array().items(
         Joi.object().keys({
           id: Joi.string(),
           label: Joi.string().required(),
+          _id: Joi.string(),
           values: Joi.array()
         })).required()
     }).required()),
@@ -43,7 +46,7 @@ export default (app) => {
   app.get('/api/dictionaries',
     validateRequest(Joi.object().keys({
       _id: Joi.string()
-    })),
+    }), 'query'),
     (req, res) => {
       let id;
       if (req.query && req.query._id) {

@@ -63,6 +63,13 @@ Object {
 exports[`users routes POST /users should have a validation schema 1`] = `
 Object {
   "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
     "_id": Object {
       "flags": Object {
         "presence": "required",

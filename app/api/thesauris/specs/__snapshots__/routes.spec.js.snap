@@ -54,6 +54,19 @@ Object {
 exports[`thesauris routes POST should have a validation schema 1`] = `
 Object {
   "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "name": Object {
       "flags": Object {
         "presence": "required",
@@ -71,6 +84,12 @@ Object {
       "items": Array [
         Object {
           "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
             "id": Object {
               "invalids": Array [
                 "",
