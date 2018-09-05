@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { wrapDispatch } from 'app/Multireducer';
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
-
-import { processFilters, encodeSearch, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
+import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
@@ -54,12 +51,8 @@ export function mapStateToProps(state, props) {
   return {
     searchUrl: encodeSearch(params),
     showGeolocation: Boolean(state.templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))),
-    zoomLevel: state[props.storeKey].ui.get('zoomLevel'),
+    zoomLevel: Object.keys(props).indexOf('zoomLevel') !== -1 ? props.zoomLevel : state[props.storeKey].ui.get('zoomLevel'),
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ zoomIn, zoomOut }, wrapDispatch(dispatch, props.storeKey));
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryModeToggleButtons);
+export default connect(mapStateToProps)(LibraryModeToggleButtons);

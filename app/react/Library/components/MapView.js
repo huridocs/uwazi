@@ -46,6 +46,7 @@ export class MapView extends Component {
         <Markers entities={this.props.markers.get('rows')}>
           {markers => (
             <Map
+              ref={(ref) => { this.map = ref; }}
               markers={markers}
               zoom={1}
               clickOnMarker={this.clickOnMarker}
@@ -78,4 +79,4 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ getAndSelectDocument, selectDocuments, unselectAllDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapView);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(MapView);
