@@ -90,7 +90,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
         <b>
           Contain
         </b>
-         will show the entire media inside the container.  Grey bars will appear to the sides of the image.
+         will show the entire media inside the container.
         <br />
         <b>
           Cover
@@ -182,7 +182,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
         <b>
           Contain
         </b>
-         will show the entire media inside the container.  Grey bars will appear to the sides of the image.
+         will show the entire media inside the container.
         <br />
         <b>
           Cover

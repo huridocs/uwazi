@@ -24,7 +24,7 @@ const style = index => (
     </div>
     <div className="protip">
       <p>
-        <b>Contain</b> will show the entire media inside the container.  Grey bars will appear to the sides of the image.
+        <b>Contain</b> will show the entire media inside the container.
         <br />
         <b>Cover</b> will attempt to fill the container, using it&#39;s entire width.  In cards, cropping is likely to occur.
       </p>
