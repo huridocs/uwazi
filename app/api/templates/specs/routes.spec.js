@@ -38,6 +38,9 @@ describe('templates routes', () => {
   });
 
   describe('DELETE', () => {
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/templates')).toMatchSnapshot();
+    });
     it('should delete a template', (done) => {
       spyOn(templates, 'delete').and.returnValue(Promise.resolve('ok'));
       spyOn(settings, 'removeTemplateFromFilters').and.returnValue(Promise.resolve());
@@ -65,6 +68,9 @@ describe('templates routes', () => {
   });
 
   describe('POST', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/templates')).toMatchSnapshot();
+    });
     it('should create a template', (done) => {
       spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve('response')));
       const req = { body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] }, language: 'en' };
@@ -92,6 +98,9 @@ describe('templates routes', () => {
   });
 
   describe('/templates/count_by_thesauri', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/templates/count_by_thesauri')).toMatchSnapshot();
+    });
     it('should return the number of templates using a thesauri', (done) => {
       spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(2));
       const req = { query: { _id: 'abc1' } };
