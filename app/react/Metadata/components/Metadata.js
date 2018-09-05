@@ -16,6 +16,10 @@ const showByType = (prop, compact) => {
     result = <MarkdownViewer markdown={prop.value} />;
   }
 
+  if (prop.type === 'multimedia') {
+    result = <img className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
+  }
+
   if (prop.url) {
     result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
   }
