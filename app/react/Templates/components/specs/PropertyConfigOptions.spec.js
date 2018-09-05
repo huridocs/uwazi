@@ -1,4 +1,3 @@
-import Immutable from 'immutable';
 import React from 'react';
 
 import PropertyConfigOptions from 'app/Templates/components/PropertyConfigOptions';
