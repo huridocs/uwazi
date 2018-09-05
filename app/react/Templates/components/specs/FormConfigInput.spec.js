@@ -29,23 +29,6 @@ describe('FormConfigInput', () => {
     component = shallow(<FormConfigInput {...props}/>);
     const formFields = component.find(Field);
     expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
-    expect(formFields.getElements()[1].props.model).toBe('template.data.properties[0].required');
-    expect(formFields.getElements()[2].props.model).toBe('template.data.properties[0].showInCard');
-    expect(formFields.getElements()[3].props.model).toBe('template.data.properties[0].filter');
-    expect(formFields.getElements()[4].props.model).toBe('template.data.properties[0].defaultfilter');
-    expect(formFields.getElements()[5].props.model).toBe('template.data.properties[0].prioritySorting');
-  });
-
-  it('should not allow prioritySorting on types others than text or date', () => {
-    props.type = 'text';
-    component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).at(5).parent().props().if).toBe(true);
-    props.type = 'date';
-    component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).at(5).parent().props().if).toBe(true);
-    props.type = 'markdown';
-    component = shallow(<FormConfigInput {...props}/>);
-    expect(component.find(Field).at(5).parent().props().if).toBe(false);
   });
 
   describe('validation', () => {
