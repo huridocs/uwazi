@@ -25,6 +25,10 @@ describe('relationtypes routes', () => {
   });
 
   describe('POST', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/settings')).toMatchSnapshot();
+    });
+
     it('should save settings', (done) => {
       spyOn(settings, 'save').and.returnValue(mockRequest);
       routes.post('/api/settings', {body: {collection_name: 'my new name'}})
