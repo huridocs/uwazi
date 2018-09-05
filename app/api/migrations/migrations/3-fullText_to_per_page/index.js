@@ -49,6 +49,16 @@ export default {
             }
             cursor.resume();
           });
+        }).catch((e) => {
+          console.log(e);
+          db.collection('entities').findOneAndUpdate(entity, { $set: { fullText: { 1: '' } } }, () => {
+            process.stdout.write(`processed -> ${index}\r`);
+            index += 1;
+            if (index - 1 === totalDocuments) {
+              return resolve();
+            }
+            cursor.resume();
+          });
         });
       });
 
