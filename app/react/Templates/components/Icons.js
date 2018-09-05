@@ -12,5 +12,6 @@ export default {
   multidate: 'calendar',
   multidaterange: 'calendar',
   daterange: 'calendar',
-  geolocation: 'map-marker'
+  multimedia: 'image',
+  geolocation: 'map-marker',
 };
