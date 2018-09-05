@@ -8,10 +8,11 @@
       padding: 15px;
       border-top: 1px solid $c-grey-lighten;
       margin: 0;
+      &:first-child {
+        border-top: 0;
+      }
     }
-    dl:first-child {
-      border-top: 0;
-    }
+
     dt {
       float: left;
       width: 100%;
@@ -60,6 +61,11 @@
     font-size: $f-size-sm;
     font-weight: bold;
   }
+}
+
+.sidepanel-body .view dl.full-width {
+  padding: 15px 0;
+  text-align: center;
 }
 
 .entity-viewer {
