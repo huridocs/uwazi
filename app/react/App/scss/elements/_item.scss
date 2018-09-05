@@ -122,7 +122,6 @@ $item-padding: 15px;
 .item-info {
   width: $item-width;
   padding: $item-padding;
-  flex: 1;
 }
 
 .item-icon {
@@ -289,6 +288,19 @@ $item-padding: 15px;
     padding: 3px 0;
     font-size: $f-size-sm;
 
+    &.metadata-type-multimedia {
+      text-align: center;
+
+      img {
+        max-height: 200px;
+
+        &.cover {
+          width: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
     &:first-child {
       margin-top: $item-padding;
     }
@@ -330,7 +342,6 @@ $item-padding: 15px;
   */
 
   dd {
-    display: inline;
     width: 100%;
     &.item-metadata-empty {
       color: $c-grey;

@@ -80,8 +80,27 @@
     }
     .metadata-type-markdown,
     .metadata-type-geolocation,
+    .metadata-type-multimedia,
     .metadata-timeline-viewer {
       width: 100%;
     }
   }
+}
+
+dl.metadata-type-multimedia {
+  dd {
+    /*background-color: #eaeaea;*/
+    text-align: center;
+    overflow: hidden;
+  }
+
+  img {
+    box-shadow: 3px 1px 6px 0px rgba(0, 0, 0, 0.2), -3px 1px 6px 0px rgba(0, 0, 0, 0.2);
+
+    &.contain {
+      max-width: calc(100% - 10px);
+      margin: 5px;
+    }
+  }
+
 }
