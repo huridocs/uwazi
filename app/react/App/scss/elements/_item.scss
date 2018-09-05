@@ -283,12 +283,24 @@ $item-padding: 15px;
 }
 
 .item-metadata {
-  padding: 0 $item-padding $item-padding;
 
   dl {
-    margin: 0;
+    margin:0 $item-padding;
     padding: 3px 0;
     font-size: $f-size-sm;
+
+    &:first-child {
+      margin-top: $item-padding;
+    }
+
+    &:last-child {
+      margin-bottom: $item-padding;
+    }
+
+    &.full-width {
+      margin: 0;
+      text-align: center;
+    }
   }
 
   dt {
