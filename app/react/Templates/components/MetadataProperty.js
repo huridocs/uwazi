@@ -20,19 +20,19 @@ import Icons from './Icons';
 export class MetadataProperty extends Component {
   renderForm() {
     if (this.props.isCommonProperty) {
-      return <FormConfigCommon index={this.props.index} />;
+      return <FormConfigCommon index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'relationship') {
-      return <FormConfigRelationship index={this.props.index} />;
+      return <FormConfigRelationship index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'relationshipfilter') {
-      return <FormConfigRelationshipFilter index={this.props.index} />;
+      return <FormConfigRelationshipFilter index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'select' || this.props.type === 'multiselect') {
-      return <FormConfigSelect index={this.props.index} />;
+      return <FormConfigSelect index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'nested') {
-      return <FormConfigNested index={this.props.index} />;
+      return <FormConfigNested index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'geolocation') {
       return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false}/>;
