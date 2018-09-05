@@ -15,6 +15,9 @@ export default {
     const cursor = db.collection('entities').find({ type: 'document' }, { _id: 1, file: 1 });
     return db.collection('entities').count({ type: 'document' })
     .then(totalDocuments => new Promise((resolve, reject) => {
+      if (totalDocuments === 0) {
+        return resolve();
+      }
       let index = 1;
       cursor.on('data', (entity) => {
         cursor.pause();
