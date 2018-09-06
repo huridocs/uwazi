@@ -12,48 +12,12 @@ describe('Error handling middleware', () => {
     spyOn(errorLog, 'error'); //just to avoid annoying console output
   });
 
-  it('should call next', () => {
-    middleware(req, res, next);
+  it('should respond with the error and error code as status', () => {
+    const error = { message: 'error', code: 500 };
+    middleware(error, req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: 'error' });
     expect(next).toHaveBeenCalled();
-  });
-
-  describe('when error is instanceof Error (unhandled)', () => {
-    it('should respond the error stack trace splited', () => {
-      middleware(req, res, next);
-      const error = new Error('error');
-      res.error(error);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: error.stack.split('\n') });
-    });
-  });
-
-  describe('when error is uwazi error (handeled object with message and code)', () => {
-    it('should respond the error message with the status', () => {
-      middleware(req, res, next);
-      const error = { message: 'error', code: '345' };
-      res.error(error);
-      expect(res.status).toHaveBeenCalledWith('345');
-      expect(res.json).toHaveBeenCalledWith({ error: 'error' });
-    });
-  });
-
-  describe('when error is a MongoError', () => {
-    it('should respond the error message with the status 500', () => {
-      middleware(req, res, next);
-      const error = { name: 'MongoError', message: 'error', code: '345' };
-      res.error(error);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'error' });
-    });
-  });
-
-  describe('when error code is a Mailer EAUTH error', () => {
-    it('should respond the error message with the status 500', () => {
-      middleware(req, res, next);
-      const error = { name: 'MongoError', message: 'error', code: 'EAUTH' };
-      res.error(error);
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: 'error' });
-    });
   });
 });
