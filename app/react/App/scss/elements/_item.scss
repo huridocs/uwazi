@@ -310,7 +310,8 @@ $item-padding: 15px;
     }
 
     &.full-width {
-      margin: 0;
+      margin-left: 0;
+      margin-right: 0;
       text-align: center;
     }
   }
