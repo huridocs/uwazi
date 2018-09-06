@@ -43,16 +43,16 @@ export default (app) => {
         })
       )
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       settings.save(req.body)
       .then(response => res.json(response))
-      .catch(res.error);
+      .catch(next);
     }
   );
 
-  app.get('/api/settings', (req, res) => {
+  app.get('/api/settings', (req, res, next) => {
     settings.get()
     .then(response => res.json(response))
-    .catch(res.error);
+    .catch(next);
   });
 };

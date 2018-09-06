@@ -24,15 +24,12 @@ describe('templates routes', () => {
     });
 
     describe('when there is an error', () => {
-      it('should return the error in the response', (done) => {
+      it('should return the error in the response', async () => {
         spyOn(templates, 'get').and.returnValue(Promise.reject(new Error('error')));
+        const next = jasmine.createSpy('next');
 
-        routes.get('/api/templates', {})
-        .then((response) => {
-          expect(response.error.message).toBe('error');
-          done();
-        })
-        .catch(catchErrors(done));
+        await routes.get('/api/templates', {}, {}, next);
+        expect(next).toHaveBeenCalledWith(new Error('error'));
       });
     });
   });
@@ -54,15 +51,12 @@ describe('templates routes', () => {
     });
 
     describe('when there is an error', () => {
-      it('should return the error in the response', (done) => {
+      it('should return the error in the response', async () => {
         spyOn(templates, 'delete').and.returnValue(Promise.reject(new Error('error')));
+        const next = jasmine.createSpy('next');
 
-        routes.delete('/api/templates', { query: {} })
-        .then((response) => {
-          expect(response.error.message).toBe('error');
-          done();
-        })
-        .catch(catchErrors(done));
+        await routes.delete('/api/templates', { query: {} }, {}, next);
+        expect(next).toHaveBeenCalledWith(new Error('error'));
       });
     });
   });
@@ -85,14 +79,12 @@ describe('templates routes', () => {
     });
 
     describe('when there is an error', () => {
-      it('should return the error in the response', (done) => {
+      it('should return the error in the response', async () => {
         spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));
-        routes.post('/api/templates', {})
-        .then((response) => {
-          expect(response.error.message).toBe('error');
-          done();
-        })
-        .catch(catchErrors(done));
+        const next = jasmine.createSpy('next');
+
+        await routes.post('/api/templates', {}, {}, next);
+        expect(next).toHaveBeenCalledWith(new Error('error'));
       });
     });
   });
