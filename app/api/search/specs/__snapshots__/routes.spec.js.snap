@@ -21,6 +21,24 @@ Object {
       ],
       "type": "string",
     },
+    "limit": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "order": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "sort": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "types": Object {
       "invalids": Array [
         "",

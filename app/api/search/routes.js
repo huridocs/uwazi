@@ -18,7 +18,10 @@ export default (app) => {
       filters: Joi.string(),
       types: Joi.string(),
       fields: Joi.string(),
-      aggregations: Joi.string()
+      aggregations: Joi.string(),
+      order: Joi.string(),
+      sort: Joi.string(),
+      limit: Joi.string()
     }), 'query'),
     (req, res) => {
       if (req.query.filters) {

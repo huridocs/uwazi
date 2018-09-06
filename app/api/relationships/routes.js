@@ -80,7 +80,12 @@ export default (app) => {
 
   app.get('/api/references/search/:id',
     validateRequest(Joi.object().keys({
-      filter: Joi.string().allow('')
+      filter: Joi.string().allow(''),
+      limit: Joi.string().allow(''),
+      sort: Joi.string().allow(''),
+      order: Joi.string(),
+      treatAs: Joi.string(),
+      searchTerm: Joi.string().allow('')
     }), 'query'),
     (req, res, next) => {
       req.query.filter = JSON.parse(req.query.filter || '{}');

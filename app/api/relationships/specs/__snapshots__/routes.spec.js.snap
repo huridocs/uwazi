@@ -29,6 +29,36 @@ Object {
         "",
       ],
     },
+    "limit": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "order": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "searchTerm": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "sort": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "treatAs": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
   },
   "type": "object",
 }
