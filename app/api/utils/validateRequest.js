@@ -4,7 +4,7 @@ import createError from './Error';
 export default (schema, propTovalidate = 'body') => (req, res, next) => {
   const result = Joi.validate(req[propTovalidate], schema);
   if (result.error) {
-    res.error(createError(result.error.toString(), 400));
+    next(createError(result.error.toString(), 400));
   }
 
   if (!result.error) {

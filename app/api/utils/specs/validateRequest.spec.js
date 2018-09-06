@@ -31,7 +31,7 @@ describe('validateRequest', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it('should respond with an error when schema does not validate', () => {
+  it('should call next with the error', () => {
     const schema = Joi.object().keys({
       prop1: Joi.string(),
       prop2: Joi.number(),
@@ -39,7 +39,6 @@ describe('validateRequest', () => {
 
     req.body = { prop1: 55, prop2: 'must be number' };
     middleware(schema)(req, res, next);
-    expect(res.error.calls.argsFor(0)).toMatchSnapshot();
-    expect(next).not.toHaveBeenCalled();
+    expect(next.calls.argsFor(0)).toMatchSnapshot();
   });
 });
