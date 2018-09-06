@@ -2,9 +2,14 @@ import errorLog from 'api/log/errorLog';
 
 export default (error, uncaught = false) => {
   let result = error;
+  const responseToClientError = error.json;
 
   if (error instanceof Error) {
     result = { code: 500, message: error.stack };
+  }
+
+  if (responseToClientError) {
+    result = { code: 500, message: error.json.error };
   }
 
   if (error.name === 'MongoError') {

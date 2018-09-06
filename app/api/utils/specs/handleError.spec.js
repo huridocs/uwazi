@@ -51,4 +51,12 @@ describe('handleError', () => {
       expect(error.message).toBe('uncaught exception or unhandled rejection, Node process finished !!\n error');
     });
   });
+
+  describe('when error is a response to client error', () => {
+    it('use error instead of message', () => {
+      const error = handleError({ json: { error: 'error' } });
+      expect(error.message).toBe('error');
+      expect(error.code).toBe(500);
+    });
+  });
 });
