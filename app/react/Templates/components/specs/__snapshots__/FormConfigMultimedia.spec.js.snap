@@ -71,11 +71,11 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
           Array [
             Object {
               "_id": "contain",
-              "name": "Contain",
+              "name": "Fit",
             },
             Object {
               "_id": "cover",
-              "name": "Cover",
+              "name": "Fill",
             },
           ]
         }
@@ -88,12 +88,12 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     >
       <p>
         <b>
-          Contain
+          Fit
         </b>
          will show the entire media inside the container.
         <br />
         <b>
-          Cover
+          Fill
         </b>
          will attempt to fill the container, using it's entire width.  In cards, cropping is likely to occur.
       </p>
@@ -163,11 +163,11 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
           Array [
             Object {
               "_id": "contain",
-              "name": "Contain",
+              "name": "Fit",
             },
             Object {
               "_id": "cover",
-              "name": "Cover",
+              "name": "Fill",
             },
           ]
         }
@@ -180,12 +180,12 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     >
       <p>
         <b>
-          Contain
+          Fit
         </b>
          will show the entire media inside the container.
         <br />
         <b>
-          Cover
+          Fill
         </b>
          will attempt to fill the container, using it's entire width.  In cards, cropping is likely to occur.
       </p>

@@ -17,16 +17,16 @@ const style = index => (
       </label>
       <Select
         model={`template.data.properties[${index}].style`}
-        options={[{ _id: 'contain', name: 'Contain' }, { _id: 'cover', name: 'Cover' }]}
+        options={[{ _id: 'contain', name: 'Fit' }, { _id: 'cover', name: 'Fill' }]}
         optionsLabel="name"
         optionsValue="_id"
       />
     </div>
     <div className="protip">
       <p>
-        <b>Contain</b> will show the entire media inside the container.
+        <b>Fit</b> will show the entire media inside the container.
         <br />
-        <b>Cover</b> will attempt to fill the container, using it&#39;s entire width.  In cards, cropping is likely to occur.
+        <b>Fill</b> will attempt to fill the container, using it&#39;s entire width.  In cards, cropping is likely to occur.
       </p>
     </div>
   </div>
