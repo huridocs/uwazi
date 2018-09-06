@@ -288,7 +288,7 @@ $item-padding: 15px;
     padding: 3px 0;
     font-size: $f-size-sm;
 
-    &.metadata-type-multimedia {
+    &.metadata-type-multimedia dd {
       text-align: center;
 
       img {
