@@ -1,0 +1,193 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`relationships routes DELETE should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`relationships routes GET search should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "filter": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`relationships routes POST bulk should have a validation schema 1`] = `
+Object {
+  "flags": Object {
+    "presence": "required",
+    "sparse": false,
+  },
+  "items": Array [
+    Object {
+      "children": Object {
+        "__v": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+        "_id": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+        "entity": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+        "hub": Object {
+          "type": "string",
+          "valids": Array [
+            "",
+          ],
+        },
+        "language": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+        "metadata": Object {
+          "type": "any",
+        },
+        "range": Object {
+          "children": Object {
+            "end": Object {
+              "invalids": Array [
+                Infinity,
+                -Infinity,
+              ],
+              "type": "number",
+            },
+            "start": Object {
+              "invalids": Array [
+                Infinity,
+                -Infinity,
+              ],
+              "type": "number",
+            },
+            "text": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "template": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+  ],
+  "type": "array",
+}
+`;
+
+exports[`relationships routes POST should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "entity": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "hub": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "language": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "metadata": Object {
+      "type": "any",
+    },
+    "range": Object {
+      "children": Object {
+        "end": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+        "start": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+        "text": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "template": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

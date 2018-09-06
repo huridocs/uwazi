@@ -14,6 +14,7 @@ export default (app) => {
         Joi.object().keys({
           _id: Joi.string(),
           __v: Joi.number(),
+          localID: Joi.string(),
           id: Joi.string(),
           label: Joi.string(),
           type: Joi.string(),
