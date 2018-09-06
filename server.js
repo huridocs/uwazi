@@ -17,8 +17,6 @@ var privateInstanceMiddleware = require('./app/api/auth/privateInstanceMiddlewar
 var bodyParser = require('body-parser');
 var uploadsFolder = require('./app/api/config/paths').uploadDocumentsPath;
 
-var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
-app.use(error_handling_middleware);
 
 app.use(compression());
 var oneYear = 31557600;
@@ -45,23 +43,19 @@ var systemKeys = require('./app/api/i18n/systemKeys.js');
 var ports = require('./app/api/config/ports.js');
 const port = ports[app.get('env')];
 
-// Error logging needs to be after the last route
-var error_logging_middleware = require('./app/api/utils/error_logging_middleware.js');
-app.use(error_logging_middleware);
+var error_handling_middleware = require('./app/api/utils/error_handling_middleware.js');
+app.use(error_handling_middleware);
 
-var errorLog = require('./app/api/log/errorLog.js').createErrorLog();
+var handleError = require('./app/api/utils/handleError.js');
 
-process.on('unhandledRejection', err => {
-  let result = err;
-  if (err instanceof Error) {
-    result = err.stack.split('\n');
-  }
+process.on('unhandledRejection', error => {
+  handleError(error, true);
+  process.exit(1);
+});
 
-  if (err.code) {
-    result = err.message;
-  }
-
-  errorLog.error(result);
+process.on('uncaughtException', error => {
+  handleError(error, true);
+  process.exit(1);
 });
 
 var mongoose = require('mongoose');

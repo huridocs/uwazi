@@ -16,10 +16,10 @@ export default (app) => {
       password: Joi.string(),
       role: Joi.string().valid('admin', 'editor')
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       users.save(req.body, req.user, getDomain(req))
       .then(response => res.json(response))
-      .catch(res.error);
+      .catch(next);
     });
 
   app.post('/api/users/new',
@@ -29,10 +29,10 @@ export default (app) => {
       email: Joi.string().required(),
       role: Joi.string().valid('admin', 'editor').required()
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       users.newUser(req.body, getDomain(req))
       .then(response => res.json(response))
-      .catch(res.error);
+      .catch(next);
     });
 
   app.post(
@@ -40,10 +40,10 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       email: Joi.string().required(),
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       users.recoverPassword(req.body.email, getDomain(req))
       .then(() => res.json('OK'))
-      .catch(res.error);
+      .catch(next);
     }
   );
 
@@ -51,17 +51,17 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       key: Joi.string().required()
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       users.resetPassword(req.body)
       .then(response => res.json(response))
-      .catch(res.error);
+      .catch(next);
     }
   );
 
-  app.get('/api/users', needsAuthorization(), (req, res) => {
+  app.get('/api/users', needsAuthorization(), (req, res, next) => {
     users.get()
     .then(response => res.json(response))
-    .catch(res.error);
+    .catch(next);
   });
 
   app.delete('/api/users',
@@ -69,10 +69,10 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       _id: Joi.string().required()
     }).required(), 'query'),
-    (req, res) => {
+    (req, res, next) => {
       users.delete(req.query._id, req.user)
       .then(response => res.json(response))
-      .catch(res.error);
+      .catch(next);
     }
   );
 };

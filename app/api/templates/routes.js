@@ -1,8 +1,10 @@
 import Joi from 'joi';
-import templates from './templates';
+
 import settings from 'api/settings';
+
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import templates from './templates';
 
 export default (app) => {
   app.post('/api/templates',
@@ -44,20 +46,20 @@ export default (app) => {
         })
       )
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       templates.save(req.body, req.language)
       .then((response) => {
         res.json(response);
         req.io.sockets.emit('templateChange', response);
       })
-      .catch(res.error);
+      .catch(next);
     }
   );
 
-  app.get('/api/templates', (req, res) => {
+  app.get('/api/templates', (req, res, next) => {
     templates.get()
     .then(response => res.json({ rows: response }))
-    .catch(res.error);
+    .catch(next);
   });
 
   app.delete('/api/templates',
@@ -65,18 +67,16 @@ export default (app) => {
   validateRequest(Joi.object({
     _id: Joi.string().required()
   }).required(), 'query'),
-    (req, res) => {
+    (req, res, next) => {
       const template = { _id: req.query._id };
       templates.delete(template)
-      .then(() => {
-        return settings.removeTemplateFromFilters(template._id);
-      })
+      .then(() => settings.removeTemplateFromFilters(template._id))
       .then((newSettings) => {
         res.json(template);
         req.io.sockets.emit('updateSettings', newSettings);
         req.io.sockets.emit('templateDelete', template);
       })
-      .catch(res.error);
+      .catch(next);
     }
   );
 
@@ -84,10 +84,10 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       _id: Joi.string().required()
     }).required(), 'query'),
-    (req, res) => {
+    (req, res, next) => {
       templates.countByThesauri(req.query._id)
       .then(response => res.json(response))
-      .catch(res.error);
+      .catch(next);
     }
   );
 };

@@ -63,15 +63,13 @@ describe('users routes', () => {
         .catch(catchErrors(done));
       });
 
-      it('should return an error if recover password fails', (done) => {
-        spyOn(users, 'recoverPassword').and.returnValue(Promise.reject('error'));
+      it('should return an error if recover password fails', async () => {
+        spyOn(users, 'recoverPassword').and.returnValue(Promise.reject(new Error('error')));
         const req = { body: { email: 'recover@me.com' }, protocol: 'http', get: () => 'localhost' };
-        routes.post('/api/recoverpassword', req)
-        .then((response) => {
-          expect(response.error).toBe('error');
-          done();
-        })
-        .catch(catchErrors(done));
+        const next = jasmine.createSpy('next');
+
+        await routes.post('/api/recoverpassword', req, {}, next);
+        expect(next).toHaveBeenCalledWith(new Error('error'));
       });
     });
 
@@ -111,15 +109,13 @@ describe('users routes', () => {
       .catch(catchErrors(done));
     });
 
-    it('should return an error if recover password fails', (done) => {
-      spyOn(users, 'recoverPassword').and.returnValue(Promise.reject('error'));
+    it('should call next on error', async () => {
+      spyOn(users, 'recoverPassword').and.returnValue(Promise.reject(new Error('error')));
       const req = { body: { email: 'recover@me.com' }, protocol: 'http', get: () => 'localhost' };
-      routes.post('/api/recoverpassword', req)
-      .then((response) => {
-        expect(response.error).toBe('error');
-        done();
-      })
-      .catch(done.fail);
+      const next = jasmine.createSpy('next');
+
+      await routes.post('/api/recoverpassword', req, {}, next);
+      expect(next).toHaveBeenCalledWith(new Error('error'));
     });
   });
 

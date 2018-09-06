@@ -18,13 +18,13 @@ export default (app) => {
           values: Joi.array()
         })).required()
     }).required()),
-    (req, res) => {
+    (req, res, next) => {
       thesauris.save(req.body)
       .then((response) => {
         res.json(response);
         req.io.sockets.emit('thesauriChange', response);
       })
-      .catch(error => res.json({ error }));
+      .catch(next);
     }
   );
 
@@ -32,14 +32,14 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       _id: Joi.string()
     })),
-    (req, res) => {
+    (req, res, next) => {
       let id;
       if (req.query) {
         id = req.query._id;
       }
       thesauris.get(id, req.language, req.user)
       .then(response => res.json({ rows: response }))
-      .catch(error => res.json({ error }));
+      .catch(next);
     }
   );
 
@@ -47,21 +47,21 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       _id: Joi.string()
     }), 'query'),
-    (req, res) => {
+    (req, res, next) => {
       let id;
       if (req.query && req.query._id) {
         id = { _id: req.query._id };
       }
       thesauris.dictionaries(id)
       .then(response => res.json({ rows: response }))
-      .catch(error => res.json({ error }));
+      .catch(next);
     }
   );
 
-  app.get('/api/thesauris/entities', (req, res) => {
+  app.get('/api/thesauris/entities', (req, res, next) => {
     thesauris.entities(req.language)
     .then(response => res.json({ rows: response }))
-    .catch(error => res.json({ error }));
+    .catch(next);
   });
 
   app.delete('/api/thesauris',
@@ -70,13 +70,13 @@ export default (app) => {
       _id: Joi.string().required(),
       _rev: Joi.any()
     }).required(), 'query'),
-    (req, res) => {
+    (req, res, next) => {
       thesauris.delete(req.query._id, req.query._rev)
       .then((response) => {
         res.json(response);
         req.io.sockets.emit('thesauriDelete', response);
       })
-      .catch(error => res.json({ error }));
+      .catch(next);
     }
   );
 };
