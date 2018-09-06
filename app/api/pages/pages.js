@@ -1,8 +1,9 @@
 import { createError } from 'api/utils';
-import date from 'api/utils/date.js';
 import ID from 'shared/uniqueID';
-import settings from '../settings';
+import date from 'api/utils/date.js';
+
 import model from './pagesModel';
+import settings from '../settings';
 
 export default {
   save(doc, user, language) {
@@ -15,7 +16,7 @@ export default {
       return model.save(doc);
     }
 
-    return settings.get().then(({languages}) => {
+    return settings.get().then(({ languages }) => {
       const sharedId = ID();
       const docs = languages.map((lang) => {
         const langDoc = Object.assign({}, doc);
@@ -29,16 +30,16 @@ export default {
     });
   },
 
-  get(query) {
-    return model.get(query);
+  get(query, select) {
+    return model.get(query, select);
   },
 
-  getById(sharedId, language) {
-    return this.get({sharedId, language})
+  getById(sharedId, language, select) {
+    return this.get({ sharedId, language }, select)
     .then(results => results[0] ? results[0] : Promise.reject(createError('Page not found', 404)));
   },
 
   delete(sharedId) {
-    return model.delete({sharedId});
+    return model.delete({ sharedId });
   }
 };
