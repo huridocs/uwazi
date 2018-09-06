@@ -58,7 +58,6 @@ serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);
 
-
 mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
 .then(async () => {
   console.info('==> Processing system keys...');
