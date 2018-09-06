@@ -9,9 +9,9 @@ export default (app) => {
   validateRequest(Joi.object().keys({
     templateId: Joi.string().required()
   }).required(), 'query'),
-  (req, res) => entities.countByTemplate(req.query.templateId)
+  (req, res, next) => entities.countByTemplate(req.query.templateId)
   .then(results => res.json(results))
-  .catch(res.error));
+  .catch(next));
 
   app.get('/api/search',
     validateRequest(Joi.object().keys({
@@ -45,13 +45,13 @@ export default (app) => {
     searchTerm: Joi.string().allow(''),
     id: Joi.string()
   }), 'query'),
-  (req, res) => search.searchSnippets(req.query.searchTerm, req.query.id, req.language)
+  (req, res, next) => search.searchSnippets(req.query.searchTerm, req.query.id, req.language)
   .then(results => res.json(results))
-  .catch(res.error));
+  .catch(next));
 
-  app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res) => {
+  app.get('/api/search/unpublished', needsAuthorization(['admin', 'editor']), (req, res, next) => {
     search.getUploadsByUser(req.user, req.language)
     .then(response => res.json({ rows: response }))
-    .catch(res.error);
+    .catch(next);
   });
 };
