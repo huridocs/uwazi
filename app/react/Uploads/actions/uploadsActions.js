@@ -96,8 +96,30 @@ export function publishDocument(doc) {
   });
 }
 
+export function unpublishEntity(entity) {
+  return dispatch => api.post('entities', { ...entity, published: false })
+  .then(() => {
+    dispatch(notify('Entity unpublished', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
+  });
+}
+
+export function unpublishDocument(doc) {
+  return dispatch => api.post('documents', { ...doc, published: false })
+  .then(() => {
+    dispatch(notify('Document unpublished', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc });
+  });
+}
+
 export function publish(entity) {
+  console.log(entity);
   return dispatch => entity.type === 'entity' ? dispatch(publishEntity(entity)) : dispatch(publishDocument(entity));
+}
+
+export function unpublish(entity) {
+  console.log(entity);
+  return dispatch => entity.type === 'entity' ? dispatch(unpublishEntity(entity)) : dispatch(unpublishDocument(entity));
 }
 
 export function conversionComplete(docId) {

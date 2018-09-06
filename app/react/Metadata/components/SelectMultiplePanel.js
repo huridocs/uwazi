@@ -53,6 +53,8 @@ export class SelectMultiplePanel extends Component {
     this.delete = this.delete.bind(this);
     this.save = this.save.bind(this);
     this.edit = this.edit.bind(this);
+    this.publish = this.publish.bind(this);
+    this.unpublish = this.unpublish.bind(this);
   }
 
   close() {
@@ -97,6 +99,24 @@ export class SelectMultiplePanel extends Component {
       this.props.updateEntities(updatedEntities);
       this.props.unselectAllDocuments();
       this.props.resetForm(this.props.formKey);
+    });
+  }
+
+  publish() {
+    this.context.confirm({
+      accept: () => {
+        this.props.multipleUpdate(this.props.entitiesSelected, { published: true });
+      },
+      title: t('System', 'Confirm', null, false),
+      message: t('System', 'Confirm publish multiple items', null, false)
+    });
+  }
+
+  unpublish() {
+    this.context.confirm({
+      accept: () => this.props.multipleUpdate(this.props.entitiesSelected, { published: false }),
+      title: t('System', 'Confirm', null, false),
+      message: t('System', 'Confirm unpublish multiple items', null, false)
     });
   }
 
@@ -154,6 +174,13 @@ export class SelectMultiplePanel extends Component {
       return !_template.isEntity;
     })
     .map(tmpl => ({ label: tmpl.name, value: tmpl._id }));
+
+    const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {
+      const isEntity = entity.get('type') === 'entity';
+      return previousCan && (entity.get('processed') || isEntity) && !entity.get('published') && !!entity.get('template');
+    }, true);
+
+    const canBeUnPublished = this.props.entitiesSelected.reduce((previousCan, entity) => previousCan && entity.get('published'), true);
 
     return (
       <SidePanel open={open} className="multi-edit">
@@ -234,6 +261,18 @@ export class SelectMultiplePanel extends Component {
             <button className="delete btn btn-danger" onClick={this.delete}>
               <Icon icon="trash-alt" />
               <span className="btn-label">{t('System', 'Delete')}</span>
+            </button>
+          </ShowIf>
+          <ShowIf if={!editing && canBePublished}>
+            <button className="publish btn btn-success" onClick={this.publish}>
+              <Icon icon="paper-plane" />
+              <span className="btn-label">{t('System', 'Publish')}</span>
+            </button>
+          </ShowIf>
+          <ShowIf if={!editing && canBeUnPublished}>
+            <button className="unpublish btn btn-warning" onClick={this.unpublish}>
+              <Icon icon="paper-plane" />
+              <span className="btn-label">{t('System', 'Unpublish')}</span>
             </button>
           </ShowIf>
           <ShowIf if={editing}>
