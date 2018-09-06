@@ -1,6 +1,6 @@
 require('babel-core/register')();
 
-require.extensions['.scss'] = () => {};
-require.extensions['.css'] = () => {};
+require.extensions['.scss'] = function scss() {};
+require.extensions['.css'] = function css() {};
 
 require('./app/server.js');
