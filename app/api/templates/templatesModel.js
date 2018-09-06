@@ -15,6 +15,7 @@ const propertiesSchema = new mongoose.Schema({
   sortable: Boolean,
   showInCard: Boolean,
   prioritySorting: Boolean,
+  style: String,
   nestedProperties: [String]
 });
 
