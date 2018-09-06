@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`validateRequest should respond with an error when schema does not validate 1`] = `
+exports[`validateRequest should call next with the error 1`] = `
 Array [
   Object {
     "code": 400,
