@@ -13,6 +13,10 @@ describe('search routes', () => {
   });
 
   describe('/api/search/count_by_template', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/search/count_by_template')).toMatchSnapshot();
+    });
+
     it('should return count of search using a specific template', (done) => {
       spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
       const req = { query: { templateId: 'templateId' } };
@@ -27,6 +31,10 @@ describe('search routes', () => {
   });
 
   describe('/api/search', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/search')).toMatchSnapshot();
+    });
+
     it('should search search and return the results', (done) => {
       spyOn(search, 'search').and.returnValue(new Promise(resolve => resolve('results')));
       const filtersValue = JSON.stringify({ property: 'property' });
@@ -64,6 +72,10 @@ describe('search routes', () => {
   });
 
   describe('/api/search_snippets', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/search_snippets')).toMatchSnapshot();
+    });
+
     it('should search', (done) => {
       spyOn(search, 'searchSnippets').and.returnValue(new Promise(resolve => resolve('results')));
       const req = { query: { searchTerm: 'test', id: 'id' }, language: 'es' };

@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`search routes /api/search should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "aggregations": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "fields": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "filters": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "types": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`search routes /api/search/count_by_template should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "templateId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`search routes /api/search_snippets should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "searchTerm": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+  },
+  "type": "object",
+}
+`;
