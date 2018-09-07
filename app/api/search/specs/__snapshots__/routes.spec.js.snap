@@ -48,11 +48,20 @@ Object {
       ],
       "type": "string",
     },
+    "treatAs": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "types": Object {
       "invalids": Array [
         "",
       ],
       "type": "string",
+    },
+    "unpublished": Object {
+      "type": "any",
     },
   },
   "type": "object",
