@@ -113,12 +113,10 @@ export function unpublishDocument(doc) {
 }
 
 export function publish(entity) {
-  console.log(entity);
   return dispatch => entity.type === 'entity' ? dispatch(publishEntity(entity)) : dispatch(publishDocument(entity));
 }
 
 export function unpublish(entity) {
-  console.log(entity);
   return dispatch => entity.type === 'entity' ? dispatch(unpublishEntity(entity)) : dispatch(unpublishDocument(entity));
 }
 

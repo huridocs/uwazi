@@ -120,18 +120,19 @@ MetadataFormButtons.contextTypes = {
 MetadataFormButtons.defaultProps = {
   entityBeingEdited: false,
   formName: 'metadataForm',
+  delete: () => {},
 };
 
 MetadataFormButtons.propTypes = {
   loadInReduxForm: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
-  delete: PropTypes.func.isRequired,
+  delete: PropTypes.func,
   publish: PropTypes.func.isRequired,
   unpublish: PropTypes.func.isRequired,
   templates: PropTypes.object.isRequired,
   data: PropTypes.object.isRequired,
   entityBeingEdited: PropTypes.bool,
-  formStatePath: PropTypes.string.isRequired,
+  formStatePath: PropTypes.string,
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool

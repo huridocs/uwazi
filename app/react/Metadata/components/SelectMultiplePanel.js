@@ -108,7 +108,8 @@ export class SelectMultiplePanel extends Component {
         this.props.multipleUpdate(this.props.entitiesSelected, { published: true });
       },
       title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm publish multiple items', null, false)
+      message: t('System', 'Confirm publish multiple items', null, false),
+      type: 'success'
     });
   }
 
@@ -116,7 +117,8 @@ export class SelectMultiplePanel extends Component {
     this.context.confirm({
       accept: () => this.props.multipleUpdate(this.props.entitiesSelected, { published: false }),
       title: t('System', 'Confirm', null, false),
-      message: t('System', 'Confirm unpublish multiple items', null, false)
+      message: t('System', 'Confirm unpublish multiple items', null, false),
+      type: 'success'
     });
   }
 
