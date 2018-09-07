@@ -23,7 +23,9 @@ export default (app) => {
       sort: Joi.string(),
       limit: Joi.string(),
       searchTerm: Joi.string().allow(''),
-      includeUnpublished: Joi.any()
+      includeUnpublished: Joi.any(),
+      treatAs: Joi.string(),
+      unpublished: Joi.any()
     }), 'query'),
     (req, res) => {
       if (req.query.filters) {

@@ -6,31 +6,33 @@ import needsAuthorization from '../auth/authMiddleware';
 export default (app) => {
   app.post('/api/relationships/bulk',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object().keys({
-      save: Joi.array().items(
-        Joi.object().keys({
-          _id: Joi.string(),
-          __v: Joi.number(),
-          entity: Joi.string(),
-          entityData: Joi.object(),
-          hub: Joi.string().allow(''),
-          template: Joi.string().allow(null).allow(''),
-          metadata: Joi.any(),
-          language: Joi.string(),
-          range: Joi.object().keys({
-            start: Joi.number(),
-            end: Joi.number(),
-            text: Joi.string()
-          })
-        })
-      ),
-      delete: Joi.array().items(
-        Joi.object().keys({
-          entity: Joi.string(),
-          _id: Joi.string()
-        })
-      )
-    }).required()),
+    // validateRequest(Joi.object().keys({
+    //   save: Joi.array().items(
+    //     Joi.array().items(
+    //       Joi.object().keys({
+    //         _id: Joi.string(),
+    //         __v: Joi.number(),
+    //         entity: Joi.string(),
+    //         entityData: Joi.object(),
+    //         hub: Joi.string().allow(''),
+    //         template: Joi.any(),
+    //         metadata: Joi.any(),
+    //         language: Joi.string(),
+    //         range: Joi.object().keys({
+    //           start: Joi.number(),
+    //           end: Joi.number(),
+    //           text: Joi.string()
+    //         })
+    //       })
+    //     )
+    //   ),
+    //   delete: Joi.array().items(
+    //     Joi.object().keys({
+    //       entity: Joi.string(),
+    //       _id: Joi.string()
+    //     })
+    //   )
+    // }).required()),
     (req, res, next) => {
       relationships.bulk(req.body, req.language)
       .then(response => res.json(response))
