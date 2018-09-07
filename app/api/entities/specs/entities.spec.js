@@ -673,7 +673,7 @@ describe('entities', () => {
     });
 
     describe('getRawePage', () => {
-      fit('should return the page text', async () => {
+      it('should return the page text', async () => {
         const pageNumber = 2;
         const page = await entities.getRawPage('shared', 'en', pageNumber);
 
