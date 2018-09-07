@@ -21,7 +21,9 @@ export default (app) => {
       aggregations: Joi.string(),
       order: Joi.string(),
       sort: Joi.string(),
-      limit: Joi.string()
+      limit: Joi.string(),
+      searchTerm: Joi.string().allow(''),
+      includeUnpublished: Joi.any()
     }), 'query'),
     (req, res) => {
       if (req.query.filters) {

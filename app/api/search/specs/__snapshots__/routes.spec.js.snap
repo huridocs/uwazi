@@ -21,6 +21,9 @@ Object {
       ],
       "type": "string",
     },
+    "includeUnpublished": Object {
+      "type": "any",
+    },
     "limit": Object {
       "invalids": Array [
         "",
@@ -32,6 +35,12 @@ Object {
         "",
       ],
       "type": "string",
+    },
+    "searchTerm": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
     },
     "sort": Object {
       "invalids": Array [

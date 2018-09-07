@@ -66,64 +66,21 @@ Object {
 
 exports[`relationships routes POST bulk should have a validation schema 1`] = `
 Object {
-  "flags": Object {
-    "presence": "required",
-    "sparse": false,
-  },
-  "items": Array [
-    Object {
-      "children": Object {
-        "__v": Object {
-          "invalids": Array [
-            Infinity,
-            -Infinity,
-          ],
-          "type": "number",
-        },
-        "_id": Object {
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-        "entity": Object {
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-        "hub": Object {
-          "type": "string",
-          "valids": Array [
-            "",
-          ],
-        },
-        "language": Object {
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-        "metadata": Object {
-          "type": "any",
-        },
-        "range": Object {
+  "children": Object {
+    "delete": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
           "children": Object {
-            "end": Object {
+            "_id": Object {
               "invalids": Array [
-                Infinity,
-                -Infinity,
+                "",
               ],
-              "type": "number",
+              "type": "string",
             },
-            "start": Object {
-              "invalids": Array [
-                Infinity,
-                -Infinity,
-              ],
-              "type": "number",
-            },
-            "text": Object {
+            "entity": Object {
               "invalids": Array [
                 "",
               ],
@@ -132,17 +89,96 @@ Object {
           },
           "type": "object",
         },
-        "template": Object {
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-      },
-      "type": "object",
+      ],
+      "type": "array",
     },
-  ],
-  "type": "array",
+    "save": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "children": Object {
+            "__v": Object {
+              "invalids": Array [
+                Infinity,
+                -Infinity,
+              ],
+              "type": "number",
+            },
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "entity": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "entityData": Object {
+              "type": "object",
+            },
+            "hub": Object {
+              "type": "string",
+              "valids": Array [
+                "",
+              ],
+            },
+            "language": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "metadata": Object {
+              "type": "any",
+            },
+            "range": Object {
+              "children": Object {
+                "end": Object {
+                  "invalids": Array [
+                    Infinity,
+                    -Infinity,
+                  ],
+                  "type": "number",
+                },
+                "start": Object {
+                  "invalids": Array [
+                    Infinity,
+                    -Infinity,
+                  ],
+                  "type": "number",
+                },
+                "text": Object {
+                  "invalids": Array [
+                    "",
+                  ],
+                  "type": "string",
+                },
+              },
+              "type": "object",
+            },
+            "template": Object {
+              "type": "string",
+              "valids": Array [
+                null,
+                "",
+              ],
+            },
+          },
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
 }
 `;
 
