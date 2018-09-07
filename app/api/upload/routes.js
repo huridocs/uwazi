@@ -1,12 +1,12 @@
-import debugLog from 'api/log/debugLog';
-import errorLog from 'api/log/errorLog';
-import fs from 'fs';
-import path from 'path';
 import multer from 'multer';
 
 import ID from 'shared/uniqueID';
+import debugLog from 'api/log/debugLog';
 import entities from 'api/entities';
+import errorLog from 'api/log/errorLog';
+import fs from 'fs';
 import languages from 'shared/languages';
+import path from 'path';
 import relationships from 'api/relationships';
 
 import { uploadDocumentsPath } from '../config/paths';
@@ -35,18 +35,12 @@ export default (app) => {
   };
 
   const uploadProcess = (req, res, allLanguages = true) => getDocuments(req.body.document, allLanguages)
-  .then((_docs) => {
-    debugLog.debug(`Upload Process for ${_docs[0]._id.toString()}`);
+  .then((docs) => {
+    debugLog.debug(`Upload Process for ${docs[0]._id.toString()}`);
     debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
     debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
 
-    const docs = _docs.map((doc) => {
-      doc.file = req.files[0];
-      doc.uploaded = true;
-      return doc;
-    });
-
-    return entities.saveMultiple(docs);
+    return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })));
   })
   .then(() => {
     debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
@@ -65,13 +59,15 @@ export default (app) => {
   .then(([conversion, _docs]) => {
     debugLog.debug(`Conversion succeeed for: ${req.files[0].originalname}`);
 
-    const docs = _docs.map((doc) => {
-      doc.processed = true;
-      doc.fullText = conversion.fullText;
-      doc.file.language = languages.detect(conversion.fullText, 'franc');
-      doc.toc = [];
-      return doc;
-    });
+    const docs = _docs.map(doc => ({
+        ...doc,
+        processed: true,
+        fullText: conversion.fullText,
+        totalPages: conversion.totalPages,
+        formattedPlainTextPages: conversion.formatted,
+        file: { ...doc.file, language: languages.detect(Object.values(conversion.fullText).join(''), 'franc') },
+        toc: [],
+    }));
 
     debugLog.debug('Saving documents');
     return entities.saveMultiple(docs).then(() => {
@@ -84,12 +80,8 @@ export default (app) => {
     debugLog.debug(err.error);
 
     getDocuments(req.body.document, allLanguages)
-    .then((_docs) => {
-      const docs = _docs.map((doc) => {
-        doc.processed = false;
-        return doc;
-      });
-      entities.saveMultiple(docs);
+    .then((docs) => {
+      entities.saveMultiple(docs.map(doc => ({ ...doc, processed: false })));
     });
 
     const sessionSockets = req.io.getCurrentSessionSockets();

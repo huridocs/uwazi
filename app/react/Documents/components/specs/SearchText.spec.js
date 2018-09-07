@@ -2,10 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
-import { I18NLink } from 'app/I18N';
 import { actions as formActions } from 'react-redux-form';
 import { browserHistory } from 'react-router';
 import { SearchText } from '../SearchText.js';
+import SnippetList from '../SnippetList';
 
 describe('SearchText', () => {
   let component;
@@ -20,34 +20,45 @@ describe('SearchText', () => {
   beforeEach(() => {
     spyOn(browserHistory, 'getCurrentLocation').and.returnValue({ pathname: 'path', query: { page: 1 } });
     props = {
-      doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' }),
+      doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       storeKey: 'storeKey',
       searchSnippets: jasmine.createSpy('searchSnippets').and.returnValue(Promise.resolve([{ page: 2 }])),
-      snippets: Immutable.fromJS([
-        { text: 'first <b>snippet 1</b> found', page: 1 },
-        { text: 'second <b>snippet 3</b> found', page: 2 },
-        { text: 'third <b>snippet 3</b> found', page: 3 }
-      ])
+      snippets: Immutable.fromJS({
+        metadata: [
+          {
+            field: 'title',
+            texts: [
+              'metadata <b>snippet m1</b> found'
+            ]
+          },
+          {
+            field: 'metadata.summary',
+            texts: [
+              'metadata <b>snippets m2</b>'
+            ]
+          }
+        ],
+        fullText: [
+          { text: 'first <b>snippet 1</b> found', page: 1 },
+          { text: 'second <b>snippet 3</b> found', page: 2 },
+          { text: 'third <b>snippet 3</b> found', page: 3 }
+        ]
+      })
     };
   });
 
-  it('should render all snippets with dangerouslySetInnerHTML', () => {
-    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
+  it('should render SnippetList and pass down same props to it', () => {
+    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
     render();
-    const snippets = component.find('li span');
-    expect(snippets.length).toBe(3);
-    expect(snippets.at(0).props().dangerouslySetInnerHTML).toEqual({ __html: props.snippets.toJS()[0].text });
-    expect(component.find(I18NLink).at(0).props().to).toMatch(/page=1&searchTerm=/);
-    expect(snippets.at(1).props().dangerouslySetInnerHTML).toEqual({ __html: props.snippets.toJS()[1].text });
-    expect(snippets.at(2).props().dangerouslySetInnerHTML).toEqual({ __html: props.snippets.toJS()[2].text });
+    const snippets = component.find(SnippetList);
+    expect(snippets).toMatchSnapshot();
   });
 
-  it('should scrollToPage when click on a snippet link', () => {
-    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
-    props.scrollToPage = jasmine.createSpy('scrollToPage');
+  it('should use entity view url if doc type is entity', () => {
+    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'entity' });
     render();
-    component.find(I18NLink).at(1).simulate('click');
-    expect(props.scrollToPage).toHaveBeenCalledWith(2);
+    const snippets = component.find(SnippetList);
+    expect(snippets.props().documentViewUrl).toMatchSnapshot();
   });
 
   describe('blankState', () => {

@@ -1,7 +1,8 @@
 import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import { enterLibrary } from 'app/Library/actions/libraryActions';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import { enterLibrary, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import requestState from 'app/Library/helpers/requestState';
 import setReduxState from 'app/Library/helpers/setReduxState';
 import SearchButton from 'app/Library/components/SearchButton';
@@ -30,19 +31,21 @@ export default class Library extends RouteHandler {
     setReduxState(state, this.context);
   }
 
-  componentWillMount() {
-    wrapDispatch(this.context.store.dispatch, 'library')(enterLibrary());
+  urlHasChanged(nextProps) {
+    return nextProps.location.query.q !== this.props.location.query.q;
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.location.query.q !== this.props.location.query.q) {
-      this.superComponentWillReceiveProps(nextProps);
-    }
+  componentWillMount() {
+    const { dispatch } = this.context.store;
+    wrapDispatch(dispatch, 'library')(enterLibrary());
+    this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
+    this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
   }
 
   render() {
     return (
       <LibraryLayout>
+        <LibraryModeToggleButtons storeKey="library" zoomIn={this.zoomIn} zoomOut={this.zoomOut} />
         <DocumentsList storeKey="library"/>
       </LibraryLayout>
     );

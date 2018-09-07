@@ -1,10 +1,10 @@
 import React from 'react';
-
 import { shallow } from 'enzyme';
 import Library from 'app/Library/Library';
 import RouteHandler from 'app/App/RouteHandler';
 import createStore from 'app/store';
 import DocumentsList from 'app/Library/components/DocumentsList';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 
 describe('Library', () => {
   const templates = [
@@ -25,6 +25,7 @@ describe('Library', () => {
     context = { store: { dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
       dispatchCallsOrder.push(action.type);
     }) } };
+
     component = shallow(<Library {...props}/>, { context });
     instance = component.instance();
   });
@@ -34,21 +35,24 @@ describe('Library', () => {
     expect(component.find(DocumentsList).props().storeKey).toBe('library');
   });
 
-  describe('componentWillReceiveProps()', () => {
-    beforeEach(() => {
-      instance.superComponentWillReceiveProps = jasmine.createSpy('superComponentWillReceiveProps');
-    });
+  it('should include the Toggle Buttons with zoom in and out functionality', () => {
+    const libraryButtons = component.find(LibraryModeToggleButtons);
+    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY']);
+    libraryButtons.props().zoomIn();
+    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY', 'ZOOM_IN']);
+    libraryButtons.props().zoomOut();
+    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY', 'ZOOM_IN', 'ZOOM_OUT']);
+  });
 
-    it('should update if "q" has changed', () => {
+  describe('urlHasChanged', () => {
+    it('return true when q has changed', () => {
       const nextProps = { location: { query: { q: '(a:2)' } } };
-      instance.componentWillReceiveProps(nextProps);
-      expect(instance.superComponentWillReceiveProps).toHaveBeenCalledWith(nextProps);
+      expect(instance.urlHasChanged(nextProps)).toBe(true);
     });
 
     it('should not update if "q" is the same', () => {
       const nextProps = { location: { query: { q: '(a:1)' } } };
-      instance.componentWillReceiveProps(nextProps);
-      expect(instance.superComponentWillReceiveProps).not.toHaveBeenCalled();
+      expect(instance.urlHasChanged(nextProps)).toBe(false);
     });
   });
 });

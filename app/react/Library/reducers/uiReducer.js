@@ -2,7 +2,14 @@ import Immutable from 'immutable';
 
 import * as types from 'app/Library/actions/actionTypes';
 
-const initialState = Immutable.fromJS({searchTerm: '', previewDoc: '', suggestions: [], selectedDocuments: [], filtersPanel: false});
+const initialState = Immutable.fromJS({
+  searchTerm: '',
+  previewDoc: '',
+  suggestions: [],
+  selectedDocuments: [],
+  filtersPanel: false,
+  zoomLevel: 0,
+});
 
 export default function ui(state = initialState, action = {}) {
   if (action.type === types.SET_SEARCHTERM) {
@@ -14,7 +21,7 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.SELECT_DOCUMENT) {
-    const alreadtySelected = state.get('selectedDocuments').filter((doc) => doc.get('_id') === action.doc._id).size;
+    const alreadtySelected = state.get('selectedDocuments').filter(doc => doc.get('_id') === action.doc._id).size;
     if (!alreadtySelected) {
       return state.update('selectedDocuments', selectedDocuments => selectedDocuments.push(Immutable.fromJS(action.doc)));
     }
@@ -29,7 +36,7 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.SELECT_DOCUMENTS) {
     return action.docs.reduce((_state, doc) => {
-      const alreadtySelected = _state.get('selectedDocuments').filter((_doc) => _doc.get('_id') === doc._id).size;
+      const alreadtySelected = _state.get('selectedDocuments').filter(_doc => _doc.get('_id') === doc._id).size;
       if (!alreadtySelected) {
         return _state.update('selectedDocuments', selectedDocuments => selectedDocuments.push(Immutable.fromJS(doc)));
       }
@@ -38,7 +45,7 @@ export default function ui(state = initialState, action = {}) {
   }
 
   if (action.type === types.UNSELECT_DOCUMENT) {
-    return state.update('selectedDocuments', selectedDocuments => selectedDocuments.filter((doc) => doc.get('_id') !== action.docId));
+    return state.update('selectedDocuments', selectedDocuments => selectedDocuments.filter(doc => doc.get('_id') !== action.docId));
   }
 
   if (action.type === types.UNSELECT_ALL_DOCUMENTS) {
@@ -75,6 +82,16 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.OVER_SUGGESTIONS) {
     return state.set('overSuggestions', action.hover);
+  }
+
+  if (action.type === types.ZOOM_IN) {
+    const maxLevel = 5;
+    return state.set('zoomLevel', Math.min(state.get('zoomLevel') + 1, maxLevel));
+  }
+
+  if (action.type === types.ZOOM_OUT) {
+    const minLevel = -5;
+    return state.set('zoomLevel', Math.max(state.get('zoomLevel') - 1, minLevel));
   }
 
   return Immutable.fromJS(state);

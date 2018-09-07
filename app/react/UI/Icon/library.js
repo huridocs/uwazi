@@ -49,6 +49,8 @@ import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons/faQuoteLeft';
 import { faQuoteRight } from '@fortawesome/free-solid-svg-icons/faQuoteRight';
 import { faSave } from '@fortawesome/free-solid-svg-icons/faSave';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus';
+import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus';
 import { faSitemap } from '@fortawesome/free-solid-svg-icons/faSitemap';
 import { faSort } from '@fortawesome/free-solid-svg-icons/faSort';
 import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDown';
@@ -114,6 +116,8 @@ const icons = {
   faQuoteRight,
   faSave,
   faSearch,
+  faSearchMinus,
+  faSearchPlus,
   faSitemap,
   faSort,
   faSortAlphaDown,

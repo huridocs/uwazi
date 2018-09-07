@@ -1,12 +1,16 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import config from '../helpers/config.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
+import insertFixtures from '../helpers/insertFixtures';
 
 //iphone 6 measures
 const nightmare = createNightmare(376, 667);
 
 describe('mobile somke test', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
@@ -19,7 +23,7 @@ describe('mobile somke test', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   describe('uploads view', () => {
@@ -66,12 +70,5 @@ describe('mobile somke test', () => {
       })
       .catch(catchErrors(done));
     }, 40000);
-  });
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
-    });
   });
 });

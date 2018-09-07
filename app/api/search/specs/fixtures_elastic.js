@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 const userId = db.id();
 const batmanBegins = 'shared2';
 const batmanFinishes = 'shared';
+const metadataSnippets = 'metadataSnippets';
 
 const template = db.id();
 const template1 = db.id();
@@ -15,9 +16,34 @@ const relationType = db.id();
 
 export default {
   entities: [
-    { _id: db.id(), sharedId: batmanFinishes, template: template1, language: 'en', title: 'Batman finishes en', fullText: 'english[[12]] document[[2]] english[[123]]', published: true, user: userId },
-    { _id: db.id(), sharedId: batmanFinishes, template: template1, language: 'es', title: 'Batman finishes es', fullText: 'spanish[[34]] document[[4]]', published: true, user: userId },
-    { _id: db.id(), sharedId: batmanBegins, template: template2, language: 'en', title: 'Batman begins en', fullText: 'english[[2]] another[[5]]', published: true, user: userId },
+    {
+      _id: db.id(),
+      sharedId: batmanFinishes,
+      template: template1,
+      language: 'en',
+      title: 'Batman finishes en',
+      fullText: {
+        1: 'english[[12]]',
+        2: 'document[[2]]',
+        3: 'english[[123]]',
+      },
+      published: true,
+      user: userId
+    },
+    { _id: db.id(), sharedId: batmanFinishes, template: template1, language: 'es', title: 'Batman finishes es', fullText: { 1: 'spanish[[34]]', 2: 'document[[4]]' }, published: true, user: userId },
+    {
+      _id: db.id(),
+      sharedId: batmanBegins,
+      template: template2,
+      language: 'en',
+      title: 'Batman begins en',
+      fullText: {
+        1: 'english[[2]]',
+        2: 'another[[5]]',
+      },
+      published: true,
+      user: userId
+    },
     { _id: db.id(), sharedId: batmanBegins, template: template2, language: 'es', title: 'Batman begins es', published: true, user: userId },
     { _id: db.id(), sharedId: 'unpublished', template, language: 'es', title: 'unpublished', published: false, user: userId },
     { _id: db.id(), sharedId: 'shared3', template: template1, language: 'en', title: 'template1 title en', published: true, user: userId },
@@ -104,11 +130,25 @@ export default {
       }
     },
     { _id: db.id(), sharedId: 'missingTemplate', language: 'en', title: 'missingTemplate', published: true, user: userId },
-    { _id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: 'unpublished document', published: false, user: userId, metadata: { field1: 'joker' } },
+    { _id: db.id(), sharedId: 'unpublishedSharedId', template: templateMetadata1, language: 'en', title: 'metadata6', fullText: { 1: 'unpublished document' }, published: false, user: userId, metadata: { field1: 'joker' } },
     { _id: db.id(), sharedId: 'abc123', language: 'en', title: 'Country Egypt', published: true, user: userId },
     { _id: db.id(), sharedId: 'entityWithEgypt', template, language: 'en', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['abc123'] } },
     { _id: db.id(), sharedId: 'entityWithEgyptDictionary', template, language: 'en', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['35ae6c24-9f4c-4017-9f01-2bc42ff7ad83'] } },
     { _id: db.id(), sharedId: 'unsuportedLanguage', template, language: 'ar', title: 'Something', published: true, user: userId, metadata: { multiselect1: ['bce629bf-efc1-40dd-9af0-0542422dcbc3'] } },
+    // snippets in metadata
+    {
+      _id: db.id(),
+      sharedId: metadataSnippets,
+      language: 'en',
+      title: 'Document about gargoyles',
+      metadata: {
+        field1: 'This is some text containing the word gargoyles.'
+      },
+      fullText: {
+        1: 'Once upon a time[[1]]',
+        2: ' gargoyles lived on building ledges[[13]]',
+      }
+    }
   ],
   templates: [
     { _id: template, properties: [] },
@@ -195,6 +235,7 @@ export default {
 export const ids = {
     batmanBegins,
     batmanFinishes,
+    metadataSnippets,
     userId,
     template1: template1.toString(),
     template2: template2.toString(),

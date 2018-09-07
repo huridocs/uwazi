@@ -14,7 +14,6 @@ import fixtures, { batmanFinishesId, templateId, templateChangingNames, syncProp
 describe('entities', () => {
   beforeEach((done) => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
-    spyOn(search, 'index').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
@@ -98,10 +97,7 @@ describe('entities', () => {
       const user = { _id: db.id() };
 
       entities.save(doc, { user, language: 'en' })
-      .then((createdDocument) => {
-        createdDocument.title = 'updated title';
-        return entities.save(createdDocument, { user, language: 'en' });
-      })
+      .then(createdDocument => entities.save({ ...createdDocument, title: 'updated title' }, { user, language: 'en' }))
       .then((updatedDocument) => {
         expect(updatedDocument.title).toBe('updated title');
         done();
@@ -343,7 +339,7 @@ describe('entities', () => {
       const doc = {
         _id: batmanFinishesId,
         sharedId: 'shared',
-        metadata: { select: ''},
+        metadata: { select: '' },
         published: false,
         template: templateId
       };
@@ -676,6 +672,15 @@ describe('entities', () => {
       });
     });
 
+    describe('getRawePage', () => {
+      it('should return the page text', async () => {
+        const pageNumber = 2;
+        const page = await entities.getRawPage('shared', 'en', pageNumber);
+
+        expect(page).toBe('page 2');
+      });
+    });
+
     it('should delete the document in the database', (done) => {
       entities.delete('shared')
       .then(() => entities.get({ sharedId: 'shared' }))
@@ -687,21 +692,21 @@ describe('entities', () => {
     });
 
     it('should delete the document from the search', done => entities.delete('shared')
-      .then(() => {
-        const argumnets = search.delete.calls.allArgs();
-        expect(search.delete).toHaveBeenCalled();
-        expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-        done();
-      })
-      .catch(catchErrors(done)));
+    .then(() => {
+      const argumnets = search.delete.calls.allArgs();
+      expect(search.delete).toHaveBeenCalled();
+      expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
+      done();
+    })
+    .catch(catchErrors(done)));
 
     it('should delete the document relationships', done => entities.delete('shared')
-      .then(() => relationships.get({ entity: 'shared' }))
-      .then((refs) => {
-        expect(refs.length).toBe(0);
-        done();
-      })
-      .catch(catchErrors(done)));
+    .then(() => relationships.get({ entity: 'shared' }))
+    .then((refs) => {
+      expect(refs.length).toBe(0);
+      done();
+    })
+    .catch(catchErrors(done)));
 
     it('should delete the original file', (done) => {
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));

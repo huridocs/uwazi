@@ -39,7 +39,8 @@
     "migrate": "node run.js ./app/api/migrations/migrate.js",
     "test-debug": "node --inspect ./node_modules/.bin/jest --watch -i",
     "test": "node ./node_modules/.bin/jest",
-    "e2e": "node nightmare/nightmare_tests.js",
+    "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
+    "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet"
   },
   "dependencies": {
@@ -64,6 +65,7 @@
     "batarange": "0.2.0",
     "bluebird": "^3.4.6",
     "bootstrap": "3.3.6",
+    "child-process-promise": "^2.2.1",
     "compression": "^1.6.0",
     "compression-webpack-plugin": "^1.0.0",
     "connect-mongo": "2.0.1",

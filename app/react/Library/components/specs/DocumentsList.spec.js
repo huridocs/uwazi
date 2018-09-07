@@ -1,26 +1,27 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import Immutable, {fromJS} from 'immutable';
+import { shallow } from 'enzyme';
+import Immutable, { fromJS } from 'immutable';
 
-import {clickOnDocument, mapStateToProps} from '../DocumentsList';
-import DocumentsList from 'app/Layout/DocumentsList';
+import { clickOnDocument, mapStateToProps } from '../DocumentsList';
+import DocumentsList from '../../../Layout/DocumentsList';
 
 describe('Library DocumentsList container', () => {
   let component;
   let instance;
   let props;
-  let documents = Immutable.fromJS({rows: [
-    {title: 'Document one', _id: '1'},
-    {title: 'Document two', _id: '2'},
-    {title: 'Document three', _id: '3'}
-  ], totalRows: 3});
+  const documents = Immutable.fromJS({ rows: [
+    { title: 'Document one', _id: '1' },
+    { title: 'Document two', _id: '2' },
+    { title: 'Document three', _id: '3' }
+  ],
+totalRows: 3 });
 
   beforeEach(() => {
     props = {
-      documents: documents,
+      documents,
       selectedDocuments: Immutable.fromJS([]),
-      search: {sort: 'sort'},
-      filters: Immutable.fromJS({documentTypes: []}),
+      search: { sort: 'sort' },
+      filters: Immutable.fromJS({ documentTypes: [] }),
       searchDocuments: () => {},
       user: Immutable.fromJS({}),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
@@ -32,7 +33,7 @@ describe('Library DocumentsList container', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<DocumentsList {...props} />);
     instance = component.instance();
   };
@@ -41,7 +42,7 @@ describe('Library DocumentsList container', () => {
     it('should select the document', () => {
       render();
       const e = {};
-      const doc = Immutable.fromJS({_id: '1'});
+      const doc = Immutable.fromJS({ _id: '1' });
       const active = false;
       clickOnDocument.call(instance, e, doc, active);
       expect(props.unselectAllDocuments).toHaveBeenCalled();
@@ -51,8 +52,8 @@ describe('Library DocumentsList container', () => {
     describe('when holding cmd or ctrl', () => {
       it('should add the document to the selected documents', () => {
         render();
-        const e = {metaKey: true};
-        const doc = Immutable.fromJS({_id: '1'});
+        const e = { metaKey: true };
+        const doc = Immutable.fromJS({ _id: '1' });
         const active = false;
         clickOnDocument.call(instance, e, doc, active);
         expect(props.unselectAllDocuments).not.toHaveBeenCalled();
@@ -62,10 +63,10 @@ describe('Library DocumentsList container', () => {
 
     describe('when holding shift', () => {
       it('should select all the documents from the last selected document to the one clicked', () => {
-        props.selectedDocuments = Immutable.fromJS([{_id: '1'}]);
+        props.selectedDocuments = Immutable.fromJS([{ _id: '1' }]);
         render();
-        const e = {shiftKey: true};
-        const doc = Immutable.fromJS({_id: '3'});
+        const e = { shiftKey: true };
+        const doc = Immutable.fromJS({ _id: '3' });
         const active = false;
         clickOnDocument.call(instance, e, doc, active);
         expect(props.unselectAllDocuments).not.toHaveBeenCalled();
@@ -76,27 +77,28 @@ describe('Library DocumentsList container', () => {
 
   describe('maped state', () => {
     it('should contain the documents, library filters and search options', () => {
-      const filters = fromJS({documentTypes: []});
+      const filters = fromJS({ documentTypes: [] });
 
-      let store = {
+      const store = {
         library: {
           documents,
           filters,
-          ui: fromJS({filtersPanel: 'panel', selectedDocuments: ['selected']}),
-          search: {sort: 'sortProperty'}
+          ui: fromJS({ filtersPanel: 'panel', selectedDocuments: ['selected'], zoomLevel: 2 }),
+          search: { sort: 'sortProperty' }
         },
-        user: fromJS({_id: 'uid'})
+        user: fromJS({ _id: 'uid' })
       };
 
-      let state = mapStateToProps(store, {storeKey: 'library'});
+      const state = mapStateToProps(store, { storeKey: 'library' });
       expect(state).toEqual({
-        documents: documents,
+        documents,
         filters,
         filtersPanel: 'panel',
-        search: {sort: 'sortProperty'},
+        search: { sort: 'sortProperty' },
         selectedDocuments: store.library.ui.get('selectedDocuments'),
         multipleSelected: false,
         authorized: true,
+        rowListZoomLevel: 2,
         clickOnDocument
       });
     });

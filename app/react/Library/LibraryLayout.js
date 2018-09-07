@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { store } from 'app/store';
 import Welcome from 'app/Library/components/Welcome';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import Helmet from 'react-helmet';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
@@ -20,7 +19,6 @@ export default class LibraryLayout extends Component {
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
         <main className={`library-viewer document-viewer with-panel ${this.props.className}`}>
-          <LibraryModeToggleButtons storeKey="library"/>
           {this.props.children}
         </main>
         <LibraryFilters storeKey="library"/>

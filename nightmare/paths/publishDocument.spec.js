@@ -3,6 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
@@ -31,6 +32,9 @@ selectors.doc = {
 const comicCharacter = '58ad7d240d44252fee4e61fd';
 
 describe('PublishDocument', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   // missing test for actually upload and publish a document
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
@@ -43,7 +47,7 @@ describe('PublishDocument', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   it('should fill a document metadata and publish it', (done) => {
@@ -77,13 +81,14 @@ describe('PublishDocument', () => {
       .click(selectors.navigation.libraryNavButton)
       .waitForTheEntityToBeIndexed()
       .openDocumentFromLibrary(title)
-      .getInnerText(selectors.documentView.contentHeader)
+      .waitForText(selectors.documentView.sidePanelTitle)
+      .getInnerText(selectors.documentView.sidePanelTitle)
       .then((headerText) => {
         expect(headerText).toContain(title);
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
 
     it('should allow changing the different template\'s properties', (done) => {
       nightmare
@@ -112,9 +117,9 @@ describe('PublishDocument', () => {
       .then((text) => {
         expect(text).toBe('regeneration\n');
       })
-      .then(done)
+      .then(() => { done(); })
       .catch(catchErrors(done));
-    }, 20000);
+    });
   });
 
   it('should go to library and change the document type', (done) => {
@@ -135,14 +140,7 @@ describe('PublishDocument', () => {
       .click(selectors.libraryView.deleteButton)
       .waitToClick(selectors.libraryView.deleteButtonConfirmation)
       .waitForTheEntityToBeIndexed()
-      .then(done);
-    });
-  }, 10000);
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
+      .then(() => { done(); });
     });
   });
 });

@@ -1,12 +1,16 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
+import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
 describe('publish entity path', () => {
+  beforeAll(async () => insertFixtures());
+  afterAll(async () => nightmare.end());
+
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
@@ -19,7 +23,7 @@ describe('publish entity path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 10000);
+    });
   });
 
   it('should create a new entity and publish it', (done) => {
@@ -96,7 +100,7 @@ describe('publish entity path', () => {
       done();
     })
     .catch(done.fail);
-  }, 10000);
+  });
 
   it('should refresh and check the values', (done) => {
     nightmare
@@ -135,12 +139,5 @@ describe('publish entity path', () => {
       done();
     })
     .catch(done.fail);
-  }, 10000);
-
-  describe('closing browser', () => {
-    it('should close the browser', (done) => {
-      nightmare.end()
-      .then(done);
-    });
   });
 });

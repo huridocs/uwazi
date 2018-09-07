@@ -27,3 +27,5 @@ export const UNSELECT_ALL_DOCUMENTS = 'UNSELECT_ALL_DOCUMENTS';
 export const SHOW_FILTERS = 'SHOW_FILTERS';
 export const HIDE_FILTERS = 'HIDE_FILTERS';
 export const ENTER_LIBRARY = 'ENTER_LIBRARY';
+export const ZOOM_IN = 'ZOOM_IN';
+export const ZOOM_OUT = 'ZOOM_OUT';

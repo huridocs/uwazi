@@ -6,6 +6,9 @@ const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));
 const allowedApiCalls = ['/api/recoverpassword', '/api/resetpassword'];
 const allowedApiMatch = new RegExp(allowedApiCalls.join('|'));
 
+const forbiddenRoutes = ['/api/', '/uploaded_documents/'];
+const forbiddenRoutesMatch = new RegExp(forbiddenRoutes.join('|'));
+
 export default function (req, res, next) {
   if (req.user || req.url.match(allowedRoutesMatch)) {
     return next();
@@ -13,7 +16,7 @@ export default function (req, res, next) {
 
   return settings.get()
   .then((result) => {
-    if (result.private && req.url.match('/api/')) {
+    if (result.private && req.url.match(forbiddenRoutesMatch)) {
       if (req.url.match(allowedApiMatch)) {
         next();
         return;
