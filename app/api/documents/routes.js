@@ -1,29 +1,29 @@
-import path from 'path';
+import Joi from 'joi';
 import sanitize from 'sanitize-filename';
-import documents from './documents';
-import templates from '../templates';
-import needsAuthorization from '../auth/authMiddleware';
+
+import path from 'path';
+
 import { uploadDocumentsPath } from '../config/paths';
+import { validateRequest } from '../utils';
+import documents from './documents';
+import needsAuthorization from '../auth/authMiddleware';
+import templates from '../templates';
 
 export default (app) => {
-  app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res) => documents
+  app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res, next) => documents
   .save(req.body, { user: req.user, language: req.language })
   .then(doc => res.json(doc))
-  .catch((error) => {
-    res.json({ error }, 500);
-  }));
+  .catch(next));
 
-  app.post('/api/documents/pdfInfo', (req, res) => documents.savePDFInfo(req.body, { language: req.language })
+  app.post('/api/documents/pdfInfo', (req, res, next) => documents.savePDFInfo(req.body, { language: req.language })
   .then(doc => res.json(doc))
-  .catch((error) => {
-    res.json({ error }, 500);
-  }));
+  .catch(next));
 
-  app.get('/api/documents/count_by_template', (req, res) => templates.countByTemplate(req.query.templateId)
+  app.get('/api/documents/count_by_template', (req, res, next) => templates.countByTemplate(req.query.templateId)
   .then(results => res.json(results))
-  .catch(error => res.json({ error }, 500)));
+  .catch(next));
 
-  app.get('/api/documents', (req, res) => {
+  app.get('/api/documents', (req, res, next) => {
     let id;
 
     if (req.query && req.query._id) {
@@ -37,23 +37,38 @@ export default (app) => {
       }
       res.json({ rows: [response] });
     })
-    .catch(error => res.json({ error }, 500));
+    .catch(next);
   });
 
-  app.delete('/api/documents', needsAuthorization(['admin', 'editor']), (req, res) => {
-    documents.delete(req.query.sharedId)
-    .then(response => res.json(response))
-    .catch((error) => {
-      res.json({ error }, 500);
-    });
-  });
+  app.delete(
+    '/api/documents',
+    needsAuthorization(['admin', 'editor']),
 
-  app.get('/api/documents/download', (req, res) => {
-    documents.getById(req.query._id)
-    .then((response) => {
-      const basename = path.basename(response.file.originalname, path.extname(response.file.originalname));
-      res.download(path.join(uploadDocumentsPath, response.file.filename), sanitize(basename + path.extname(response.file.filename)));
-    })
-    .catch(error => res.json({ error }, 500));
-  });
+    validateRequest(Joi.object({
+      sharedId: Joi.string().required(),
+    }).required(), 'query'),
+
+    (req, res, next) => {
+      documents.delete(req.query.sharedId)
+      .then(response => res.json(response))
+      .catch(next);
+    }
+  );
+
+  app.get(
+    '/api/documents/download',
+
+    validateRequest(Joi.object({
+      _id: Joi.string().required(),
+    }).required(), 'query'),
+
+    (req, res, next) => {
+      documents.getById(req.query._id)
+      .then((response) => {
+        const basename = path.basename(response.file.originalname, path.extname(response.file.originalname));
+        res.download(path.join(uploadDocumentsPath, response.file.filename), sanitize(basename + path.extname(response.file.filename)));
+      })
+      .catch(next);
+    }
+  );
 };
