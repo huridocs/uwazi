@@ -40,7 +40,7 @@ describe('publish entity path', () => {
     .waitToClick(selectors.newEntity.form.suporPowers.laserBeam)
     .pickToday(selectors.newEntity.form.firstSighting)
     .click(selectors.uploadsView.saveButton)
-    .waitToClick(selectors.uploadsView.firstPublishButton)
+    .waitToClick(selectors.uploadsView.publishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
     .isVisible('.alert.alert-success')
