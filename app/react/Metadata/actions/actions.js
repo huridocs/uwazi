@@ -6,6 +6,7 @@ import * as types from './actionTypes';
 import { api as entitiesAPI } from 'app/Entities';
 import { notify } from 'app/Notifications';
 import { advancedSort } from 'app/utils/advancedSort';
+import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -124,6 +125,10 @@ export function multipleUpdate(_entities, values) {
     return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
     .then(() => {
       dispatch(notify('Update success', 'success'));
+      if (values.published !== undefined) {
+        dispatch(unselectAllDocuments());
+        dispatch(removeDocuments(updatedEntities));
+      }
       return updatedEntities;
     });
   };

@@ -36,5 +36,12 @@ describe('migration fullText_to_per_page', () => {
     expect(doc2.fullText[2]).toMatch('The[[2]] new[[2]]');
     expect(doc2.fullText[3]).toMatch('fullText');
     expect(doc2.totalPages).toBe(3);
+
+    const doc7 = entities.find(e => e.title === 'doc7');
+    expect(doc7.fullText[1]).toMatch('This');
+    expect(doc7.fullText[2]).toMatch('Is[[2]]');
+    expect(doc7.fullText[2]).toMatch('The[[2]] new[[2]]');
+    expect(doc7.fullText[3]).toMatch('fullText');
+    expect(doc7.totalPages).toBe(3);
   });
 });

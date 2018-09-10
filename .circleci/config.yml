@@ -87,7 +87,7 @@ jobs:
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
-      - run: node_modules/.bin/webpack
+      - run: NODE_ENV=production node_modules/.bin/webpack --config ./webpack.production.config.js
       - save_cache:
           paths:
             - ./node_modules
@@ -97,7 +97,7 @@ jobs:
       # run tests!
       - run: yarn blank-state
       - run:
-          command: npm run dev-server
+          command: npm run run-production
           background: true
       - run: sleep 15 && wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:3000/ #check if server is up
       - run: yarn e2e #run e2e
