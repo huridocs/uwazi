@@ -13,9 +13,6 @@ export class PropertyConfigOptions extends Component {
         <PropertyConfigOption label="Hide label" model={`template.data.properties[${index}].noLabel`}>
           <Tip>This property will be shown without the label.</Tip>
         </PropertyConfigOption>
-        <PropertyConfigOption label="Full width" model={`template.data.properties[${index}].fullWidth`}>
-          <Tip>This property will be shown using all the width available.</Tip>
-        </PropertyConfigOption>
         <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
           <Tip>You won&#39;t be able to publish a document if this property is empty.</Tip>
         </PropertyConfigOption>
