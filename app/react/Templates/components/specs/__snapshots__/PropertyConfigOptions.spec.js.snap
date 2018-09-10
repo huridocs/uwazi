@@ -11,14 +11,6 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
-    label="Full width"
-    model="template.data.properties[2].fullWidth"
-  >
-    <Tip>
-      This property will be shown using all the width available.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
     label="Required property"
     model="template.data.properties[2].required"
   >
@@ -71,14 +63,6 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
-    label="Full width"
-    model="template.data.properties[2].fullWidth"
-  >
-    <Tip>
-      This property will be shown using all the width available.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
     label="Required property"
     model="template.data.properties[2].required"
   >
@@ -118,14 +102,6 @@ exports[`PropertyConfigOptions when the are type date should render the priority
   >
     <Tip>
       This property will be shown without the label.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
-    label="Full width"
-    model="template.data.properties[2].fullWidth"
-  >
-    <Tip>
-      This property will be shown using all the width available.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -176,14 +152,6 @@ exports[`PropertyConfigOptions when the are type text should render the priority
   >
     <Tip>
       This property will be shown without the label.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
-    label="Full width"
-    model="template.data.properties[2].fullWidth"
-  >
-    <Tip>
-      This property will be shown using all the width available.
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
