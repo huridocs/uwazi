@@ -1,32 +1,31 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-import {setNestedProperties} from 'app/Templates/actions/templateActions';
+import React, { Component } from 'react';
+import { setNestedProperties } from 'app/Templates/actions/templateActions';
 import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties';
-import {Field} from 'react-redux-form';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import { Field } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Icon } from 'UI';
+import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigNested extends Component {
-
   constructor(props) {
     super(props);
     props.setNestedProperties(props.index, Object.keys(ViolatedArticlesNestedProperties));
   }
 
   contentValidation() {
-    return {required: (val) => val.trim() !== ''};
+    return { required: val => val.trim() !== '' };
   }
 
   render() {
-    const {index, data, formState} = this.props;
+    const { index, data, formState, type } = this.props;
     const property = data.properties[index];
 
     let labelClass = 'form-group';
-    let labelKey = `properties.${index}.label`;
-    let requiredLabel = formState.$form.errors[labelKey + '.required'];
-    let duplicatedLabel = formState.$form.errors[labelKey + '.duplicated'];
+    const labelKey = `properties.${index}.label`;
+    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
+    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
     if (requiredLabel || duplicatedLabel) {
       labelClass += ' has-error';
     }
@@ -41,48 +40,17 @@ export class FormConfigNested extends Component {
         </div>
 
         <Field model={`template.data.properties[${index}].required`}>
-          <input id={'required' + this.props.index} type="checkbox"/>
+          <input id={`required${this.props.index}`} type="checkbox"/>
           &nbsp;
-          <label className="property-label" htmlFor={'required' + this.props.index}>
+          <label className="property-label" htmlFor={`required${this.props.index}`}>
             Required property
             <span className="property-help">
               <Icon icon="question-circle" />
-              <div className="property-description">You won't be able to publish a document if this property is empty.</div>
+              <div className="property-description">You won&#39;t be able to publish a document if this property is empty.</div>
             </span>
           </label>
         </Field>
-
-        <Field model={`template.data.properties[${index}].showInCard`}>
-          <input id={'showInCard' + this.props.index} type="checkbox"/>
-          &nbsp;
-          <label className="property-label" htmlFor={'showInCard' + this.props.index}>
-            Show in cards
-            <span className="property-help">
-              <Icon icon="question-circle" />
-              <div className="property-description">
-                This property will appear in the library cards as part of the basic info.
-              </div>
-            </span>
-          </label>
-        </Field>
-        <div className="well-metadata-creator">
-          <div>
-            <Field model={`template.data.properties[${index}].filter`}>
-              <input id={'filter' + this.props.index} type="checkbox"/>
-              &nbsp;
-              <label className="property-label" htmlFor={'filter' + this.props.index}>
-                Use as filter
-                <span className="property-help">
-                  <Icon icon="question-circle" />
-                  <div className="property-description">This property will be used for filtering the library results.
-                  When properties match in equal name and field type with other document types, they will be combined for filtering.</div>
-                </span>
-              </label>
-            </Field>
-            <FilterSuggestions {...property} />
-          </div>
-        </div>
-
+        <PropertyConfigOptions index={index} property={property} type={type} />
       </div>
     );
   }
@@ -94,7 +62,8 @@ FormConfigNested.propTypes = {
   index: PropTypes.number,
   formState: PropTypes.object,
   formKey: PropTypes.string,
-  setNestedProperties: PropTypes.func
+  setNestedProperties: PropTypes.func,
+  type: PropTypes.string.isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -105,7 +74,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({setNestedProperties}, dispatch);
+  return bindActionCreators({ setNestedProperties }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(FormConfigNested);

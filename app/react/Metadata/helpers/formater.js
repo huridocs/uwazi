@@ -112,6 +112,18 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
+  multimedia(property, value, thesauris, showInCard) {
+    return {
+      type: 'multimedia',
+      label: property.get('label'),
+      name: property.get('name'),
+      style: property.get('style') || 'contain',
+      noLabel: Boolean(property.get('noLabel')),
+      value,
+      showInCard
+    };
+  },
+
   geolocation(property, value, thesauris, { showInCard, onlyForCards }) {
     const markers = [];
     let _value;
@@ -230,7 +242,7 @@ export default {
     if (this[type] && value) {
       return Object.assign(
         this[type](property, value, thesauris, { ...options, showInCard }),
-        { type: type === 'nested' ? 'markdown' : type, translateContext: template.get('_id') }
+        { translateContext: template.get('_id'), ...property.toJS(), type: type === 'nested' ? 'markdown' : type }
       );
     }
 

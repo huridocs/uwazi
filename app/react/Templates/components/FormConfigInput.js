@@ -1,11 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
-import ShowIf from 'app/App/ShowIf';
-import PrioritySortingLabel from './PrioritySortingLabel';
-import { Icon } from 'UI';
+import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigInput extends Component {
   render() {
@@ -27,79 +24,7 @@ export class FormConfigInput extends Component {
             <input className="form-control" />
           </Field>
         </div>
-
-        <Field model={`template.data.properties[${index}].required`}>
-          <input id={`required${index}`} type="checkbox"/>
-          &nbsp;
-          <label className="property-label" htmlFor={`required${index}`}>
-            Required property
-            <span className="property-help">
-              <Icon icon="question-circle" />
-              <div className="property-description">You won&#8217;t be able to publish a document if this property is empty.</div>
-            </span>
-          </label>
-        </Field>
-        <ShowIf if={this.props.canShowInCard}>
-          <Field model={`template.data.properties[${index}].showInCard`}>
-            <input id={`showInCard${this.props.index}`} type="checkbox"/>
-            &nbsp;
-            <label className="property-label" htmlFor={`showInCard${this.props.index}`}>
-              Show in cards
-              <span className="property-help">
-                <Icon icon="question-circle" />
-                <div className="property-description">Show this property in the cards as part of the basic info.</div>
-              </span>
-            </label>
-          </Field>
-        </ShowIf>
-        <div>
-          <ShowIf if={this.props.canBeFilter}>
-            <Field className="filter" model={`template.data.properties[${index}].filter`}>
-              <input id={`filter${this.props.index}`} type="checkbox"/>
-            &nbsp;
-              <label className="property-label" htmlFor={`filter${this.props.index}`}>
-              Use as filter
-              <span className="property-help">
-                <Icon icon="question-circle" />
-                  <div className="property-description">
-                  Use this property to filter the library results.
-                  When properties match in equal name and field type with other document types, they will be combined for filtering.
-                  Also library items will be able to be sorted by this property.
-                  </div>
-                </span>
-              </label>
-            </Field>
-          </ShowIf>
-          <ShowIf if={property.filter}>
-            <Field className="filter" model={`template.data.properties[${index}].defaultfilter`}>
-              <input
-                id={`defaultfilter${this.props.index}`}
-                type="checkbox"
-                disabled={!property.filter}
-              />
-              &nbsp;
-              <label className="property-label" htmlFor={`defaultfilter${this.props.index}`}>
-                Default filter
-                <span className="property-help">
-                  <Icon icon="question-circle" />
-                  <div className="property-description">
-                    Use this property as a default filter in the library.
-                    When there are no document types selected, this property will show as a default filter for your collection.
-                  </div>
-                </span>
-              </label>
-            </Field>
-          </ShowIf>
-          <FilterSuggestions {...property} />
-        </div>
-
-        <ShowIf if={type === 'text' || type === 'date'}>
-          <Field model={`template.data.properties[${index}].prioritySorting`}>
-            <input id={`prioritySorting${this.props.index}`} type="checkbox" disabled={!property.filter} />
-            &nbsp;
-            <PrioritySortingLabel htmlFor={`prioritySorting${this.props.index}`} />
-          </Field>
-        </ShowIf>
+        <PropertyConfigOptions index={index} property={property} type={type} />
       </div>
     );
   }
@@ -116,7 +41,7 @@ FormConfigInput.propTypes = {
   property: PropTypes.instanceOf(Object).isRequired,
   index: PropTypes.number.isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
-  type: PropTypes.string.isRequired
+  type: PropTypes.string.isRequired,
 };
 
 export function mapStateToProps({ template }, props) {

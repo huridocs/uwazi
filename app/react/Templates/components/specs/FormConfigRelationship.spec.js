@@ -17,6 +17,7 @@ describe('FormConfigRelationship', () => {
       thesauris: Immutable.fromJS(thesauris),
       relationTypes: Immutable.fromJS(relationTypes),
       index: 0,
+      type: 'relationship',
       data: { properties: [{ filter: false }] },
       formState: {
         'properties.0.label': { valid: true, dirty: false, errors: {} },
