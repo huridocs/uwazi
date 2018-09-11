@@ -1,7 +1,7 @@
 import React from 'react';
-
-import PropertyConfigOptions from 'app/Templates/components/PropertyConfigOptions';
 import { shallow } from 'enzyme';
+
+import PropertyConfigOptions from '../PropertyConfigOptions';
 
 describe('PropertyConfigOptions', () => {
   let component;
@@ -15,32 +15,35 @@ describe('PropertyConfigOptions', () => {
     };
   });
 
-  it('should render fields with the correct datas', () => {
+  const expectMatch = () => {
     component = shallow(<PropertyConfigOptions {...props}/>);
     expect(component).toMatchSnapshot();
+  };
+
+  it('should render fields with the correct datas', () => {
+    expectMatch();
   });
 
   describe('Once the property is checked as filter', () => {
     it('should render the default filter option', () => {
       props.property.filter = true;
-      component = shallow(<PropertyConfigOptions {...props}/>);
-      expect(component).toMatchSnapshot();
+      expectMatch();
     });
   });
 
-  describe('when the are type text', () => {
-    it('should render the priority sorting option', () => {
+  describe('priority sorting option', () => {
+    it('should render for text and date', () => {
       props.type = 'text';
-      component = shallow(<PropertyConfigOptions {...props}/>);
-      expect(component).toMatchSnapshot();
+      expectMatch();
+      props.type = 'date';
+      expectMatch();
     });
   });
 
-  describe('when the are type date', () => {
-    it('should render the priority sorting option', () => {
-      props.type = 'date';
-      component = shallow(<PropertyConfigOptions {...props}/>);
-      expect(component).toMatchSnapshot();
+  describe('Additional options', () => {
+    it('should allow to exclude the "use as filter" option', () => {
+      props.canBeFilter = false;
+      expectMatch();
     });
   });
 });

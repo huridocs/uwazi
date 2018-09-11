@@ -6,7 +6,7 @@ import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigInput extends Component {
   render() {
-    const { index, property, formState, type } = this.props;
+    const { index, property, formState, type, canBeFilter } = this.props;
     let labelClass = 'form-group';
     const labelKey = `properties.${index}.label`;
     const requiredLabel = formState.$form.errors[`${labelKey}.required`];
@@ -24,7 +24,7 @@ export class FormConfigInput extends Component {
             <input className="form-control" />
           </Field>
         </div>
-        <PropertyConfigOptions index={index} property={property} type={type} />
+        <PropertyConfigOptions index={index} property={property} type={type} canBeFilter={canBeFilter} />
       </div>
     );
   }
@@ -32,12 +32,10 @@ export class FormConfigInput extends Component {
 
 FormConfigInput.defaultProps = {
   canBeFilter: true,
-  canShowInCard: true
 };
 
 FormConfigInput.propTypes = {
   canBeFilter: PropTypes.bool,
-  canShowInCard: PropTypes.bool,
   property: PropTypes.instanceOf(Object).isRequired,
   index: PropTypes.number.isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
