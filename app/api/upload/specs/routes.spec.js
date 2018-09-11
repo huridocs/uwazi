@@ -167,6 +167,10 @@ describe('upload routes', () => {
       spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/reupload')).toMatchSnapshot();
+    });
+
     it('should reupload a document', (done) => {
       req.body.document = entityId;
       routes.post('/api/reupload', req)
@@ -201,6 +205,10 @@ describe('upload routes', () => {
   });
 
   describe('DELETE/customisation/upload', () => {
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/customisation/upload')).toMatchSnapshot();
+    });
+
     it('should delete upload and return the response', async () => {
       spyOn(uploads, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
       const result = await routes.delete('/api/customisation/upload', { query: { _id: 'upload_id' } });

@@ -6,8 +6,11 @@ import users from './users';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
 export default (app) => {
-  app.post('/api/users',
+  app.post(
+    '/api/users',
+
     needsAuthorization(['admin', 'editor']),
+
     validateRequest(Joi.object().keys({
       _id: Joi.string().required(),
       __v: Joi.number(),
@@ -16,6 +19,7 @@ export default (app) => {
       password: Joi.string(),
       role: Joi.string().valid('admin', 'editor')
     }).required()),
+
     (req, res, next) => {
       users.save(req.body, req.user, getDomain(req))
       .then(response => res.json(response))

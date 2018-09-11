@@ -81,9 +81,11 @@ export default (app) => {
   );
 
   app.get('/api/templates/count_by_thesauri',
+
     validateRequest(Joi.object().keys({
       _id: Joi.string().required()
     }).required(), 'query'),
+
     (req, res, next) => {
       templates.countByThesauri(req.query._id)
       .then(response => res.json(response))

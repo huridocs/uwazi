@@ -14,6 +14,7 @@ export default (app) => {
   .catch(next));
 
   app.get('/api/search',
+
     validateRequest(Joi.object().keys({
       filters: Joi.string(),
       types: Joi.string(),
@@ -27,6 +28,7 @@ export default (app) => {
       treatAs: Joi.string(),
       unpublished: Joi.any()
     }), 'query'),
+
     (req, res) => {
       if (req.query.filters) {
         req.query.filters = JSON.parse(req.query.filters);
