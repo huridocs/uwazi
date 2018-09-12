@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { TemplateCreator } from 'app/Templates/components/TemplateCreator';
-import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import Immutable from 'immutable';
+import { TemplateCreator } from '../TemplateCreator';
+import MetadataTemplate from '../MetadataTemplate';
 
 describe('TemplateCreator', () => {
   const template = { id: '1', properties: [{ label: 'label1' }, { label: 'label2' }] };

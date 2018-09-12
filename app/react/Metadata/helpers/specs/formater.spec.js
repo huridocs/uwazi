@@ -35,13 +35,15 @@ describe('metadata formater', () => {
     let select;
     let relationship1;
     let relationship2;
-    let multimedia;
+    let image;
+    let media;
     let geolocation;
     let nested;
 
     beforeAll(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
-      [text, date, multiselect, multidate, daterange, multidaterange, markdown, select, multimedia, relationship1, relationship2, geolocation, nested]
+      [text, date, multiselect, multidate, daterange, multidaterange, markdown,
+       select, image, media, relationship1, relationship2, geolocation, nested]
         = data.metadata;
     });
 
@@ -53,7 +55,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(13);
+      expect(data.metadata.length).toBe(14);
     });
 
     it('should process text type', () => {
@@ -116,10 +118,14 @@ describe('metadata formater', () => {
     });
 
     it('should process multimedia types', () => {
-      expect(multimedia.value).toBe('multimediaURL');
-      expect(multimedia.style).toBe('cover');
-      expect(multimedia.noLabel).toBe(true);
-      expect(multimedia.showInCard).toBe(true);
+      expect(image.value).toBe('imageURL');
+      expect(image.style).toBe('cover');
+      expect(image.noLabel).toBe(true);
+      expect(image.showInCard).toBe(true);
+
+      expect(media.value).toBe('mediaURL');
+      expect(media.noLabel).toBe(false);
+      expect(media.showInCard).toBe(true);
     });
 
     it('should render a Map for geolocation fields', () => {
@@ -142,12 +148,13 @@ describe('metadata formater', () => {
     let text;
     let markdown;
     let creationDate;
-    let multimedia;
+    let image;
+    let media;
     let geolocation;
 
     beforeAll(() => {
       data = formater.prepareMetadataForCard(doc, templates, thesauris);
-      [text, markdown, multimedia, geolocation] = data.metadata;
+      [text, markdown, image, media, geolocation] = data.metadata;
     });
 
     it('should process text type', () => {
@@ -159,7 +166,8 @@ describe('metadata formater', () => {
     });
 
     it('should process multimedia type', () => {
-      assessBasicProperties(multimedia, ['Multimedia', 'multimedia', 'templateID', 'multimediaURL']);
+      assessBasicProperties(image, ['Image', 'image', 'templateID', 'imageURL']);
+      assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
     });
 
     it('should render a Map for geolocation fields', () => {
@@ -172,7 +180,7 @@ describe('metadata formater', () => {
         data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
         [text, date, markdown] = data.metadata;
         assessBasicProperties(date, ['Date', 'date', 'templateID']);
-        expect(data.metadata.length).toBe(5);
+        expect(data.metadata.length).toBe(6);
         expect(date.value).toContain('1970');
       });
 
@@ -197,7 +205,7 @@ describe('metadata formater', () => {
       describe('when sort property is creationDate', () => {
         it('should add it as a value to show', () => {
           data = formater.prepareMetadataForCard(doc, templates, thesauris, 'creationDate');
-          [text, markdown, multimedia, geolocation, creationDate] = data.metadata;
+          [text, markdown, image, media, geolocation, creationDate] = data.metadata;
           expect(text.sortedBy).toBe(false);
           expect(markdown.sortedBy).toBe(false);
           assessBasicProperties(creationDate, ['Date added', undefined, 'System', 'Jan 1, 1970']);
