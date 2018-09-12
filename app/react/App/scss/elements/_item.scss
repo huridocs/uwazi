@@ -299,6 +299,13 @@ $item-padding: 15px;
           object-fit: cover;
         }
       }
+
+      .markdown-viewer {
+        height: auto;
+        &:after {
+          display: none;
+        }
+      }
     }
 
     &:first-child {
