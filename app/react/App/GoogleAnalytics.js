@@ -5,8 +5,8 @@ import React, { Component } from 'react';
 import { isClient } from 'app/utils';
 
 export function trackPage() {
-  if (isClient && window.ga) {
-    window.ga('send', 'pageview');
+  if (isClient && window.gtag) {
+    window.gtag('send', 'pageview');
   }
 }
 
@@ -17,8 +17,12 @@ export class GoogleAnalytics extends Component {
       return;
     }
     /*eslint-disable */
-    window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-    window.ga('create', props.analyticsTrackingId, 'auto');
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function() {
+      window.dataLayer.push(arguments);
+    }
+    window.gtag('js', new Date());
+    window.gtag('config', props.analyticsTrackingId);
     trackPage();
     /*eslint-enable */
   }
@@ -27,7 +31,7 @@ export class GoogleAnalytics extends Component {
     if (!this.props.analyticsTrackingId) {
       return false;
     }
-    return <script async src="https://www.google-analytics.com/analytics.js" />;
+    return <script async src={`https://www.googletagmanager.com/gtag/js?id=${this.props.analyticsTrackingId}`} />;
   }
 }
 
