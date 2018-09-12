@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Field } from 'react-redux-form';
 import FormConfigMultimedia, { mapStateToProps } from '../FormConfigMultimedia';
 
 describe('FormConfigMultimedia', () => {
