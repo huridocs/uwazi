@@ -65,6 +65,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt';
 import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload';
+import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 
 const icons = {
   faAngleLeft,
@@ -133,6 +134,7 @@ const icons = {
   faTrashAlt,
   faUndo,
   faUpload,
+  faVideo,
 };
 
 export const loadIcons = () => {
