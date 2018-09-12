@@ -3,17 +3,17 @@ import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
-import {APIURL} from 'app/config.js';
-import {PDFUtils} from '../../PDF/';
-import {actions} from 'app/BasicReducer';
-import {actions as formActions} from 'react-redux-form';
+import { APIURL } from 'app/config.js';
+import { PDFUtils } from '../../PDF/';
+import { actions } from 'app/BasicReducer';
+import { actions as formActions } from 'react-redux-form';
 import documents from 'app/Documents';
-import {notify} from 'app/Notifications';
-import {removeDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import { notify } from 'app/Notifications';
+import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
-import {isClient} from 'app/utils';
-import {actions as relationshipActions} from 'app/Relationships';
+import { isClient } from 'app/utils';
+import { actions as relationshipActions } from 'app/Relationships';
 
 export function setDocument(document, html) {
   return {
@@ -37,7 +37,7 @@ export function loadDefaultViewerMenu() {
 
 export function saveDocument(doc) {
   const updateDoc = {};
-  Object.keys(doc).forEach(key => {
+  Object.keys(doc).forEach((key) => {
     if (key !== 'fullText') {
       updateDoc[key] = doc[key];
     }
@@ -47,7 +47,7 @@ export function saveDocument(doc) {
     return documents.api.save(updateDoc)
     .then((updatedDoc) => {
       dispatch(notify('Document updated', 'success'));
-      dispatch({type: types.VIEWER_UPDATE_DOCUMENT, doc});
+      dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
       dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
       dispatch(actions.set('viewer/doc', updatedDoc));
       dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
@@ -57,10 +57,10 @@ export function saveDocument(doc) {
 
 export function saveToc(toc) {
   return function (dispatch, getState) {
-    const {_id, _rev, sharedId, file} = getState().documentViewer.doc.toJS();
+    const { _id, _rev, sharedId, file } = getState().documentViewer.doc.toJS();
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('documentViewer/tocBeingEdited', false));
-    return dispatch(saveDocument({_id, _rev, sharedId, toc, file}));
+    return dispatch(saveDocument({ _id, _rev, sharedId, toc, file }));
   };
 }
 
@@ -77,9 +77,9 @@ export function deleteDocument(doc) {
 }
 
 export function getDocument(id) {
-  return api.get('entities?_id=' + id)
+  return api.get(`entities?_id=${id}`)
   .then((response) => {
-    let doc = response.json.rows[0];
+    const doc = response.json.rows[0];
     if (!isClient) {
       return doc;
     }
@@ -90,9 +90,7 @@ export function getDocument(id) {
     .then((pdfInfo) => {
       doc.pdfInfo = pdfInfo;
       return api.post('documents/pdfInfo', doc)
-      .then((res) => {
-        return res.json;
-      });
+      .then(res => res.json);
     });
   });
 }
@@ -112,7 +110,7 @@ export function loadTargetDocument(id) {
 
 export function cancelTargetDocument() {
   return function (dispatch) {
-    dispatch({type: connectionsTypes.CANCEL_RANGED_CONNECTION});
+    dispatch({ type: connectionsTypes.CANCEL_RANGED_CONNECTION });
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocReferences'));
     dispatch(selectionActions.unsetTargetSelection());
@@ -131,12 +129,10 @@ export function editToc(toc) {
 
 export function removeFromToc(tocElement) {
   return function (dispatch, getState) {
-    let state = getState();
+    const state = getState();
     let toc = state.documentViewer.tocForm;
 
-    toc = toc.filter((entry) => {
-      return entry !== tocElement;
-    });
+    toc = toc.filter(entry => entry !== tocElement);
 
     dispatch(formActions.load('documentViewer.tocForm', toc));
   };
@@ -144,9 +140,9 @@ export function removeFromToc(tocElement) {
 
 export function indentTocElement(tocElement, indentation) {
   return function (dispatch, getState) {
-    let state = getState();
-    let toc = state.documentViewer.tocForm.map((_entry) => {
-      let entry = Object.assign({}, _entry);
+    const state = getState();
+    const toc = state.documentViewer.tocForm.map((_entry) => {
+      const entry = Object.assign({}, _entry);
       if (_entry === tocElement) {
         entry.indentation = indentation;
       }
@@ -159,12 +155,12 @@ export function indentTocElement(tocElement, indentation) {
 
 export function addToToc(textSelectedObject) {
   return function (dispatch, getState) {
-    let state = getState();
+    const state = getState();
     let toc = state.documentViewer.tocForm.concat();
     if (!toc.length) {
       toc = state.documentViewer.doc.toJS().toc || [];
     }
-    let tocElement = {
+    const tocElement = {
       range: {
         start: textSelectedObject.sourceRange.start,
         end: textSelectedObject.sourceRange.end
@@ -174,9 +170,7 @@ export function addToToc(textSelectedObject) {
     };
 
     toc.push(tocElement);
-    toc = toc.sort((a, b) => {
-      return a.range.start - b.range.start;
-    });
+    toc = toc.sort((a, b) => a.range.start - b.range.start);
     dispatch(editToc(toc));
   };
 }

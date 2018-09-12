@@ -14,25 +14,29 @@ import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigRelationshipFilter from './FormConfigRelationshipFilter';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
+import FormConfigMultimedia from './FormConfigMultimedia';
 import Icons from './Icons';
 
 
 export class MetadataProperty extends Component {
   renderForm() {
     if (this.props.isCommonProperty) {
-      return <FormConfigCommon index={this.props.index} />;
+      return <FormConfigCommon index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'relationship') {
-      return <FormConfigRelationship index={this.props.index} />;
+      return <FormConfigRelationship index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'relationshipfilter') {
-      return <FormConfigRelationshipFilter index={this.props.index} />;
+      return <FormConfigRelationshipFilter index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'select' || this.props.type === 'multiselect') {
-      return <FormConfigSelect index={this.props.index} />;
+      return <FormConfigSelect index={this.props.index} type={this.props.type}/>;
     }
     if (this.props.type === 'nested') {
-      return <FormConfigNested index={this.props.index} />;
+      return <FormConfigNested index={this.props.index} type={this.props.type}/>;
+    }
+    if (this.props.type === 'multimedia') {
+      return <FormConfigMultimedia type={this.props.type} index={this.props.index}/>;
     }
     if (this.props.type === 'geolocation') {
       return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false}/>;
@@ -42,7 +46,7 @@ export class MetadataProperty extends Component {
 
   render() {
     const { label, connectDragSource, isDragging, connectDropTarget, uiState, index, localID, inserting, formState } = this.props;
-    const editingProperty = uiState.toJS().editingProperty;
+    const { editingProperty } = uiState.toJS();
 
     let propertyClass = 'list-group-item';
     if (isDragging || inserting) {

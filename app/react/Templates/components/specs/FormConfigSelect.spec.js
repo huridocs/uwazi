@@ -1,10 +1,10 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {FormConfigSelect} from 'app/Templates/components/FormConfigSelect';
-import {Field} from 'react-redux-form';
-import {Select} from 'app/ReactReduxForms';
+import { FormConfigSelect } from 'app/Templates/components/FormConfigSelect';
+import { Field } from 'react-redux-form';
+import { Select } from 'app/ReactReduxForms';
 
 describe('FormConfigSelect', () => {
   let component;
@@ -13,13 +13,14 @@ describe('FormConfigSelect', () => {
   let props;
 
   beforeEach(() => {
-    thesauris = [{_id: 1, name: 'thesauri1'}, {_id: 2, name: 'thesauri2'}, {_id: 3, name: 'Judge', type: 'template'}];
-    relationTypes = [{_id: 1, name: 'relationType1'}, {_id: 2, name: 'relationType2'}];
+    thesauris = [{ _id: 1, name: 'thesauri1' }, { _id: 2, name: 'thesauri2' }, { _id: 3, name: 'Judge', type: 'template' }];
+    relationTypes = [{ _id: 1, name: 'relationType1' }, { _id: 2, name: 'relationType2' }];
     props = {
+      type: 'select',
       thesauris: Immutable.fromJS(thesauris),
       relationTypes: Immutable.fromJS(relationTypes),
       index: 0,
-      data: {properties: [{}]},
+      data: { properties: [{}] },
       formState: {
         $form: {
           errors: {
@@ -36,16 +37,12 @@ describe('FormConfigSelect', () => {
     component = shallow(<FormConfigSelect {...props}/>);
     const formFields = component.find(Field);
     expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
-    expect(formFields.getElements()[1].props.model).toBe('template.data.properties[0].required');
-    expect(formFields.getElements()[2].props.model).toBe('template.data.properties[0].showInCard');
-    expect(formFields.getElements()[3].props.model).toBe('template.data.properties[0].filter');
-
     expect(component.find(Select).props().model).toBe('template.data.properties[0].content');
   });
 
   it('should render the select with the dictionaries', () => {
     component = shallow(<FormConfigSelect {...props}/>);
-    let expectedOptions = [thesauris[0], thesauris[1]];
+    const expectedOptions = [thesauris[0], thesauris[1]];
     expect(component.find(Select).props().options).toEqual(expectedOptions);
   });
 

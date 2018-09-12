@@ -66,6 +66,13 @@ export class MetadataFormFields extends Component {
       return <MultiDateRange model={_model} format={this.props.dateFormat}/>;
     case 'geolocation':
       return <Geolocation model={_model} />;
+    case 'multimedia':
+      return (
+        <div>
+          <Field model={_model}><input className="form-control"/></Field>
+          &nbsp;<em>URL (address for media file or video)</em>
+        </div>
+      );
     case 'text':
       return <Field model={_model}><input className="form-control"/></Field>;
     default:

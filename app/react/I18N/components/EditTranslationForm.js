@@ -9,23 +9,36 @@ import { Icon } from 'UI';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 
 export class EditTranslationForm extends Component {
-  translationExists(translations, locale) {
+  static getDefaultTranslation(translations, languages) {
+    const defaultLocale = languages.find(lang => lang.default).key;
+    return translations.find(tr => tr.locale === defaultLocale);
+  }
+
+  static translationExists(translations, locale) {
     return translations.find(tr => tr.locale === locale);
   }
 
-  getDefaultTranslation(translations, languages) {
-    const defaultLocale = languages.find(lang => lang.default).key;
-    return translations.find(tr => tr.locale === defaultLocale);
+  constructor(props) {
+    super(props);
+    this.save = this.save.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.translationsForm.length !== nextProps.translationsForm.length;
+  }
+
+  componentWillUnmount() {
+    this.props.resetForm();
   }
 
   prepareTranslations() {
     const translations = this.props.translationsForm;
 
     if (translations.length) {
-      const languages = this.props.settings.collection.toJS().languages;
+      const { languages } = this.props.settings.collection.toJS();
       languages.forEach((lang) => {
-        if (!this.translationExists(translations, lang.key)) {
-          const defaultTranslation = this.getDefaultTranslation(translations, languages);
+        if (!EditTranslationForm.translationExists(translations, lang.key)) {
+          const defaultTranslation = EditTranslationForm.getDefaultTranslation(translations, languages);
           const translation = { locale: lang.key };
           translation.values = Object.assign({}, defaultTranslation.values);
           translations.push(translation);
@@ -36,12 +49,13 @@ export class EditTranslationForm extends Component {
     return translations;
   }
 
-  shouldComponentUpdate(nextProps) {
-    return this.props.translationsForm.length !== nextProps.translationsForm.length;
-  }
-
-  componentWillUnmount() {
-    this.props.resetForm();
+  save(_translations) {
+    const translations = _translations.map((_translationLanguage) => {
+      const translationLanguage = Object.assign({}, _translationLanguage);
+      translationLanguage.contexts = translationLanguage.contexts.filter(ctx => ctx.id === this.props.context);
+      return translationLanguage;
+    });
+    this.props.saveTranslations(translations);
   }
 
   render() {
@@ -60,7 +74,7 @@ export class EditTranslationForm extends Component {
       <div className="EditTranslationForm">
         <Form
           model="translationsForm"
-          onSubmit={this.props.saveTranslations}
+          onSubmit={this.save}
         >
           <div className="panel panel-default">
             <div className="panel-heading">
@@ -74,38 +88,39 @@ export class EditTranslationForm extends Component {
                       {translations.map((translation, i) => {
                           const context = translation.contexts.find(ctx => ctx.id === contextId);
                           const index = translation.contexts.indexOf(context);
-                          return (<FormGroup key={`${translation.locale}-${value}-${i}`}>
-                            <div className="input-group">
-                              <span className="input-group-addon">{translation.locale}</span>
-                              <Field model={`translationsForm[${i}].contexts[${index}].values["${value}"]`}>
-                                <input className="form-control" type="text" />
-                              </Field>
-                            </div>
-                                  </FormGroup>);
+                          return (
+                            <FormGroup key={`${translation.locale}-${value}-${i}`}>
+                              <div className="input-group">
+                                <span className="input-group-addon">{translation.locale}</span>
+                                <Field model={`translationsForm[${i}].contexts[${index}].values["${value}"]`}>
+                                  <input className="form-control" type="text" />
+                                </Field>
+                              </div>
+                            </FormGroup>);
                         })}
                     </li>));
                   }
                 })()}
-              </ul>
-            </div>
-            <div className="settings-footer">
-              <I18NLink to="/settings/translations" className="btn btn-default">
-                <Icon icon="arrow-left" />
-                <span className="btn-label">Back</span>
-              </I18NLink>
-              <button type="submit" className="btn btn-success save-template">
-                <Icon icon="save" />
-                <span className="btn-label">{t('System', 'Save')}</span>
-              </button>
-            </div>
-          </Form>
+            </ul>
+          </div>
+          <div className="settings-footer">
+            <I18NLink to="/settings/translations" className="btn btn-default">
+              <Icon icon="arrow-left" />
+              <span className="btn-label">Back</span>
+            </I18NLink>
+            <button type="submit" className="btn btn-success save-template">
+              <Icon icon="save" />
+              <span className="btn-label">{t('System', 'Save')}</span>
+            </button>
+          </div>
+        </Form>
       </div>
     );
   }
 }
 
 EditTranslationForm.propTypes = {
-  context: PropTypes.string,
+  context: PropTypes.string.isRequired,
   translationsForm: PropTypes.array,
   settings: PropTypes.object,
   saveTranslations: PropTypes.func,

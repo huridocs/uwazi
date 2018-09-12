@@ -6,10 +6,7 @@ import React, { Component } from 'react';
 
 import { Select } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
-import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
-
-import PropertyConfigOption from './PropertyConfigOption';
-import Tip from '../../Layout/Tip';
+import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigRelationship extends Component {
   static contentValidation() {
@@ -17,7 +14,7 @@ export class FormConfigRelationship extends Component {
   }
 
   render() {
-    const { index, data, formState } = this.props;
+    const { index, data, formState, type } = this.props;
     const thesauris = this.props.thesauris.toJS();
     const property = data.properties[index];
     const relationTypes = this.props.relationTypes.toJS();
@@ -63,33 +60,7 @@ export class FormConfigRelationship extends Component {
             optionsValue="_id"
           />
         </div>
-
-        <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
-          <Tip>You won&#39;t be able to publish a document if this property is empty.</Tip>
-        </PropertyConfigOption>
-
-        <PropertyConfigOption label="Show in cards" model={`template.data.properties[${index}].showInCard`}>
-          <Tip>This property will appear in the library cards as part of the basic info.</Tip>
-        </PropertyConfigOption>
-
-        <div>
-          <PropertyConfigOption label="Use as filter" model={`template.data.properties[${index}].filter`}>
-            <Tip>
-              This property will be used for filtering the library results.
-              When properties match in equal name and field type with other document types, they will be combined for filtering.
-            </Tip>
-          </PropertyConfigOption>
-          {property.filter && (
-            <PropertyConfigOption label="Default filter" model={`template.data.properties[${index}].defaultfilter`}>
-              <Tip>
-                Use this property as a default filter in the library.
-                When there are no document types selected, this property will show as a default filter for your collection.
-              </Tip>
-            </PropertyConfigOption>
-          )
-          }
-          <FilterSuggestions {...property} />
-        </div>
+        <PropertyConfigOptions index={index} property={property} type={type} />
       </div>
     );
   }
@@ -100,7 +71,8 @@ FormConfigRelationship.propTypes = {
   relationTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   data: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  formState: PropTypes.object.isRequired
+  formState: PropTypes.object.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 export function mapStateToProps(state) {

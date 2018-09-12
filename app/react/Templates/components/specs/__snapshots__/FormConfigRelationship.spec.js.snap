@@ -72,35 +72,15 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
       }
     />
   </div>
-  <PropertyConfigOption
-    label="Required property"
-    model="template.data.properties[0].required"
-  >
-    <Tip>
-      You won't be able to publish a document if this property is empty.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
-    label="Show in cards"
-    model="template.data.properties[0].showInCard"
-  >
-    <Tip>
-      This property will appear in the library cards as part of the basic info.
-    </Tip>
-  </PropertyConfigOption>
-  <div>
-    <PropertyConfigOption
-      label="Use as filter"
-      model="template.data.properties[0].filter"
-    >
-      <Tip>
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-      </Tip>
-    </PropertyConfigOption>
-    <Connect(FilterSuggestions)
-      filter={false}
-    />
-  </div>
+  <PropertyConfigOptions
+    index={0}
+    property={
+      Object {
+        "filter": false,
+      }
+    }
+    type="relationship"
+  />
 </div>
 `;
 
@@ -176,35 +156,15 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       }
     />
   </div>
-  <PropertyConfigOption
-    label="Required property"
-    model="template.data.properties[0].required"
-  >
-    <Tip>
-      You won't be able to publish a document if this property is empty.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
-    label="Show in cards"
-    model="template.data.properties[0].showInCard"
-  >
-    <Tip>
-      This property will appear in the library cards as part of the basic info.
-    </Tip>
-  </PropertyConfigOption>
-  <div>
-    <PropertyConfigOption
-      label="Use as filter"
-      model="template.data.properties[0].filter"
-    >
-      <Tip>
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-      </Tip>
-    </PropertyConfigOption>
-    <Connect(FilterSuggestions)
-      filter={false}
-    />
-  </div>
+  <PropertyConfigOptions
+    index={0}
+    property={
+      Object {
+        "filter": false,
+      }
+    }
+    type="relationship"
+  />
 </div>
 `;
 
@@ -280,35 +240,15 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       }
     />
   </div>
-  <PropertyConfigOption
-    label="Required property"
-    model="template.data.properties[0].required"
-  >
-    <Tip>
-      You won't be able to publish a document if this property is empty.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
-    label="Show in cards"
-    model="template.data.properties[0].showInCard"
-  >
-    <Tip>
-      This property will appear in the library cards as part of the basic info.
-    </Tip>
-  </PropertyConfigOption>
-  <div>
-    <PropertyConfigOption
-      label="Use as filter"
-      model="template.data.properties[0].filter"
-    >
-      <Tip>
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-      </Tip>
-    </PropertyConfigOption>
-    <Connect(FilterSuggestions)
-      filter={false}
-    />
-  </div>
+  <PropertyConfigOptions
+    index={0}
+    property={
+      Object {
+        "filter": false,
+      }
+    }
+    type="relationship"
+  />
 </div>
 `;
 
@@ -384,42 +324,14 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
       }
     />
   </div>
-  <PropertyConfigOption
-    label="Required property"
-    model="template.data.properties[0].required"
-  >
-    <Tip>
-      You won't be able to publish a document if this property is empty.
-    </Tip>
-  </PropertyConfigOption>
-  <PropertyConfigOption
-    label="Show in cards"
-    model="template.data.properties[0].showInCard"
-  >
-    <Tip>
-      This property will appear in the library cards as part of the basic info.
-    </Tip>
-  </PropertyConfigOption>
-  <div>
-    <PropertyConfigOption
-      label="Use as filter"
-      model="template.data.properties[0].filter"
-    >
-      <Tip>
-        This property will be used for filtering the library results. When properties match in equal name and field type with other document types, they will be combined for filtering.
-      </Tip>
-    </PropertyConfigOption>
-    <PropertyConfigOption
-      label="Default filter"
-      model="template.data.properties[0].defaultfilter"
-    >
-      <Tip>
-        Use this property as a default filter in the library. When there are no document types selected, this property will show as a default filter for your collection.
-      </Tip>
-    </PropertyConfigOption>
-    <Connect(FilterSuggestions)
-      filter={true}
-    />
-  </div>
+  <PropertyConfigOptions
+    index={0}
+    property={
+      Object {
+        "filter": true,
+      }
+    }
+    type="relationship"
+  />
 </div>
 `;

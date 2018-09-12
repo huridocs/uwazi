@@ -41,6 +41,10 @@ describe('Metadata', () => {
     testMetadata([{ label: 'label array', value: [{ value: 'first_value' }, { value: 'second_value' }] }]);
   });
 
+  it('should render a Multimedia entry when the metadata is type multimedia', () => {
+    testMetadata([{ label: 'Multimedia Label', value: 'http://some.url.com/image.jpg', type: 'multimedia', style: 'cover' }]);
+  });
+
   it('should render a Markdown when the metadata is type mardown', () => {
     testMetadata([{ label: 'label array', value: 'some markdown text', type: 'markdown' }]);
   });
