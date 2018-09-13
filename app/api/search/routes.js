@@ -18,6 +18,7 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       filters: Joi.string(),
       types: Joi.string(),
+      _types: Joi.string(),
       fields: Joi.string(),
       aggregations: Joi.string(),
       order: Joi.string(),
