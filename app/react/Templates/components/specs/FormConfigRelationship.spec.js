@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 import React from 'react';
-
-import { FormConfigRelationship } from 'app/Templates/components/FormConfigRelationship';
 import { shallow } from 'enzyme';
+
+import { FormConfigRelationship } from '../FormConfigRelationship';
 
 describe('FormConfigRelationship', () => {
   let component;

@@ -1,8 +1,9 @@
 import React from 'react';
+import { Field } from 'react-redux-form';
 import { shallow } from 'enzyme';
 
-import { FormConfigInput } from 'app/Templates/components/FormConfigInput';
-import { Field } from 'react-redux-form';
+import { FormConfigInput } from '../FormConfigInput';
+import PropertyConfigOptions from '../PropertyConfigOptions';
 
 describe('FormConfigInput', () => {
   let component;
@@ -29,12 +30,21 @@ describe('FormConfigInput', () => {
     component = shallow(<FormConfigInput {...props}/>);
     const formFields = component.find(Field);
     expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
+    expect(component.find(PropertyConfigOptions).props().canBeFilter).toBe(true);
   });
 
   describe('validation', () => {
     it('should render the label without errors', () => {
       component = shallow(<FormConfigInput {...props}/>);
       expect(component.find('.has-error').length).toBe(0);
+    });
+  });
+
+  describe('options', () => {
+    it('should pass on the canBeFilter option', () => {
+      props.canBeFilter = false;
+      component = shallow(<FormConfigInput {...props}/>);
+      expect(component.find(PropertyConfigOptions).props().canBeFilter).toBe(false);
     });
   });
 

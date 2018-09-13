@@ -161,8 +161,13 @@ describe('MetadataProperty', () => {
         component.setProps({ type: 'relationship' });
         expect(component.find(FormConfigRelationship).length).toBe(1);
 
-        component.setProps({ type: 'multimedia' });
+        component.setProps({ type: 'media' });
         expect(component.find(FormConfigMultimedia).length).toBe(1);
+        expect(component.find(FormConfigMultimedia).props().canSetStyle).toBe(false);
+
+        component.setProps({ type: 'image' });
+        expect(component.find(FormConfigMultimedia).length).toBe(1);
+        expect(component.find(FormConfigMultimedia).props().canSetStyle).toBe(true);
 
         component.setProps({ type: 'geolocation' });
         expect(component.find(FormConfigInput).length).toBe(1);
