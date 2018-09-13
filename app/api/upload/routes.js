@@ -131,10 +131,6 @@ export default (app) => {
 
     needsAuthorization(['admin', 'editor']),
 
-    // validateRequest(Joi.object({
-    //   document: Joi.string().required()
-    // }).required()),
-
     upload.any(),
 
     (req, res, next) => entities.getById(req.body.document)

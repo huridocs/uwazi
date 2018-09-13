@@ -31,7 +31,7 @@ export default (app) => {
   app.get('/api/thesauris',
     validateRequest(Joi.object().keys({
       _id: Joi.string()
-    })),
+    }), 'query'),
     (req, res, next) => {
       let id;
       if (req.query) {

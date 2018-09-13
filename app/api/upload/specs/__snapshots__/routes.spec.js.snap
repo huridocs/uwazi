@@ -36,23 +36,3 @@ Object {
   "size": 171411271,
 }
 `;
-
-exports[`upload routes POST/reupload should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "document": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-  },
-  "flags": Object {
-    "presence": "required",
-  },
-  "type": "object",
-}
-`;

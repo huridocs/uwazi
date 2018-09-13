@@ -167,10 +167,6 @@ describe('upload routes', () => {
       spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/reupload')).toMatchSnapshot();
-    });
-
     it('should reupload a document', (done) => {
       req.body.document = entityId;
       routes.post('/api/reupload', req)
