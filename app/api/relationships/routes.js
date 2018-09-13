@@ -102,7 +102,7 @@ export default (app) => {
       req.query.filter = JSON.parse(req.query.filter || '{}');
       relationships.search(req.params.id, req.query, req.language, req.user)
       .then(results => res.json(results))
-      .catch(res.error, next);
+      .catch(next);
     }
   );
 

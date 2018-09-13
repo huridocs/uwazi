@@ -23,10 +23,6 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
       resolve(response);
     });
 
-    res.error = (error) => {
-      res.json({ error });
-    };
-
     if (!args[1]) {
       return reject(new Error('route function has not been defined !'));
     }

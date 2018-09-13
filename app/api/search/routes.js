@@ -29,7 +29,7 @@ export default (app) => {
       unpublished: Joi.any()
     }), 'query'),
 
-    (req, res) => {
+    (req, res, next) => {
       if (req.query.filters) {
         req.query.filters = JSON.parse(req.query.filters);
       }
@@ -45,7 +45,7 @@ export default (app) => {
 
       return search.search(req.query, req.language, req.user)
       .then(results => res.json(results))
-      .catch(res.error);
+      .catch(next);
     }
   );
 
