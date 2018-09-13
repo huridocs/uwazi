@@ -68,7 +68,8 @@ export class TemplateCreator extends Component {
                       <PropertyOption label="Multi Date" type="multidate"/>
                       <PropertyOption label="Multi Date Range" type="multidaterange"/>
                       <PropertyOption label="Rich Text" type="markdown"/>
-                      <PropertyOption label="Multimedia" type="multimedia"/>
+                      <PropertyOption label="Image" type="image"/>
+                      <PropertyOption label="Media" type="media"/>
                       <PropertyOption label="Geolocation" type="geolocation"/>
                       { this.props.project === 'cejil' &&
                         <PropertyOption label="Violated articles" type="nested"/>

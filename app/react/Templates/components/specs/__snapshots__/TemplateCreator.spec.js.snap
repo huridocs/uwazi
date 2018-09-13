@@ -85,8 +85,12 @@ exports[`TemplateCreator Property Options should include document specific optio
                 type="markdown"
               />
               <Connect(DragSource(PropertyOption))
-                label="Multimedia"
-                type="multimedia"
+                label="Image"
+                type="image"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Media"
+                type="media"
               />
               <Connect(DragSource(PropertyOption))
                 label="Geolocation"
@@ -191,8 +195,12 @@ exports[`TemplateCreator Property Options should include most common options by 
                 type="markdown"
               />
               <Connect(DragSource(PropertyOption))
-                label="Multimedia"
-                type="multimedia"
+                label="Image"
+                type="image"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Media"
+                type="media"
               />
               <Connect(DragSource(PropertyOption))
                 label="Geolocation"

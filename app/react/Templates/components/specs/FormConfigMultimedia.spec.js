@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Field } from 'react-redux-form';
 import FormConfigMultimedia, { mapStateToProps } from '../FormConfigMultimedia';
 
 describe('FormConfigMultimedia', () => {
@@ -30,27 +29,33 @@ describe('FormConfigMultimedia', () => {
     component = shallow(<FormConfigMultimedia.WrappedComponent {...mappedProps}/>);
   };
 
+  const expectMatch = () => {
+    render();
+    expect(component).toMatchSnapshot();
+  };
+
   const expectErrorLengthToBe = (length) => {
     render();
     expect(component.find('.has-error').length).toBe(length);
   };
 
   it('should hold show label, show in card and select card style type options by default', () => {
-    render();
-    expect(component).toMatchSnapshot();
+    expectMatch();
   });
 
   it('should allow setting a help text', () => {
     props.helpText = 'Some help text';
-    render();
-    expect(component).toMatchSnapshot();
+    expectMatch();
   });
 
   it('should allow excluding "show in card"', () => {
     props.canShowInCard = false;
-    render();
-    const formFields = component.find(Field);
-    expect(formFields.getElements().length).toBe(1);
+    expectMatch();
+  });
+
+  it('should allow excluding "style"', () => {
+    props.canSetStyle = false;
+    expectMatch();
   });
 
   describe('validation', () => {

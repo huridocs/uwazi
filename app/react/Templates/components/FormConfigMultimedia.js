@@ -34,7 +34,7 @@ const style = index => (
 
 class FormConfigMultimedia extends Component {
   render() {
-    const { index, formState, canShowInCard, helpText } = this.props;
+    const { index, formState, canShowInCard, helpText, canSetStyle } = this.props;
 
     let labelClass = 'form-group';
     const labelKey = `properties.${index}.label`;
@@ -75,7 +75,7 @@ class FormConfigMultimedia extends Component {
           </PropertyConfigOption>
         }
 
-        {style(index)}
+        {canSetStyle && style(index)}
       </div>
     );
   }
@@ -83,11 +83,13 @@ class FormConfigMultimedia extends Component {
 
 FormConfigMultimedia.defaultProps = {
   canShowInCard: true,
+  canSetStyle: true,
   helpText: ''
 };
 
 FormConfigMultimedia.propTypes = {
   canShowInCard: PropTypes.bool,
+  canSetStyle: PropTypes.bool,
   helpText: PropTypes.string,
   index: PropTypes.number.isRequired,
   formState: PropTypes.instanceOf(Object).isRequired

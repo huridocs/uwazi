@@ -5,9 +5,9 @@ import FilterSuggestions from 'app/Templates/components/FilterSuggestions';
 import PropertyConfigOption from './PropertyConfigOption';
 import Tip from '../../Layout/Tip';
 
-export class PropertyConfigOptions extends Component {
+class PropertyConfigOptions extends Component {
   render() {
-    const { index, property, type } = this.props;
+    const { index, property, type, canBeFilter } = this.props;
     return (
       <div>
         <PropertyConfigOption label="Hide label" model={`template.data.properties[${index}].noLabel`}>
@@ -20,24 +20,26 @@ export class PropertyConfigOptions extends Component {
           <Tip>This property will appear in the library cards as part of the basic info.</Tip>
         </PropertyConfigOption>
 
-        <div className="inline-group">
-          <PropertyConfigOption label="Use as filter" model={`template.data.properties[${index}].filter`}>
-            <Tip>
-              This property will be used for filtering the library results.
-              When properties match in equal name and field type with other document types, they will be combined for filtering.
-            </Tip>
-          </PropertyConfigOption>
-          {property.filter && (
-            <PropertyConfigOption label="Default filter" model={`template.data.properties[${index}].defaultfilter`}>
+        {canBeFilter && (
+          <div className="inline-group">
+            <PropertyConfigOption label="Use as filter" model={`template.data.properties[${index}].filter`}>
               <Tip>
-                Use this property as a default filter in the library.
-                When there are no document types selected, this property will show as a default filter for your collection.
+                This property will be used for filtering the library results.
+                When properties match in equal name and field type with other document types, they will be combined for filtering.
               </Tip>
             </PropertyConfigOption>
-          )
-          }
-          <FilterSuggestions {...property} />
-        </div>
+            {property.filter && (
+              <PropertyConfigOption label="Default filter" model={`template.data.properties[${index}].defaultfilter`}>
+                <Tip>
+                  Use this property as a default filter in the library.
+                  When there are no document types selected, this property will show as a default filter for your collection.
+                </Tip>
+              </PropertyConfigOption>
+            )
+            }
+            <FilterSuggestions {...property} />
+          </div>
+        )}
         {(type === 'text' || type === 'date') && (
           <PropertyConfigOption label="Priority sorting" model={`template.data.properties[${index}].prioritySorting`}>
             <Tip>
@@ -52,10 +54,15 @@ export class PropertyConfigOptions extends Component {
   }
 }
 
+PropertyConfigOptions.defaultProps = {
+  canBeFilter: true,
+};
+
 PropertyConfigOptions.propTypes = {
   property: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
   type: PropTypes.string.isRequired,
+  canBeFilter: PropTypes.bool,
 };
 
 

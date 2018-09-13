@@ -112,9 +112,9 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value, showInCard };
   },
 
-  multimedia(property, value, thesauris, showInCard) {
+  multimedia(property, value, thesauris, showInCard, type) {
     return {
-      type: 'multimedia',
+      type,
       label: property.get('label'),
       name: property.get('name'),
       style: property.get('style') || 'contain',
@@ -122,6 +122,14 @@ export default {
       value,
       showInCard
     };
+  },
+
+  image(property, value, thesauris, showInCard) {
+    return this.multimedia(property, value, thesauris, showInCard, 'image');
+  },
+
+  media(property, value, thesauris, showInCard) {
+    return this.multimedia(property, value, thesauris, showInCard, 'media');
   },
 
   geolocation(property, value, thesauris, { showInCard, onlyForCards }) {

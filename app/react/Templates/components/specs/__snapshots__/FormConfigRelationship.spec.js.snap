@@ -73,6 +73,7 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
     />
   </div>
   <PropertyConfigOptions
+    canBeFilter={true}
     index={0}
     property={
       Object {
@@ -157,6 +158,7 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
     />
   </div>
   <PropertyConfigOptions
+    canBeFilter={true}
     index={0}
     property={
       Object {
@@ -241,6 +243,7 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
     />
   </div>
   <PropertyConfigOptions
+    canBeFilter={true}
     index={0}
     property={
       Object {
@@ -325,6 +328,7 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
     />
   </div>
   <PropertyConfigOptions
+    canBeFilter={true}
     index={0}
     property={
       Object {
