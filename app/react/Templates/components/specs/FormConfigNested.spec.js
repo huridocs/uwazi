@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {FormConfigNested} from 'app/Templates/components/FormConfigNested';
-import {Field} from 'react-redux-form';
+import { FormConfigNested } from 'app/Templates/components/FormConfigNested';
+import { Field } from 'react-redux-form';
 
 describe('FormConfigNested', () => {
   let component;
@@ -11,13 +11,14 @@ describe('FormConfigNested', () => {
   beforeEach(() => {
     props = {
       index: 0,
-      data: {properties: [{nestedProperties: [
-        {key: 'nestedPropOne', label: 'nested prop one'},
-        {key: 'nestedPropTwo', label: 'nested prop two'}
-      ]}]},
+      type: 'nested',
+      data: { properties: [{ nestedProperties: [
+        { key: 'nestedPropOne', label: 'nested prop one' },
+        { key: 'nestedPropTwo', label: 'nested prop two' }
+      ] }] },
       setNestedProperties: jasmine.createSpy('setNestedProperties'),
       formState: {
-        'properties.0.label': {valid: true, dirty: false, errors: {}},
+        'properties.0.label': { valid: true, dirty: false, errors: {} },
         $form: {
           errors: {
             'properties.0.label.required': false,
@@ -32,9 +33,6 @@ describe('FormConfigNested', () => {
     component = shallow(<FormConfigNested {...props}/>);
     const formFields = component.find(Field);
     expect(formFields.getElements()[0].props.model).toBe('template.data.properties[0].label');
-    expect(formFields.getElements()[1].props.model).toBe('template.data.properties[0].required');
-    expect(formFields.getElements()[2].props.model).toBe('template.data.properties[0].showInCard');
-    expect(formFields.getElements()[3].props.model).toBe('template.data.properties[0].filter');
   });
 
   describe('validation', () => {

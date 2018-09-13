@@ -1,4 +1,4 @@
-import {createSelector} from 'reselect';
+import { createSelector } from 'reselect';
 
 const docState = createSelector(
   (state, props) => state.progress.get(props.doc.get('sharedId')),

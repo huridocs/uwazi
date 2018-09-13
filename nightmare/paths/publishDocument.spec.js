@@ -62,7 +62,7 @@ describe('PublishDocument', () => {
     .write(selectors.doc.form.superPowersSearch, 'regen')
     .waitToClick(selectors.doc.form.suporPowers.regeneration)
     .click(selectors.libraryView.saveButton)
-    .waitToClick(selectors.uploadsView.firstPublishButton)
+    .waitToClick(selectors.uploadsView.publishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')
     .isVisible('.alert.alert-success')

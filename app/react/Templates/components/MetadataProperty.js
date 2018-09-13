@@ -14,35 +14,43 @@ import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigRelationshipFilter from './FormConfigRelationshipFilter';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
+import FormConfigMultimedia from './FormConfigMultimedia';
 import Icons from './Icons';
 
 
 export class MetadataProperty extends Component {
   renderForm() {
+    const { type, index } = this.props;
+    let defaultInput = <FormConfigInput type={type} index={index} />;
+
     if (this.props.isCommonProperty) {
-      return <FormConfigCommon index={this.props.index} />;
+      return <FormConfigCommon index={index} type={type}/>;
     }
-    if (this.props.type === 'relationship') {
-      return <FormConfigRelationship index={this.props.index} />;
+
+    if (type === 'relationship') {
+      defaultInput = <FormConfigRelationship index={index} type={type}/>;
     }
-    if (this.props.type === 'relationshipfilter') {
-      return <FormConfigRelationshipFilter index={this.props.index} />;
+    if (type === 'relationshipfilter') {
+      defaultInput = <FormConfigRelationshipFilter index={index} type={type}/>;
     }
-    if (this.props.type === 'select' || this.props.type === 'multiselect') {
-      return <FormConfigSelect index={this.props.index} />;
+    if (type === 'select' || type === 'multiselect') {
+      defaultInput = <FormConfigSelect index={index} type={type}/>;
     }
-    if (this.props.type === 'nested') {
-      return <FormConfigNested index={this.props.index} />;
+    if (type === 'nested') {
+      defaultInput = <FormConfigNested index={index} type={type}/>;
     }
-    if (this.props.type === 'geolocation') {
-      return <FormConfigInput type={this.props.type} index={this.props.index} canBeFilter={false}/>;
+    if (type === 'media' || type === 'image') {
+      defaultInput = <FormConfigMultimedia type={type} index={index} canSetStyle={type === 'image'}/>;
     }
-    return <FormConfigInput type={this.props.type} index={this.props.index} />;
+    if (type === 'geolocation') {
+      defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false}/>;
+    }
+    return defaultInput;
   }
 
   render() {
     const { label, connectDragSource, isDragging, connectDropTarget, uiState, index, localID, inserting, formState } = this.props;
-    const editingProperty = uiState.toJS().editingProperty;
+    const { editingProperty } = uiState.toJS();
 
     let propertyClass = 'list-group-item';
     if (isDragging || inserting) {

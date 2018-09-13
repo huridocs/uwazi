@@ -1,38 +1,64 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {TemplateCreator} from 'app/Templates/components/TemplateCreator';
-import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import { TemplateCreator } from '../TemplateCreator';
+import MetadataTemplate from '../MetadataTemplate';
 
 describe('TemplateCreator', () => {
-  let template = {id: '1', properties: [{label: 'label1'}, {label: 'label2'}]};
+  const template = { id: '1', properties: [{ label: 'label1' }, { label: 'label2' }] };
+  const saveTemplate = jasmine.createSpy('saveTemplate');
+  const saveEntity = jasmine.createSpy('saveEntity');
+  const saveRelationType = jasmine.createSpy('saveRelationType');
+  const resetTemplate = jasmine.createSpy('resetTemplate');
+  const settings = { collection: Immutable.fromJS({}) };
+
   let component;
-  let saveTemplate = jasmine.createSpy('saveTemplate');
-  let saveEntity = jasmine.createSpy('saveEntity');
-  let resetTemplate = jasmine.createSpy('resetTemplate');
   let props;
-  let settings = {collection: Immutable.fromJS({})};
   let context;
 
   beforeEach(() => {
-    props = {resetTemplate, saveTemplate, saveEntity, template, settings};
-    context = {router: {isActive: jasmine.createSpy('isActive')}};
+    props = { resetTemplate, saveTemplate, saveEntity, saveRelationType, template, settings };
+    context = { router: { isActive: jasmine.createSpy('isActive') } };
   });
 
-  let render = () => {
-    component = shallow(<TemplateCreator {...props} />, {context});
+  const render = () => {
+    component = shallow(<TemplateCreator {...props} />, { context });
+  };
+
+  const expectSave = (expectedSave) => {
+    render();
+    expect(component.find(MetadataTemplate).props().saveTemplate).toBe(expectedSave);
   };
 
   it('should pass the saveTemplate action to the MetadataTemplate component', () => {
-    render();
-    expect(component.find(MetadataTemplate).props().saveTemplate).toBe(saveTemplate);
+    expectSave(saveTemplate);
   });
 
-  describe('when creating a new entity', () => {
-    it('should pass the saveEntity action to the MetadataTemplate component', () => {
+  describe('when creating different templates', () => {
+    it('should pass the appropriate action to the MetadataTemplate component', () => {
+      props.entity = true;
+      expectSave(saveEntity);
+      props.relationType = true;
+      expectSave(saveRelationType);
+    });
+  });
+
+  describe('Property Options', () => {
+    it('should include most common options by default (entity)', () => {
       props.entity = true;
       render();
-      expect(component.find(MetadataTemplate).props().saveTemplate).toBe(saveEntity);
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should include document specific options', () => {
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should remove all options for relationship', () => {
+      props.relationType = true;
+      render();
+      expect(component).toMatchSnapshot();
     });
   });
 

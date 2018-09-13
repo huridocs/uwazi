@@ -16,6 +16,14 @@ const showByType = (prop, compact) => {
     result = <MarkdownViewer markdown={prop.value} />;
   }
 
+  if (prop.type === 'image') {
+    result = <img className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
+  }
+
+  if (prop.type === 'media') {
+    result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
+  }
+
   if (prop.url) {
     result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
   }
@@ -36,14 +44,18 @@ const removeEmptyValues = (p) => {
 
 const Metadata = ({ metadata, compact }) => (
   <React.Fragment>
-    {metadata.filter(removeEmptyValues).map(prop => (
-      <dl className={`metadata-type-${prop.type ? prop.type : 'default'}`} key={prop.label}>
-        <dt>{t(prop.translateContext, prop.label)}</dt>
-        <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop, compact)}
-        </dd>
-      </dl>
-    ))}
+    {metadata.filter(removeEmptyValues).map((prop) => {
+      let type = prop.type ? prop.type : 'default';
+      type = type === 'image' || type === 'media' ? 'multimedia' : type;
+      return (
+        <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={prop.label}>
+          {!prop.noLabel && <dt>{t(prop.translateContext, prop.label)}</dt>}
+          <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+            {showByType(prop, compact)}
+          </dd>
+        </dl>
+      );
+    })}
   </React.Fragment>
 );
 

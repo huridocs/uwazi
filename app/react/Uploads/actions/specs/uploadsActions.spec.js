@@ -160,7 +160,9 @@ describe('uploadsActions', () => {
 
         const expectedActions = [
           { type: notificationsTypes.NOTIFY, notification: { message: 'Document published', type: 'success', id: 'unique_id' } },
-          { type: types.REMOVE_DOCUMENT, doc: document }
+          { type: types.REMOVE_DOCUMENT, doc: document },
+          { type: 'viewer/doc/SET', value: { testBackendResult: 'ok' } },
+          { type: 'UNSELECT_ALL_DOCUMENTS' }
         ];
         const store = mockStore({});
 
