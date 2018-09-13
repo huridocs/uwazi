@@ -245,6 +245,9 @@ export default {
       if (values.template) {
         entity.template = values.template;
       }
+      if (values.published !== undefined) {
+        entity.published = values.published;
+      }
       return this.save(entity, params);
     })));
   },

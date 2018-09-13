@@ -34,10 +34,10 @@ export default class NestedMultiselect extends Component {
       return this.props.options;
     }
 
-    if (!aggregations[this.props.property.name]) {
+    if (!aggregations.all[this.props.property.name][prop]) {
       return [];
     }
-    let options = aggregations[this.props.property.name][prop].buckets;
+    let options = aggregations.all[this.props.property.name][prop].buckets;
     if (options.length === 1 && options[0].key === 'missing') {
       return [];
     }
@@ -73,7 +73,6 @@ export default class NestedMultiselect extends Component {
     const property = this.props.property;
     const locale = store.getState().locale;
     const aggregations = this.props.aggregations ? this.props.aggregations.toJS() : {};
-
     return (
       <ul className="multiselect is-active">
         <li className="multiselectActions">

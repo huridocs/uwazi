@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import { t, I18NLink } from 'app/I18N';
-import { publish } from 'app/Uploads/actions/uploadsActions';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
 import { Icon } from 'UI';
 
@@ -14,10 +11,16 @@ import { Item } from 'app/Layout';
 import { is } from 'immutable';
 
 export class Doc extends Component {
-  deleteConnection(e, connection) {
-    e.stopPropagation();
-    const { _id, sourceType } = connection;
-    this.props.deleteConnection({ _id, sourceType });
+  shouldComponentUpdate(nextProps) {
+    return !is(this.props.doc, nextProps.doc) ||
+           this.props.active !== nextProps.active ||
+           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
+  }
+
+  onClick(e) {
+    if (this.props.onClick) {
+      this.props.onClick(e, this.props.doc, this.props.active);
+    }
   }
 
   getConnections(connections) {
@@ -45,36 +48,17 @@ export class Doc extends Component {
     );
   }
 
-  shouldComponentUpdate(nextProps) {
-    return !is(this.props.doc, nextProps.doc) ||
-           this.props.active !== nextProps.active ||
-           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
-  }
-
-  onClick(e) {
-    if (this.props.onClick) {
-      this.props.onClick(e, this.props.doc, this.props.active);
-    }
-  }
-
-  publish(e) {
+  deleteConnection(e, connection) {
     e.stopPropagation();
-    this.context.confirm({
-      accept: () => {
-        this.props.publish(this.props.doc.toJS());
-      },
-      title: 'Confirm',
-      message: 'Are you sure you want to publish this entity?',
-      type: 'success'
-    });
+    const { _id, sourceType } = connection;
+    this.props.deleteConnection({ _id, sourceType });
   }
 
   render() {
     const { className, additionalText } = this.props;
     const doc = this.props.doc.toJS();
-    const { sharedId, type, template } = doc;
+    const { sharedId, type } = doc;
     const isEntity = type === 'entity';
-    const hasTemplate = !!template;
     const documentViewUrl = `/${type}/${sharedId}`;
 
     let itemConnections = null;
@@ -87,11 +71,6 @@ export class Doc extends Component {
         <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={e => e.stopPropagation()}>
           <Icon icon="angle-right" /> { t('System', 'View') }
         </I18NLink> : false
-                      }
-      {(doc.processed || isEntity) && !doc.published && hasTemplate ?
-        <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
-          <Icon icon="paper-plane" /> { t('System', 'Publish') }
-        </button> : false
                       }
                      </div>);
 
@@ -117,7 +96,6 @@ Doc.propTypes = {
   active: PropTypes.bool,
   authorized: PropTypes.bool,
   deleteConnection: PropTypes.func,
-  publish: PropTypes.func,
   onSnippetClick: PropTypes.func,
   onClick: PropTypes.func,
   className: PropTypes.string,
@@ -137,8 +115,4 @@ export function mapStateToProps(state, ownProps) {
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ publish }, wrapDispatch(dispatch, props.storeKey));
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Doc);
+export default connect(mapStateToProps)(Doc);

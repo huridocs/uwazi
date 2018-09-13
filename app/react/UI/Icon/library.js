@@ -30,6 +30,7 @@ import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
 import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
 import { faGavel } from '@fortawesome/free-solid-svg-icons/faGavel';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
+import { faImage } from '@fortawesome/free-solid-svg-icons/faImage';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
 import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb';
@@ -64,6 +65,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt';
 import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload';
+import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 
 const icons = {
   faAngleLeft,
@@ -97,6 +99,7 @@ const icons = {
   faFont,
   faGavel,
   faHome,
+  faImage,
   faInfoCircle,
   faLanguage,
   faLightbulb,
@@ -131,6 +134,7 @@ const icons = {
   faTrashAlt,
   faUndo,
   faUpload,
+  faVideo,
 };
 
 export const loadIcons = () => {

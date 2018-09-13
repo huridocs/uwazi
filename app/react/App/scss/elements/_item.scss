@@ -122,7 +122,6 @@ $item-padding: 15px;
 .item-info {
   width: $item-width;
   padding: $item-padding;
-  flex: 1;
 }
 
 .item-icon {
@@ -283,12 +282,49 @@ $item-padding: 15px;
 }
 
 .item-metadata {
-  padding: 0 $item-padding $item-padding;
 
   dl {
-    margin: 0;
+    margin:0 $item-padding;
     padding: 3px 0;
     font-size: $f-size-sm;
+
+    &.metadata-type-multimedia dd {
+      text-align: center;
+
+      img {
+        max-height: 200px;
+
+        &.cover {
+          width: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .markdown-viewer {
+        height: auto;
+        &:after {
+          display: none;
+        }
+
+        .timelink {
+          display: none;
+        }
+      }
+    }
+
+    &:first-child {
+      margin-top: $item-padding;
+    }
+
+    &:last-child {
+      margin-bottom: $item-padding;
+    }
+
+    &.full-width {
+      margin-left: 0;
+      margin-right: 0;
+      text-align: center;
+    }
   }
 
   dt {
@@ -318,7 +354,6 @@ $item-padding: 15px;
   */
 
   dd {
-    display: inline;
     width: 100%;
     &.item-metadata-empty {
       color: $c-grey;

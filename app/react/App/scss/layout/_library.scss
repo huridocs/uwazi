@@ -1,6 +1,10 @@
+$ImgMaxHeight: 200px;
 $c1: calc(100%);
+$c1ImgMaxHeight: 600px;
 $c2: calc(50% - 15px);
+$c2ImgMaxHeight: 460px;
 $c3: calc(33.333% - 15px);
+$c3ImgMaxHeight: 320px;
 $c4: calc(25% - 15px);
 $c5: calc(20% - 15px);
 $c6: calc(16.666% - 15px);
@@ -10,7 +14,7 @@ $c9: calc(11.111% - 15px);
 $c10: calc(10% - 15px);
 $c11: calc(9.09% - 15px);
 
-.item { 
+.item {
   .item-group-zoom--5 & {
     @media(min-width: 600px) {
       width: $c7;
@@ -58,7 +62,7 @@ $c11: calc(9.09% - 15px);
       width: $c10;
     }
   }
-  
+
   .item-group-zoom--3 & {
     @media(min-width: 600px) {
       width: $c5;
@@ -110,112 +114,205 @@ $c11: calc(9.09% - 15px);
   .item-group-zoom--1 & {
     @media(min-width: 600px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
     @media(min-width: 872px) {
       width: $c4;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 1024px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
     @media(min-width: 1280px) {
       width: $c4;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 1560px) {
       width: $c5;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 1850px) {
       width: $c6;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 2120px) {
       width: $c7;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
   }
 
   .item-group-zoom-0 & {
     @media(min-width: 600px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
     @media(min-width: 872px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
     @media(min-width: 1024px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
     @media(min-width: 1280px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
     @media(min-width: 1560px) {
       width: $c4;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 1850px) {
       width: $c5;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 2120px) {
       width: $c6;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
   }
-  
+
   .item-group-zoom-1 & {
     @media(min-width: 600px) {
       width: $c1;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c1ImgMaxHeight
+      }
     }
     @media(min-width: 872px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
     @media(min-width: 1024px) {
       width: $c1;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c1ImgMaxHeight
+      }
     }
     @media(min-width: 1280px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
     @media(min-width: 1560px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
     @media(min-width: 1850px) {
       width: $c4;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
     @media(min-width: 2120px) {
       width: $c5;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
   }
-  
+
   .item-group-zoom-2 & {
     @media(min-width: 600px) {
       width: $c1;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c1ImgMaxHeight
+      }
     }
     @media(min-width: 1560px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
     @media(min-width: 1850px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
     @media(min-width: 2120px) {
       width: $c4;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $ImgMaxHeight
+      }
     }
   }
-  
+
   .item-group-zoom-3 & {
     @media(min-width: 600px) {
       width: $c1;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c1ImgMaxHeight
+      }
     }
     @media(min-width: 1850px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
     @media(min-width: 2120px) {
       width: $c3;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c3ImgMaxHeight
+      }
     }
   }
   .item-group-zoom-4 & {
     @media(min-width: 600px) {
       width: $c1;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c1ImgMaxHeight
+      }
     }
     @media(min-width: 2120px) {
       width: $c2;
+      .item-metadata dl.metadata-type-multimedia dd img {
+        max-height: $c2ImgMaxHeight
+      }
     }
   }
   .item-group-zoom-5 & {
     width: $c1;
-  }  
+    .item-metadata dl.metadata-type-multimedia dd img {
+      max-height: $c1ImgMaxHeight
+    }
+  }
 }
 
 @mixin disableButton() {

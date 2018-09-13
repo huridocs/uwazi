@@ -20,8 +20,7 @@ describe('GoogleAnalytics', () => {
 
   it('should define a ga method', () => {
     render();
-    // component.instance().constructor(props);
-    expect(window.ga).toEqual(jasmine.any(Function));
+    expect(window.gtag).toEqual(jasmine.any(Function));
   });
 
   it('should render a script', () => {
@@ -41,22 +40,22 @@ describe('GoogleAnalytics', () => {
 
     it('should not define ga', () => {
       let undefinedValue;
-      window.ga = undefinedValue;
+      window.gtag = undefinedValue;
       render();
-      expect(window.ga).not.toBeDefined();
+      expect(window.gtag).not.toBeDefined();
     });
   });
 
   describe('trackPage', () => {
-    it('should send a pageview event to ga', () => {
-      window.ga = jasmine.createSpy('ga');
+    it('should send a pageview event to gtag', () => {
+      window.gtag = jasmine.createSpy('gtag');
       trackPage();
-      expect(window.ga).toHaveBeenCalledWith('send', 'pageview');
+      expect(window.gtag).toHaveBeenCalledWith('send', 'pageview');
     });
 
-    describe('if ga is not defined does nothing', () => {
+    describe('if gtag is not defined does nothing', () => {
       it('should do nothing', () => {
-        delete window.ga;
+        delete window.gtag;
         expect(trackPage).not.toThrow();
       });
     });

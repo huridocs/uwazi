@@ -27,6 +27,13 @@ export class DocumentTypesList extends Component {
     };
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !is(this.props.libraryFilters, nextProps.libraryFilters) ||
+           !is(this.props.settings, nextProps.settings) ||
+           !is(this.props.aggregations, nextProps.aggregations) ||
+           this.stateChanged(nextState);
+  }
+
   changeAll(item, e) {
     const selectedItems = this.props.libraryFilters.toJS().documentTypes || [];
     if (e.target.checked) {
@@ -76,7 +83,7 @@ export class DocumentTypesList extends Component {
 
   aggregations(item) {
     const aggregations = this.aggs;
-    const buckets = aggregations.all && aggregations.all.types ? aggregations.all.types.buckets : [];
+    const buckets = aggregations.all && aggregations.all._types ? aggregations.all._types.buckets : [];
     const found = buckets.find(agg => agg.key === item.id);
     if (found) {
       return found.filtered.doc_count;
@@ -92,6 +99,19 @@ export class DocumentTypesList extends Component {
   showSubOptions(parent) {
     const toggled = this.state.ui[parent.id];
     return !!(toggled || !!(!this.checked(parent) && parent.items.find(itm => this.checked(itm))));
+  }
+
+  checked(item) {
+    if (item.items) {
+      return item.items.reduce((result, _item) => result && this.checked(_item), item.items.length > 0);
+    }
+
+    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
+  }
+
+  stateChanged(nextState) {
+    return Object.keys(nextState.ui).length === Object.keys(this.state.ui).length ||
+           Object.keys(nextState.ui).reduce((result, key) => result || nextState.ui[key] === this.state.ui[key], false);
   }
 
   renderSingleType(item, index) {
@@ -122,55 +142,36 @@ export class DocumentTypesList extends Component {
   }
 
   renderGroupType(item, index) {
-    return (<li key={index}>
-      <div className="multiselectItem">
-        <input
-          type="checkbox"
-          className="form-control multiselectItem-input"
-          id={item.id}
-          onChange={this.changeAll.bind(this, item)}
-          checked={this.checked(item)}
-        />
-        <label htmlFor={item.id} className="multiselectItem-label">
-          <span className="multiselectItem-icon">
-            <Icon icon={['far', 'square']} className="checkbox-empty" />
-            <Icon icon="check" className="checkbox-checked" />
+    return (
+      <li key={index}>
+        <div className="multiselectItem">
+          <input
+            type="checkbox"
+            className="form-control multiselectItem-input"
+            id={item.id}
+            onChange={this.changeAll.bind(this, item)}
+            checked={this.checked(item)}
+          />
+          <label htmlFor={item.id} className="multiselectItem-label">
+            <span className="multiselectItem-icon">
+              <Icon icon={['far', 'square']} className="checkbox-empty" />
+              <Icon icon="check" className="checkbox-checked" />
+            </span>
+            <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>
+          </label>
+          <span className="multiselectItem-results">
+            <span>{this.aggregations(item)}</span>
+            <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
+              <Icon icon={this.state.ui[item.id] ? 'caret-up' : 'caret-down'} />
+            </span>
           </span>
-          <span className="multiselectItem-name"><b>{t('Filters', item.name)}</b></span>
-        </label>
-        <span className="multiselectItem-results">
-          <span>{this.aggregations(item)}</span>
-          <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
-            <Icon icon={this.state.ui[item.id] ? 'caret-up' : 'caret-down'} />
-          </span>
-        </span>
-      </div>
-      <ShowIf if={this.showSubOptions(item)}>
-        <ul className="multiselectChild is-active">
-          {item.items.map((_item, i) => this.renderSingleType(_item, i))}
-        </ul>
-      </ShowIf>
-    </li>);
-  }
-
-  stateChanged(nextState) {
-    return Object.keys(nextState.ui).length === Object.keys(this.state.ui).length ||
-           Object.keys(nextState.ui).reduce((result, key) => result || nextState.ui[key] === this.state.ui[key], false);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return !is(this.props.libraryFilters, nextProps.libraryFilters) ||
-           !is(this.props.settings, nextProps.settings) ||
-           !is(this.props.aggregations, nextProps.aggregations) ||
-           this.stateChanged(nextState);
-  }
-
-  checked(item) {
-    if (item.items) {
-      return item.items.reduce((result, _item) => result && this.checked(_item), item.items.length > 0);
-    }
-
-    return this.props.libraryFilters.toJS().documentTypes.includes(item.id);
+        </div>
+        <ShowIf if={this.showSubOptions(item)}>
+          <ul className="multiselectChild is-active">
+            {item.items.map((_item, i) => this.renderSingleType(_item, i))}
+          </ul>
+        </ShowIf>
+      </li>);
   }
 
   render() {

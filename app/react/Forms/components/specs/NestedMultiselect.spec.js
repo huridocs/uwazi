@@ -8,58 +8,60 @@ describe('NestedMultiselect', () => {
   let component;
   let props;
   const aggregations = {
-    nested_property: {
-      acd: {
-        buckets: [
-          {
-            key: '1',
-            doc_count: 4,
-            filtered: {
-              doc_count: 2,
-              total: { doc_count: 4, filtered: { doc_count: 2 } }
+    all: {
+      nested_property: {
+        acd: {
+          buckets: [
+            {
+              key: '1',
+              doc_count: 4,
+              filtered: {
+                doc_count: 2,
+                total: { doc_count: 4, filtered: { doc_count: 2 } }
+              }
+            },
+            {
+              key: '1.1',
+              doc_count: 3,
+              filtered: {
+                doc_count: 2,
+                total: { doc_count: 3, filtered: { doc_count: 2 } }
+              }
             }
-          },
-          {
-            key: '1.1',
-            doc_count: 3,
-            filtered: {
-              doc_count: 2,
-              total: { doc_count: 3, filtered: { doc_count: 2 } }
+          ]
+        },
+        cjh: {
+          buckets: [
+            {
+              key: '2',
+              doc_count: 4,
+              filtered: {
+                doc_count: 2,
+                total: { doc_count: 4, filtered: { doc_count: 2 } }
+              }
+            },
+            {
+              key: '1.2',
+              doc_count: 3,
+              filtered: {
+                doc_count: 2,
+                total: { doc_count: 4, filtered: { doc_count: 2 } }
+              }
             }
-          }
-        ]
-      },
-      cjh: {
-        buckets: [
-          {
-            key: '2',
-            doc_count: 4,
-            filtered: {
-              doc_count: 2,
-              total: { doc_count: 4, filtered: { doc_count: 2 } }
+          ]
+        },
+        acb: {
+          buckets: [
+            {
+              key: 'missing',
+              doc_count: 3,
+              filtered: {
+                doc_count: 2,
+                total: { doc_count: 4, filtered: { doc_count: 2 } }
+              }
             }
-          },
-          {
-            key: '1.2',
-            doc_count: 3,
-            filtered: {
-              doc_count: 2,
-              total: { doc_count: 4, filtered: { doc_count: 2 } }
-            }
-          }
-        ]
-      },
-      acb: {
-        buckets: [
-          {
-            key: 'missing',
-            doc_count: 3,
-            filtered: {
-              doc_count: 2,
-              total: { doc_count: 4, filtered: { doc_count: 2 } }
-            }
-          }
-        ]
+          ]
+        }
       }
     }
   };

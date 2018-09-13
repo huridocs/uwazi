@@ -24,7 +24,7 @@ export function filterDocumentTypes(documentTypes, storeKey) {
       selectedSorting: state[storeKey].selectedSorting
     });
 
-    const search = Object.assign({ types: documentTypes }, state[storeKey].search, { sort, order });
+    const search = Object.assign({ _types: documentTypes }, state[storeKey].search, { sort, order });
     const filters = { documentTypes, properties: libraryFilters };
     dispatch(libraryActions.searchDocuments({ filters, search }, storeKey));
   };

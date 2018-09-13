@@ -168,7 +168,7 @@ describe('search', () => {
     it('should return aggregations when searching by 2 terms', (done) => {
       search.search({ searchTerm: 'english document' }, 'es')
       .then((response) => {
-        const aggregation = response.aggregations.all.types.buckets.find(bucket => bucket.key === ids.template1.toString());
+        const aggregation = response.aggregations.all._types.buckets.find(bucket => bucket.key === ids.template1.toString());
         expect(aggregation.filtered.doc_count).toBe(1);
         done();
       })
@@ -274,11 +274,11 @@ describe('search', () => {
       .then(([joker, unpublished]) => {
         expect(joker.rows.length).toBe(2);
 
-        const typesAggs = joker.aggregations.all.types.buckets;
+        const typesAggs = joker.aggregations.all._types.buckets;
         expect(typesAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(2);
         expect(typesAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
 
-        const unpublishedAggs = unpublished.aggregations.all.types.buckets;
+        const unpublishedAggs = unpublished.aggregations.all._types.buckets;
         expect(unpublishedAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
         expect(unpublishedAggs.find(a => a.key === ids.templateMetadata2).filtered.doc_count).toBe(0);
         done();
@@ -312,7 +312,7 @@ describe('search', () => {
         search.search({ searchTerm: 'spanish' }, 'es')
       ])
       .then(([matches]) => {
-        const matchesAggs = matches.aggregations.all.types.buckets;
+        const matchesAggs = matches.aggregations.all._types.buckets;
         expect(matchesAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(1);
         expect(matchesAggs.find(a => a.key === ids.template2).filtered.doc_count).toBe(0);
         expect(matchesAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(0);
@@ -414,7 +414,7 @@ describe('search', () => {
           expect(bothAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
 
           const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
-          const templateAggs = filtered.aggregations.all.types.buckets;
+          const templateAggs = filtered.aggregations.all._types.buckets;
           expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
           expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(3);
           expect(templateAggs.find(a => a.key === ids.template1).filtered.doc_count).toBe(0);
@@ -442,7 +442,7 @@ describe('search', () => {
             }, 'en')
           .then((filtered) => {
             const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
-            const templateAggs = filtered.aggregations.all.types.buckets;
+            const templateAggs = filtered.aggregations.all._types.buckets;
             expect(filteredAggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(1);
             expect(filteredAggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(1);
             expect(templateAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);

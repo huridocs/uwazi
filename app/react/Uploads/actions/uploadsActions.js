@@ -2,7 +2,7 @@ import superagent from 'superagent';
 
 import { actions as basicActions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications';
-import { selectSingleDocument } from 'app/Library/actions/libraryActions';
+import { selectSingleDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
 import uniqueID from 'shared/uniqueID';
@@ -82,22 +82,50 @@ export function documentProcessError(sharedId) {
 
 export function publishEntity(entity) {
   return dispatch => api.post('entities', { ...entity, published: true })
-  .then(() => {
+  .then((response) => {
     dispatch(notify('Entity published', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
+    dispatch(basicActions.set('entityView/entity', response.json));
+    dispatch(unselectAllDocuments());
   });
 }
 
 export function publishDocument(doc) {
   return dispatch => api.post('documents', { ...doc, published: true })
-  .then(() => {
+  .then((response) => {
     dispatch(notify('Document published', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc });
+    dispatch(basicActions.set('viewer/doc', response.json));
+    dispatch(unselectAllDocuments());
+  });
+}
+
+export function unpublishEntity(entity) {
+  return dispatch => api.post('entities', { ...entity, published: false })
+  .then((response) => {
+    dispatch(notify('Entity unpublished', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
+    dispatch(basicActions.set('entityView/entity', response.json));
+    dispatch(unselectAllDocuments());
+  });
+}
+
+export function unpublishDocument(doc) {
+  return dispatch => api.post('documents', { ...doc, published: false })
+  .then((response) => {
+    dispatch(notify('Document unpublished', 'success'));
+    dispatch({ type: types.REMOVE_DOCUMENT, doc });
+    dispatch(basicActions.set('viewer/doc', response.json));
+    dispatch(unselectAllDocuments());
   });
 }
 
 export function publish(entity) {
   return dispatch => entity.type === 'entity' ? dispatch(publishEntity(entity)) : dispatch(publishDocument(entity));
+}
+
+export function unpublish(entity) {
+  return dispatch => entity.type === 'entity' ? dispatch(unpublishEntity(entity)) : dispatch(unpublishDocument(entity));
 }
 
 export function conversionComplete(docId) {
