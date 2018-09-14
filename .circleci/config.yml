@@ -80,9 +80,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-yarn-dependencies-{{ checksum "package.json" }}
+          - v2-yarn-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-yarn-dependencies-
+          - v2-yarn-dependencies-
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
@@ -92,7 +92,7 @@ jobs:
           paths:
             - ./node_modules
             - ~/.mongodb-binaries
-          key: v1-yarn-dependencies-{{ checksum "package.json" }}
+          key: v2-yarn-dependencies-{{ checksum "package.json" }}
 
       # run tests!
       - run: yarn blank-state
