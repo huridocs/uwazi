@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = {reference: {}};
+const initialState = { reference: {} };
 
-let unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
+const unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
 export default function (state = initialState, action = {}) {
   if (action.type === types.HIGHLIGHT_REFERENCE) {
@@ -43,7 +43,7 @@ export default function (state = initialState, action = {}) {
   }
 
   if (action.type === types.UNSET_SELECTION) {
-    let newState = state.setIn(['reference', 'sourceRange'], null);
+    const newState = state.setIn(['reference', 'sourceRange'], null);
     if (unsetPanelsWhenUnsetSelections.indexOf(state.get('panel')) !== -1) {
       return newState.set('panel', false);
     }
@@ -60,7 +60,7 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === 'viewer/documentResults/SET') {
     let newState = state;
-    let selectedInResults = action.value.find((result) => result._id === state.getIn(['reference', 'targetDocument']));
+    const selectedInResults = action.value.find(result => result._id === state.getIn(['reference', 'targetDocument']));
     if (!selectedInResults) {
       newState = state.deleteIn(['reference', 'targetDocument']);
     }

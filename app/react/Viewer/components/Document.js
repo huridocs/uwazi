@@ -9,6 +9,7 @@ import Loader from 'app/components/Elements/Loader';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
 import Text from 'app/Viewer/utils/Text';
+import Immutable from 'immutable';
 
 import { APIURL } from '../../config.js';
 
@@ -78,7 +79,7 @@ export class Document extends Component {
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
 
-    if (this.props.searchTerm) {
+    if (this.props.snippets.size) {
       this.props.highlightSnippets(this.props.snippets, this.text.charRange.pages);
     }
   }
@@ -143,6 +144,7 @@ Document.defaultProps = {
   highlightSnippets,
   onDocumentReady: () => {},
   onPageChange: () => {},
+  snippets: Immutable.fromJS({})
 };
 
 Document.propTypes = {
