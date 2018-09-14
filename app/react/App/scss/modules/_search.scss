@@ -615,7 +615,7 @@
     color: $c-black;
     background: transparent;
     box-shadow: none !important;
-    
+
     &:hover,
     &:focus {
       border-color: $c-black;
@@ -760,9 +760,18 @@
     line-height: 50px;
     font-size: $f-size;
   }
-  a {
+  a .page-number {
     min-width: 30px;
     line-height: 50px;
+    float: left;
+  }
+
+  a .snippet-text {
+    color: $c-black;
+  }
+
+  a {
+    text-decoration: none;
   }
 
   b {
@@ -772,4 +781,3 @@
     // box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }
-

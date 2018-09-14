@@ -61,9 +61,9 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
           onClick={() => scrollToPage(snippet.get('page'))}
           to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
         >
-          {snippet.get('page')}
+          <span className="page-number">{snippet.get('page')}</span>
+          <span><SafeHTML>{snippet.get('text')}</SafeHTML></span>
         </I18NLink>
-        <span><SafeHTML>{snippet.get('text')}</SafeHTML></span>
       </li>
     ))}
   </React.Fragment>
