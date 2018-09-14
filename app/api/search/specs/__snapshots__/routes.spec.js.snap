@@ -3,6 +3,12 @@
 exports[`search routes /api/search should have a validation schema 1`] = `
 Object {
   "children": Object {
+    "_types": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "aggregations": Object {
       "invalids": Array [
         "",
