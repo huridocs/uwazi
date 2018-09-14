@@ -19,19 +19,19 @@ jobs:
       - checkout
 
       # Download and cache dependencies
-      # - restore_cache:
-      #     keys:
-      #     - v1-yarn-dependencies-1-{{ checksum "package.json" }}
-      #     # fallback to using the latest cache if no exact match is found
-      #     - v1-yarn-dependencies-
+      - restore_cache:
+          keys:
+          - v1-yarn-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-yarn-dependencies-
 
       - run: yarn install
       - run: sudo apt-get install poppler-utils
-      # - save_cache:
-      #     paths:
-      #       - ./node_modules
-      #       - ~/.mongodb-binaries
-      #     key: v1-yarn-dependencies-1-{{ checksum "package.json" }}
+      - save_cache:
+          paths:
+            - ./node_modules
+            - ~/.mongodb-binaries
+          key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
@@ -78,21 +78,21 @@ jobs:
     steps:
       - checkout
       # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-yarn-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-yarn-dependencies-
+      # - restore_cache:
+      #     keys:
+      #     - v1-yarn-dependencies-{{ checksum "package.json" }}
+      #     # fallback to using the latest cache if no exact match is found
+      #     - v1-yarn-dependencies-
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
       - run: NODE_ENV=production node_modules/.bin/webpack --config ./webpack.production.config.js
-      - save_cache:
-          paths:
-            - ./node_modules
-            - ~/.mongodb-binaries
-          key: v1-yarn-dependencies-{{ checksum "package.json" }}
+      # - save_cache:
+      #     paths:
+      #       - ./node_modules
+      #       - ~/.mongodb-binaries
+      #     key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       # run tests!
       - run: yarn blank-state
