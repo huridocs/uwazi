@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DateFilter should render a date filter field with a label and passing the model and format 1`] = `
+<Connect(I18NLink)
+  className="btn btn-default btn-xs"
+  onClick={[Function]}
+  to="/entity/123"
+>
+  <Component
+    icon="angle-right"
+  />
+   
+  View
+</Connect(I18NLink)>
+`;
+
+exports[`ViewDocButton should render a view button poiting to the doc url with the searchTerm if pressent 1`] = `
+<Connect(I18NLink)
+  className="btn btn-default btn-xs"
+  onClick={[Function]}
+  to="/entity/123"
+>
+  <Component
+    icon="angle-right"
+  />
+   
+  View
+</Connect(I18NLink)>
+`;
+
+exports[`ViewDocButton should render a view button poiting to the doc url with the searchTerm if pressent 2`] = `
+<Connect(I18NLink)
+  className="btn btn-default btn-xs"
+  onClick={[Function]}
+  to="/entity/123?searchTerm=something"
+>
+  <Component
+    icon="angle-right"
+  />
+   
+  View
+</Connect(I18NLink)>
+`;
