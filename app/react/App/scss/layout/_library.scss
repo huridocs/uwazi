@@ -315,6 +315,13 @@ $c11: calc(9.09% - 15px);
   }
 }
 
+.page-viewer .item-group-zoom-0 .item {
+  width: $c3;
+  .item-metadata dl.metadata-type-multimedia dd img {
+    max-height: $ImgMaxHeight
+  }
+}
+
 @mixin disableButton() {
   opacity: .3;
   pointer-events: none;
