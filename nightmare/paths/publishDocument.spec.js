@@ -62,6 +62,7 @@ describe('PublishDocument', () => {
     .write(selectors.doc.form.superPowersSearch, 'regen')
     .waitToClick(selectors.doc.form.suporPowers.regeneration)
     .click(selectors.libraryView.saveButton)
+    // .waitToClick('#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(4) > label')
     .waitToClick(selectors.uploadsView.publishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')

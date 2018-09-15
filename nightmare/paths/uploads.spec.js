@@ -6,6 +6,8 @@ import insertFixtures from '../helpers/insertFixtures';
 
 const nightmare = createNightmare();
 
+const comicCharacter = '58ad7d240d44252fee4e61fd';
+
 describe('Uploads', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
@@ -18,6 +20,23 @@ describe('Uploads', () => {
       done();
     })
     .catch(catchErrors(done));
+  });
+
+  describe('when filtering by type', () => {
+    it('should show only filtered ones', (done) => {
+      nightmare
+      .library.editCard('Wolverine')
+      .select('#metadataForm > div:nth-child(2) > ul > li.wide > select', comicCharacter)
+      .library.saveCard()
+      .refresh()
+      .library.selectFilter('Comic character')
+      .library.countFiltersResults()
+      .then((resutls) => {
+        expect(resutls).toBe(1);
+        done();
+      })
+      .then(done);
+    });
   });
 
   describe('when uploading a pdf', () => {
