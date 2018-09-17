@@ -2,16 +2,22 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { I18NLink } from 'app/I18N';
+import { I18NLink, t } from 'app/I18N';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 import { wrapDispatch } from 'app/Multireducer';
-
 import { searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions } from 'app/Library/actions/libraryActions';
 import debounce from 'app/utils/debounce';
-import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
 export class SearchBar extends Component {
+  componentWillMount() {
+    this.getSuggestions = debounce(this.getSuggestions, 400);
+  }
+
+  componentWillUnmount() {
+    this.props.setOverSuggestions(false);
+  }
+
   onChange(e) {
     this.props.change(`${this.props.storeKey}.search.searchTerm`, e.target.value);
     this.getSuggestions(e);
@@ -31,14 +37,6 @@ export class SearchBar extends Component {
   }
 
   mouseOut() {
-    this.props.setOverSuggestions(false);
-  }
-
-  componentWillMount() {
-    this.getSuggestions = debounce(this.getSuggestions, 400);
-  }
-
-  componentWillUnmount() {
     this.props.setOverSuggestions(false);
   }
 
@@ -66,8 +64,9 @@ export class SearchBar extends Component {
         <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
           <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
             <Field model=".searchTerm" updateOn="submit">
-              <Icon icon="search"
-              onClick={this.submitSearch.bind(this)}
+              <Icon
+                icon="search"
+                onClick={this.submitSearch.bind(this)}
               />
               <input
                 type="text"
@@ -87,12 +86,13 @@ export class SearchBar extends Component {
           >
             {suggestions.toJS().map((suggestion, index) => {
               const documentViewUrl = `/${suggestion.type}/${suggestion.sharedId}`;
-              return (<p className="search-suggestions-item" key={index}>
-                <I18NLink to={documentViewUrl}>
-                  <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
-                  <Icon icon="file" />
-                </I18NLink>
-                      </p>);
+              return (
+                <p className="search-suggestions-item" key={index}>
+                  <I18NLink to={documentViewUrl}>
+                    <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
+                    <Icon icon="file" />
+                  </I18NLink>
+                </p>);
             })}
             <button
               className="search-suggestions-all"
