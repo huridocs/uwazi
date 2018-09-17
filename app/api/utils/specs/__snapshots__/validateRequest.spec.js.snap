@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validateRequest should call next with the error 1`] = `
+Array [
+  Object {
+    "code": 400,
+    "message": "ValidationError: child \\"prop1\\" fails because [\\"prop1\\" must be a string]",
+  },
+]
+`;

@@ -124,6 +124,10 @@ describe('Attachments Routes', () => {
       expect(routes.post('/api/attachments/rename', { body: { entityId: 'a' } })).toNeedAuthorization();
     });
 
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/attachments/rename')).toMatchSnapshot();
+    });
+
     it('should rename a specific attachment', (done) => {
       routes.post('/api/attachments/rename', req)
       .then((response) => {
@@ -173,6 +177,10 @@ describe('Attachments Routes', () => {
         }
         done();
       });
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/attachments/delete')).toMatchSnapshot();
     });
 
     it('should need authorization', () => {

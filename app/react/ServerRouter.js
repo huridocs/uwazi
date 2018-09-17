@@ -4,7 +4,6 @@ import { match, RouterContext } from 'react-router';
 import { renderToString } from 'react-dom/server';
 import Helmet from 'react-helmet';
 import React from 'react';
-import errorLog from 'api/log/errorLog';
 
 import { I18NUtils, t, Translate } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
@@ -20,6 +19,7 @@ import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
 import store from './store';
 import translationsApi from '../api/i18n/translations';
+import handleError from '../api/utils/handleError';
 
 
 let assets = {};
@@ -63,7 +63,8 @@ function handle404(res) {
   res.status(404).send(wholeHtml);
 }
 
-function handleError(res, error) {
+function respondError(res, error) {
+  handleError(error);
   res.status(500).send(error.message);
 }
 
@@ -161,7 +162,7 @@ function handleRoute(res, renderProps, req) {
       }
 
       if (error.status === 500) {
-        handleError(res, error);
+        respondError(res, error);
         return Promise.reject(error);
       }
 
@@ -177,17 +178,7 @@ function handleRoute(res, renderProps, req) {
       initialData.locale = locale;
       renderPage(initialData, true);
     })
-    .catch((e) => {
-      let error = e;
-
-      if (!error.status || error.status !== 404) {
-        if (error instanceof Error) {
-          error = error.stack.split('\n');
-        }
-
-        errorLog.error(error);
-      }
-    });
+    .catch(handleError);
   }
 
   renderPage();
@@ -226,7 +217,7 @@ const allowedRoute = (user = {}, url) => {
 function routeMatch(req, res, location) {
   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
     if (error) {
-      return handleError(error);
+      return respondError(res, error);
     } else if (redirectLocation) {
       return handleRedirect(res, redirectLocation);
     } else if (renderProps) {

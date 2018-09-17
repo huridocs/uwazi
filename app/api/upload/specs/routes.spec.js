@@ -201,6 +201,10 @@ describe('upload routes', () => {
   });
 
   describe('DELETE/customisation/upload', () => {
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/customisation/upload')).toMatchSnapshot();
+    });
+
     it('should delete upload and return the response', async () => {
       spyOn(uploads, 'delete').and.returnValue(Promise.resolve('upload_deleted'));
       const result = await routes.delete('/api/customisation/upload', { query: { _id: 'upload_id' } });

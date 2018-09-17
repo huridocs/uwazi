@@ -1,7 +1,8 @@
-import pagesRoutes from '../routes.js';
+import { catchErrors } from 'api/utils/jasmineHelpers';
+
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import pages from '../pages';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import pagesRoutes from '../routes.js';
 
 describe('Pages Routes', () => {
   let routes;
@@ -14,8 +15,8 @@ describe('Pages Routes', () => {
     let req;
     beforeEach(() => {
       req = {
-        body: {title: 'Batman begins'},
-        user: {username: 'admin'},
+        body: { title: 'Batman begins' },
+        user: { username: 'admin' },
         language: 'lang'
       };
     });
@@ -25,7 +26,7 @@ describe('Pages Routes', () => {
     });
 
     it('should create a new document with current user', (done) => {
-      spyOn(pages, 'save').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(pages, 'save').and.returnValue(new Promise(resolve => resolve('document')));
       routes.post('/api/pages', req)
       .then((document) => {
         expect(document).toBe('document');
@@ -37,9 +38,13 @@ describe('Pages Routes', () => {
   });
 
   describe('/api/pages', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/pages')).toMatchSnapshot();
+    });
+
     it('should ask pages model for the page in the current locale', (done) => {
-      let req = {
-        query: {sharedId: '123'},
+      const req = {
+        query: { sharedId: '123' },
         language: 'es'
       };
       spyOn(pages, 'getById').and.returnValue(Promise.resolve('page'));
@@ -55,28 +60,40 @@ describe('Pages Routes', () => {
 
   describe('/api/pages/list', () => {
     it('return the list from pages passing the keys', (done) => {
-      let req = {
+      const req = {
         language: 'es'
       };
 
-      spyOn(pages, 'get').and.returnValue(new Promise((resolve) => resolve('document')));
+      spyOn(pages, 'get').and.returnValue(new Promise(resolve => resolve('document')));
       routes.get('/api/pages/list', req)
       .then((document) => {
-        expect(document).toEqual({rows: 'document'});
-        expect(pages.get).toHaveBeenCalledWith({language: 'es'});
+        expect(document).toEqual({ rows: 'document' });
+        expect(pages.get).toHaveBeenCalledWith({ language: 'es' });
         done();
       })
       .catch(catchErrors(done));
     });
   });
 
+  describe('GET', () => {
+    describe('/api/pages', () => {
+      it('should have a validation schema', () => {
+        expect(routes.get.validation('/api/pages')).toMatchSnapshot();
+      });
+    });
+  });
+
   describe('DELETE', () => {
     beforeEach(() => {
-      spyOn(pages, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
+      spyOn(pages, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/pages')).toMatchSnapshot();
     });
 
     it('should use pages to delete it', (done) => {
-      let req = {query: {_id: 123, _rev: 456, sharedId: '456'}};
+      const req = { query: { _id: 123, _rev: 456, sharedId: '456' } };
       return routes.delete('/api/pages', req)
       .then(() => {
         expect(pages.delete).toHaveBeenCalledWith(req.query.sharedId);
