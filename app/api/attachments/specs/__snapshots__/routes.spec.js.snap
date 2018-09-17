@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Attachments Routes /delete should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "entityId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "filename": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`Attachments Routes /rename should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "entityId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "language": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "originalname": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

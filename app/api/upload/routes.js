@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import multer from 'multer';
 
 import ID from 'shared/uniqueID';
@@ -10,6 +11,7 @@ import path from 'path';
 import relationships from 'api/relationships';
 
 import { uploadDocumentsPath } from '../config/paths';
+import { validateRequest } from '../utils';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
@@ -90,29 +92,51 @@ export default (app) => {
 
   app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));
 
-  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
+  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {
     uploads.save(req.files[0])
     .then((saved) => {
       res.json(saved);
-    });
+    })
+    .catch(next);
   });
 
-  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
+  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res, next) => {
     uploads.get()
     .then((result) => {
       res.json(result);
-    });
+    })
+    .catch(next);
   });
 
-  app.delete('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
-    uploads.delete(req.query._id)
-    .then((result) => {
-      res.json(result);
-    });
-  });
+  app.delete(
+    '/api/customisation/upload',
 
-  app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => entities.getById(req.body.document)
-  .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
-  .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
-  .then(() => uploadProcess(req, res, false)));
+    needsAuthorization(['admin', 'editor']),
+
+    validateRequest(Joi.object({
+      _id: Joi.string().required()
+    }).required(), 'query'),
+
+    (req, res, next) => {
+      uploads.delete(req.query._id)
+      .then((result) => {
+        res.json(result);
+      })
+      .catch(next);
+    }
+  );
+
+  app.post(
+    '/api/reupload',
+
+    needsAuthorization(['admin', 'editor']),
+
+    upload.any(),
+
+    (req, res, next) => entities.getById(req.body.document)
+    .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
+    .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
+    .then(() => uploadProcess(req, res, false))
+    .catch(next)
+  );
 };

@@ -8,29 +8,21 @@ export default {
     }
 
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   save(template) {
     return api.post('templates', template)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   countByThesauri(thesauri) {
-    return api.get('templates/count_by_thesauri', thesauri)
-    .then((response) => {
-      return response.json;
-    });
+    return api.get('templates/count_by_thesauri', { _id: thesauri._id })
+    .then(response => response.json);
   },
 
   delete(template) {
-    return api.delete('templates', template)
-    .then((response) => {
-      return response.json;
-    });
+    return api.delete('templates', { _id: template._id })
+    .then(response => response.json);
   }
 };
