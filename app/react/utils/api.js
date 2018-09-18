@@ -19,9 +19,7 @@ const doneLoading = (data) => {
 
 const handleError = (e, endpoint) => {
   const error = e;
-  // if (error.json) {
-    error.endpoint = endpoint;
-  // }
+  error.endpoint = endpoint;
 
   if (!isClient) {
     return Promise.reject(error);
@@ -44,7 +42,7 @@ const handleError = (e, endpoint) => {
     return Promise.reject(error);
   }
 
-  console.error(error);
+  // console.error(error);
   store.dispatch(notify(error.json.error, 'danger'));
   return Promise.reject(error);
 };
