@@ -1,8 +1,10 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
-import t from '../I18N/t';
+
 import SafeHTML from 'app/utils/SafeHTML';
+
+import t from '../I18N/t';
 
 function getFieldLabel(field, template) {
   if (field === 'title') {
