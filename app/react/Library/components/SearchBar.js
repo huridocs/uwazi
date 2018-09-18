@@ -1,13 +1,15 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Field, Form, actions as formActions } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+
 import { I18NLink, t } from 'app/I18N';
-import { Field, Form, actions as formActions } from 'react-redux-form';
-import { wrapDispatch } from 'app/Multireducer';
-import { searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions } from 'app/Library/actions/libraryActions';
-import debounce from 'app/utils/debounce';
 import { Icon } from 'UI';
+import { searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
+import SafeHTML from 'app/utils/SafeHTML';
+import debounce from 'app/utils/debounce';
 
 export class SearchBar extends Component {
   componentWillMount() {
@@ -89,7 +91,7 @@ export class SearchBar extends Component {
               return (
                 <p className="search-suggestions-item" key={index}>
                   <I18NLink to={documentViewUrl}>
-                    <span dangerouslySetInnerHTML={{__html: suggestion.title}}/>
+                    <span><SafeHTML>{suggestion.title}</SafeHTML></span>
                     <Icon icon="file" />
                   </I18NLink>
                 </p>);
