@@ -15,6 +15,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
       }
     }
     key="title"
+    searchTerm="snippet"
     template={
       Immutable.Map {
         "_id": "template",
@@ -38,6 +39,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
       }
     }
     key="metadata.summary"
+    searchTerm="snippet"
     template={
       Immutable.Map {
         "_id": "template",
@@ -68,8 +70,14 @@ exports[`SnippetList should render metadata snippets and document content snippe
       ]
     }
     documentViewUrl="/document/sharedId"
-    scrollToPage={[MockFunction]}
     searchTerm="snippet"
+    selectSnippet={[MockFunction]}
+    selectedSnippet={
+      Immutable.Map {
+        "text": "first <b>snippet 1</b> found",
+        "page": 1,
+      }
+    }
   />
 </ul>
 `;
@@ -96,8 +104,14 @@ exports[`SnippetList should render only document snippets if there are no metada
       ]
     }
     documentViewUrl="/document/sharedId"
-    scrollToPage={[MockFunction]}
     searchTerm="snippet"
+    selectSnippet={[MockFunction]}
+    selectedSnippet={
+      Immutable.Map {
+        "text": "first <b>snippet 1</b> found",
+        "page": 1,
+      }
+    }
   />
 </ul>
 `;
@@ -117,6 +131,7 @@ exports[`SnippetList should render only metadata snippets if there are no docume
       }
     }
     key="title"
+    searchTerm="snippet"
     template={
       Immutable.Map {
         "_id": "template",
@@ -140,6 +155,7 @@ exports[`SnippetList should render only metadata snippets if there are no docume
       }
     }
     key="metadata.summary"
+    searchTerm="snippet"
     template={
       Immutable.Map {
         "_id": "template",

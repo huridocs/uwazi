@@ -7,7 +7,7 @@ import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { highlightSearch } from 'app/Viewer/actions/uiActions';
 import { browserHistory } from 'react-router';
-import { scrollToPage } from 'app/Viewer/actions/uiActions';
+import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { toUrlParams } from '../../../shared/JSONRequest';
 import { Icon } from 'UI';
 import SnippetList from './SnippetList';
@@ -91,7 +91,7 @@ export class SearchText extends Component {
           (<SnippetList
             doc={this.props.doc}
             snippets={snippets}
-            scrollToPage={this.props.scrollToPage}
+            selectSnippet={this.props.selectSnippet}
             searchTerm={this.props.searchTerm}
             documentViewUrl={documentViewUrl}
           />) : ''
@@ -109,13 +109,12 @@ SearchText.propTypes = {
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
-  scrollToPage: PropTypes.func,
+  selectSnippet: PropTypes.func.isRequired,
   highlightSearch: PropTypes.func
 };
 
 SearchText.defaultProps = {
   searchTerm: '',
-  scrollToPage,
   snippets: {
     count: 0,
     metadata: [],
@@ -131,7 +130,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ searchSnippets }, dispatch);
+  return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

@@ -55,8 +55,6 @@ describe('Viewer uiActions', () => {
     it('should scroll to active if goToActive is true', () => {
       actions.scrollToActive({ _id: 'id' }, {}, '', true)(dispatch);
       expect(dispatch).toHaveBeenCalledWith({ type: types.GO_TO_ACTIVE, value: false });
-      //expect(dispatch).toHaveBeenCalledWith({type: 'activateReference'});
-      //expect(actions.activateReference).toHaveBeenCalledWith({_id: 'id'}, {}, '');
     });
   });
 
@@ -132,51 +130,34 @@ describe('Viewer uiActions', () => {
     });
   });
 
-  describe('highlightSnippets', () => {
+  describe('highlightSnippet', () => {
     it('should unmark all and mark snippets passed only once (only the ones for the pages being rendered)', () => {
       const container = document.createElement('div');
-      let innerHTML = '<div class="main-wrapper">unique ';
+      let innerHTML = '<div class="document-viewer">unique ';
+      innerHTML += '<div id="page-3">';
       innerHTML += 'snippet <span>marked</span> (with)  multiple spaces';
       innerHTML += 'snippet marked </br>new line';
+      innerHTML += '</div>';
+      innerHTML += '<div id="page-4">';
       innerHTML += 'page not in range 5';
       innerHTML += 'page not in range 6';
       innerHTML += 'page not in range 7';
+      innerHTML += '</div>';
       innerHTML += '</div>';
       container.innerHTML = innerHTML;
       document.body.appendChild(container);
       Marker.init('div.main-wrapper');
 
-      const snippets = Immutable.fromJS({
-        count: 7,
-        metadata: [],
-        fullText: [
-          { text: 'unique', page: 1 },
-          { text: 'unique', page: 2 },
-          { text: 'snippet <b>marked</b> (with) multiple spaces', page: 3 },
-          { text: 'snippet <b>marked</b>\nnew line', page: 4 },
-          { text: 'page not in range 5', page: 5 },
-          { text: 'page not in range 6', page: 6 },
-          { text: 'page not in range 7', page: 7 }
-        ]
-      });
-
-      const pages = [1, 2, 3, 4];
-
-      actions.highlightSnippets(snippets, pages);
+      actions.highlightSnippet(Immutable.fromJS({ text: 'snippet <b>marked</b> (with) multiple spaces', page: 3 }));
       let marks = document.querySelectorAll('mark');
-      expect(marks.length).toBe(6);
-      expect(marks[0].innerHTML).toBe('unique');
-      expect(marks[1].innerHTML).toBe('snippet ');
-      expect(marks[2].innerHTML).toBe('marked');
+      expect(marks.length).toBe(4);
+      expect(marks[0].innerHTML).toBe('snippet ');
       expect(marks[3].innerHTML).toBe(' (with)  multiple spaces');
-      expect(marks[4].innerHTML).toBe('snippet marked ');
-      expect(marks[5].innerHTML).toBe('new line');
 
-      actions.highlightSnippets(Immutable.fromJS({
-        count: 0,
-        metadata: [],
-        fullText: []
-      }));
+      const searchTermMarks = document.querySelectorAll('mark.searchTerm');
+      expect(searchTermMarks.length).toBe(1);
+
+      actions.highlightSnippet(Immutable.fromJS({}));
       marks = document.querySelectorAll('mark');
       expect(marks.length).toBe(0);
 

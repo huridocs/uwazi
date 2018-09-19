@@ -4,12 +4,12 @@ import 'app/Viewer/scss/document.scss';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { highlightSnippets } from 'app/Viewer/actions/uiActions';
 import Loader from 'app/components/Elements/Loader';
 import PDF from 'app/PDF';
 import ShowIf from 'app/App/ShowIf';
 import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
+import { highlightSnippet } from 'app/Viewer/actions/uiActions';
 
 import { APIURL } from '../../config.js';
 
@@ -78,10 +78,7 @@ export class Document extends Component {
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
-
-    if (this.props.snippets.size) {
-      this.props.highlightSnippets(this.props.snippets, this.text.charRange.pages);
-    }
+    highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
   }
 
   pdfLoaded(range) {
@@ -141,10 +138,9 @@ export class Document extends Component {
 }
 
 Document.defaultProps = {
-  highlightSnippets,
   onDocumentReady: () => {},
   onPageChange: () => {},
-  snippets: Immutable.fromJS({})
+  selectedSnippet: Immutable.fromJS({})
 };
 
 Document.propTypes = {
@@ -155,10 +151,9 @@ Document.propTypes = {
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
   highlightReference: PropTypes.func,
-  highlightSnippets: PropTypes.func,
   header: PropTypes.func,
   searchTerm: PropTypes.string,
-  snippets: PropTypes.object,
+  selectedSnippet: PropTypes.object,
   page: PropTypes.number,
   activateReference: PropTypes.func,
   doScrollToActive: PropTypes.bool,

@@ -749,12 +749,12 @@
     border-bottom: 1px solid $c-grey-light;
   }
 
-  li.snippet-list-item:hover {
+  li.snippet-list-item.fulltext-snippet:hover {
     background-color: $c-grey-lighten;
   }
 
   li.snippet-list-item.selected {
-    background-color: blue;
+    background-color: $c-primary-lighten;
   }
 
   li.snippet-list-item-header {
