@@ -40,7 +40,14 @@ export class MetadataProperty extends Component {
       defaultInput = <FormConfigNested index={index} type={type}/>;
     }
     if (type === 'media' || type === 'image' || type === 'preview') {
-      defaultInput = <FormConfigMultimedia type={type} index={index} canSetStyle={type === 'image' || type === 'preview'}/>;
+      defaultInput = (
+        <FormConfigMultimedia
+          type={type}
+          index={index}
+          canSetStyle={type === 'image' || type === 'preview'}
+          canBeRequired={type !== 'preview'}
+        />
+      );
     }
     if (type === 'geolocation') {
       defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false}/>;
