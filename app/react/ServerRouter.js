@@ -46,15 +46,13 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   const head = Helmet.rewind();
 
   let reduxData = {};
-  let data = initialData;
 
   if (isRedux) {
     reduxData = initialData;
-    data = {};
   }
 
   return `<!doctype html>\n${renderToString(
-    <Root content={componentHtml} initialData={data} head={head} user={user} reduxData={reduxData} assets={assets}/>
+    <Root content={componentHtml} head={head} user={user} reduxData={reduxData} assets={assets}/>
   )}`;
 }
 

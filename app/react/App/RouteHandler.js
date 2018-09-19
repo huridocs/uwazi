@@ -12,12 +12,11 @@ class RouteHandler extends Component {
     return Promise.resolve({});
   }
 
-  emptyState() {
-  }
+  setReduxState() {} //eslint-disable-line
+  emptyState() {} //eslint-disable-line
 
   static renderTools() {}
 
-  setReduxState() {}
 
   isRenderedFromServer() {
     const result = RouteHandler.renderedFromServer;
