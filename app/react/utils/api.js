@@ -41,8 +41,7 @@ const handleError = (e, endpoint) => {
     store.dispatch(notify('An error has occurred', 'danger'));
     return Promise.reject(error);
   }
-
-  // console.error(error);
+  
   store.dispatch(notify(error.json.error, 'danger'));
   return Promise.reject(error);
 };

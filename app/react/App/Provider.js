@@ -1,12 +1,12 @@
+import { Component, Children } from 'react';
 import PropTypes from 'prop-types';
-import {Component, Children} from 'react';
-import {isClient} from 'app/utils';
+
+import { isClient } from 'app/utils';
 
 class CustomProvider extends Component {
-
   constructor(props) {
     super(props);
-    this.data = isClient && window.__initialData__ ? window.__initialData__ : props.initialData;
+    this.data = isClient && window.__reduxData__ ? window.__reduxData__ : props.initialData;
     this.renderedFromServer = true;
     this.user = isClient && window.__user__ ? window.__user__ : props.user;
   }
@@ -24,19 +24,19 @@ class CustomProvider extends Component {
   }
 
   isRenderedFromServer() {
-    let renderedFromServer = this.renderedFromServer;
+    const renderedFromServer = this.renderedFromServer;
     this.renderedFromServer = false;
     return renderedFromServer;
   }
 
   getInitialData() {
-    let data = this.data;
+    const data = this.data;
     delete this.data;
     return data;
   }
 
   render() {
-    let {children} = this.props;
+    const { children } = this.props;
     return Children.only(children);
   }
 }
