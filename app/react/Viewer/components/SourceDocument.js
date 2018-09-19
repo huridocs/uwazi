@@ -31,8 +31,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-function mapDispatchToProps(dispatch, ownProps) {
-  console.log(ownProps);
+function mapDispatchToProps(dispatch) {
   const actions = {
     setSelection,
     unsetSelection,
