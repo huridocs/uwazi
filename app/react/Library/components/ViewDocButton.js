@@ -35,7 +35,7 @@ ViewDocButton.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    searchTerm: state[props.storeKey].search.searchTerm
+    searchTerm: props.storeKey ? state[props.storeKey].search.searchTerm : ''
   };
 }
 
