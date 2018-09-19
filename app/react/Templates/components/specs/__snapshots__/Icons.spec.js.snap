@@ -14,6 +14,7 @@ Object {
   "multiselect": "list",
   "nested": "cubes",
   "numeric": "calculator",
+  "preview": "passport",
   "relationship": "link",
   "relationshipfilter": "filter",
   "select": "sort",
