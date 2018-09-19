@@ -20,6 +20,7 @@ describe('Menu', () => {
       libraryFilters: Immutable.fromJS({
         properties: []
       }),
+      location: { query: { searchTerm: 'asd' } },
       uploadsFilters: Immutable.fromJS({
         properties: []
       })
