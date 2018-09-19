@@ -82,6 +82,9 @@ DocumentContentSnippets.propTypes = {
   documentSnippets: PropTypes.shape({
     map: PropTypes.func
   }).isRequired,
+  selectedSnippet: PropTypes.shape({
+    get: PropTypes.func
+  }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   searchTerm: PropTypes.string.isRequired
 };
