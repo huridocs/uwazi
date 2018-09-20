@@ -1,6 +1,9 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
+
+import SafeHTML from 'app/utils/SafeHTML';
+
 import t from '../I18N/t';
 
 function getFieldLabel(field, template) {
@@ -32,8 +35,9 @@ export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
       <div
         onClick={onSnippetClick}
         className="item-snippet"
-        dangerouslySetInnerHTML={{ __html: `${content} ...` }}
-      />
+      >
+        <SafeHTML>{content}</SafeHTML>
+      </div>
     </React.Fragment>
   );
 
