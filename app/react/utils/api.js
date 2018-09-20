@@ -19,9 +19,7 @@ const doneLoading = (data) => {
 
 const handleError = (e, endpoint) => {
   const error = e;
-  // if (error.json) {
-    error.endpoint = endpoint;
-  // }
+  error.endpoint = endpoint;
 
   if (!isClient) {
     return Promise.reject(error);
