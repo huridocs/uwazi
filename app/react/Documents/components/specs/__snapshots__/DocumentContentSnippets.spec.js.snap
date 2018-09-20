@@ -17,13 +17,11 @@ exports[`SnippetList should render all document snippets 1`] = `
     >
       1
     </Connect(I18NLink)>
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "first <b>snippet 1</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        first &lt;b&gt;snippet 1&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
   <li
     className="snippet-list-item fulltext-snippet"
@@ -35,13 +33,11 @@ exports[`SnippetList should render all document snippets 1`] = `
     >
       2
     </Connect(I18NLink)>
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "second <b>snippet 3</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        second &lt;b&gt;snippet 3&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
   <li
     className="snippet-list-item fulltext-snippet"
@@ -53,13 +49,11 @@ exports[`SnippetList should render all document snippets 1`] = `
     >
       3
     </Connect(I18NLink)>
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "third <b>snippet 3</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        third &lt;b&gt;snippet 3&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
 </React.Fragment>
 `;
