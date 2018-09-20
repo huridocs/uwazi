@@ -27,7 +27,7 @@ describe('PDF', () => {
   });
 
   describe('createThumbnail', () => {
-    const thumbnailName = `${__dirname}/documentId-01.jpg`;
+    const thumbnailName = `${__dirname}/documentId.jpg`;
 
     const deleteThumbnail = (done) => {
       fs.stat(path.resolve(thumbnailName), (err) => {
