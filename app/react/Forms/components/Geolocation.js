@@ -48,11 +48,11 @@ export default class Geolocation extends Component {
         <div className="form-row">
           <div className="form-group">
             <label>Latitude&nbsp;</label>
-            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat} step="0.001"/>
+            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat} step="any"/>
           </div>
           <div className="form-group">
             <label>Longitude&nbsp;</label>
-            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="0.001"/>
+            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="any"/>
           </div>
         </div>
       </div>
