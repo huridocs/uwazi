@@ -81,11 +81,6 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
 
 export default {
 
-  date(property, timestamp, thesauris, { showInCard }) {
-    const value = moment.utc(timestamp, 'X').format('ll');
-    return { label: property.get('label'), name: property.get('name'), value, timestamp, showInCard };
-  },
-
   formatDateRange(daterange) {
     let from = '';
     let to = '';
@@ -96,54 +91,6 @@ export default {
       to = moment.utc(daterange.to, 'X').format('ll');
     }
     return `${from} ~ ${to}`;
-  },
-
-  daterange(property, daterange, thesauris, { showInCard }) {
-    return { label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange), showInCard };
-  },
-
-  multidate(property, timestamps = [], thesauris, { showInCard }) {
-    const value = timestamps.map(timestamp => ({ timestamp, value: moment.utc(timestamp, 'X').format('ll') }));
-    return { label: property.get('label'), name: property.get('name'), value, showInCard };
-  },
-
-  multidaterange(property, dateranges = [], thesauris, { showInCard }) {
-    const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
-    return { label: property.get('label'), name: property.get('name'), value, showInCard };
-  },
-
-  multimedia(property, value, thesauris, showInCard, type) {
-    return {
-      type,
-      label: property.get('label'),
-      name: property.get('name'),
-      style: property.get('style') || 'contain',
-      noLabel: Boolean(property.get('noLabel')),
-      value,
-      showInCard
-    };
-  },
-
-  image(property, value, thesauris, showInCard) {
-    return this.multimedia(property, value, thesauris, showInCard, 'image');
-  },
-
-  media(property, value, thesauris, showInCard) {
-    return this.multimedia(property, value, thesauris, showInCard, 'media');
-  },
-
-  geolocation(property, value, thesauris, { showInCard, onlyForCards }) {
-    const markers = [];
-    let _value;
-    if (value.lat && value.lon) {
-      _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
-      markers.push({ latitude: value.lat, longitude: value.lon });
-    }
-    if (!onlyForCards) {
-      _value = <Map latitude={value.lat} height={370} longitude={value.lon} markers={markers}/>;
-    }
-
-    return { label: property.get('label'), name: property.get('name'), value: _value, showInCard };
   },
 
   getSelectOptions(option, thesauri) {
@@ -162,19 +109,75 @@ export default {
     return { value, url, icon };
   },
 
-  select(property, thesauriValue, thesauris, { showInCard }) {
+  multimedia(property, value, type) {
+    return {
+      type,
+      label: property.get('label'),
+      name: property.get('name'),
+      style: property.get('style') || 'contain',
+      noLabel: Boolean(property.get('noLabel')),
+      value,
+    };
+  },
+
+  date(property, timestamp) {
+    const value = moment.utc(timestamp, 'X').format('ll');
+    return { label: property.get('label'), name: property.get('name'), value, timestamp };
+  },
+
+  daterange(property, daterange) {
+    return { label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange) };
+  },
+
+  multidate(property, timestamps = []) {
+    const value = timestamps.map(timestamp => ({ timestamp, value: moment.utc(timestamp, 'X').format('ll') }));
+    return { label: property.get('label'), name: property.get('name'), value };
+  },
+
+  multidaterange(property, dateranges = []) {
+    const value = dateranges.map(range => ({ value: this.formatDateRange(range) }));
+    return { label: property.get('label'), name: property.get('name'), value };
+  },
+
+  image(property, value) {
+    return this.multimedia(property, value, 'image');
+  },
+
+  preview(property, value, thesauris, { doc }) {
+    return this.multimedia(property, `/api/attachment/${doc._id}-01.jpg`, 'image');
+  },
+
+  media(property, value) {
+    return this.multimedia(property, value, 'media');
+  },
+
+  geolocation(property, value, thesauris, { onlyForCards }) {
+    const markers = [];
+    let _value;
+    if (value.lat && value.lon) {
+      _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
+      markers.push({ latitude: value.lat, longitude: value.lon });
+    }
+    if (!onlyForCards) {
+      _value = <Map latitude={value.lat} height={370} longitude={value.lon} markers={markers}/>;
+    }
+
+    return { label: property.get('label'), name: property.get('name'), value: _value };
+  },
+
+  select(property, thesauriValue, thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
     const { value, url, icon } = this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri);
-    return { label: property.get('label'), name: property.get('name'), value, icon, url, showInCard };
+    return { label: property.get('label'), name: property.get('name'), value, icon, url };
   },
 
-  multiselect(property, thesauriValues, thesauris, { showInCard }) {
+  multiselect(property, thesauriValues, thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
     const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
-    return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
+    return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  relationship(property, thesauriValues, thesauris, { showInCard }) {
+  relationship(property, thesauriValues, thesauris) {
     const allEntitiesThesauriValues = thesauris
     .filter(_thesauri => _thesauri.get('type') === 'template')
     .reduce((result, _thesauri) => {
@@ -187,19 +190,16 @@ export default {
 
     const sortedValues = advancedSort(allEntitiesThesauriValues, { property: 'value' });
 
-    return { label: property.get('label'), name: property.get('name'), value: sortedValues, showInCard };
+    return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  getThesauriValues(thesauriValues, thesauri) {
-    return advancedSort(
-      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)).filter(v => v.value),
-      { property: 'value' }
-    );
+  markdown(property, value, thesauris, { type }) {
+    return { label: property.get('label'), name: property.get('name'), value, type: type || 'markdown' };
   },
 
-  nested(property, rows, thesauris, { showInCard }) {
+  nested(property, rows, thesauris) {
     if (!rows[0]) {
-      return { label: property.get('label'), name: property.get('name'), value: '', showInCard };
+      return { label: property.get('label'), name: property.get('name'), value: '' };
     }
 
     const { locale } = store.getState();
@@ -209,12 +209,14 @@ export default {
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
     result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
 
-    // return this.markdown(property, result, thesauris,  showInCard);
-    return this.markdown(property, result, thesauris, { showInCard });
+    return this.markdown(property, result, thesauris, { type: 'markdown' });
   },
 
-  markdown(property, value, thesauris, { showInCard }) {
-    return { label: property.get('label'), name: property.get('name'), value, showInCard };
+  getThesauriValues(thesauriValues, thesauri) {
+    return advancedSort(
+      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)).filter(v => v.value),
+      { property: 'value' }
+    );
   },
 
   prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
@@ -247,10 +249,16 @@ export default {
 
     const type = property.get('type');
 
-    if (this[type] && value) {
+    if (this[type] && (value || type === 'preview')) {
+      // console.log('En transform:', doc);
+      // console.log('type:', type);
+      // console.log('value:', value);
+      // console.log('property.toJS():', property.toJS());
+      // console.log('----------------------');
       return Object.assign(
-        this[type](property, value, thesauris, { ...options, showInCard }),
-        { translateContext: template.get('_id'), ...property.toJS(), type: type === 'nested' ? 'markdown' : type }
+        {},
+        { translateContext: template.get('_id'), ...property.toJS() },
+        this[type](property, value, thesauris, { ...options, doc })
       );
     }
 
