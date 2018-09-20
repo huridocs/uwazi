@@ -1,5 +1,4 @@
 import { spawn } from 'child-process-promise';
-
 import EventEmitter from 'events';
 import path from 'path';
 
@@ -26,6 +25,14 @@ export default class PDF extends EventEmitter {
       fullText: pages.reduce((memo, page, index) => ({ ...memo, [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`) }), {}),
       totalPages: pages.length
     };
+  }
+
+  async createThumbnail(documentId) {
+    return spawn(
+      'pdftoppm',
+      ['-f', '1', '-l', '1', '-scale-to', '320', '-jpeg', this.filepath, path.join(path.dirname(this.filepath), documentId)],
+      { capture: ['stdout', 'stderr'] }
+    );
   }
 
   convert() {

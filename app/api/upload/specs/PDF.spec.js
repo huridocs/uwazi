@@ -1,14 +1,16 @@
+import path from 'path';
+import fs from 'fs';
 import PDFObject from '../PDF.js';
 
 describe('PDF', () => {
   let pdf;
+  const filepath = `${__dirname}/12345.test.pdf`;
+
+  beforeEach(() => {
+    pdf = new PDFObject(filepath);
+  });
 
   describe('convert', () => {
-    const filepath = `${__dirname}/12345.test.pdf`;
-    beforeEach(() => {
-      pdf = new PDFObject(filepath);
-    });
-
     it('should extract text indexed per page, with apended page in every word for elastic search purposes', async () => {
       const conversion = await pdf.convert();
       const pages = conversion.fullText;
@@ -21,6 +23,41 @@ describe('PDF', () => {
     it('should return the total number of pages', async () => {
       const conversion = await pdf.convert();
       expect(conversion.totalPages).toBe(11);
+    });
+  });
+
+  describe('createThumbnail', () => {
+    const thumbnailName = `${__dirname}/documentId-01.jpg`;
+
+    const deleteThumbnail = (done) => {
+      fs.stat(path.resolve(thumbnailName), (err) => {
+        if (err) { return done(); }
+        fs.unlinkSync(thumbnailName);
+        return done();
+      });
+    };
+
+    beforeEach((done) => {
+      deleteThumbnail(done);
+    });
+
+    afterEach((done) => {
+      deleteThumbnail(done);
+    });
+
+    it('should send a spawn process to create image (implementation test)', async () => {
+      const thumbnailResponse = await pdf.createThumbnail('documentId');
+      expect(thumbnailResponse.childProcess.spawnfile).toBe('pdftoppm');
+      expect(thumbnailResponse.childProcess.spawnargs).toEqual([
+        'pdftoppm',
+        '-f', '1',
+        '-l', '1',
+        '-scale-to', '320',
+        '-jpeg',
+        filepath,
+        `${__dirname}/documentId`
+      ]);
+      expect(fs.existsSync(thumbnailName)).toBe(true);
     });
   });
 });
