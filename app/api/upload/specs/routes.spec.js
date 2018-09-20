@@ -1,4 +1,6 @@
 /* eslint-disable max-nested-callbacks */
+import fs from 'fs';
+import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents';
@@ -6,7 +8,7 @@ import entities from 'api/entities';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
 
-import fixtures, { entityId } from './fixtures.js';
+import fixtures, { entityId, entityEnId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
@@ -18,28 +20,48 @@ describe('upload routes', () => {
   let file;
   let iosocket;
 
-  beforeEach((done) => {
-    spyOn(search, 'delete').and.returnValue(Promise.resolve());
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
-    iosocket = jasmine.createSpyObj('socket', ['emit']);
-    const io = { getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }) };
-    routes = instrumentRoutes(uploadRoutes);
-    file = { fieldname: 'file',
-            originalname: 'gadgets-01.pdf',
-            encoding: '7bit',
-            mimetype: 'application/octet-stream',
-            destination: `${__dirname}/uploads/`,
-            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-            path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
-            size: 171411271 };
-    req = { language: 'es', user: 'admin', headers: {}, body: { document: 'id' }, files: [file], io };
+  const deleteThumbnail = thumbnailId => new Promise((resolve) => {
+    const thumbnail = `${__dirname}/uploads/${thumbnailId}.jpg`;
+    fs.stat(path.resolve(thumbnail), (err) => {
+      if (err) { return resolve(); }
+      fs.unlinkSync(thumbnail);
+      return resolve();
+    });
+  });
 
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
+  const deleteThumbnails = () => deleteThumbnail(entityId)
+  .then(() => deleteThumbnail(entityEnId));
+
+  beforeEach((done) => {
+    deleteThumbnails()
+    .then(() => {
+      spyOn(search, 'delete').and.returnValue(Promise.resolve());
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+      iosocket = jasmine.createSpyObj('socket', ['emit']);
+      const io = { getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }) };
+      routes = instrumentRoutes(uploadRoutes);
+      file = {
+        fieldname: 'file',
+        originalname: 'gadgets-01.pdf',
+        encoding: '7bit',
+        mimetype: 'application/octet-stream',
+        destination: `${__dirname}/uploads/`,
+        filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+        path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
+        size: 171411271
+      };
+      req = { language: 'es', user: 'admin', headers: {}, body: { document: 'id' }, files: [file], io };
+
+      db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+      spyOn(errorLog, 'error'); //just to avoid annoying console output
+    });
   });
 
   afterAll((done) => {
-    db.disconnect().then(done);
+    deleteThumbnails()
+    .then(() => {
+      db.disconnect().then(done);
+    });
   });
 
   describe('POST/upload', () => {
@@ -68,6 +90,7 @@ describe('upload routes', () => {
           .catch(catchErrors(done));
         }
       });
+
       routes.post('/api/upload', req)
       .catch(catchErrors(done));
     });
