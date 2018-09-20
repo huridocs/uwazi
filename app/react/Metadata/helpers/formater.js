@@ -144,7 +144,7 @@ export default {
   },
 
   preview(property, value, thesauris, { doc }) {
-    return this.multimedia(property, `/api/attachment/${doc._id}-01.jpg`, 'image');
+    return this.multimedia(property, `/api/attachment/${doc._id}.jpg`, 'image');
   },
 
   media(property, value) {

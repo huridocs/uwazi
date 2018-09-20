@@ -118,14 +118,14 @@ describe('metadata formater', () => {
       assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);
     });
 
-    fit('should process multimedia types', () => {
+    it('should process multimedia types', () => {
       expect(image.value).toBe('imageURL');
       expect(image.style).toBe('cover');
       expect(image.noLabel).toBe(true);
       expect(image.showInCard).toBe(true);
 
       expect(preview.type).toBe('image');
-      expect(preview.value).toBe('/api/attachment/languageSpecificId-01.jpg');
+      expect(preview.value).toBe('/api/attachment/languageSpecificId.jpg');
       expect(preview.style).toBe('contain');
       expect(preview.noLabel).toBe(false);
       expect(preview.showInCard).toBe(true);
@@ -175,7 +175,7 @@ describe('metadata formater', () => {
 
     it('should process multimedia type', () => {
       assessBasicProperties(image, ['Image', 'image', 'templateID', 'imageURL']);
-      assessBasicProperties(preview, ['PDFPreview', 'image', 'templateID', 'filename_preivew.png']);
+      assessBasicProperties(preview, ['PDFPreview', 'preview', 'templateID', '/api/attachment/languageSpecificId.jpg']);
       assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
     });
 
