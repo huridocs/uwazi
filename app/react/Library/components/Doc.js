@@ -58,22 +58,14 @@ export class Doc extends Component {
   render() {
     const { className, additionalText } = this.props;
     const doc = this.props.doc.toJS();
-    const { sharedId, type, template, processed } = doc;
-    const isEntity = type === 'entity';
+    const { sharedId, type, processed } = doc;
 
     let itemConnections = null;
     if (doc.connections && doc.connections.length) {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = (<div>
-      <ViewDocButton type={type} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/>
-      {(processed || isEntity) && !doc.published && template ?
-        <button className="btn btn-success btn-xs" onClick={this.publish.bind(this)}>
-          <Icon icon="paper-plane" /> { t('System', 'Publish') }
-        </button> : false
-                      }
-                     </div>);
+    const buttons = (<div><ViewDocButton type={type} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/></div>);
 
     return (<Item
       onClick={this.onClick.bind(this)}
