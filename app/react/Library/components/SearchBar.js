@@ -66,10 +66,6 @@ export class SearchBar extends Component {
         <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
           <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
             <Field model=".searchTerm" updateOn="submit">
-              <Icon
-                icon="search"
-                onClick={this.submitSearch.bind(this)}
-              />
               <input
                 type="text"
                 placeholder={t('System', 'Search', null, false)}
@@ -78,8 +74,15 @@ export class SearchBar extends Component {
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
-              <Icon icon="times" onClick={this.resetSearch.bind(this)} />
+              <Icon
+                icon="times"
+                onClick={this.resetSearch.bind(this)}
+              />
             </Field>
+            <Icon
+              icon="search"
+              onClick={this.submitSearch.bind(this)}
+            />
           </div>
           <div
             onMouseOver={this.mouseEnter.bind(this)}
