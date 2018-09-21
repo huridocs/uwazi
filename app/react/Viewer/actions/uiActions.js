@@ -54,20 +54,36 @@ export function goToActive(value = true) {
   };
 }
 
-export function highlightSnippets(snippets, pagesBeingRendered = []) {
-  const highlights = snippets.get('fullText')
-  .filter(s => pagesBeingRendered.includes(s.get('page')))
-  .map(snippet => snippet.get('text')
+export function highlightSnippet(snippet) {
+  Marker.init('.document-viewer');
+  Marker.unmark();
+  const page = snippet.get('page');
+  Marker.init(`#page-${page}`);
+  const text = snippet.get('text');
+  if (!text) {
+    return;
+  }
+  const matches = text.match(/<b>(.*?)<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
+  const highlight = text
   .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
   .replace(/<[^>]*>/g, '')
   .replace(/\s+/g, '\\s*')
-  .replace(/\n/g, '\\s*'))
-  .filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+  .replace(/\n/g, '\\s*');
 
-  Marker.unmark();
-  highlights.forEach((highlightRegExp) => {
-    const regexp = new RegExp(highlightRegExp);
-    Marker.markRegExp(regexp, { separateWordSearch: false, acrossElements: true });
+  const regexp = new RegExp(highlight);
+  const scrollToMark = () => {
+    scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
+  };
+  const markSearchTerm = () => {
+    Marker.init('mark');
+    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: true });
+    scrollToMark();
+  };
+
+  Marker.markRegExp(regexp, {
+    separateWordSearch: false,
+    acrossElements: true,
+    done: markSearchTerm
   });
 }
 
@@ -97,6 +113,13 @@ export function scrollTo(reference, docInfo, element = 'a') {
   }
 
   scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 100 });
+}
+
+export function selectSnippet(page, snippet) {
+  scrollToPage(page);
+  return function (dispatch) {
+    dispatch({ type: types.SELECT_SNIPPET, snippet });
+  };
 }
 
 export function activateReference(reference, docInfo, tab) {

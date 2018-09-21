@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import { t, I18NLink } from 'app/I18N';
+import { t } from 'app/I18N';
 import UploadEntityStatus from 'app/Library/components/UploadEntityStatus';
+import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';
 
 import { Item } from 'app/Layout';
@@ -57,22 +58,14 @@ export class Doc extends Component {
   render() {
     const { className, additionalText } = this.props;
     const doc = this.props.doc.toJS();
-    const { sharedId, type } = doc;
-    const isEntity = type === 'entity';
-    const documentViewUrl = `/${type}/${sharedId}`;
+    const { sharedId, type, processed } = doc;
 
     let itemConnections = null;
     if (doc.connections && doc.connections.length) {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = (<div>
-      {doc.processed || isEntity ?
-        <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={e => e.stopPropagation()}>
-          <Icon icon="angle-right" /> { t('System', 'View') }
-        </I18NLink> : false
-                      }
-                     </div>);
+    const buttons = (<div><ViewDocButton type={type} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/></div>);
 
     return (<Item
       onClick={this.onClick.bind(this)}
@@ -99,7 +92,8 @@ Doc.propTypes = {
   onSnippetClick: PropTypes.func,
   onClick: PropTypes.func,
   className: PropTypes.string,
-  additionalText: PropTypes.string
+  additionalText: PropTypes.string,
+  storeKey: PropTypes.string,
 };
 
 Doc.contextTypes = {

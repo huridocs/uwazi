@@ -14,7 +14,6 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
-      highlightSnippets: jasmine.createSpy('highlightSnippets'),
       PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
@@ -235,14 +234,6 @@ describe('Document', () => {
       it('should highlight the reference', () => {
         instance.componentDidUpdate();
         expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
-      });
-
-      describe('when there is a searchTerm', () => {
-        it('should highlightSnippets', () => {
-          instance.text.charRange = { pages: 'pages' };
-          instance.componentDidUpdate();
-          expect(props.highlightSnippets).toHaveBeenCalledWith(props.snippets, 'pages');
-        });
       });
     });
   });
