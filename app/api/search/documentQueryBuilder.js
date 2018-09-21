@@ -98,7 +98,8 @@ export default function () {
           order: 'score',
           pre_tags: ['<b>'],
           post_tags: ['</b>'],
-          fields: fields.map(field => ({ [field]: {} }))
+          encoder: 'html',
+          fields: fields.map(field => ({ [field]: {} })),
         };
       }
 
@@ -113,6 +114,7 @@ export default function () {
                 order: 'score',
                 pre_tags: ['<b>'],
                 post_tags: ['</b>'],
+                encoder: 'html',
                 fields: {
                   'fullText_*': {
                     number_of_fragments,

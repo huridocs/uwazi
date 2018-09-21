@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { t, I18NLink } from 'app/I18N';
+import SafeHTML from 'app/utils/SafeHTML';
 
 function getFieldLabel(field, template) {
   if (field === 'title') {
@@ -28,7 +29,7 @@ export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template
     </li>
     {fieldSnippets.get('texts').map((snippet, index) => (
       <li key={index} className="snippet-list-item metadata-snippet">
-        <span dangerouslySetInnerHTML={{ __html: snippet }} />
+        <span><SafeHTML>{snippet}</SafeHTML></span>
       </li>
     ))}
   </React.Fragment>
@@ -62,7 +63,7 @@ export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, docume
         >
           {snippet.get('page')}
         </I18NLink>
-        <span dangerouslySetInnerHTML={{ __html: snippet.get('text') }} />
+        <span><SafeHTML>{snippet.get('text')}</SafeHTML></span>
       </li>
     ))}
   </React.Fragment>

@@ -150,20 +150,20 @@ describe('uiReducer', () => {
       changedState = uiReducer(changedState, { type: types.ZOOM_IN });
       expect(changedState.get('zoomLevel')).toBe(2);
       changedState = uiReducer(changedState.set('zoomLevel', 4), { type: types.ZOOM_IN });
-      expect(changedState.get('zoomLevel')).toBe(5);
-      changedState = uiReducer(changedState, { type: types.ZOOM_IN });
-      expect(changedState.get('zoomLevel')).toBe(5);
-      changedState = uiReducer(changedState, { type: types.ZOOM_OUT });
-      expect(changedState.get('zoomLevel')).toBe(4);
-      changedState = uiReducer(changedState, { type: types.ZOOM_OUT });
       expect(changedState.get('zoomLevel')).toBe(3);
+      changedState = uiReducer(changedState, { type: types.ZOOM_IN });
+      expect(changedState.get('zoomLevel')).toBe(3);
+      changedState = uiReducer(changedState, { type: types.ZOOM_OUT });
+      expect(changedState.get('zoomLevel')).toBe(2);
+      changedState = uiReducer(changedState, { type: types.ZOOM_OUT });
+      expect(changedState.get('zoomLevel')).toBe(1);
 
       changedState = uiReducer(initialState, { type: types.ZOOM_OUT });
       expect(changedState.get('zoomLevel')).toBe(-1);
       changedState = uiReducer(changedState.set('zoomLevel', -4), { type: types.ZOOM_OUT });
-      expect(changedState.get('zoomLevel')).toBe(-5);
+      expect(changedState.get('zoomLevel')).toBe(-3);
       changedState = uiReducer(changedState, { type: types.ZOOM_OUT });
-      expect(changedState.get('zoomLevel')).toBe(-5);
+      expect(changedState.get('zoomLevel')).toBe(-3);
     });
   });
 });
