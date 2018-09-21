@@ -49,21 +49,21 @@ const handleError = (e, endpoint) => {
 export default {
   get: (url, data) => {
     loadingBar.start();
-    return request.get(API_URL + url, data, { 'Content-language': locale, Cookie: cookie })
+    return request.get(API_URL + url, data, { 'Content-language': locale, Cookie: cookie, 'X-Requested-With': 'XMLHttpRequest' })
     .then(doneLoading)
     .catch(e => handleError(e, { url, method: 'GET' }));
   },
 
   post: (url, data) => {
     loadingBar.start();
-    return request.post(API_URL + url, data, { 'Content-language': locale })
+    return request.post(API_URL + url, data, { 'Content-language': locale, 'X-Requested-With': 'XMLHttpRequest' })
     .then(doneLoading)
     .catch(e => handleError(e, { url, method: 'POST' }));
   },
 
   delete: (url, data) => {
     loadingBar.start();
-    return request.delete(API_URL + url, data, { 'Content-language': locale })
+    return request.delete(API_URL + url, data, { 'Content-language': locale, 'X-Requested-With': 'XMLHttpRequest' })
     .then(doneLoading)
     .catch(e => handleError(e, { url, method: 'DELETE' }));
   },

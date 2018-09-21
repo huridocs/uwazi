@@ -6,7 +6,7 @@ describe('authMiddleware', () => {
   let next;
 
   beforeEach(() => {
-    req = {};
+    req = { get: () => 'XMLHttpRequest' };
     res = {
       status: jasmine.createSpy('status'),
       json: jasmine.createSpy('json')
@@ -19,23 +19,35 @@ describe('authMiddleware', () => {
     middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({error: 'Unauthorized'});
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
     expect(next).not.toHaveBeenCalled();
   });
 
   it('should return an error when the user role is not in the allowed roles', () => {
     const middleWare = authMiddleware(['root']);
-    req.user = {role: 'newb'};
+    req.user = { role: 'newb' };
     middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({error: 'Unauthorized'});
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return an error when logged in but no X-Requested-With header', () => {
+    req = { get: () => '' };
+
+    const middleWare = authMiddleware(['editor']);
+    req.user = { role: 'editor' };
+    middleWare(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
     expect(next).not.toHaveBeenCalled();
   });
 
   it('should call next when the user role is in the allowed roles', () => {
     const middleWare = authMiddleware(['editor']);
-    req.user = {role: 'editor'};
+    req.user = { role: 'editor' };
     middleWare(req, res, next);
 
     expect(res.status).not.toHaveBeenCalled();
@@ -45,7 +57,7 @@ describe('authMiddleware', () => {
 
   it('should have admin as the default roles list', () => {
     const middleWare = authMiddleware();
-    req.user = {role: 'admin'};
+    req.user = { role: 'admin' };
     middleWare(req, res, next);
 
     expect(res.status).not.toHaveBeenCalled();

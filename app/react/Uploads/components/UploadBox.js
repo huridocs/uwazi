@@ -1,17 +1,16 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
-import {wrapDispatch} from 'app/Multireducer';
-import { Icon } from 'UI';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import {uploadDocument, createDocument, documentProcessed, documentProcessError} from 'app/Uploads/actions/uploadsActions';
-import {unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import { Icon } from 'UI';
+import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { uploadDocument, createDocument, documentProcessed, documentProcessError } from 'app/Uploads/actions/uploadsActions';
+import { wrapDispatch } from 'app/Multireducer';
 import socket from 'app/socket';
 
 export class UploadBox extends Component {
-
   constructor(props) {
     super(props);
     socket.on('documentProcessed', (sharedId) => {
@@ -25,7 +24,7 @@ export class UploadBox extends Component {
 
   onDrop(files) {
     files.forEach((file) => {
-      let doc = {title: this.extractTitle(file)};
+      const doc = { title: this.extractTitle(file) };
       this.props.createDocument(doc)
       .then((newDoc) => {
         this.props.uploadDocument(newDoc.sharedId, file);
@@ -35,7 +34,7 @@ export class UploadBox extends Component {
   }
 
   extractTitle(file) {
-    let title = file.name
+    const title = file.name
     .replace(/\.[^/.]+$/, '')
     .replace(/_/g, ' ')
     .replace(/-/g, ' ')
@@ -46,8 +45,12 @@ export class UploadBox extends Component {
 
   render() {
     return (
-      <Dropzone className="upload-box"
-                style={{}} onDrop={this.onDrop.bind(this)} accept="application/pdf">
+      <Dropzone
+        className="upload-box"
+        style={{}}
+        onDrop={this.onDrop.bind(this)}
+        accept="application/pdf"
+      >
         <div className="upload-box_wrapper">
           <Icon icon="upload" /> <a className="upload-box_link">Browse your PDFs to upload</a>
           <span> or drop your files here.</span>
@@ -70,7 +73,7 @@ UploadBox.propTypes = {
   documents: PropTypes.object
 };
 
-export function mapStateToProps({uploads}) {
+export function mapStateToProps({ uploads }) {
   return {
     documents: uploads.documents
   };
