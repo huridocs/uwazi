@@ -6,7 +6,7 @@ exports[`SnippetList should properly render title snippets with Title label as h
     className="snippet-list-item-header metadata-snippet-header"
   >
     <Connect(I18NLink)
-      to="/document/sharedId"
+      to="/document/sharedId?searchTerm=snippet"
     >
       Summary
     </Connect(I18NLink)>
@@ -40,7 +40,7 @@ exports[`SnippetList should render all metadata snippets with the field label as
     className="snippet-list-item-header metadata-snippet-header"
   >
     <Connect(I18NLink)
-      to="/document/sharedId"
+      to="/document/sharedId?searchTerm=snippet"
     >
       Summary
     </Connect(I18NLink)>

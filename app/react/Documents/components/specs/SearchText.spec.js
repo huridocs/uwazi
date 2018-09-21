@@ -23,6 +23,7 @@ describe('SearchText', () => {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       storeKey: 'storeKey',
       searchSnippets: jasmine.createSpy('searchSnippets').and.returnValue(Promise.resolve([{ page: 2 }])),
+      selectSnippet: jest.fn(),
       snippets: Immutable.fromJS({
         metadata: [
           {

@@ -37,7 +37,8 @@ export class LeftRelationship extends Component {
       <div key="toggelRemoveLeftRelationship" className="removeHub">
         <button
           onClick={this.toggelRemoveLeftRelationship}
-          className="relationships-icon">
+          className="relationships-icon"
+        >
           <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
         </button>
       </div>
@@ -83,7 +84,10 @@ export class LeftRelationship extends Component {
   }
 
   render() {
-    const { hub, index } = this.props;
+    const { hub, index, parentEntity } = this.props;
+    if (!parentEntity.get('sharedId')) {
+      return false;
+    }
     return (
       <Fragment>
         {this.renderTrashButton(hub, index)}

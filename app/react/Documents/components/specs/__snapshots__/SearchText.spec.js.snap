@@ -42,8 +42,8 @@ exports[`SearchText should render SnippetList and pass down same props to it 1`]
     }
   }
   documentViewUrl="/document/sharedId"
-  scrollToPage={[Function]}
   searchTerm=""
+  selectSnippet={[MockFunction]}
   snippets={
     Immutable.Map {
       "metadata": Immutable.List [
