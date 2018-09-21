@@ -29,44 +29,36 @@ const handleError = (e, endpoint) => {
 
   if (error.status === 401) {
     browserHistory.replace('/login');
-    return Promise.reject(error);
   }
 
   if (error.status === 404) {
     browserHistory.replace('/404');
-    return Promise.reject(error);
   }
 
   if (error.status === 500) {
     store.dispatch(notify('An error has occurred', 'danger'));
-    return Promise.reject(error);
   }
 
-  store.dispatch(notify(error.json.error, 'danger'));
+  if (![500, 404, 401].includes(error.status)) {
+    store.dispatch(notify(error.json.error, 'danger'));
+  }
+
   return Promise.reject(error);
 };
 
+const _request = (url, data, method) => {
+  loadingBar.start();
+  return request[method](API_URL + url, data, { 'Content-language': locale, Cookie: cookie, 'X-Requested-With': 'XMLHttpRequest' })
+  .then(doneLoading)
+  .catch(e => handleError(e, { url, method }));
+};
+
 export default {
-  get: (url, data) => {
-    loadingBar.start();
-    return request.get(API_URL + url, data, { 'Content-language': locale, Cookie: cookie })
-    .then(doneLoading)
-    .catch(e => handleError(e, { url, method: 'GET' }));
-  },
+  get: (url, data) => _request(url, data, 'get'),
 
-  post: (url, data) => {
-    loadingBar.start();
-    return request.post(API_URL + url, data, { 'Content-language': locale })
-    .then(doneLoading)
-    .catch(e => handleError(e, { url, method: 'POST' }));
-  },
+  post: (url, data) => _request(url, data, 'post'),
 
-  delete: (url, data) => {
-    loadingBar.start();
-    return request.delete(API_URL + url, data, { 'Content-language': locale })
-    .then(doneLoading)
-    .catch(e => handleError(e, { url, method: 'DELETE' }));
-  },
+  delete: (url, data) => _request(url, data, 'delete'),
 
   cookie(c) {
     cookie = c;

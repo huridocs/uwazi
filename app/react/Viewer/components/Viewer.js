@@ -99,7 +99,7 @@ export class Viewer extends Component {
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               {raw || this.state.firstRender ?
                 <pre>{pageText}</pre> :
-                <SourceDocument onPageChange={this.props.onPageChange} onDocumentReady={this.props.onDocumentReady}/>
+                <SourceDocument searchTerm={searchTerm} onPageChange={this.props.onPageChange} onDocumentReady={this.props.onDocumentReady}/>
               }
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>

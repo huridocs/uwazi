@@ -54,24 +54,59 @@ export function goToActive(value = true) {
   };
 }
 
-export function highlightSnippets(snippets, pagesBeingRendered = []) {
-  const highlights = snippets.get('fullText')
-  .filter(s => pagesBeingRendered.includes(s.get('page')))
-  .map(snippet => snippet.get('text')
+export function highlightSnippet(snippet) {
+  Marker.init('.document-viewer');
+  Marker.unmark();
+  const page = snippet.get('page');
+  Marker.init(`#page-${page}`);
+  const text = snippet.get('text');
+  if (!text) {
+    return;
+  }
+
+  const textToMatcherRegExp = _text => _text
   .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
   .replace(/<[^>]*>/g, '')
   .replace(/\s+/g, '\\s*')
-  .replace(/\n/g, '\\s*'))
-  .filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+  .replace(/\n/g, '\\s*');
 
-  Marker.unmark();
-  highlights.forEach((highlightRegExp) => {
-    const regexp = new RegExp(highlightRegExp);
-    Marker.markRegExp(regexp, { separateWordSearch: false, acrossElements: true });
+  const matches = text.match(/<b>(.*?)<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
+  const highlight = textToMatcherRegExp(text);
+
+  const scrollToMark = () => {
+    scroller.to('.document-viewer mark', '.document-viewer', { duration: 50 });
+  };
+  const markSearchTerm = () => {
+    Marker.init('mark');
+    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: true, done: scrollToMark });
+  };
+
+  const tryFuzziMark = (chunkLenght = 20) => {
+    if (!chunkLenght) {
+      return;
+    }
+    const startOfText = textToMatcherRegExp(text.substring(0, chunkLenght));
+    const endOfText = textToMatcherRegExp(text.substring(text.length - chunkLenght - 1, text.length - 1));
+    const fuzziText = `${startOfText}.*?${endOfText}`;
+    const regexp = new RegExp(fuzziText);
+    Marker.markRegExp(regexp, {
+      separateWordSearch: false,
+      acrossElements: true,
+      done: markSearchTerm,
+      noMatch: tryFuzziMark.bind(this, chunkLenght - 5)
+    });
+  };
+
+  const regexp = new RegExp(highlight);
+  Marker.markRegExp(regexp, {
+    separateWordSearch: false,
+    acrossElements: true,
+    done: markSearchTerm,
+    noMatch: tryFuzziMark.bind(this, 20)
   });
 }
 
-export function scrollToPage(page, duration = 100) {
+export function scrollToPage(page, duration = 0) {
   scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1 });
 }
 
@@ -97,6 +132,13 @@ export function scrollTo(reference, docInfo, element = 'a') {
   }
 
   scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 100 });
+}
+
+export function selectSnippet(page, snippet) {
+  scrollToPage(page);
+  return function (dispatch) {
+    dispatch({ type: types.SELECT_SNIPPET, snippet });
+  };
 }
 
 export function activateReference(reference, docInfo, tab) {

@@ -1,10 +1,10 @@
 import React from 'react';
-import {shallow} from 'enzyme';
 
-import {UploadBox} from 'app/Uploads/components/UploadBox';
+import { UploadBox } from 'app/Uploads/components/UploadBox';
+import { shallow } from 'enzyme';
 
 describe('UploadBox', () => {
-  let files = [{name: 'fighting__crime--101.pdf'}, {name: 'file2'}];
+  let files = [{ name: 'fighting__crime--101.pdf' }, { name: 'file2' }];
 
   if (typeof File === 'function') {
     files = [new File([], 'fighting__crime--101.pdf'), new File([], 'fighting__crime--101.pdf')];
@@ -13,17 +13,19 @@ describe('UploadBox', () => {
   let component;
   let instance;
 
-  let documentCreation = new Promise((resolve) => {
-    resolve({sharedId: 'abc1'});
+  const documentCreation = new Promise((resolve) => {
+    resolve({ sharedId: 'abc1' });
   });
 
-  let props = {
+  const props = {
     createDocument: jasmine.createSpy('createDocument').and.returnValue(documentCreation),
     uploadDocument: jasmine.createSpy('uploadDocument'),
-    unselectAllDocuments: jasmine.createSpy('unselectAllDocuments')
+    documentProcessed: jasmine.createSpy('documentProcessed'),
+    documentProcessError: jasmine.createSpy('documentProcessError'),
+    unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
   };
 
-  let render = () => {
+  const render = () => {
     component = shallow(<UploadBox {...props}/>);
     instance = component.instance();
   };
@@ -32,7 +34,7 @@ describe('UploadBox', () => {
     it('should upload all documents passed', (done) => {
       render();
       instance.onDrop(files);
-      expect(props.createDocument).toHaveBeenCalledWith({title: 'Fighting crime 101'});
+      expect(props.createDocument).toHaveBeenCalledWith({ title: 'Fighting crime 101' });
       documentCreation.then(() => {
         expect(props.uploadDocument).toHaveBeenCalledWith('abc1', files[0]);
         expect(props.uploadDocument).toHaveBeenCalledWith('abc1', files[1]);

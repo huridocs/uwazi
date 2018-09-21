@@ -180,6 +180,19 @@ describe('JSONRequest', () => {
   });
 
   describe('delete()', () => {
+    describe('when passing headers', () => {
+      it('should send them', (done) => {
+        request.delete('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
+        .then(() => {
+          const headers = backend.calls().matched[0][1].headers;
+          expect(headers.Cookie).toBe('cookie');
+
+          done();
+        })
+        .catch(done.fail);
+      });
+    });
+
     it('should DELETE to the url and return the response json and the status', (done) => {
       request.delete('http://localhost:3000/api/test')
       .then((response) => {

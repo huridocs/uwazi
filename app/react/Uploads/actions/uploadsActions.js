@@ -38,6 +38,7 @@ export function upload(docId, file, endpoint = 'upload') {
   return dispatch => new Promise((resolve) => {
     superagent.post(APIURL + endpoint)
     .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
     .field('document', docId)
     .attach('file', file, file.name)
     .on('progress', (data) => {

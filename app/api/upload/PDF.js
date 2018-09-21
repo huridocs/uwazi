@@ -1,20 +1,10 @@
 import EventEmitter from 'events';
-import path from 'path';
-import debugLog from 'api/log/debugLog';
 import { spawn } from 'child-process-promise';
-
-const basename = (filepath = '') => {
-  let finalPath = filepath;
-  if (typeof filepath !== 'string') {
-    finalPath = '';
-  }
-  return path.basename(finalPath, path.extname(finalPath));
-};
+import debugLog from 'api/log/debugLog';
 
 export default class PDF extends EventEmitter {
-  constructor(filepath, originalName) {
+  constructor(filepath) {
     super();
-    this.logFile = `${__dirname}/../../../log/${basename(originalName)}.log`;
     this.filepath = filepath;
     this.optimizedPath = filepath;
   }
