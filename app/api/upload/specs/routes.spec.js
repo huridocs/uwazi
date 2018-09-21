@@ -21,16 +21,30 @@ describe('upload routes', () => {
   let iosocket;
 
   const deleteThumbnail = thumbnailId => new Promise((resolve) => {
-    const thumbnail = `${__dirname}/uploads/${thumbnailId}.jpg`;
-    fs.stat(path.resolve(thumbnail), (err) => {
+    const thumbnailURI = `${__dirname}/uploads/${thumbnailId}.jpg`;
+    fs.stat(path.resolve(thumbnailURI), (err) => {
       if (err) { return resolve(); }
-      fs.unlinkSync(thumbnail);
+      fs.unlinkSync(thumbnailURI);
       return resolve();
     });
   });
 
   const deleteThumbnails = () => deleteThumbnail(entityId)
   .then(() => deleteThumbnail(entityEnId));
+
+  const checkThumbnails = () => {
+    const thumbnail1URI = `${__dirname}/uploads/${entityId}.jpg`;
+    const thumbnail2URI = `${__dirname}/uploads/${entityEnId}.jpg`;
+    return new Promise((resolve, reject) => {
+      fs.stat(path.resolve(thumbnail1URI), (err1) => {
+        if (err1) { reject(new Error(`Missing thumbnail: ${thumbnail1URI}`)); }
+        fs.stat(path.resolve(thumbnail2URI), (err2) => {
+          if (err2) { reject(new Error(`Missing thumbnail: ${thumbnail2URI}`)); }
+          resolve();
+        });
+      });
+    });
+  };
 
   beforeEach((done) => {
     deleteThumbnails()
@@ -85,7 +99,8 @@ describe('upload routes', () => {
             expect(docES[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
             expect(docES[0].totalPages).toBe(1);
             expect(docES[0].language).toBe('es');
-            done();
+
+            return checkThumbnails().then(() => { done(); });
           })
           .catch(catchErrors(done));
         }

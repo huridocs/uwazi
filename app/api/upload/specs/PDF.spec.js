@@ -51,7 +51,7 @@ describe('PDF', () => {
       expect(thumbnailResponse.childProcess.spawnargs).toEqual([
         'pdftoppm',
         '-f', '1',
-        '-l', '1',
+        '-singlefile',
         '-scale-to', '320',
         '-jpeg',
         filepath,

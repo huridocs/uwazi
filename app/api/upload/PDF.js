@@ -1,6 +1,5 @@
 import EventEmitter from 'events';
 import path from 'path';
-import fs from 'fs';
 import debugLog from 'api/log/debugLog';
 import { spawn } from 'child-process-promise';
 
@@ -11,18 +10,6 @@ const basename = (filepath = '') => {
   }
   return path.basename(finalPath, path.extname(finalPath));
 };
-
-const renameThumbnail = (dir, documentId) => new Promise((resolve, reject) => {
-  fs.readdir(dir, (readErr, files) => {
-    if (readErr) { reject(readErr); }
-    const searchExpression = new RegExp(`${documentId}-(.*).jpg`, 'g');
-    const numberedFileName = files.find(e => e.match(searchExpression));
-    fs.rename(path.join(dir, numberedFileName), path.join(dir, `${documentId}.jpg`), (renameErr) => {
-      if (renameErr) { reject(renameErr); }
-      resolve();
-    });
-  });
-});
 
 export default class PDF extends EventEmitter {
   constructor(filepath, originalName) {
@@ -42,21 +29,18 @@ export default class PDF extends EventEmitter {
   }
 
   async createThumbnail(documentId) {
-    const dir = path.dirname(this.filepath);
     let response;
     try {
       response = await spawn(
         'pdftoppm',
-        ['-f', '1', '-l', '1', '-scale-to', '320', '-jpeg', this.filepath, path.join(dir, documentId)],
+        ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', this.filepath, path.join(path.dirname(this.filepath), documentId)],
         { capture: ['stdout', 'stderr'] }
       );
     } catch (err) {
       debugLog.debug(`Thumbnail creation error for: ${this.filepath}`);
     }
 
-    return renameThumbnail(dir, documentId)
-    .then(() => response)
-    .catch(err => err);
+    return Promise.resolve(response);
   }
 
   convert() {
