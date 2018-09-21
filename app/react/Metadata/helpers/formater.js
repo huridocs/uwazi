@@ -144,7 +144,8 @@ export default {
   },
 
   preview(property, value, thesauris, { doc }) {
-    return this.multimedia(property, `/api/attachment/${doc._id}.jpg`, 'image');
+    let reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
+    return this.multimedia(property, `/api/attachment/${doc._id}.jpg${reloadHack ? `?r=${reloadHack}` : ''}`, 'image');
   },
 
   media(property, value) {

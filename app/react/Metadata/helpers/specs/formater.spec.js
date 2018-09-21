@@ -125,7 +125,7 @@ describe('metadata formater', () => {
       expect(image.showInCard).toBe(true);
 
       expect(preview.type).toBe('image');
-      expect(preview.value).toBe('/api/attachment/languageSpecificId.jpg');
+      expect(preview.value).toBe('/api/attachment/languageSpecificId.jpg?r=filename.pdf');
       expect(preview.style).toBe('contain');
       expect(preview.noLabel).toBe(false);
       expect(preview.showInCard).toBe(true);
@@ -175,7 +175,7 @@ describe('metadata formater', () => {
 
     it('should process multimedia type', () => {
       assessBasicProperties(image, ['Image', 'image', 'templateID', 'imageURL']);
-      assessBasicProperties(preview, ['PDFPreview', 'preview', 'templateID', '/api/attachment/languageSpecificId.jpg']);
+      assessBasicProperties(preview, ['PDFPreview', 'preview', 'templateID', '/api/attachment/languageSpecificId.jpg?r=filename.pdf']);
       assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
     });
 
