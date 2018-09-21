@@ -242,7 +242,7 @@ describe('Metadata Actions', () => {
       });
 
       it('should request and set viewer states', () => {
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith('sharedId', 'es', { templates: 'immutableTemplates' });
+        expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'sharedId' }, { templates: 'immutableTemplates' });
         expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
         expect(store.getActions()).toContainEqual({ type: 'setViewerState' });
       });
