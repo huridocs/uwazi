@@ -10,9 +10,20 @@ import { uploadDocument, createDocument, documentProcessed, documentProcessError
 import { wrapDispatch } from 'app/Multireducer';
 import socket from 'app/socket';
 
+const extractTitle = (file) => {
+  const title = file.name
+  .replace(/\.[^/.]+$/, '')
+  .replace(/_/g, ' ')
+  .replace(/-/g, ' ')
+  .replace(/ {2}/g, ' ');
+
+  return title.charAt(0).toUpperCase() + title.slice(1);
+};
+
 export class UploadBox extends Component {
   constructor(props) {
     super(props);
+    this.onDrop = this.onDrop.bind(this);
     socket.on('documentProcessed', (sharedId) => {
       this.props.documentProcessed(sharedId);
     });
@@ -24,7 +35,7 @@ export class UploadBox extends Component {
 
   onDrop(files) {
     files.forEach((file) => {
-      const doc = { title: this.extractTitle(file) };
+      const doc = { title: extractTitle(file) };
       this.props.createDocument(doc)
       .then((newDoc) => {
         this.props.uploadDocument(newDoc.sharedId, file);
@@ -33,30 +44,15 @@ export class UploadBox extends Component {
     this.props.unselectAllDocuments();
   }
 
-  extractTitle(file) {
-    const title = file.name
-    .replace(/\.[^/.]+$/, '')
-    .replace(/_/g, ' ')
-    .replace(/-/g, ' ')
-    .replace(/ {2}/g, ' ');
-
-    return title.charAt(0).toUpperCase() + title.slice(1);
-  }
-
   render() {
     return (
-      <Dropzone
-        className="upload-box"
-        style={{}}
-        onDrop={this.onDrop.bind(this)}
-        accept="application/pdf"
-      >
+      <Dropzone className="upload-box" style={{}} onDrop={this.onDrop} accept="application/pdf">
         <div className="upload-box_wrapper">
-          <Icon icon="upload" /> <a className="upload-box_link">Browse your PDFs to upload</a>
+          <Icon icon="upload" /><a href="/" className="upload-box_link">Browse your PDFs to upload</a>
           <span> or drop your files here.</span>
         </div>
         <div className="protip">
-          <Icon icon="lightbulb" /> <b>ProTip!</b>
+          <Icon icon="lightbulb" /><b>ProTip!</b>
           <span>For better performance, upload your documents in batches of 50 or less.</span>
         </div>
       </Dropzone>
@@ -65,18 +61,15 @@ export class UploadBox extends Component {
 }
 
 UploadBox.propTypes = {
-  documentProcessed: PropTypes.func,
-  documentProcessError: PropTypes.func,
-  uploadDocument: PropTypes.func,
-  createDocument: PropTypes.func,
-  unselectAllDocuments: PropTypes.func,
-  documents: PropTypes.object
+  documentProcessed: PropTypes.func.isRequired,
+  documentProcessError: PropTypes.func.isRequired,
+  uploadDocument: PropTypes.func.isRequired,
+  createDocument: PropTypes.func.isRequired,
+  unselectAllDocuments: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps({ uploads }) {
-  return {
-    documents: uploads.documents
-  };
+export function mapStateToProps() {
+  return {};
 }
 
 
