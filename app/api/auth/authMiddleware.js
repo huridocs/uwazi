@@ -1,9 +1,9 @@
 export default function (roles = ['admin']) {
-  return function (req, res, next) {
-    if (req.user && roles.includes(req.user.role)) {
+  return (req, res, next) => {
+    if (req.user && roles.includes(req.user.role) && req.get('X-Requested-With') === 'XMLHttpRequest') {
       return next();
     }
     res.status(401);
-    res.json({error: 'Unauthorized'});
+    return res.json({ error: 'Unauthorized' });
   };
 }

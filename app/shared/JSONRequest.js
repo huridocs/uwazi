@@ -1,8 +1,9 @@
 import 'isomorphic-fetch';
+
 import rison from 'rison';
 
 const attemptRisonDecode = (string) => {
-  const errcb = function (e) {
+  const errcb = (e) => {
     throw Error(`rison decoder error: ${e}`);
   };
 
@@ -92,5 +93,5 @@ export default {
 
   get: (url, data, headers) => _fetch(url, data, 'GET', headers),
 
-  delete: (url, data) => _fetch(url, data, 'DELETE')
+  delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
 };
