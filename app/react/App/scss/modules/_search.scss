@@ -46,7 +46,7 @@
     line-height: $header-height;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 5;
+    z-index: 4;
   }
   .input-group .fa-search {
     right: 20px;
@@ -615,7 +615,7 @@
     color: $c-black;
     background: transparent;
     box-shadow: none !important;
-    
+
     &:hover,
     &:focus {
       border-color: $c-black;
@@ -772,4 +772,3 @@
     // box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
   }
 }
-
