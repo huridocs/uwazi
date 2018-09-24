@@ -61,7 +61,7 @@
 
 mark, .mark {
   color: transparent !important;
-  background-color: transparentize($c-primary, 0.9) !important;
+  background-color: transparentize($c-primary, 0.8) !important;
   padding: 0 !important;
   mark, .mark {
     background-color: transparent !important;
@@ -69,7 +69,7 @@ mark, .mark {
 }
 
 mark.searchTerm {
-  background-color: transparentize(yellow, 0.7) !important;
+  background-color: transparentize(yellow, 0.6) !important;
 
   mark.searchTerm {
     background-color: transparent !important;
