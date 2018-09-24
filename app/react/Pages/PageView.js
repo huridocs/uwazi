@@ -11,8 +11,6 @@ import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
 
-import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
-
 function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
 
@@ -38,7 +36,6 @@ function prepareLists(page) {
 export class PageView extends RouteHandler {
   constructor(props, context) {
     super(props, context);
-    this.context.store.dispatch(unselectAllDocuments())
   }
 
   static requestState({ pageId }) {
