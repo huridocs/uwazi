@@ -63,31 +63,50 @@ export function highlightSnippet(snippet) {
   if (!text) {
     return;
   }
-  const matches = text.match(/<b>(.*?)<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
-  const highlight = text
+
+  const textToMatcherRegExp = _text => _text
   .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
   .replace(/<[^>]*>/g, '')
   .replace(/\s+/g, '\\s*')
   .replace(/\n/g, '\\s*');
 
-  const regexp = new RegExp(highlight);
+  const matches = text.match(/<b>(.*?)<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
+  const highlight = textToMatcherRegExp(text);
+
   const scrollToMark = () => {
-    scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
+    scroller.to('.document-viewer mark', '.document-viewer', { duration: 50 });
   };
   const markSearchTerm = () => {
     Marker.init('mark');
-    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: true });
-    scrollToMark();
+    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: true, done: scrollToMark });
   };
 
+  const tryFuzziMark = (chunkLenght = 20) => {
+    if (!chunkLenght) {
+      return;
+    }
+    const startOfText = textToMatcherRegExp(text.substring(0, chunkLenght));
+    const endOfText = textToMatcherRegExp(text.substring(text.length - chunkLenght - 1, text.length - 1));
+    const fuzziText = `${startOfText}.*?${endOfText}`;
+    const regexp = new RegExp(fuzziText);
+    Marker.markRegExp(regexp, {
+      separateWordSearch: false,
+      acrossElements: true,
+      done: markSearchTerm,
+      noMatch: tryFuzziMark.bind(this, chunkLenght - 5)
+    });
+  };
+
+  const regexp = new RegExp(highlight);
   Marker.markRegExp(regexp, {
     separateWordSearch: false,
     acrossElements: true,
-    done: markSearchTerm
+    done: markSearchTerm,
+    noMatch: tryFuzziMark.bind(this, 20)
   });
 }
 
-export function scrollToPage(page, duration = 100) {
+export function scrollToPage(page, duration = 0) {
   scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1 });
 }
 
