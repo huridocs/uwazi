@@ -66,6 +66,19 @@ describe('DocumentSidePanel', () => {
 
       expect(component.find(SidePanel).props().open).toBe(true);
     });
+    describe('when initialiClosed', () => {
+      it('should not open sidePanel on first render', () => {
+        props.open = true;
+        props.initialiClosed = true;
+
+        render();
+        expect(component.find(SidePanel).props().open).toBe(false);
+
+        component.instance().forceUpdate();
+        component.update();
+        expect(component.find(SidePanel).props().open).toBe(true);
+      });
+    });
   });
 
   describe('connections', () => {

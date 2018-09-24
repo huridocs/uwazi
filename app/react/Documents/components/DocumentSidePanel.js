@@ -25,6 +25,7 @@ export class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
+    this.firstRender = true;
   }
 
   componentWillReceiveProps(newProps) {
@@ -92,8 +93,14 @@ export class DocumentSidePanel extends Component {
       });
       return summaryData;
     }, { totalConnections: 0 });
+
+    let open = this.props.open;
+    if (this.props.initialiClosed && this.firstRender) {
+      open = false;
+      this.firstRender = false;
+    }
     return (
-      <SidePanel open={this.props.open} className="metadata-sidepanel">
+      <SidePanel open={open} className="metadata-sidepanel">
         <div className="sidepanel-header">
           <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
             <Icon icon="times" />
@@ -279,6 +286,7 @@ DocumentSidePanel.propTypes = {
   searchTerm: PropTypes.string,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
+  initialiClosed: PropTypes.bool,
   tocBeingEdited: PropTypes.bool,
   showTab: PropTypes.func.isRequired,
   tab: PropTypes.string,
