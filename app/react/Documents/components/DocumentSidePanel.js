@@ -94,7 +94,7 @@ export class DocumentSidePanel extends Component {
       return summaryData;
     }, { totalConnections: 0 });
 
-    let open = this.props.open;
+    let { open } = this.props;
     if (this.props.initialiClosed && this.firstRender) {
       open = false;
       this.firstRender = false;
