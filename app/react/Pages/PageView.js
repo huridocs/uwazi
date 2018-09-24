@@ -34,10 +34,6 @@ function prepareLists(page) {
 }
 
 export class PageView extends RouteHandler {
-  constructor(props, context) {
-    super(props, context);
-  }
-
   static requestState({ pageId }) {
     return PagesAPI.get(pageId)
     .then((page) => {
