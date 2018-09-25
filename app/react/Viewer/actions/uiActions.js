@@ -57,8 +57,6 @@ export function goToActive(value = true) {
 export function highlightSnippet(snippet) {
   Marker.init('.document-viewer');
   Marker.unmark();
-  const page = snippet.get('page');
-  Marker.init(`#page-${page}`);
   const text = snippet.get('text');
   if (!text) {
     return;
@@ -87,7 +85,7 @@ export function highlightSnippet(snippet) {
     }
     const startOfText = textToMatcherRegExp(text.substring(0, chunkLenght));
     const endOfText = textToMatcherRegExp(text.substring(text.length - chunkLenght - 1, text.length - 1));
-    const fuzziText = `${startOfText}.*?${endOfText}`;
+    const fuzziText = `${startOfText}.{1,200}${endOfText}`;
     const regexp = new RegExp(fuzziText);
     Marker.markRegExp(regexp, {
       separateWordSearch: false,
