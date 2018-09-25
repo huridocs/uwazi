@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import errorLog from 'api/log/errorLog';
 import PDFObject from '../PDF.js';
 
 describe('PDF', () => {
@@ -58,6 +59,14 @@ describe('PDF', () => {
         `${__dirname}/documentId`
       ]);
       expect(fs.existsSync(thumbnailName)).toBe(true);
+    });
+
+    it('should correctly log errors, but continue with the flow', async () => {
+      spyOn(errorLog, 'error');
+      pdf = new PDFObject('/missingpath/pdf.pdf');
+      const thumbnailResponse = await pdf.createThumbnail('documentId');
+      expect(thumbnailResponse instanceof Error).toBe(true);
+      expect(errorLog.error).toHaveBeenCalledWith('Thumbnail creation error for: /missingpath/pdf.pdf');
     });
   });
 });

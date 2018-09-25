@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
+import path from 'path';
 import { spawn } from 'child-process-promise';
-import debugLog from 'api/log/debugLog';
+import errorLog from 'api/log/errorLog';
 
 export default class PDF extends EventEmitter {
   constructor(filepath) {
@@ -27,7 +28,8 @@ export default class PDF extends EventEmitter {
         { capture: ['stdout', 'stderr'] }
       );
     } catch (err) {
-      debugLog.debug(`Thumbnail creation error for: ${this.filepath}`);
+      response = err;
+      errorLog.error(`Thumbnail creation error for: ${this.filepath}`);
     }
 
     return Promise.resolve(response);
