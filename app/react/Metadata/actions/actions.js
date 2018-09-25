@@ -6,6 +6,7 @@ import { api as entitiesAPI } from 'app/Entities';
 import { notify } from 'app/Notifications';
 import { advancedSort } from 'app/utils/advancedSort';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
 import * as types from './actionTypes';
 
 export function resetReduxForm(form) {
@@ -101,6 +102,9 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file, __reducerKey });
       requestViewerState({ documentId: docSharedId }, { templates: getState().templates })
       .then((state) => {
+        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
+        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
         dispatch(setViewerState(state));
       });
     })
