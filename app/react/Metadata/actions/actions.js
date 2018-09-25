@@ -91,6 +91,7 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
     superagent.post(`${APIURL}reupload`)
     .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
     .field('document', docId)
     .attach('file', file, file.name)
     .on('progress', (data) => {

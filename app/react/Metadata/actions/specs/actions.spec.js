@@ -1,16 +1,15 @@
-import * as actions from '../actions';
 import * as reactReduxForm from 'react-redux-form';
-import { actions as formActions } from 'react-redux-form';
+import Immutable from 'immutable';
 import superagent from 'superagent';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { APIURL } from 'app/config.js';
-import * as types from '../actionTypes';
 import * as routeActions from 'app/Viewer/actions/routeActions';
 import { mockID } from 'shared/uniqueID.js';
 import { api } from 'app/Entities';
 
-import Immutable from 'immutable';
+import * as types from '../actionTypes';
+import * as actions from '../actions';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -18,7 +17,7 @@ const mockStore = configureMockStore(middlewares);
 describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
     it('should load the document with default metadata properties if not present', () => {
-      spyOn(formActions, 'load').and.returnValue('formload');
+      spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
       const dispatch = jasmine.createSpy('dispatch');
       const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
       const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
@@ -26,7 +25,7 @@ describe('Metadata Actions', () => {
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
       const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2', newProp: '', testRelation: [] } };
       expect(dispatch).toHaveBeenCalledWith('formload');
-      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
 
     describe('When doc has no template', () => {
@@ -35,8 +34,8 @@ describe('Metadata Actions', () => {
       let templates;
 
       beforeEach(() => {
-        spyOn(formActions, 'load').and.returnValue('formload');
-        spyOn(formActions, 'reset').and.returnValue('formreset');
+        spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
+        spyOn(reactReduxForm.actions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
         doc = { title: 'test' };
         templates = [{
@@ -72,8 +71,8 @@ describe('Metadata Actions', () => {
         };
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
-        expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
-        expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+        expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
       it('should set the first document template if document has type document', () => {
@@ -82,7 +81,7 @@ describe('Metadata Actions', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
-        expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
       it('should set the first entity template if document has type entity', () => {
@@ -93,7 +92,7 @@ describe('Metadata Actions', () => {
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         const expectedDoc = { title: 'test', type: 'entity', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
-        expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });
   });
@@ -110,8 +109,8 @@ describe('Metadata Actions', () => {
     });
 
     it('should change the document template and reset metadata properties (preserving types)', () => {
-      spyOn(formActions, 'reset').and.returnValue('formReset');
-      spyOn(formActions, 'load').and.returnValue('formLoad');
+      spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
+      spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
 
       const dispatch = jasmine.createSpy('dispatch');
 
@@ -130,18 +129,18 @@ describe('Metadata Actions', () => {
 
       const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: '', newProp: [] } };
       expect(dispatch).toHaveBeenCalledWith('formReset');
-      expect(formActions.reset).toHaveBeenCalledWith('formNamespace');
+      expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
 
       jasmine.clock().tick(0);
 
       expect(dispatch).toHaveBeenCalledWith('formLoad');
-      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
   });
 
   describe('loadTemplate', () => {
     it('should load the given template with empty values', () => {
-      spyOn(formActions, 'load').and.returnValue('formLoad');
+      spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
 
       const template = {
         _id: '1',
@@ -165,7 +164,7 @@ describe('Metadata Actions', () => {
 
       const dispatch = jasmine.createSpy('dispatch');
       actions.loadTemplate('formNamespace', template)(dispatch);
-      expect(formActions.load).toHaveBeenCalledWith('formNamespace', expectedModel);
+      expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedModel);
     });
   });
 
