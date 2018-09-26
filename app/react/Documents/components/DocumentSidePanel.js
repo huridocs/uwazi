@@ -25,6 +25,7 @@ export class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
+    this.firstRender = true;
   }
 
   componentWillReceiveProps(newProps) {
@@ -92,6 +93,7 @@ export class DocumentSidePanel extends Component {
       });
       return summaryData;
     }, { totalConnections: 0 });
+
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel">
         <div className="sidepanel-header">
