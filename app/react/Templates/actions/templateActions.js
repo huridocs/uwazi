@@ -58,7 +58,7 @@ export function selectProperty(index) {
 }
 
 export function removeProperty(index) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const properties = getState().template.data.properties.slice(0);
     properties.splice(index, 1);
     dispatch(formActions.change('template.data.properties', properties));
@@ -66,13 +66,13 @@ export function removeProperty(index) {
 }
 
 export function reorderProperty(originIndex, targetIndex) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(formActions.move('template.data.properties', originIndex, targetIndex));
   };
 }
 
 export function saveTemplate(data) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch({ type: types.SAVING_TEMPLATE });
     return api.save(data)
     .then((response) => {
@@ -81,13 +81,16 @@ export function saveTemplate(data) {
 
       dispatch(formActions.merge('template.data', response));
       dispatch(notify('Saved successfully.', 'success'));
+    })
+    .catch(() => {
+      dispatch({ type: types.TEMPLATE_SAVED, data });
     });
   };
 }
 
 export function saveEntity(data) {
   const entity = Object.assign({}, data, { isEntity: true });
-  return function (dispatch) {
+  return (dispatch) => {
     saveTemplate(entity)(dispatch);
   };
 }
