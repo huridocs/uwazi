@@ -63,20 +63,18 @@ export function highlightSnippet(snippet) {
   }
 
   const textToMatcherRegExp = _text => _text
+  .replace(/…/g, '...')
   .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
   .replace(/<[^>]*>/g, '')
   .replace(/\s+/g, '\\s*')
   .replace(/\n/g, '\\s*');
 
-  const matches = text.match(/<b>(.*?)<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
+  const matches = text.match(/<b>(.|\n)*?<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
   const highlight = textToMatcherRegExp(text);
 
-  const scrollToMark = () => {
-    scroller.to('.document-viewer mark', '.document-viewer', { duration: 50 });
-  };
   const markSearchTerm = () => {
     Marker.init('mark');
-    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: true, done: scrollToMark });
+    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: false, separateWordSearch: true, accuracy: 'exactly' });
   };
 
   const tryFuzziMark = (chunkLenght = 20) => {
@@ -108,6 +106,10 @@ export function scrollToPage(page, duration = 0) {
   scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1 });
 }
 
+export function scrollTomark() {
+  scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
+}
+
 export function scrollTo(reference, docInfo, element = 'a') {
   //
   const page = Object.keys(docInfo).find(pageNumber => docInfo[pageNumber].chars >= reference.range.start);
@@ -134,6 +136,7 @@ export function scrollTo(reference, docInfo, element = 'a') {
 
 export function selectSnippet(page, snippet) {
   scrollToPage(page);
+  setTimeout(() => { scrollTomark(); }, 500);
   return function (dispatch) {
     dispatch({ type: types.SELECT_SNIPPET, snippet });
   };

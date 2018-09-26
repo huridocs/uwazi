@@ -18,7 +18,6 @@ export class Document extends Component {
     super(props);
     this.pages = { 1: 0 };
     this.previousMostVisible = props.page;
-    this.textSnippetChanged = false;
   }
 
   handleMouseUp() {
@@ -67,7 +66,6 @@ export class Document extends Component {
     if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
       this.props.unsetSelection();
     }
-    this.textSnippetChanged = nextProps.selectedSnippet.get('text') !== this.props.selectedSnippet.get('text');
   }
 
   componentWillMount() {
@@ -80,9 +78,7 @@ export class Document extends Component {
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
     this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
-    if (this.textSnippetChanged) {
-      highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
-    }
+    highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
   }
 
   pdfLoaded(range) {
