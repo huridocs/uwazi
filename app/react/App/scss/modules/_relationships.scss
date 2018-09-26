@@ -3,8 +3,6 @@ $c-background: #fcfcfc;
 
 .entity-viewer,
 .document-viewer {
-  background-color: $c-background;
-
   .search-list.centered,
   .sort-by.centered {
     max-width: 910px;
@@ -69,10 +67,6 @@ $c-background: #fcfcfc;
       margin: 0;
     }
   }
-
-  /*.item-type {
-    margin: 0 15px 15px;
-  }*/
 
   .item-connection,
   .connection-data {
@@ -227,6 +221,7 @@ $c-background: #fcfcfc;
       align-items: center;
       height: auto;
       position: relative;
+      font-size: $f-size-sm;
 
       .item-label-group {
   width: auto;
