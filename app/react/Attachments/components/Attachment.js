@@ -7,10 +7,42 @@ import filesize from 'filesize';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 
-import { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm } from '../actions/actions';
 import UploadButton from 'app/Metadata/components/UploadButton';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { Icon } from 'UI';
+
+import { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm } from '../actions/actions';
+
+const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
+
+const getItemOptions = (isSourceDocument, parentId, filename) => {
+  const options = {};
+  options.itemClassName = isSourceDocument ? 'item-source-document' : '';
+  options.typeClassName = isSourceDocument ? 'primary' : 'empty';
+  options.icon = isSourceDocument ? 'file-pdf-o' : 'paperclip';
+  options.deletable = !isSourceDocument;
+  options.replaceable = isSourceDocument;
+  options.downloadHref = isSourceDocument ?
+    `/api/documents/download?_id=${parentId}` :
+    `/api/attachments/download?_id=${parentId}&file=${filename}`;
+
+  return options;
+};
+
+const conformThumbnail = (file, item) => {
+  const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
+  let thumbnail = null;
+
+  if (getExtension(file.filename) === 'pdf') {
+    thumbnail = <span><Icon icon="file-pdf" /> pdf</span>;
+  }
+
+  if (acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1) {
+    thumbnail = <img src={item.downloadHref} alt={file.filename} />;
+  }
+
+  return <div className="attachment-thumbnail">{thumbnail}</div>;
+};
 
 export class Attachment extends Component {
   deleteAttachment(attachment) {
@@ -23,100 +55,75 @@ export class Attachment extends Component {
     });
   }
 
-  getExtension(filename) {
-    return filename.substr(filename.lastIndexOf('.') + 1);
-  }
-
-  getItemOptions(isSourceDocument, parentId, filename, originalname) {
-    const options = {};
-    options.itemClassName = isSourceDocument ? 'item-source-document' : '';
-    options.typeClassName = isSourceDocument ? 'primary' : 'empty';
-    options.icon = isSourceDocument ? 'file-pdf-o' : 'paperclip';
-    options.deletable = !isSourceDocument;
-    options.replaceable = isSourceDocument;
-    options.downloadHref = isSourceDocument ?
-      `/api/documents/download?_id=${parentId}&originalname=${originalname}` :
-      `/api/attachments/download?_id=${parentId}&file=${filename}`;
-
-    return options;
-  }
-
-  conformThumbnail(file, item) {
-    const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
-    let thumbnail = null;
-
-    if (this.getExtension(file.filename) === 'pdf') {
-      thumbnail = <span><Icon icon="file-pdf" /> pdf</span>;
-    }
-
-    if (acceptedThumbnailExtensions.indexOf(this.getExtension(file.filename.toLowerCase())) !== -1) {
-      thumbnail = <img src={item.downloadHref} />;
-    }
-
-    return <div className="attachment-thumbnail">{thumbnail}</div>;
-  }
-
   render() {
     const { file, parentId, parentSharedId, model, isSourceDocument, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
-    const item = this.getItemOptions(isSourceDocument, parentId, file.filename, file.originalname);
+    const item = getItemOptions(isSourceDocument, parentId, file.filename);
 
-    let name = (<a className="attachment-link" href={item.downloadHref}>
-      {this.conformThumbnail(file, item)}
-      <span className="attachment-name">
-        <span>{file.originalname}</span>
-        <ShowIf if={Boolean(sizeString)}>
-          <span className="attachment-size">{sizeString}</span>
-        </ShowIf>
-      </span>
-    </a>);
+    let name = (
+      <a className="attachment-link" href={item.downloadHref}>
+        {conformThumbnail(file, item)}
+        <span className="attachment-name">
+          <span>{file.originalname}</span>
+          <ShowIf if={Boolean(sizeString)}>
+            <span className="attachment-size">{sizeString}</span>
+          </ShowIf>
+        </span>
+      </a>
+    );
 
-    let buttons = (<div>
-      <NeedAuthorization roles={['admin', 'editor']}>
-        <div className="attachment-buttons">
-          <ShowIf if={!this.props.readOnly}>
-            <a className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
-              <Icon icon="pencil-alt" />
-            </a>
-          </ShowIf>
-          <ShowIf if={item.deletable && !this.props.readOnly}>
-            <a className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
-              <Icon icon="trash-alt" />
-            </a>
-          </ShowIf>
-          <ShowIf if={item.replaceable && !this.props.readOnly}>
-            <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
-          </ShowIf>
-        </div>
-      </NeedAuthorization>
-                   </div>);
+    let buttons = (
+      <div>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <div className="attachment-buttons">
+            <ShowIf if={!this.props.readOnly}>
+              <button className="item-shortcut btn btn-default" onClick={this.props.loadForm.bind(this, model, file)}>
+                <Icon icon="pencil-alt" />
+              </button>
+            </ShowIf>
+            <ShowIf if={item.deletable && !this.props.readOnly}>
+              <button className="item-shortcut btn btn-default btn-hover-danger" onClick={this.deleteAttachment.bind(this, file)}>
+                <Icon icon="trash-alt" />
+              </button>
+            </ShowIf>
+            <ShowIf if={item.replaceable && !this.props.readOnly}>
+              <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
+            </ShowIf>
+          </div>
+        </NeedAuthorization>
+      </div>
+    );
 
     if (this.props.beingEdited && !this.props.readOnly) {
-      name = (<div className="attachment-link">
-        {this.conformThumbnail(file, item)}
-        <span className="attachment-name">
-          <AttachmentForm
-            model={this.props.model}
-            isSourceDocument={isSourceDocument}
-            onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}
-          />
-        </span>
-              </div>);
-
-      buttons = (<div className="attachment-buttons">
-        <div className="item-shortcut-group">
-          <NeedAuthorization roles={['admin', 'editor']}>
-            <a className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
-              <Icon icon="times" />
-            </a>
-          </NeedAuthorization>
-          <NeedAuthorization roles={['admin', 'editor']}>
-            <a className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model, storeKey)}>
-              <Icon icon="save" />
-            </a>
-          </NeedAuthorization>
+      name = (
+        <div className="attachment-link">
+          {conformThumbnail(file, item)}
+          <span className="attachment-name">
+            <AttachmentForm
+              model={this.props.model}
+              isSourceDocument={isSourceDocument}
+              onSubmit={this.props.renameAttachment.bind(this, parentId, model, storeKey)}
+            />
+          </span>
         </div>
-                 </div>);
+      );
+
+      buttons = (
+        <div className="attachment-buttons">
+          <div className="item-shortcut-group">
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <button className="item-shortcut btn btn-primary" onClick={this.props.resetForm.bind(this, model)}>
+                <Icon icon="times" />
+              </button>
+            </NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <button className="item-shortcut btn btn-success" onClick={this.props.submitForm.bind(this, model, storeKey)}>
+                <Icon icon="save" />
+              </button>
+            </NeedAuthorization>
+          </div>
+        </div>
+      );
     }
 
 

@@ -13,6 +13,7 @@ export default {
   multidaterange: 'calendar',
   daterange: 'calendar',
   image: 'image',
+  preview: 'passport',
   media: 'video',
   geolocation: 'map-marker',
 };

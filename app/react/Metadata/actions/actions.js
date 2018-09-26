@@ -2,11 +2,12 @@ import superagent from 'superagent';
 import { actions as formActions, getModel } from 'react-redux-form';
 import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
 import { APIURL } from 'app/config.js';
-import * as types from './actionTypes';
 import { api as entitiesAPI } from 'app/Entities';
 import { notify } from 'app/Notifications';
 import { advancedSort } from 'app/utils/advancedSort';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
+import * as types from './actionTypes';
 
 export function resetReduxForm(form) {
   return formActions.reset(form);
@@ -91,6 +92,7 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
     superagent.post(`${APIURL}reupload`)
     .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
     .field('document', docId)
     .attach('file', file, file.name)
     .on('progress', (data) => {
@@ -98,9 +100,11 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     })
     .on('response', () => {
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file, __reducerKey });
-
-      requestViewerState(docSharedId, getState().locale, { templates: getState().templates })
+      requestViewerState({ documentId: docSharedId }, { templates: getState().templates })
       .then((state) => {
+        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
+        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
         dispatch(setViewerState(state));
       });
     })

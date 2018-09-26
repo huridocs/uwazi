@@ -1,5 +1,9 @@
 import * as utils from 'api/utils';
 
+const createSpy = (key, resolve) => jasmine.createSpy(key).and.callFake((...args) => {
+  resolve(`${key}:${args.join(',')}`);
+});
+
 const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, runRoute = true) => {
   const args = app[method].calls.allArgs().find(a => a[0] === routePath);
   if (!args) {
@@ -12,9 +16,9 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
       statusCode = code;
     };
 
-    res.download = jasmine.createSpy('download').and.callFake((response) => {
-      resolve(response);
-    });
+    res.download = createSpy('download', resolve);
+    res.redirect = createSpy('redirect', resolve);
+    res.sendFile = createSpy('sendFile', resolve);
 
     res.json = jasmine.createSpy('json').and.callFake((response) => {
       if (statusCode) {
