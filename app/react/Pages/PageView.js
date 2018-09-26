@@ -10,6 +10,8 @@ import { markdownDatasets } from 'app/Markdown';
 import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
+import {removeDocument, removeDocuments, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
 
 function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
@@ -47,6 +49,18 @@ export class PageView extends RouteHandler {
         page: { pageView, itemLists, datasets },
       };
     });
+  }
+
+  closeSidePanel() {
+    wrapDispatch(this.context.store.dispatch, 'library')(unselectAllDocuments());
+  }
+
+  componentDidMount() {
+    this.closeSidePanel();
+  }
+
+  emptyState() {
+    this.closeSidePanel();
   }
 
   setReduxState(state) {
