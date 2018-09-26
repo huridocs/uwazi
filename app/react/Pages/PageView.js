@@ -59,7 +59,7 @@ export class PageView extends RouteHandler {
     return (
       <React.Fragment>
         <PageViewer />
-        <ViewMetadataPanel storeKey="library" initialiClosed />
+        <ViewMetadataPanel storeKey="library" />
       </React.Fragment>
     );
   }
