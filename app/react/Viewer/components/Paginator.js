@@ -13,7 +13,7 @@ const disableButton = (page, pageToDisable) => ({
 const Paginator = ({ page, totalPages, onPageChange }) => (
   <div className="paginator">
     <CurrentLocationLink
-      queryParams={{ page }}
+      queryParams={{ page: page - 1 }}
       onClick={(e) => {
         e.preventDefault();
         onPageChange(page - 1);
@@ -24,7 +24,7 @@ const Paginator = ({ page, totalPages, onPageChange }) => (
     </CurrentLocationLink>
     <span>{` ${page} / ${totalPages} `}</span>
     <CurrentLocationLink
-      queryParams={{ page }}
+      queryParams={{ page: page + 1 }}
       onClick={(e) => {
         e.preventDefault();
         onPageChange(page + 1);
