@@ -2,16 +2,16 @@ import React from 'react';
 import rison from 'rison';
 
 import { actions } from 'app/BasicReducer';
+import { markdownDatasets } from 'app/Markdown';
+import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import api from 'app/Search/SearchAPI';
-import { markdownDatasets } from 'app/Markdown';
 
 import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
-import {removeDocument, removeDocuments, unselectDocument, unselectAllDocuments} from 'app/Library/actions/libraryActions';
-import { wrapDispatch } from 'app/Multireducer';
 
 function prepareLists(page) {
   const listsData = pageItemLists.generate(page.metadata.content);
