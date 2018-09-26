@@ -68,10 +68,11 @@ export class Viewer extends Component {
       className += ' connections';
     }
 
-    const { raw, searchTerm, pageText } = this.props;
+    const { raw, searchTerm, pageText, page } = this.props;
+    const documentTitle = doc.get('title') ? doc.get('title') : '';
     return (
       <div className="row">
-        <Helmet title={doc.get('title') ? doc.get('title') : 'Document'} />
+        <Helmet title={`${documentTitle} • Page ${page}`} />
         <ShowIf if={!this.props.targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
@@ -149,6 +150,7 @@ Viewer.defaultProps = {
   onPageChange: () => {},
   changePage: () => {},
   onDocumentReady: () => {},
+  page: 1,
 };
 
 Viewer.propTypes = {
@@ -162,14 +164,15 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
-  // TEST!!!
+  // TEST!!!!!
   sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
   showTextSelectMenu: PropTypes.bool,
   selectedConnection: PropTypes.bool,
   selectedConnectionMetadata: PropTypes.object,
-  showTab: PropTypes.func
+  showTab: PropTypes.func,
+  page: PropTypes.number,
 };
 
 Viewer.contextTypes = {
