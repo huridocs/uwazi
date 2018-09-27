@@ -1,20 +1,11 @@
-import { spawn } from 'child-process-promise';
-
 import EventEmitter from 'events';
 import path from 'path';
-
-const basename = (filepath = '') => {
-  let finalPath = filepath;
-  if (typeof filepath !== 'string') {
-    finalPath = '';
-  }
-  return path.basename(finalPath, path.extname(finalPath));
-};
+import { spawn } from 'child-process-promise';
+import errorLog from 'api/log/errorLog';
 
 export default class PDF extends EventEmitter {
-  constructor(filepath, originalName) {
+  constructor(filepath) {
     super();
-    this.logFile = `${__dirname}/../../../log/${basename(originalName)}.log`;
     this.filepath = filepath;
     this.optimizedPath = filepath;
   }
@@ -26,6 +17,22 @@ export default class PDF extends EventEmitter {
       fullText: pages.reduce((memo, page, index) => ({ ...memo, [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`) }), {}),
       totalPages: pages.length
     };
+  }
+
+  async createThumbnail(documentId) {
+    let response;
+    try {
+      response = await spawn(
+        'pdftoppm',
+        ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', this.filepath, path.join(path.dirname(this.filepath), documentId)],
+        { capture: ['stdout', 'stderr'] }
+      );
+    } catch (err) {
+      response = err;
+      errorLog.error(`Thumbnail creation error for: ${this.filepath}`);
+    }
+
+    return Promise.resolve(response);
   }
 
   convert() {

@@ -25,12 +25,15 @@ export default (app) => {
           type: Joi.string(),
           relationType: Joi.string(),
           filter: Joi.boolean(),
-          defaultFilter: Joi.boolean(),
+          noLabel: Joi.boolean(),
+          defaultfilter: Joi.boolean(),
           required: Joi.boolean(),
           sortable: Joi.boolean(),
           showInCard: Joi.boolean(),
+          fullWidth: Joi.boolean(),
           content: Joi.string(),
           prioritySorting: Joi.boolean(),
+          style: Joi.string(),
           inserting: Joi.any()
         })
       ),

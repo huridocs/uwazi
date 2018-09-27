@@ -51,6 +51,16 @@ const processAllLanguages = (entity, req) => processSingleLanguage(entity, req)
 export default (app) => {
   const upload = multer({ storage });
 
+  app.get('/api/attachment/:file', (req, res) => {
+    const filePath = `${path.resolve(attachmentsPath)}/${path.basename(req.params.file)}`;
+    fs.stat(filePath, (err) => {
+      if (err) {
+        return res.redirect('/public/no-preview.png');
+      }
+      return res.sendFile(filePath);
+    });
+  });
+
   app.get('/api/attachments/download', (req, res, next) => {
     entities.getById(req.query._id)
     .then((response) => {

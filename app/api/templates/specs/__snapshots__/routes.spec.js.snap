@@ -164,7 +164,7 @@ Object {
               ],
               "type": "string",
             },
-            "defaultFilter": Object {
+            "defaultfilter": Object {
               "falsy": Array [
                 false,
               ],
@@ -177,6 +177,18 @@ Object {
               "type": "boolean",
             },
             "filter": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "fullWidth": Object {
               "falsy": Array [
                 false,
               ],
@@ -220,6 +232,18 @@ Object {
                 "sparse": false,
               },
               "type": "array",
+            },
+            "noLabel": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
             },
             "prioritySorting": Object {
               "falsy": Array [
@@ -274,6 +298,12 @@ Object {
                 true,
               ],
               "type": "boolean",
+            },
+            "style": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
             },
             "type": Object {
               "invalids": Array [

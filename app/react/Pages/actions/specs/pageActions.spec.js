@@ -1,16 +1,18 @@
-import {actions as formActions} from 'react-redux-form';
-import {actions as basicActions} from 'app/BasicReducer';
-import {browserHistory} from 'react-router';
-import * as actions from '../pageActions';
+import { browserHistory } from 'react-router';
+import { actions as formActions } from 'react-redux-form';
+
+import { actions as basicActions } from 'app/BasicReducer';
 import * as Notifications from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
+
+import * as actions from '../pageActions';
 
 describe('Page actions', () => {
   let dispatch;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', sharedId: 'newSharedId', _rev: 'newRev'}));
+    spyOn(api, 'save').and.returnValue(Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' }));
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
@@ -31,7 +33,7 @@ describe('Page actions', () => {
     it('should dispatch a saving page and save the data', () => {
       actions.savePage('data')(dispatch);
       expect(dispatch.calls.count()).toBe(1);
-      expect(dispatch).toHaveBeenCalledWith({type: 'SAVING_PAGE'});
+      expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
       expect(api.save).toHaveBeenCalledWith('data');
     });
 
@@ -44,11 +46,11 @@ describe('Page actions', () => {
       });
 
       it('should dispatch a page saved with response', () => {
-        expect(dispatch).toHaveBeenCalledWith({type: 'PAGE_SAVED', data: {_id: 'newId', sharedId: 'newSharedId', _rev: 'newRev'}});
+        expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: { _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' } });
       });
 
       it('should merge response data', () => {
-        expect(formActions.merge).toHaveBeenCalledWith('page.data', {_id: 'newId', sharedId: 'newSharedId', _rev: 'newRev'});
+        expect(formActions.merge).toHaveBeenCalledWith('page.data', { _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' });
         expect(dispatch).toHaveBeenCalledWith('PAGE DATA MERGED');
       });
 
@@ -59,6 +61,16 @@ describe('Page actions', () => {
 
       it('should navigate to pages edit with the sharedId', () => {
         expect(browserHistory.push).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
+      });
+    });
+    describe('on error', () => {
+      it('should dispatch page saved', (done) => {
+        api.save.and.callFake(() => Promise.reject(new Error()));
+        actions.savePage('data')(dispatch)
+        .then(() => {
+          expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
+          done();
+        });
       });
     });
   });
