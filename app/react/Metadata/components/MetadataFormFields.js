@@ -74,6 +74,8 @@ export class MetadataFormFields extends Component {
           &nbsp;<em>URL (address for image or media file)</em>
         </div>
       );
+    case 'preview':
+      return <div><em>This content is automatically generated</em></div>;
     case 'text':
       return <Field model={_model}><input className="form-control"/></Field>;
     default:
