@@ -102,6 +102,7 @@ class ViewDocument extends RouteHandler {
           onPageChange={this.changeBrowserHistoryPage}
           onDocumentReady={this.onDocumentReady}
           changePage={this.changePage}
+          page={page}
         />
       </React.Fragment>
     );
