@@ -57,28 +57,24 @@ export function goToActive(value = true) {
 export function highlightSnippet(snippet) {
   Marker.init('.document-viewer');
   Marker.unmark();
-  const page = snippet.get('page');
-  Marker.init(`#page-${page}`);
   const text = snippet.get('text');
   if (!text) {
     return;
   }
 
   const textToMatcherRegExp = _text => _text
+  .replace(/…/g, '...')
   .replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')
   .replace(/<[^>]*>/g, '')
   .replace(/\s+/g, '\\s*')
   .replace(/\n/g, '\\s*');
 
-  const matches = text.match(/<b>(.*?)<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
+  const matches = text.match(/<b>(.|\n)*?<\/b>/g).map(m => m.replace(/<.*?>/g, ''));
   const highlight = textToMatcherRegExp(text);
 
-  const scrollToMark = () => {
-    scroller.to('.document-viewer mark', '.document-viewer', { duration: 50 });
-  };
   const markSearchTerm = () => {
     Marker.init('mark');
-    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: true, done: scrollToMark });
+    Marker.mark(matches, { className: 'searchTerm', diacritics: false, acrossElements: false, separateWordSearch: true, accuracy: 'exactly' });
   };
 
   const tryFuzziMark = (chunkLenght = 20) => {
@@ -87,7 +83,7 @@ export function highlightSnippet(snippet) {
     }
     const startOfText = textToMatcherRegExp(text.substring(0, chunkLenght));
     const endOfText = textToMatcherRegExp(text.substring(text.length - chunkLenght - 1, text.length - 1));
-    const fuzziText = `${startOfText}.*?${endOfText}`;
+    const fuzziText = `${startOfText}.{1,200}${endOfText}`;
     const regexp = new RegExp(fuzziText);
     Marker.markRegExp(regexp, {
       separateWordSearch: false,
@@ -108,6 +104,10 @@ export function highlightSnippet(snippet) {
 
 export function scrollToPage(page, duration = 50) {
   scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1, offset: 50 });
+}
+
+export function scrollTomark() {
+  scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {
@@ -136,6 +136,7 @@ export function scrollTo(reference, docInfo, element = 'a') {
 
 export function selectSnippet(page, snippet) {
   scrollToPage(page);
+  setTimeout(() => { scrollTomark(); }, 500);
   return function (dispatch) {
     dispatch({ type: types.SELECT_SNIPPET, snippet });
   };

@@ -18,6 +18,7 @@ describe('Document', () => {
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({ _id: 'documentId', pdfInfo: { test: 'pdfInfo' } }),
+      selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
         pages: ['page1', 'page2', 'page3'],
         css: 'css'
@@ -97,9 +98,9 @@ describe('Document', () => {
     it('should unset selection if different doc', () => {
       render();
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'documentId' }) });
+      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'documentId' }), selectedSnippet: Immutable.fromJS({}) });
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'anotherId' }) });
+      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'anotherId' }), selectedSnippet: Immutable.fromJS({}) });
       expect(props.unsetSelection.calls.count()).toBe(2);
     });
   });
