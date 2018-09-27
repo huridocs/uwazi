@@ -54,14 +54,21 @@ export default (app) => {
     sessionSockets.emit('conversionStart', req.body.document);
     debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
     return Promise.all([
-        new PDF(file, req.files[0].originalname).convert(),
-        getDocuments(req.body.document, allLanguages)
+      new PDF(file, req.files[0].originalname).convert(),
+      getDocuments(req.body.document, allLanguages),
+      file
     ]);
   })
-  .then(([conversion, _docs]) => {
+  .then(([conversion, _docs, file]) => {
     debugLog.debug(`Conversion succeeed for: ${req.files[0].originalname}`);
 
-    const docs = _docs.map(doc => ({
+    const thumbnailCreations = [];
+
+    const docs = _docs.map((doc) => {
+      debugLog.debug(`Assigning Thumbnail creation for: ${doc._id.toString()}`);
+      thumbnailCreations.push(new PDF(file, req.files[0].originalname).createThumbnail(doc._id.toString()));
+
+      return {
         ...doc,
         processed: true,
         fullText: conversion.fullText,
@@ -69,12 +76,18 @@ export default (app) => {
         formattedPlainTextPages: conversion.formatted,
         file: { ...doc.file, language: languages.detect(Object.values(conversion.fullText).join(''), 'franc') },
         toc: [],
-    }));
+      };
+    });
 
-    debugLog.debug('Saving documents');
-    return entities.saveMultiple(docs).then(() => {
-      const sessionSockets = req.io.getCurrentSessionSockets();
-      sessionSockets.emit('documentProcessed', req.body.document);
+    debugLog.debug('Creating PDF thumbnails');
+
+    return Promise.all(thumbnailCreations)
+    .then(() => {
+      debugLog.debug('Saving documents');
+      return entities.saveMultiple(docs).then(() => {
+        const sessionSockets = req.io.getCurrentSessionSockets();
+        sessionSockets.emit('documentProcessed', req.body.document);
+      });
     });
   })
   .catch((err) => {

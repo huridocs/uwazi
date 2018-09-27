@@ -27,6 +27,18 @@ Object {
       ],
       "type": "string",
     },
+    "geolocation": Object {
+      "falsy": Array [
+        false,
+      ],
+      "flags": Object {
+        "insensitive": true,
+      },
+      "truthy": Array [
+        true,
+      ],
+      "type": "boolean",
+    },
     "includeUnpublished": Object {
       "type": "any",
     },

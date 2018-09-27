@@ -66,7 +66,7 @@ describe('Attachment', () => {
     it('should have a cancel edit button', () => {
       render();
 
-      const cancelButton = component.find('.item-shortcut-group').find('a').at(0);
+      const cancelButton = component.find('.item-shortcut-group').find('button').at(0);
 
       expect(props.resetForm).not.toHaveBeenCalled();
 
@@ -78,7 +78,7 @@ describe('Attachment', () => {
     it('should have a save edit button that submits form', () => {
       render();
 
-      const saveButton = component.find('.item-shortcut-group').find('a.item-shortcut.btn-success');
+      const saveButton = component.find('.item-shortcut-group').find('button.item-shortcut.btn-success');
 
       expect(props.submitForm).not.toHaveBeenCalled();
 
@@ -90,7 +90,7 @@ describe('Attachment', () => {
 
   it('should include an authorized delete button for each file', () => {
     render();
-    const deleteButton = component.find('.attachment-buttons').find('a').at(1);
+    const deleteButton = component.find('.attachment-buttons').find('button').at(1);
 
     expect(deleteButton.parents().at(2).is(NeedAuthorization)).toBe(true);
     expect(deleteButton.parent().props().if).toBe(true);
@@ -135,7 +135,7 @@ describe('Attachment', () => {
 
     it('should not render the delete button on the first item', () => {
       render();
-      const deleteButton = component.find('.attachment-buttons').find('a').at(1);
+      const deleteButton = component.find('.attachment-buttons').find('button').at(1);
       expect(deleteButton.parent().props().if).toBe(false);
     });
 

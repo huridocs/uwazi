@@ -1,10 +1,12 @@
-import {actions as formActions} from 'react-redux-form';
-import {actions as basicActions} from 'app/BasicReducer';
-import * as actions from '../navlinksActions';
+import { actions as formActions } from 'react-redux-form';
+
+import { actions as basicActions } from 'app/BasicReducer';
+import { mockID } from 'shared/uniqueID';
 import * as Notifications from 'app/Notifications';
 import api from 'app/Settings/SettingsAPI';
-import {mockID} from 'shared/uniqueID';
 import * as uiActions from 'app/Settings/actions/uiActions';
+
+import * as actions from '../navlinksActions';
 
 describe('Settings/Navlinks actions', () => {
   let dispatch;
@@ -12,7 +14,7 @@ describe('Settings/Navlinks actions', () => {
   beforeEach(() => {
     mockID();
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', _rev: 'newRev'}));
+    spyOn(api, 'save').and.returnValue(Promise.resolve({ _id: 'newId', _rev: 'newRev' }));
     spyOn(formActions, 'load').and.returnValue('ITEMS LOADED');
     spyOn(uiActions, 'editLink').and.returnValue('ITEM EDITED');
     spyOn(formActions, 'push').and.returnValue('ITEM PUSHED');
@@ -25,14 +27,14 @@ describe('Settings/Navlinks actions', () => {
   describe('loadLinks', () => {
     it('should load sent links into navlinksData', () => {
       expect(actions.loadLinks('links')).toBe('ITEMS LOADED');
-      expect(formActions.load).toHaveBeenCalledWith('settings.navlinksData', {links: 'links'});
+      expect(formActions.load).toHaveBeenCalledWith('settings.navlinksData', { links: 'links' });
     });
   });
 
   describe('addLink', () => {
     it('should push a new item with default naming', () => {
-      const expected = {title: 'Item 2', localID: 'unique_id'};
-      actions.addLink([{_id: 'existing link'}])(dispatch);
+      const expected = { title: 'Item 2', localID: 'unique_id' };
+      actions.addLink([{ _id: 'existing link' }])(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('settings.navlinksData.links', expected);
       expect(uiActions.editLink).toHaveBeenCalledWith('unique_id');
     });
@@ -56,8 +58,16 @@ describe('Settings/Navlinks actions', () => {
     it('should dispatch a SAVING_NAVLINKS and save the data', () => {
       actions.saveLinks('data')(dispatch);
       expect(dispatch.calls.count()).toBe(1);
-      expect(dispatch).toHaveBeenCalledWith({type: 'SAVING_NAVLINKS'});
+      expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_NAVLINKS' });
       expect(api.save).toHaveBeenCalledWith('data');
+    });
+
+    describe('on error', () => {
+      fit('should dispatch NAVLINKS_SAVED', async () => {
+        api.save.and.callFake(() => Promise.reject(new Error()));
+        await actions.saveLinks('data')(dispatch);
+        expect(dispatch).toHaveBeenCalledWith({ type: 'NAVLINKS_SAVED', data: 'data' });
+      });
     });
 
     describe('upon success', () => {
@@ -69,11 +79,11 @@ describe('Settings/Navlinks actions', () => {
       });
 
       it('should dispatch a NAVLINKS_SAVED with response', () => {
-        expect(dispatch).toHaveBeenCalledWith({type: 'NAVLINKS_SAVED', data: {_id: 'newId', _rev: 'newRev'}});
+        expect(dispatch).toHaveBeenCalledWith({ type: 'NAVLINKS_SAVED', data: { _id: 'newId', _rev: 'newRev' } });
       });
 
       it('should set settings/collection to response', () => {
-        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', {_id: 'newId', _rev: 'newRev'});
+        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', { _id: 'newId', _rev: 'newRev' });
         expect(dispatch).toHaveBeenCalledWith('DATA SET');
       });
 

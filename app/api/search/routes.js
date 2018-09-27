@@ -27,7 +27,8 @@ export default (app) => {
       searchTerm: Joi.string().allow(''),
       includeUnpublished: Joi.any(),
       treatAs: Joi.string(),
-      unpublished: Joi.any()
+      unpublished: Joi.any(),
+      geolocation: Joi.boolean(),
     }), 'query'),
 
     (req, res, next) => {

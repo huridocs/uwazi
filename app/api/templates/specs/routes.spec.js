@@ -1,8 +1,8 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import settings from 'api/settings/settings';
-import templateRoutes from 'api/templates/routes.js';
-import templates from 'api/templates/templates';
+import templates from '../templates';
+import templateRoutes from '../routes.js';
 
 describe('templates routes', () => {
   let routes;

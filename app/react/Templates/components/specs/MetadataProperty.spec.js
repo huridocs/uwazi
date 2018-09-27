@@ -143,6 +143,12 @@ describe('MetadataProperty', () => {
     });
 
     describe('when type is custom type', () => {
+      const checkMultimedia = (canSetStyle, canBeRequired) => {
+        expect(component.find(FormConfigMultimedia).length).toBe(1);
+        expect(component.find(FormConfigMultimedia).props().canSetStyle).toBe(canSetStyle);
+        expect(component.find(FormConfigMultimedia).props().canBeRequired).toBe(canBeRequired);
+      };
+
       it('should render the correct component', () => {
         expect(component.find(FormConfigInput).length).toBe(1);
 
@@ -161,13 +167,14 @@ describe('MetadataProperty', () => {
         component.setProps({ type: 'relationship' });
         expect(component.find(FormConfigRelationship).length).toBe(1);
 
-        component.setProps({ type: 'media' });
-        expect(component.find(FormConfigMultimedia).length).toBe(1);
-        expect(component.find(FormConfigMultimedia).props().canSetStyle).toBe(false);
-
         component.setProps({ type: 'image' });
-        expect(component.find(FormConfigMultimedia).length).toBe(1);
-        expect(component.find(FormConfigMultimedia).props().canSetStyle).toBe(true);
+        checkMultimedia(true, true);
+
+        component.setProps({ type: 'preview' });
+        checkMultimedia(true, false);
+
+        component.setProps({ type: 'media' });
+        checkMultimedia(false, true);
 
         component.setProps({ type: 'geolocation' });
         expect(component.find(FormConfigInput).length).toBe(1);

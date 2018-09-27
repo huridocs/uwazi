@@ -2,10 +2,12 @@ import React from 'react';
 import rison from 'rison';
 
 import { actions } from 'app/BasicReducer';
+import { markdownDatasets } from 'app/Markdown';
+import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import api from 'app/Search/SearchAPI';
-import { markdownDatasets } from 'app/Markdown';
 
 import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
@@ -49,6 +51,18 @@ export class PageView extends RouteHandler {
     });
   }
 
+  closeSidePanel() {
+    wrapDispatch(this.context.store.dispatch, 'library')(unselectAllDocuments());
+  }
+
+  componentDidMount() {
+    this.closeSidePanel();
+  }
+
+  emptyState() {
+    this.closeSidePanel();
+  }
+
   setReduxState(state) {
     this.context.store.dispatch(actions.set('page/pageView', state.page.pageView));
     this.context.store.dispatch(actions.set('page/itemLists', state.page.itemLists));
@@ -59,7 +73,7 @@ export class PageView extends RouteHandler {
     return (
       <React.Fragment>
         <PageViewer />
-        <ViewMetadataPanel storeKey="library"/>
+        <ViewMetadataPanel storeKey="library" />
       </React.Fragment>
     );
   }
