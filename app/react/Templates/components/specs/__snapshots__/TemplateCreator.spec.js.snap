@@ -89,6 +89,10 @@ exports[`TemplateCreator Property Options should include document specific optio
                 type="image"
               />
               <Connect(DragSource(PropertyOption))
+                label="Preview"
+                type="preview"
+              />
+              <Connect(DragSource(PropertyOption))
                 label="Media"
                 type="media"
               />

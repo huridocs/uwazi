@@ -34,7 +34,7 @@ const style = index => (
 
 class FormConfigMultimedia extends Component {
   render() {
-    const { index, formState, canShowInCard, helpText, canSetStyle } = this.props;
+    const { index, formState, canShowInCard, helpText, canSetStyle, canBeRequired } = this.props;
 
     let labelClass = 'form-group';
     const labelKey = `properties.${index}.label`;
@@ -66,9 +66,11 @@ class FormConfigMultimedia extends Component {
         <PropertyConfigOption label="Full width" model={`template.data.properties[${index}].fullWidth`}>
           <Tip>This property will be shown using all the width available.</Tip>
         </PropertyConfigOption>
-        <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
-          <Tip>You won&#39;t be able to save a document if this property is empty.</Tip>
-        </PropertyConfigOption>
+        {canBeRequired &&
+          <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
+            <Tip>You won&#39;t be able to save a document if this property is empty.</Tip>
+          </PropertyConfigOption>
+        }
         {canShowInCard &&
           <PropertyConfigOption label="Show in cards" model={`template.data.properties[${index}].showInCard`}>
             <Tip>This property will appear in the library cards as part of the basic info.</Tip>
@@ -84,12 +86,14 @@ class FormConfigMultimedia extends Component {
 FormConfigMultimedia.defaultProps = {
   canShowInCard: true,
   canSetStyle: true,
+  canBeRequired: true,
   helpText: ''
 };
 
 FormConfigMultimedia.propTypes = {
   canShowInCard: PropTypes.bool,
   canSetStyle: PropTypes.bool,
+  canBeRequired: PropTypes.bool,
   helpText: PropTypes.string,
   index: PropTypes.number.isRequired,
   formState: PropTypes.instanceOf(Object).isRequired
