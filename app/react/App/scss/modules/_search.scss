@@ -589,7 +589,7 @@
   .form-control {
     border: 1px solid $c-grey-light;
     border-radius: 0;
-    font-size: 12px;
+    font-size: $f-size-sm;
     width: auto;
     padding: 2px 30px 0 10px;
     margin-bottom: 5px;
@@ -740,7 +740,7 @@
     -webkit-align-items: center;
     align-items: center;
     padding: 0;
-    font-size: $f-size-sm;
+    font-size: $f-size;
     line-height: 1.6em;
     width: 100%;
     a, span {

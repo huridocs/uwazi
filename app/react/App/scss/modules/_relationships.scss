@@ -174,7 +174,7 @@ $c-background: #fcfcfc;
   .connection-type {
     width: 100%;
     padding: 5px 15px;
-    font-size: 12px;
+    font-size: $f-size-sm;
     margin: 0;
     color: #777;
 
@@ -411,6 +411,7 @@ $relationship-type-height: 32px;
   display: flex;
   position: relative;
   margin-bottom: 30px;
+  line-height: 1em;
 
   @media(max-width: 1023px) {
     flex-direction: column;

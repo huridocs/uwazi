@@ -158,7 +158,7 @@ $item-padding: 15px;
 
 .item-type__icon {
   margin-right: 5px;
-  font-size: 14px;
+  font-size: $f-size;
 }
 
 .item-type__name {
@@ -186,13 +186,13 @@ $item-padding: 15px;
 
   > span {
     color: $c-grey-dark;
-    background-color: $c-grey-lighten;
+    background-color: $c-language-highlight;
     border-radius: 0;
     padding: 0 4px;
     height: 17px;
     line-height: 18px;
     font-family: "Roboto", sans-serif;
-    font-size: 9px;
+    font-size: $f-size-xs;
     font-weight: 500;
     letter-spacing: 0.075em;
     max-width: 100%;
@@ -263,7 +263,7 @@ $item-padding: 15px;
 }
 
 .item-snippet-source {
-  color: $c-grey;
+  color: $c-grey-dark;
   font-size: $f-size-xs;
 }
 
