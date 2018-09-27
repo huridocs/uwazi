@@ -9,7 +9,7 @@ exports[`Paginator should render a previous button and next button based on the 
     onClick={[Function]}
     queryParams={
       Object {
-        "page": 5,
+        "page": 4,
       }
     }
   >
@@ -25,7 +25,7 @@ exports[`Paginator should render a previous button and next button based on the 
     onClick={[Function]}
     queryParams={
       Object {
-        "page": 5,
+        "page": 6,
       }
     }
   >
@@ -45,7 +45,7 @@ exports[`Paginator when base Url already has the query string "?" should add the
     onClick={[Function]}
     queryParams={
       Object {
-        "page": 3,
+        "page": 2,
       }
     }
   >
@@ -61,7 +61,7 @@ exports[`Paginator when base Url already has the query string "?" should add the
     onClick={[Function]}
     queryParams={
       Object {
-        "page": 3,
+        "page": 4,
       }
     }
   >
@@ -98,7 +98,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
     onClick={[Function]}
     queryParams={
       Object {
-        "page": 1,
+        "page": 2,
       }
     }
   >
@@ -118,7 +118,7 @@ exports[`Paginator when on last page should disable the next link 1`] = `
     onClick={[Function]}
     queryParams={
       Object {
-        "page": 25,
+        "page": 24,
       }
     }
   >

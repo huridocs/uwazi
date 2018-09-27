@@ -106,7 +106,7 @@ export function highlightSnippet(snippet) {
   });
 }
 
-export function scrollToPage(page, duration = 0) {
+export function scrollToPage(page, duration = 50) {
   scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1 });
 }
 
