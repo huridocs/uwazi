@@ -10,31 +10,35 @@ const disableButton = (page, pageToDisable) => ({
     rel: page === pageToDisable ? 'nofollow' : undefined
 });
 
-const Paginator = ({ page, totalPages, onPageChange }) => (
-  <div className="paginator">
-    <CurrentLocationLink
-      queryParams={{ page }}
-      onClick={(e) => {
-        e.preventDefault();
-        onPageChange(page - 1);
-      }}
-      {...disableButton(page, 1)}
-    >
-      <Translate>Previous</Translate>
-    </CurrentLocationLink>
-    <span>{` ${page} / ${totalPages} `}</span>
-    <CurrentLocationLink
-      queryParams={{ page }}
-      onClick={(e) => {
-        e.preventDefault();
-        onPageChange(page + 1);
-      }}
-      {...disableButton(page, totalPages)}
-    >
-      <Translate>Next</Translate>
-    </CurrentLocationLink>
-  </div>
-);
+const Paginator = ({ page, totalPages, onPageChange }) => {
+  const prevPage = page - 1 || 1;
+  const nextPage = page + 1 > totalPages ? totalPages : page + 1;
+  return (
+    <div className="paginator">
+      <CurrentLocationLink
+        queryParams={{ page: prevPage }}
+        onClick={(e) => {
+          e.preventDefault();
+          onPageChange(prevPage);
+        }}
+        {...disableButton(page, 1)}
+      >
+        <Translate>Previous</Translate>
+      </CurrentLocationLink>
+      <span>{` ${page} / ${totalPages} `}</span>
+      <CurrentLocationLink
+        queryParams={{ page: nextPage }}
+        onClick={(e) => {
+          e.preventDefault();
+          onPageChange(nextPage);
+        }}
+        {...disableButton(page, totalPages)}
+      >
+        <Translate>Next</Translate>
+      </CurrentLocationLink>
+    </div>
+  );
+};
 
 Paginator.defaultProps = {
   page: 1,
