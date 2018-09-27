@@ -107,7 +107,7 @@ export function highlightSnippet(snippet) {
 }
 
 export function scrollToPage(page, duration = 50) {
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1 });
+  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration, dividerOffset: 1, offset: 50 });
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {
