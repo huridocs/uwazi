@@ -58,6 +58,11 @@ describe('FormConfigMultimedia', () => {
     expectMatch();
   });
 
+  it('should allow excluding "required"', () => {
+    props.canBeRequired = false;
+    expectMatch();
+  });
+
   describe('validation', () => {
     it('should render the label without errors', () => {
       expectErrorLengthToBe(0);
