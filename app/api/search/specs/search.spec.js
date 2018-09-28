@@ -307,6 +307,14 @@ describe('search', () => {
       expect(response.rows.length).toBe(2);
     });
 
+    fit('should filter by relationships metadata markdown', async () => {
+      const response = await search.search({
+        types: [ids.templateMetadata1],
+        filters: { rich_text: 'rich' }
+      }, 'en');
+      expect(response.rows.length).toBe(1);
+    });
+
     it('should filter by fullText, and return template aggregations based on the filter the language and the published status', (done) => {
       Promise.all([
         search.search({ searchTerm: 'spanish' }, 'es')

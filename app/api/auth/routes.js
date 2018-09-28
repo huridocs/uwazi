@@ -4,6 +4,7 @@ import mongoConnect from 'connect-mongo';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import session from 'express-session';
+import uniqueID from 'shared/uniqueID';
 
 import { validateRequest } from '../utils';
 
@@ -15,7 +16,7 @@ export default (app) => {
   app.use(cookieParser());
 
   app.use(session({
-    secret: 'Lola and Harvey',
+    secret: uniqueID(),
     store: new MongoStore({
       mongooseConnection: mongoose.connection
     }),
