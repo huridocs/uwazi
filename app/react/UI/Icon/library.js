@@ -41,6 +41,7 @@ import { faMapMarker } from '@fortawesome/free-solid-svg-icons/faMapMarker';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons/faPaperPlane';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
 import { faParagraph } from '@fortawesome/free-solid-svg-icons/faParagraph';
+import { faPassport } from '@fortawesome/free-solid-svg-icons/faPassport';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
@@ -110,6 +111,7 @@ const icons = {
   faPaperPlane,
   faPaperclip,
   faParagraph,
+  faPassport,
   faPencilAlt,
   faPlay,
   faPlus,

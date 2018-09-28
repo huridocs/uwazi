@@ -1,9 +1,13 @@
 import Immutable from 'immutable';
 
 export const doc = {
+  _id: 'languageSpecificId',
   template: 'templateID',
   title: 'Corte Interamericana de Derechos Humanos',
   creationDate: 0,
+  file: {
+    filename: 'filename.pdf'
+  },
   metadata: {
     text: 'text content',
     date: 10,
@@ -40,6 +44,7 @@ export const templates = Immutable.fromJS([
       { name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true },
       { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
       { name: 'image', type: 'image', label: 'Image', showInCard: true, noLabel: true, style: 'cover' },
+      { name: 'preview', type: 'preview', label: 'PDFPreview', showInCard: true, noLabel: false, style: 'contain' },
       { name: 'media', type: 'media', label: 'Media', showInCard: true, noLabel: false },
       { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
       { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },

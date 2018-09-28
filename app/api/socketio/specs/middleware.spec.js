@@ -7,7 +7,7 @@ describe('socketio middleware', () => {
       use: jasmine.createSpy('use')
     };
     middleware({}, app);
-    executeMiddleware = app.use.calls.mostRecent().args[0];
+    [executeMiddleware] = app.use.calls.mostRecent().args;
   });
 
   it('should call next', () => {
@@ -21,12 +21,10 @@ describe('socketio middleware', () => {
   });
 
   describe('getCurrentSessionSockets', () => {
-    const createSocket = (cookie) => {
-      return {
-        request: {headers: {cookie}},
-        emit: jasmine.createSpy('emit')
-      };
-    };
+    const createSocket = cookie => ({
+      request: { headers: { cookie } },
+      emit: jasmine.createSpy('emit')
+    });
 
     let socket1;
     let socket2;
@@ -41,10 +39,11 @@ describe('socketio middleware', () => {
       socket3 = createSocket('connect.sid=s%3AsessionId.otherCookieStuff; io=otherSocketioStuff; locale=en');
 
       const socketWithoutSid = createSocket('io=socketioStuff; locale=en');
+      const socketWithoutCookie = createSocket();
 
       req = {
-        io: {sockets: {connected: {socket1, socket2, socketWithoutSid, socket3}}},
-        session: {id: 'sessionId'}
+        io: { sockets: { connected: { socket1, socket2, socketWithoutSid, socket3, socketWithoutCookie } } },
+        session: { id: 'sessionId' }
       };
 
       res = {};
@@ -64,8 +63,8 @@ describe('socketio middleware', () => {
     });
 
     it('should include in the result an "emit" function that emits to all the found sockets the sent message', () => {
-      let result = req.io.getCurrentSessionSockets();
-      const data = {data: 'data'};
+      const result = req.io.getCurrentSessionSockets();
+      const data = { data: 'data' };
 
       result.emit('Message', data);
 

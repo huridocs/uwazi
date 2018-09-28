@@ -1,43 +1,56 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {reuploadDocument} from 'app/Metadata/actions/actions';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { reuploadDocument } from 'app/Metadata/actions/actions';
 import socket from 'app/socket';
 import { Icon } from 'UI';
 
-export class UploadButton extends Component {
+const renderProgress = progress => (
+  <div className="item-shortcut btn btn-default btn-disabled">
+    <span>{progress}%</span>
+  </div>
+);
 
+const renderProcessing = () => (
+  <div className="item-shortcut btn btn-default">
+    <Icon icon="cog" spin />
+  </div>
+);
+
+export class UploadButton extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = {processing: false, failed: false, completed: false};
+    this.state = { processing: false, failed: false, completed: false };
 
     socket.on('conversionStart', (docId) => {
       if (docId === this.props.documentId) {
-        this.setState({processing: true, failed: false, completed: false});
+        this.setState({ processing: true, failed: false, completed: false });
       }
     });
 
     socket.on('conversionFailed', (docId) => {
       if (docId === this.props.documentId) {
-        this.setState({processing: false, failed: true, completed: false});
+        this.setState({ processing: false, failed: true, completed: false });
       }
     });
 
     socket.on('documentProcessed', (docId) => {
       if (docId === this.props.documentId) {
-        this.setState({processing: false, failed: false, completed: true}, () => {
+        this.setState({ processing: false, failed: false, completed: true }, () => {
           setTimeout(() => {
-            this.setState({processing: false, failed: false, completed: false});
+            this.setState({ processing: false, failed: false, completed: false });
           }, 2000);
         });
       }
     });
+
+    this.onChange = this.onChange.bind(this);
   }
 
   onChange(e) {
-    let file = e.target.files[0];
+    const file = e.target.files[0];
     this.context.confirm({
       accept: () => {
         this.props.reuploadDocument(this.props.documentId, file, this.props.documentSharedId, this.props.storeKey);
@@ -52,11 +65,13 @@ export class UploadButton extends Component {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut btn btn-default">
         <Icon icon="upload" />
-        <input onChange={this.onChange.bind(this)}
-               type="file"
-               accept="application/pdf"
-               id="upload-button-input"
-               style={{display: 'none'}} />
+        <input
+          onChange={this.onChange}
+          type="file"
+          accept="application/pdf"
+          id="upload-button-input"
+          style={{ display: 'none' }}
+        />
       </label>
     );
   }
@@ -65,11 +80,13 @@ export class UploadButton extends Component {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut btn btn-success">
         <Icon icon="check" />
-        <input onChange={this.onChange.bind(this)}
-               type="file"
-               accept="application/pdf"
-               id="upload-button-input"
-               style={{display: 'none'}} />
+        <input
+          onChange={this.onChange}
+          type="file"
+          accept="application/pdf"
+          id="upload-button-input"
+          style={{ display: 'none' }}
+        />
       </label>
     );
   }
@@ -78,30 +95,20 @@ export class UploadButton extends Component {
     return (
       <label htmlFor="upload-button-input" className="item-shortcut btn btn-danger">
         <Icon icon="exclamation-triangle" />
-        <input onChange={this.onChange.bind(this)}
-               type="file"
-               accept="application/pdf"
-               id="upload-button-input"
-               style={{display: 'none'}} />
+        <input
+          onChange={this.onChange}
+          type="file"
+          accept="application/pdf"
+          id="upload-button-input"
+          style={{ display: 'none' }}
+        />
       </label>
     );
   }
 
-  renderProgress(progress) {
-    return <div className="item-shortcut btn btn-default btn-disabled">
-             <span>{progress}%</span>
-           </div>;
-  }
-
-  renderProcessing() {
-    return <div className="item-shortcut btn btn-default">
-             <Icon icon="cog" spin />
-           </div>;
-  }
-
   render() {
     if (this.state.processing) {
-      return this.renderProcessing();
+      return renderProcessing();
     }
 
     if (this.state.failed) {
@@ -112,9 +119,9 @@ export class UploadButton extends Component {
       return this.renderCompleted();
     }
 
-    let progress = this.props.progress.get(this.props.documentId);
+    const progress = this.props.progress.get(this.props.documentId);
     if (progress) {
-      return this.renderProgress(progress);
+      return renderProgress(progress);
     }
 
     return this.renderUploadButton();
@@ -133,12 +140,10 @@ UploadButton.contextTypes = {
   confirm: PropTypes.func
 };
 
-const mapStateToProps = ({metadata}) => {
-  return {progress: metadata.progress};
-};
+const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({reuploadDocument}, dispatch);
+  return bindActionCreators({ reuploadDocument }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);

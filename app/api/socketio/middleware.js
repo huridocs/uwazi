@@ -1,7 +1,8 @@
 import cookie from 'cookie';
+import socketIo from 'socket.io';
 
 export default (server, app) => {
-  let io = require('socket.io')(server);
+  const io = socketIo(server);
   app.use((req, res, next) => {
     req.io = io;
     next();
@@ -9,10 +10,10 @@ export default (server, app) => {
 
   app.use((req, res, next) => {
     req.io.getCurrentSessionSockets = () => {
-      let sessionSockets = {
+      const sessionSockets = {
         sockets: [],
-        emit: function (...args) {
-          this.sockets.forEach(socket => {
+        emit(...args) {
+          this.sockets.forEach((socket) => {
             socket.emit(...args);
           });
         }
@@ -20,11 +21,15 @@ export default (server, app) => {
 
       Object.keys(req.io.sockets.connected).reduce((sockets, socketId) => {
         const socket = req.io.sockets.connected[socketId];
+        if (typeof socket.request.headers.cookie !== 'string') {
+          return sockets;
+        }
+
         const socketCookie = cookie.parse(socket.request.headers.cookie);
         let sessionId;
 
         if (socketCookie['connect.sid']) {
-          sessionId = socketCookie['connect.sid'].split('.')[0].split(':')[1];
+          [, sessionId] = socketCookie['connect.sid'].split('.')[0].split(':');
         }
 
         if (sessionId === req.session.id) {
