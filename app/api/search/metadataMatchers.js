@@ -210,7 +210,7 @@ const relationshipfilter = (filter) => {
 
 const filterToMatch = (filter, path = 'metadata') => {
   let match;
-  if (filter.type === 'text') {
+  if (filter.type === 'text' || filter.type === 'markdown') {
     match = textFilter(filter, path);
   }
 
