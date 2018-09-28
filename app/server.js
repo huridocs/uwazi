@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
+import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
+import helmet from 'helmet';
 import mongoose from 'mongoose';
 
 import { Server } from 'http';
-import bodyParser from 'body-parser';
 import path from 'path';
 
 import { uploadDocumentsPath } from './api/config/paths';
@@ -23,6 +24,8 @@ import uwaziMessage from '../message';
 mongoose.Promise = Promise;
 
 const app = express();
+app.use(helmet());
+
 const http = Server(app);
 
 const uncaughtError = (error) => {
