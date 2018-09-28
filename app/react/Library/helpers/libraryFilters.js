@@ -44,7 +44,7 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
   properties = populateOptions(properties, thesauris).map((property) => {
     let defaultValue = {};
 
-    if (property.type === 'text') {
+    if (property.type === 'text' || property.type === 'markdown') {
       defaultValue = '';
     }
 

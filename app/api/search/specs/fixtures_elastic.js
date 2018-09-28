@@ -62,6 +62,7 @@ export default {
         field1: 'joker',
         field2: 'bane',
         select1: 'selectValue1',
+        rich_text: 'rich',
         multiselect1: ['multiValue1', 'multiValue2'],
         groupedDictionary: ['spainID'],
         nestedField: [{ nested1: ['1', '2', '3'] }],
@@ -155,7 +156,7 @@ export default {
     {
       _id: template1,
       properties: [
-        { name: 'status_relationship_filter', type: 'relationshipfilter', relationType }
+        { name: 'status_relationship_filter', type: 'relationshipfilter', relationType },
       ]
     },
     { _id: template2, properties: [] },
@@ -169,6 +170,7 @@ export default {
         { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
         { name: 'city_geolocation', type: 'geolocation', filter: true },
         { name: 'groupedDictionary', type: 'multiselect', filter: true, content: countriesDictionaryID },
+        { name: 'rich_text', type: 'markdown', filter: true },
       ]
     },
     {
