@@ -5,6 +5,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents';
 import entities from 'api/entities';
+import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
 
@@ -13,6 +14,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
+import pathsConfig from '../../config/paths';
 
 describe('upload routes', () => {
   let routes;
@@ -219,6 +221,26 @@ describe('upload routes', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    it('should remove old document on reupload', (done) => {
+      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      fs.writeFile(`${__dirname}/uploads/test`, 'data', () => {
+        entitiesModel.save({ _id: entityId, file: { filename: 'test' } })
+        .then(() => {
+          req.body.document = entityId;
+          return routes.post('/api/reupload', req);
+        })
+        .then(() => {
+          fs.stat(path.resolve(`${__dirname}/uploads/test`), (err1) => {
+            if (err1) {
+              return done();
+            }
+            done.fail('file should be deleted on reupload');
+          });
+        })
+        .catch(catchErrors(done));
+      });
     });
   });
 
