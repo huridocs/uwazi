@@ -25,6 +25,12 @@ const storage = multer.diskStorage({
   }
 });
 
+const deleteFile = file => new Promise((resolve) => {
+  fs.unlink(file, () => {
+    resolve();
+  });
+});
+
 export default (app) => {
   const upload = multer({ storage });
 
@@ -42,7 +48,10 @@ export default (app) => {
     debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
     debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
 
-    return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })));
+    return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })))
+    .then(() => Promise.all(docs
+    .filter(doc => doc.file && doc.file.filename)
+    .map(doc => deleteFile(path.join(uploadDocumentsPath, doc.file.filename)))));
   })
   .then(() => {
     debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
