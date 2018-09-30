@@ -8,18 +8,19 @@ describe('library helper', () => {
         { name: 'author', filter: false, type: 'text' },
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
         { name: 'date', filter: true, type: 'text' },
-        { name: 'language', filter: true, type: 'text' }
+        { name: 'language', filter: true, type: 'text' },
+        { name: 'rich', filter: true, type: 'markdown' },
       ] },
     { _id: '2',
       properties: [
         { name: 'author', filter: false, type: 'text' },
         { name: 'country', filter: true, type: 'select', content: 'abc1' },
-        { name: 'language', filter: false, type: 'text' }
+        { name: 'language', filter: false, type: 'text' },
       ] },
     { _id: '3',
       properties: [
         { name: 'author', filter: false, type: 'select' },
-        { name: 'country', filter: true, type: 'text' }
+        { name: 'country', filter: true, type: 'text' },
       ] }
   ];
 
@@ -56,12 +57,13 @@ describe('library helper', () => {
         order: 'order',
         sort: 'sort',
         types: ['3'],
-        filters: { country: 'countryValue' }
+        filters: { country: 'countryValue', rich: 'search' }
       };
 
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
       expect(state.properties.length).toBe(1);
       expect(state.search.filters.country).toBe('countryValue');
+      expect(state.search.filters.rich).toBe('search');
       expect(state.search.searchTerm).toBe('searchTerm');
       expect(state.search.order).toBe('order');
       expect(state.search.sort).toBe('sort');
@@ -77,6 +79,7 @@ describe('library helper', () => {
       const state = libraryHelper.URLQueryToState(query, templates, thesauris);
       expect(state.search.filters.country).toEqual({});
       expect(state.search.filters.language).toBe('');
+      expect(state.search.filters.rich).toBe('');
     });
   });
 
