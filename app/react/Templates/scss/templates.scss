@@ -30,15 +30,15 @@
       font-size: 12px;
 
       @media(max-width: 1310px) {
+        font-size: 10px;
+      }
+
+      @media(max-width: 1080px) {
+        padding: 10px 5px;
+      }
+
+      @media(max-width: 1043px) {
         font-size: 9px;
-      }
-
-      @media(max-width: 1210px) {
-        font-size: 8px;
-      }
-
-      @media(max-width: 1160px) {
-        font-size: 7px;
       }
     }
 
@@ -52,16 +52,12 @@
         background-color: #eee;
       }
 
-      @media(max-width: 1300px) {
+      @media(max-width: 1310px) {
+        font-size: 10px;
+      }
+
+      @media(max-width: 1080px) {
         font-size: 9px;
-      }
-
-      @media(max-width: 1210px) {
-        font-size: 8px;
-      }
-
-      @media(max-width: 1160px) {
-        font-size: 7px;
       }
     }
   }
