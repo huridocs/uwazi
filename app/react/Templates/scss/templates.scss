@@ -21,6 +21,52 @@
   }
 }
 
+.property-options-list {
+  li {
+    padding: 0;
+    span {
+      padding: 10px 10px;
+      display: inline-block;
+      font-size: 12px;
+
+      @media(max-width: 1310px) {
+        font-size: 9px;
+      }
+
+      @media(max-width: 1210px) {
+        font-size: 8px;
+      }
+
+      @media(max-width: 1160px) {
+        font-size: 7px;
+      }
+    }
+
+    button {
+      padding: 10px 10px;
+      border: 0;
+      background-color: transparent;
+      border-right: 1px solid #ccc;
+
+      &:hover {
+        background-color: #eee;
+      }
+
+      @media(max-width: 1300px) {
+        font-size: 9px;
+      }
+
+      @media(max-width: 1210px) {
+        font-size: 8px;
+      }
+
+      @media(max-width: 1160px) {
+        font-size: 7px;
+      }
+    }
+  }
+}
+
 .metadataTemplate-list,
 .metadataTemplate-constructor {
   .list-group-item {

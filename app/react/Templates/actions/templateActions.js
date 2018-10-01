@@ -13,9 +13,11 @@ export function resetTemplate() {
   };
 }
 
-export function addProperty(property = {}, index = 0) {
+export function addProperty(property = {}, _index) {
   property.localID = ID();
   return (dispatch, getState) => {
+    const properties = getState().template.data.properties.slice(0);
+    const index = _index || properties.length;
     if (property.type === 'select' || property.type === 'multiselect') {
       property.content = getState().thesauris.get(0).get('_id');
     }
@@ -24,7 +26,6 @@ export function addProperty(property = {}, index = 0) {
       property.nestedProperties = [{ key: '', label: '' }];
     }
 
-    const properties = getState().template.data.properties.slice(0);
     properties.splice(index, 0, property);
     dispatch(formActions.change('template.data.properties', properties));
   };
