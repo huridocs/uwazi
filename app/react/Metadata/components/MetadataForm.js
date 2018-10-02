@@ -1,15 +1,17 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Form, Field } from 'react-redux-form';
 
-import validator from '../helpers/validator';
 import { FormGroup, IconSelector } from 'app/ReactReduxForms';
 import { Select as SimpleSelect } from 'app/Forms';
-import MetadataFormFields from './MetadataFormFields';
 import { createSelector } from 'reselect';
 import { filterBaseProperties } from 'app/Entities/utils/filterBaseProperties';
+import { notify } from 'app/Notifications';
 import t from 'app/I18N/t';
+import MetadataFormFields from './MetadataFormFields';
+import validator from '../helpers/validator';
 
 const selectTemplateOptions = createSelector(
   [s => s.templates, (s, isEntity) => isEntity],
@@ -23,8 +25,18 @@ const selectTemplateOptions = createSelector(
 );
 
 export class MetadataForm extends Component {
+  constructor(props) {
+    super(props);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onSubmitFailed = this.onSubmitFailed.bind(this);
+  }
+
   onSubmit(metadata) {
     this.props.onSubmit(filterBaseProperties(metadata), this.props.model);
+  }
+
+  onSubmitFailed() {
+    this.props.notify('Form is invalid', 'danger');
   }
 
   render() {
@@ -35,7 +47,13 @@ export class MetadataForm extends Component {
     }
 
     return (
-      <Form id="metadataForm" model={model} onSubmit={this.onSubmit.bind(this)} validators={validator.generate(template.toJS())}>
+      <Form
+        id="metadataForm"
+        model={model}
+        onSubmit={this.onSubmit}
+        validators={validator.generate(template.toJS())}
+        onSubmitFailed={this.onSubmitFailed}
+      >
 
         <FormGroup model=".title">
           <ul className="search__filter">
@@ -84,12 +102,17 @@ MetadataForm.propTypes = {
   templateOptions: PropTypes.object,
   thesauris: PropTypes.object,
   changeTemplate: PropTypes.func,
-  onSubmit: PropTypes.func
+  onSubmit: PropTypes.func,
+  notify: PropTypes.func,
 };
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ notify }, dispatch);
+}
 
 export const mapStateToProps = (state, ownProps) => ({
     template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId),
     templateOptions: selectTemplateOptions(state, ownProps.isEntity)
 });
 
-export default connect(mapStateToProps)(MetadataForm);
+export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
