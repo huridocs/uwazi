@@ -171,7 +171,7 @@ export default {
     interpretationOption: 'li:nth-child(6)',
 
     sidePanelViewEntityButton: '#app > div.content > div > div > aside.side-panel.connections-metadata.is-active > div.sidepanel-footer > span > a > button',
-    sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
+    sidePanelSearchInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body div.search-box input',
     sidePanelDocuments: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div .item-name'
   },
   datePicker: {

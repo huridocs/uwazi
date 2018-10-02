@@ -10,8 +10,20 @@ import { searchDocuments, getSuggestions, hideSuggestions, setOverSuggestions } 
 import { wrapDispatch } from 'app/Multireducer';
 import SafeHTML from 'app/utils/SafeHTML';
 import debounce from 'app/utils/debounce';
+import SearchTips from 'app/Library/components/SearchTips';
 
 export class SearchBar extends Component {
+  constructor(props) {
+    super(props);
+    this.search = this.search.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.resetSearch = this.resetSearch.bind(this);
+    this.submitSearch = this.submitSearch.bind(this);
+    this.mouseEnter = this.mouseEnter.bind(this);
+    this.mouseOut = this.mouseOut.bind(this);
+    this.closeSuggestions = this.closeSuggestions.bind(this);
+  }
+
   componentWillMount() {
     this.getSuggestions = debounce(this.getSuggestions, 400);
   }
@@ -63,30 +75,30 @@ export class SearchBar extends Component {
     const model = `${this.props.storeKey}.search`;
     return (
       <div className={`search-box${this.props.open ? ' is-active' : ''}`}>
-        <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
+        <Form model={model} onSubmit={this.search} autoComplete="off">
           <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
             <Field model=".searchTerm" updateOn="submit">
               <input
                 type="text"
                 placeholder={t('System', 'Search', null, false)}
                 className="form-control"
-                onChange={this.onChange.bind(this)}
+                onChange={this.onChange}
                 onBlur={this.props.hideSuggestions}
                 autoComplete="off"
               />
               <Icon
                 icon="times"
-                onClick={this.resetSearch.bind(this)}
+                onClick={this.resetSearch}
               />
             </Field>
             <Icon
               icon="search"
-              onClick={this.submitSearch.bind(this)}
+              onClick={this.submitSearch}
             />
           </div>
           <div
-            onMouseOver={this.mouseEnter.bind(this)}
-            onMouseLeave={this.mouseOut.bind(this)}
+            onMouseOver={this.mouseEnter}
+            onMouseLeave={this.mouseOut}
             className={`search-suggestions${showSuggestions && search.searchTerm || overSuggestions ? ' is-active' : ''}`}
           >
             {suggestions.toJS().map((suggestion, index) => {
@@ -102,12 +114,13 @@ export class SearchBar extends Component {
             <button
               className="search-suggestions-all"
               type="submit"
-              onClick={this.closeSuggestions.bind(this)}
+              onClick={this.closeSuggestions}
             >
               View all results for <b>{search.searchTerm}</b>
             </button>
           </div>
         </Form>
+        <SearchTips />
       </div>
     );
   }

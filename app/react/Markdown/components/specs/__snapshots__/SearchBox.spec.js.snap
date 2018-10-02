@@ -29,5 +29,6 @@ exports[`SearchBox should render a basic input that binds to the correct model 1
       </Modeled(Connect(Field))>
     </div>
   </Connect(Form)>
+  <SearchTips />
 </div>
 `;
