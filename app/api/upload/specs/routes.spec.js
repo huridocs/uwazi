@@ -223,6 +223,29 @@ describe('upload routes', () => {
       .catch(done.fail);
     });
 
+    it('should not remove old document when assigned to other entities', (done) => {
+      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      fs.writeFile(`${__dirname}/uploads/test`, 'data', () => {
+        Promise.all([
+          entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
+          entitiesModel.save({ file: { filename: 'test' } }),
+        ])
+        .then(() => {
+          req.body.document = entityId;
+          return routes.post('/api/reupload', req);
+        })
+        .then(() => {
+          fs.stat(path.resolve(`${__dirname}/uploads/test`), (err1) => {
+            if (err1) {
+              return done.fail('file should not be deleted');
+            }
+            return done();
+          });
+        })
+        .catch(catchErrors(done));
+      });
+    });
+
     it('should remove old document on reupload', (done) => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
       fs.writeFile(`${__dirname}/uploads/test`, 'data', () => {
@@ -236,7 +259,7 @@ describe('upload routes', () => {
             if (err1) {
               return done();
             }
-            done.fail('file should be deleted on reupload');
+            return done.fail('file should be deleted on reupload');
           });
         })
         .catch(catchErrors(done));
