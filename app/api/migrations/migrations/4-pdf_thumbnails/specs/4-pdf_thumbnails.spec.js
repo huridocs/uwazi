@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import { promisify } from 'util';
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
