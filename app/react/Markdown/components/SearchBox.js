@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import rison from 'rison';
 import { Icon } from 'UI';
+import SearchTips from 'app/Library/components/SearchTips';
 
 const search = ({ searchTerm }) => {
   browserHistory.push(`/library/?q=${rison.encode({ searchTerm })}`);
@@ -21,6 +22,7 @@ const SearchBox = ({ placeholder, classname }) => (
         </Field>
       </div>
     </Form>
+    <SearchTips />
   </div>
 );
 

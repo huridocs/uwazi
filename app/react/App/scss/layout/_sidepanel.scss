@@ -160,7 +160,7 @@ $c-sidebar: $c-white;
   .search-box {
     width: calc(100% - 10px);
     max-width: 100%;
-    margin: 5px;
+    margin: 5px 5px 1.2em 5px;
     z-index: 1;
 
     .form-control {
