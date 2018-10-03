@@ -15,9 +15,11 @@ export default {
     const cursor = db.collection('entities').find({ type: 'document' });
     while (await cursor.hasNext()) {
       const doc = await cursor.next();
-      await new PDF(path.join(uploadDocumentsPath, doc.file.filename)).createThumbnail(doc._id.toString());
-      process.stdout.write(`processed -> ${index}\r`);
-      index += 1;
+      if (doc.file && doc.file.filename) {
+        await new PDF(path.join(uploadDocumentsPath, doc.file.filename)).createThumbnail(doc._id.toString());
+        process.stdout.write(`processed -> ${index}\r`);
+        index += 1;
+      }
     }
     process.stdout.write('\r\n');
   }

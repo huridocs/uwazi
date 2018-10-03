@@ -1,8 +1,6 @@
 import db from 'api/utils/testing_db';
 
 const docId1 = db.id().toString();
-const docId2 = db.id().toString();
-const docId3 = db.id().toString();
 const docId4 = db.id().toString();
 
 export default {
@@ -14,11 +12,9 @@ export default {
       filename: 'existingPDF.pdf',
     }
   }, {
-    _id: docId2,
     title: 'non document entity',
     type: 'entity',
   }, {
-    _id: docId3,
     title: 'second doc',
     type: 'document',
     file: {
@@ -31,12 +27,13 @@ export default {
     file: {
       filename: 'existingPDF.pdf',
     }
+  }, {
+    title: 'missconformed doc entity',
+    type: 'document',
   }]
 };
 
 export {
   docId1,
-  docId2,
-  docId3,
   docId4,
 };

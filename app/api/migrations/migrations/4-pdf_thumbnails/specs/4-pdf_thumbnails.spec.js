@@ -6,7 +6,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import paths from 'api/config/paths';
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
-import fixtures, { docId1, docId2, docId3, docId4 } from './fixtures.js';
+import fixtures, { docId1, docId4 } from './fixtures.js';
 
 const exists = promisify(fs.stat);
 
