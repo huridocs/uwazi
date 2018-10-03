@@ -247,7 +247,7 @@ Nightmare.action('scrollElement', function (selector, height, done) {
 });
 
 Nightmare.action('waitForText', function (selector, done) {
-  this.wait(elementToSelect => document.__helpers.querySelector(elementToSelect).innerText, selector)
+  this.wait(elementToSelect => document.querySelector(elementToSelect) && document.querySelector(elementToSelect).innerText, selector)
   .then(() => { done(); });
 });
 
@@ -370,7 +370,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
       found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
-  .waitForText(selectors.documentView.sidePanelTitle)
+  .waitForText(selectors.documentView.viewerSidePanelFirstSnippet)
   .then(() => { done(); });
 });
 
