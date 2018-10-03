@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import PDF from 'api/upload/PDF';
 import path from 'path';
 import { uploadDocumentsPath } from 'api/config/paths';
