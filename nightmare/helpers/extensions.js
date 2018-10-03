@@ -370,7 +370,7 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
       found.querySelector('div.item-actions > div > a').click();
     }
   }, itemName)
-  .waitForText(selectors.documentView.viewerSidePanelFirstSnippet)
+  .waitForText('#pageContainer1 > div.textLayer')
   .then(() => { done(); });
 });
 
