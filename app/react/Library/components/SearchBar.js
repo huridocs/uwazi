@@ -11,6 +11,12 @@ import { wrapDispatch } from 'app/Multireducer';
 import SearchTips from 'app/Library/components/SearchTips';
 
 export class SearchBar extends Component {
+  constructor(props) {
+    super(props);
+    this.search = this.search.bind(this);
+    this.resetSearch = this.resetSearch.bind(this);
+    this.submitSearch = this.submitSearch.bind(this);
+  }
   resetSearch() {
     this.props.change(`${this.props.storeKey}.search.searchTerm`, '');
     const search = Object.assign({}, this.props.search);
@@ -32,7 +38,7 @@ export class SearchBar extends Component {
     const model = `${this.props.storeKey}.search`;
     return (
       <div className={`search-box${this.props.open ? ' is-active' : ''}`}>
-        <Form model={model} onSubmit={this.search.bind(this)} autoComplete="off">
+        <Form model={model} onSubmit={this.search} autoComplete="off">
           <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
             <Field model=".searchTerm" updateOn="submit">
               <input
@@ -43,12 +49,12 @@ export class SearchBar extends Component {
               />
               <Icon
                 icon="times"
-                onClick={this.resetSearch.bind(this)}
+                onClick={this.resetSearch}
               />
             </Field>
             <Icon
               icon="search"
-              onClick={this.submitSearch.bind(this)}
+              onClick={this.submitSearch}
             />
           </div>
         </Form>
