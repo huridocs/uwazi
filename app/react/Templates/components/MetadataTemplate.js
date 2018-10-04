@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { DropTarget } from 'react-dnd';
-import { I18NLink } from 'app/I18N';
+import { I18NLink, t } from 'app/I18N';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { FormGroup } from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
+import { notify } from 'app/Notifications';
 
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
@@ -18,6 +19,7 @@ export class MetadataTemplate extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
   onSubmit(_template) {
@@ -31,6 +33,10 @@ export class MetadataTemplate extends Component {
     this.props.saveTemplate(template);
   }
 
+  onSubmitFailed() {
+    this.props.notify(t('System', 'Duplicated name', null, false), 'danger');
+  }
+
   render() {
     const { connectDropTarget } = this.props;
     const commonProperties = this.props.commonProperties || [];
@@ -40,6 +46,7 @@ export class MetadataTemplate extends Component {
         <Form
           model="template.data"
           onSubmit={this.onSubmit}
+          onSubmitFailed={this.onSubmitFailed}
           className="metadataTemplate"
           validators={validator(this.props.properties, this.props.templates.toJS(), this.props._id)}
         >
@@ -97,6 +104,7 @@ MetadataTemplate.propTypes = {
   savingTemplate: PropTypes.bool,
   relationType: PropTypes.bool,
   setErrors: PropTypes.func,
+  notify: PropTypes.func,
   properties: PropTypes.array,
   commonProperties: PropTypes.array,
   templates: PropTypes.object
@@ -140,7 +148,7 @@ const mapStateToProps = ({ template, templates, relationTypes }, props) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ inserted, addProperty, setErrors: formActions.setErrors }, dispatch);
+  return bindActionCreators({ inserted, addProperty, setErrors: formActions.setErrors, notify }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);

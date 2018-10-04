@@ -13,12 +13,18 @@ const localSelectors = {
   backbutton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > a',
   template: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(6) > a',
   templatesListItems: '#app > div.content > div > div > div.settings-content > div > ul > li',
-  editRelationShipProperty: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div > button.btn.btn-default.btn-xs.property-edit',
   relationShipSelect: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(3) > select',
   superPowersThesauriOption: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(3) > select > option:nth-child(12)'
 };
 
 const propertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`;
+const editPropertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.list-group-item-actions > button.btn.btn-default.btn-xs.property-edit`;
+const hideLabelSelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div:nth-child(2) > div:nth-child(1) > label`;
+const usedAsFilterSelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div:nth-child(2) > div.inline-group > div > label`;
+const propertyNameSelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div.form-group > div > input`;
+const deletePropertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.list-group-item-actions > button.btn.btn-danger.btn-xs.property-remove`;
+const textPropertyIndex = 3;
+const relationshipPropertyIndex = 7;
 
 const nightmare = createNightmare();
 
@@ -69,8 +75,32 @@ describe('templates path', () => {
       }
 
       nightmare
-      .waitToClick(localSelectors.editRelationShipProperty)
+      .waitToClick(editPropertySelector(textPropertyIndex))
+      .waitToClick(hideLabelSelector(textPropertyIndex))
+      .waitToClick(usedAsFilterSelector(textPropertyIndex))
+      .waitToClick(editPropertySelector(relationshipPropertyIndex))
       .select(localSelectors.relationShipSelect, '5aae90e0bfbf88e5ae28b18c')
+      .waitToClick(localSelectors.saveTemplate)
+      .waitToClick('.alert.alert-success')
+      .waitToClick(localSelectors.backbutton)
+      .getInnerText(localSelectors.template)
+      .then((text) => {
+        expect(text).toContain('Testing Document Type');
+      })
+      .then(() => { done(); })
+      .catch(catchErrors(done));
+    });
+
+    it('should not allow duplicated properties', (done) => {
+      nightmare
+      .editItemFromList(localSelectors.templatesListItems, 'Testing Document Type')
+      .waitToClick(editPropertySelector(textPropertyIndex))
+      .clearInput(propertyNameSelector(textPropertyIndex))
+      .type(propertyNameSelector(textPropertyIndex), 'Select')
+      .waitToClick(localSelectors.saveTemplate)
+      .waitToClick('.alert.alert-danger')
+      .waitToClick(deletePropertySelector(textPropertyIndex))
+      .waitToClick('body > div:nth-child(10) > div > div > div > div.modal-footer > button.btn.btn-danger.confirm-button')
       .waitToClick(localSelectors.saveTemplate)
       .waitToClick('.alert.alert-success')
       .waitToClick(localSelectors.backbutton)
