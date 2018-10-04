@@ -26,7 +26,7 @@ function processQuery(_query, globalResources, key) {
 }
 
 export default function requestState(params, _query = {}, globalResources, key = 'documents') {
-  const query = processQuery(_query, globalResources, key);
+  const { userSelectedSorting, ...query } = processQuery(_query, globalResources, key);
 
   return api.search(query)
   .then((response) => {
