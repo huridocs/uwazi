@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-
-import {closePanel} from '../actions/uiActions';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import SidePanel from 'app/Layout/SidePanel';
-import SearchForm from './SearchEntitiesForm';
 import SearchResults from 'app/Connections/components/SearchResults';
 import { Icon } from 'UI';
-
+import { closePanel } from '../actions/uiActions';
+import SearchForm from './SearchEntitiesForm';
 import * as actions from '../actions/actions';
 
 export class AddEntities extends Component {
@@ -23,7 +21,7 @@ export class AddEntities extends Component {
   }
 
   render() {
-    const {uiState, searchResults} = this.props;
+    const { uiState, searchResults } = this.props;
     const open = Boolean(this.props.uiState.get('open'));
 
     return (
@@ -33,17 +31,17 @@ export class AddEntities extends Component {
           <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
             <Icon icon="times" />
           </button>
-
-          <div className="search-form">
-            <SearchForm />
-          </div>
         </div>
 
         <div className="sidepanel-body">
+          <div className="search-box">
+            <SearchForm />
+          </div>
           <SearchResults
             results={searchResults}
             searching={uiState.get('searching')}
-            onClick={this.addEntity}/>
+            onClick={this.addEntity}
+          />
         </div>
       </SidePanel>
     );
@@ -59,7 +57,7 @@ AddEntities.propTypes = {
   closePanel: PropTypes.func
 };
 
-export const mapStateToProps = ({relationships}) => {
+export const mapStateToProps = ({ relationships }) => {
   return {
     uiState: relationships.uiState,
     searchResults: relationships.searchResults,
@@ -69,7 +67,7 @@ export const mapStateToProps = ({relationships}) => {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({addEntity: actions.addEntity, closePanel}, dispatch);
+  return bindActionCreators({ addEntity: actions.addEntity, closePanel }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEntities);

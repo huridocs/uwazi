@@ -73,6 +73,15 @@
   .input-group.is-active .fa-times {
     display: block;
   }
+  .search-tips {
+    position: absolute;
+    right: .5em;
+    font-size: $f-size-xs;
+    bottom: -1.6em;
+    color: $c-primary;
+    border-bottom: 1px solid $c-primary-light;
+    cursor: pointer;
+  }
 }
 
 .search-button {

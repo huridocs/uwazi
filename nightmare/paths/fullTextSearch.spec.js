@@ -56,6 +56,7 @@ describe('FullTextSearch zone', () => {
     .clearInput(selectors.libraryView.searchInput)
     .openDocumentFromLibrary('Batman')
     .waitToClick(selectors.documentView.searchTextTab)
+    .clearInput(selectors.documentView.searchTextInput)
     .write(selectors.documentView.searchTextInput, 'joker')
     .typeEnter(selectors.documentView.searchTextInput)
     .wait(2000)
