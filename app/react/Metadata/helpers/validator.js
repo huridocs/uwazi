@@ -6,7 +6,7 @@ export function notEmpty(val) {
     return true;
   }
 
-  if (typeof val === 'object') {
+  if (typeof val === 'object' && val !== null) {
     return Boolean(Object.keys(val).length);
   }
   return !!val && val.trim() !== '';
@@ -14,13 +14,13 @@ export function notEmpty(val) {
 
 export default {
   generate(template) {
-    let validationObject = {
-      title: {required: notEmpty}
+    const validationObject = {
+      title: { required: notEmpty }
     };
 
     template.properties.forEach((property) => {
       if (property.required) {
-        validationObject[`metadata.${property.name}`] = {required: notEmpty};
+        validationObject[`metadata.${property.name}`] = { required: notEmpty };
       }
     });
 

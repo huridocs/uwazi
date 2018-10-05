@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks */
+import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -16,11 +16,26 @@ import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
 import pathsConfig from '../../config/paths';
 
+const writeFile = promisify(fs.writeFile);
+const fileExists = promisify(fs.stat);
+
 describe('upload routes', () => {
   let routes;
   let req;
   let file;
   let iosocket;
+
+  const onSocketRespond = (method, url, reqObject, eventName = 'documentProcessed') => {
+    const promise = new Promise((resolve) => {
+      iosocket.emit.and.callFake((event) => {
+        if (event === eventName) {
+          resolve();
+        }
+      });
+    });
+    routes[method](url, reqObject);
+    return promise;
+  };
 
   const deleteThumbnail = thumbnailId => new Promise((resolve) => {
     const thumbnailURI = `${__dirname}/uploads/${thumbnailId}.jpg`;
@@ -81,82 +96,56 @@ describe('upload routes', () => {
   });
 
   describe('POST/upload', () => {
-    // Temporary test for PDF conversion. This should probably go elsewhere?
-    it('should process the document after upload', (done) => {
-      iosocket.emit.and.callFake((eventName) => {
-        if (eventName === 'documentProcessed') {
-          return Promise.all([
-            documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-            documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
-          ])
-          .then(([docES, docEN]) => {
-            expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
-            expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
-            expect(docEN[0].processed).toBe(true);
-            expect(docEN[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
-            expect(docEN[0].totalPages).toBe(1);
-            expect(docEN[0].language).toBe('en');
+    it('should process the document after upload', async () => {
+      await onSocketRespond('post', '/api/upload', req);
+      const [docES, docEN] = await Promise.all([
+        documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
+        documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+      ]);
+      expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
+      expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
+      expect(docEN[0].processed).toBe(true);
+      expect(docEN[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
+      expect(docEN[0].totalPages).toBe(1);
+      expect(docEN[0].language).toBe('en');
 
-            expect(docES[0].processed).toBe(true);
-            expect(docES[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
-            expect(docES[0].totalPages).toBe(1);
-            expect(docES[0].language).toBe('es');
+      expect(docES[0].processed).toBe(true);
+      expect(docES[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
+      expect(docES[0].totalPages).toBe(1);
+      expect(docES[0].language).toBe('es');
 
-            return checkThumbnails().then(() => { done(); });
-          })
-          .catch(catchErrors(done));
-        }
-      });
-
-      routes.post('/api/upload', req)
-      .catch(catchErrors(done));
+      await checkThumbnails();
     });
 
     describe('Language detection', () => {
-      it('should detect English documents and store the result', (done) => {
+      it('should detect English documents and store the result', async () => {
         file.filename = 'eng.pdf';
         file.path = `${__dirname}/uploads/eng.pdf`;
 
-        iosocket.emit.and.callFake((eventName) => {
-          if (eventName === 'documentProcessed') {
-            return Promise.all([
-              documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-              documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
-            ])
-            .then(([docES, docEN]) => {
-              expect(docEN[0].file.language).toBe('eng');
-              expect(docES[0].file.language).toBe('eng');
-              done();
-            })
-            .catch(catchErrors(done));
-          }
-        });
+        await onSocketRespond('post', '/api/upload', req);
 
-        routes.post('/api/upload', req)
-        .catch(catchErrors(done));
+        const [docES, docEN] = await Promise.all([
+          documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
+          documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+        ]);
+
+        expect(docEN[0].file.language).toBe('eng');
+        expect(docES[0].file.language).toBe('eng');
       });
 
-      it('should detect Spanish documents and store the result', (done) => {
+      it('should detect Spanish documents and store the result', async () => {
         file.filename = 'spn.pdf';
         file.path = `${__dirname}/uploads/spn.pdf`;
-        iosocket.emit.and.callFake((eventName) => {
-          if (eventName === 'documentProcessed') {
-            return Promise.all([
-              documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-              documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
-            ])
-            .then(([docES, docEN]) => {
-              expect(docEN[0].file.language).toBe('spa');
-              expect(docEN[0].file.originalname).toBeDefined();
-              expect(docES[0].file.language).toBe('spa');
-              done();
-            })
-            .catch(catchErrors(done));
-          }
-        });
 
-        routes.post('/api/upload', req)
-        .catch(catchErrors(done));
+        await onSocketRespond('post', '/api/upload', req);
+
+        const [docES, docEN] = await Promise.all([
+          documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
+          documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+        ]);
+        expect(docEN[0].file.language).toBe('spa');
+        expect(docEN[0].file.originalname).toBeDefined();
+        expect(docES[0].file.language).toBe('spa');
       });
     });
 
@@ -186,16 +175,20 @@ describe('upload routes', () => {
 
     describe('when upload finishes', () => {
       it('should update the document with the file path and uploaded flag to true', (done) => {
+        iosocket.emit.and.callFake((eventName) => {
+          if (eventName === 'documentProcessed') {
+            documents.getById('id', 'es')
+            .then((modifiedDoc) => {
+              expect(modifiedDoc.file.originalname).toEqual(file.originalname);
+              expect(modifiedDoc.file.filename).toEqual(file.filename);
+              expect(modifiedDoc.uploaded).toEqual(true);
+              done();
+            });
+          }
+        });
         routes.post('/api/upload', req)
         .then((response) => {
           expect(response).toEqual(file);
-          return documents.getById('id', 'es');
-        })
-        .then((doc) => {
-          expect(doc.file.originalname).toEqual(file.originalname);
-          expect(doc.file.filename).toEqual(file.filename);
-          expect(doc.uploaded).toEqual(true);
-          done();
         })
         .catch(done.fail);
       });
@@ -208,62 +201,52 @@ describe('upload routes', () => {
     });
 
     it('should reupload a document', (done) => {
+      iosocket.emit.and.callFake((eventName) => {
+        if (eventName === 'documentProcessed') {
+          expect(relationships.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
+
+          documents.getById('id', 'es')
+          .then((modifiedDoc) => {
+            expect(modifiedDoc.toc.length).toBe(0);
+            done();
+          });
+        }
+      });
       req.body.document = entityId;
+
       routes.post('/api/reupload', req)
       .then((response) => {
-        expect(relationships.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
         expect(response).toEqual(file);
-
-        return documents.getById('id', 'es');
-      })
-      .then((modifiedDoc) => {
-        expect(modifiedDoc.toc.length).toBe(0);
-        done();
       })
       .catch(done.fail);
     });
 
-    it('should not remove old document when assigned to other entities', (done) => {
+    it('should not remove old document when assigned to other entities', async () => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
-      fs.writeFile(`${__dirname}/uploads/test`, 'data', () => {
-        Promise.all([
-          entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
-          entitiesModel.save({ file: { filename: 'test' } }),
-        ])
-        .then(() => {
-          req.body.document = entityId;
-          return routes.post('/api/reupload', req);
-        })
-        .then(() => {
-          fs.stat(path.resolve(`${__dirname}/uploads/test`), (err1) => {
-            if (err1) {
-              return done.fail('file should not be deleted');
-            }
-            return done();
-          });
-        })
-        .catch(catchErrors(done));
-      });
+      req.body.document = entityId;
+
+      await writeFile(`${__dirname}/uploads/test`, 'data');
+      await Promise.all([
+        entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
+        entitiesModel.save({ file: { filename: 'test' } }),
+      ]);
+
+      await onSocketRespond('post', '/api/reupload', req);
+      await fileExists(path.resolve(`${__dirname}/uploads/test`));
     });
 
-    it('should remove old document on reupload', (done) => {
+    it('should remove old document on reupload', async () => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
-      fs.writeFile(`${__dirname}/uploads/test`, 'data', () => {
-        entitiesModel.save({ _id: entityId, file: { filename: 'test' } })
-        .then(() => {
-          req.body.document = entityId;
-          return routes.post('/api/reupload', req);
-        })
-        .then(() => {
-          fs.stat(path.resolve(`${__dirname}/uploads/test`), (err1) => {
-            if (err1) {
-              return done();
-            }
-            return done.fail('file should be deleted on reupload');
-          });
-        })
-        .catch(catchErrors(done));
-      });
+      req.body.document = entityId;
+      await writeFile(`${__dirname}/uploads/test`, 'data');
+
+      await entitiesModel.save({ _id: entityId, file: { filename: 'test' } });
+      await onSocketRespond('post', '/api/reupload', req);
+
+      try {
+        await fileExists(path.resolve(`${__dirname}/uploads/test`));
+        fail('file should be deleted on reupload');
+      } catch (e) {} //eslint-disable-line
     });
   });
 
