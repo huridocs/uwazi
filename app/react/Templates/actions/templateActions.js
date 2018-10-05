@@ -17,7 +17,7 @@ export function addProperty(property = {}, _index) {
   property.localID = ID();
   return (dispatch, getState) => {
     const properties = getState().template.data.properties.slice(0);
-    const index = _index || properties.length;
+    const index = _index !== undefined ? _index : properties.length;
     if (property.type === 'select' || property.type === 'multiselect') {
       property.content = getState().thesauris.get(0).get('_id');
     }
