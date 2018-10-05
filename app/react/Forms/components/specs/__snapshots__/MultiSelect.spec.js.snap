@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MultiSelect should not render aggregations on the groups when not defined 1`] = `
+<span
+  className="multiselectItem-results"
+>
+  <span
+    className="multiselectItem-action"
+    onClick={[Function]}
+  >
+    <Component
+      icon="caret-down"
+    />
+  </span>
+</span>
+`;

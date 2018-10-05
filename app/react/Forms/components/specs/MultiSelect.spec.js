@@ -43,6 +43,13 @@ describe('MultiSelect', () => {
     expect(optionElements.at(4).props().value).toBe('group-option2');
   });
 
+  it('should not render aggregations on the groups when not defined', () => {
+    delete props.options[2].results;
+    render();
+    const groupAggregation = component.find('.multiselect-group .multiselectItem .multiselectItem-results');
+    expect(groupAggregation.at(0)).toMatchSnapshot();
+  });
+
   describe('when checking an option', () => {
     it('should call onChange with the new value', () => {
       render();
