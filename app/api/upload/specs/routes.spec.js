@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks */
+import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -15,7 +15,6 @@ import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
 import pathsConfig from '../../config/paths';
-import { promisify } from 'util';
 
 const writeFile = promisify(fs.writeFile);
 const fileExists = promisify(fs.stat);
