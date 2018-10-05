@@ -116,14 +116,8 @@
 }
 
 .form-group {
-  .required {
-    display: none;
-    margin: 5px 0;
-    color: $c-danger;
-  }
-
   &.has-error .required {
-    display: inline;
+    color: $c-danger;
   }
 }
 
@@ -160,6 +154,7 @@
 }
 
 .has-error {
+  background: #fff1f1;
   .input-group-addon {
     position: relative;
     background-color: $c-danger-light;
@@ -207,7 +202,7 @@
     color: $c-grey-dark;
     text-decoration: none;
   }
-  
+
   &:hover .tab-link-tooltip{
     display: block;
   }
