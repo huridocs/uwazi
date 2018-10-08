@@ -20,6 +20,8 @@ export default (app) => {
       types: Joi.string(),
       _types: Joi.string(),
       fields: Joi.string(),
+      allAggregations: Joi.string(),
+      userSelectedSorting: Joi.string(),
       aggregations: Joi.string(),
       order: Joi.string(),
       sort: Joi.string(),
