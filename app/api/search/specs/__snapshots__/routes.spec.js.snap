@@ -15,6 +15,18 @@ Object {
       ],
       "type": "string",
     },
+    "allAggregations": Object {
+      "falsy": Array [
+        false,
+      ],
+      "flags": Object {
+        "insensitive": true,
+      },
+      "truthy": Array [
+        true,
+      ],
+      "type": "boolean",
+    },
     "fields": Object {
       "invalids": Array [
         "",
