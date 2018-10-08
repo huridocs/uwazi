@@ -15,6 +15,12 @@ Object {
       ],
       "type": "string",
     },
+    "allAggregations": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "fields": Object {
       "invalids": Array [
         "",
@@ -80,6 +86,12 @@ Object {
     },
     "unpublished": Object {
       "type": "any",
+    },
+    "userSelectedSorting": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
     },
   },
   "type": "object",
