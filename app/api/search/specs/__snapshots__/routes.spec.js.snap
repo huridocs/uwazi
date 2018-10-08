@@ -16,16 +16,10 @@ Object {
       "type": "string",
     },
     "allAggregations": Object {
-      "falsy": Array [
-        false,
+      "invalids": Array [
+        "",
       ],
-      "flags": Object {
-        "insensitive": true,
-      },
-      "truthy": Array [
-        true,
-      ],
-      "type": "boolean",
+      "type": "string",
     },
     "fields": Object {
       "invalids": Array [
@@ -92,6 +86,12 @@ Object {
     },
     "unpublished": Object {
       "type": "any",
+    },
+    "userSelectedSorting": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
     },
   },
   "type": "object",
