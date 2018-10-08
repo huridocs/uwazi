@@ -17,13 +17,13 @@ export class FormGroup extends Component {
     if (this.props.model) {
       const className = `form-group ${this.props.className || ''}`;
       return (
-        <Control.select
+        <Control.custom
           model={this.props.model}
           component={props => <div className={`${className} ${props.className}`}>{props.children}</div>}
           mapProps={mapProps}
         >
           {this.props.children}
-        </Control.select>
+        </Control.custom>
       );
     }
 
