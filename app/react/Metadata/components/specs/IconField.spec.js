@@ -1,10 +1,10 @@
 import React from 'react';
 
+import { StoreValue } from 'app/Layout';
 import { shallow } from 'enzyme';
+import ToggleDisplay from 'app/Layout/ToggleDisplay';
 
 import { IconField } from '../IconField';
-import ToggleDisplay from 'app/Layout/ToggleDisplay';
-import { StoreValue } from 'app/Layout';
 
 describe('IconField', () => {
   let props;
