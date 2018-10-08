@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import {addReference, saveTargetRangedReference} from '../actions/referencesActions';
-import {cancelTargetDocument} from '../actions/documentActions';
+import { addReference, saveTargetRangedReference } from '../actions/referencesActions';
+import { cancelTargetDocument } from '../actions/documentActions';
 import { Icon } from 'UI';
 
 export class TargetDocumentHeader extends Component {
-
   save(connection, targetRange) {
     return this.props.saveTargetRangedReference(connection.toJS(), targetRange, (ref) => {
       this.props.addReference(ref, this.props.pdfInfo.toJS(), true);
@@ -16,8 +15,8 @@ export class TargetDocumentHeader extends Component {
   }
 
   render() {
-    const {targetDocument, reference, connection} = this.props;
-    const {targetRange} = reference;
+    const { targetDocument, reference, connection } = this.props;
+    const { targetRange } = reference;
 
     let className = 'btn btn-default hidden';
 
@@ -35,8 +34,10 @@ export class TargetDocumentHeader extends Component {
           <h2>Select target paragraph<small>3</small></h2>
         </div>
         <div className="ContextMenu ContextMenu-center">
-          <button onClick={this.save.bind(this, connection, targetRange)}
-            className={className}>
+          <button
+            onClick={this.save.bind(this, connection, targetRange)}
+            className={className}
+          >
             <Icon icon="save" />
             <span className="ContextMenu-tooltip">Save</span>
           </button>
@@ -57,7 +58,7 @@ TargetDocumentHeader.propTypes = {
 };
 
 
-function mapStateToProps({documentViewer, connections}) {
+function mapStateToProps({ documentViewer, connections }) {
   return {
     connection: connections.connection,
     reference: documentViewer.uiState.toJS().reference,
