@@ -38,11 +38,16 @@ ToggleDisplay.defaultProps = {
   open: false,
 };
 
+const labelType = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.element,
+]);
+
 ToggleDisplay.propTypes = {
   children: PropTypes.element.isRequired,
   onHide: PropTypes.func,
-  showLabel: PropTypes.string,
-  hideLabel: PropTypes.string,
+  showLabel: labelType,
+  hideLabel: labelType,
   open: PropTypes.bool,
 };
 

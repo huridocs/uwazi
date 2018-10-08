@@ -2,19 +2,41 @@
 
 exports[`IconField should be open when has value 1`] = `
 <ToggleDisplay
-  hideLabel="remove icon"
+  hideLabel={
+    <span>
+      <Connect(Translate)>
+        hide icon
+      </Connect(Translate)>
+      <Unknown
+        icon="pencil"
+      />
+    </span>
+  }
   onHide={[Function]}
   open={true}
-  showLabel="add icon"
+  showLabel={
+    <span>
+      <Connect(Translate)>
+        show icon
+      </Connect(Translate)>
+      <Unknown
+        icon="pencil-alt"
+      />
+    </span>
+  }
 >
   <ul
     className="search__filter"
   >
     <li>
       <label>
-        Icon
+        <Connect(Translate)>
+          Icon
+        </Connect(Translate)>
          / 
-        Flag
+        <Connect(Translate)>
+          Flag
+        </Connect(Translate)>
       </label>
     </li>
     <li
@@ -30,19 +52,41 @@ exports[`IconField should be open when has value 1`] = `
 
 exports[`IconField should render IconSelector with toggleDisplay 1`] = `
 <ToggleDisplay
-  hideLabel="remove icon"
+  hideLabel={
+    <span>
+      <Connect(Translate)>
+        hide icon
+      </Connect(Translate)>
+      <Unknown
+        icon="pencil"
+      />
+    </span>
+  }
   onHide={[Function]}
   open={false}
-  showLabel="add icon"
+  showLabel={
+    <span>
+      <Connect(Translate)>
+        show icon
+      </Connect(Translate)>
+      <Unknown
+        icon="pencil-alt"
+      />
+    </span>
+  }
 >
   <ul
     className="search__filter"
   >
     <li>
       <label>
-        Icon
+        <Connect(Translate)>
+          Icon
+        </Connect(Translate)>
          / 
-        Flag
+        <Connect(Translate)>
+          Flag
+        </Connect(Translate)>
       </label>
     </li>
     <li
