@@ -67,7 +67,7 @@ export class RightRelationship extends Component {
                              ${rightRelationshipIndex === hub.get('rightRelationships').size - 1 ? 'last-of-type' : ''}`}
             >
               {!editing && (
-                <div className="rw-dropdown-list rw-widget">
+                <div className="rw-dropdown-list rw-widget no-edit">
                   <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
                     <div className="rw-input rw-dropdown-list-input no-edit">
                       {(() => {

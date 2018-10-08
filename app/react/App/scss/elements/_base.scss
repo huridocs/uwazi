@@ -2,13 +2,16 @@ body {
 	background-color: $c-background;
 	color: $c-black;
 	font-family: $f-regular;
-	font-size: $f-size;
+	font-size: 13px;
 	overflow: hidden;
+	@include big {
+		font-size: 15px;
+	}
 }
 
 a {
   color: $c-primary;
-  
+
   &:hover,
   &:focus,
   &:active {

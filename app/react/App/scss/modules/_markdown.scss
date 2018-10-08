@@ -46,14 +46,14 @@
     font-weight: 300;
     border: 0;
     p {
-      font-size: 20px;
+      font-size: $f-size-lg;
     }
   }
   code {
     padding: 3px 6px 2px;
     position: relative;
     top: -2px;
-    font-size: 12px;
+    font-size: $f-size-sm;
     margin-right: 4px;
     color: $c-primary;
     background-color: $c-grey-lighten;
@@ -75,7 +75,7 @@
   }
   p, li {
     font-family: $f-regular;
-    font-size: 17px;
+    font-size: $f-size-lg;
     line-height: 1.5em;
   }
   li {
@@ -223,7 +223,7 @@
       font-size: $f-size-xxl;
     }
     h2 {
-      font-size: 28px;
+      font-size: $f-size-xxl;
     }
   }
 }
