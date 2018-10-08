@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IconField should be open when has value 1`] = `
+<ToggleDisplay
+  hideLabel="remove icon"
+  onHide={[Function]}
+  open={true}
+  showLabel="add icon"
+>
+  <ul
+    className="search__filter"
+  >
+    <li>
+      <label>
+        Icon
+         / 
+        Flag
+      </label>
+    </li>
+    <li
+      className="wide"
+    >
+      <IconSelector
+        model=".icon"
+      />
+    </li>
+  </ul>
+</ToggleDisplay>
+`;
+
+exports[`IconField should render IconSelector with toggleDisplay 1`] = `
+<ToggleDisplay
+  hideLabel="remove icon"
+  onHide={[Function]}
+  open={false}
+  showLabel="add icon"
+>
+  <ul
+    className="search__filter"
+  >
+    <li>
+      <label>
+        Icon
+         / 
+        Flag
+      </label>
+    </li>
+    <li
+      className="wide"
+    >
+      <IconSelector
+        model=".icon"
+      />
+    </li>
+  </ul>
+</ToggleDisplay>
+`;
