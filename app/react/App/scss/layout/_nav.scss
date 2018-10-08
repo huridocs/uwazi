@@ -92,7 +92,7 @@ $nav-height: $header-height;
   border: 0;
   border-radius: 0;
   white-space: nowrap;
-  
+
   &:hover .tab-link-tooltip{
     display: block;
   }
@@ -102,7 +102,7 @@ $nav-height: $header-height;
 .nav-tabs>li>div.tab-link-active:focus,
 .nav-tabs>li>div.tab-link-active:hover {
 	color: $c-primary;
-	
+
 	&:after {
 	  content: '';
 	  display: block;
@@ -121,7 +121,7 @@ $nav-height: $header-height;
 
 .connectionsNumber {
   position: relative;
-  font-size: 11px;
+  font-size: $f-size-sm;
   line-height: 1em;
   margin-left: 5px;
 }

@@ -31,7 +31,7 @@ describe('MarkdownMedia', () => {
         const links = component.find('.timelink');
         expect(links.length).toBe(2);
 
-        const { player } = component.instance().refs;
+        const { player } = component.instance();
         spyOn(player, 'seekTo');
         const firstTimeLink = component.find('.timelink').at(0);
         const secondTimeLink = component.find('.timelink').at(1);

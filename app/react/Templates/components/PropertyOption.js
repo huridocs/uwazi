@@ -5,10 +5,19 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import { removeProperty } from 'app/Templates/actions/templateActions';
+import { removeProperty, addProperty } from 'app/Templates/actions/templateActions';
 import Icons from './Icons';
 
 export class PropertyOption extends Component {
+  constructor(props) {
+    super(props);
+    this.addProperty = this.addProperty.bind(this);
+  }
+
+  addProperty() {
+    this.props.addProperty({ label: this.props.label, type: this.props.type });
+  }
+
   render() {
     const { connectDragSource } = this.props;
     const { label } = this.props;
@@ -17,10 +26,8 @@ export class PropertyOption extends Component {
     return (
       connectDragSource(
         <li className={liClass}>
-          <span>
-            <Icon icon="clone" />
-            <Icon icon={iconClass} /> {label}
-          </span>
+          <button onClick={this.addProperty}><Icon icon="plus" /></button>
+          <span><Icon icon={iconClass} /> {label}</span>
         </li>
       )
     );
@@ -29,6 +36,7 @@ export class PropertyOption extends Component {
 
 PropertyOption.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
+  addProperty: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   disabled: PropTypes.bool
@@ -59,7 +67,7 @@ const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
 export { dragSource };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ removeProperty }, dispatch);
+  return bindActionCreators({ removeProperty, addProperty }, dispatch);
 }
 
 export default connect(null, mapDispatchToProps, null, { withRef: true })(dragSource);

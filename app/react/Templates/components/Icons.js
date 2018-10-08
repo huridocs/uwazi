@@ -12,5 +12,8 @@ export default {
   multidate: 'calendar',
   multidaterange: 'calendar',
   daterange: 'calendar',
-  geolocation: 'map-marker'
+  image: 'image',
+  preview: 'passport',
+  media: 'video',
+  geolocation: 'map-marker',
 };

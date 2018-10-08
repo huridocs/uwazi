@@ -17,7 +17,8 @@ describe('SnippetList', () => {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       searchTerm: 'snippet',
       documentViewUrl: '/document/sharedId',
-      scrollToPage: jest.fn(),
+      selectSnippet: jest.fn(),
+      selectedSnippet: Immutable.fromJS({ text: 'first <b>snippet 1</b> found', page: 1 }),
       snippets: Immutable.fromJS({
         metadata: [
           {

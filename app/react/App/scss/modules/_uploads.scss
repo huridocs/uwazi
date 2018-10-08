@@ -13,12 +13,12 @@
     margin-bottom: 15px;
     color: $c-grey-dark;
     border: 2px dashed $c-grey-light;
-    
+
     svg {
       color: $c-grey-dark;
       margin-right: 10px;
     }
-    
+
     a, button {
       border: 0;
       border-bottom: 1px dotted $c-grey-dark;
@@ -26,7 +26,7 @@
       padding: 0;
       cursor: pointer;
       color: $c-grey-dark;
-      
+
       &:hover {
         color: $c-black;
         border-bottom: 1px solid $c-grey-dark;
@@ -69,8 +69,6 @@
 .required {
   position: relative;
   top: -3px;
-  right: -3px;
-  color: red;
 }
 
 .content-header ~ .library-filters{

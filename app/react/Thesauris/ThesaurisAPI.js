@@ -8,9 +8,7 @@ export default {
     }
 
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   getDictionaries(id) {
@@ -20,31 +18,23 @@ export default {
     }
 
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   getEntities() {
-    let url = '/thesauris/entities';
+    const url = '/thesauris/entities';
 
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   save(thesauri) {
     return api.post('thesauris', thesauri)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   delete(thesauri) {
-    return api.delete('thesauris', thesauri)
-    .then((response) => {
-      return response.json;
-    });
+    return api.delete('thesauris', { _id: thesauri._id })
+    .then(response => response.json);
   }
 };

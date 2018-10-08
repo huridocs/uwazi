@@ -1,12 +1,12 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {MetadataForm, mapStateToProps} from '../MetadataForm';
+import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
-import {Form, Field} from 'react-redux-form';
-import {FormGroup, Select as SimpleSelect} from 'app/Forms';
-import {IconSelector} from 'app/ReactReduxForms';
+import { Form, Field } from 'react-redux-form';
+import { FormGroup, Select as SimpleSelect } from 'app/Forms';
+import { IconSelector } from 'app/ReactReduxForms';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
 
@@ -18,44 +18,43 @@ describe('MetadataForm', () => {
 
   beforeEach(() => {
     fieldsTemplate = [
-      {name: 'field1', label: 'label1'},
-      {name: 'field2', label: 'label2', type: 'select', content: '2'},
-      {name: 'field3', label: 'label3', type: 'multiselect', content: '2'},
-      {name: 'field4', label: 'label4', type: 'date'}
+      { name: 'field1', label: 'label1' },
+      { name: 'field2', label: 'label2', type: 'select', content: '2' },
+      { name: 'field3', label: 'label3', type: 'multiselect', content: '2' },
+      { name: 'field4', label: 'label4', type: 'date' }
     ];
 
     templates = Immutable.fromJS([
-      {name: 'template1', _id: 'templateId', properties: fieldsTemplate},
-      {name: 'template2', _id: '2', properties: [{name: 'field3'}], isEntity: false},
-      {name: 'template3', _id: '3', properties: [{name: 'field4'}], isEntity: true}
+      { name: 'template1', _id: 'templateId', properties: fieldsTemplate },
+      { name: 'template2', _id: '2', properties: [{ name: 'field3' }], isEntity: false },
+      { name: 'template3', _id: '3', properties: [{ name: 'field4' }], isEntity: true }
     ]);
 
     props = {
-      metadata: {_id: 'docId', template: 'templateId', title: 'testTitle', metadata: {field1: 'field1value', field2: 'field2value'}},
+      metadata: { _id: 'docId', template: 'templateId', title: 'testTitle', metadata: { field1: 'field1value', field2: 'field2value' } },
       templates,
       template: templates.get(0),
       templateOptions: Immutable.fromJS([]),
-      thesauris: Immutable.fromJS([{_id: 2, name: 'thesauri', values: [{label: 'option1', id: '1'}]}]),
+      thesauris: Immutable.fromJS([{ _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] }]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
-      //state: {title: {titleProp: 'prop'}, metadata: {field1: {field1Prop: 'prop'}}},
       model: 'metadata'
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<MetadataForm {...props}/>);
   };
 
   it('should render a form with metadata as model', () => {
     render();
-    let form = component.find(Form);
+    const form = component.find(Form);
     expect(form.props().model).toEqual('metadata');
   });
 
   it('should render MetadataFormFields passing thesauris state and template', () => {
     render();
-    let formFields = component.find(MetadataFormFields);
+    const formFields = component.find(MetadataFormFields);
 
     expect(formFields.props().thesauris).toBe(props.thesauris);
     expect(formFields.props().state).toBe(props.state);
@@ -64,31 +63,31 @@ describe('MetadataForm', () => {
 
   it('should pass the model to Form and MetadataFormFields', () => {
     render();
-    let form = component.find(Form);
+    const form = component.find(Form);
     expect(form.props().model).toBe('metadata');
-    let metadataFields = component.find(MetadataFormFields);
+    const metadataFields = component.find(MetadataFormFields);
     expect(metadataFields.props().model).toBe('metadata');
   });
 
   it('should render title field as a textarea', () => {
     render();
-    let title = component.find('textarea').closest(Field);
-    let titleGroup = component.find(FormGroup).at(0);
+    const title = component.find('textarea').closest(Field);
+    const titleGroup = component.find(FormGroup).at(0);
     expect(title.props().model).toEqual('.title');
     expect(titleGroup.props().model).toEqual('.title');
   });
 
   it('should render an icon selector linked to the icon property', () => {
     render();
-    let iconSelector = component.find(IconSelector);
+    const iconSelector = component.find(IconSelector);
     expect(iconSelector.props().model).toBe('.icon');
   });
 
   describe('on template change', () => {
     it('should call changeTemplate with the template', () => {
       render();
-      let template = component.find(SimpleSelect).first();
-      template.simulate('change', {target: {value: '2'}});
+      const template = component.find(SimpleSelect).first();
+      template.simulate('change', { target: { value: '2' } });
       expect(props.changeTemplate).toHaveBeenCalledWith(props.model, props.templates.toJS()[1]._id);
     });
   });
@@ -108,16 +107,16 @@ describe('MetadataForm', () => {
     let ownProps;
 
     beforeEach(() => {
-      state = {templates};
-      ownProps = {templates: templates, templateId: templates.get(1).get('_id')};
+      state = { templates };
+      ownProps = { templates, templateId: templates.get(1).get('_id') };
     });
 
     it('should select templateOptions according to entity type', () => {
-      let expectedOptions = [{label: 'template1', value: 'templateId'}, {label: 'template2', value: '2'}];
+      let expectedOptions = [{ label: 'template1', value: 'templateId' }, { label: 'template2', value: '2' }];
       expect(mapStateToProps(state, ownProps).templateOptions.toJS()).toEqual(expectedOptions);
 
       ownProps.isEntity = true;
-      expectedOptions = [{label: 'template3', value: '3'}];
+      expectedOptions = [{ label: 'template3', value: '3' }];
       expect(mapStateToProps(state, ownProps).templateOptions.toJS()).toEqual(expectedOptions);
     });
 

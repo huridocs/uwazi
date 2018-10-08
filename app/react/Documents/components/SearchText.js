@@ -5,20 +5,19 @@ import { bindActionCreators } from 'redux';
 import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
-import { highlightSearch } from 'app/Viewer/actions/uiActions';
+import { highlightSearch, selectSnippet } from 'app/Viewer/actions/uiActions';
 import { browserHistory } from 'react-router';
-import { scrollToPage } from 'app/Viewer/actions/uiActions';
-import { toUrlParams } from '../../../shared/JSONRequest';
 import { Icon } from 'UI';
+import SearchTips from 'app/Library/components/SearchTips';
+import { toUrlParams } from '../../../shared/JSONRequest';
 import SnippetList from './SnippetList';
 
 export class SearchText extends Component {
-  resetSearch() {}
-
-  attachDispatch(dispatch) {
-    this.formDispatch = dispatch;
+  constructor(props) {
+    super(props);
+    this.submit = this.submit.bind(this);
+    this.resetSearch = this.resetSearch.bind(this);
   }
-
   componentDidMount() {
     if (this.props.storeKey === 'documentViewer') {
       this.searchSnippets(this.props.searchTerm, this.props.doc.get('sharedId'));
@@ -30,6 +29,12 @@ export class SearchText extends Component {
       this.searchSnippets(nextProps.searchTerm, nextProps.doc.get('sharedId'));
     }
   }
+
+  attachDispatch(dispatch) {
+    this.formDispatch = dispatch;
+  }
+
+  resetSearch() {}
 
   searchSnippets(searchTerm, sharedId) {
     if (sharedId) {
@@ -58,7 +63,7 @@ export class SearchText extends Component {
       <div>
         <LocalForm
           model="searchText"
-          onSubmit={this.submit.bind(this)}
+          onSubmit={this.submit}
           getDispatch={dispatch => this.attachDispatch(dispatch)}
           autoComplete="off"
         >
@@ -73,9 +78,10 @@ export class SearchText extends Component {
                     className="form-control"
                     autoComplete="off"
                   />
-                  <Icon icon="times" onClick={this.resetSearch.bind(this)}/>
+                  <Icon icon="times" onClick={this.resetSearch}/>
                 </Field>
               </div>
+              <SearchTips />
             </div>
           }
         </LocalForm>
@@ -91,7 +97,7 @@ export class SearchText extends Component {
           (<SnippetList
             doc={this.props.doc}
             snippets={snippets}
-            scrollToPage={this.props.scrollToPage}
+            selectSnippet={this.props.selectSnippet}
             searchTerm={this.props.searchTerm}
             documentViewUrl={documentViewUrl}
           />) : ''
@@ -109,13 +115,12 @@ SearchText.propTypes = {
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
-  scrollToPage: PropTypes.func,
+  selectSnippet: PropTypes.func.isRequired,
   highlightSearch: PropTypes.func
 };
 
 SearchText.defaultProps = {
   searchTerm: '',
-  scrollToPage,
   snippets: {
     count: 0,
     metadata: [],
@@ -131,7 +136,7 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ searchSnippets }, dispatch);
+  return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchText);

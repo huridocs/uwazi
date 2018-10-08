@@ -7,17 +7,17 @@ export function catchErrors(done) {
   };
 }
 
-let matchers = {
+const matchers = {
   toNeedAuthorization() {
     return {
       compare(routeResult) {
         let status;
-        let req = {};
-        let next = () => {};
-        let res = {status: (code) => status = code, json: () => {}};
-        let authMiddleware = routeResult.middlewares[0];
+        const req = {};
+        const next = () => {};
+        const res = { status: code => status = code, json: () => {} };
+        const authMiddleware = routeResult.middlewares[0];
         authMiddleware(req, res, next);
-        let result = {pass: status === 401};
+        const result = { pass: status === 401 };
         if (result.pass) {
           result.message = 'route is authorized';
         } else {
@@ -31,12 +31,12 @@ let matchers = {
     return {
       compare(actual, expected) {
         const result = {};
-        const missingItems = expected.filter((item) => !actual.includes(item));
+        const missingItems = expected.filter(item => !actual.includes(item));
         result.pass = !missingItems.length && actual.length === expected.length;
         if (result.pass) {
           result.message = 'Collections are equal';
         } else {
-          result.message = 'Expected: [' + expected + '] but got: [' + actual + ']';
+          result.message = `Expected: [${expected}] but got: [${actual}]`;
         }
         return result;
       }

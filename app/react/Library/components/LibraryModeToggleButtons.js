@@ -10,13 +10,13 @@ export class LibraryModeToggleButtons extends Component {
     return (
       <div className="list-view-mode">
         <div className={`list-view-mode-zoom list-view-buttons-zoom-${this.props.zoomLevel} buttons-group`}>
-          <button className="btn btn-default zoom-in" onClick={this.props.zoomIn}>
-            <Icon icon="search-plus" />
-            <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
-          </button>
           <button className="btn btn-default zoom-out" onClick={this.props.zoomOut}>
             <Icon icon="search-minus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
+          </button>
+          <button className="btn btn-default zoom-in" onClick={this.props.zoomIn}>
+            <Icon icon="search-plus" />
+            <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
           </button>
         </div>
 

@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Icons should hold the option icons map 1`] = `
+Object {
+  "checkbox": "check",
+  "date": "calendar",
+  "daterange": "calendar",
+  "geolocation": "map-marker",
+  "image": "image",
+  "markdown": "file",
+  "media": "video",
+  "multidate": "calendar",
+  "multidaterange": "calendar",
+  "multiselect": "list",
+  "nested": "cubes",
+  "numeric": "calculator",
+  "preview": "passport",
+  "relationship": "link",
+  "relationshipfilter": "filter",
+  "select": "sort",
+  "text": "font",
+}
+`;

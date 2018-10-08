@@ -40,6 +40,10 @@ export default class Uploads extends RouteHandler {
     );
   }
 
+  urlHasChanged(nextProps) {
+    return nextProps.location.query.q !== this.props.location.query.q;
+  }
+
   static requestState(params, _query = {}, globalResources) {
     const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
     const query = rison.decode(_query.q || '()');

@@ -3,6 +3,8 @@ import { browserHistory } from 'react-router';
 import React from 'react';
 import PropTypes from 'prop-types';
 import rison from 'rison';
+import { Icon } from 'UI';
+import SearchTips from 'app/Library/components/SearchTips';
 
 const search = ({ searchTerm }) => {
   browserHistory.push(`/library/?q=${rison.encode({ searchTerm })}`);
@@ -13,13 +15,14 @@ const SearchBox = ({ placeholder, classname }) => (
     <Form model="library.search" onSubmit={search} >
       <div className="input-group">
         <button type="submit">
-          <i className="fa fa-search" />
+          <Icon icon="search" />
         </button>
         <Field model=".searchTerm">
           <input className="form-control" type="text" placeholder={placeholder} />
         </Field>
       </div>
     </Form>
+    <SearchTips />
   </div>
 );
 

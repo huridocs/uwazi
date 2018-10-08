@@ -1,28 +1,26 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import serialize from 'serialize-javascript';
 
 class Root extends Component {
   renderInitialData() {
     let innerHtml = '';
-    if (this.props.initialData) {
-      innerHtml += `window.__initialData__ = ${JSON.stringify(this.props.initialData)};`;
-    }
     if (this.props.reduxData) {
-      innerHtml += `window.__reduxData__ = ${JSON.stringify(this.props.reduxData)};`;
+      innerHtml += `window.__reduxData__ = ${serialize(this.props.reduxData, { isJSON: true })};`;
     }
 
     if (this.props.user) {
-      innerHtml += `window.__user__ = ${JSON.stringify(this.props.user)};`;
+      innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
     }
 
     return (
-      <script dangerouslySetInnerHTML={{ __html: innerHtml }} />
+      <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
     );
   }
 
   render() {
     const isHotReload = process.env.HOT;
-    const head = this.props.head;
+    const { head } = this.props;
     let pdfWorkerPathScript = 'window.pdfWorkerPath = \'/static/pdf.worker.js\';';
     let JS = [
       'http://localhost:8080/manifest.js',
@@ -81,7 +79,6 @@ class Root extends Component {
 Root.propTypes = {
   user: PropTypes.object,
   children: PropTypes.object,
-  initialData: PropTypes.object,
   reduxData: PropTypes.object,
   head: PropTypes.object,
   content: PropTypes.string,

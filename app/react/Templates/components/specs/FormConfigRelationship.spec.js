@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 import React from 'react';
-
-import { FormConfigRelationship } from 'app/Templates/components/FormConfigRelationship';
 import { shallow } from 'enzyme';
+
+import { FormConfigRelationship } from '../FormConfigRelationship';
 
 describe('FormConfigRelationship', () => {
   let component;
@@ -17,6 +17,7 @@ describe('FormConfigRelationship', () => {
       thesauris: Immutable.fromJS(thesauris),
       relationTypes: Immutable.fromJS(relationTypes),
       index: 0,
+      type: 'relationship',
       data: { properties: [{ filter: false }] },
       formState: {
         'properties.0.label': { valid: true, dirty: false, errors: {} },

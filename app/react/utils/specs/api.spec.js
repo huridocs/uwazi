@@ -1,10 +1,11 @@
-import {APIURL} from 'app/config';
+import { browserHistory } from 'react-router';
+
+import { APIURL } from 'app/config';
+import { store } from 'app/store';
 import api from 'app/utils/api';
 import backend from 'fetch-mock';
-import {browserHistory} from 'react-router';
-import * as notifyActions from 'app/Notifications/actions/notificationsActions';
-import {store} from 'app/store';
 import loadingBar from 'app/App/LoadingProgressBar';
+import * as notifyActions from 'app/Notifications/actions/notificationsActions';
 
 describe('api', () => {
   beforeEach(() => {
@@ -12,12 +13,12 @@ describe('api', () => {
     spyOn(loadingBar, 'done');
     backend.restore();
     backend
-    .get(APIURL + 'test_get', JSON.stringify({method: 'GET'}))
-    .post(APIURL + 'test_post', JSON.stringify({method: 'POST'}))
-    .delete(APIURL + 'test_delete?data=delete', JSON.stringify({method: 'DELETE'}))
-    .get(APIURL + 'unauthorised', {status: 401, body: {}})
-    .get(APIURL + 'notfound', {status: 404, body: {}})
-    .get(APIURL + 'error_url', {status: 500, body: {}});
+    .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
+    .post(`${APIURL}test_post`, JSON.stringify({ method: 'POST' }))
+    .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
+    .get(`${APIURL}unauthorised`, { status: 401, body: {} })
+    .get(`${APIURL}notfound`, { status: 404, body: {} })
+    .get(`${APIURL}error_url`, { status: 500, body: {} });
   });
 
   afterEach(() => backend.restore());
@@ -47,7 +48,7 @@ describe('api', () => {
         api.cookie('cookie');
         api.get('test_get')
         .then(() => {
-          let headers = backend.calls().matched[0][1].headers;
+          const headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -59,9 +60,9 @@ describe('api', () => {
 
   describe('POST', () => {
     it('should prefix url with config api url', (done) => {
-      api.post('test_post', {data: 'post'})
+      api.post('test_post', { data: 'post' })
       .then((response) => {
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({data: 'post'}));
+        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({ data: 'post' }));
         expect(response.json.method).toBe('POST');
         done();
       })
@@ -69,7 +70,7 @@ describe('api', () => {
     });
 
     it('should start and end the loading bar', (done) => {
-      api.post('test_post', {data: 'post'})
+      api.post('test_post', { data: 'post' })
       .then(() => {
         expect(loadingBar.done).toHaveBeenCalled();
         done();
@@ -81,7 +82,7 @@ describe('api', () => {
 
   describe('DELETE', () => {
     it('should prefix url with config api url', (done) => {
-      api.delete('test_delete', {data: 'delete'})
+      api.delete('test_delete', { data: 'delete' })
       .then((response) => {
         expect(response.json.method).toBe('DELETE');
         done();
@@ -90,7 +91,7 @@ describe('api', () => {
     });
 
     it('should start and end the loading bar', (done) => {
-      api.delete('test_delete', {data: 'delete'})
+      api.delete('test_delete', { data: 'delete' })
       .then(() => {
         expect(loadingBar.done).toHaveBeenCalled();
         done();

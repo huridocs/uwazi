@@ -1,9 +1,51 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"peerDependencies": true}] */
 import Nightmare from 'nightmare';
+import selectors from './selectors.js';
 
 let currentState;
 
 Nightmare.action('library', {
+  openCardSidePanel(matchingText, done) {
+    this.evaluate((nameToFind) => {
+      const cards = document.querySelectorAll('.main-wrapper div.item');
+      let found = false;
+      cards.forEach((card) => {
+        if (found) {
+          return;
+        }
+        if (card.innerText.match(nameToFind)) {
+          found = card;
+        }
+      });
+
+      if (found) {
+        return found.click();
+      }
+
+      throw new Error(`Card with text "${nameToFind}" not found !`);
+    }, matchingText)
+    .then(() => { done(); });
+  },
+
+  selectFilter(matchingText, done) {
+    this.library.setCurrentState()
+    .waitToClick(`li[title*="${matchingText}" i] label`)
+    .library.waitForSearchToFinish()
+    .then(() => { done(); });
+  },
+
+  editCard(matchingText, done) {
+    this.library.openCardSidePanel(matchingText)
+    .waitToClick(selectors.libraryView.editEntityButton)
+    .then(() => { done(); });
+  },
+
+  saveCard(done) {
+    this.click(selectors.libraryView.saveButton)
+    .waitForTheEntityToBeIndexed()
+    .then(() => done());
+  },
+
   clickFilter(selector, done) {
     this.library.setCurrentState()
     .waitToClick(selector)

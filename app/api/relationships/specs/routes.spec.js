@@ -1,7 +1,7 @@
 import relationshipsRroutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import relationships from 'api/relationships/relationships';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 describe('relationships routes', () => {
@@ -19,8 +19,12 @@ describe('relationships routes', () => {
   });
 
   describe('POST', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/references')).toMatchSnapshot();
+    });
+
     it('should save a reference', (done) => {
-      let req = {body: {name: 'created_reference'}, language: 'es'};
+      let req = { body: { name: 'created_reference' }, language: 'es' };
 
       routes.post('/api/references', req)
       .then(() => {
@@ -32,6 +36,9 @@ describe('relationships routes', () => {
   });
 
   describe('POST bulk', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/relationships/bulk')).toMatchSnapshot();
+    });
     it('should save and delete the relationships', (done) => {
       let req = {body: {
         save: [{_id: 1}, {_id: 2}],
@@ -50,6 +57,9 @@ describe('relationships routes', () => {
   });
 
   describe('DELETE', () => {
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/references')).toMatchSnapshot();
+    });
     it('should delete the reference', (done) => {
       let req = {query: {_id: 'to_delete_id'}, language: 'en'};
 
@@ -97,6 +107,10 @@ describe('relationships routes', () => {
   describe('GET search', () => {
     beforeEach(() => {
       spyOn(relationships, 'search').and.returnValue(Promise.resolve('search results'));
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/references/search/:id')).toMatchSnapshot();
     });
 
     it('should return entities from relationships search() passing the user', (done) => {

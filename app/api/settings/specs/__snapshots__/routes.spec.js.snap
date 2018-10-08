@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`relationtypes routes POST should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "analyticsTrackingId": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "custom": Object {
+      "type": "any",
+    },
+    "customCSS": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "dateFormat": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "filters": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "items": Object {
+              "type": "any",
+            },
+            "name": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "home_page": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "languages": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "default": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "key": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "label": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "links": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "localID": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "title": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "url": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "mailerConfig": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "private": Object {
+      "falsy": Array [
+        false,
+      ],
+      "flags": Object {
+        "insensitive": true,
+      },
+      "truthy": Array [
+        true,
+      ],
+      "type": "boolean",
+    },
+    "project": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "site_name": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

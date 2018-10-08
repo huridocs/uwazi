@@ -41,6 +41,14 @@ describe('Metadata', () => {
     testMetadata([{ label: 'label array', value: [{ value: 'first_value' }, { value: 'second_value' }] }]);
   });
 
+  it('should render an image field', () => {
+    testMetadata([{ label: 'Image Label', value: 'http://some.url.com/image.jpg', type: 'image', style: 'cover' }]);
+  });
+
+  it('should render a media field', () => {
+    testMetadata([{ label: 'Media Label', value: 'http://youtube.com/videoid', type: 'media' }]);
+  });
+
   it('should render a Markdown when the metadata is type mardown', () => {
     testMetadata([{ label: 'label array', value: 'some markdown text', type: 'markdown' }]);
   });

@@ -8,11 +8,12 @@ import { createStore } from 'redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
-import { MetadataProperty, dragSource, dropTarget } from 'app/Templates/components/MetadataProperty';
-import FormConfigInput from 'app/Templates/components/FormConfigInput';
-import FormConfigSelect from 'app/Templates/components/FormConfigSelect';
-import FormConfigNested from 'app/Templates/components/FormConfigNested';
-import FormConfigRelationship from 'app/Templates/components/FormConfigRelationship';
+import { MetadataProperty, dragSource, dropTarget } from '../MetadataProperty';
+import FormConfigMultimedia from '../FormConfigMultimedia';
+import FormConfigInput from '../FormConfigInput';
+import FormConfigSelect from '../FormConfigSelect';
+import FormConfigNested from '../FormConfigNested';
+import FormConfigRelationship from '../FormConfigRelationship';
 
 function wrapInTestContext(DecoratedComponent) {
   return DragDropContext(TestBackend)(
@@ -141,8 +142,14 @@ describe('MetadataProperty', () => {
       });
     });
 
-    describe('when type is select or list', () => {
-      it('should render FormConfigSelect', () => {
+    describe('when type is custom type', () => {
+      const checkMultimedia = (canSetStyle, canBeRequired) => {
+        expect(component.find(FormConfigMultimedia).length).toBe(1);
+        expect(component.find(FormConfigMultimedia).props().canSetStyle).toBe(canSetStyle);
+        expect(component.find(FormConfigMultimedia).props().canBeRequired).toBe(canBeRequired);
+      };
+
+      it('should render the correct component', () => {
         expect(component.find(FormConfigInput).length).toBe(1);
 
         component.setProps({ type: 'select' });
@@ -159,6 +166,15 @@ describe('MetadataProperty', () => {
 
         component.setProps({ type: 'relationship' });
         expect(component.find(FormConfigRelationship).length).toBe(1);
+
+        component.setProps({ type: 'image' });
+        checkMultimedia(true, true);
+
+        component.setProps({ type: 'preview' });
+        checkMultimedia(true, false);
+
+        component.setProps({ type: 'media' });
+        checkMultimedia(false, true);
 
         component.setProps({ type: 'geolocation' });
         expect(component.find(FormConfigInput).length).toBe(1);

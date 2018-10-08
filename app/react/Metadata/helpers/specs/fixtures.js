@@ -1,9 +1,13 @@
 import Immutable from 'immutable';
 
 export const doc = {
+  _id: 'languageSpecificId',
   template: 'templateID',
   title: 'Corte Interamericana de Derechos Humanos',
   creationDate: 0,
+  file: {
+    filename: 'filename.pdf'
+  },
   metadata: {
     text: 'text content',
     date: 10,
@@ -13,6 +17,8 @@ export const doc = {
     multidaterange: [{ from: 10, to: 1000000 }, { from: 2000000, to: 3000000 }],
     markdown: 'markdown content',
     select: 'value3',
+    image: 'imageURL',
+    media: 'mediaURL',
     relationship1: ['value1', 'value2'],
     relationship2: ['value1', 'value2', 'value4'],
     geolocation: { lat: 2, lon: 3 },
@@ -37,6 +43,9 @@ export const templates = Immutable.fromJS([
       { name: 'multidaterange', type: 'multidaterange', label: 'Multi Date Range' },
       { name: 'markdown', type: 'markdown', label: 'Mark Down', showInCard: true },
       { name: 'select', content: 'thesauriId', type: 'select', label: 'Select' },
+      { name: 'image', type: 'image', label: 'Image', showInCard: true, noLabel: true, style: 'cover' },
+      { name: 'preview', type: 'preview', label: 'PDFPreview', showInCard: true, noLabel: false, style: 'contain' },
+      { name: 'media', type: 'media', label: 'Media', showInCard: true, noLabel: false },
       { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
       { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },

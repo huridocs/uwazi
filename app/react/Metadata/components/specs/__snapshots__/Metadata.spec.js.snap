@@ -5,7 +5,7 @@ exports[`Metadata should not render an empty list 1`] = `<React.Fragment />`;
 exports[`Metadata should not render metadata without value 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="Label"
   >
     <dt>
@@ -23,7 +23,7 @@ exports[`Metadata should not render metadata without value 1`] = `
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-markdown"
+    className="metadata-type-markdown "
     key="label array"
   >
     <dt>
@@ -42,10 +42,54 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
 </React.Fragment>
 `;
 
+exports[`Metadata should render a media field 1`] = `
+<React.Fragment>
+  <dl
+    className="metadata-type-multimedia "
+    key="Media Label"
+  >
+    <dt>
+      Media Label
+    </dt>
+    <dd
+      className=""
+    >
+      <MarkdownViewer
+        html={false}
+        lists={Array []}
+        markdown="{media}(http://youtube.com/videoid)"
+      />
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
+exports[`Metadata should render an image field 1`] = `
+<React.Fragment>
+  <dl
+    className="metadata-type-multimedia "
+    key="Image Label"
+  >
+    <dt>
+      Image Label
+    </dt>
+    <dd
+      className=""
+    >
+      <img
+        alt="Image Label"
+        className="multimedia-img cover"
+        src="http://some.url.com/image.jpg"
+      />
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
 exports[`Metadata should render array values separated by ", " 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="label array"
   >
     <dt>
@@ -78,7 +122,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 exports[`Metadata should render links when multiple properties have url 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="label array"
   >
     <dt>
@@ -113,7 +157,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
 exports[`Metadata should render links when the property has url 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="withUrl"
   >
     <dt>
@@ -135,7 +179,7 @@ exports[`Metadata should render links when the property has url 1`] = `
 exports[`Metadata should render property not have this item when type is null 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="metadata without property"
   >
     <dt>
@@ -153,7 +197,7 @@ exports[`Metadata should render property not have this item when type is null 1`
 exports[`Metadata should render sorted property with sorted styles 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="sortedBy"
   >
     <dt>
@@ -171,7 +215,7 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
 exports[`Metadata should render string values 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="Label"
   >
     <dt>
@@ -189,7 +233,7 @@ exports[`Metadata should render string values 1`] = `
 exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <React.Fragment>
   <dl
-    className="metadata-type-default"
+    className="metadata-type-default "
     key="label array"
   >
     <dt>

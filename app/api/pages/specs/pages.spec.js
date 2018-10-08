@@ -1,10 +1,10 @@
-import pages from '../pages.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
-import {mockID} from 'shared/uniqueID';
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import { mockID } from 'shared/uniqueID';
 import date from 'api/utils/date.js';
-
-import fixtures, {pageToUpdate} from './fixtures.js';
 import db from 'api/utils/testing_db';
+
+import fixtures, { pageToUpdate } from './fixtures.js';
+import pages from '../pages.js';
 
 describe('pages', () => {
   beforeEach((done) => {
@@ -20,17 +20,15 @@ describe('pages', () => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       mockID('sharedid');
 
-      let doc = {title: 'Batman begins'};
-      let user = {_id: db.id()};
+      const doc = { title: 'Batman begins' };
+      const user = { _id: db.id() };
 
       pages.save(doc, user, 'es')
-      .then((result) => {
-        return Promise.all([
-          pages.getById(result.sharedId, 'es'),
-          pages.getById(result.sharedId, 'en'),
-          pages.getById(result.sharedId, 'pt')
-        ]);
-      })
+      .then(result => Promise.all([
+          pages.getById(result.sharedId, 'es', 'title creationDate user'),
+          pages.getById(result.sharedId, 'en', 'title creationDate user'),
+          pages.getById(result.sharedId, 'pt', 'title creationDate user')
+      ]))
       .then(([es, en, pt]) => {
         expect(es.title).toBe(doc.title);
         expect(en.title).toBe(doc.title);
@@ -43,15 +41,18 @@ describe('pages', () => {
     });
 
     it('should return the newly created document', (done) => {
-      let doc = {title: 'the dark knight'};
-      let user = {_id: db.id()};
+      const doc = { title: 'the dark knight' };
+      const user = { _id: db.id() };
 
       pages.save(doc, user, 'es')
       .then((createdDocument) => {
         expect(createdDocument._id.toString()).toBeDefined();
         expect(createdDocument.title).toBe(doc.title);
-        expect(createdDocument.user.equals(user._id)).toBe(true);
         expect(createdDocument.language).toBe('es');
+        return pages.get(createdDocument._id, 'creationDate user');
+      })
+      .then(([createdDocument]) => {
+        expect(createdDocument.user.equals(user._id)).toBe(true);
         done();
       })
       .catch(catchErrors(done));
@@ -61,11 +62,14 @@ describe('pages', () => {
       it('should not assign again user and creation date and partial update data', (done) => {
         spyOn(date, 'currentUTC').and.returnValue(10);
 
-        return pages.save({_id: pageToUpdate, sharedId: '1', title: 'Edited title'}, 'another_user')
+        return pages.save({ _id: pageToUpdate, sharedId: '1', title: 'Edited title' }, 'another_user')
         .then((modifiedDoc) => {
           expect(modifiedDoc.title).toBe('Edited title');
-          expect(modifiedDoc.user).not.toBe('another_user');
-          expect(modifiedDoc.creationDate).toBe(1);
+          return pages.get(modifiedDoc._id, 'creationDate user');
+        })
+        .then(([doc]) => {
+          expect(doc.user).not.toBe('another_user');
+          expect(doc.creationDate).toBe(1);
           done();
         })
         .catch(catchErrors(done));
@@ -75,11 +79,9 @@ describe('pages', () => {
 
   describe('delete', () => {
     it('should delete the document in all languages', (done) => {
-      let sharedId = '1';
+      const sharedId = '1';
       return pages.delete(sharedId)
-      .then(() => {
-        return pages.get({sharedId});
-      })
+      .then(() => pages.get({ sharedId }))
       .then((result) => {
         expect(result.length).toBe(0);
         done();

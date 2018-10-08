@@ -6,7 +6,7 @@ exports[`SnippetList should properly render title snippets with Title label as h
     className="snippet-list-item-header metadata-snippet-header"
   >
     <Connect(I18NLink)
-      to="/document/sharedId"
+      to="/document/sharedId?searchTerm=snippet"
     >
       Summary
     </Connect(I18NLink)>
@@ -15,25 +15,21 @@ exports[`SnippetList should properly render title snippets with Title label as h
     className="snippet-list-item metadata-snippet"
     key="0"
   >
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "title <b>snippet m1</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        title &lt;b&gt;snippet m1&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
   <li
     className="snippet-list-item metadata-snippet"
     key="1"
   >
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "title <b>snippet m2</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        title &lt;b&gt;snippet m2&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
 </React.Fragment>
 `;
@@ -44,7 +40,7 @@ exports[`SnippetList should render all metadata snippets with the field label as
     className="snippet-list-item-header metadata-snippet-header"
   >
     <Connect(I18NLink)
-      to="/document/sharedId"
+      to="/document/sharedId?searchTerm=snippet"
     >
       Summary
     </Connect(I18NLink)>
@@ -53,25 +49,21 @@ exports[`SnippetList should render all metadata snippets with the field label as
     className="snippet-list-item metadata-snippet"
     key="0"
   >
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "metadata <b>snippet m1</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        metadata &lt;b&gt;snippet m1&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
   <li
     className="snippet-list-item metadata-snippet"
     key="1"
   >
-    <span
-      dangerouslySetInnerHTML={
-        Object {
-          "__html": "metadata <b>snippet m2</b> found",
-        }
-      }
-    />
+    <span>
+      <SafeHTML>
+        metadata &lt;b&gt;snippet m2&lt;/b&gt; found
+      </SafeHTML>
+    </span>
   </li>
 </React.Fragment>
 `;

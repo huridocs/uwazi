@@ -1,0 +1,258 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TemplateCreator Property Options should include document specific options 1`] = `
+<div
+  className="metadata"
+>
+  <div
+    className="panel panel-default"
+  >
+    <div
+      className="panel-heading"
+    >
+      Metadata creator
+    </div>
+    <div
+      className="panel-body"
+    >
+      <div
+        className="row"
+      >
+        <main
+          className="col-xs-12 col-sm-9"
+        >
+          <Connect(DropTarget(MetadataTemplate))
+            backUrl="/settings/documents"
+            relationType={false}
+            saveTemplate={[Function]}
+          />
+        </main>
+        <aside
+          className="col-xs-12 col-sm-3"
+        >
+          <div
+            className="metadataTemplate-constructor"
+          >
+            <div>
+              <i>
+                Properties
+              </i>
+            </div>
+            <ul
+              className="list-group property-options-list"
+            >
+              <Connect(DragSource(PropertyOption))
+                label="Text"
+                type="text"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Numeric"
+                type="numeric"
+              />
+              <Connect(DragSource(PropertyOption))
+                disabled={true}
+                label="Select"
+                type="select"
+              />
+              <Connect(DragSource(PropertyOption))
+                disabled={true}
+                label="Multi Select"
+                type="multiselect"
+              />
+              <Connect(DragSource(PropertyOption))
+                disabled={true}
+                label="Relationship"
+                type="relationship"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Date"
+                type="date"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Date Range"
+                type="daterange"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Multi Date"
+                type="multidate"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Multi Date Range"
+                type="multidaterange"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Rich Text"
+                type="markdown"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Image"
+                type="image"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Preview"
+                type="preview"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Media"
+                type="media"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Geolocation"
+                type="geolocation"
+              />
+            </ul>
+            <div
+              className="alert alert-warning"
+            >
+              Relationship fields can not be added untill you have at least one relationship type to select.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TemplateCreator Property Options should include most common options by default (entity) 1`] = `
+<div
+  className="metadata"
+>
+  <div
+    className="panel panel-default"
+  >
+    <div
+      className="panel-heading"
+    >
+      Metadata creator
+    </div>
+    <div
+      className="panel-body"
+    >
+      <div
+        className="row"
+      >
+        <main
+          className="col-xs-12 col-sm-9"
+        >
+          <Connect(DropTarget(MetadataTemplate))
+            backUrl="/settings/entities"
+            relationType={false}
+            saveTemplate={[Function]}
+          />
+        </main>
+        <aside
+          className="col-xs-12 col-sm-3"
+        >
+          <div
+            className="metadataTemplate-constructor"
+          >
+            <div>
+              <i>
+                Properties
+              </i>
+            </div>
+            <ul
+              className="list-group property-options-list"
+            >
+              <Connect(DragSource(PropertyOption))
+                label="Text"
+                type="text"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Numeric"
+                type="numeric"
+              />
+              <Connect(DragSource(PropertyOption))
+                disabled={true}
+                label="Select"
+                type="select"
+              />
+              <Connect(DragSource(PropertyOption))
+                disabled={true}
+                label="Multi Select"
+                type="multiselect"
+              />
+              <Connect(DragSource(PropertyOption))
+                disabled={true}
+                label="Relationship"
+                type="relationship"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Date"
+                type="date"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Date Range"
+                type="daterange"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Multi Date"
+                type="multidate"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Multi Date Range"
+                type="multidaterange"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Rich Text"
+                type="markdown"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Image"
+                type="image"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Media"
+                type="media"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Geolocation"
+                type="geolocation"
+              />
+            </ul>
+            <div
+              className="alert alert-warning"
+            >
+              Relationship fields can not be added untill you have at least one relationship type to select.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TemplateCreator Property Options should remove all options for relationship 1`] = `
+<div
+  className="metadata"
+>
+  <div
+    className="panel panel-default"
+  >
+    <div
+      className="panel-heading"
+    >
+      Metadata creator
+    </div>
+    <div
+      className="panel-body"
+    >
+      <div
+        className="row"
+      >
+        <main
+          className="col-xs-12 col-sm-9"
+        >
+          <Connect(DropTarget(MetadataTemplate))
+            backUrl="/settings/connections"
+            relationType={true}
+            saveTemplate={[Function]}
+          />
+        </main>
+      </div>
+    </div>
+  </div>
+</div>
+`;

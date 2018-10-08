@@ -61,9 +61,17 @@
 
 mark, .mark {
   color: transparent !important;
-  background-color: transparentize(yellow, 0.8) !important;
+  background-color: transparentize($c-primary, 0.8) !important;
   padding: 0 !important;
   mark, .mark {
+    background-color: transparent !important;
+  }
+}
+
+mark.searchTerm {
+  background-color: transparentize(yellow, 0.6) !important;
+
+  mark.searchTerm {
     background-color: transparent !important;
   }
 }
@@ -103,7 +111,7 @@ mark, .mark {
   .btn {
     padding: 5px 10px;
     margin: 12px 10px 12px 0;
-    font-size: 11px;
+    font-size: $f-size-sm;
   }
   h2 {
     font-size: $f-size-sm;
@@ -205,34 +213,6 @@ mark, .mark {
       font-family: $f-regular;
       color: $c-grey-dark;
     }
-    /*
-    &::after {
-      content: '\F096';
-      font-family: FontAwesome;
-      text-rendering: auto;
-      -webkit-font-smoothing: antialiased;
-      position: absolute;
-      top: 50%;
-      left: 15px;
-      font-size: $f-size-lg;
-      color: $c-grey-light;
-      transform: translateY(-50%);
-    }
-
-
-    &.is-selected {
-      box-shadow: none;
-      font-weight: bold;
-      &:after {
-        content: '\f00c';
-        color: $c-success;
-      }
-
-      .item-name {
-        color: $c-black;
-      }
-    }
-    */
 
     .search-form {
       margin: 0 -15px;

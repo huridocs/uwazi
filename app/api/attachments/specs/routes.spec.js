@@ -12,6 +12,15 @@ describe('Attachments Routes', () => {
   let routes;
   let originalAttachmentsPath;
 
+  function testRouteResponse(URL, req, expected, done) {
+    routes.get(URL, req)
+    .then((response) => {
+      expect(response).toBe(expected);
+      done();
+    })
+    .catch(catchErrors(done));
+  }
+
   beforeEach((done) => {
     spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachmentsPath;
@@ -26,6 +35,18 @@ describe('Attachments Routes', () => {
 
   afterAll((done) => {
     db.disconnect().then(done);
+  });
+
+  describe('/attachment/file', () => {
+    it('should send the requested existing file', (done) => {
+      paths.attachmentsPath = `${__dirname}/uploads/`;
+      const expected = `sendFile:${paths.attachmentsPath}mockfile.doc`;
+      testRouteResponse('/api/attachment/:file', { params: { file: 'mockfile.doc' } }, expected, done);
+    });
+
+    it('should redirect to no_preview if file doesnt exist', (done) => {
+      testRouteResponse('/api/attachment/:file', { params: { file: 'missing.jpg' } }, 'redirect:/public/no-preview.png', done);
+    });
   });
 
   describe('/download', () => {
@@ -124,6 +145,10 @@ describe('Attachments Routes', () => {
       expect(routes.post('/api/attachments/rename', { body: { entityId: 'a' } })).toNeedAuthorization();
     });
 
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/attachments/rename')).toMatchSnapshot();
+    });
+
     it('should rename a specific attachment', (done) => {
       routes.post('/api/attachments/rename', req)
       .then((response) => {
@@ -173,6 +198,10 @@ describe('Attachments Routes', () => {
         }
         done();
       });
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/attachments/delete')).toMatchSnapshot();
     });
 
     it('should need authorization', () => {

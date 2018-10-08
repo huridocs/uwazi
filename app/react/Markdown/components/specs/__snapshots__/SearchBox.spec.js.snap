@@ -14,8 +14,8 @@ exports[`SearchBox should render a basic input that binds to the correct model 1
       <button
         type="submit"
       >
-        <i
-          className="fa fa-search"
+        <Component
+          icon="search"
         />
       </button>
       <Modeled(Connect(Field))
@@ -29,5 +29,6 @@ exports[`SearchBox should render a basic input that binds to the correct model 1
       </Modeled(Connect(Field))>
     </div>
   </Connect(Form)>
+  <SearchTips />
 </div>
 `;

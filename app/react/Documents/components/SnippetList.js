@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { t, I18NLink } from 'app/I18N';
+import SafeHTML from 'app/utils/SafeHTML';
 
 function getFieldLabel(field, template) {
   if (field === 'title') {
@@ -19,20 +20,24 @@ function getFieldLabel(field, template) {
   return field;
 }
 
-export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template }) => (
+export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm }) => (
   <React.Fragment>
     <li className="snippet-list-item-header metadata-snippet-header">
-      <I18NLink to={documentViewUrl}>
+      <I18NLink to={`${documentViewUrl}?searchTerm=${searchTerm}`}>
         { getFieldLabel(fieldSnippets.get('field'), template) }
       </I18NLink>
     </li>
     {fieldSnippets.get('texts').map((snippet, index) => (
       <li key={index} className="snippet-list-item metadata-snippet">
-        <span dangerouslySetInnerHTML={{ __html: snippet }} />
+        <span><SafeHTML>{snippet}</SafeHTML></span>
       </li>
     ))}
   </React.Fragment>
 );
+
+MetadataFieldSnippets.defaultProps = {
+  searchTerm: '',
+};
 
 MetadataFieldSnippets.propTypes = {
   fieldSnippets: PropTypes.shape({
@@ -40,6 +45,7 @@ MetadataFieldSnippets.propTypes = {
     field: PropTypes.string
   }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
+  searchTerm: PropTypes.string,
   template: PropTypes.shape({
     get: PropTypes.func
   })
@@ -49,35 +55,41 @@ MetadataFieldSnippets.defaultProps = {
   template: undefined
 };
 
-export const DocumentContentSnippets = ({ scrollToPage, documentSnippets, documentViewUrl, searchTerm }) => (
+export const DocumentContentSnippets = ({ selectSnippet, documentSnippets, documentViewUrl, searchTerm, selectedSnippet }) => (
   <React.Fragment>
     <li className="snippet-list-item-header fulltext-snippet-header">
       {t('System', 'Document contents')}
     </li>
-    {documentSnippets.map((snippet, index) => (
-      <li key={index} className="snippet-list-item fulltext-snippet">
-        <I18NLink
-          onClick={() => scrollToPage(snippet.get('page'))}
-          to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
-        >
-          {snippet.get('page')}
-        </I18NLink>
-        <span dangerouslySetInnerHTML={{ __html: snippet.get('text') }} />
-      </li>
-    ))}
+    {documentSnippets.map((snippet, index) => {
+      const selected = (snippet.get('text') === selectedSnippet.get('text')) ? 'selected' : '';
+      return (
+        <li key={index} className={`snippet-list-item fulltext-snippet ${selected}`}>
+          <I18NLink
+            onClick={() => selectSnippet(snippet.get('page'), snippet)}
+            to={`${documentViewUrl}?page=${snippet.get('page')}&searchTerm=${searchTerm || ''}`}
+          >
+            <span className="page-number">{snippet.get('page')}</span>
+            <span className="snippet-text"><SafeHTML>{snippet.get('text')}</SafeHTML></span>
+          </I18NLink>
+        </li>
+      );
+    })}
   </React.Fragment>
 );
 
 DocumentContentSnippets.propTypes = {
-  scrollToPage: PropTypes.func.isRequired,
+  selectSnippet: PropTypes.func.isRequired,
   documentSnippets: PropTypes.shape({
     map: PropTypes.func
+  }).isRequired,
+  selectedSnippet: PropTypes.shape({
+    get: PropTypes.func
   }).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
   searchTerm: PropTypes.string.isRequired
 };
 
-export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPage, template }) => (
+export const SnippetList = ({ snippets, documentViewUrl, searchTerm, selectSnippet, template, selectedSnippet }) => (
   <ul className="snippet-list">
     {snippets.get('metadata').map(fieldSnippets => (
       <MetadataFieldSnippets
@@ -85,13 +97,15 @@ export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPag
         fieldSnippets={fieldSnippets}
         template={template}
         documentViewUrl={documentViewUrl}
+        searchTerm={searchTerm}
       />
     ))}
     {snippets.get('fullText').size ? (
       <DocumentContentSnippets
         documentSnippets={snippets.get('fullText')}
         documentViewUrl={documentViewUrl}
-        scrollToPage={scrollToPage}
+        selectSnippet={selectSnippet}
+        selectedSnippet={selectedSnippet}
         searchTerm={searchTerm}
       />
      ) : ''}
@@ -99,12 +113,12 @@ export const SnippetList = ({ snippets, documentViewUrl, searchTerm, scrollToPag
 );
 
 SnippetList.propTypes = {
-  doc: PropTypes.shape({
+  documentViewUrl: PropTypes.string.isRequired,
+  selectSnippet: PropTypes.func.isRequired,
+  searchTerm: PropTypes.string.isRequired,
+  selectedSnippet: PropTypes.shape({
     get: PropTypes.func
   }).isRequired,
-  documentViewUrl: PropTypes.string.isRequired,
-  scrollToPage: PropTypes.func.isRequired,
-  searchTerm: PropTypes.string.isRequired,
   snippets: PropTypes.shape({
     get: PropTypes.func
   }).isRequired,
@@ -118,7 +132,8 @@ SnippetList.defaultProps = {
 };
 
 export const mapStateToProps = (state, ownProps) => ({
-  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template'))
+  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template')),
+  selectedSnippet: state.documentViewer.uiState.get('snippet'),
 });
 
 export default connect(mapStateToProps)(SnippetList);

@@ -12,6 +12,10 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/relationtypes')).toMatchSnapshot();
+    });
+
     it('should ask relationtypes for all documents', (done) => {
       spyOn(relationtypes, 'get').and.returnValue(mockRequest);
       routes.get('/api/relationtypes', {query: {}})
@@ -38,6 +42,10 @@ describe('relationtypes routes', () => {
   });
 
   describe('DELETE', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/relationtypes')).toMatchSnapshot();
+    });
+
     it('should delete the relationtype', (done) => {
       spyOn(relationtypes, 'delete').and.returnValue(mockRequest);
       routes.delete('/api/relationtypes', {query: {_id: 'someId', _rev: 'latest'}})
@@ -51,6 +59,10 @@ describe('relationtypes routes', () => {
   });
 
   describe('POST', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/relationtypes')).toMatchSnapshot();
+    });
+
     it('should save the relationtype', (done) => {
       spyOn(relationtypes, 'save').and.returnValue(mockRequest);
       routes.post('/api/relationtypes', {body: {name: 'my new template'}})

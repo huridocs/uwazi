@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import multer from 'multer';
 
 import ID from 'shared/uniqueID';
@@ -10,6 +11,7 @@ import path from 'path';
 import relationships from 'api/relationships';
 
 import { uploadDocumentsPath } from '../config/paths';
+import { validateRequest } from '../utils';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
@@ -21,6 +23,19 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
+});
+
+const deleteFile = filename => new Promise((resolve) => {
+  entities.count({ 'file.filename': filename })
+  .then((entitiesUsingFile) => {
+    if (entitiesUsingFile === 0) {
+      fs.unlink(path.join(uploadDocumentsPath, filename), () => {
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
 });
 
 export default (app) => {
@@ -40,7 +55,12 @@ export default (app) => {
     debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
     debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
 
-    return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })));
+
+    return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })))
+    .then(() =>
+      Promise.all(docs
+      .filter(doc => doc.file && doc.file.filename)
+      .map(doc => deleteFile(doc.file.filename))));
   })
   .then(() => {
     debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
@@ -52,14 +72,21 @@ export default (app) => {
     sessionSockets.emit('conversionStart', req.body.document);
     debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
     return Promise.all([
-        new PDF(file, req.files[0].originalname).convert(),
-        getDocuments(req.body.document, allLanguages)
+      new PDF(file, req.files[0].originalname).convert(),
+      getDocuments(req.body.document, allLanguages),
+      file
     ]);
   })
-  .then(([conversion, _docs]) => {
+  .then(([conversion, _docs, file]) => {
     debugLog.debug(`Conversion succeeed for: ${req.files[0].originalname}`);
 
-    const docs = _docs.map(doc => ({
+    const thumbnailCreations = [];
+
+    const docs = _docs.map((doc) => {
+      debugLog.debug(`Assigning Thumbnail creation for: ${doc._id.toString()}`);
+      thumbnailCreations.push(new PDF(file, req.files[0].originalname).createThumbnail(doc._id.toString()));
+
+      return {
         ...doc,
         processed: true,
         fullText: conversion.fullText,
@@ -67,12 +94,18 @@ export default (app) => {
         formattedPlainTextPages: conversion.formatted,
         file: { ...doc.file, language: languages.detect(Object.values(conversion.fullText).join(''), 'franc') },
         toc: [],
-    }));
+      };
+    });
 
-    debugLog.debug('Saving documents');
-    return entities.saveMultiple(docs).then(() => {
-      const sessionSockets = req.io.getCurrentSessionSockets();
-      sessionSockets.emit('documentProcessed', req.body.document);
+    debugLog.debug('Creating PDF thumbnails');
+
+    return Promise.all(thumbnailCreations)
+    .then(() => {
+      debugLog.debug('Saving documents');
+      return entities.saveMultiple(docs).then(() => {
+        const sessionSockets = req.io.getCurrentSessionSockets();
+        sessionSockets.emit('documentProcessed', req.body.document);
+      });
     });
   })
   .catch((err) => {
@@ -90,29 +123,51 @@ export default (app) => {
 
   app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));
 
-  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => {
+  app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {
     uploads.save(req.files[0])
     .then((saved) => {
       res.json(saved);
-    });
+    })
+    .catch(next);
   });
 
-  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
+  app.get('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res, next) => {
     uploads.get()
     .then((result) => {
       res.json(result);
-    });
+    })
+    .catch(next);
   });
 
-  app.delete('/api/customisation/upload', needsAuthorization(['admin', 'editor']), (req, res) => {
-    uploads.delete(req.query._id)
-    .then((result) => {
-      res.json(result);
-    });
-  });
+  app.delete(
+    '/api/customisation/upload',
 
-  app.post('/api/reupload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => entities.getById(req.body.document)
-  .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
-  .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
-  .then(() => uploadProcess(req, res, false)));
+    needsAuthorization(['admin', 'editor']),
+
+    validateRequest(Joi.object({
+      _id: Joi.string().required()
+    }).required(), 'query'),
+
+    (req, res, next) => {
+      uploads.delete(req.query._id)
+      .then((result) => {
+        res.json(result);
+      })
+      .catch(next);
+    }
+  );
+
+  app.post(
+    '/api/reupload',
+
+    needsAuthorization(['admin', 'editor']),
+
+    upload.any(),
+
+    (req, res, next) => entities.getById(req.body.document)
+    .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
+    .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
+    .then(() => uploadProcess(req, res, false))
+    .catch(next)
+  );
 };

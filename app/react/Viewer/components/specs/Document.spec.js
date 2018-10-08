@@ -14,11 +14,11 @@ describe('Document', () => {
   beforeEach(() => {
     props = {
       setSelection: jasmine.createSpy('setSelection'),
-      highlightSnippets: jasmine.createSpy('highlightSnippets'),
       PDFReady: jasmine.createSpy('PDFReady'),
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({ _id: 'documentId', pdfInfo: { test: 'pdfInfo' } }),
+      selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
         pages: ['page1', 'page2', 'page3'],
         css: 'css'
@@ -98,9 +98,9 @@ describe('Document', () => {
     it('should unset selection if different doc', () => {
       render();
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'documentId' }) });
+      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'documentId' }), selectedSnippet: Immutable.fromJS({}) });
       expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'anotherId' }) });
+      instance.componentWillReceiveProps({ doc: Immutable.fromJS({ _id: 'anotherId' }), selectedSnippet: Immutable.fromJS({}) });
       expect(props.unsetSelection.calls.count()).toBe(2);
     });
   });
@@ -235,14 +235,6 @@ describe('Document', () => {
       it('should highlight the reference', () => {
         instance.componentDidUpdate();
         expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
-      });
-
-      describe('when there is a searchTerm', () => {
-        it('should highlightSnippets', () => {
-          instance.text.charRange = { pages: 'pages' };
-          instance.componentDidUpdate();
-          expect(props.highlightSnippets).toHaveBeenCalledWith(props.snippets, 'pages');
-        });
       });
     });
   });
