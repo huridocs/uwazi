@@ -36,7 +36,7 @@ export class MetadataForm extends Component {
   }
 
   onSubmitFailed() {
-    this.props.notify('Form is invalid', 'danger');
+    this.props.notify(t('System', 'Invalid form', null, false), 'danger');
   }
 
   render() {

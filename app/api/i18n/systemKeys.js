@@ -76,7 +76,7 @@ export default [
 { key: 'hubs', label: 'hubs' },
 { key: 'Icon', label: 'Icon' },
 { key: 'Info', label: 'Info' },
-{ key: 'Info', label: 'Info' },
+{ key: 'Invalid form', label: 'An entry is required or has an invalid value. Please correct and try again.' },
 { key: 'Label date "From"', label: 'From: ' },
 { key: 'Label date "to"', label: 'To: ' },
 { key: 'Landing page', label: 'Landing page' },
