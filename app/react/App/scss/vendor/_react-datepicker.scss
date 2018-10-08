@@ -1,6 +1,10 @@
+.react-datepicker {
+    font-size: $f-size-sm;
+}
+
 .react-datepicker__header {
   background-color: $c-grey-lighten;
-  border-bottom: $c-grey-light; 
+  border-bottom: $c-grey-light;
 }
 
 .react-datepicker__current-month {
@@ -36,7 +40,7 @@
 .react-datepicker__navigation--years-previous {
   top: 8px;
   border-top-color: $c-grey;
-  
+
 }
 .react-datepicker__navigation--previous{
   left: 0;
@@ -81,7 +85,7 @@
     color: #fff;
     content: "\D7";
     cursor: pointer;
-    font-size: 12px;
+    font-size: $f-size-sm;
     height: 16px;
     width: 16px;
     line-height: 1;
@@ -114,7 +118,7 @@
 
 
 .react-datepicker__close-icon,
-.react-datepicker__delete-icon {  
+.react-datepicker__delete-icon {
   &::after {
     background: $c-grey-light;
     color: $c-grey-dark;

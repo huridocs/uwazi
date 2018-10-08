@@ -5,8 +5,6 @@ header {
   top: 0;
   min-height: $header-height;
   justify-content: space-between;
-  /* Removed for language selector. Check for side-effects!
-  /*overflow: hidden;*/
   background: $c-theme;
   border-bottom: 1px solid $c-grey-light;
 
@@ -39,7 +37,6 @@ header {
     }
   }
 
-  /* menu buttons */
   .menu-button {
     z-index: 1;
     float: left;

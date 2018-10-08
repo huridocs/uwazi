@@ -160,7 +160,7 @@
     color: $c-grey-dark;
     position: absolute;
     top: 100%;
-    font-size: 10px;
+    font-size: $f-size-xs;
     line-height: 1.5em;
     left: 50%;
     transform: translateX(-50%) translateY(2px);
@@ -250,7 +250,7 @@
 
 .custom-uploads {
   .uploading {
-    font-size: 20px;
+    font-size: $f-size-lg;
     position: absolute;
     margin: 0;
     top: 0;
@@ -296,7 +296,7 @@
     }
     button {
       padding: 1px 5px;
-      font-size: 12px;
+      font-size: $f-size-sm;
       line-height: 1.5;
       border-radius: 3px;
       color: #fff;
@@ -350,7 +350,7 @@
     //background-color: #2b303b;
     //color: #c0c5ce;
     font-weight: bold;
-    font-size: 14px;
+    font-size: $f-size;
     letter-spacing: 0.05em;
   }
 }
