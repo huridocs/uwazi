@@ -173,6 +173,7 @@ $c-sidebar: $c-white;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  font-size: $f-size-sm;
 
   & > *:last-child { // firefox hack (related issue #378)
     padding-bottom: $header-height * 2;
@@ -235,7 +236,7 @@ $c-sidebar: $c-white;
     color: $c-grey-dark;
     position: absolute;
     top: 100%;
-    font-size: 10px;
+    font-size: $f-size-xs;
     line-height: 1.5em;
     left: 50%;
     transform: translateX(-50%) translateY(2px);
