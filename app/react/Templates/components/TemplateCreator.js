@@ -49,7 +49,7 @@ export class TemplateCreator extends Component {
                 <aside className="col-xs-12 col-sm-3">
                   <div className="metadataTemplate-constructor">
                     <div><i>Properties</i></div>
-                    <ul className="list-group">
+                    <ul className="list-group property-options-list">
                       <PropertyOption label="Text" type="text"/>
                       <PropertyOption label="Numeric" type="numeric"/>
                       <PropertyOption label="Select" type="select" disabled={this.props.noDictionaries} />

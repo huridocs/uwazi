@@ -34,6 +34,7 @@ function sourceTargetTestContext(Target, Source, actions) {
           type: 'type',
           index: 2,
           localID: 'source',
+          addProperty: () => {},
           connectDragSource: identity,
           formState: { fields: {}, errors: {} }
         };
