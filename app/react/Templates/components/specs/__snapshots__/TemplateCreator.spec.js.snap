@@ -39,7 +39,7 @@ exports[`TemplateCreator Property Options should include document specific optio
               </i>
             </div>
             <ul
-              className="list-group"
+              className="list-group property-options-list"
             >
               <Connect(DragSource(PropertyOption))
                 label="Text"
@@ -153,7 +153,7 @@ exports[`TemplateCreator Property Options should include most common options by 
               </i>
             </div>
             <ul
-              className="list-group"
+              className="list-group property-options-list"
             >
               <Connect(DragSource(PropertyOption))
                 label="Text"
