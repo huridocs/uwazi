@@ -121,3 +121,9 @@ $ yarn e2e
 ```
 
 Note that if you already have an instance running, this will likely throw an error of ports already been used.  Only one instance of Uwazi may be run in a the same port at the same time.
+
+### Default login
+
+The application's default log in is admin / change this password now 
+
+Note the subtle nudge ;)
