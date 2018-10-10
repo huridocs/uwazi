@@ -10,7 +10,7 @@ export default (error, { req = {}, uncaught = false } = {}) => {
   }
 
   if (responseToClientError) {
-    result = { code: 500, message: error.json.error };
+    result = { code: error.status || 500, message: error.json.error };
   }
 
   if (error.name === 'MongoError') {

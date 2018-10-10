@@ -54,9 +54,13 @@ describe('handleError', () => {
 
   describe('when error is a response to client error', () => {
     it('use error instead of message', () => {
-      const error = handleError({ json: { error: 'error' } });
+      let error = handleError({ json: { error: 'error' } });
       expect(error.message).toBe('error');
       expect(error.code).toBe(500);
+
+      error = handleError({ status: 404, json: { error: 'error' } });
+      expect(error.message).toBe('error');
+      expect(error.code).toBe(404);
     });
   });
 });
