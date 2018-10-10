@@ -8,7 +8,7 @@ exports[`IconField should be open when has value 1`] = `
         hide icon
       </Connect(Translate)>
       <Unknown
-        icon="pencil"
+        icon="eye-slash"
       />
     </span>
   }
@@ -20,7 +20,7 @@ exports[`IconField should be open when has value 1`] = `
         show icon
       </Connect(Translate)>
       <Unknown
-        icon="pencil-alt"
+        icon="eye"
       />
     </span>
   }
@@ -58,7 +58,7 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
         hide icon
       </Connect(Translate)>
       <Unknown
-        icon="pencil"
+        icon="eye-slash"
       />
     </span>
   }
@@ -70,7 +70,7 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
         show icon
       </Connect(Translate)>
       <Unknown
-        icon="pencil-alt"
+        icon="eye"
       />
     </span>
   }

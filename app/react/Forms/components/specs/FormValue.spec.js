@@ -2,9 +2,9 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { mapStateToProps, StoreValue } from '../StoreValue';
+import { mapStateToProps, FormValue } from '../FormValue';
 
-describe('StoreValue', () => {
+describe('FormValue', () => {
   let props;
   beforeEach(() => {
     const state = { form: { value: 'value' } };
@@ -13,7 +13,7 @@ describe('StoreValue', () => {
   });
 
   it('should call render prop with value selected', () => {
-    const component = shallow(<StoreValue {...props}>{value => <span>{value}</span>}</StoreValue>);
+    const component = shallow(<FormValue {...props}>{value => <span>{value}</span>}</FormValue>);
     expect(component).toMatchSnapshot();
   });
 });
