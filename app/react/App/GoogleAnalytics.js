@@ -1,4 +1,3 @@
-import { store } from 'app/store';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -28,12 +27,10 @@ export default class GoogleAnalytics extends Component {
   }
 
   render() {
-    const analyticsTrackingId = store.getState().settings.collection.get('analyticsTrackingId');
-
-    if (!analyticsTrackingId) {
+    if (!this.props.analyticsTrackingId) {
       return false;
     }
-    return <script async src={`https://www.googletagmanager.com/gtag/js?id=${analyticsTrackingId}`} />;
+    return <script async src={`https://www.googletagmanager.com/gtag/js?id=${this.props.analyticsTrackingId}`} />;
   }
 }
 
