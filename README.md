@@ -78,9 +78,20 @@ $ export PORT=3000
 
 Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
 
-### Upgrading Uwazi (migrations)
+### Upgrading Uwazi and data migrations
 
-We are working on a migration system that will allow seamless transitions from one version to the next of Uwazi.  For the time being, please, check the release notes for each version as to what is required in order to have the data properly migrated.
+Updating Uwazi is pretty straight forward using git:
+```
+$ cd uwazi
+$ git pull
+$ yarn install
+$ yarn migrate
+$ yarn production-build
+$ yarn run-production
+```
+- If you are not using git, just download and overwrite the code in the Uwazi directory. 
+- 'yarn install' will automatically add, remove or replace any changes in module dependecies.
+- 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
 
 # Development
 
