@@ -37,9 +37,17 @@ Intallation guide
 - **Yarn** https://yarnpkg.com/en/docs/install
 - **pdftotext** 0.67.0 https://poppler.freedesktop.org/
 
-Before anything else you will need to install the application dependencies running:
+Before anything else you will need to install the application dependencies. 
+
+If you want to use the latest development code:
 ```
 $ git clone https://github.com/huridocs/uwazi.git
+$ cd uwazi
+$ yarn install
+```
+If you just want to only use the latest stable release (recommended for production):
+```
+$ git clone -b master --single-branch https://github.com/huridocs/uwazi.git
 $ cd uwazi
 $ yarn install
 ```
