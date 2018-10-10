@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
@@ -8,6 +9,10 @@ export default class PDF extends EventEmitter {
     super();
     this.filepath = filepath;
     this.optimizedPath = filepath;
+  }
+
+  getThumbnailPath(documentId) {
+    return path.join(path.dirname(this.filepath), documentId);
   }
 
   async extractText() {
@@ -24,7 +29,7 @@ export default class PDF extends EventEmitter {
     try {
       response = await spawn(
         'pdftoppm',
-        ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', this.filepath, path.join(path.dirname(this.filepath), documentId)],
+        ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', this.filepath, this.getThumbnailPath(documentId)],
         { capture: ['stdout', 'stderr'] }
       );
     } catch (err) {
@@ -33,6 +38,15 @@ export default class PDF extends EventEmitter {
     }
 
     return Promise.resolve(response);
+  }
+
+  deleteThumbnail(documentId) {
+    return new Promise((resolve) => {
+      fs.unlink(`${this.getThumbnailPath(documentId)}.jpg`, (err) => {
+        if (err) { errorLog.error(`Thumbnail deletion error for: ${this.getThumbnailPath(documentId)}`); }
+        resolve();
+      });
+    });
   }
 
   convert() {
