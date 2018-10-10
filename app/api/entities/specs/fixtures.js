@@ -17,6 +17,9 @@ const hub3 = db.id();
 const hub4 = db.id();
 const hub5 = db.id();
 
+const docId1 = db.id();
+const docId2 = db.id();
+
 export default {
   entities: [
     {
@@ -38,8 +41,8 @@ export default {
         filename: '8202c463d6158af8065022d9b5014cc1.pdf'
       }
     },
-    { _id: db.id(), sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }] },
-    { _id: db.id(), sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
+    { _id: docId1, sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }] },
+    { _id: docId2, sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
     { _id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: { property1: 'value1' } },
     //select/multiselect/date sync
     { _id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' } },
@@ -122,5 +125,7 @@ export {
   syncPropertiesEntityId,
   templateId,
   templateChangingNames,
-  templateWithEntityAsThesauri
+  templateWithEntityAsThesauri,
+  docId1,
+  docId2,
 };

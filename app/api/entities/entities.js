@@ -334,6 +334,7 @@ export default {
     .reduce((paths, doc) => {
       if (doc.file) {
         paths.push(path.normalize(`${uploadDocumentsPath}/${doc.file.filename}`));
+        paths.push(path.normalize(`${uploadDocumentsPath}/${doc._id.toString()}.jpg`));
       }
 
       if (doc.attachments) {
