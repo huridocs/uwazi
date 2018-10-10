@@ -1,6 +1,6 @@
-import {db_url as dbURL} from 'api/config/database';
+import { db_url as dbURL } from 'api/config/database';
 import request from 'shared/JSONRequest';
-import {updateMetadataNames, deleteMetadataProperties} from 'api/documents/utils';
+import { updateMetadataNames, deleteMetadataProperties } from 'api/documents/utils';
 import fs from 'fs';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
@@ -19,7 +19,7 @@ export default {
       if (existingDoc.pdfInfo) {
         return existingDoc;
       }
-      return model.save({_id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo}, params);
+      return model.save({ _id: doc._id, sharedId: doc.sharedId, pdfInfo: doc.pdfInfo }, params);
     });
   },
   //
@@ -39,13 +39,13 @@ export default {
   updateMetadataProperties(templateId, nameMatches, deleteProperties) {
     return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
     .then((response) => {
-      let documents = response.json.rows.map((r) => r.value);
+      let documents = response.json.rows.map(r => r.value);
       documents = updateMetadataNames(documents, nameMatches);
       documents = deleteMetadataProperties(documents, deleteProperties);
 
-      let updates = [];
+      const updates = [];
       documents.forEach((document) => {
-        let url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
+        const url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
         updates.push(request.post(url, document));
       });
 
@@ -57,7 +57,7 @@ export default {
     return this.get(id, language)
     .then((docResponse) => {
       const doc = docResponse.rows[0];
-      let path = `${__dirname}/../../../conversions/${doc._id}.json`;
+      const path = `${__dirname}/../../../conversions/${doc._id}.json`;
       return new Promise((resolve, reject) => {
         fs.readFile(path, (err, conversionJSON) => {
           if (err) {
@@ -65,9 +65,9 @@ export default {
           }
 
           try {
-            let conversion = JSON.parse(conversionJSON);
+            const conversion = JSON.parse(conversionJSON);
             if (conversion.css) {
-              conversion.css = conversion.css.replace(/(\..*?){/g, '._' + doc._id + ' $1 {');
+              conversion.css = conversion.css.replace(/(\..*?){/g, `._${doc._id} $1 {`);
             }
             resolve(conversion);
           } catch (e) {
@@ -80,7 +80,7 @@ export default {
 
   saveHTML(conversion) {
     conversion.type = 'conversion';
-    let path = `${__dirname}/../../../conversions/${conversion.document}.json`;
+    const path = `${__dirname}/../../../conversions/${conversion.document}.json`;
     return new Promise((resolve, reject) => {
       fs.writeFile(path, JSON.stringify(conversion), (err) => {
         if (err) {
