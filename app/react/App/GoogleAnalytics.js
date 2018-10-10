@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { store } from 'app/store';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -10,7 +10,7 @@ export function trackPage() {
   }
 }
 
-export class GoogleAnalytics extends Component {
+export default class GoogleAnalytics extends Component {
   constructor(props) {
     super(props);
     if (!props.analyticsTrackingId || !isClient) {
@@ -28,10 +28,12 @@ export class GoogleAnalytics extends Component {
   }
 
   render() {
-    if (!this.props.analyticsTrackingId) {
+    const analyticsTrackingId = store.getState().settings.collection.get('analyticsTrackingId');
+
+    if (!analyticsTrackingId) {
       return false;
     }
-    return <script async src={`https://www.googletagmanager.com/gtag/js?id=${this.props.analyticsTrackingId}`} />;
+    return <script async src={`https://www.googletagmanager.com/gtag/js?id=${analyticsTrackingId}`} />;
   }
 }
 
@@ -48,5 +50,3 @@ export function mapStateToProps({ settings }) {
     analyticsTrackingId: settings.collection.get('analyticsTrackingId')
   };
 }
-
-export default connect(mapStateToProps)(GoogleAnalytics);
