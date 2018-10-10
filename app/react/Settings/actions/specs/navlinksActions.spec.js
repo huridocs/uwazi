@@ -63,7 +63,7 @@ describe('Settings/Navlinks actions', () => {
     });
 
     describe('on error', () => {
-      fit('should dispatch NAVLINKS_SAVED', async () => {
+      it('should dispatch NAVLINKS_SAVED', async () => {
         api.save.and.callFake(() => Promise.reject(new Error()));
         await actions.saveLinks('data')(dispatch);
         expect(dispatch).toHaveBeenCalledWith({ type: 'NAVLINKS_SAVED', data: 'data' });
