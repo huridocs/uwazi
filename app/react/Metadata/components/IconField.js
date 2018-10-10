@@ -13,19 +13,21 @@ import { Icon } from 'UI';
 export const IconField = ({ model, removeIcon }) => (
   <FormValue model={`${model}.icon`}>{
     icon => (
-      <ToggleDisplay
-        showLabel={<span><Translate>show icon</Translate><Icon icon="eye" /></span>}
-        hideLabel={<span>{<Translate>hide icon</Translate>}<Icon icon="eye-slash" /></span>}
-        onHide={() => removeIcon(`${model}.icon`)}
-        open={!!icon}
-      >
-        <ul className="search__filter">
-          <li><label><Translate>Icon</Translate> / <Translate>Flag</Translate></label></li>
-          <li className="wide">
-            <IconSelector model=".icon"/>
-          </li>
-        </ul>
-      </ToggleDisplay>
+      <div className="icon-selector">
+        <ToggleDisplay
+          showLabel={<span><Translate>add icon</Translate><Icon icon="eye" /></span>}
+          hideLabel={<span>{<Translate>remove icon</Translate>}<Icon icon="eye-slash" /></span>}
+          onHide={() => removeIcon(`${model}.icon`)}
+          open={!!icon}
+        >
+          <ul className="search__filter">
+            <li><label><Translate>Icon</Translate> / <Translate>Flag</Translate></label></li>
+            <li className="wide">
+              <IconSelector model=".icon"/>
+            </li>
+          </ul>
+        </ToggleDisplay>
+      </div>
     )}
   </FormValue>
 );

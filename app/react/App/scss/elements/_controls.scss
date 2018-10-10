@@ -223,3 +223,23 @@ input[type="checkbox"][disabled] ~ label {
     opacity: 0.3;
     cursor: not-allowed;
 }
+
+.icon-selector {
+  button {
+    background: none;
+    border: none;
+    font-size: $f-size-xs;
+    color: $c-primary;
+    display: block;
+    margin: .2em 0 0 auto;
+  }
+
+  svg {
+    margin-left: 5px;
+  }
+}
+
+.form-group .icon-selector ul.search__filter {
+  border: none;
+  padding:0;
+}
