@@ -10,15 +10,15 @@ const nightmare = createNightmare();
 selectors.doc = {
   form: {
     title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
-    type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
-    company: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
-    superPowersSearch: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(1) > div > input',
+    type: '#metadataForm > div.form-group.undefined > ul > li.wide > select',
+    company: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
+    superPowersSearch: '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(1) > div > input',
     suporPowers: {
-      regeneration: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li.multiselectItem > label'
+      regeneration: '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li.multiselectItem > label'
     },
     nemesis: {
-      daneryl: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(2) > label',
-      joker: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(3) > label'
+      daneryl: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(2) > label',
+      joker: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > ul > li:nth-child(3) > label'
     }
   },
   viewer: {
@@ -35,7 +35,6 @@ describe('PublishDocument', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  // missing test for actually upload and publish a document
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
       nightmare
@@ -62,7 +61,6 @@ describe('PublishDocument', () => {
     .write(selectors.doc.form.superPowersSearch, 'regen')
     .waitToClick(selectors.doc.form.suporPowers.regeneration)
     .click(selectors.libraryView.saveButton)
-    // .waitToClick('#app > div.content > div > div > aside.side-panel.library-filters.is-hidden > div.sidepanel-body > div.documentTypes-selector.nested-selector > ul > li:nth-child(4) > label')
     .waitToClick(selectors.uploadsView.publishButton)
     .waitToClick(selectors.uploadsView.acceptPublishModel)
     .wait('.alert.alert-success')

@@ -15,6 +15,7 @@ import NumericRange from './components/NumericRange';
 import RadioButtons from './components/RadioButtons';
 import Switcher from './components/Switcher';
 import Geolocation from './components/Geolocation';
+import FormValue from './components/FormValue';
 
 export {
   Select,
@@ -33,5 +34,6 @@ export {
   IconSelector,
   RadioButtons,
   Switcher,
-  Geolocation
+  Geolocation,
+  FormValue,
 };

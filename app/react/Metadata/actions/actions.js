@@ -114,8 +114,8 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
   };
 }
 
-export function remove(model) {
-  return formActions.change(model, '');
+export function removeIcon(model) {
+  return formActions.change(model, { _id: null, type: 'Empty' });
 }
 
 export function multipleUpdate(_entities, values) {

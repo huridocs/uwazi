@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 
 import { IconSelector } from 'app/ReactReduxForms';
 import { actions } from 'app/Metadata';
-import { StoreValue } from 'app/Layout';
+import { FormValue } from 'app/Forms';
 import ToggleDisplay from 'app/Layout/ToggleDisplay';
 import { bindActionCreators } from 'redux';
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 export const IconField = ({ model, removeIcon }) => (
-  <StoreValue model={`${model}.icon`}>{
+  <FormValue model={`${model}.icon`}>{
     icon => (
       <ToggleDisplay
         showLabel={<span><Translate>show icon</Translate><Icon icon="eye" /></span>}
@@ -27,7 +27,7 @@ export const IconField = ({ model, removeIcon }) => (
         </ul>
       </ToggleDisplay>
     )}
-  </StoreValue>
+  </FormValue>
 );
 
 IconField.propTypes = {
@@ -36,7 +36,7 @@ IconField.propTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ removeIcon: actions.remove }, dispatch);
+  return bindActionCreators({ removeIcon: actions.removeIcon }, dispatch);
 }
 
 export default connect(null, mapDispatchToProps)(IconField);
