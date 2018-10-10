@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
+import GoogleAnalytics from './GoogleAnalytics';
 
 class Root extends Component {
   renderInitialData() {
@@ -63,6 +64,7 @@ class Root extends Component {
             href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
           />
           <link rel="shortcut icon" href="/public/favicon.ico"/>
+          <GoogleAnalytics/>
         </head>
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: this.props.content }} />
