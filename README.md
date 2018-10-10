@@ -39,10 +39,27 @@ Intallation guide
 
 Before anything else you will need to install the application dependencies running:
 ```
+$ git clone https://github.com/huridocs/uwazi.git
+$ cd uwazi
 $ yarn install
 ```
 
 # Production
+
+### Production Build
+
+```
+$ yarn production-build
+```
+
+The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. To do so:
+```
+$ yarn blank-state
+```
+
+```
+$ yarn run-production
+```
 
 ### Production Configuration (advanced)
 
@@ -60,26 +77,6 @@ $ export PORT=3000
 ```
 
 Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
-
-### Production Build
-
-```
-$ yarn production-build
-```
-
-### Initial State
-
-The first time you run Uwazi, you will need to initialize the database with its default blank values.  To do so:
-```
-$ yarn blank-state
-```
-Do no run this command for existing projects, as this will erase the entire database.
-
-### Production Run
-
-```
-$ yarn run-production
-```
 
 ### Upgrading Uwazi (migrations)
 
