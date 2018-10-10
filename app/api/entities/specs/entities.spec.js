@@ -680,6 +680,17 @@ describe('entities', () => {
 
         expect(page).toBe('page 2');
       });
+
+      describe('when entity do not exists', () => {
+        it('should throw 404 error', async () => {
+          const pageNumber = 2;
+          try {
+            await entities.getRawPage('nonexistent', 'en', pageNumber);
+          } catch (e) {
+            expect(e.code).toBe(404);
+          }
+        });
+      });
     });
 
     it('should delete the document in the database', (done) => {
