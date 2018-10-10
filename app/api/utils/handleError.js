@@ -1,6 +1,7 @@
+/* eslint-disable prefer-template */
 import errorLog from 'api/log/errorLog';
 
-export default (error, uncaught = false) => {
+export default (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
   const responseToClientError = error.json;
 
@@ -21,7 +22,12 @@ export default (error, uncaught = false) => {
   }
 
   if (result.code === 500) {
-    errorLog.error(result.message);
+    errorLog.error(
+      (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
+      (req.body && Object.keys(req.body).length ? `\nbody: ${JSON.stringify(req.body, null, ' ')}` : '') +
+      (req.query && Object.keys(req.query).length ? `\nquery: ${JSON.stringify(req.query, null, ' ')}` : '') +
+      `\n${result.message}`
+    );
   }
 
   return result;
