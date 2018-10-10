@@ -6,6 +6,15 @@ import PDFObject from '../PDF.js';
 describe('PDF', () => {
   let pdf;
   const filepath = `${__dirname}/12345.test.pdf`;
+  const thumbnailName = `${__dirname}/documentId.jpg`;
+
+  const deleteThumbnail = (done) => {
+    fs.stat(path.resolve(thumbnailName), (err) => {
+      if (err) { return done(); }
+      fs.unlinkSync(thumbnailName);
+      return done();
+    });
+  };
 
   beforeEach(() => {
     pdf = new PDFObject(filepath);
@@ -28,16 +37,6 @@ describe('PDF', () => {
   });
 
   describe('createThumbnail', () => {
-    const thumbnailName = `${__dirname}/documentId.jpg`;
-
-    const deleteThumbnail = (done) => {
-      fs.stat(path.resolve(thumbnailName), (err) => {
-        if (err) { return done(); }
-        fs.unlinkSync(thumbnailName);
-        return done();
-      });
-    };
-
     beforeEach((done) => {
       deleteThumbnail(done);
     });
@@ -67,6 +66,15 @@ describe('PDF', () => {
       const thumbnailResponse = await pdf.createThumbnail('documentId');
       expect(thumbnailResponse instanceof Error).toBe(true);
       expect(errorLog.error).toHaveBeenCalledWith('Thumbnail creation error for: /missingpath/pdf.pdf');
+    });
+  });
+
+  describe('deleteThumbnail', () => {
+    it('should unlink the file from the system', async () => {
+      await pdf.createThumbnail('documentId');
+      expect(fs.existsSync(thumbnailName)).toBe(true);
+      await pdf.deleteThumbnail('documentId');
+      expect(fs.existsSync(thumbnailName)).toBe(false);
     });
   });
 });
