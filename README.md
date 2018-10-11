@@ -68,7 +68,7 @@ Then start the server by typing:
 ```
 $ yarn run-production
 ```
-By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and user the default username "admin" with password "change this password now".
+By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
 
 ### Production Configuration (advanced)
 
