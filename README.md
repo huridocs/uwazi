@@ -60,14 +60,15 @@ $ yarn install
 $ yarn production-build
 ```
 
-The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. To do so:
+The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running. 
 ```
 $ yarn blank-state
 ```
-
+Then start the server by typing:
 ```
 $ yarn run-production
 ```
+By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and user the default username "admin" with password "change this password now".
 
 ### Production Configuration (advanced)
 
