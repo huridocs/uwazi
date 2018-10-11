@@ -11,17 +11,19 @@ import { TranslateForm } from 'app/I18N';
 import { loadIcons } from 'UI/Icon/library';
 import { Icon } from 'UI';
 
+import './scss/styles.scss';
+
 import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
-
-import './scss/styles.scss';
+import GoogleAnalytics from './GoogleAnalytics';
 
 loadIcons();
 
 class App extends Component {
   constructor(props, context) {
     super(props, context);
+    // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
     this.state = { showmenu: false, confirmOptions: {} };
   }
@@ -46,6 +48,7 @@ class App extends Component {
 
   renderTools() {
     return React.Children.map(this.props.children, (child) => {
+      //condition not tested
       if (child.type.renderTools) {
         return child.type.renderTools();
       }
@@ -80,6 +83,7 @@ class App extends Component {
             <Confirm {...this.state.confirmOptions}/>
             <TranslateForm/>
             {this.props.children}
+            <GoogleAnalytics/>
           </div>
         </div>
       </div>
