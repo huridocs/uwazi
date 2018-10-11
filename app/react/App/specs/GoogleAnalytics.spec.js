@@ -2,7 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import GoogleAnalytics, { trackPage } from '../GoogleAnalytics';
+import { GoogleAnalytics, trackPage } from '../GoogleAnalytics';
 
 describe('GoogleAnalytics', () => {
   let component;
