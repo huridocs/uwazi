@@ -37,12 +37,38 @@ Intallation guide
 - **Yarn** https://yarnpkg.com/en/docs/install
 - **pdftotext** 0.67.0 https://poppler.freedesktop.org/
 
-Before anything else you will need to install the application dependencies running:
+Before anything else you will need to install the application dependencies. 
+
+If you want to use the latest development code:
 ```
+$ git clone https://github.com/huridocs/uwazi.git
+$ cd uwazi
+$ yarn install
+```
+If you just want to only use the latest stable release (recommended for production):
+```
+$ git clone -b master --single-branch https://github.com/huridocs/uwazi.git
+$ cd uwazi
 $ yarn install
 ```
 
 # Production
+
+### Production Build
+
+```
+$ yarn production-build
+```
+
+The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running. 
+```
+$ yarn blank-state
+```
+Then start the server by typing:
+```
+$ yarn run-production
+```
+By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and user the default username "admin" with password "change this password now".
 
 ### Production Configuration (advanced)
 
@@ -61,29 +87,20 @@ $ export PORT=3000
 
 Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
 
-### Production Build
+### Upgrading Uwazi and data migrations
 
+Updating Uwazi is pretty straight forward using git:
 ```
+$ cd uwazi
+$ git pull
+$ yarn install
+$ yarn migrate
 $ yarn production-build
-```
-
-### Initial State
-
-The first time you run Uwazi, you will need to initialize the database with its default blank values.  To do so:
-```
-$ yarn blank-state
-```
-Do no run this command for existing projects, as this will erase the entire database.
-
-### Production Run
-
-```
 $ yarn run-production
 ```
-
-### Upgrading Uwazi (migrations)
-
-We are working on a migration system that will allow seamless transitions from one version to the next of Uwazi.  For the time being, please, check the release notes for each version as to what is required in order to have the data properly migrated.
+- If you are not using git, just download and overwrite the code in the Uwazi directory. 
+- 'yarn install' will automatically add, remove or replace any changes in module dependecies.
+- 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
 
 # Development
 
@@ -121,3 +138,9 @@ $ yarn e2e
 ```
 
 Note that if you already have an instance running, this will likely throw an error of ports already been used.  Only one instance of Uwazi may be run in a the same port at the same time.
+
+### Default login
+
+The application's default log in is admin / change this password now 
+
+Note the subtle nudge ;)

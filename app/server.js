@@ -29,7 +29,7 @@ app.use(helmet());
 const http = Server(app);
 
 const uncaughtError = (error) => {
-  handleError(error, true);
+  handleError(error, { uncaught: true });
   process.exit(1);
 };
 

@@ -4,9 +4,10 @@ import errorLog from '../../log/errorLog';
 describe('Error handling middleware', () => {
   let next;
   let res;
-  const req = {};
+  let req = {};
 
   beforeEach(() => {
+    req = {};
     next = jasmine.createSpy('next');
     res = { json: jasmine.createSpy('json'), status: jasmine.createSpy('status') };
     spyOn(errorLog, 'error'); //just to avoid annoying console output
@@ -19,5 +20,31 @@ describe('Error handling middleware', () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: 'error' });
     expect(next).toHaveBeenCalled();
+  });
+
+  it('should log the url', () => {
+    const error = { message: 'error', code: 500 };
+    req.originalUrl = 'url';
+    middleware(error, req, res, next);
+
+    expect(errorLog.error).toHaveBeenCalledWith('\nurl: url\nerror');
+  });
+
+  it('should log the error body', () => {
+    const error = { message: 'error', code: 500 };
+    req.body = { param: 'value', param2: 'value2' };
+    middleware(error, req, res, next);
+    expect(errorLog.error).toHaveBeenCalledWith(`\nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`);
+
+    req.body = {};
+    middleware(error, req, res, next);
+    expect(errorLog.error).toHaveBeenCalledWith('\nerror');
+  });
+  it('should log the error query', () => {
+    const error = { message: 'error', code: 500 };
+    req.query = { param: 'value', param2: 'value2' };
+    middleware(error, req, res, next);
+
+    expect(errorLog.error).toHaveBeenCalledWith(`\nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`);
   });
 });
