@@ -32,7 +32,7 @@ Intallation guide
 # Dependencies
 
 - **NodeJs 8.11.x** For ease of update, use nvm: https://github.com/creationix/nvm
-- **Elasticsearch 5.5.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.5, some sections of the instructions use 5.x which would install a different version)
+- **ElasticSearch 5.5.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.5, some sections of the instructions use 5.x which would install a different version). Please note that ElasticSearch requires java.
 - **MongoDB 3.4.x** https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
 - **Yarn** https://yarnpkg.com/en/docs/install
 - **pdftotext** 0.67.0 https://poppler.freedesktop.org/
@@ -68,7 +68,7 @@ Then start the server by typing:
 ```
 $ yarn run-production
 ```
-By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and user the default username "admin" with password "change this password now".
+By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
 
 ### Production Configuration (advanced)
 
@@ -86,6 +86,10 @@ $ export PORT=3000
 ```
 
 Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
+
+For production environments, you may need to activate your system's sendmail so user's receive sign up and password recovery notifications.
+
+Alternatively, you can use a custom SMTP configuration to send these emails. Find this option in settings > collection.
 
 ### Upgrading Uwazi and data migrations
 
