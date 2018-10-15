@@ -65,7 +65,12 @@ describe('LibraryModeToggleButtons', () => {
     beforeEach(() => {
       props = { storeKey: 'library' };
       state = {
-       library: { search: {}, filters: Immutable.fromJS({ properties: [] }), ui: Immutable.fromJS({ zoomLevel: 1 }), markers: Immutable.fromJS({ rows: [] }) },
+       library: {
+         search: {},
+         filters: Immutable.fromJS({ properties: [] }),
+         ui: Immutable.fromJS({ zoomLevel: 1 }),
+         markers: Immutable.fromJS({ rows: [] })
+        },
        templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }])
       };
     });
