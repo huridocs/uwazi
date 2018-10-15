@@ -186,12 +186,12 @@ describe('Users', () => {
     });
 
     describe('when the user does not exist with that email', () => {
-      it('should not create the entry in the database, should not send a mail, and return "userNotFound".', (done) => {
+      it('should not create the entry in the database, should not send a mail, and return an error.', (done) => {
         spyOn(Date, 'now').and.returnValue(1000);
         const key = SHA256(`false@email.com${1000}`).toString();
         users.recoverPassword('false@email.com')
-        .then((response) => {
-          expect(response).toBe('userNotFound');
+        .catch((error) => {
+          expect(error.code).toBe(403);
           return passwordRecoveriesModel.get({ key });
         })
         .then((response) => {
