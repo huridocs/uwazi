@@ -70,26 +70,7 @@ $ yarn run-production
 ```
 By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
 
-### Production Configuration (advanced)
-
-Uwazi is configured to run correctly with its default values. There is no need to change or reconfigure these values.
-
-However, if you require different database names, elastic indexes, etc. you can override those defaults by exporting one or more of the following environment variables:
-
-```
-$ export DBHOST=localhost
-$ export DATABASE_NAME=uwazi_development
-$ export ELASTICSEARCH_URL=http://localhost:9200
-$ export INDEX_NAME=uwazi_development
-$ export API_URL=/api/
-$ export PORT=3000
-```
-
-Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
-
-For production environments, you may need to activate your system's sendmail so user's receive sign up and password recovery notifications.
-
-Alternatively, you can use a custom SMTP configuration to send these emails. Find this option in settings > collection.
+Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
 
 ### Upgrading Uwazi and data migrations
 
