@@ -49,3 +49,12 @@
     font-weight: bold;
   }
 }
+
+.login-password {
+  .login-failed {
+    display:none;
+  }
+  &.has-error .login-failed {
+    display: inline;
+  }
+}
