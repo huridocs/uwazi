@@ -52,6 +52,15 @@ Object {
       ],
       "type": "string",
     },
+    "password": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
   },
   "flags": Object {
     "presence": "required",

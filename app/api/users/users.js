@@ -55,11 +55,10 @@ export default {
         return Promise.reject(createError('Unauthorized', 403));
       }
 
-      if (user.hasOwnProperty('password')) {
-        user.password = encryptPassword(user.password);
-      }
-
-      return model.save(user);
+      return model.save({
+        ...user,
+        password: user.password ? encryptPassword(user.password) : undefined,
+      });
     });
   },
 
@@ -77,13 +76,8 @@ export default {
         return Promise.reject(createError('Email already exists', 409));
       }
 
-      user.password = encryptPassword(random());
-
-      return model.save(user)
-      .then((_user) => {
-        this.recoverPassword(user.email, domain, { newUser: true });
-        return _user;
-      });
+      return model.save({ ...user, password: encryptPassword(random()) })
+      .then(_user => this.recoverPassword(user.email, domain, { newUser: true }).then(() => _user));
     });
   },
 
@@ -134,19 +128,18 @@ export default {
         });
       }
 
-      return 'userNotFound';
+      return Promise.reject(createError('User not found', 403));
     });
   },
 
-  resetPassword(credentials) {
-    return passwordRecoveriesModel.get({ key: credentials.key })
-    .then((response) => {
-      if (response.length) {
-        return Promise.all([
-          passwordRecoveriesModel.delete(response[0]._id),
-          model.save({ _id: response[0].user, password: encryptPassword(credentials.password) })
-        ]);
-      }
-    });
+  async resetPassword(credentials) {
+    const [key] = await passwordRecoveriesModel.get({ key: credentials.key });
+    if (key) {
+      return Promise.all([
+        passwordRecoveriesModel.delete(key._id),
+        model.save({ _id: key.user, password: encryptPassword(credentials.password) })
+      ]);
+    }
+    throw createError('key not found', 403);
   }
 };
