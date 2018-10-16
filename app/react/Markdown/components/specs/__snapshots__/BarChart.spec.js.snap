@@ -120,6 +120,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         active={false}
         animationDuration={400}
         animationEasing="ease"
+        contentStyle={Object {}}
         coordinate={
           Object {
             "x": 0,
