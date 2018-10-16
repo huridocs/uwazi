@@ -1,101 +1,109 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IconField should be open when has value 1`] = `
-<ToggleDisplay
-  hideLabel={
-    <span>
-      <Connect(Translate)>
-        hide icon
-      </Connect(Translate)>
-      <Unknown
-        icon="eye-slash"
-      />
-    </span>
-  }
-  onHide={[Function]}
-  open={true}
-  showLabel={
-    <span>
-      <Connect(Translate)>
-        show icon
-      </Connect(Translate)>
-      <Unknown
-        icon="eye"
-      />
-    </span>
-  }
+<div
+  className="icon-selector"
 >
-  <ul
-    className="search__filter"
+  <ToggleDisplay
+    hideLabel={
+      <span>
+        <Connect(Translate)>
+          remove icon
+        </Connect(Translate)>
+        <Unknown
+          icon="eye-slash"
+        />
+      </span>
+    }
+    onHide={[Function]}
+    open={true}
+    showLabel={
+      <span>
+        <Connect(Translate)>
+          add icon
+        </Connect(Translate)>
+        <Unknown
+          icon="eye"
+        />
+      </span>
+    }
   >
-    <li>
-      <label>
-        <Connect(Translate)>
-          Icon
-        </Connect(Translate)>
-         / 
-        <Connect(Translate)>
-          Flag
-        </Connect(Translate)>
-      </label>
-    </li>
-    <li
-      className="wide"
+    <ul
+      className="search__filter"
     >
-      <IconSelector
-        model=".icon"
-      />
-    </li>
-  </ul>
-</ToggleDisplay>
+      <li>
+        <label>
+          <Connect(Translate)>
+            Icon
+          </Connect(Translate)>
+           / 
+          <Connect(Translate)>
+            Flag
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <IconSelector
+          model=".icon"
+        />
+      </li>
+    </ul>
+  </ToggleDisplay>
+</div>
 `;
 
 exports[`IconField should render IconSelector with toggleDisplay 1`] = `
-<ToggleDisplay
-  hideLabel={
-    <span>
-      <Connect(Translate)>
-        hide icon
-      </Connect(Translate)>
-      <Unknown
-        icon="eye-slash"
-      />
-    </span>
-  }
-  onHide={[Function]}
-  open={false}
-  showLabel={
-    <span>
-      <Connect(Translate)>
-        show icon
-      </Connect(Translate)>
-      <Unknown
-        icon="eye"
-      />
-    </span>
-  }
+<div
+  className="icon-selector"
 >
-  <ul
-    className="search__filter"
+  <ToggleDisplay
+    hideLabel={
+      <span>
+        <Connect(Translate)>
+          remove icon
+        </Connect(Translate)>
+        <Unknown
+          icon="eye-slash"
+        />
+      </span>
+    }
+    onHide={[Function]}
+    open={false}
+    showLabel={
+      <span>
+        <Connect(Translate)>
+          add icon
+        </Connect(Translate)>
+        <Unknown
+          icon="eye"
+        />
+      </span>
+    }
   >
-    <li>
-      <label>
-        <Connect(Translate)>
-          Icon
-        </Connect(Translate)>
-         / 
-        <Connect(Translate)>
-          Flag
-        </Connect(Translate)>
-      </label>
-    </li>
-    <li
-      className="wide"
+    <ul
+      className="search__filter"
     >
-      <IconSelector
-        model=".icon"
-      />
-    </li>
-  </ul>
-</ToggleDisplay>
+      <li>
+        <label>
+          <Connect(Translate)>
+            Icon
+          </Connect(Translate)>
+           / 
+          <Connect(Translate)>
+            Flag
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <IconSelector
+          model=".icon"
+        />
+      </li>
+    </ul>
+  </ToggleDisplay>
+</div>
 `;
