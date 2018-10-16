@@ -19,7 +19,7 @@ describe('IconField', () => {
   });
 
   it('should be open when has value', () => {
-    const component = shallow(<IconField {...props} model="model.value"/>).find(FormValue).prop('children')('value');
+    const component = shallow(<IconField {...props} model="model.value"/>).find(FormValue).prop('children')({ _id: 'id' });
     expect(component).toMatchSnapshot();
   });
 
