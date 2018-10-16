@@ -67,8 +67,9 @@ describe('PublishDocument', () => {
     .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
-      done();
-    });
+      return nightmare.waitToClick('.alert.alert-success');
+    })
+    .then(done);
   });
 
   describe('metadata editing', () => {
