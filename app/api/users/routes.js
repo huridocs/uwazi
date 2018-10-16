@@ -53,7 +53,8 @@ export default (app) => {
 
   app.post('/api/resetpassword',
     validateRequest(Joi.object().keys({
-      key: Joi.string().required()
+      key: Joi.string().required(),
+      password: Joi.string().required(),
     }).required()),
     (req, res, next) => {
       users.resetPassword(req.body)
