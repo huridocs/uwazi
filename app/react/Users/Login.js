@@ -92,7 +92,7 @@ export class Login extends RouteHandler {
                   <input type="password" name="password" id="password" className="form-control"/>
                 </Field>
                 <div className="form-text">
-                  <span className="required">{t('System', 'Login failed')} - </span>
+                  {this.state.error && <span>{t('System', 'Login failed')} - </span>}
                   <a
                     title={t('System', 'Forgot Password?', null, false)}
                     onClick={this.setRecoverPassword.bind(this)}
