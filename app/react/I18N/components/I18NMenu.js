@@ -53,7 +53,7 @@ export class I18NMenu extends Component {
           </button>
         </NeedAuthorization>
         {(() => languages.map((lang) => {
-            const url = `/${lang.key}${path}${this.props.location.search}`;
+            const url = `/${lang.key}${path}${path.match('document') ? '' : this.props.location.search}`;
             return (
               <li className={`menuNav-item${locale === lang.key ? ' is-active' : ''}`} key={lang.key}>
                 <a

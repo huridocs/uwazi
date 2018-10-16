@@ -691,6 +691,17 @@ describe('entities', () => {
           }
         });
       });
+
+      describe('when page do not exists', () => {
+        it('should throw 404 error', async () => {
+          const pageNumber = 200;
+          try {
+            await entities.getRawPage('shared', 'en', pageNumber);
+          } catch (e) {
+            expect(e.code).toBe(404);
+          }
+        });
+      });
     });
 
     it('should delete the document in the database', (done) => {

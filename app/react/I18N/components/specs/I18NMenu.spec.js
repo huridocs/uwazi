@@ -30,6 +30,16 @@ describe('I18NMenu', () => {
     spyOn(I18NMenu, 'reload');
   };
 
+  it('should not render searchQuery when on documents path', () => {
+    props.location.pathname = '/es/documents';
+    props.location.search = '?search';
+    render();
+    const links = component.find('a');
+    expect(links.length).toBe(2);
+    expect(links.first().props().href).toBe('/en/documents');
+    expect(links.last().props().href).toBe('/es/documents');
+  });
+
   describe('when there is NO language in the url', () => {
     it('should render links for each language', () => {
       render();
