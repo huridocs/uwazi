@@ -139,7 +139,7 @@
     "superagent": "3.8.2",
     "swagger-jsdoc": "^1.9.6",
     "tiny-cookie": "2.1.1",
-    "underscore.string": "3.0.3",
+    "underscore.string": "3.3.5",
     "validate.js": "0.9.0",
     "winston": "3.0.0",
     "world-countries": "2.0.0",
