@@ -36,6 +36,7 @@ exports[`GaugeChart Markdown component should allow rendering value with prefix,
         animationBegin={400}
         animationDuration={1500}
         animationEasing="ease"
+        blendStroke={false}
         cx="50%"
         cy={300}
         data={
@@ -145,6 +146,7 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
         animationBegin={400}
         animationDuration={1500}
         animationEasing="ease"
+        blendStroke={false}
         cx="50%"
         cy={110}
         data={
