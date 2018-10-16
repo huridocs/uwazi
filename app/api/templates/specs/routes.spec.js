@@ -26,10 +26,11 @@ describe('templates routes', () => {
     describe('when there is an error', () => {
       it('should return the error in the response', async () => {
         spyOn(templates, 'get').and.returnValue(Promise.reject(new Error('error')));
-        const next = jasmine.createSpy('next');
-
-        await routes.get('/api/templates', {}, {}, next);
-        expect(next).toHaveBeenCalledWith(new Error('error'));
+        try {
+          await routes.get('/api/templates');
+        } catch (error) {
+          expect(error).toEqual(new Error('error'));
+        }
       });
     });
   });
@@ -53,10 +54,12 @@ describe('templates routes', () => {
     describe('when there is an error', () => {
       it('should return the error in the response', async () => {
         spyOn(templates, 'delete').and.returnValue(Promise.reject(new Error('error')));
-        const next = jasmine.createSpy('next');
 
-        await routes.delete('/api/templates', { query: {} }, {}, next);
-        expect(next).toHaveBeenCalledWith(new Error('error'));
+        try {
+          await routes.delete('/api/templates', { query: {} });
+        } catch (error) {
+          expect(error).toEqual(new Error('error'));
+        }
       });
     });
   });
@@ -81,10 +84,12 @@ describe('templates routes', () => {
     describe('when there is an error', () => {
       it('should return the error in the response', async () => {
         spyOn(templates, 'save').and.returnValue(Promise.reject(new Error('error')));
-        const next = jasmine.createSpy('next');
 
-        await routes.post('/api/templates', {}, {}, next);
-        expect(next).toHaveBeenCalledWith(new Error('error'));
+        try {
+          await routes.post('/api/templates');
+        } catch (error) {
+          expect(error).toEqual(new Error('error'));
+        }
       });
     });
   });

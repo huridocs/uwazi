@@ -31,7 +31,7 @@ describe('entities', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.post('/api/entities', req)).toNeedAuthorization();
+      expect(routes._post('/api/entities', req)).toNeedAuthorization();
     });
 
     it('should create a new document with current user', (done) => {
@@ -102,7 +102,7 @@ describe('entities', () => {
       });
 
       it('should need authorization', () => {
-        expect(routes.post('/api/entities/multipleupdate', req)).toNeedAuthorization();
+        expect(routes._post('/api/entities/multipleupdate', req)).toNeedAuthorization();
       });
 
       it('should call multipleUpdate with the ids and the metadata in the body', (done) => {
