@@ -11528,7 +11528,7 @@ underscore.string.fp@^1.0.4:
 
 underscore.string@3.0.3:
   version "3.0.3"
-  resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-3.0.3.tgz#4617b8c1a250cf6e5064fbbb363d0fa96cf14552"
+  resolved "http://registry.npmjs.org/underscore.string/-/underscore.string-3.0.3.tgz#4617b8c1a250cf6e5064fbbb363d0fa96cf14552"
 
 underscore@1.8.x:
   version "1.8.3"
