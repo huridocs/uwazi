@@ -20,7 +20,7 @@ describe('handleError', () => {
       const error = new Error('error');
       handleError(error);
 
-      expect(errorLog.error).toHaveBeenCalledWith(error.stack);
+      expect(errorLog.error).toHaveBeenCalledWith(`\n${error.stack}`);
     });
   });
 
@@ -34,7 +34,7 @@ describe('handleError', () => {
       expect(errorLog.error).not.toHaveBeenCalled();
 
       handleError(createError('test error'));
-      expect(errorLog.error).toHaveBeenCalledWith('test error');
+      expect(errorLog.error).toHaveBeenCalledWith('\ntest error');
     });
   });
   describe('when error is a MongoError', () => {
@@ -47,16 +47,20 @@ describe('handleError', () => {
   describe('when error is uncaught', () => {
     it('should append the info into the message', () => {
       const uncaught = true;
-      const error = handleError({ message: 'error' }, uncaught);
+      const error = handleError({ message: 'error' }, { uncaught });
       expect(error.message).toBe('uncaught exception or unhandled rejection, Node process finished !!\n error');
     });
   });
 
   describe('when error is a response to client error', () => {
     it('use error instead of message', () => {
-      const error = handleError({ json: { error: 'error' } });
+      let error = handleError({ json: { error: 'error' } });
       expect(error.message).toBe('error');
       expect(error.code).toBe(500);
+
+      error = handleError({ status: 404, json: { error: 'error' } });
+      expect(error.message).toBe('error');
+      expect(error.code).toBe(404);
     });
   });
 });

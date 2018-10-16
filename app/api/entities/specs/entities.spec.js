@@ -9,7 +9,8 @@ import search from 'api/search/search';
 import { uploadDocumentsPath } from 'api/config/paths';
 import path from 'path';
 import entities from '../entities.js';
-import fixtures, { batmanFinishesId, templateId, templateChangingNames, syncPropertiesEntityId, templateWithEntityAsThesauri } from './fixtures.js';
+import fixtures, { batmanFinishesId, templateId, templateChangingNames,
+  syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';
 
 describe('entities', () => {
   beforeEach((done) => {
@@ -679,6 +680,17 @@ describe('entities', () => {
 
         expect(page).toBe('page 2');
       });
+
+      describe('when entity do not exists', () => {
+        it('should throw 404 error', async () => {
+          const pageNumber = 2;
+          try {
+            await entities.getRawPage('nonexistent', 'en', pageNumber);
+          } catch (e) {
+            expect(e.code).toBe(404);
+          }
+        });
+      });
     });
 
     it('should delete the document in the database', (done) => {
@@ -712,16 +724,22 @@ describe('entities', () => {
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014cc1.pdf'));
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccc.pdf'));
+      fs.writeFileSync(path.join(uploadDocumentsPath, `${docId1}.jpg`));
+      fs.writeFileSync(path.join(uploadDocumentsPath, `${docId2}.jpg`));
 
       expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(true);
       expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(true);
       expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(true);
+      expect(fs.existsSync(path.join(uploadDocumentsPath, `${docId1}.jpg`))).toBe(true);
+      expect(fs.existsSync(path.join(uploadDocumentsPath, `${docId2}.jpg`))).toBe(true);
 
       entities.delete('shared')
       .then(() => {
         expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
         expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
         expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+        expect(fs.existsSync(path.join(uploadDocumentsPath, `${docId1}.jpg`))).toBe(false);
+        expect(fs.existsSync(path.join(uploadDocumentsPath, `${docId2}.jpg`))).toBe(false);
         done();
       })
       .catch(catchErrors(done));

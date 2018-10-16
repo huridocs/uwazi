@@ -8,13 +8,13 @@ export function removeNotification(id) {
   };
 }
 
-export function notify(message, type) {
+export function notify(message, type, delay = 6000) {
   return (dispatch) => {
-    let id = ID();
-    dispatch({type: actions.NOTIFY, notification: {message, type, id}});
+    const id = ID();
+    dispatch({ type: actions.NOTIFY, notification: { message, type, id } });
 
     setTimeout(() => {
       dispatch(removeNotification(id));
-    }, 2500);
+    }, delay);
   };
 }

@@ -307,7 +307,7 @@ describe('search', () => {
       expect(response.rows.length).toBe(2);
     });
 
-    fit('should filter by relationships metadata markdown', async () => {
+    it('should filter by relationships metadata markdown', async () => {
       const response = await search.search({
         types: [ids.templateMetadata1],
         filters: { rich_text: 'rich' }
@@ -580,7 +580,7 @@ describe('search', () => {
       }, 'es', 'user')
       .then(() => {
         const expectedQuery = documentQueryBuilder()
-        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
+        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.rich_text', 'metadata.field3', 'title', 'fullText'], 2)
         .includeUnpublished()
         .language('es')
         .query();
@@ -598,7 +598,7 @@ describe('search', () => {
       }, 'es')
       .then(() => {
         const expectedQuery = documentQueryBuilder()
-        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.field3', 'title', 'fullText'], 2)
+        .fullTextSearch('searchTerm', ['metadata.field1', 'metadata.field2', 'metadata.rich_text', 'metadata.field3', 'title', 'fullText'], 2)
         .language('es')
         .query();
 

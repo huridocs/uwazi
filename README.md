@@ -32,34 +32,27 @@ Intallation guide
 # Dependencies
 
 - **NodeJs 8.11.x** For ease of update, use nvm: https://github.com/creationix/nvm
-- **Elasticsearch 5.5.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.5, some sections of the instructions use 5.x which would install a different version)
+- **ElasticSearch 5.5.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.5, some sections of the instructions use 5.x which would install a different version). Please note that ElasticSearch requires java.
 - **MongoDB 3.4.x** https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
 - **Yarn** https://yarnpkg.com/en/docs/install
-- **pdftotext** 0.67.0 https://poppler.freedesktop.org/
+- **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/
 
-Before anything else you will need to install the application dependencies running:
+Before anything else you will need to install the application dependencies. 
+
+If you want to use the latest development code:
 ```
+$ git clone https://github.com/huridocs/uwazi.git
+$ cd uwazi
+$ yarn install
+```
+If you just want to only use the latest stable release (recommended for production):
+```
+$ git clone -b master --single-branch https://github.com/huridocs/uwazi.git
+$ cd uwazi
 $ yarn install
 ```
 
 # Production
-
-### Production Configuration (advanced)
-
-Uwazi is configured to run correctly with its default values. There is no need to change or reconfigure these values.
-
-However, if you require different database names, elastic indexes, etc. you can override those defaults by exporting one or more of the following environment variables:
-
-```
-$ export DBHOST=localhost
-$ export DATABASE_NAME=uwazi_development
-$ export ELASTICSEARCH_URL=http://localhost:9200
-$ export INDEX_NAME=uwazi_development
-$ export API_URL=/api/
-$ export PORT=3000
-```
-
-Again, please notice that there is no need to export any value for a normal installation and only do so if you are certain you need different defaults.  If these values are not correctly overridden, Uwazi will fail to run properly.
 
 ### Production Build
 
@@ -67,23 +60,32 @@ Again, please notice that there is no need to export any value for a normal inst
 $ yarn production-build
 ```
 
-### Initial State
-
-The first time you run Uwazi, you will need to initialize the database with its default blank values.  To do so:
+The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running. 
 ```
 $ yarn blank-state
 ```
-Do no run this command for existing projects, as this will erase the entire database.
-
-### Production Run
-
+Then start the server by typing:
 ```
 $ yarn run-production
 ```
+By default, Uwazi runs on localhost on the port 3000. So point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
 
-### Upgrading Uwazi (migrations)
+Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
 
-We are working on a migration system that will allow seamless transitions from one version to the next of Uwazi.  For the time being, please, check the release notes for each version as to what is required in order to have the data properly migrated.
+### Upgrading Uwazi and data migrations
+
+Updating Uwazi is pretty straight forward using git:
+```
+$ cd uwazi
+$ git pull
+$ yarn install
+$ yarn migrate
+$ yarn production-build
+$ yarn run-production
+```
+- If you are not using git, just download and overwrite the code in the Uwazi directory. 
+- 'yarn install' will automatically add, remove or replace any changes in module dependecies.
+- 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
 
 # Development
 

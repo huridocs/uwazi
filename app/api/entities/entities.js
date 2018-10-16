@@ -2,6 +2,7 @@ import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 import relationships from 'api/relationships/relationships';
+import createError from 'api/utils/Error';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import path from 'path';
@@ -334,6 +335,7 @@ export default {
     .reduce((paths, doc) => {
       if (doc.file) {
         paths.push(path.normalize(`${uploadDocumentsPath}/${doc.file.filename}`));
+        paths.push(path.normalize(`${uploadDocumentsPath}/${doc._id.toString()}.jpg`));
       }
 
       if (doc.attachments) {
@@ -373,9 +375,12 @@ export default {
   },
 
   async getRawPage(sharedId, language, pageNumber) {
-    const entity = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
+    const [entity] = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
     const pageNumberMatch = /\[\[(\d+)\]\]/g;
-    return entity[0].fullText[pageNumber].replace(pageNumberMatch, '');
+    if (!entity) {
+      throw createError('entity does not exists', 404);
+    }
+    return entity.fullText[pageNumber].replace(pageNumberMatch, '');
   },
 
   removeValuesFromEntities(properties, template) {
