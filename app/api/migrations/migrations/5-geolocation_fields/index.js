@@ -19,7 +19,7 @@ export default {
       const geolocationProperty = entityPropertiesNames.find(propertyName => propertyName.match('geolocation'));
       const propertyValue = entity.metadata[geolocationProperty];
 
-      if (!processedIds.includes(sharedId) && geolocationProperty && (propertyValue.lat !== undefined || propertyValue.lon !== undefined)) {
+      if (!processedIds.includes(sharedId) && geolocationProperty && propertyValue && (propertyValue.lat !== undefined || propertyValue.lon !== undefined)) {
         const changes = {};
         changes[`metadata.${geolocationProperty}`] = propertyValue;
         processedIds.push(sharedId);
