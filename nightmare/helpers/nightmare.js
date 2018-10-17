@@ -14,7 +14,7 @@ nightmareUpload(Nightmare);
 const show = !!process.argv.includes('--show') || process.env.SHOW_E2E;
 export default function createNightmare(width = 1100, height = 600) {
   const nightmare = new Nightmare({
-    show,
+    show: true,
     typeInterval: 10,
     x: 0,
     y: 0,
