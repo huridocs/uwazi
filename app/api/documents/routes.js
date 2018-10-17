@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import sanitize from 'sanitize-filename';
 
+import { createError } from 'api/utils';
 import path from 'path';
 
 import { uploadDocumentsPath } from '../config/paths';
@@ -65,6 +66,9 @@ export default (app) => {
     (req, res, next) => {
       documents.getById(req.query._id)
       .then((response) => {
+        if (!response) {
+          throw createError('document does not exist', 404);
+        }
         const basename = path.basename(response.file.originalname, path.extname(response.file.originalname));
         res.download(path.join(uploadDocumentsPath, response.file.filename), sanitize(basename + path.extname(response.file.filename)));
       })
