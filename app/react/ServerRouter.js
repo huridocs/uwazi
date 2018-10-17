@@ -176,7 +176,7 @@ function handleRoute(res, renderProps, req) {
       initialData.locale = locale;
       renderPage(initialData, true);
     })
-    .catch(handleError);
+    .catch(e => handleError(e, { req }));
   }
 
   renderPage();

@@ -7,6 +7,7 @@ import handleError from '../handleError';
 describe('handleError', () => {
   beforeEach(() => {
     spyOn(errorLog, 'error');
+    spyOn(debugLog, 'debug');
   });
 
   describe('when error is instance of Error', () => {
@@ -54,20 +55,16 @@ describe('handleError', () => {
   });
 
   describe('when error is a response to client error', () => {
-    it('use error instead of message', () => {
-      let error = handleError({ json: { error: 'error' } });
-      expect(error.message).toBe('error');
-      expect(error.code).toBe(500);
-
-      error = handleError({ status: 404, json: { error: 'error' } });
-      expect(error.message).toBe('error');
-      expect(error.code).toBe(404);
+    it('should ignore it', () => {
+      const error = handleError({ json: { error: 'error' } });
+      expect(error).toBe(false);
+      expect(errorLog.error).not.toHaveBeenCalled();
+      expect(debugLog.debug).not.toHaveBeenCalled();
     });
   });
 
   describe('when error its not a 500', () => {
     it('should log it using debugLog', () => {
-      spyOn(debugLog, 'debug');
       handleError(createError('test error', 400));
       expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
     });

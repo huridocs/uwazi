@@ -6,12 +6,12 @@ export default (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
   const responseToClientError = error.json;
 
-  if (error instanceof Error) {
-    result = { code: 500, message: error.stack };
+  if (responseToClientError) {
+    return false;
   }
 
-  if (responseToClientError) {
-    result = { code: error.status || 500, message: error.json.error };
+  if (error instanceof Error) {
+    result = { code: 500, message: error.stack };
   }
 
   if (error.name === 'MongoError') {
