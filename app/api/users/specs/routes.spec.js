@@ -138,11 +138,13 @@ describe('users routes', () => {
       expect(routes.delete('/api/users', req)).toNeedAuthorization();
     });
 
-    it('should use users to delete it', done => routes.delete('/api/users', req)
+    it('should use users to delete it', (done) => {
+      routes.delete('/api/users', req)
       .then(() => {
         expect(users.delete).toHaveBeenCalledWith(req.query._id, { _id: 'currentUser' });
         done();
       })
-      .catch(catchErrors(done)));
+      .catch(catchErrors(done));
+    });
   });
 });

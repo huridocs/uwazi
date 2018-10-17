@@ -17,7 +17,7 @@ import NoMatch from './App/NoMatch';
 import Root from './App/Root';
 import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
-import store from './store';
+import createStore from './store';
 import translationsApi from '../api/i18n/translations';
 import handleError from '../api/utils/handleError';
 
@@ -25,10 +25,10 @@ import handleError from '../api/utils/handleError';
 let assets = {};
 
 function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
-  let initialStore = store({});
+  let initialStore = createStore({});
 
   if (isRedux) {
-    initialStore = store(initialData);
+    initialStore = createStore(initialData);
   }
   // to prevent warnings on some client libs that use window global var
   global.window = {};
@@ -73,8 +73,7 @@ function handleRedirect(res, redirectLocation) {
 function onlySystemTranslations(AllTranslations) {
   const rows = AllTranslations.map((translation) => {
     const systemTranslation = translation.contexts.find(c => c.id === 'System');
-    translation.contexts = [systemTranslation];
-    return translation;
+    return { ...translation, contexts: [systemTranslation] };
   });
 
   return { json: { rows } };
@@ -167,19 +166,21 @@ function handleRoute(res, renderProps, req) {
       return Promise.reject(error);
     })
     .then(([initialData, globalResources]) => {
-      initialData.user = globalResources.user;
-      initialData.settings = globalResources.settings;
-      initialData.translations = globalResources.translations;
-      initialData.templates = globalResources.templates;
-      initialData.thesauris = globalResources.thesauris;
-      initialData.relationTypes = globalResources.relationTypes;
-      initialData.locale = locale;
-      renderPage(initialData, true);
+      renderPage({
+        ...initialData,
+        locale,
+        user: globalResources.user,
+        settings: globalResources.settings,
+        translations: globalResources.translations,
+        templates: globalResources.templates,
+        thesauris: globalResources.thesauris,
+        relationTypes: globalResources.relationTypes,
+      }, true);
     })
     .catch(e => handleError(e, { req }));
   }
 
-  renderPage();
+  return renderPage();
 }
 
 const allowedRoute = (user = {}, url) => {
