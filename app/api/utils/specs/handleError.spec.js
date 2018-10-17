@@ -70,6 +70,13 @@ describe('handleError', () => {
     });
   });
 
+  describe('when "rison decoder error"', () => {
+    it('should set code to 400', () => {
+      const error = handleError({ message: 'rison decoder error' });
+      expect(error.code).toBe(400);
+    });
+  });
+
   describe('when error is 400', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));

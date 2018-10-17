@@ -22,6 +22,10 @@ export default (error, { req = {}, uncaught = false } = {}) => {
     result.code = 400;
   }
 
+  if (error.message.match(/rison decoder error/)) {
+    result.code = 400;
+  }
+
   if (uncaught) {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
   }
