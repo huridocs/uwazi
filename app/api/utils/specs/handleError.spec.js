@@ -63,7 +63,14 @@ describe('handleError', () => {
     });
   });
 
-  describe('when error its not a 500', () => {
+  describe('when "Cast to objectId failed"', () => {
+    it('should set code to 400', () => {
+      const error = handleError({ message: 'Cast to ObjectId failed for value' });
+      expect(error.code).toBe(400);
+    });
+  });
+
+  describe('when error is 400', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));
       expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
