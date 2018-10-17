@@ -4,6 +4,7 @@ import relationships from 'api/relationships/relationships';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import relationshipsRroutes from '../routes.js';
+import entities from 'api/entities';
 
 describe('relationships routes', () => {
   let routes;
@@ -49,6 +50,8 @@ describe('relationships routes', () => {
         },
         language: 'es',
       };
+
+      spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
 
       routes.post('/api/relationships/bulk', req)
       .then(() => {

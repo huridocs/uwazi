@@ -1,5 +1,6 @@
 import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
+import debugLog from 'api/log/debugLog';
 
 import handleError from '../handleError';
 
@@ -61,6 +62,14 @@ describe('handleError', () => {
       error = handleError({ status: 404, json: { error: 'error' } });
       expect(error.message).toBe('error');
       expect(error.code).toBe(404);
+    });
+  });
+
+  describe('when error its not a 500', () => {
+    it('should log it using debugLog', () => {
+      spyOn(debugLog, 'debug');
+      handleError(createError('test error', 400));
+      expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
     });
   });
 });
