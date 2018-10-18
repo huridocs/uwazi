@@ -1,15 +1,17 @@
+import { Form, Field } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Form, Field } from 'react-redux-form';
 
-import { FormGroup, IconSelector } from 'app/ReactReduxForms';
+import { FormGroup } from 'app/ReactReduxForms';
 import { Select as SimpleSelect } from 'app/Forms';
-import { createSelector } from 'reselect';
 import { filterBaseProperties } from 'app/Entities/utils/filterBaseProperties';
 import { notify } from 'app/Notifications';
 import t from 'app/I18N/t';
+
+import IconField from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import validator from '../helpers/validator';
 
@@ -63,6 +65,7 @@ export class MetadataForm extends Component {
                 <textarea className="form-control"/>
               </Field>
             </li>
+            <IconField model={model}/>
           </ul>
         </FormGroup>
 
@@ -82,14 +85,6 @@ export class MetadataForm extends Component {
           </ul>
         </FormGroup>
 
-        <FormGroup>
-          <ul className="search__filter">
-            <li><label>{t('System', 'Icon')} / {t('System', 'Flag')}</label></li>
-            <li className="wide">
-              <IconSelector model=".icon"/>
-            </li>
-          </ul>
-        </FormGroup>
         <MetadataFormFields thesauris={this.props.thesauris} model={model} template={template} />
       </Form>
     );
@@ -111,8 +106,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 export const mapStateToProps = (state, ownProps) => ({
-    template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId),
-    templateOptions: selectTemplateOptions(state, ownProps.isEntity)
+  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId),
+  templateOptions: selectTemplateOptions(state, ownProps.isEntity)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

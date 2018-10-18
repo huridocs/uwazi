@@ -1,11 +1,13 @@
 import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
+import debugLog from 'api/log/debugLog';
 
 import handleError from '../handleError';
 
 describe('handleError', () => {
   beforeEach(() => {
     spyOn(errorLog, 'error');
+    spyOn(debugLog, 'debug');
   });
 
   describe('when error is instance of Error', () => {
@@ -53,14 +55,32 @@ describe('handleError', () => {
   });
 
   describe('when error is a response to client error', () => {
-    it('use error instead of message', () => {
-      let error = handleError({ json: { error: 'error' } });
-      expect(error.message).toBe('error');
-      expect(error.code).toBe(500);
+    it('should ignore it', () => {
+      const error = handleError({ json: { error: 'error' } });
+      expect(error).toBe(false);
+      expect(errorLog.error).not.toHaveBeenCalled();
+      expect(debugLog.debug).not.toHaveBeenCalled();
+    });
+  });
 
-      error = handleError({ status: 404, json: { error: 'error' } });
-      expect(error.message).toBe('error');
-      expect(error.code).toBe(404);
+  describe('when "Cast to objectId failed"', () => {
+    it('should set code to 400', () => {
+      const error = handleError({ message: 'Cast to ObjectId failed for value' });
+      expect(error.code).toBe(400);
+    });
+  });
+
+  describe('when "rison decoder error"', () => {
+    it('should set code to 400', () => {
+      const error = handleError({ message: 'rison decoder error' });
+      expect(error.code).toBe(400);
+    });
+  });
+
+  describe('when error is 400', () => {
+    it('should log it using debugLog', () => {
+      handleError(createError('test error', 400));
+      expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
     });
   });
 });

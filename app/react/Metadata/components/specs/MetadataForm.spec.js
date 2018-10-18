@@ -6,7 +6,6 @@ import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
 import { Form, Field } from 'react-redux-form';
 import { FormGroup, Select as SimpleSelect } from 'app/Forms';
-import { IconSelector } from 'app/ReactReduxForms';
 import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
 
@@ -46,6 +45,12 @@ describe('MetadataForm', () => {
     component = shallow(<MetadataForm {...props}/>);
   };
 
+  describe('Icon field', () => {
+    it('should remove icon', () => {
+
+    });
+  });
+
   it('should render a form with metadata as model', () => {
     render();
     const form = component.find(Form);
@@ -75,12 +80,6 @@ describe('MetadataForm', () => {
     const titleGroup = component.find(FormGroup).at(0);
     expect(title.props().model).toEqual('.title');
     expect(titleGroup.props().model).toEqual('.title');
-  });
-
-  it('should render an icon selector linked to the icon property', () => {
-    render();
-    const iconSelector = component.find(IconSelector);
-    expect(iconSelector.props().model).toBe('.icon');
   });
 
   describe('on template change', () => {

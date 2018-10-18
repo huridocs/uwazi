@@ -120,6 +120,7 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
           payload={Array []}
         />
       }
+      contentStyle={Object {}}
       coordinate={
         Object {
           "x": 0,
@@ -322,6 +323,7 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
           payload={Array []}
         />
       }
+      contentStyle={Object {}}
       coordinate={
         Object {
           "x": 0,
