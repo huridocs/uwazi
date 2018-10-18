@@ -31,6 +31,7 @@ describe('userCreation', () => {
     await nightmare.write(passwordInput, 'password');
     await nightmare.waitToClick(adminCheckBox);
     await nightmare.waitToClick(saveUserButton);
+    await nightmare.waitToClick('.alert.alert-success');
     await nightmare.waitToClick(usersButton);
     const newUser = await nightmare.getInnerText(newUsername);
     expect(newUser).toBe('username');
