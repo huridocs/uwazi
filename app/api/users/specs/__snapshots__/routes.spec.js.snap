@@ -139,6 +139,12 @@ Object {
       ],
       "type": "string",
     },
+    "password": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "role": Object {
       "flags": Object {
         "allowOnly": true,
