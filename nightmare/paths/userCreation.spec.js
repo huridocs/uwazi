@@ -22,18 +22,21 @@ describe('userCreation', () => {
     await nightmare.login('admin', 'admin');
   });
 
-  it('should create a new user', async () => {
-    await nightmare.waitToClick(selectors.settingsView.settingsHeader);
-    await nightmare.waitToClick(usersButton);
-    await nightmare.waitToClick(addUserButton);
-    await nightmare.write(usernameInput, 'username');
-    await nightmare.write(emailInput, 'email@email.com');
-    await nightmare.write(passwordInput, 'password');
-    await nightmare.waitToClick(adminCheckBox);
-    await nightmare.waitToClick(saveUserButton);
-    await nightmare.waitToClick('.alert.alert-success');
-    await nightmare.waitToClick(usersButton);
-    const newUser = await nightmare.getInnerText(newUsername);
-    expect(newUser).toBe('username');
+  it('should create a new user', (done) => {
+    nightmare.waitToClick(selectors.settingsView.settingsHeader)
+    .waitToClick(usersButton)
+    .waitToClick(addUserButton)
+    .write(usernameInput, 'username')
+    .write(emailInput, 'email@email.com')
+    .write(passwordInput, 'password')
+    .waitToClick(adminCheckBox)
+    .waitToClick(saveUserButton)
+    .waitToClick('.alert.alert-success')
+    .waitToClick(usersButton)
+    .getInnerText(newUsername)
+    .then((newUser) => {
+      expect(newUser).toBe('username');
+      done();
+    });
   });
 });
