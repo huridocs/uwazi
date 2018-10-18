@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import mongoose from 'mongoose';
+import createError from 'api/utils/Error';
 import multer from 'multer';
 import sanitize from 'sanitize-filename';
 
@@ -64,6 +65,9 @@ export default (app) => {
   app.get('/api/attachments/download', (req, res, next) => {
     entities.getById(req.query._id)
     .then((response) => {
+      if (!response) {
+        throw createError('entitiy does not exist', 404);
+      }
       const file = response.attachments.find(a => a.filename === req.query.file);
       const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
       res.download(path.join(attachmentsPath, file.filename), sanitize(newName));

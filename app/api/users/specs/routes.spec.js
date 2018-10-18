@@ -66,10 +66,12 @@ describe('users routes', () => {
       it('should return an error if recover password fails', async () => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.reject(new Error('error')));
         const req = { body: { email: 'recover@me.com' }, protocol: 'http', get: () => 'localhost' };
-        const next = jasmine.createSpy('next');
 
-        await routes.post('/api/recoverpassword', req, {}, next);
-        expect(next).toHaveBeenCalledWith(new Error('error'));
+        try {
+          await routes.post('/api/recoverpassword', req);
+        } catch (error) {
+          expect(error).toEqual(new Error('error'));
+        }
       });
     });
 
@@ -112,10 +114,12 @@ describe('users routes', () => {
     it('should call next on error', async () => {
       spyOn(users, 'recoverPassword').and.returnValue(Promise.reject(new Error('error')));
       const req = { body: { email: 'recover@me.com' }, protocol: 'http', get: () => 'localhost' };
-      const next = jasmine.createSpy('next');
 
-      await routes.post('/api/recoverpassword', req, {}, next);
-      expect(next).toHaveBeenCalledWith(new Error('error'));
+      try {
+        await routes.post('/api/recoverpassword', req);
+      } catch (error) {
+        expect(error).toEqual(new Error('error'));
+      }
     });
   });
 
@@ -134,11 +138,13 @@ describe('users routes', () => {
       expect(routes.delete('/api/users', req)).toNeedAuthorization();
     });
 
-    it('should use users to delete it', done => routes.delete('/api/users', req)
-    .then(() => {
-      expect(users.delete).toHaveBeenCalledWith(req.query._id, { _id: 'currentUser' });
-      done();
-    })
-    .catch(catchErrors(done)));
+    it('should use users to delete it', (done) => {
+      routes.delete('/api/users', req)
+      .then(() => {
+        expect(users.delete).toHaveBeenCalledWith(req.query._id, { _id: 'currentUser' });
+        done();
+      })
+      .catch(catchErrors(done));
+    });
   });
 });
