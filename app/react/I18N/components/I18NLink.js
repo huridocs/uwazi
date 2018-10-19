@@ -11,14 +11,13 @@ export class I18NLink extends Component {
   }
 
   onClick(e) {
-    console.log(this.props.disabled);
     if (this.props.disabled) {
       e.preventDefault();
       return;
     }
 
     if (this.props.onClick) {
-      this.props.onClick();
+      this.props.onClick(e);
     }
   }
 

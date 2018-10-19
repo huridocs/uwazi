@@ -34,7 +34,7 @@ describe('I18NLink', () => {
       expect(link.props().onMouseOver).toBe(mouseOverAction);
       expect(link.props().dispatch).toBeUndefined();
       component.simulate('click', event);
-      expect(props.onClick).toHaveBeenCalled();
+      expect(props.onClick).toHaveBeenCalledWith(event);
     });
   });
 
