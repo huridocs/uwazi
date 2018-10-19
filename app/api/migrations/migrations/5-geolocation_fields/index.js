@@ -14,17 +14,20 @@ export default {
     const processedIds = [];
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
-      const sharedId = entity.sharedId;
-      const entityPropertiesNames = Object.keys(entity.metadata);
-      const geolocationProperty = entityPropertiesNames.find(propertyName => propertyName.match('geolocation'));
-      const propertyValue = entity.metadata[geolocationProperty];
+      if(entity.metadata) {
+        const sharedId = entity.sharedId;
+        const entityPropertiesNames = Object.keys(entity.metadata);
+        const geolocationProperty = entityPropertiesNames.find(propertyName => propertyName.match('geolocation'));
+        const propertyValue = entity.metadata[geolocationProperty];
 
-      if (!processedIds.includes(sharedId) && geolocationProperty && propertyValue && (propertyValue.lat !== undefined || propertyValue.lon !== undefined)) {
-        const changes = {};
-        changes[`metadata.${geolocationProperty}`] = propertyValue;
-        processedIds.push(sharedId);
-        await db.collection('entities').updateMany({ sharedId }, { $set: changes });
+        if (!processedIds.includes(sharedId) && geolocationProperty && propertyValue && (propertyValue.lat !== undefined || propertyValue.lon !== undefined)) {
+          const changes = {};
+          changes[`metadata.${geolocationProperty}`] = propertyValue;
+          processedIds.push(sharedId);
+          await db.collection('entities').updateMany({ sharedId }, { $set: changes });
+        }
       }
+
       process.stdout.write(`processed -> ${index}\r`);
       index += 1;
     }
