@@ -3,6 +3,7 @@
 exports[`FormatMetadata should render Metadata component passing the formatted metadata 1`] = `
 <Metadata
   compact={true}
+  forceLabels={false}
   metadata={
     Array [
       Object {
@@ -10,12 +11,15 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
       },
     ]
   }
+  templates={Array []}
+  thesauris={Array []}
 />
 `;
 
 exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
 <Metadata
   compact={true}
+  forceLabels={false}
   metadata={
     Array [
       Object {
@@ -29,5 +33,7 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
       },
     ]
   }
+  templates={Array []}
+  thesauris={Array []}
 />
 `;

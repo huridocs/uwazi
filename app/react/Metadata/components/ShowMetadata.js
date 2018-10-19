@@ -41,7 +41,7 @@ export class ShowMetadata extends Component {
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
         </ShowIf>
-        <FormatMetadata entity={entity} />
+        <FormatMetadata entity={entity} forceLabels/>
       </div>
     );
   }

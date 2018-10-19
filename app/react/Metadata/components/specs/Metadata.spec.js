@@ -33,6 +33,17 @@ describe('Metadata', () => {
     ]);
   });
 
+  it('should not render label when noLabel prop', () => {
+    testMetadata([{ label: 'Label', value: 'string value', noLabel: true }]);
+  });
+
+  describe('when forceLabels', () => {
+    it('should render label even with noLabel prop', () => {
+      props.forceLabels = true;
+      testMetadata([{ label: 'Label', value: 'string value', noLabel: true }]);
+    });
+  });
+
   it('should render string values', () => {
     testMetadata([{ label: 'Label', value: 'string value' }]);
   });
