@@ -46,8 +46,9 @@ describe('publish entity path', () => {
     .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
-      done();
-    });
+      return nightmare.waitToClick('.alert.alert-success');
+    })
+    .then(done);
   });
 
   it('should go to library and check the values', (done) => {
@@ -97,8 +98,9 @@ describe('publish entity path', () => {
     .isVisible('.alert.alert-success')
     .then((result) => {
       expect(result).toBe(true);
-      done();
+      return nightmare.waitToClick('.alert.alert-success');
     })
+    .then(done)
     .catch(done.fail);
   });
 

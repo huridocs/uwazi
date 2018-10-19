@@ -181,18 +181,18 @@ export default {
     form: {
       title: '#metadataForm > div:nth-child(1) > ul > li.wide > div > textarea',
       type: '#metadataForm > div:nth-child(2) > ul > li.wide > select',
-      realName: '#metadataForm > div:nth-child(4) > div:nth-child(1) > ul > li.wide > div > input',
-      age: '#metadataForm > div:nth-child(4) > div:nth-child(2) > ul > li.wide > input',
+      realName: '#metadataForm > div:nth-child(3) > div:nth-child(1) > ul > li.wide > div > input',
+      age: '#metadataForm > div:nth-child(3) > div:nth-child(2) > ul > li.wide > input',
       knownAccomplices: {
-        joker: '#metadataForm > div:nth-child(4) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label'
+        joker: '#metadataForm > div:nth-child(3) > div:nth-child(3) > ul > li.wide > ul > li:nth-child(3) > label'
       },
-      mainSuperpower: '#metadataForm > div:nth-child(4) > div:nth-child(4) > ul > li.wide > select',
+      mainSuperpower: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > select',
       suporPowers: {
-        fly: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-        laserBeam: '#metadataForm > div:nth-child(4) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
+        fly: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
+        laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
       },
-      firstSighting: '#metadataForm > div:nth-child(4) > div:nth-child(6) > ul > li.wide > div > input',
-      whoIsHe: '#metadataForm > div:nth-child(4) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
+      firstSighting: '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > input',
+      whoIsHe: '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
     },
     viewer: {
       title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',

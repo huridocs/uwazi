@@ -50,7 +50,7 @@ describe('Attachments Routes', () => {
   });
 
   describe('/download', () => {
-    it('should download the document with the titile as file name (replacing extension with file ext)', (done) => {
+    it('should download the document with the title as file name (replacing extension with file ext)', (done) => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
@@ -67,6 +67,22 @@ describe('Attachments Routes', () => {
       })
       .catch(catchErrors(done));
     });
+
+    it('should fail when entity does not exists', (done) => {
+      const nonExistentId = db.id();
+      const req = { query: { _id: nonExistentId, file: 'match.doc' } };
+      const res = {};
+      paths.attachmentsPath = `${__dirname}/uploads`;
+
+      routes.get('/api/attachments/download', req, res)
+      .then(() => {
+        done.fail('should fail when entity does not exists');
+      })
+      .catch((error) => {
+        expect(error.code).toBe(404);
+        done();
+      });
+    });
   });
 
   describe('/upload', () => {
@@ -82,10 +98,10 @@ describe('Attachments Routes', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.post('/api/attachments/upload', req)).toNeedAuthorization();
+      expect(routes._post('/api/attachments/upload', req)).toNeedAuthorization();
     });
 
-    it('should add the uploaded file to attachments and return it, incluiding its new ID', (done) => {
+    it('should add the uploaded file to attachments and return it, including its new ID', (done) => {
       routes.post('/api/attachments/upload', req)
       .then(addedFile => Promise.all([addedFile, entities.getById(req.body.entityId)]))
       .then(([addedFile, dbEntity]) => {
@@ -99,7 +115,7 @@ describe('Attachments Routes', () => {
       .catch(catchErrors(done));
     });
 
-    it('should add the uploaded file to all shared entities and return the file, incluiding its new ID', (done) => {
+    it('should add the uploaded file to all shared entities and return the file, including its new ID', (done) => {
       req.body.allLanguages = 'true';
 
       routes.post('/api/attachments/upload', req)
@@ -142,7 +158,7 @@ describe('Attachments Routes', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.post('/api/attachments/rename', { body: { entityId: 'a' } })).toNeedAuthorization();
+      expect(routes._post('/api/attachments/rename', { body: { entityId: 'a' } })).toNeedAuthorization();
     });
 
     it('should have a validation schema', () => {

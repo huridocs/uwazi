@@ -1,12 +1,14 @@
-import superagent from 'superagent';
 import { actions as formActions, getModel } from 'react-redux-form';
-import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
+import superagent from 'superagent';
+
 import { APIURL } from 'app/config.js';
+import { advancedSort } from 'app/utils/advancedSort';
 import { api as entitiesAPI } from 'app/Entities';
 import { notify } from 'app/Notifications';
-import { advancedSort } from 'app/utils/advancedSort';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
+
 import * as types from './actionTypes';
 
 export function resetReduxForm(form) {
@@ -110,6 +112,10 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     })
     .end();
   };
+}
+
+export function removeIcon(model) {
+  return formActions.change(model, { _id: null, type: 'Empty' });
 }
 
 export function multipleUpdate(_entities, values) {

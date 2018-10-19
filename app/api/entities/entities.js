@@ -376,10 +376,14 @@ export default {
 
   async getRawPage(sharedId, language, pageNumber) {
     const [entity] = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
-    const pageNumberMatch = /\[\[(\d+)\]\]/g;
     if (!entity) {
       throw createError('entity does not exists', 404);
     }
+    if (!entity.fullText[pageNumber]) {
+      throw createError('page does not exist', 404);
+    }
+
+    const pageNumberMatch = /\[\[(\d+)\]\]/g;
     return entity.fullText[pageNumber].replace(pageNumberMatch, '');
   },
 

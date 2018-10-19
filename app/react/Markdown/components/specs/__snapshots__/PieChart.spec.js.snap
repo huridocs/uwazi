@@ -44,6 +44,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         animationBegin={400}
         animationDuration={1500}
         animationEasing="ease"
+        blendStroke={false}
         cx="50%"
         cy="50%"
         data={
@@ -94,6 +95,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         active={false}
         animationDuration={400}
         animationEasing="ease"
+        contentStyle={Object {}}
         coordinate={
           Object {
             "x": 0,

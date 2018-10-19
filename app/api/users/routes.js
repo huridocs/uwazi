@@ -31,6 +31,7 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       username: Joi.string().required(),
       email: Joi.string().required(),
+      password: Joi.string(),
       role: Joi.string().valid('admin', 'editor').required()
     }).required()),
     (req, res, next) => {
@@ -53,7 +54,8 @@ export default (app) => {
 
   app.post('/api/resetpassword',
     validateRequest(Joi.object().keys({
-      key: Joi.string().required()
+      key: Joi.string().required(),
+      password: Joi.string().required(),
     }).required()),
     (req, res, next) => {
       users.resetPassword(req.body)
