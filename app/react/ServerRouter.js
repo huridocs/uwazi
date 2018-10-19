@@ -257,19 +257,7 @@ function ServerRouter(req, res) {
   const { PORT } = process.env;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
 
-  let location = req.url;
-  if (location === '/') {
-    return settingsApi.get()
-    .then((settingsData) => {
-      if (settingsData.home_page) {
-        location = settingsData.home_page;
-      }
-      return getAssets();
-    })
-    .then(() => {
-      routeMatch(req, res, location);
-    });
-  }
+  const location = req.url;
 
   getAssets()
   .then(() => {

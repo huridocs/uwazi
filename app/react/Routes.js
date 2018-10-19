@@ -56,12 +56,23 @@ function onEnter() {
 }
 
 function getIndexRoute(nextState, callBack) {
+  const homePageSetting = store.getState().settings.collection.get('home_page');
+  const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
+
+  const isPageRoute = customHomePage.includes('page');
+
+  let component = Library;
+  if (isPageRoute) {
+    const pageId = customHomePage[customHomePage.indexOf('page') + 1];
+    component = props => <PageView {...props} params={{ pageId }}/>;
+    component.requestState = () => PageView.requestState({ pageId });
+  }
+
   const indexRoute = {
-    component: Library,
+    component,
     onEnter: (nxtState, replace) => {
-      const collectionSettings = store.getState().settings.collection.toJS();
-      if (collectionSettings.home_page) {
-        replace(collectionSettings.home_page);
+      if (!isPageRoute) {
+        replace(customHomePage.join('/'));
       }
     }
   };
