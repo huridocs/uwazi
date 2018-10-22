@@ -42,14 +42,14 @@ const removeEmptyValues = (p) => {
   return p.value || p.type === null;
 };
 
-const Metadata = ({ metadata, compact, forceLabels }) => (
+const Metadata = ({ metadata, compact, renderLabel }) => (
   <React.Fragment>
     {metadata.filter(removeEmptyValues).map((prop) => {
       let type = prop.type ? prop.type : 'default';
       type = type === 'image' || type === 'media' ? 'multimedia' : type;
       return (
         <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={prop.label}>
-          {(forceLabels || !prop.noLabel) && <dt>{t(prop.translateContext, prop.label)}</dt>}
+          {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
           <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
             {showByType(prop, compact)}
           </dd>
@@ -61,7 +61,7 @@ const Metadata = ({ metadata, compact, forceLabels }) => (
 
 Metadata.defaultProps = {
   compact: false,
-  forceLabels: false,
+  renderLabel: (prop, label) => label,
 };
 
 Metadata.propTypes = {
@@ -79,7 +79,7 @@ Metadata.propTypes = {
     ])
   })).isRequired,
   compact: PropTypes.bool,
-  forceLabels: PropTypes.bool,
+  renderLabel: PropTypes.func,
 };
 
 export default Metadata;

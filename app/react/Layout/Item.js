@@ -8,8 +8,8 @@ import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteri
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
-import TemplateLabel from './TemplateLabel';
 import ItemSnippet from './ItemSnippet';
+import TemplateLabel from './TemplateLabel';
 
 export class Item extends Component {
   getSearchSnipett(doc) {
@@ -53,6 +53,7 @@ export class Item extends Component {
             entity={doc}
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
+            renderLabel={(prop, label) => !prop.noLabel && label}
           />
         </div>
         <ItemFooter>

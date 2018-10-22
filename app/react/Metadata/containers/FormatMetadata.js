@@ -5,7 +5,6 @@ import React from 'react';
 import selectors from '../selectors';
 import Metadata from '../components/Metadata';
 
-
 const FormatMetadata = ({ additionalMetadata, sortedProperty, entity, ...props }) => (
   <Metadata
     metadata={additionalMetadata.concat(selectors.formatMetadata(props, entity, sortedProperty))}
