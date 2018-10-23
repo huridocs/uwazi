@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`I18NMenu when there is only one language should only render the inline translation button 1`] = `
+<ul
+  className="menuNav-I18NMenu"
+>
+  <Connect(NeedAuthorization)
+    roles={
+      Array [
+        "admin",
+        "editor",
+      ]
+    }
+  >
+    <button
+      className="menuNav-btn btn btn-default"
+      onClick={[Function]}
+    >
+      <Component
+        icon="language"
+        size="lg"
+      />
+    </button>
+  </Connect(NeedAuthorization)>
+</ul>
+`;
