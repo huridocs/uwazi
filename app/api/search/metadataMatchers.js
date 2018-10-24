@@ -12,7 +12,7 @@ const rangeFilter = (filter, path = 'metadata') => {
 
 const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
-  const { values } = filterValue;
+  const { values = [] } = filterValue;
   let match;
   if (values.includes('missing') && !filterValue.and) {
     const _values = values.filter(v => v !== 'missing');
