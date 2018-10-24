@@ -30,6 +30,19 @@ export class I18NMenu extends Component {
     this.setState({ open: !this.state.open });
   }
 
+  inlineEditButton() {
+    return (
+      <NeedAuthorization roles={['admin', 'editor']}>
+        <button
+          className={this.props.i18nmode ? 'inlineEdit menuNav-btn btn btn-default active' : 'menuNav-btn btn btn-default'}
+          onClick={this.props.toggleInlineEdit}
+        >
+          <Icon icon="language" size="lg" />
+        </button>
+      </NeedAuthorization>
+    );
+  }
+
   render() {
     const languages = this.props.languages.toJS();
     let path = this.props.location.pathname;
@@ -39,19 +52,16 @@ export class I18NMenu extends Component {
     path = path.replace(regexp, '/');
 
     if (languages.length <= 1) {
-      return false;
+      return (
+        <ul className="menuNav-I18NMenu">
+          {this.inlineEditButton()}
+        </ul>
+      );
     }
 
     return (
       <ul className="menuNav-I18NMenu">
-        <NeedAuthorization roles={['admin', 'editor']}>
-          <button
-            className={this.props.i18nmode ? 'inlineEdit menuNav-btn btn btn-default active' : 'menuNav-btn btn btn-default'}
-            onClick={this.props.toggleInlineEdit}
-          >
-            <Icon icon="language" size="lg" />
-          </button>
-        </NeedAuthorization>
+        {this.inlineEditButton()}
         {(() => languages.map((lang) => {
             const url = `/${lang.key}${path}${path.match('document') ? '' : this.props.location.search}`;
             return (

@@ -100,4 +100,12 @@ describe('I18NMenu', () => {
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', { expires: 3650 });
     });
   });
+
+  describe('when there is only one language', () => {
+    it('should only render the inline translation button', () => {
+      props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);
+      render();
+      expect(component).toMatchSnapshot();
+    });
+  });
 });
