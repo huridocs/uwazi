@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Metadata should render cejil timeline when template is cejils timeline configured templates 1`] = `
+<dl
+  className="metadata-timeline-viewer"
+>
+  <dd>
+    <Connect(TimelineViewer)
+      entity={
+        Object {
+          "template": "58b2f3a35d59f31e1345b48a",
+        }
+      }
+    />
+  </dd>
+</dl>
+`;
+
+exports[`Metadata should render cejil timeline when template is cejils timeline configured templates 2`] = `
+<dl
+  className="metadata-timeline-viewer"
+>
+  <dd>
+    <Connect(TimelineViewer)
+      entity={
+        Object {
+          "template": "58b2f3a35d59f31e1345b4a4",
+        }
+      }
+    />
+  </dd>
+</dl>
+`;
+
+exports[`Metadata should render templateType when showType 1`] = `
+<div
+  className="item-info"
+>
+  <Connect(TemplateLabel) />
+</div>
+`;
+
+exports[`Metadata should render title and templateType when and showTitle 1`] = `
+<div
+  className="item-info"
+>
+  <div>
+    <Icon
+      className="item-icon item-icon-center"
+    />
+    <h1
+      className="item-name"
+    >
+      <Connect(DocumentLanguage)
+        doc={Immutable.Map {}}
+      />
+    </h1>
+  </div>
+</div>
+`;
+
+exports[`Metadata should render without timeline by default 1`] = `
+<div
+  className="view"
+>
+  <ShowIf
+    if={false}
+  >
+    <dl
+      className="metadata-timeline-viewer"
+    >
+      <dd>
+        <Connect(TimelineViewer)
+          entity={Object {}}
+        />
+      </dd>
+    </dl>
+  </ShowIf>
+  <Connect(FormatMetadata)
+    entity={Object {}}
+  />
+</div>
+`;
