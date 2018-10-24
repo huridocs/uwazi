@@ -5,11 +5,11 @@ import React from 'react';
 import selectors from '../selectors';
 import Metadata from '../components/Metadata';
 
-
-const FormatMetadata = props => (
+const FormatMetadata = ({ additionalMetadata, sortedProperty, entity, ...props }) => (
   <Metadata
-    metadata={props.additionalMetadata.concat(selectors.formatMetadata(props, props.entity, props.sortedProperty))}
-    compact={!!props.sortedProperty}
+    metadata={additionalMetadata.concat(selectors.formatMetadata(props, entity, sortedProperty))}
+    compact={!!sortedProperty}
+    {...props}
   />
 );
 
