@@ -45,7 +45,7 @@ export default class Map extends Component {
   componentDidMount() {
     this.setSize();
     const map = this.map.getMap();
-    map.on('style.load', () => this.centerOnMarkers(this.props.markers));
+    map.on('load', () => this.centerOnMarkers(this.props.markers));
     map.on('moveend', (e) => {
       if (e.autoCentered) {
         this.setViweport(map);
