@@ -10,6 +10,9 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
       },
     ]
   }
+  renderLabel={[Function]}
+  templates={Array []}
+  thesauris={Array []}
 />
 `;
 
@@ -29,5 +32,8 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
       },
     ]
   }
+  renderLabel={[Function]}
+  templates={Array []}
+  thesauris={Array []}
 />
 `;

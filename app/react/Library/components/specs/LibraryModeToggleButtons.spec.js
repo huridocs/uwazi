@@ -22,6 +22,7 @@ describe('LibraryModeToggleButtons', () => {
         zoomIn: jasmine.createSpy('zoomIn'),
         zoomOut: jasmine.createSpy('zoomOut'),
         zoomLevel: 3,
+        numberOfMarkers: 23,
       };
       render();
     });
@@ -64,7 +65,12 @@ describe('LibraryModeToggleButtons', () => {
     beforeEach(() => {
       props = { storeKey: 'library' };
       state = {
-       library: { search: {}, filters: Immutable.fromJS({ properties: [] }), ui: Immutable.fromJS({ zoomLevel: 1 }) },
+       library: {
+         search: {},
+         filters: Immutable.fromJS({ properties: [] }),
+         ui: Immutable.fromJS({ zoomLevel: 1 }),
+         markers: Immutable.fromJS({ rows: [] })
+        },
        templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }])
       };
     });
