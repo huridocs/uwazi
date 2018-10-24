@@ -3,6 +3,7 @@ import libraryHelper from 'app/Library/helpers/libraryFilters';
 import comonPropertiesHelper from 'shared/comonProperties';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { actions as formActions } from 'react-redux-form';
 
 export function filterDocumentTypes(documentTypes, storeKey) {
   return (dispatch, getState) => {
@@ -33,6 +34,7 @@ export function filterDocumentTypes(documentTypes, storeKey) {
 export function resetFilters(storeKey) {
   return (dispatch, getState) => {
     dispatch({ type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: [] });
+    dispatch(formActions.load(`${storeKey}.search`, { searchTerm: '' }));
     libraryActions.searchDocuments({ search: getState()[storeKey].search }, storeKey)(dispatch, getState);
   };
 }
