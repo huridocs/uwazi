@@ -68,7 +68,7 @@ mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
 
   const port = ports[app.get('env')];
 
-  const bindAddress = ({ true: 'localhost' })[process.env.localhostOnly];
+  const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
 
   http.listen(port, bindAddress, () => {
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
