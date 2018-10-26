@@ -52,7 +52,7 @@ import { trackPage } from 'app/App/GoogleAnalytics';
 import { store } from './store';
 
 function onEnter() {
-  trackPage();
+  // trackPage();
 }
 
 function getIndexRoute(nextState, callBack) {

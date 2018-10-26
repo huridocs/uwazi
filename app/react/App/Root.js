@@ -63,6 +63,19 @@ class Root extends Component {
             href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
           />
           <link rel="shortcut icon" href="/public/favicon.ico"/>
+          <script type="text/javascript" dangerouslySetInnerHTML={{__html: `
+            var _paq = _paq || [];
+            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+              var u="//localhost:8081/";
+              _paq.push(['setTrackerUrl', u+'piwik.php']);
+              _paq.push(['setSiteId', '1']);
+              var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+              g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+            })();
+            `}} />
         </head>
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: this.props.content }} />

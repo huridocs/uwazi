@@ -7,6 +7,7 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import Notifications from 'app/Notifications';
 import { TranslateForm } from 'app/I18N';
+import Helmet from 'react-helmet';
 
 import { loadIcons } from 'UI/Icon/library';
 import { Icon } from 'UI';
@@ -55,6 +56,13 @@ class App extends Component {
     });
   }
 
+  titleChanged({ title }) {
+    if (title !== this.title) {
+      console.log(title);
+      this.title = title;
+    }
+  }
+
   render() {
     let MenuButtonIcon = 'bars';
     let navClass = 'menuNav';
@@ -66,6 +74,7 @@ class App extends Component {
 
     return (
       <div id="app">
+        <Helmet onChangeClientState={this.titleChanged.bind(this)} />
         <Notifications />
         <div className="content">
           <nav>
