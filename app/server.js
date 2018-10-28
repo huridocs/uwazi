@@ -67,7 +67,10 @@ mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
   await translations.processSystemKeys(systemKeys);
 
   const port = ports[app.get('env')];
-  http.listen(port, () => {
+
+  const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
+
+  http.listen(port, bindAddress, () => {
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');
