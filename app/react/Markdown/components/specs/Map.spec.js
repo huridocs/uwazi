@@ -26,12 +26,16 @@ describe('Map Markdown component', () => {
     ]));
   }
 
+  function findInnerMapComponent(component) {
+    return component.find(Markers).props().children([{ value: 'markers' }])
+  }
+
   it('should render the data passed by mapStateToProps', () => {
     spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS(['passed entities']));
 
     const props = getProps(state, { prop1: 'propValue' });
     const component = shallow(<MapComponent {...props} classname="custom-class" />);
-    const map = component.find(Markers).props().children([{ value: 'markers' }]);
+    const map = findInnerMapComponent(component);
 
     expect(markdownDatasets.getRows).toHaveBeenCalledWith(state, { prop1: 'propValue' });
     expect(component).toMatchSnapshot();
@@ -57,9 +61,9 @@ describe('Map Markdown component', () => {
       const marker1 = { properties: { entity: { template: 't1', title: 'title' } } };
       const marker2 = { properties: { entity: { template: 't2', title: 'another title' } } };
 
-      const popUp1 = component.find(Markers).props().children([{ value: 'markers' }]).props.renderPopupInfo(marker1);
+      const popUp1 = findInnerMapComponent(component).props.renderPopupInfo(marker1);
       expect(popUp1).toMatchSnapshot();
-      const popUp2 = component.find(Markers).props().children([{ value: 'markers' }]).props.renderPopupInfo(marker2);
+      const popUp2 = findInnerMapComponent(component).props.renderPopupInfo(marker2);
       expect(popUp2).toMatchSnapshot();
     });
   });
@@ -73,7 +77,7 @@ describe('Map Markdown component', () => {
       const props = getProps(state, { prop2: 'propValue' }, dispatch);
       const component = shallow(<MapComponent {...props} />);
       const marker = { properties: { entity: { template: 't1', title: 'title', sharedId: 'id' } } };
-      component.find(Markers).props().children([{ value: 'markers' }]).props.clickOnMarker(marker);
+      findInnerMapComponent(component).props.clickOnMarker(marker);
       expect(getAndSelectDocument).toHaveBeenCalledWith('id');
     });
   });
@@ -91,7 +95,7 @@ describe('Map Markdown component', () => {
         { properties: { entity: { template: 't1', title: 'title', sharedId: 'id' } } },
         { properties: { entity: { template: 't1', title: 'title', sharedId: 'id2' } } }
       ];
-      component.find(Markers).props().children([{ value: 'markers' }]).props.clickOnCluster(cluster);
+      findInnerMapComponent(component).props.clickOnCluster(cluster);
       expect(unselectAllDocuments).toHaveBeenCalled();
       expect(selectDocuments).toHaveBeenCalledWith([
         { template: 't1', title: 'title', sharedId: 'id' },
