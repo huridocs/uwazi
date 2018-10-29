@@ -174,6 +174,21 @@ export default function () {
       return this;
     },
 
+    sortByForeignKey(property, keys, order = 'desc') {
+      const sort = {};
+      // const keys = sortedKeys.reverse();
+      sort._script = {
+        order,
+        type: 'string',
+        script: {
+          params: { keys },
+          source: `params.keys[doc['${property}.sort'].value]`
+        }
+      };
+      baseQuery.sort.push(sort);
+      return this;
+    },
+
     hasMetadataProperties(fieldNames) {
       const match = { bool: { should: [] } };
       match.bool.should = fieldNames.map(field => ({ exists: { field: `metadata.${field}` } }));

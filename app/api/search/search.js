@@ -1,5 +1,7 @@
 import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
 import { detect as detectLanguage } from 'shared/languages';
+import translate, { getLocaleTranslation, getContext } from 'shared/translate';
+import translations from 'api/i18n/translations';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
@@ -116,6 +118,35 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.select(selectProps);
 }
 
+const processResponse = (response) => {
+  const rows = response.hits.hits.map((hit) => {
+    const result = hit._source;
+    result._explanation = hit._explanation;
+    result.snippets = snippetsFromSearchHit(hit);
+    result._id = hit._id;
+    return result;
+  });
+  Object.keys(response.aggregations.all).forEach((aggregationKey) => {
+    const aggregation = response.aggregations.all[aggregationKey];
+    if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
+      aggregation.buckets = Object.keys(aggregation.buckets).map(key => Object.assign({ key }, aggregation.buckets[key]));
+    }
+    if (aggregation.buckets) {
+      response.aggregations.all[aggregationKey] = aggregation;
+    }
+    if (!aggregation.buckets) {
+      Object.keys(aggregation).forEach((key) => {
+        if (aggregation[key].buckets) {
+          const buckets = aggregation[key].buckets.map(option => Object.assign({ key: option.key }, option.filtered.total));
+          response.aggregations.all[key] = { doc_count: aggregation[key].doc_count, buckets };
+        }
+      });
+    }
+  });
+
+  return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
+};
+
 const search = {
   search(query, language, user) {
     let searchEntitiesbyTitle = Promise.resolve([]);
@@ -130,18 +161,21 @@ const search = {
       ]);
     }
 
-    return Promise.all([templatesModel.get(), searchEntitiesbyTitle, searchDictionariesByTitle, dictionariesModel.get(), relationtypes.get()])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes]) => {
+    return Promise.all([
+      templatesModel.get(),
+      searchEntitiesbyTitle,
+      searchDictionariesByTitle,
+      dictionariesModel.get(),
+      relationtypes.get(),
+      translations.get()
+    ])
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes, translations]) => {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
       .filterByTemplate(query.types)
       .filterById(query.ids)
       .language(language);
-
-      if (query.sort) {
-        documentsQuery.sort(query.sort, query.order);
-      }
 
       if (query.from) {
         documentsQuery.from(query.from);
@@ -160,17 +194,34 @@ const search = {
       }
 
       const allTemplates = templates.map(t => t._id);
+      const allUniqueProps = allUniqueProperties(templates);
       const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
       let properties = comonFilters(templates, relationTypes, filteringTypes);
       properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
 
+      if (query.sort) {
+        const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+        if (sortingProp && sortingProp.type === 'select') {
+          const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
+          const translation = getLocaleTranslation(translations, language);
+          const context = getContext(translation, dictionary._id.toString());
+          const keys = dictionary.values.reduce((result, value) => {
+            result[value.id] = translate(context, value.label, value.label);
+            return result;
+          }, {});
+          documentsQuery.sortByForeignKey(query.sort, keys, query.order);
+        } else {
+          documentsQuery.sort(query.sort, query.order);
+        }
+      }
+
       if (query.allAggregations) {
-        properties = allUniqueProperties(templates);
+        properties = allUniqueProps;
       }
 
       const aggregations = agregationProperties(properties);
       const filters = processFiltes(query.filters, properties);
-      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProperties(templates), entitiesMatchedByTitle, dictionariesMatchByLabel);
+      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProps, entitiesMatchedByTitle, dictionariesMatchByLabel);
 
 
       documentsQuery.filterMetadataByFullText(textSearchFilters);
@@ -181,34 +232,7 @@ const search = {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
       return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
-      .then((response) => {
-        const rows = response.hits.hits.map((hit) => {
-          const result = hit._source;
-          result._explanation = hit._explanation;
-          result.snippets = snippetsFromSearchHit(hit);
-          result._id = hit._id;
-          return result;
-        });
-        Object.keys(response.aggregations.all).forEach((aggregationKey) => {
-          const aggregation = response.aggregations.all[aggregationKey];
-          if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
-            aggregation.buckets = Object.keys(aggregation.buckets).map(key => Object.assign({ key }, aggregation.buckets[key]));
-          }
-          if (aggregation.buckets) {
-            response.aggregations.all[aggregationKey] = aggregation;
-          }
-          if (!aggregation.buckets) {
-            Object.keys(aggregation).forEach((key) => {
-              if (aggregation[key].buckets) {
-                const buckets = aggregation[key].buckets.map(option => Object.assign({ key: option.key }, option.filtered.total));
-                response.aggregations.all[key] = { doc_count: aggregation[key].doc_count, buckets };
-              }
-            });
-          }
-        });
-
-        return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
-      })
+      .then(processResponse)
       .catch((error) => {
         console.log(error);
         throw createError('Query error', 400);
