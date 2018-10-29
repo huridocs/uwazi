@@ -242,7 +242,7 @@ export default {
         _relationship.language = entity.language;
         return model.save(_relationship);
       });
-      return Promise.all(relationshipsCreation).then(relations => relations.find(r => r.language === relationship.language));
+      return Promise.all(relationshipsCreation).then(relations => relations.filter(r => r).find(r => r.language === relationship.language));
     });
   },
 

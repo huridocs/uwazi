@@ -184,7 +184,7 @@ describe('relationships', () => {
         .catch(catchErrors(done));
       });
 
-      it('should call entities top update the metadata', (done) => {
+      it('should call entities to update the metadata', (done) => {
         relationships.save({ entity: 'entity3', hub: hub1 }, 'en')
         .then(() => {
           expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
