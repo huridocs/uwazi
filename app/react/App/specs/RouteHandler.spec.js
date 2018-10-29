@@ -102,7 +102,7 @@ describe('RouteHandler', () => {
 
     describe('when handling a specific language url', () => {
       it('should set the state.locale to the url language', () => {
-        instance.componentWillReceiveProps({ location: { pathname: '/es/templates/2452345', query: '' }, params: { id: '1' } });
+        instance.componentWillReceiveProps({ location: { pathname: '/es/templates/2452345', query: '' }, params: { id: '1', lang: 'es' } });
         expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'locale/SET', value: 'es' });
       });
     });
@@ -110,9 +110,9 @@ describe('RouteHandler', () => {
     describe('when the locale isn\'t at the url', () => {
       describe('on client side', () => {
         it('should set the state.locale to the coockie language', () => {
-          spyOn(Cookie, 'get').and.returnValue('po');
+          spyOn(Cookie, 'get').and.returnValue('es');
           instance.componentWillReceiveProps({ location: { pathname: '/templates/2452345', query: '' }, params: { id: '1' } });
-          expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'locale/SET', value: 'po' });
+          expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'locale/SET', value: 'es' });
         });
       });
     });
