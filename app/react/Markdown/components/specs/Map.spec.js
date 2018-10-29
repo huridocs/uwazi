@@ -4,10 +4,9 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Markers } from 'app/Map';
 
+import * as actions from 'app/Library/actions/libraryActions';
 import { mapStateToProps, mapDispatchToProps, MapComponent } from '../Map.js';
 import markdownDatasets from '../../markdownDatasets';
-import * as actions from 'app/Library/actions/libraryActions';
-
 
 describe('Map Markdown component', () => {
   const state = {};
@@ -18,6 +17,13 @@ describe('Map Markdown component', () => {
       ...mapStateToProps(originalState, originalProps),
       ...mapDispatchToProps(_dispatch)
     };
+  }
+
+  function spyOnDatasetRows() {
+    spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([
+      { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
+      { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
+    ]));
   }
 
   it('should render the data passed by mapStateToProps', () => {
@@ -44,10 +50,7 @@ describe('Map Markdown component', () => {
 
   describe('renderPopupInfo', () => {
     it('should have a correct function for rendering popus', () => {
-      spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([
-        { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
-        { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
-      ]));
+      spyOnDatasetRows();
 
       const props = getProps(state, { prop2: 'propValue' });
       const component = shallow(<MapComponent {...props} />);
@@ -63,10 +66,8 @@ describe('Map Markdown component', () => {
 
   describe('clickOnMarker', () => {
     it('should fetch and display document when marker is clicked', () => {
-      spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([
-        { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
-        { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
-      ]));
+      spyOnDatasetRows();
+
       const getAndSelectDocument = jest.spyOn(actions, 'getAndSelectDocument');
       const dispatch = jest.fn();
       const props = getProps(state, { prop2: 'propValue' }, dispatch);
@@ -79,10 +80,8 @@ describe('Map Markdown component', () => {
 
   describe('clickOnCluster', () => {
     it('should set documents in cluster as selected documents', () => {
-      spyOn(markdownDatasets, 'getRows').and.returnValue(Immutable.fromJS([
-        { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
-        { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
-      ]));
+      spyOnDatasetRows();
+
       const unselectAllDocuments = jest.spyOn(actions, 'unselectAllDocuments');
       const selectDocuments = jest.spyOn(actions, 'selectDocuments');
       const dispatch = jest.fn();

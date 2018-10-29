@@ -19,16 +19,19 @@ const renderInfo = marker => (
   </div>
 );
 
+const createMarkerClickHandler = props => marker =>
+  props.getAndSelectDocument(marker.properties.entity.sharedId);
+
+const createClusterClickHandler = props => (cluster) => {
+  props.unselectAllDocuments();
+  props.selectDocuments(cluster.map(m => m.properties.entity));
+};
+
+
 export const MapComponent = (props) => {
   const { data, classname } = props;
-  const clickOnMarker = (marker) => {
-    props.getAndSelectDocument(marker.properties.entity.sharedId);
-  };
-
-  const clickOnCluster = (cluster) => {
-    props.unselectAllDocuments();
-    props.selectDocuments(cluster.map(m => m.properties.entity));
-  };
+  const clickOnMarker = createMarkerClickHandler(props);
+  const clickOnCluster = createClusterClickHandler(props);
   return (
     <div className={`Map ${classname}`}>
       {data ? (
