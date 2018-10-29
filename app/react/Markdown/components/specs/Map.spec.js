@@ -27,7 +27,7 @@ describe('Map Markdown component', () => {
   }
 
   function findInnerMapComponent(component) {
-    return component.find(Markers).props().children([{ value: 'markers' }])
+    return component.find(Markers).props().children([{ value: 'markers' }]);
   }
 
   it('should render the data passed by mapStateToProps', () => {
