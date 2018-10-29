@@ -51,6 +51,19 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   }, null);
 }
 
+function determineDeleteAction(shouldDeleteHub, hubId, relation, relationQuery) {
+  if (shouldDeleteHub) {
+    return model.delete({ hub: hubId });
+  }
+
+  let deleteQuery = relationQuery;
+  if (relationQuery._id) {
+    deleteQuery = { sharedId: relation.sharedId.toString() };
+  }
+
+  return model.delete(deleteQuery);
+}
+
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!
 const conformRelationships = (rows, parentEntitySharedId) => {
   let order = -1;
@@ -439,18 +452,7 @@ export default {
         hub.filter(r => r.language === currentLanguage.key).length <= 2 && shouldDelete, true
       );
 
-      const hubId = hub[0].hub;
-      let deleteAction;
-
-      if (shouldDeleteHub) {
-        deleteAction = model.delete({ hub: hubId });
-      } else {
-        let deleteQuery = relationQuery;
-        if (relationQuery._id) {
-          deleteQuery = { sharedId: relation.sharedId.toString() };
-        }
-        deleteAction = model.delete(deleteQuery);
-      }
+      const deleteAction = determineDeleteAction(shouldDeleteHub, hub[0].hub, relation, relationQuery);
 
       if (updateMetdata) {
         return deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
