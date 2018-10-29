@@ -18,11 +18,10 @@ describe('migration connections_sanitizing', () => {
   });
 
   describe('Migration logic', () => {
-    let response;
     let migratedConnections;
 
     beforeEach(async () => {
-      response = await migration.up(testingDB.mongodb);
+      await migration.up(testingDB.mongodb);
       migratedConnections = await testingDB.mongodb.collection('connections').find().toArray();
     });
 
