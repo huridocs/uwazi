@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
+import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
 import { generateNamesAndIds } from '../templates/utils';
 import entities from 'api/entities/entities';
@@ -418,25 +419,43 @@ export default {
     });
   },
 
-  delete(relation, language, updateMetdata = true) {
-    if (!relation) {
+  delete(relationQuery, language, updateMetdata = true) {
+    if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
-    return model.get(relation)
-    .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub, language: _relation.language }))))
-    .then(hubs => Promise.all(hubs.map((hub) => {
-      const shouldDeleteTheLoneConnectionToo = hub.length === 2;
+
+    let languages;
+    let relation;
+
+    return Promise.all([settings.get(), model.get(relationQuery)])
+    .then(([_settings, relationships]) => {
+      ({ languages } = _settings);
+      [relation] = relationships;
+      return relationships;
+    })
+    .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub }))))
+    .then(hubRelationships => Promise.all(hubRelationships.map((hub) => {
+      const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
+        hub.filter(r => r.language === currentLanguage.key).length <= 2 && shouldDelete, true
+      );
+
       const hubId = hub[0].hub;
       let deleteAction;
-      if (shouldDeleteTheLoneConnectionToo) {
+
+      if (shouldDeleteHub) {
         deleteAction = model.delete({ hub: hubId });
       } else {
-        deleteAction = model.delete(relation);
+        let deleteQuery = relationQuery;
+        if (relationQuery._id) {
+          deleteQuery = { sharedId: relation.sharedId.toString() };
+        }
+        deleteAction = model.delete(deleteQuery);
       }
 
       if (updateMetdata) {
-        return deleteAction.then(() => this.updateEntitiesMetadata(hub.map(r => r.entity), language));
+        return deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
       }
+
       return deleteAction;
     })))
     .catch(console.log);

@@ -1,6 +1,8 @@
 /* eslint-disable */
 import db from 'api/utils/testing_db';
 const connectionID1 = db.id();
+const connectionID2 = db.id();
+const connectionID3 = db.id();
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
@@ -31,6 +33,8 @@ const sharedId1 = db.id();
 const sharedId2 = db.id();
 const sharedId3 = db.id();
 const sharedId4 = db.id();
+const sharedId5 = db.id();
+const sharedId6 = db.id();
 
 export default {
   connections: [
@@ -61,6 +65,10 @@ export default {
     {entity: 'entity_id', hub: hub7, template: relation1, sharedId: sharedId2, language: 'es'},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'en'},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'es'},
+    {entity: 'another_id', hub: hub7, template: relation1, sharedId: sharedId5, language: 'en'},
+    {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1, sharedId: sharedId5, language: 'es'},
+    {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7, template: relation1, sharedId: sharedId6, language: 'en'},
+
     {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
@@ -138,6 +146,10 @@ export default {
     {_id: relation2, name: 'relation 2'},
     {_id: friend, name: 'friend'},
     {_id: family, name: 'family'}
+  ],
+
+  settings: [
+    { languages: [{ key: 'en' }, { key: 'es' }] }
   ]
 };
 
@@ -145,6 +157,8 @@ export {
   template,
   inbound,
   connectionID1,
+  connectionID2,
+  connectionID3,
   selectValueID,
   value1ID,
   value2ID,
@@ -164,5 +178,8 @@ export {
   hub10,
   family,
   friend,
-  sharedId4
+  sharedId2,
+  sharedId3,
+  sharedId4,
+  sharedId5,
 };
