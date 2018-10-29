@@ -52,6 +52,20 @@ export class PageCreator extends Component {
               <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
             </div>
           </div>
+          <div className="panel panel-default">
+            <div className="panel-body">
+              <div className="alert alert-info">
+                <Icon icon="info-circle" size="2x" />
+                <div>
+                  Use Markdown syntax to create page content<br/>
+                  You can also embed advanced components like maps, charts
+                  and document lists in your page.&nbsp;
+                  <a target="_blank" href="https://github.com/huridocs/uwazi/wiki/Components">Click here</a>
+                  &nbsp;to learn more about the components.
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="settings-footer">
             <I18NLink to={backUrl} className="btn btn-default">
               <Icon icon="arrow-left" />
