@@ -14,7 +14,7 @@ describe('migration connections_sanitizing', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(5);
+    expect(migration.delta).toBe(6);
   });
 
   describe('Missing connections', () => {

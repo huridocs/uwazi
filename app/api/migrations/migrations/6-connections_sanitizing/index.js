@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 export default {
-  delta: 5,
+  delta: 6,
 
   name: 'connections_sanitizing',
 
