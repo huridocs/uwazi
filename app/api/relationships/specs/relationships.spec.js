@@ -517,13 +517,17 @@ describe('relationships', () => {
       await relationships.delete({ _id: connectionID1 }, 'en');
     });
 
+    function expectLength(result, source, target, length) {
+      expect(result.filter(i => i[source].toString() === target.toString()).length).toBe(length);
+    }
+
     it('should delete the relationship in all languages', (done) => {
       relationships.get({ hub: hub7 })
       .then((result) => {
         expect(result.length).toBe(5);
-        expect(result.filter(i => i.sharedId.toString() === sharedId3.toString()).length).toBe(2);
-        expect(result.filter(i => i.sharedId.toString() === sharedId5.toString()).length).toBe(2);
-        expect(result.filter(i => i._id.toString() === connectionID3.toString()).length).toBe(1);
+        expectLength(result, 'sharedId', sharedId3, 2);
+        expectLength(result, 'sharedId', sharedId5, 2);
+        expectLength(result, '_id', connectionID3, 1);
         done();
       })
       .catch(catchErrors(done));
@@ -545,8 +549,8 @@ describe('relationships', () => {
       .then(() => relationships.get({ hub: hub7 }))
       .then((result) => {
         expect(result.length).toBe(3);
-        expect(result.filter(i => i.sharedId.toString() === sharedId3.toString()).length).toBe(2);
-        expect(result.filter(i => i._id.toString() === connectionID3.toString()).length).toBe(1);
+        expectLength(result, 'sharedId', sharedId3, 2);
+        expectLength(result, '_id', connectionID3, 1);
         done();
       })
       .catch(catchErrors(done));
