@@ -169,7 +169,7 @@ const search = {
       relationtypes.get(),
       translations.get()
     ])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes, translations]) => {
+    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes, _translations]) => {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
@@ -203,7 +203,7 @@ const search = {
         const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
         if (sortingProp && sortingProp.type === 'select') {
           const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-          const translation = getLocaleTranslation(translations, language);
+          const translation = getLocaleTranslation(_translations, language);
           const context = getContext(translation, dictionary._id.toString());
           const keys = dictionary.values.reduce((result, value) => {
             result[value.id] = translate(context, value.label, value.label);
