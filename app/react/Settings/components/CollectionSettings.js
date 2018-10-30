@@ -246,6 +246,12 @@ export class CollectionSettings extends Component {
                 rows="5"
               />
             </div>
+            <div className="alert alert-info">
+              <Icon icon="question-circle" size="2x" />
+              <div>
+                {'This is a JSON configuration object like {"url": "matomo.server.url", "id": "site_id"}.'}
+              </div>
+            </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
               <textarea
