@@ -7,6 +7,7 @@ import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
+import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import api from 'app/Search/SearchAPI';
 
 import PageViewer from './components/PageViewer';
@@ -74,6 +75,7 @@ export class PageView extends RouteHandler {
       <React.Fragment>
         <PageViewer />
         <ViewMetadataPanel storeKey="library" />
+        <SelectMultiplePanelContainer storeKey="library"/>
       </React.Fragment>
     );
   }

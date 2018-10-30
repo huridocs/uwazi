@@ -50,6 +50,17 @@ export class PageCreator extends Component {
                 </div>
               </ShowIf>
               <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
+              <div className="alert alert-info">
+                <Icon icon="info-circle" size="2x" />
+                <div>
+                  Use <a target="_blank" href="https://guides.github.com/features/mastering-markdown/">Markdown</a> syntax
+                  to create page content<br/>
+                  You can also embed advanced components like maps, charts
+                  and document lists in your page.&nbsp;
+                  <a target="_blank" href="https://github.com/huridocs/uwazi/wiki/Components">Click here</a> to
+                  learn more about the components.
+                </div>
+              </div>
             </div>
           </div>
           <div className="settings-footer">
