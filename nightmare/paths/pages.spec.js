@@ -41,8 +41,8 @@ describe('pages path', () => {
       .write(localSelectors.pageTitleInput, 'Page title')
       .write(localSelectors.pageContentsInput, 'Page contents')
       .waitToClick('form > div.settings-footer > button.save-template')
-      .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info')
-      .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info')
+      .wait('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
+      .getInnerText('div.panel-body.page-viewer.document-viewer > div.alert.alert-info:first-of-type')
       .then((text) => {
         expect(text).toContain('/page');
         expect(text).toContain('(view page)');
