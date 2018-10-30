@@ -6,7 +6,6 @@ import { I18NUtils } from 'app/I18N';
 import { actions } from 'app/BasicReducer';
 import JSONUtils from 'shared/JSONUtils';
 import api from 'app/utils/api';
-import { trackPage } from 'app/App/GoogleAnalytics';
 
 class RouteHandler extends Component {
   static requestState() {
