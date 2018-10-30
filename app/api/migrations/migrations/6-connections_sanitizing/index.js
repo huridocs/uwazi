@@ -39,24 +39,14 @@ export default {
     let orphaned = 0;
 
     const secondCursor = db.collection('connections').aggregate([{ $group: { _id: '$hub' } }]);
-    const hubs = [];
     while (await secondCursor.hasNext()) {
       const hub = await secondCursor.next();
 
-      const hubConnectionsCursor = db.collection('connections').find({ hub: hub._id });
-      const hubConnections = [];
-      while (await hubConnectionsCursor.hasNext()) {
-        const hubConnection = await hubConnectionsCursor.next();
-        hubConnections.push(hubConnection);
-      }
-
-      const languageData = [];
+      const hubConnections = await db.collection('connections').find({ hub: hub._id }).toArray();
 
       const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
         hubConnections.filter(c => c.language === currentLanguage.key).length < 2 && shouldDelete, true
       );
-
-      hubs.push({ hub: hub._id, shouldDeleteHub, hubConnections, languageData });
 
       if (shouldDeleteHub) {
         orphaned += 1;
