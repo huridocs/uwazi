@@ -2,14 +2,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { isClient } from 'app/utils';
-
 export class Matomo extends Component {
-  constructor(props) {
-    super(props);
-    // trackPage();
-  }
-
   render() {
     if (!this.props.id && !this.props.url) {
       return false;

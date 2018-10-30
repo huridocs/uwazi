@@ -163,6 +163,12 @@ Object {
         "",
       ],
     },
+    "matomoConfig": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
     "private": Object {
       "falsy": Array [
         false,

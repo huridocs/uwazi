@@ -7,7 +7,6 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import Notifications from 'app/Notifications';
 import { TranslateForm } from 'app/I18N';
-import Helmet from 'react-helmet';
 
 import { loadIcons } from 'UI/Icon/library';
 import { Icon } from 'UI';
