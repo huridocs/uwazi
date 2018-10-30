@@ -28,6 +28,7 @@ const settingsSchema = new mongoose.Schema({
   filters: [filtersSchema],
   mailerConfig: String,
   analyticsTrackingId: String,
+  matomoConfig: String,
   dateFormat: String,
   custom: mongoose.Schema.Types.Mixed,
   customCSS: String

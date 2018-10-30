@@ -18,6 +18,7 @@ import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
+import Matomo from './Matomo';
 
 loadIcons();
 
@@ -56,13 +57,6 @@ class App extends Component {
     });
   }
 
-  titleChanged({ title }) {
-    if (title !== this.title) {
-      console.log(title);
-      this.title = title;
-    }
-  }
-
   render() {
     let MenuButtonIcon = 'bars';
     let navClass = 'menuNav';
@@ -74,7 +68,6 @@ class App extends Component {
 
     return (
       <div id="app">
-        <Helmet onChangeClientState={this.titleChanged.bind(this)} />
         <Notifications />
         <div className="content">
           <nav>
@@ -93,6 +86,7 @@ class App extends Component {
             <TranslateForm/>
             {this.props.children}
             <GoogleAnalytics/>
+            <Matomo/>
           </div>
         </div>
       </div>

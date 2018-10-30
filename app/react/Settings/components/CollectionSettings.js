@@ -22,6 +22,7 @@ export class CollectionSettings extends Component {
       homePage: props.settings.home_page || '',
       mailerConfig: props.settings.mailerConfig || '',
       analyticsTrackingId: props.settings.analyticsTrackingId || '',
+      matomoConfig: props.settings.matomoConfig || '',
       private: props.settings.private || false,
       customLandingpage: !!props.settings.home_page,
       dateFormat: props.settings.dateFormat,
@@ -70,6 +71,12 @@ export class CollectionSettings extends Component {
   changeAnalyticsTrackingId(e) {
     this.setState({ analyticsTrackingId: e.target.value });
     const settings = Object.assign(this.props.settings, { analyticsTrackingId: e.target.value });
+    this.props.setSettings(settings);
+  }
+
+  changeMatomoConfig(e) {
+    this.setState({ matomoConfig: e.target.value });
+    const settings = Object.assign(this.props.settings, { matomoConfig: e.target.value });
     this.props.setSettings(settings);
   }
 
@@ -226,6 +233,17 @@ export class CollectionSettings extends Component {
                 value={this.state.analyticsTrackingId}
                 type="text"
                 className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Matomo configuration')}</label>
+              <textarea
+                name="collectionMatomoConfig"
+                onChange={this.changeMatomoConfig.bind(this)}
+                value={this.state.matomoConfig}
+                type="text"
+                className="form-control"
+                rows="5"
               />
             </div>
             <div className="form-group">
