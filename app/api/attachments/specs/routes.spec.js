@@ -83,6 +83,21 @@ describe('Attachments Routes', () => {
         done();
       });
     });
+
+    it('should fail when attachment does not exist', (done) => {
+      const req = { query: { _id: entityId, file: 'nonExisting.doc' } };
+      const res = {};
+      paths.attachmentsPath = `${__dirname}/uploads`;
+
+      routes.get('/api/attachments/download', req, res)
+      .then(() => {
+        done.fail('should fail when attachment does not exist');
+      })
+      .catch((error) => {
+        expect(error.code).toBe(404);
+        done();
+      });
+    });
   });
 
   describe('/upload', () => {
