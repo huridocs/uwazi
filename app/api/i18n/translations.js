@@ -1,51 +1,41 @@
+import instanceModel from 'api/odm';
 import settings from 'api/settings/settings';
 
-import instanceModel from 'api/odm';
 import translationsModel from './translationsModel.js';
 
 const model = instanceModel(translationsModel);
 
 function prepareContexts(contexts) {
-  return contexts.map((context) => {
-    if (context.id === 'System' || context.id === 'Filters' || context.id === 'Menu') {
-      context.type = 'Uwazi UI';
-    }
-
-    let values = {};
-    context.values = context.values || [];
-    context.values.forEach((value) => {
-      values[value.key] = value.value;
-    });
-
-    context.values = values;
-    return context;
-  });
+  return contexts.map(context => ({
+      ...context,
+      type: context.id === 'System' || context.id === 'Filters' || context.id === 'Menu' ? 'Uwazi UI' : context.type,
+      values: context.values && context.values.reduce((values, value) => ({ ...values, [value.key]: value.value }), {})
+  }));
 }
 
 function processContextValues(context) {
+  let values;
   if (context.values && !Array.isArray(context.values)) {
-    let values = [];
+    values = [];
     Object.keys(context.values).forEach((key) => {
-      values.push({key, value: context.values[key]});
+      values.push({ key, value: context.values[key] });
     });
-    context.values = values;
   }
 
-  return context;
+  return { ...context, values: values || context.values };
 }
 
 function update(translation) {
   return model.getById(translation._id)
   .then((currentTranslationData) => {
     currentTranslationData.contexts.forEach((context) => {
-      let isPresentInTheComingData = translation.contexts.find((_context) => _context.id === context.id);
+      const isPresentInTheComingData = translation.contexts.find(_context => _context.id === context.id);
       if (!isPresentInTheComingData) {
         translation.contexts.push(context);
       }
     });
 
-    translation.contexts = translation.contexts.map(processContextValues);
-    return model.save(translation);
+    return model.save({ ...translation, contexts: translation.contexts.map(processContextValues) });
   });
 }
 
@@ -53,70 +43,48 @@ export default {
   prepareContexts,
   get() {
     return model.get()
-    .then((response) => {
-      return response.map((translation) => {
-        translation.contexts = prepareContexts(translation.contexts);
-        return translation;
-      });
-    });
+    .then(response => response.map(translation => ({ ...translation, contexts: prepareContexts(translation.contexts) })));
   },
 
   save(translation) {
-    translation.contexts = translation.contexts || [];
     if (translation._id) {
       return update(translation);
     }
 
-    translation.contexts = translation.contexts.map(processContextValues);
-    return model.save(translation);
+    return model.save({ ...translation, contexts: translation.contexts && translation.contexts.map(processContextValues) });
   },
 
   addEntry(contextId, key, defaultValue) {
     return model.get()
-    .then((result) => {
-      return Promise.all(result.map((translation) => {
-        let context = translation.contexts.find((ctx) => ctx.id === contextId);
-        if (!context) {
-          return Promise.resolve();
-        }
-        context.values = context.values || [];
-        context.values.push({key, value: defaultValue});
-        return this.save(translation);
-      }));
-    })
-    .then(() => {
-      return 'ok';
-    });
+    .then(result => Promise.all(result.map((translation) => {
+      const context = translation.contexts.find(ctx => ctx.id === contextId);
+      if (!context) {
+        return Promise.resolve();
+      }
+      context.values = context.values || [];
+      context.values.push({ key, value: defaultValue });
+      return this.save(translation);
+    })))
+    .then(() => 'ok');
   },
 
   addContext(id, contextName, values, type) {
-    let translatedValues = [];
+    const translatedValues = [];
     Object.keys(values).forEach((key) => {
-      translatedValues.push({key, value: values[key]});
+      translatedValues.push({ key, value: values[key] });
     });
     return model.get()
-    .then((result) => {
-      return Promise.all(result.map((translation) => {
-        translation.contexts.push({id, label: contextName, values: translatedValues, type});
-        return this.save(translation);
-      }));
-    })
-    .then(() => {
-      return 'ok';
-    });
+    .then(result => Promise.all(result.map((translation) => {
+      translation.contexts.push({ id, label: contextName, values: translatedValues, type });
+      return this.save(translation);
+    })))
+    .then(() => 'ok');
   },
 
   deleteContext(id) {
     return model.get()
-    .then((result) => {
-      return Promise.all(result.map((translation) => {
-        translation.contexts = translation.contexts.filter((tr) => tr.id !== id);
-        return model.save(translation);
-      }));
-    })
-    .then(() => {
-      return 'ok';
-    });
+    .then(result => Promise.all(result.map(translation => model.save({ ...translation, contexts: translation.contexts.filter(tr => tr.id !== id) }))))
+    .then(() => 'ok');
   },
 
   processSystemKeys(keys) {
@@ -124,11 +92,10 @@ export default {
     .then((languages) => {
       let existingKeys = languages[0].contexts.find(c => c.label === 'System').values;
       const newKeys = keys.map(k => k.key);
-      let keysToAdd = [];
+      const keysToAdd = [];
       keys.forEach((key) => {
-        key.label = key.label || key.key;
         if (!existingKeys.find(k => key.key === k.key)) {
-          keysToAdd.push({key: key.key, value: key.label});
+          keysToAdd.push({ key: key.key, value: key.label || key.key });
         }
       });
 
@@ -138,12 +105,12 @@ export default {
           system = {
             id: 'System',
             label: 'System',
-            values: keys.map((k) => ({key: k.key, value: k.label}))
+            values: keys.map(k => ({ key: k.key, value: k.label || k.key }))
           };
           language.contexts.unshift(system);
         }
         existingKeys = system.values;
-        let valuesWithRemovedValues = existingKeys.filter(i => newKeys.includes(i.key));
+        const valuesWithRemovedValues = existingKeys.filter(i => newKeys.includes(i.key));
         system.values = valuesWithRemovedValues.concat(keysToAdd);
       });
 
@@ -152,18 +119,18 @@ export default {
   },
 
   updateContext(id, newContextName, keyNamesChanges, deletedProperties, values) {
-    let translatedValues = [];
+    const translatedValues = [];
     Object.keys(values).forEach((key) => {
-      translatedValues.push({key, value: values[key]});
+      translatedValues.push({ key, value: values[key] });
     });
 
     return Promise.all([model.get(), settings.get()])
     .then(([translations, siteSettings]) => {
-      let defaultLanguage = siteSettings.languages.find((lang) => lang.default).key;
+      const defaultLanguage = siteSettings.languages.find(lang => lang.default).key;
       return Promise.all(translations.map((translation) => {
-        let context = translation.contexts.find((tr) => tr.id.toString() === id.toString());
+        const context = translation.contexts.find(tr => tr.id.toString() === id.toString());
         if (!context) {
-          translation.contexts.push({id, label: newContextName, values: translatedValues});
+          translation.contexts.push({ id, label: newContextName, values: translatedValues });
           return this.save(translation);
         }
 
@@ -171,8 +138,8 @@ export default {
         context.values = context.values.filter(v => !deletedProperties.includes(v.key));
 
         Object.keys(keyNamesChanges).forEach((originalKey) => {
-          let newKey = keyNamesChanges[originalKey];
-          let value = context.values.find(v => v.key === originalKey);
+          const newKey = keyNamesChanges[originalKey];
+          const value = context.values.find(v => v.key === originalKey);
           if (value) {
             value.key = newKey;
 
@@ -181,13 +148,13 @@ export default {
             }
           }
           if (!value) {
-            context.values.push({key: newKey, value: values[newKey]});
+            context.values.push({ key: newKey, value: values[newKey] });
           }
         });
 
         Object.keys(values).forEach((key) => {
           if (!context.values.find(v => v.key === key)) {
-            context.values.push({key, value: values[key]});
+            context.values.push({ key, value: values[key] });
           }
         });
 
@@ -196,8 +163,6 @@ export default {
         return this.save(translation);
       }));
     })
-    .then(() => {
-      return 'ok';
-    });
+    .then(() => 'ok');
   }
 };
