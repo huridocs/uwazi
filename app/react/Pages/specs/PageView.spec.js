@@ -7,6 +7,7 @@ import PageViewer from 'app/Pages/components/PageViewer';
 import PagesAPI from 'app/Pages/PagesAPI';
 import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
+import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import api from 'app/Search/SearchAPI';
 
 import PageView from '../PageView';
@@ -42,6 +43,11 @@ describe('PageView', () => {
   it('should render a ViewMetadataPanel', () => {
     expect(component.find(ViewMetadataPanel).length).toBe(1);
     expect(component.find(ViewMetadataPanel).props().storeKey).toBe('library');
+  });
+
+  it('should render SelectMultiplePanelContainer', () => {
+    expect(component.find(SelectMultiplePanelContainer).length).toBe(1);
+    expect(component.find(SelectMultiplePanelContainer).props().storeKey).toBe('library');
   });
 
   describe('static requestState()', () => {
