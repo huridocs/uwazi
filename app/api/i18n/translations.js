@@ -9,7 +9,7 @@ function prepareContexts(contexts) {
   return contexts.map(context => ({
       ...context,
       type: context.id === 'System' || context.id === 'Filters' || context.id === 'Menu' ? 'Uwazi UI' : context.type,
-      values: context.values && context.values.reduce((values, value) => ({ ...values, [value.key]: value.value }), {})
+      values: context.values ? context.values.reduce((values, value) => ({ ...values, [value.key]: value.value }), {}) : {}
   }));
 }
 
@@ -164,5 +164,27 @@ export default {
       }));
     })
     .then(() => 'ok');
+  },
+
+  async addLanguage(language) {
+    const [lanuageTranslationAlreadyExists] = await model.get({ locale: language });
+    if (lanuageTranslationAlreadyExists) {
+      return Promise.resolve();
+    }
+
+    const { languages } = await settings.get();
+
+    const [defaultTranslation] = await model.get({ locale: languages.find(l => l.default).key });
+
+    return model.save({
+      ...defaultTranslation,
+      _id: null,
+      locale: language,
+      contexts: defaultTranslation.contexts.map(({ _id, ...context }) => context)
+    });
+  },
+
+  async removeLanguage(language) {
+    return model.delete({ locale: language });
   }
 };
