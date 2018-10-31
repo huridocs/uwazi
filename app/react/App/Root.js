@@ -50,7 +50,7 @@ class Root extends Component {
     }
 
     return (
-      <html>
+      <html lang={this.props.language}>
         <head>
           {head.title.toComponent()}
           {head.meta.toComponent()}
@@ -82,6 +82,7 @@ Root.propTypes = {
   reduxData: PropTypes.object,
   head: PropTypes.object,
   content: PropTypes.string,
+  language: PropTypes.string,
   assets: PropTypes.object
 };
 
