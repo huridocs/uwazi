@@ -50,6 +50,16 @@ describe('Attachments Routes', () => {
   });
 
   describe('/download', () => {
+    function expect404Error(req, res, done) {
+      routes.get('/api/attachments/download', req, res)
+      .then(() => {
+        done.fail('should fail');
+      })
+      .catch((error) => {
+        expect(error.code).toBe(404);
+        done();
+      });
+    }
     it('should download the document with the title as file name (replacing extension with file ext)', (done) => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
@@ -74,14 +84,7 @@ describe('Attachments Routes', () => {
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
 
-      routes.get('/api/attachments/download', req, res)
-      .then(() => {
-        done.fail('should fail when entity does not exists');
-      })
-      .catch((error) => {
-        expect(error.code).toBe(404);
-        done();
-      });
+      expect404Error(req, res, done);
     });
 
     it('should fail when attachment does not exist', (done) => {
@@ -89,14 +92,7 @@ describe('Attachments Routes', () => {
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
 
-      routes.get('/api/attachments/download', req, res)
-      .then(() => {
-        done.fail('should fail when attachment does not exist');
-      })
-      .catch((error) => {
-        expect(error.code).toBe(404);
-        done();
-      });
+      expect404Error(req, res, done);
     });
   });
 
