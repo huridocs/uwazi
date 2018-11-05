@@ -9,12 +9,18 @@ describe('Matomo', () => {
   let props;
   beforeEach(() => {
     props = {
-      url: 'url',
+      url: 'url/',
       id: 'id',
     };
   });
 
   it('should include matomo script when url and id are set', () => {
+    const component = shallow(<Matomo {...props} />);
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should add "/" at the end of url when not set', () => {
+    props.url = 'url';
     const component = shallow(<Matomo {...props} />);
     expect(component).toMatchSnapshot();
   });
@@ -30,6 +36,7 @@ describe('Matomo', () => {
       const state = { settings: { collection: Immutable.fromJS({ matomoConfig: '{"id":"id", "url": "url"}' }) } };
       expect(mapStateToProps(state)).toEqual({ id: 'id', url: 'url' });
     });
+
     it('should not fail when json is malformed', () => {
       const state = { settings: { collection: Immutable.fromJS({ matomoConfig: '{\'id\':"id", "url": "url"}' }) } };
       expect(mapStateToProps(state)).toEqual({});

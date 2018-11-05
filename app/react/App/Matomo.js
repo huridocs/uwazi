@@ -7,6 +7,9 @@ export class Matomo extends Component {
     if (!this.props.id && !this.props.url) {
       return false;
     }
+
+    const url = this.props.url.replace(/\/?$/, '/');
+
     return (
       <script
         type="text/javascript"
@@ -15,7 +18,7 @@ export class Matomo extends Component {
               _paq.push(['trackPageView']);
               _paq.push(['enableLinkTracking']);
               (function() {
-                var u="${this.props.url}";
+                var u="${url}";
                 _paq.push(['setTrackerUrl', u+'piwik.php']);
                 _paq.push(['setSiteId', '${this.props.id}']);
                 var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
