@@ -13,7 +13,6 @@ describe('CollectionSettings', () => {
     props = {
       settings: { _id: 'id', links: ['123'] },
       notify: jasmine.createSpy('notify'),
-      //test this shit
       setSettings: jasmine.createSpy('setSettings')
     };
     component = shallow(<CollectionSettings {...props} />);
@@ -26,14 +25,9 @@ describe('CollectionSettings', () => {
 
     it('should save the settings with defaults', () => {
       component.find('form').simulate('submit', { preventDefault: () => {} });
+      const expectedSettings = { home_page: '', site_name: '', mailerConfig: '', analyticsTrackingId: '', private: false };
       expect(SettingsAPI.save)
-      .toHaveBeenCalledWith(Object.assign({
-        home_page: '',
-        site_name: '',
-        mailerConfig: '',
-        analyticsTrackingId: '',
-        private: false
-      }, props.settings));
+      .toHaveBeenCalledWith(Object.assign(expectedSettings, props.settings));
     });
 
     it('should save the updated settings', () => {

@@ -1,5 +1,5 @@
-import {actions} from 'app/BasicReducer';
-import {notify} from 'app/Notifications';
+import { actions } from 'app/BasicReducer';
+import { notify } from 'app/Notifications';
 import api from 'app/utils/api';
 import debounce from 'app/utils/debounce';
 
@@ -9,7 +9,7 @@ import * as uiActions from './uiActions';
 export function immidiateSearch(dispatch, searchTerm, connectionType) {
   dispatch(uiActions.searching());
 
-  let query = {searchTerm, fields: ['title']};
+  const query = { searchTerm, fields: ['title'] };
 
   return api.get('search', query)
   .then((response) => {
@@ -24,20 +24,18 @@ export function immidiateSearch(dispatch, searchTerm, connectionType) {
 const debouncedSearch = debounce(immidiateSearch, 400);
 
 export function search(searchTerm, connectionType) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(actions.set('connections/searchTerm', searchTerm));
     return debouncedSearch(dispatch, searchTerm, connectionType);
   };
 }
 
 export function startNewConnection(connectionType, sourceDocument) {
-  return function (dispatch) {
-    return immidiateSearch(dispatch, '', connectionType)
-    .then(() => {
-      dispatch(actions.set('connections/searchTerm', ''));
-      dispatch(uiActions.openPanel(connectionType, sourceDocument));
-    });
-  };
+  return dispatch => immidiateSearch(dispatch, '', connectionType)
+  .then(() => {
+    dispatch(actions.set('connections/searchTerm', ''));
+    dispatch(uiActions.openPanel(connectionType, sourceDocument));
+  });
 }
 
 export function setRelationType(template) {
@@ -55,17 +53,17 @@ export function setTargetDocument(id) {
 }
 
 export function saveConnection(connection, callback = () => {}) {
-  return function (dispatch, getState) {
-    dispatch({type: types.CREATING_CONNECTION});
+  return (dispatch, getState) => {
+    dispatch({ type: types.CREATING_CONNECTION });
     if (connection.type !== 'basic') {
       connection.language = getState().locale;
     }
 
     delete connection.type;
 
-    const sourceRelationship = {entity: connection.sourceDocument, template: null, range: connection.sourceRange};
+    const sourceRelationship = { entity: connection.sourceDocument, template: null, range: connection.sourceRange };
 
-    let targetRelationship = {entity: connection.targetDocument, template: connection.template};
+    const targetRelationship = { entity: connection.targetDocument, template: connection.template };
     if (connection.targetRange && typeof connection.targetRange.start !== 'undefined') {
       targetRelationship.range = connection.targetRange;
     }
@@ -76,8 +74,8 @@ export function saveConnection(connection, callback = () => {}) {
     };
 
     return api.post('relationships/bulk', apiCall)
-    .then(response => {
-      dispatch({type: types.CONNECTION_CREATED});
+    .then((response) => {
+      dispatch({ type: types.CONNECTION_CREATED });
       callback(response.json);
       dispatch(notify('saved successfully !', 'success'));
     });
@@ -85,8 +83,8 @@ export function saveConnection(connection, callback = () => {}) {
 }
 
 export function selectRangedTarget(connection, onRangedConnect) {
-  return function (dispatch) {
-    dispatch({type: types.CREATING_RANGED_CONNECTION});
+  return (dispatch) => {
+    dispatch({ type: types.CREATING_RANGED_CONNECTION });
     onRangedConnect(connection.targetDocument);
   };
 }

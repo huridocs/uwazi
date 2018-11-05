@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Customisation should render Customisation component 1`] = `
+<div
+  className="panel panel-default settings-custom-css"
+>
+  <div
+    className="panel-heading"
+  >
+    Custom styles
+  </div>
+  <div
+    className="panel-body"
+  >
+    <Connect(Form)
+      model="settings.settings"
+      onSubmit={[Function]}
+    >
+      <Modeled(Connect(Field))
+        model=".customCSS"
+      >
+        <label
+          className="form-group-label"
+          htmlFor="custom_css"
+        >
+          Custom CSS
+          <textarea
+            className="form-control"
+            id="custom_css"
+          />
+        </label>
+      </Modeled(Connect(Field))>
+      <div
+        className="settings-footer"
+      >
+        <button
+          className="btn btn-success"
+          type="submit"
+        >
+          <Component
+            icon="save"
+          />
+          <span
+            className="btn-label"
+          >
+            Update
+          </span>
+        </button>
+      </div>
+    </Connect(Form)>
+  </div>
+</div>
+`;
+
+exports[`Languages should render Languages component 1`] = `undefined`;

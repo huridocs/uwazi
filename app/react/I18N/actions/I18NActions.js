@@ -1,6 +1,8 @@
 import { actions as formActions } from 'react-redux-form';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
+import SettingsAPI from 'app/Settings/SettingsAPI';
+import { actions } from 'app/BasicReducer';
 import t from '../t';
 import I18NApi from '../I18NApi';
 
@@ -50,5 +52,42 @@ export function editTranslations(translations) {
 export function resetForm() {
   return (dispatch) => {
     dispatch(formActions.reset('translationsForm'));
+  };
+}
+
+function updateSettings(dispatch) {
+  SettingsAPI.get()
+  .then((settings) => {
+    updateSettings(dispatch);
+    dispatch(actions.set('settings/collection', settings.collection));
+  });
+}
+
+export function addLanguage(language) {
+  return (dispatch) => {
+    I18NApi.addLanguage(language)
+    .then(() => {
+      updateSettings(dispatch);
+      notifications.notify(t('System', 'New language added', null, false), 'success')(dispatch);
+    });
+  };
+}
+
+export function deleteLanguage(key) {
+  return (dispatch) => {
+    I18NApi.deleteLanguage(key)
+    .then(() => {
+      updateSettings(dispatch);
+      notifications.notify(t('System', 'Language deleted', null, false), 'success')(dispatch);
+    });
+  };
+}
+
+export function setDefaultLanguage(key) {
+  return (dispatch) => {
+    I18NApi.setDefaultLanguage(key)
+    .then(() => {
+      notifications.notify(t('System', 'Default language change success', null, false), 'success')(dispatch);
+    });
   };
 }
