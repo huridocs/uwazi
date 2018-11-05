@@ -4,8 +4,8 @@ import entities from 'api/entities/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import relationships from '../relationships';
-import fixtures, { connectionID1, connectionID2, connectionID3, hub1, hub7, hub2, relation1, relation2,
-  template, sharedId1, sharedId3, sharedId4, sharedId5 } from './fixtures';
+import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, hub1, hub2, hub7, hub12, relation1, relation2,
+  template, sharedId1, sharedId3, sharedId4, sharedId5, sharedId7 } from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
@@ -551,6 +551,18 @@ describe('relationships', () => {
         expect(result.length).toBe(3);
         expectLength(result, 'sharedId', sharedId3, 2);
         expectLength(result, '_id', connectionID3, 1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should not delete the hub when specific combos yield a hub with less than 2 connections in every language', (done) => {
+      relationships.delete({ _id: connectionID4 }, 'es')
+      .then(() => relationships.get({ hub: hub12 }))
+      .then((result) => {
+        expect(result.length).toBe(3);
+        expectLength(result, 'sharedId', sharedId7, 2);
+        expectLength(result, 'entity', 'doc2', 1);
         done();
       })
       .catch(catchErrors(done));

@@ -51,11 +51,7 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   }, null);
 }
 
-function determineDeleteAction(shouldDeleteHub, hubId, relation, relationQuery) {
-  if (shouldDeleteHub) {
-    return model.delete({ hub: hubId });
-  }
-
+function determineDeleteAction(hubId, relation, relationQuery) {
   let deleteQuery = relationQuery;
   if (relationQuery._id) {
     deleteQuery = { sharedId: relation.sharedId.toString() };
@@ -447,20 +443,26 @@ export default {
       return relationships;
     })
     .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub }))))
-    .then(hubRelationships => Promise.all(hubRelationships.map((hub) => {
-      const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
-        hub.filter(r => r.language === currentLanguage.key).length <= 2 && shouldDelete, true
-      );
-
-      const deleteAction = determineDeleteAction(shouldDeleteHub, hub[0].hub, relation, relationQuery);
+    .then(hubsRelationships => Promise.all(hubsRelationships.map((hub) => {
+      let deleteAction = determineDeleteAction(hub[0].hub, relation, relationQuery);
 
       if (updateMetdata) {
-        return deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
+        deleteAction = deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
       }
 
-      return deleteAction;
-    })))
-    .catch(console.log);
+      return deleteAction
+      .then(response => Promise.all([response, model.get({ hub: hub[0].hub })]))
+      .then(([response, hubRelationships]) => {
+        const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
+          hubRelationships.filter(r => r.language === currentLanguage.key).length < 2 && shouldDelete, true
+        );
+        if (shouldDeleteHub) {
+          return model.delete({ hub: hub[0].hub });
+        }
+
+        return Promise.resolve(response);
+      });
+    })));
   },
 
   deleteTextReferences(sharedId, language) {

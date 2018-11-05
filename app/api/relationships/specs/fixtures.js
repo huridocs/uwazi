@@ -3,6 +3,7 @@ import db from 'api/utils/testing_db';
 const connectionID1 = db.id();
 const connectionID2 = db.id();
 const connectionID3 = db.id();
+const connectionID4 = db.id();
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
@@ -27,6 +28,7 @@ const hub8 = db.id();
 const hub9 = db.id();
 const hub10 = db.id();
 const hub11 = db.id();
+const hub12 = db.id();
 
 const sharedId1 = db.id();
 const sharedId2 = db.id();
@@ -34,6 +36,7 @@ const sharedId3 = db.id();
 const sharedId4 = db.id();
 const sharedId5 = db.id();
 const sharedId6 = db.id();
+const sharedId7 = db.id();
 
 export default {
   connections: [
@@ -73,7 +76,12 @@ export default {
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
     {entity: 'bruceWayne', hub: hub9, sharedId: db.id(), language: 'en'},
     {entity: 'thomasWayne', hub: hub9, template: family, sharedId: db.id(), language: 'en'},
-    {entity: 'IHaveNoTemplate', hub: hub9, template: null, sharedId: db.id(), language: 'en'}
+    {entity: 'IHaveNoTemplate', hub: hub9, template: null, sharedId: db.id(), language: 'en'},
+
+    {hub: hub12, entity: 'entity1', sharedId: sharedId7, language: 'es' },
+    {hub: hub12, entity: 'entity1', sharedId: sharedId7, language: 'en' },
+    {hub: hub12, _id: connectionID4, entity: 'doc1', sharedId: db.id(), range: { end: 5, text: 'not empty' }, language: 'es' },
+    {hub: hub12, entity: 'doc2', sharedId: db.id(), range: { end: 9, text: 'another text' }, language: 'en' },
   ],
   templates: [
     {_id: templateWithoutProperties},
@@ -158,6 +166,7 @@ export {
   connectionID1,
   connectionID2,
   connectionID3,
+  connectionID4,
   selectValueID,
   value1ID,
   value2ID,
@@ -175,10 +184,12 @@ export {
   hub8,
   hub9,
   hub10,
+  hub12,
   family,
   friend,
   sharedId2,
   sharedId3,
   sharedId4,
   sharedId5,
+  sharedId7,
 };
