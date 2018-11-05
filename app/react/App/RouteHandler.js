@@ -17,7 +17,6 @@ class RouteHandler extends Component {
 
   static renderTools() {}
 
-
   isRenderedFromServer() {
     const result = RouteHandler.renderedFromServer;
     RouteHandler.renderedFromServer = false;
@@ -27,20 +26,18 @@ class RouteHandler extends Component {
   setLocale(props) {
     const locale = this.getLocale(props);
     if (locale) {
-      this.setApiLocale(locale);
+      api.locale(locale);
       this.setStateLocale(locale);
     }
   }
 
   getLocale(props) {
     if (this.context.store && this.context.store.getState) {
-      const languages = this.context.store.getState().settings.collection.toJS().languages;
-      return I18NUtils.getLocale(props.location.pathname, languages);
+      const { languages } = this.context.store.getState().settings.collection.toJS();
+      return I18NUtils.getLocale(props.params.lang, languages);
     }
-  }
 
-  setApiLocale(locale) {
-    api.locale(locale);
+    return null;
   }
 
   setStateLocale(locale) {
@@ -56,7 +53,7 @@ class RouteHandler extends Component {
     //test ?
     const locale = this.getLocale(props);
     moment.locale(locale);
-    this.setApiLocale(locale);
+    api.locale(locale);
     //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
       this.getClientState(this.props);
