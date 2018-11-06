@@ -176,14 +176,13 @@ export default function () {
 
     sortByForeignKey(property, keys, order = 'desc') {
       const sort = {};
-      // const keys = sortedKeys.reverse();
       sort._script = {
         order,
         type: 'string',
         script: {
           params: { keys },
-          source: `params.keys[doc['${property}.sort'].value]`
-        }
+          source: `params.keys[doc['${property}.sort'].value] != null ? params.keys[doc['${property}.sort'].value] : '|'`
+        },
       };
       baseQuery.sort.push(sort);
       return this;
