@@ -175,9 +175,7 @@ export function mapStateToProps(state, ownProps) {
   let { templates } = state;
   const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : `${ownProps.storeKey}.search`;
 
-  if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
-    templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
-  }
+  templates = templates.filter(i => ownProps.selectedTemplates.includes(i.get('_id')));
 
   const search = stateProperty.split(/[.,\/]/).reduce((memo, property) => Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null, state);
 
