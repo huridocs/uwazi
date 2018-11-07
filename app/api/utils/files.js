@@ -3,7 +3,7 @@ import fs from 'fs';
 function deleteFile(file) {
   return new Promise((resolve, reject) => {
     fs.unlink(file, (err) => {
-      if (err) {
+      if (err && err.code !== 'ENOENT') {
         reject(err);
       }
       resolve();
@@ -12,7 +12,7 @@ function deleteFile(file) {
 }
 
 function deleteFiles(files) {
-  return Promise.all(files.map((file) => deleteFile(file)));
+  return Promise.all(files.map(file => deleteFile(file)));
 }
 
-export {deleteFiles, deleteFile};
+export { deleteFiles, deleteFile };
