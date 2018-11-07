@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
+import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
 import { generateNamesAndIds } from '../templates/utils';
 import entities from 'api/entities/entities';
@@ -48,6 +49,15 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
 
     return result;
   }, null);
+}
+
+function determineDeleteAction(hubId, relation, relationQuery) {
+  let deleteQuery = relationQuery;
+  if (relationQuery._id) {
+    deleteQuery = { sharedId: relation.sharedId.toString() };
+  }
+
+  return model.delete(deleteQuery);
 }
 
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!
@@ -241,7 +251,7 @@ export default {
         _relationship.language = entity.language;
         return model.save(_relationship);
       });
-      return Promise.all(relationshipsCreation).then(relations => relations.find(r => r.language === relationship.language));
+      return Promise.all(relationshipsCreation).then(relations => relations.filter(r => r).find(r => r.language === relationship.language));
     });
   },
 
@@ -418,28 +428,41 @@ export default {
     });
   },
 
-  delete(relation, language, updateMetdata = true) {
-    if (!relation) {
+  delete(relationQuery, language, updateMetdata = true) {
+    if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
-    return model.get(relation)
-    .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub, language: _relation.language }))))
-    .then(hubs => Promise.all(hubs.map((hub) => {
-      const shouldDeleteTheLoneConnectionToo = hub.length === 2;
-      const hubId = hub[0].hub;
-      let deleteAction;
-      if (shouldDeleteTheLoneConnectionToo) {
-        deleteAction = model.delete({ hub: hubId });
-      } else {
-        deleteAction = model.delete(relation);
-      }
+
+    let languages;
+    let relation;
+
+    return Promise.all([settings.get(), model.get(relationQuery)])
+    .then(([_settings, relationships]) => {
+      ({ languages } = _settings);
+      [relation] = relationships;
+      return relationships;
+    })
+    .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub }))))
+    .then(hubsRelationships => Promise.all(hubsRelationships.map((hub) => {
+      let deleteAction = determineDeleteAction(hub[0].hub, relation, relationQuery);
 
       if (updateMetdata) {
-        return deleteAction.then(() => this.updateEntitiesMetadata(hub.map(r => r.entity), language));
+        deleteAction = deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
       }
-      return deleteAction;
-    })))
-    .catch(console.log);
+
+      return deleteAction
+      .then(response => Promise.all([response, model.get({ hub: hub[0].hub })]))
+      .then(([response, hubRelationships]) => {
+        const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
+          hubRelationships.filter(r => r.language === currentLanguage.key).length < 2 && shouldDelete, true
+        );
+        if (shouldDeleteHub) {
+          return model.delete({ hub: hub[0].hub });
+        }
+
+        return Promise.resolve(response);
+      });
+    })));
   },
 
   deleteTextReferences(sharedId, language) {

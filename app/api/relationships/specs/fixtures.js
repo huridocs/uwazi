@@ -1,6 +1,9 @@
 /* eslint-disable */
 import db from 'api/utils/testing_db';
 const connectionID1 = db.id();
+const connectionID2 = db.id();
+const connectionID3 = db.id();
+const connectionID4 = db.id();
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
@@ -14,7 +17,6 @@ const relation2 = db.id();
 const friend = db.id();
 const family = db.id();
 
-
 const hub1 = db.id();
 const hub2 = db.id();
 const hub3 = db.id();
@@ -26,11 +28,15 @@ const hub8 = db.id();
 const hub9 = db.id();
 const hub10 = db.id();
 const hub11 = db.id();
+const hub12 = db.id();
 
 const sharedId1 = db.id();
 const sharedId2 = db.id();
 const sharedId3 = db.id();
 const sharedId4 = db.id();
+const sharedId5 = db.id();
+const sharedId6 = db.id();
+const sharedId7 = db.id();
 
 export default {
   connections: [
@@ -61,12 +67,21 @@ export default {
     {entity: 'entity_id', hub: hub7, template: relation1, sharedId: sharedId2, language: 'es'},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'en'},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'es'},
+    {entity: 'another_id', hub: hub7, template: relation1, sharedId: sharedId5, language: 'en'},
+    {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1, sharedId: sharedId5, language: 'es'},
+    {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7, template: relation1, sharedId: sharedId6, language: 'en'},
+
     {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
     {entity: 'bruceWayne', hub: hub9, sharedId: db.id(), language: 'en'},
     {entity: 'thomasWayne', hub: hub9, template: family, sharedId: db.id(), language: 'en'},
-    {entity: 'IHaveNoTemplate', hub: hub9, template: null, sharedId: db.id(), language: 'en'}
+    {entity: 'IHaveNoTemplate', hub: hub9, template: null, sharedId: db.id(), language: 'en'},
+
+    {hub: hub12, entity: 'entity1', sharedId: sharedId7, language: 'es' },
+    {hub: hub12, entity: 'entity1', sharedId: sharedId7, language: 'en' },
+    {hub: hub12, _id: connectionID4, entity: 'doc1', sharedId: db.id(), range: { end: 5, text: 'not empty' }, language: 'es' },
+    {hub: hub12, entity: 'doc2', sharedId: db.id(), range: { end: 9, text: 'another text' }, language: 'en' },
   ],
   templates: [
     {_id: templateWithoutProperties},
@@ -112,8 +127,8 @@ export default {
     {sharedId: 'entity4', language: 'en', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity4', language: 'ru', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'doc4', language: 'en', title: 'doc4 en title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
-    {sharedId: 'doc4', language: 'es', title: 'doc4 es title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
     {sharedId: 'doc4', language: 'pt', title: 'doc4 pt title', type: 'document', template: template, file: {filename: 'pt'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc4', language: 'es', title: 'doc4 es title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
     {sharedId: 'doc5', language: 'en', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'en'}},
     {sharedId: 'doc5', language: 'es', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'en'}},
     {sharedId: 'doc5', language: 'pt', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'en'}},
@@ -138,6 +153,10 @@ export default {
     {_id: relation2, name: 'relation 2'},
     {_id: friend, name: 'friend'},
     {_id: family, name: 'family'}
+  ],
+
+  settings: [
+    { languages: [{ key: 'en' }, { key: 'es' }] }
   ]
 };
 
@@ -145,6 +164,9 @@ export {
   template,
   inbound,
   connectionID1,
+  connectionID2,
+  connectionID3,
+  connectionID4,
   selectValueID,
   value1ID,
   value2ID,
@@ -162,7 +184,12 @@ export {
   hub8,
   hub9,
   hub10,
+  hub12,
   family,
   friend,
-  sharedId4
+  sharedId2,
+  sharedId3,
+  sharedId4,
+  sharedId5,
+  sharedId7,
 };
