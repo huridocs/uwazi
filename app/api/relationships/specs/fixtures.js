@@ -4,6 +4,7 @@ const connectionID1 = db.id();
 const connectionID2 = db.id();
 const connectionID3 = db.id();
 const connectionID4 = db.id();
+const connectionID5 = db.id();
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
@@ -34,21 +35,25 @@ const sharedId1 = db.id();
 const sharedId2 = db.id();
 const sharedId3 = db.id();
 const sharedId4 = db.id();
-const sharedId5 = db.id();
-const sharedId6 = db.id();
 const sharedId7 = db.id();
 
 export default {
   connections: [
+    //
+    {_id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}},
+    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1},
+    {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1},
+    {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7},
+    {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
+    {entity: 'entity_id', hub: hub7, template: relation1},
+    //
     {entity: 'entity1', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
     {entity: 'entity2', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
 
     {entity: 'entity2', hub: hub2, template: relation2, sharedId: db.id(), language: 'en'},
-    {entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}, language: 'en', sharedId: sharedId1},
     {entity: 'entity3', hub: hub2, language: 'en', sharedId: sharedId4},
 
     {entity: 'entity2', hub: hub11, template: relation2, sharedId: db.id(), language: 'ru'},
-    {entity: 'entity3', hub: hub11, template: relation2, range: {text: 'rusian'}, language: 'ru', sharedId: sharedId1},
     {entity: 'entity3', hub: hub11, language: 'en', sharedId: db.id()},
 
     {entity: 'entity2', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
@@ -63,13 +68,6 @@ export default {
 
     {entity: 'target1', hub: hub6, sharedId: db.id(), language: 'en'},
 
-    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1, sharedId: sharedId2, language: 'en'},
-    {entity: 'entity_id', hub: hub7, template: relation1, sharedId: sharedId2, language: 'es'},
-    {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'en'},
-    {entity: value2ID, hub: hub7, range: 'range1', template: relation1, sharedId: sharedId3, language: 'es'},
-    {entity: 'another_id', hub: hub7, template: relation1, sharedId: sharedId5, language: 'en'},
-    {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1, sharedId: sharedId5, language: 'es'},
-    {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7, template: relation1, sharedId: sharedId6, language: 'en'},
 
     {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
@@ -126,12 +124,12 @@ export default {
     {sharedId: 'entity3', language: 'ru', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity4', language: 'en', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity4', language: 'ru', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
-    {sharedId: 'doc4', language: 'en', title: 'doc4 en title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
-    {sharedId: 'doc4', language: 'pt', title: 'doc4 pt title', type: 'document', template: template, file: {filename: 'pt'}, metadata: {data: 'data3'}, creationDate: 789},
-    {sharedId: 'doc4', language: 'es', title: 'doc4 es title', type: 'document', template: template, file: {filename: 'en'}, metadata: {data: 'data3'}, creationDate: 789},
-    {sharedId: 'doc5', language: 'en', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'en'}},
-    {sharedId: 'doc5', language: 'es', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'en'}},
-    {sharedId: 'doc5', language: 'pt', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'en'}},
+    {sharedId: 'doc4', language: 'en', title: 'doc4 en title', type: 'document', template: template, file: {filename: 'doc4enFile'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc4', language: 'pt', title: 'doc4 pt title', type: 'document', template: template, file: {filename: 'doc4ptFile'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc4', language: 'es', title: 'doc4 es title', type: 'document', template: template, file: {filename: 'doc4enFile'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc5', language: 'en', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'doc5enFile'}},
+    {sharedId: 'doc5', language: 'es', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'doc5enFile'}},
+    {sharedId: 'doc5', language: 'pt', title: 'doc5 title', type: 'document', template: template, published: true, file: {filename: 'doc5enFile'}},
     {sharedId: selectValueID, language: 'en', title: 'selectValue', type: 'entity'},
     {sharedId: value1ID, language: 'en', title: 'value1', type: 'entity'},
     {sharedId: value2ID, language: 'en', title: 'value2', type: 'entity', template},
@@ -167,6 +165,7 @@ export {
   connectionID2,
   connectionID3,
   connectionID4,
+  connectionID5,
   selectValueID,
   value1ID,
   value2ID,
@@ -190,6 +189,5 @@ export {
   sharedId2,
   sharedId3,
   sharedId4,
-  sharedId5,
   sharedId7,
 };

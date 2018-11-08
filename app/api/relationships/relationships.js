@@ -53,9 +53,9 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
 
 function determineDeleteAction(hubId, relation, relationQuery) {
   let deleteQuery = relationQuery;
-  if (relationQuery._id) {
-    deleteQuery = { sharedId: relation.sharedId.toString() };
-  }
+  // if (relationQuery._id) {
+  //   deleteQuery = { _id: relationQuery._id };
+  // }
 
   return model.delete(deleteQuery);
 }
@@ -193,8 +193,8 @@ export default {
     });
   },
 
-  getHub(hub, language) {
-    return model.get({ hub, language });
+  getHub(hub) {
+    return model.get({ hub });
   },
 
   countByRelationType(typeId) {
@@ -203,56 +203,6 @@ export default {
 
   getAllLanguages(sharedId) {
     return model.get({ sharedId });
-  },
-
-  updateRelationship(relationship) {
-    const getTemplate = relationship.template && relationship.template._id === null ? null : relationtypes.getById(relationship.template);
-    return Promise.all([getTemplate, model.get({ sharedId: relationship.sharedId })])
-    .then(([template, relationshipsVersions]) => {
-      let toSyncProperties = [];
-      if (template && template.properties) {
-        toSyncProperties = template.properties
-        .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested'))
-        .map(p => p.name);
-      }
-
-      relationship.metadata = relationship.metadata || {};
-      const updateRelationships = relationshipsVersions.map((relation) => {
-        if (relationship._id.toString() === relation._id.toString()) {
-          if (relationship.template && relationship.template._id === null) {
-            relationship.template = null;
-          }
-          return model.save(relationship);
-        }
-        toSyncProperties.map((propertyName) => {
-          relation.metadata = relation.metadata || {};
-          relation.metadata[propertyName] = relationship.metadata[propertyName];
-        });
-        return model.save(relation);
-      });
-      return Promise.all(updateRelationships).then(relations => relations.find(r => r.language === relationship.language));
-    });
-  },
-
-  createRelationship(relationship) {
-    relationship.sharedId = generateID();
-    return entities.get({ sharedId: relationship.entity })
-    .then((entitiesVersions) => {
-      const currentLanguageEntity = entitiesVersions.find(entity => entity.language === relationship.language);
-      currentLanguageEntity.file = currentLanguageEntity.file || {};
-      const relationshipsCreation = entitiesVersions.map((entity) => {
-        const isATextReference = relationship.range;
-        entity.file = entity.file || {};
-        const entityFileDoesNotMatch = currentLanguageEntity.file.filename !== entity.file.filename;
-        if (isATextReference && entityFileDoesNotMatch) {
-          return Promise.resolve();
-        }
-        const _relationship = Object.assign({}, relationship);
-        _relationship.language = entity.language;
-        return model.save(_relationship);
-      });
-      return Promise.all(relationshipsCreation).then(relations => relations.filter(r => r).find(r => r.language === relationship.language));
-    });
   },
 
   bulk(bulkData, language) {
@@ -282,6 +232,24 @@ export default {
     }));
   },
 
+  async createRelationship(relationship, language) {
+    const isATextReference = relationship.range;
+    let filename;
+    if (isATextReference) {
+      const [entity] = await entities.get({ sharedId: relationship.entity, language });
+      ({ filename } = entity.file);
+    }
+
+    return model.save({ ...relationship, filename });
+  },
+
+  async updateRelationship(relationship) {
+    return model.save({
+      ...relationship,
+      template: relationship.template && relationship.template._id !== null ? relationship.template : null
+    });
+  },
+
   save(_relationships, language, updateMetdata = true) {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
@@ -299,11 +267,10 @@ export default {
       relationships.map((relationship) => {
         let action;
         relationship.hub = hub;
-        relationship.language = language;
-        if (relationship.sharedId) {
+        if (relationship._id) {
           action = this.updateRelationship(relationship);
         } else {
-          action = this.createRelationship(relationship);
+          action = this.createRelationship(relationship, language);
         }
 
         return action
@@ -320,7 +287,7 @@ export default {
   },
 
   updateEntitiesMetadataByHub(hubId, language) {
-    return this.getHub(hubId, language)
+    return this.getHub(hubId)
     .then(hub => entities.updateMetdataFromRelationships(hub.map(r => r.entity), language));
   },
 
@@ -433,36 +400,38 @@ export default {
       return Promise.reject(createError('Cant delete without a condition'));
     }
 
-    let languages;
-    let relation;
+//     let languages;
+//     let relation;
+    return model.delete(relationQuery);
 
-    return Promise.all([settings.get(), model.get(relationQuery)])
-    .then(([_settings, relationships]) => {
-      ({ languages } = _settings);
-      [relation] = relationships;
-      return relationships;
-    })
-    .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub }))))
-    .then(hubsRelationships => Promise.all(hubsRelationships.map((hub) => {
-      let deleteAction = determineDeleteAction(hub[0].hub, relation, relationQuery);
+    // return Promise.all([settings.get(), model.get(relationQuery)])
+    // .then(([_settings, relationships]) => {
+    //   ({ languages } = _settings);
+    //   [relation] = relationships;
+    //   return relationships;
+    // })
+    // .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub }))))
+    // .then(hubsRelationships => Promise.all(hubsRelationships.map((hub) => {
+    //   let deleteAction = determineDeleteAction(hub[0].hub, relation, relationQuery);
 
-      if (updateMetdata) {
-        deleteAction = deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
-      }
+    //   if (updateMetdata) {
+    //     deleteAction = deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
+    //   }
 
-      return deleteAction
-      .then(response => Promise.all([response, model.get({ hub: hub[0].hub })]))
-      .then(([response, hubRelationships]) => {
-        const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
-          hubRelationships.filter(r => r.language === currentLanguage.key).length < 2 && shouldDelete, true
-        );
-        if (shouldDeleteHub) {
-          return model.delete({ hub: hub[0].hub });
-        }
+    //   return deleteAction
+    //   .then(response => Promise.all([response, model.get({ hub: hub[0].hub })]))
+    //   .then(([response, hubRelationships]) => {
+    //     const shouldDeleteHub = hubsRelationships.length < 2;
+    //     const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
+    //       hubRelationships.filter(r => r.language === currentLanguage.key).length < 2 && shouldDelete, true
+    //     );
+    //     if (shouldDeleteHub) {
+    //       return model.delete({ hub: hub[0].hub });
+    //     }
 
-        return Promise.resolve(response);
-      });
-    })));
+    //     return Promise.resolve(response);
+    //   });
+    // })));
   },
 
   deleteTextReferences(sharedId, language) {
