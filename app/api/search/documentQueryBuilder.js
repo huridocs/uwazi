@@ -181,7 +181,7 @@ export default function () {
         type: 'string',
         script: {
           params: { keys },
-          source: `params.keys[doc['${property}.sort'].value] != null ? params.keys[doc['${property}.sort'].value] : '|'`
+          source: `try {params.keys[doc['${property}.sort'].value] != null ? params.keys[doc['${property}.sort'].value] : '|'}catch(Exception e){'|'}`
         },
       };
       baseQuery.sort.push(sort);
