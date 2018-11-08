@@ -17,7 +17,8 @@ export default (app) => {
 
     needsAuthorization(),
 
-    validateRequest(Joi.object().keys({
+    validateRequest(Joi.object()
+    .keys({
       _id: Joi.string(),
       __v: Joi.number(),
       locale: Joi.string().required(),
@@ -40,7 +41,42 @@ export default (app) => {
         res.json(response);
       })
       .catch(next);
-    });
+    }
+  );
+
+  app.post(
+    '/api/translations/setasdeafult',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      key: Joi.string(),
+    }).required()),
+
+    (req, res, next) => {
+      translations.save(req.body)
+      .then((response) => {
+        req.io.sockets.emit('translationsChange', response);
+        res.json('ok');
+      })
+      .catch(next);
+    }
+  );
+
+  app.post(
+    '/api/translations/setasdeafult',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      key: Joi.string(),
+    }).required()),
+
+    (req, res, next) => {
+      translations.save(req.body)
+      .then((response) => {
+        // req.io.sockets.emit('updateSettings', response);
+        res.json('ok');
+      })
+      .catch(next);
+    }
+  );
 
   // app.post(
   //   '/api/translations/addentry',

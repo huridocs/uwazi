@@ -1,55 +1,5189 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Customisation should render Customisation component 1`] = `
+exports[`Languages should render Languages component 1`] = `
 <div
-  className="panel panel-default settings-custom-css"
+  className="panel panel-default"
 >
   <div
     className="panel-heading"
   >
-    Custom styles
+    Active Languages
   </div>
-  <div
-    className="panel-body"
+  <ul
+    className="list-group document-types"
   >
-    <Connect(Form)
-      model="settings.settings"
-      onSubmit={[Function]}
+    <li
+      className="list-group-item"
+      key="0"
     >
-      <Modeled(Connect(Field))
-        model=".customCSS"
-      >
-        <label
-          className="form-group-label"
-          htmlFor="custom_css"
-        >
-          Custom CSS
-          <textarea
-            className="form-control"
-            id="custom_css"
-          />
-        </label>
-      </Modeled(Connect(Field))>
+      <span>
+        Español (es)
+      </span>
+      <span>
+        Default language
+        <Tip>
+          This language will be used as default translation when adding new languages, and the default language for the site when no other language has been selected.
+        </Tip>
+      </span>
       <div
-        className="settings-footer"
+        className="list-group-item-actions"
       >
         <button
-          className="btn btn-success"
-          type="submit"
+          className="btn btn-danger btn-xs template-remove"
+          onClick={[Function]}
         >
           <Component
-            icon="save"
+            icon="trash-alt"
           />
-          <span
-            className="btn-label"
-          >
-            Update
+           
+          <span>
+            Delete language
           </span>
         </button>
       </div>
-    </Connect(Form)>
+    </li>
+    <li
+      className="list-group-item"
+      key="1"
+    >
+      <span>
+        English (en)
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="star"
+            prefix="far"
+          />
+           
+          <span>
+            Set as default
+          </span>
+        </button>
+        <button
+          className="btn btn-danger btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="trash-alt"
+          />
+           
+          <span>
+            Delete language
+          </span>
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    className="panel-heading"
+  >
+    Available Languages
   </div>
+  <ul
+    className="list-group document-types"
+  >
+    <li
+      className="list-group-item"
+      key="0"
+    >
+      <span>
+        Abkhazian (ab) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="1"
+    >
+      <span>
+        Afar (aa) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="2"
+    >
+      <span>
+        Afrikaans (af) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="3"
+    >
+      <span>
+        Akan (ak) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="4"
+    >
+      <span>
+        Albanian (sq) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="5"
+    >
+      <span>
+        Amharic (am) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="6"
+    >
+      <span>
+        Arabic (ar) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="7"
+    >
+      <span>
+        Aragonese (an) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="8"
+    >
+      <span>
+        Armenian (hy) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="9"
+    >
+      <span>
+        Assamese (as) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="10"
+    >
+      <span>
+        Avaric (av) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="11"
+    >
+      <span>
+        Avestan (ae) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="12"
+    >
+      <span>
+        Aymara (ay) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="13"
+    >
+      <span>
+        Azerbaijani (az) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="14"
+    >
+      <span>
+        Bambara (bm) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="15"
+    >
+      <span>
+        Bashkir (ba) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="16"
+    >
+      <span>
+        Basque (eu) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="17"
+    >
+      <span>
+        Belarusian (be) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="18"
+    >
+      <span>
+        Bengali (Bangla) (bn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="19"
+    >
+      <span>
+        Bihari (bh) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="20"
+    >
+      <span>
+        Bislama (bi) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="21"
+    >
+      <span>
+        Bosnian (bs) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="22"
+    >
+      <span>
+        Breton (br) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="23"
+    >
+      <span>
+        Bulgarian (bg) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="24"
+    >
+      <span>
+        Burmese (my) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="25"
+    >
+      <span>
+        Catalan (ca) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="26"
+    >
+      <span>
+        Chamorro (ch) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="27"
+    >
+      <span>
+        Chechen (ce) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="28"
+    >
+      <span>
+        Chichewa, Chewa, Nyanja (ny) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="29"
+    >
+      <span>
+        Chinese (zh) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="30"
+    >
+      <span>
+        Chinese (Simplified) (zh-Hans) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="31"
+    >
+      <span>
+        Chinese (Traditional) (zh-Hant) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="32"
+    >
+      <span>
+        Chuvash (cv) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="33"
+    >
+      <span>
+        Cornish (kw) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="34"
+    >
+      <span>
+        Corsican (co) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="35"
+    >
+      <span>
+        Cree (cr) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="36"
+    >
+      <span>
+        Croatian (hr) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="37"
+    >
+      <span>
+        Czech (cs) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="38"
+    >
+      <span>
+        Danish (da) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="39"
+    >
+      <span>
+        Divehi, Dhivehi, Maldivian (dv) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="40"
+    >
+      <span>
+        Dutch (nl) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="41"
+    >
+      <span>
+        Dzongkha (dz) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="42"
+    >
+      <span>
+        Esperanto (eo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="43"
+    >
+      <span>
+        Estonian (et) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="44"
+    >
+      <span>
+        Ewe (ee) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="45"
+    >
+      <span>
+        Faroese (fo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="46"
+    >
+      <span>
+        Fijian (fj) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="47"
+    >
+      <span>
+        Finnish (fi) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="48"
+    >
+      <span>
+        French (fr) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="49"
+    >
+      <span>
+        Fula, Fulah, Pulaar, Pular (ff) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="50"
+    >
+      <span>
+        Galician (gl) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="51"
+    >
+      <span>
+        Gaelic Scottish (gd) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="52"
+    >
+      <span>
+        Gaelic (Manx) (gv) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="53"
+    >
+      <span>
+        Georgian (ka) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="54"
+    >
+      <span>
+        German (de) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="55"
+    >
+      <span>
+        Greek (el) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="56"
+    >
+      <span>
+        Guarani (gn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="57"
+    >
+      <span>
+        Gujarati (gu) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="58"
+    >
+      <span>
+        Haitian Creole (ht) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="59"
+    >
+      <span>
+        Hausa (ha) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="60"
+    >
+      <span>
+        Hebrew (he) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="61"
+    >
+      <span>
+        Herero (hz) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="62"
+    >
+      <span>
+        Hindi (hi) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="63"
+    >
+      <span>
+        Hiri Motu (ho) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="64"
+    >
+      <span>
+        Hungarian (hu) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="65"
+    >
+      <span>
+        Icelandic (is) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="66"
+    >
+      <span>
+        Ido (io) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="67"
+    >
+      <span>
+        Igbo (ig) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="68"
+    >
+      <span>
+        Indonesian (in) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="69"
+    >
+      <span>
+        Interlingua (ia) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="70"
+    >
+      <span>
+        Interlingue (ie) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="71"
+    >
+      <span>
+        Inuktitut (iu) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="72"
+    >
+      <span>
+        Inupiak (ik) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="73"
+    >
+      <span>
+        Irish (ga) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="74"
+    >
+      <span>
+        Italian (it) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="75"
+    >
+      <span>
+        Japanese (ja) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="76"
+    >
+      <span>
+        Javanese (jv) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="77"
+    >
+      <span>
+        Kalaallisut, Greenlandic (kl) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="78"
+    >
+      <span>
+        Kannada (kn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="79"
+    >
+      <span>
+        Kanuri (kr) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="80"
+    >
+      <span>
+        Kashmiri (ks) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="81"
+    >
+      <span>
+        Kazakh (kk) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="82"
+    >
+      <span>
+        Khmer (km) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="83"
+    >
+      <span>
+        Kikuyu (ki) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="84"
+    >
+      <span>
+        Kinyarwanda (Rwanda) (rw) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="85"
+    >
+      <span>
+        Kirundi (rn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="86"
+    >
+      <span>
+        Kyrgyz (ky) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="87"
+    >
+      <span>
+        Komi (kv) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="88"
+    >
+      <span>
+        Kongo (kg) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="89"
+    >
+      <span>
+        Korean (ko) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="90"
+    >
+      <span>
+        Kurdish (ku) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="91"
+    >
+      <span>
+        Kwanyama (kj) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="92"
+    >
+      <span>
+        Lao (lo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="93"
+    >
+      <span>
+        Latin (la) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="94"
+    >
+      <span>
+        Latvian (Lettish) (lv) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="95"
+    >
+      <span>
+        Limburgish (Limburger) (li) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="96"
+    >
+      <span>
+        Lingala (ln) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="97"
+    >
+      <span>
+        Lithuanian (lt) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="98"
+    >
+      <span>
+        Luga-Katanga (lu) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="99"
+    >
+      <span>
+        Luganda, Ganda (lg) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="100"
+    >
+      <span>
+        Luxembourgish (lb) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="101"
+    >
+      <span>
+        Macedonian (mk) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="102"
+    >
+      <span>
+        Malagasy (mg) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="103"
+    >
+      <span>
+        Malay (ms) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="104"
+    >
+      <span>
+        Malayalam (ml) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="105"
+    >
+      <span>
+        Maltese (mt) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="106"
+    >
+      <span>
+        Maori (mi) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="107"
+    >
+      <span>
+        Marathi (mr) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="108"
+    >
+      <span>
+        Marshallese (mh) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="109"
+    >
+      <span>
+        Moldavian (mo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="110"
+    >
+      <span>
+        Mongolian (mn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="111"
+    >
+      <span>
+        Nauru (na) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="112"
+    >
+      <span>
+        Navajo (nv) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="113"
+    >
+      <span>
+        Ndonga (ng) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="114"
+    >
+      <span>
+        Northern Ndebele (nd) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="115"
+    >
+      <span>
+        Nepali (ne) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="116"
+    >
+      <span>
+        Norwegian (no) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="117"
+    >
+      <span>
+        Norwegian bokmål (nb) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="118"
+    >
+      <span>
+        Norwegian nynorsk (nn) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="119"
+    >
+      <span>
+        Occitan (oc) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="120"
+    >
+      <span>
+        Ojibwe (oj) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="121"
+    >
+      <span>
+        Old Church Slavonic, Old Bulgarian (cu) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="122"
+    >
+      <span>
+        Oriya (or) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="123"
+    >
+      <span>
+        Oromo (Afaan Oromo) (om) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="124"
+    >
+      <span>
+        Ossetian (os) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="125"
+    >
+      <span>
+        Pāli (pi) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="126"
+    >
+      <span>
+        Pashto, Pushto (ps) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="127"
+    >
+      <span>
+        Persian (Farsi) (fa) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="128"
+    >
+      <span>
+        Polish (pl) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="129"
+    >
+      <span>
+        Portuguese (pt) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="130"
+    >
+      <span>
+        Punjabi (Eastern) (pa) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="131"
+    >
+      <span>
+        Quechua (qu) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="132"
+    >
+      <span>
+        Romansh (rm) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="133"
+    >
+      <span>
+        Romanian (ro) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="134"
+    >
+      <span>
+        Russian (ru) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="135"
+    >
+      <span>
+        Sami (se) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="136"
+    >
+      <span>
+        Samoan (sm) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="137"
+    >
+      <span>
+        Sango (sg) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="138"
+    >
+      <span>
+        Sanskrit (sa) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="139"
+    >
+      <span>
+        Serbian (sr) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="140"
+    >
+      <span>
+        Serbo-Croatian (sh) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="141"
+    >
+      <span>
+        Sesotho (st) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="142"
+    >
+      <span>
+        Setswana (tn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="143"
+    >
+      <span>
+        Shona (sn) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="144"
+    >
+      <span>
+        Sichuan Yi, Nuosu (ii) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="145"
+    >
+      <span>
+        Sindhi (sd) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="146"
+    >
+      <span>
+        Sinhalese (si) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="147"
+    >
+      <span>
+        Siswati, Swati (ss) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="148"
+    >
+      <span>
+        Slovak (sk) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="149"
+    >
+      <span>
+        Slovenian (sl) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="150"
+    >
+      <span>
+        Somali (so) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="151"
+    >
+      <span>
+        Southern Ndebele (nr) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="152"
+    >
+      <span>
+        Sundanese (su) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="153"
+    >
+      <span>
+        Swahili (Kiswahili) (sw) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="154"
+    >
+      <span>
+        Swedish (sv) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="155"
+    >
+      <span>
+        Tagalog (tl) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="156"
+    >
+      <span>
+        Tahitian (ty) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="157"
+    >
+      <span>
+        Tajik (tg) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="158"
+    >
+      <span>
+        Tamil (ta) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="159"
+    >
+      <span>
+        Tatar (tt) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="160"
+    >
+      <span>
+        Telugu (te) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="161"
+    >
+      <span>
+        Thai (th) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="162"
+    >
+      <span>
+        Tibetan (bo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="163"
+    >
+      <span>
+        Tigrinya (ti) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="164"
+    >
+      <span>
+        Tonga (to) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="165"
+    >
+      <span>
+        Tsonga (ts) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="166"
+    >
+      <span>
+        Turkish (tr) 
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="167"
+    >
+      <span>
+        Turkmen (tk) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="168"
+    >
+      <span>
+        Twi (tw) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="169"
+    >
+      <span>
+        Uyghur (ug) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="170"
+    >
+      <span>
+        Ukrainian (uk) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="171"
+    >
+      <span>
+        Urdu (ur) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="172"
+    >
+      <span>
+        Uzbek (uz) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="173"
+    >
+      <span>
+        Venda (ve) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="174"
+    >
+      <span>
+        Vietnamese (vi) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="175"
+    >
+      <span>
+        Volapük (vo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="176"
+    >
+      <span>
+        Wallon (wa) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="177"
+    >
+      <span>
+        Welsh (cy) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="178"
+    >
+      <span>
+        Wolof (wo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="179"
+    >
+      <span>
+        Western Frisian (fy) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="180"
+    >
+      <span>
+        Xhosa (xh) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="181"
+    >
+      <span>
+        Yiddish (yi) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="182"
+    >
+      <span>
+        Yoruba (yo) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="183"
+    >
+      <span>
+        Zhuang, Chuang (za) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="184"
+    >
+      <span>
+        Zulu (zu) 
+        <Tip>
+          Some adavanced search features may not be available for this language.
+        </Tip>
+      </span>
+      <div
+        className="list-group-item-actions"
+      >
+         
+        <button
+          className="btn btn-success btn-xs template-remove"
+          onClick={[Function]}
+        >
+          <Component
+            icon="plus"
+          />
+           
+          <span>
+            Add language
+          </span>
+        </button>
+      </div>
+    </li>
+  </ul>
 </div>
 `;
-
-exports[`Languages should render Languages component 1`] = `undefined`;

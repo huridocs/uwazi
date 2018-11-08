@@ -58,36 +58,29 @@ export function resetForm() {
 function updateSettings(dispatch) {
   SettingsAPI.get()
   .then((settings) => {
-    updateSettings(dispatch);
     dispatch(actions.set('settings/collection', settings.collection));
   });
 }
 
 export function addLanguage(language) {
-  return (dispatch) => {
-    I18NApi.addLanguage(language)
-    .then(() => {
-      updateSettings(dispatch);
-      notifications.notify(t('System', 'New language added', null, false), 'success')(dispatch);
-    });
-  };
+  return dispatch => I18NApi.addLanguage(language)
+  .then(() => {
+    updateSettings(dispatch);
+    notifications.notify(t('System', 'New language added', null, false), 'success')(dispatch);
+  });
 }
 
 export function deleteLanguage(key) {
-  return (dispatch) => {
-    I18NApi.deleteLanguage(key)
-    .then(() => {
-      updateSettings(dispatch);
-      notifications.notify(t('System', 'Language deleted', null, false), 'success')(dispatch);
-    });
-  };
+  return dispatch => I18NApi.deleteLanguage(key)
+  .then(() => {
+    updateSettings(dispatch);
+    notifications.notify(t('System', 'Language deleted', null, false), 'success')(dispatch);
+  });
 }
 
 export function setDefaultLanguage(key) {
-  return (dispatch) => {
-    I18NApi.setDefaultLanguage(key)
-    .then(() => {
-      notifications.notify(t('System', 'Default language change success', null, false), 'success')(dispatch);
-    });
-  };
+  return dispatch => I18NApi.setDefaultLanguage(key)
+  .then(() => {
+    notifications.notify(t('System', 'Default language change success', null, false), 'success')(dispatch);
+  });
 }

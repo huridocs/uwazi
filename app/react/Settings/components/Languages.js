@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { t, I18NApi } from 'app/I18N';
+import { t, I18NApi, actions } from 'app/I18N';
 import { Icon } from 'UI';
 import { languages as elasticLanguages } from '../../../shared/languagesList.js';
 import Warning from '../../Layout/Warning';
@@ -48,12 +48,12 @@ export class Languages extends Component {
   }
 
   setDefault(language) {
-    I18NApi.setDefaultLanguage(language.key);
+    this.props.setDefaultLanguage(language.key);
   }
 
   deleteLanguage(language) {
     this.context.confirm({
-      accept: () => I18NApi.deleteLanguage(language.key),
+      accept: () => this.props.deleteLanguage(language.key),
       title: 'Confirm delete language',
       message: `Are you sure you want to delete ${language.label} language?
       This action may take some time, can not be undone and will delete all the information in that language.`,
@@ -63,7 +63,7 @@ export class Languages extends Component {
 
   addLanguage(language) {
     this.context.confirm({
-      accept: I18NApi.addLanguage(language),
+      accept: this.props.addLanguage(language),
       title: 'Confirm add language',
       message: 'This action may take some time while we add the extra language to the entire collection.',
       extraConfirm: true,
@@ -87,7 +87,7 @@ export class Languages extends Component {
               </span>
               {language.default ? Languages.defaultLanguage() : ''}
               <div className="list-group-item-actions">
-                {!language.default ? this.setAsDeafultButton() : ''}
+                {!language.default ? this.setAsDeafultButton(language) : ''}
                 <button className="btn btn-danger btn-xs template-remove" onClick={this.deleteLanguage.bind(this, language)}>
                   <Icon icon="trash-alt" />&nbsp;
                   <span>{t('System', 'Delete language')}</span>
@@ -126,6 +126,9 @@ Languages.contextTypes = {
 
 Languages.propTypes = {
   languages: PropTypes.object,
+  addLanguage: PropTypes.func.isRequired,
+  deleteLanguage: PropTypes.func.isRequired,
+  setDefaultLanguage: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps({ settings }) {
@@ -133,7 +136,11 @@ export function mapStateToProps({ settings }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ notify }, dispatch);
+  return bindActionCreators({
+    addLanguage: actions.addLanguage,
+    deleteLanguage: actions.deleteLanguage,
+    setDefaultLanguage: actions.setDefaultLanguage
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Languages);

@@ -27,7 +27,7 @@ export default {
   },
 
   setDefaultLanguage(key) {
-    return api.post('translations/setDefaultLanguage', { key })
+    return api.post('translations/setasdeafult', { key })
     .then(response => response.json);
   }
 };

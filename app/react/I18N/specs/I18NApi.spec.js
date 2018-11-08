@@ -15,7 +15,7 @@ describe('I18NApi', () => {
     .post(`${APIURL}translations/addentry`, { body: JSON.stringify(okResponse) })
     .post(`${APIURL}translations/languages`, { body: JSON.stringify(okResponse) })
     .delete(`${APIURL}translations/languages?key=kl`, { body: JSON.stringify(okResponse) })
-    .post(`${APIURL}translations/setDefaultLanguage`, { body: JSON.stringify(okResponse) });
+    .post(`${APIURL}translations/setasdeafult`, { body: JSON.stringify(okResponse) });
   });
 
   afterEach(() => backend.restore());
@@ -87,7 +87,7 @@ describe('I18NApi', () => {
     it('should post the default language', (done) => {
       I18NApi.setDefaultLanguage('kl')
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}translations/setDefaultLanguage`).body))
+        expect(JSON.parse(backend.lastOptions(`${APIURL}translations/setasdeafult`).body))
         .toEqual({ key: 'kl' });
 
         expect(response).toEqual('ok');

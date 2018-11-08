@@ -1,7 +1,9 @@
 import { actions as formActions } from 'react-redux-form';
 import { store } from 'app/store';
 import Immutable from 'immutable';
+import SettingsAPI from 'app/Settings/SettingsAPI';
 import I18NApi from '../../I18NApi';
+import { actions as basicActions } from 'app/BasicReducer';
 import * as actions from '../I18NActions';
 
 describe('I18NActions', () => {
@@ -63,6 +65,44 @@ describe('I18NActions', () => {
       actions.resetForm()(dispatch);
       expect(formActions.reset).toHaveBeenCalledWith('translationsForm');
       done();
+    });
+  });
+
+  describe('addLanguage', () => {
+    it('should request the I18NApi to add a language', (done) => {
+      spyOn(I18NApi, 'addLanguage').and.returnValue(Promise.resolve());
+      spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve({ collection: 'updated settings' }));
+      spyOn(basicActions, 'set');
+      actions.addLanguage({ label: 'Español', key: 'es' })(dispatch).then(() => {
+        expect(I18NApi.addLanguage).toHaveBeenCalledWith({ label: 'Español', key: 'es' });
+        expect(SettingsAPI.get).toHaveBeenCalled();
+        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', 'updated settings');
+        done();
+      });
+    });
+  });
+
+  describe('deleteLanguage', () => {
+    it('should request the I18NApi to add a language', (done) => {
+      spyOn(I18NApi, 'deleteLanguage').and.returnValue(Promise.resolve());
+      spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve({ collection: 'updated settings' }));
+      spyOn(basicActions, 'set');
+      actions.deleteLanguage('es')(dispatch).then(() => {
+        expect(I18NApi.deleteLanguage).toHaveBeenCalledWith('es');
+        expect(SettingsAPI.get).toHaveBeenCalled();
+        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', 'updated settings');
+        done();
+      });
+    });
+  });
+
+  describe('setDefaultLanguage', () => {
+    it('should request the I18NApi to add a language', (done) => {
+      spyOn(I18NApi, 'setDefaultLanguage').and.returnValue(Promise.resolve());
+      actions.setDefaultLanguage('es')(dispatch).then(() => {
+        expect(I18NApi.setDefaultLanguage).toHaveBeenCalledWith('es');
+        done();
+      });
     });
   });
 });
