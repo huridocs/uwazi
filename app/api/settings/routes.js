@@ -15,6 +15,7 @@ export default (app) => {
       private: Joi.boolean(),
       mailerConfig: Joi.string().allow(''),
       analyticsTrackingId: Joi.string().allow(''),
+      matomoConfig: Joi.string().allow(''),
       dateFormat: Joi.string().allow(''),
       custom: Joi.any(),
       customCSS: Joi.string().allow(''),
