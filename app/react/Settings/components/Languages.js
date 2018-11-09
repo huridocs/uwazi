@@ -63,7 +63,7 @@ export class Languages extends Component {
 
   addLanguage(language) {
     this.context.confirm({
-      accept: this.props.addLanguage(language),
+      accept: () => this.props.addLanguage(language),
       title: 'Confirm add language',
       message: 'This action may take some time while we add the extra language to the entire collection.',
       extraConfirm: true,
