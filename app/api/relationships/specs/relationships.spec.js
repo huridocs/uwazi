@@ -1,11 +1,11 @@
 /* eslint-disable max-nested-callbacks */
-import relationships from '../relationships';
+import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
-import db from 'api/utils/testing_db';
-import fixtures, { connectionID1, hub1, hub7, hub2, sharedId1 } from './fixtures';
-import { relation1, relation2, template, sharedId4 } from './fixtures';
+import relationships from '../relationships';
+import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, hub1, hub2, hub7, hub12, relation1, relation2,
+  template, sharedId1, sharedId3, sharedId4, sharedId5, sharedId7 } from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
@@ -184,7 +184,7 @@ describe('relationships', () => {
         .catch(catchErrors(done));
       });
 
-      it('should call entities top update the metadata', (done) => {
+      it('should call entities to update the metadata', (done) => {
         relationships.save({ entity: 'entity3', hub: hub1 }, 'en')
         .then(() => {
           expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
@@ -513,19 +513,66 @@ describe('relationships', () => {
   });
 
   describe('delete()', () => {
-    it('should delete the relationship in all languages and dont leave lone connection in the hub', done =>
-      relationships.delete({ _id: connectionID1 }, 'en')
+    beforeEach(async () => {
+      await relationships.delete({ _id: connectionID1 }, 'en');
+    });
+
+    function expectLength(result, source, target, length) {
+      expect(result.filter(i => i[source].toString() === target.toString()).length).toBe(length);
+    }
+
+    it('should delete the relationship in all languages', (done) => {
+      relationships.get({ hub: hub7 })
+      .then((result) => {
+        expect(result.length).toBe(5);
+        expectLength(result, 'sharedId', sharedId3, 2);
+        expectLength(result, 'sharedId', sharedId5, 2);
+        expectLength(result, '_id', connectionID3, 1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should not leave a lone connection in the hub', (done) => {
+      relationships.delete({ _id: connectionID3 }, 'en')
+      .then(() => relationships.delete({ _id: connectionID2 }, 'es'))
       .then(() => relationships.get({ hub: hub7 }))
       .then((result) => {
         expect(result).toEqual([]);
         done();
       })
-      .catch(catchErrors(done)));
+      .catch(catchErrors(done));
+    });
 
-    it('should call entities top update the metadata', (done) => {
+    it('should not delete the hub when other languages have more connections (because of text references)', (done) => {
+      relationships.delete({ _id: connectionID2 }, 'es')
+      .then(() => relationships.get({ hub: hub7 }))
+      .then((result) => {
+        expect(result.length).toBe(3);
+        expectLength(result, 'sharedId', sharedId3, 2);
+        expectLength(result, '_id', connectionID3, 1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should not delete the hub when specific combos yield a hub with less than 2 connections in every language', (done) => {
+      relationships.delete({ _id: connectionID4 }, 'es')
+      .then(() => relationships.get({ hub: hub12 }))
+      .then((result) => {
+        expect(result.length).toBe(3);
+        expectLength(result, 'sharedId', sharedId7, 2);
+        expectLength(result, 'entity', 'doc2', 1);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should call entities to update the metadata', (done) => {
       relationships.delete({ entity: 'bruceWayne' }, 'en')
       .then(() => {
         expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne', 'IHaveNoTemplate'], 'en');
+        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne', 'IHaveNoTemplate'], 'es');
         done();
       });
     });
