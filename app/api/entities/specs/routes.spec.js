@@ -141,6 +141,23 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    it('should allow not fetching the relationships', async () => {
+      const expectedEntity = { sharedId: 'sharedId', published: true };
+
+      spyOn(entities, 'getWithRelationships');
+      spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
+
+      const req = {
+        query: { _id: 'sharedId', omitRelationships: true },
+        language: 'lang'
+      };
+
+      const { rows: [result] } = await routes.get('/api/entities', req);
+      expect(result).toBe(expectedEntity);
+      expect(entities.getWithRelationships).not.toHaveBeenCalled();
+      expect(entities.get).toHaveBeenCalledWith({ sharedId: 'sharedId', language: 'lang' });
+    });
+
     describe('when the document does not exist', () => {
       it('should retunr a 404', (done) => {
         spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([]));
