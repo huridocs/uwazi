@@ -45,16 +45,23 @@ export default {
     {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1},
     {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7},
     {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
-    {entity: 'entity_id', hub: hub7, template: relation1},
+
+    {entity: 'entity2', hub: hub2, template: relation2},
+    {entity: 'entity3', hub: hub2},
+    {entity: 'entity2', hub: hub11, template: relation2},
+    {entity: 'entity3', hub: hub11},
+
+    {hub: hub12, _id: connectionID4, entity: 'doc1', range: { end: 5, text: 'not empty' }},
+    {hub: hub12, entity: 'entity1'},
+    {hub: hub12, entity: 'doc2', range: { end: 9, text: 'another text' }},
+
+    {entity: 'bruceWayne', hub: hub9},
+    {entity: 'thomasWayne', hub: hub9, template: family},
+    {entity: 'IHaveNoTemplate', hub: hub9, template: null},
     //
     {entity: 'entity1', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
     {entity: 'entity2', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
 
-    {entity: 'entity2', hub: hub2, template: relation2, sharedId: db.id(), language: 'en'},
-    {entity: 'entity3', hub: hub2, language: 'en', sharedId: sharedId4},
-
-    {entity: 'entity2', hub: hub11, template: relation2, sharedId: db.id(), language: 'ru'},
-    {entity: 'entity3', hub: hub11, language: 'en', sharedId: db.id()},
 
     {entity: 'entity2', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
     {entity: 'doc4', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
@@ -72,14 +79,7 @@ export default {
     {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
     {entity: 'entity_id', hub: hub8, sharedId: db.id()},
-    {entity: 'bruceWayne', hub: hub9, sharedId: db.id(), language: 'en'},
-    {entity: 'thomasWayne', hub: hub9, template: family, sharedId: db.id(), language: 'en'},
-    {entity: 'IHaveNoTemplate', hub: hub9, template: null, sharedId: db.id(), language: 'en'},
 
-    {hub: hub12, entity: 'entity1', sharedId: sharedId7, language: 'es' },
-    {hub: hub12, entity: 'entity1', sharedId: sharedId7, language: 'en' },
-    {hub: hub12, _id: connectionID4, entity: 'doc1', sharedId: db.id(), range: { end: 5, text: 'not empty' }, language: 'es' },
-    {hub: hub12, entity: 'doc2', sharedId: db.id(), range: { end: 9, text: 'another text' }, language: 'en' },
   ],
   templates: [
     {_id: templateWithoutProperties},
@@ -183,6 +183,7 @@ export {
   hub8,
   hub9,
   hub10,
+  hub11,
   hub12,
   family,
   friend,

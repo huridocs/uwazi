@@ -395,43 +395,34 @@ export default {
     });
   },
 
-  delete(relationQuery, language, updateMetdata = true) {
+  async delete(relationQuery, language, updateMetdata = true) {
     if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
 
-//     let languages;
-//     let relation;
-    return model.delete(relationQuery);
+    const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
+    const relationsToDelete = await model.get(relationQuery, 'hub');
+    const hubsAffected = relationsToDelete.map(r => r.hub).filter(unique);
 
-    // return Promise.all([settings.get(), model.get(relationQuery)])
-    // .then(([_settings, relationships]) => {
-    //   ({ languages } = _settings);
-    //   [relation] = relationships;
-    //   return relationships;
-    // })
-    // .then(relationships => Promise.all(relationships.map(_relation => model.get({ hub: _relation.hub }))))
-    // .then(hubsRelationships => Promise.all(hubsRelationships.map((hub) => {
-    //   let deleteAction = determineDeleteAction(hub[0].hub, relation, relationQuery);
+    const { languages } = await settings.get();
+    const entitiesAffected = await model.db.aggregate([
+      { $match: { hub: { $in: hubsAffected } } },
+      { $group: { _id: '$entity' } },
+    ]);
 
-    //   if (updateMetdata) {
-    //     deleteAction = deleteAction.then(() => Promise.all(languages.map(l => this.updateEntitiesMetadata(hub.map(r => r.entity), l.key))));
-    //   }
+    await model.delete(relationQuery);
 
-    //   return deleteAction
-    //   .then(response => Promise.all([response, model.get({ hub: hub[0].hub })]))
-    //   .then(([response, hubRelationships]) => {
-    //     const shouldDeleteHub = hubsRelationships.length < 2;
-    //     const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
-    //       hubRelationships.filter(r => r.language === currentLanguage.key).length < 2 && shouldDelete, true
-    //     );
-    //     if (shouldDeleteHub) {
-    //       return model.delete({ hub: hub[0].hub });
-    //     }
+    const hubsToDelete = await model.db.aggregate([
+      { $match: { hub: { $in: hubsAffected } } },
+      { $group: { _id: '$hub', length: { $sum: 1 } } },
+      { $match: { length: { $lt: 2 } } }
+    ]);
 
-    //     return Promise.resolve(response);
-    //   });
-    // })));
+    await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
+
+    if (updateMetdata) {
+      await Promise.all(languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key)));
+    }
   },
 
   deleteTextReferences(sharedId, language) {

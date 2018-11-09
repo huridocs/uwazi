@@ -4,7 +4,7 @@ import entities from 'api/entities/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import relationships from '../relationships';
-import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, hub1, hub2, hub7, hub12, relation1, relation2,
+import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, hub1, hub2, hub7, hub11, hub12, relation1, relation2,
   template, sharedId1, sharedId3, sharedId4, sharedId5, sharedId7 } from './fixtures';
 import search from '../../search/search';
 
@@ -451,75 +451,54 @@ describe('relationships', () => {
   });
 
   describe('delete()', () => {
-    beforeEach(async () => {
-      await relationships.delete({ _id: connectionID1 }, 'en');
-    });
-
-    function expectLength(result, source, target, length) {
-      expect(result.filter(i => i[source].toString() === target.toString()).length).toBe(length);
-    }
-
     fit('should delete the relationship', async () => {
+      const response = await relationships.delete({ _id: connectionID1 }, 'en');
       const hub7Connections = await relationships.get({ hub: hub7 });
-      // expect(hub7Connections.length).toBe(4);
       expect(hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length).toBe(0);
+      expect(response).toBe('deleted documents response mock');
     });
 
-    it('should not leave a lone connection in the hub', (done) => {
-      relationships.delete({ _id: connectionID3 }, 'en')
-      .then(() => relationships.delete({ _id: connectionID2 }, 'es'))
-      .then(() => relationships.get({ hub: hub7 }))
-      .then((result) => {
-        expect(result).toEqual([]);
-        done();
-      })
-      .catch(catchErrors(done));
+    fit('should not leave a lone connection in the hub', async () => {
+      await relationships.delete({ _id: connectionID1 }, 'en');
+      await relationships.delete({ _id: connectionID3 }, 'en');
+      await relationships.delete({ _id: connectionID2 }, 'en');
+
+      const hubRelationships = await relationships.get({ hub: hub7 });
+
+      expect(hubRelationships).toEqual([]);
     });
 
-    it('should not delete the hub when other languages have more connections (because of text references)', (done) => {
-      relationships.delete({ _id: connectionID2 }, 'es')
-      .then(() => relationships.get({ hub: hub7 }))
-      .then((result) => {
-        expect(result.length).toBe(3);
-        expectLength(result, 'sharedId', sharedId3, 2);
-        expectLength(result, '_id', connectionID3, 1);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
+    describe('when deleting relations for an entity', () => {
+      fit('should not leave single relationship hubs', async () => {
+        await relationships.delete({ entity: 'entity3' }, 'en');
 
-    it('should not delete the hub when specific combos yield a hub with less than 2 connections in every language', (done) => {
-      relationships.delete({ _id: connectionID4 }, 'es')
-      .then(() => relationships.get({ hub: hub12 }))
-      .then((result) => {
-        expect(result.length).toBe(3);
-        expectLength(result, 'sharedId', sharedId7, 2);
-        expectLength(result, 'entity', 'doc2', 1);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
+        const hub2Relationships = await relationships.get({ hub: hub2 });
+        const hub11Relationships = await relationships.get({ hub: hub11 });
 
-    it('should call entities to update the metadata', (done) => {
-      relationships.delete({ entity: 'bruceWayne' }, 'en')
-      .then(() => {
-        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne', 'IHaveNoTemplate'], 'en');
-        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['bruceWayne', 'thomasWayne', 'IHaveNoTemplate'], 'es');
-        done();
+        expect(hub2Relationships).toEqual([]);
+        expect(hub11Relationships).toEqual([]);
       });
     });
 
-    it('should delete all the relationships for a given entity', done =>
-      relationships.delete({ entity: 'entity2' })
-      .then(() => relationships.get({ entity: 'entity2' }))
-      .then((result) => {
-        expect(result).toEqual([]);
-        done();
-      })
-      .catch(catchErrors(done)));
+    fit('should not delete the hub when specific combos yield a hub with less than 2 connections', async () => {
+      await relationships.delete({ _id: connectionID4 }, 'es');
+
+      const hubRelationships = await relationships.get({ hub: hub12 });
+
+      expect(hubRelationships.length).toBe(2);
+      expect(hubRelationships.filter(c => c.entity === 'entity1').length).toBe(1);
+      expect(hubRelationships.filter(c => c.entity === 'doc2').length).toBe(1);
+    });
+
+    fit('should call entities to update the metadata', async () => {
+      await relationships.delete({ entity: 'bruceWayne' }, 'en');
+
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
+    });
 
     describe('when there is no condition', () => {
-      it('should throw an error', (done) => {
+      fit('should throw an error', (done) => {
         relationships.delete()
         .then(() => {
           done.fail('Should throw an error');
