@@ -40,7 +40,8 @@ export default (app) => {
   );
 
   app.get('/api/entities', (req, res, next) => {
-    entities.getWithRelationships({ sharedId: req.query._id, language: req.language })
+    const action = req.query.omitRelationships ? 'get' : 'getWithRelationships';
+    entities[action]({ sharedId: req.query._id, language: req.language })
     .then((_entities) => {
       if (!_entities.length || (!_entities[0].published && !req.user)) {
         res.status(404);

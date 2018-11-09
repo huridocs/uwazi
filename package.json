@@ -33,7 +33,7 @@
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
     "reindex": "node run.js ./database/reindex_elastic.js",
     "health-check": "node run.js ./database/health_check.js",
-    "blank-state": "./database/blank_state.sh; yarn reindex",
+    "blank-state": "./database/blank_state.sh; yarn migrate; yarn reindex",
     "admin-user": "./database/admin_user.sh",
     "fixtures": "cd uwazi-fixtures; ./restore.sh; yarn reindex",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
