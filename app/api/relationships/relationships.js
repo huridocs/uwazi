@@ -205,31 +205,10 @@ export default {
     return model.get({ sharedId });
   },
 
-  bulk(bulkData, language) {
-    const saveActions = bulkData.save.map(reference => this.save(reference, language), false);
-    const deleteActions = bulkData.delete.map(reference => this.delete(reference, language), false);
-    const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
-
-    const hubsAffectedBySave = bulkData.save.map((item) => {
-      if (Array.isArray(item)) {
-        return item[0].hub;
-      }
-      return item.hub;
-    }).filter(unique);
-
-    const hubsAffectedByDelete = bulkData.delete.map(item => item.hub).filter(unique);
-    const hubsAffected = hubsAffectedBySave.concat(hubsAffectedByDelete).filter(unique);
-    const entitiesAffectedByDelete = bulkData.delete.map(item => item.entity).filter(unique);
-
-    return Promise.all(saveActions.concat(deleteActions))
-    .then(bulkResponse => Promise.all(hubsAffected.map(hubid => this.getHub(hubid, language)))
-    .then((hubs) => {
-      const entitiesAffected = hubs.reduce((result, hub) => result.concat(hub.map(relationship => relationship.entity)), [])
-      .concat(entitiesAffectedByDelete).filter(unique);
-
-      return entities.updateMetdataFromRelationships(entitiesAffected, language)
-      .then(() => bulkResponse);
-    }));
+  async bulk(bulkData, language) {
+    await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
+    await Promise.all(bulkData.delete.map(reference => this.delete(reference, language)));
+    return { success: 'ok' };
   },
 
   async createRelationship(relationship, language) {
@@ -410,7 +389,7 @@ export default {
       { $group: { _id: '$entity' } },
     ]);
 
-    await model.delete(relationQuery);
+    const response = await model.delete(relationQuery);
 
     const hubsToDelete = await model.db.aggregate([
       { $match: { hub: { $in: hubsAffected } } },
@@ -423,6 +402,8 @@ export default {
     if (updateMetdata) {
       await Promise.all(languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key)));
     }
+
+    return response;
   },
 
   deleteTextReferences(sharedId, language) {

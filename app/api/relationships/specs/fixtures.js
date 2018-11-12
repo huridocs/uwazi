@@ -5,6 +5,9 @@ const connectionID2 = db.id();
 const connectionID3 = db.id();
 const connectionID4 = db.id();
 const connectionID5 = db.id();
+const connectionID6 = db.id();
+const connectionID7 = db.id();
+
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
@@ -48,8 +51,8 @@ export default {
 
     {entity: 'entity2', hub: hub2, template: relation2},
     {entity: 'entity3', hub: hub2},
-    {entity: 'entity2', hub: hub11, template: relation2},
-    {entity: 'entity3', hub: hub11},
+    {_id: connectionID6, entity: 'entity2', hub: hub11, template: relation2},
+    {_id: connectionID7, entity: 'entity3', hub: hub11},
 
     {hub: hub12, _id: connectionID4, entity: 'doc1', range: { end: 5, text: 'not empty' }},
     {hub: hub12, entity: 'entity1'},
@@ -166,6 +169,8 @@ export {
   connectionID3,
   connectionID4,
   connectionID5,
+  connectionID6,
+  connectionID7,
   selectValueID,
   value1ID,
   value2ID,

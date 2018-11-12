@@ -4,8 +4,8 @@ import entities from 'api/entities/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import relationships from '../relationships';
-import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, hub1, hub2, hub7, hub11, hub12, relation1, relation2,
-  template, sharedId1, sharedId3, sharedId4, sharedId5, sharedId7 } from './fixtures';
+import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6, connectionID7,
+  hub1, hub2, hub7, hub11, hub12, relation1, relation2, template, sharedId4 } from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
@@ -153,21 +153,33 @@ describe('relationships', () => {
       // spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
     });
 
-    it('should call save and delete and then ask entities to update the ones affected by the changes', async () => {
+    fit('should save or delete the relationships', async () => {
       const data = {
         save: [{ _id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: { text: 'changed text' } }],
         delete: [{ _id: connectionID2 }, { _id: connectionID3 }]
       };
-      await relationships.bulk(data, 'en');
+
+      const response = await relationships.bulk(data, 'en');
+      expect(response).toEqual({ success: 'ok' });
+
       const savedReference = await relationships.getById(connectionID5);
       expect(savedReference.range.text).toBe('changed text');
 
       const deletedReference2 = await relationships.getById(connectionID2);
-      expect(deletedReference2).not.toBeDefined();
+      expect(deletedReference2).toBe(null);
       const deletedReference3 = await relationships.getById(connectionID3);
-      expect(deletedReference3).not.toBeDefined();
+      expect(deletedReference3).toBe(null);
+    });
 
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity3', 'entity2', 'entity1', '123', '456'], 'en');
+    fit('should first save and then delete to prevent sidefects of hub sanitizing', async () => {
+      const data = {
+        save: [{ entity: 'new relationship entity', hub: hub11 }],
+        delete: [{ _id: connectionID6 }]
+      };
+
+      await relationships.bulk(data, 'en');
+      const hubRelationships = await relationships.getHub(hub11);
+      expect(hubRelationships.length).toBe(2);
     });
   });
 
@@ -455,7 +467,7 @@ describe('relationships', () => {
       const response = await relationships.delete({ _id: connectionID1 }, 'en');
       const hub7Connections = await relationships.get({ hub: hub7 });
       expect(hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length).toBe(0);
-      expect(response).toBe('deleted documents response mock');
+      expect(JSON.parse(response).ok).toBe(1);
     });
 
     fit('should not leave a lone connection in the hub', async () => {
