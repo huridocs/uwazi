@@ -173,6 +173,7 @@ const search = {
       const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
       .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+      .filterByTemplate(query.types)
       .filterById(query.ids)
       .language(language);
 
@@ -226,7 +227,6 @@ const search = {
       documentsQuery.filterMetadataByFullText(textSearchFilters);
       documentsQuery.filterMetadata(filters);
       documentsQuery.aggregations(aggregations, dictionaries);
-      documentsQuery.filterByTemplate(query.types);
 
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
