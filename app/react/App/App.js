@@ -17,6 +17,7 @@ import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
+import Matomo from './Matomo';
 
 loadIcons();
 
@@ -84,6 +85,7 @@ class App extends Component {
             <TranslateForm/>
             {this.props.children}
             <GoogleAnalytics/>
+            <Matomo/>
           </div>
         </div>
       </div>
