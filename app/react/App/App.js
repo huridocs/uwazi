@@ -17,6 +17,7 @@ import Menu from './Menu';
 import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
+import Matomo from './Matomo';
 
 loadIcons();
 
@@ -77,13 +78,14 @@ class App extends Component {
             </button>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
-            <Menu location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
+            <Menu language={this.context.language} location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
             <TranslateForm/>
             {this.props.children}
             <GoogleAnalytics/>
+            <Matomo/>
           </div>
         </div>
       </div>
@@ -104,7 +106,8 @@ App.childContextTypes = {
 
 App.contextTypes = {
   getUser: PropTypes.func,
-  router: PropTypes.object
+  router: PropTypes.object,
+  language: PropTypes.string,
 };
 
 export default App;

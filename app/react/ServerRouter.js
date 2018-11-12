@@ -24,7 +24,7 @@ import handleError from '../api/utils/handleError';
 
 let assets = {};
 
-function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false) {
+function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false, language) {
   let initialStore = createStore({});
 
   if (isRedux) {
@@ -37,7 +37,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   Translate.resetCachedTranslation();
   const componentHtml = renderToString(
     <Provider store={initialStore}>
-      <CustomProvider initialData={initialData} user={user}>
+      <CustomProvider initialData={initialData} user={user} language={language}>
         <Component {...componentProps} />
       </CustomProvider>
     </Provider>
@@ -52,7 +52,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
   }
 
   return `<!doctype html>\n${renderToString(
-    <Root content={componentHtml} head={head} user={user} reduxData={reduxData} assets={assets}/>
+    <Root language={language} content={componentHtml} head={head} user={user} reduxData={reduxData} assets={assets}/>
   )}`;
 }
 
@@ -83,7 +83,7 @@ function handleRoute(res, renderProps, req) {
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
-    const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux);
+    const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux, req.language);
     res.status(200).send(wholeHtml);
   }
 
@@ -102,8 +102,7 @@ function handleRoute(res, renderProps, req) {
     return settingsApi.get()
     .then((settings) => {
       const { languages } = settings;
-      const path = req.url;
-      locale = I18NUtils.getLocale(path, languages, req.cookies);
+      locale = I18NUtils.getLocale(req.language, languages, req.cookies);
       api.locale(locale);
 
       return settings;

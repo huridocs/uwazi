@@ -69,6 +69,9 @@ export default (app) => {
         throw createError('entitiy does not exist', 404);
       }
       const file = response.attachments.find(a => a.filename === req.query.file);
+      if (!file) {
+        throw createError('file not found', 404);
+      }
       const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
       res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
     })

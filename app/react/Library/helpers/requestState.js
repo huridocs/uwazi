@@ -21,31 +21,31 @@ function processQuery(_query, globalResources, key) {
   if (key === 'markers') {
     query.geolocation = true;
   }
-
-  return query;
+  const { userSelectedSorting, ...sanitizedQuery } = query;
+  return sanitizedQuery;
 }
 
-export default function requestState(params, _query = {}, globalResources, key = 'documents') {
-  const { userSelectedSorting, ...query } = processQuery(_query, globalResources, key);
+export default function requestState(params, _query = {}, globalResources) {
+  const documentsQuery = processQuery(_query, globalResources);
+  const markersQuery = processQuery(_query, globalResources, 'markers');
 
-  return api.search(query)
-  .then((response) => {
+  return Promise.all([api.search(documentsQuery), api.search(markersQuery)])
+  .then(([documents, markers]) => {
     const filterState = libraryHelpers.URLQueryToState(
-      query,
+      documentsQuery,
       globalResources.templates.toJS(),
       globalResources.thesauris.toJS(),
       globalResources.relationTypes.toJS()
     );
     const state = {
       library: {
-        filters: { documentTypes: query.types || [], properties: filterState.properties },
-        aggregations: response.aggregations,
+        filters: { documentTypes: documentsQuery.types || [], properties: filterState.properties },
+        aggregations: documents.aggregations,
         search: filterState.search,
-        documents: { rows: [] },
-        markers: { rows: [] }
+        documents,
+        markers
       }
     };
-    state.library[key] = response;
     return state;
   });
 }

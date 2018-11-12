@@ -1,5 +1,5 @@
-import {browserHistory} from 'react-router';
-import {actions as formActions} from 'react-redux-form';
+import { browserHistory } from 'react-router';
+import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
 import * as actions from 'app/Library/actions/filterActions';
@@ -10,9 +10,9 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as types from 'app/Library/actions/actionTypes';
 
 describe('filterActions', () => {
-  let templates = ['templates'];
-  let thesauris = ['thesauris'];
-  let documentTypes = ['a', 'b'];
+  const templates = ['templates'];
+  const thesauris = ['thesauris'];
+  const documentTypes = ['a', 'b'];
   let libraryFilters;
   let dispatch;
   let getState;
@@ -21,8 +21,8 @@ describe('filterActions', () => {
   let filtersState;
 
   beforeEach(() => {
-    libraryFilters = [{name: 'author', filter: true}, {name: 'country', filter: true}];
-    search = {searchTerm: '', filters: {author: 'RR Martin', country: ''}};
+    libraryFilters = [{ name: 'author', filter: true }, { name: 'country', filter: true }];
+    search = { searchTerm: '', filters: { author: 'RR Martin', country: '' } };
     filtersState = {
       documentTypes,
       properties: libraryFilters,
@@ -48,7 +48,7 @@ describe('filterActions', () => {
 
   describe('filterDocumentTypes', () => {
     beforeEach(() => {
-      spyOn(prioritySortingCriteria, 'get').and.returnValue({sort: 'metadata.date', order: 'desc'});
+      spyOn(prioritySortingCriteria, 'get').and.returnValue({ sort: 'metadata.date', order: 'desc' });
     });
 
     it('should perform a search with the filters and prioritySortingCriteria', () => {
@@ -56,15 +56,15 @@ describe('filterActions', () => {
       store.library.search.order = 'desc';
       store.library.selectedSorting = 'selectedSorting';
       store.templates = Immutable.fromJS([
-        {_id: 'a', properties: [{filter: true, type: 'date', name: 'date'}]},
-        {_id: 'b'}
+        { _id: 'a', properties: [{ filter: true, type: 'date', name: 'date' }] },
+        { _id: 'b' }
       ]);
 
       spyOn(libraryActions, 'searchDocuments');
       actions.filterDocumentTypes(['a'], 'library')(dispatch, getState);
 
       expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
-        currentCriteria: {sort: 'metadata.date', order: 'desc'},
+        currentCriteria: { sort: 'metadata.date', order: 'desc' },
         filteredTemplates: ['a'],
         templates: store.templates,
         selectedSorting: 'selectedSorting'
@@ -74,12 +74,12 @@ describe('filterActions', () => {
 
       expect(searchParam.search.sort).toBe('metadata.date');
       expect(searchParam.search.order).toBe('desc');
-      expect(searchParam.filters).toEqual({documentTypes: ['a'], properties: libraryFilters});
+      expect(searchParam.filters).toEqual({ documentTypes: ['a'], properties: libraryFilters });
     });
   });
 
   describe('resetFilters', () => {
-    it('should deactivate all the properties and documentTypes', () => {
+    it('should deactivate all the properties, documentTypes and searchTerm', () => {
       spyOn(browserHistory, 'push');
       actions.resetFilters('library')(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
@@ -87,15 +87,16 @@ describe('filterActions', () => {
         libraryFilters: [],
         documentTypes: []
       });
+      expect(dispatch).toHaveBeenCalledWith(formActions.load('library.search', { searchTerm: '' }));
     });
 
     it('should perform a search with the filters reset', () => {
-      let searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
+      const searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
       const storeKey = 'library';
       spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
       actions.resetFilters(storeKey)(dispatch, getState);
 
-      expect(libraryActions.searchDocuments).toHaveBeenCalledWith({search}, storeKey);
+      expect(libraryActions.searchDocuments).toHaveBeenCalledWith({ search }, storeKey);
       expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);
     });
   });
@@ -106,8 +107,8 @@ describe('filterActions', () => {
         actions.toggleFilter('author', libraryFilters)(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({
           type: types.UPDATE_LIBRARY_FILTERS,
-          libraryFilters: [{name: 'author', filter: true, active: true},
-          {name: 'country', filter: true}]
+          libraryFilters: [{ name: 'author', filter: true, active: true },
+          { name: 'country', filter: true }]
         });
       });
     });
@@ -120,8 +121,8 @@ describe('filterActions', () => {
         actions.toggleFilter('author', libraryFilters)(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith({
           type: types.UPDATE_LIBRARY_FILTERS,
-          libraryFilters: [{name: 'author', filter: true, active: false},
-          {name: 'country', filter: true}]
+          libraryFilters: [{ name: 'author', filter: true, active: false },
+          { name: 'country', filter: true }]
         });
       });
     });
