@@ -1,6 +1,6 @@
 {
   "name": "Uwazi",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "main": "server.js",
   "repository": {
