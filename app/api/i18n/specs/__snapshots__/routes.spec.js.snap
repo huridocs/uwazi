@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`i18n translations routes POST /api/translations/setasdeafult should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "key": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
 exports[`i18n translations routes POST should have a validation schema 1`] = `
 Object {
   "children": Object {

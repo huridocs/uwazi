@@ -1,6 +1,7 @@
 import Joi from 'joi';
 
 import { validateRequest } from 'api/utils';
+import settings from 'api/settings';
 
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
@@ -52,47 +53,30 @@ export default (app) => {
     }).required()),
 
     (req, res, next) => {
-      translations.save(req.body)
+      settings.setDefaultLanguage(req.body.key)
       .then((response) => {
-        req.io.sockets.emit('translationsChange', response);
-        res.json('ok');
+        req.io.sockets.emit('updateSettings', response);
+        res.json(response);
       })
       .catch(next);
     }
   );
 
   app.post(
-    '/api/translations/setasdeafult',
+    '/api/translations/addlanguage',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
       key: Joi.string(),
+      label: Joi.string(),
     }).required()),
 
     (req, res, next) => {
-      translations.save(req.body)
+      settings.addLanguage(req.body)
       .then((response) => {
-        // req.io.sockets.emit('updateSettings', response);
-        res.json('ok');
+        req.io.sockets.emit('updateSettings', response);
+        res.json(response);
       })
       .catch(next);
     }
   );
-
-  // app.post(
-  //   '/api/translations/addentry',
-
-  //   needsAuthorization(),
-
-  //   validateRequest(Joi.object().keys({
-  //     context: Joi.string().required(),
-  //     key: Joi.string().required(),
-  //     value: Joi.string().required(),
-  //   }).required()),
-
-  //   (req, res, next) => {
-  //     translations.addEntry(req.body.context, req.body.key, req.body.value)
-  //     .then(response => res.json(response))
-  //     .catch(next);
-  //   }
-  // );
 };

@@ -326,6 +326,11 @@ const search = {
   delete(entity) {
     const id = entity._id.toString();
     return elastic.delete({ index: elasticIndex, type: 'entity', id });
+  },
+
+  deleteLanguage(language) {
+    const query = { query: { match: { language } } };
+    return elastic.deleteByQuery({ index: elasticIndex, body: query });
   }
 };
 

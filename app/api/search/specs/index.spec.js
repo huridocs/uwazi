@@ -114,4 +114,15 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('deleteLanguage', () => {
+    fit('should delete the index', (done) => {
+      search.deleteLanguage('en')
+      .then(() => search.search({}, 'en'))
+      .then((results) => {
+        expect(results.rows.length).toBe(0);
+        done();
+      });
+    });
+  });
 });

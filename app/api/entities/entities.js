@@ -448,5 +448,47 @@ export default {
     });
   },
 
+  async addLanguage(language) {
+    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
+    if (lanuageTranslationAlreadyExists) {
+      return Promise.resolve();
+    }
+
+    const { languages } = await settings.get();
+
+    const defaultLanguage = languages.find(l => l.default).key;
+
+    const duplicate = (offset, totalRows) => {
+      const limit = 200;
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get({ language: defaultLanguage }, null, { skip: offset, limit: 1 })
+      .then((entities) => {
+        const newLanguageEntities = entities.map((_entity) => {
+          const entity = Object.assign({}, _entity);
+          delete entity._id;
+          delete entity.__v;
+          entity.language = language;
+          entity.mongoLanguage = language;
+          return entity;
+        });
+
+        return this.save(newLanguageEntities);
+      })
+      .then(() => duplicate(offset + limit, totalRows));
+    };
+
+    return this.count({ language: defaultLanguage })
+    .then(totalRows => duplicate(0, totalRows))
+    .then(() => this.indexEntities({ language }));
+  },
+
+  async removeLanguage(locale) {
+    return model.delete({ locale })
+    .then(() => search.deleteLanguage(locale));
+  },
+
   count: model.count
 };
