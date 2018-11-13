@@ -178,7 +178,22 @@ export default {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return relationships.map((_relationship) => {
+
+        const filteredRelationships = relationships.filter((r) => {
+          if (r.filename) {
+            return r.filename === connectedDocuments[r.entity].file.filename;
+          }
+          return true;
+        });
+
+        const hubRelationshipsCount = filteredRelationships.reduce((data, r) => {
+          data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1;
+          return data;
+        }, {});
+
+        const finalRelationships = filteredRelationships.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
+
+        return finalRelationships.map((_relationship) => {
           const relationship = Object.assign({}, { template: null }, _relationship);
 
           if (withEntityData) {

@@ -46,8 +46,21 @@ describe('relationships', () => {
       .catch(catchErrors(done));
     });
 
-    it('should return text references only for the relations that match the filename of the entity', async () => {
-      
+    fit('should return text references only for the relations that match the filename of the entity', async () => {
+      // const entity1EnRelationships = await relationships.getByDocument('entity1', 'en');
+      // const entity1EsRelationships = await relationships.getByDocument('entity1', 'es');
+      const entity1PtRelationships = await relationships.getByDocument('entity1', 'pt');
+
+      // expect(entity1EnRelationships.length).toBe(5);
+      // expect(entity1EnRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
+      // expect(entity1EnRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(3);
+
+      // expect(entity1EsRelationships.length).toBe(4);
+      // expect(entity1EsRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
+      // expect(entity1EsRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(2);
+
+      expect(entity1PtRelationships.length).toBe(2);
+      expect(entity1PtRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
     });
 
     it('should set template to null if no template found', (done) => {

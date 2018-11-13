@@ -42,35 +42,17 @@ const sharedId7 = db.id();
 
 export default {
   connections: [
-    //
-    {_id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}},
-    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1},
-    {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1},
-    {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7},
-    {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
+    {entity: 'entity1', hub: hub1},
+    {entity: 'entity2', hub: hub1, template: relation1},
 
+    {_id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}},
     {entity: 'entity2', hub: hub2, template: relation2},
     {entity: 'entity3', hub: hub2},
-    {_id: connectionID6, entity: 'entity2', hub: hub11, template: relation2},
-    {_id: connectionID7, entity: 'entity3', hub: hub11},
 
-    {hub: hub12, _id: connectionID4, entity: 'doc1', range: { end: 5, text: 'not empty' }},
-    {hub: hub12, entity: 'entity1'},
-    {hub: hub12, entity: 'doc2', range: { end: 9, text: 'another text' }},
-
-    {entity: 'bruceWayne', hub: hub9},
-    {entity: 'thomasWayne', hub: hub9, template: family},
-    {entity: 'IHaveNoTemplate', hub: hub9, template: null},
-
-    {entity: 'entity1', hub: hub1, language: 'en'},
-    {entity: 'entity2', hub: hub1, template: relation1},
     {entity: 'entity2', hub: hub3, template: relation2},
-    {entity: 'entity2', hub: hub4, template: relation1},
-    //
-
-
     {entity: 'doc4', hub: hub3, template: relation2},
 
+    {entity: 'entity2', hub: hub4, template: relation1},
     {entity: 'doc5', hub: hub4, template: relation1},
     {entity: 'entity3', hub: hub4, template: relation1},
 
@@ -79,11 +61,25 @@ export default {
 
     {entity: 'target1', hub: hub6},
 
+    {_id: connectionID1, entity: 'entity_id', hub: hub7, template: relation1},
+    {_id: connectionID2, entity: 'another_id', hub: hub7, template: relation1},
+    {_id: connectionID3, entity: 'document_id', range: { end: 1 }, hub: hub7},
+    {entity: value2ID, hub: hub7, range: 'range1', template: relation1},
 
     {_id: inbound, entity: value2ID, hub: hub8},
     {entity: 'entity_id', hub: hub8},
     {entity: 'entity_id', hub: hub8},
 
+    {entity: 'bruceWayne', hub: hub9},
+    {entity: 'thomasWayne', hub: hub9, template: family},
+    {entity: 'IHaveNoTemplate', hub: hub9, template: null},
+
+    {_id: connectionID6, entity: 'entity2', hub: hub11, template: relation2},
+    {_id: connectionID7, entity: 'entity3', hub: hub11},
+
+    {hub: hub12, _id: connectionID4, entity: 'doc1', range: { end: 5, text: 'not empty' }, filename: 'doc1enFile'},
+    {hub: hub12, entity: 'entity1'},
+    {hub: hub12, entity: 'doc2', range: { end: 9, text: 'another text' }, filename: 'doc2enFile'},
   ],
   templates: [
     {_id: templateWithoutProperties},
@@ -122,6 +118,13 @@ export default {
     ]}
   ],
   entities: [
+    {sharedId: 'doc1', language: 'en', title: 'doc1 en title', type: 'document', template: template, file: {filename: 'doc1enFile'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc1', language: 'pt', title: 'doc1 pt title', type: 'document', template: template, file: {filename: 'doc1ptFile'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc1', language: 'es', title: 'doc1 es title', type: 'document', template: template, file: {filename: 'doc1enFile'}, metadata: {data: 'data3'}, creationDate: 789},
+    {sharedId: 'doc2', language: 'en', title: 'doc2 title', type: 'document', template: template, published: true, file: {filename: 'doc2enFile'}},
+    {sharedId: 'doc2', language: 'pt', title: 'doc2 title', type: 'document', template: template, published: true, file: {filename: 'doc2ptFile'}},
+    {sharedId: 'doc2', language: 'es', title: 'doc2 title', type: 'document', template: template, published: true, file: {filename: 'doc2esFile'}},
+
     {sharedId: 'entity1', language: 'en', title: 'entity1 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
     {sharedId: 'entity2', language: 'en', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
     {sharedId: 'entity3', language: 'en', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
