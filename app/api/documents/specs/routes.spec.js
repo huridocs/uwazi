@@ -112,5 +112,21 @@ describe('documents', () => {
       })
       .catch(catchErrors(done));
     });
+
+    describe('when document does not exist', () => {
+      it('should throw a 404 error', (done) => {
+        const nonExistent = db.id();
+        const req = { query: { _id: nonExistent } };
+
+        routes.get('/api/documents/download', req)
+        .then(() => {
+          done.fail('should throw a 404');
+        })
+        .catch((e) => {
+          expect(e.code).toBe(404);
+          done();
+        });
+      });
+    });
   });
 });

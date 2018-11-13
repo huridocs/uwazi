@@ -21,6 +21,9 @@ describe('I18NMenu', () => {
       location: {
         pathname: '/templates/2452345',
         search: '?query=weneedmoreclerics'
+      },
+      params: {
+        lang: 'es'
       }
     };
   });
@@ -30,7 +33,21 @@ describe('I18NMenu', () => {
     spyOn(I18NMenu, 'reload');
   };
 
+  it('should not render searchQuery when on documents path', () => {
+    props.location.pathname = '/es/documents';
+    props.location.search = '?search';
+    render();
+    const links = component.find('a');
+    expect(links.length).toBe(2);
+    expect(links.first().props().href).toBe('/en/documents');
+    expect(links.last().props().href).toBe('/es/documents');
+  });
+
   describe('when there is NO language in the url', () => {
+    beforeEach(() => {
+      props.params = {};
+    });
+
     it('should render links for each language', () => {
       render();
       const links = component.find('a');
@@ -47,11 +64,6 @@ describe('I18NMenu', () => {
       expect(links.first().props().href).toBe('/en/entity/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/entity/2452345?query=weneedmoreclerics');
     });
-
-    it('should render as active the default language', () => {
-      render();
-      expect(component.find('li').first().props().className).toBe('menuNav-item is-active');
-    });
   });
 
   describe('when there IS language in the url', () => {
@@ -62,6 +74,13 @@ describe('I18NMenu', () => {
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/templates/2452345?query=weneedmoreclerics');
       expect(links.last().props().href).toBe('/es/templates/2452345?query=weneedmoreclerics');
+      expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
+    });
+
+    it('should render as active the passed language when params.lang is not defined', () => {
+      props.params = {};
+      props.language = 'es';
+      render();
       expect(component.find('li').last().props().className).toBe('menuNav-item is-active');
     });
 
@@ -88,6 +107,14 @@ describe('I18NMenu', () => {
       const links = component.find('a');
       links.first().simulate('click');
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', { expires: 3650 });
+    });
+  });
+
+  describe('when there is only one language', () => {
+    it('should only render the inline translation button', () => {
+      props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);
+      render();
+      expect(component).toMatchSnapshot();
     });
   });
 });

@@ -153,8 +153,8 @@ describe('Map', () => {
       expect(window.removeEventListener).toHaveBeenCalledWith('resize', component.instance().setSize);
     });
 
-    it('should add events to the map for after the style is loaded', () => {
-      expect(map.on.calls.all()[0].args[0]).toBe('style.load');
+    it('should add events to the map for after is loaded', () => {
+      expect(map.on.calls.all()[0].args[0]).toBe('load');
       const callback = map.on.calls.all()[0].args[1];
       callback();
       expect(instance.centerOnMarkers).toHaveBeenCalled();

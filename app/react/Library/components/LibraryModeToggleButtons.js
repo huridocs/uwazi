@@ -7,6 +7,7 @@ import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions
 
 export class LibraryModeToggleButtons extends Component {
   render() {
+    const numberOfMarkersText = this.props.numberOfMarkers.toString().length > 3 ? '99+' : this.props.numberOfMarkers;
     return (
       <div className="list-view-mode">
         <div className={`list-view-mode-zoom list-view-buttons-zoom-${this.props.zoomLevel} buttons-group`}>
@@ -26,8 +27,14 @@ export class LibraryModeToggleButtons extends Component {
               <Icon icon="th" />
               <span className="tab-link-tooltip">{t('System', 'List view')}</span>
             </I18NLink>
-            <I18NLink to={`library/map${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
+            <I18NLink
+              disabled={!this.props.numberOfMarkers}
+              to={`library/map${this.props.searchUrl}`}
+              className="btn btn-default"
+              activeClassName="is-active"
+            >
               <Icon icon="map-marker" />
+              <span className="number-of-markers">{numberOfMarkersText}</span>
               <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
             </I18NLink>
           </div>
@@ -43,14 +50,19 @@ LibraryModeToggleButtons.propTypes = {
   zoomIn: PropTypes.func.isRequired,
   zoomOut: PropTypes.func.isRequired,
   zoomLevel: PropTypes.number.isRequired,
+  numberOfMarkers: PropTypes.number.isRequired,
 };
 
 export function mapStateToProps(state, props) {
-  const params = processFilters(state[props.storeKey].search, state[props.storeKey].filters.toJS());
-  encodeSearch(params);
+  const filters = state[props.storeKey].filters.toJS();
+  const params = processFilters(state[props.storeKey].search, filters);
+  const { templates } = state;
+  const showGeolocation = Boolean(templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation')));
+  const numberOfMarkers = state[props.storeKey].markers.get('rows').size;
   return {
     searchUrl: encodeSearch(params),
-    showGeolocation: Boolean(state.templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation'))),
+    showGeolocation,
+    numberOfMarkers,
     zoomLevel: Object.keys(props).indexOf('zoomLevel') !== -1 ? props.zoomLevel : state[props.storeKey].ui.get('zoomLevel'),
   };
 }

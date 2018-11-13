@@ -442,6 +442,15 @@ describe('search', () => {
       });
 
       describe('AND flag', () => {
+        it('should not fail when no values sent', async () => {
+          const filtered = await search.search({
+            filters: { multiselect1: { and: true } },
+            types: [ids.templateMetadata1, ids.templateMetadata2]
+          }, 'en');
+
+          expect(filtered.totalRows).toBe(5);
+        });
+
         it('should restrict the results to those who have all values of the filter', (done) => {
           search.search(
             {

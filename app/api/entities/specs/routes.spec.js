@@ -31,7 +31,7 @@ describe('entities', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.post('/api/entities', req)).toNeedAuthorization();
+      expect(routes._post('/api/entities', req)).toNeedAuthorization();
     });
 
     it('should create a new document with current user', (done) => {
@@ -102,7 +102,7 @@ describe('entities', () => {
       });
 
       it('should need authorization', () => {
-        expect(routes.post('/api/entities/multipleupdate', req)).toNeedAuthorization();
+        expect(routes._post('/api/entities/multipleupdate', req)).toNeedAuthorization();
       });
 
       it('should call multipleUpdate with the ids and the metadata in the body', (done) => {
@@ -139,6 +139,23 @@ describe('entities', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should allow not fetching the relationships', async () => {
+      const expectedEntity = { sharedId: 'sharedId', published: true };
+
+      spyOn(entities, 'getWithRelationships');
+      spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
+
+      const req = {
+        query: { _id: 'sharedId', omitRelationships: true },
+        language: 'lang'
+      };
+
+      const { rows: [result] } = await routes.get('/api/entities', req);
+      expect(result).toBe(expectedEntity);
+      expect(entities.getWithRelationships).not.toHaveBeenCalled();
+      expect(entities.get).toHaveBeenCalledWith({ sharedId: 'sharedId', language: 'lang' });
     });
 
     describe('when the document does not exist', () => {

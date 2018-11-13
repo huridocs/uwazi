@@ -15,7 +15,8 @@ class CustomProvider extends Component {
     return {
       getInitialData: this.getInitialData.bind(this),
       isRenderedFromServer: this.isRenderedFromServer.bind(this),
-      getUser: this.getUser.bind(this)
+      getUser: this.getUser.bind(this),
+      language: this.props.language,
     };
   }
 
@@ -44,13 +45,15 @@ class CustomProvider extends Component {
 CustomProvider.propTypes = {
   user: PropTypes.object,
   children: PropTypes.object,
-  initialData: PropTypes.object
+  initialData: PropTypes.object,
+  language: PropTypes.string,
 };
 
 CustomProvider.childContextTypes = {
   getInitialData: PropTypes.func,
   isRenderedFromServer: PropTypes.func,
-  getUser: PropTypes.func
+  getUser: PropTypes.func,
+  language: PropTypes.string,
 };
 
 export default CustomProvider;

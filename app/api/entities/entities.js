@@ -27,7 +27,7 @@ function updateEntity(entity, _template) {
   .then((docLanguages) => {
     const template = _template || { properties: [] };
     const toSyncProperties = template.properties
-    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship'))
+    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation'))
     .map(p => p.name);
     const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
@@ -376,10 +376,14 @@ export default {
 
   async getRawPage(sharedId, language, pageNumber) {
     const [entity] = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
-    const pageNumberMatch = /\[\[(\d+)\]\]/g;
     if (!entity) {
       throw createError('entity does not exists', 404);
     }
+    if (!entity.fullText[pageNumber]) {
+      throw createError('page does not exist', 404);
+    }
+
+    const pageNumberMatch = /\[\[(\d+)\]\]/g;
     return entity.fullText[pageNumber].replace(pageNumberMatch, '');
   },
 

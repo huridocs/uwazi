@@ -1,9 +1,9 @@
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
-import settings from '../settings.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
 
 import fixtures from './fixtures.js';
-import db from 'api/utils/testing_db';
+import settings from '../settings.js';
 
 describe('settings', () => {
   beforeEach((done) => {
@@ -17,14 +17,10 @@ describe('settings', () => {
 
   describe('save()', () => {
     it('should save the settings', (done) => {
-      let config = {site_name: 'My collection'};
+      const config = { site_name: 'My collection' };
       settings.save(config)
-      .then(() => {
-        return settings.save({custom: {customNested: 'data'}});
-      })
-      .then(() => {
-        return settings.get();
-      })
+      .then(() => settings.save({ custom: { customNested: 'data' } }))
+      .then(() => settings.get())
       .then((result) => {
         expect(result.site_name).toBe('My collection');
         expect(result.custom.customNested).toBe('data');
@@ -34,7 +30,7 @@ describe('settings', () => {
     });
 
     it('should return the newly created document', (done) => {
-      let config = {site_name: 'New settings'};
+      const config = { site_name: 'New settings' };
 
       settings.save(config)
       .then((createdDocument) => {
@@ -46,10 +42,10 @@ describe('settings', () => {
 
     describe('when has links', () => {
       it('should create a translation context for the links', (done) => {
-        let config = {site_name: 'My collection', links: [{title: 'Page one'}]};
+        const config = { site_name: 'My collection', links: [{ title: 'Page one' }] };
         settings.save(config)
         .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], {'Page one': 'Page one'});
+          expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], { 'Page one': 'Page one' });
           done();
         })
         .catch(catchErrors(done));
@@ -57,15 +53,15 @@ describe('settings', () => {
 
       describe('updating the links', () => {
         it('should update the translation context for the links', (done) => {
-          let config = {site_name: 'My collection', links: [{title: 'Page one'}, {title: 'Page two'}]};
+          let config = { site_name: 'My collection', links: [{ title: 'Page one' }, { title: 'Page two' }] };
           settings.save(config)
           .then((savedConfig) => {
-            config = {site_name: 'My collection', links: [{title: 'Page 1', _id: savedConfig.links[0]._id}, {title: 'Page three'}]};
+            config = { site_name: 'My collection', links: [{ title: 'Page 1', _id: savedConfig.links[0]._id }, { title: 'Page three' }] };
             return settings.save(config);
           })
           .then(() => {
             expect(translations.updateContext)
-            .toHaveBeenCalledWith('Menu', 'Menu', {'Page one': 'Page 1'}, ['Page two'], {'Page 1': 'Page 1', 'Page three': 'Page three'});
+            .toHaveBeenCalledWith('Menu', 'Menu', { 'Page one': 'Page 1' }, ['Page two'], { 'Page 1': 'Page 1', 'Page three': 'Page three' });
             done();
           })
           .catch(catchErrors(done));
@@ -75,10 +71,23 @@ describe('settings', () => {
 
     describe('when there are filter groups', () => {
       it('should create translations for them', (done) => {
-        let config = {site_name: 'My collection', filters: [{id: 1, name: 'Judge'}, {id: 2, name: 'Documents', items: [{id: 3, name: 'Cause'}]}]};
+        const config = {
+          site_name: 'My collection',
+          filters: [{
+            id: 1,
+            name: 'Judge'
+          }, {
+            id: 2,
+            name: 'Documents',
+            items: [{
+              id: 3,
+              name: 'Cause'
+            }]
+          }]
+        };
         settings.save(config)
         .then(() => {
-          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {}, [], {Documents: 'Documents'});
+          expect(translations.updateContext).toHaveBeenCalledWith('Filters', 'Filters', {}, [], { Documents: 'Documents' });
           done();
         })
         .catch(catchErrors(done));
@@ -87,11 +96,11 @@ describe('settings', () => {
       it('should update them', (done) => {
         let config = {
           site_name: 'My collection',
-          filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Documents', items: []}, {id: '3', name: 'Files', items: []}]
+          filters: [{ id: '1', name: 'Judge' }, { id: '2', name: 'Documents', items: [] }, { id: '3', name: 'Files', items: [] }]
         };
         settings.save(config)
         .then(() => {
-          config = {site_name: 'My collection', filters: [{id: '1', name: 'Judge'}, {id: '2', name: 'Important Documents', items: []}]};
+          config = { site_name: 'My collection', filters: [{ id: '1', name: 'Judge' }, { id: '2', name: 'Important Documents', items: [] }] };
           translations.updateContext.calls.reset();
           return settings.save(config);
         })
@@ -99,7 +108,11 @@ describe('settings', () => {
           expect(translations.updateContext)
           .toHaveBeenCalledWith('Menu', 'Menu', {}, [], {});
           expect(translations.updateContext)
-          .toHaveBeenCalledWith('Filters', 'Filters', {Documents: 'Important Documents'}, ['Files'], {'Important Documents': 'Important Documents'});
+          .toHaveBeenCalledWith('Filters', 'Filters', {
+            Documents: 'Important Documents'
+          }, ['Files'], {
+            'Important Documents': 'Important Documents'
+          });
           done();
         })
         .catch(catchErrors(done));
@@ -124,12 +137,12 @@ describe('settings', () => {
 
   describe('removeTemplateFromFilters', () => {
     it('should remove the template from the filters', (done) => {
-      let _settings = {
+      const _settings = {
         filters: [
-          {id: '123'},
+          { id: '123' },
           {
             id: 'axz',
-            items: [{id: '123'}]
+            items: [{ id: '123' }]
           }
         ]
       };
@@ -137,7 +150,7 @@ describe('settings', () => {
       spyOn(settings, 'save');
       settings.removeTemplateFromFilters('123')
       .then(() => {
-        expect(settings.save).toHaveBeenCalledWith({filters: [{id: 'axz', items: []}]});
+        expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
         done();
       });
     });
