@@ -153,26 +153,24 @@ export default {
     return model.getById(id);
   },
 
-  getDocumentHubs(id, language) {
-    return model.get({ entity: id, language })
-    .then((ownRelations) => {
-      const hubsIds = ownRelations.map(relationship => relationship.hub);
-      return model.db.aggregate([
-        { $match: { hub: { $in: hubsIds }, language } },
-        { $group: {
-          _id: '$hub',
-          relationships: { $push: '$$ROOT' },
-          count: { $sum: 1 }
-        } }
-      ]);
-    })
-    .then(hubs => hubs.filter(hub => hub.count > 1));
+  async getDocumentHubs(entity) {
+    const ownRelations = await model.get({ entity });
+    const hubsIds = ownRelations.map(relationship => relationship.hub);
+    return model.get({ hub: { $in: hubsIds } });
+    // return model.db.aggregate([
+    //   { $match: { hub: { $in: hubsIds } } },
+    //   { $group: {
+    //     _id: '$hub',
+    //     relationships: { $push: '$$ROOT' },
+    //     count: { $sum: 1 }
+    //   } }
+    // ]);
   },
 
   getByDocument(id, language, withEntityData = true) {
     return this.getDocumentHubs(id, language)
-    .then((hubs) => {
-      const relationships = Array.prototype.concat(...hubs.map(hub => hub.relationships));
+    .then((relationships) => {
+      // const relationships = Array.prototype.concat(...hubs.map(hub => hub.relationships));
       const connectedEntityiesSharedId = relationships.map(relationship => relationship.entity);
       return entities.get({ sharedId: { $in: connectedEntityiesSharedId }, language })
       .then((_connectedDocuments) => {

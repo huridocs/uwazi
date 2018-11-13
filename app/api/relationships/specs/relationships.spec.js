@@ -19,10 +19,10 @@ describe('relationships', () => {
   });
 
   describe('getByDocument()', () => {
-    it('should return all the relationships of a document in the current language', (done) => {
+    fit('should return all the relationships of a document', (done) => {
       relationships.getByDocument('entity2', 'en')
       .then((result) => {
-        expect(result.length).toBe(10);
+        expect(result.length).toBe(12);
         const entity1Connection = result.find(connection => connection.entity === 'entity1');
         expect(entity1Connection.entityData.title).toBe('entity1 title');
         expect(entity1Connection.entityData.icon).toBe('icon1');
@@ -44,6 +44,10 @@ describe('relationships', () => {
         done();
       })
       .catch(catchErrors(done));
+    });
+
+    it('should return text references only for the relations that match the filename of the entity', async () => {
+      
     });
 
     it('should set template to null if no template found', (done) => {

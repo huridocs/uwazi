@@ -61,27 +61,28 @@ export default {
     {entity: 'bruceWayne', hub: hub9},
     {entity: 'thomasWayne', hub: hub9, template: family},
     {entity: 'IHaveNoTemplate', hub: hub9, template: null},
+
+    {entity: 'entity1', hub: hub1, language: 'en'},
+    {entity: 'entity2', hub: hub1, template: relation1},
+    {entity: 'entity2', hub: hub3, template: relation2},
+    {entity: 'entity2', hub: hub4, template: relation1},
     //
-    {entity: 'entity1', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
-    {entity: 'entity2', hub: hub1, language: 'en', template: relation1, sharedId: db.id()},
 
 
-    {entity: 'entity2', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
-    {entity: 'doc4', hub: hub3, template: relation2, sharedId: db.id(), language: 'en'},
+    {entity: 'doc4', hub: hub3, template: relation2},
 
-    {entity: 'doc5', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
-    {entity: 'entity2', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
-    {entity: 'entity3', hub: hub4, template: relation1, sharedId: db.id(), language: 'en'},
+    {entity: 'doc5', hub: hub4, template: relation1},
+    {entity: 'entity3', hub: hub4, template: relation1},
 
-    {entity: 'target', hub: hub5, sharedId: db.id(), language: 'en'},
-    {entity: 'target', hub: hub5, sharedId: db.id(), language: 'en'},
+    {entity: 'target', hub: hub5},
+    {entity: 'target', hub: hub5},
 
-    {entity: 'target1', hub: hub6, sharedId: db.id(), language: 'en'},
+    {entity: 'target1', hub: hub6},
 
 
-    {_id: inbound, entity: value2ID, hub: hub8, sharedId: db.id()},
-    {entity: 'entity_id', hub: hub8, sharedId: db.id()},
-    {entity: 'entity_id', hub: hub8, sharedId: db.id()},
+    {_id: inbound, entity: value2ID, hub: hub8},
+    {entity: 'entity_id', hub: hub8},
+    {entity: 'entity_id', hub: hub8},
 
   ],
   templates: [
