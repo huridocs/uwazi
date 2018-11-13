@@ -4,7 +4,7 @@ import entities from 'api/entities/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import relationships from '../relationships';
-import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6, connectionID7,
+import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6,
   hub1, hub2, hub7, hub11, hub12, relation1, relation2, template, sharedId4 } from './fixtures';
 import search from '../../search/search';
 
@@ -148,11 +148,6 @@ describe('relationships', () => {
   });
 
   describe('bulk()', () => {
-    beforeEach(() => {
-      // spyOn(relationships, 'save').and.returnValue(Promise.resolve());
-      // spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
-    });
-
     fit('should save or delete the relationships', async () => {
       const data = {
         save: [{ _id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: { text: 'changed text' } }],
