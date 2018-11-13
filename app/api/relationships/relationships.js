@@ -144,6 +144,39 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
   return results;
 };
 
+class RelationshipCollection extends Array {
+  setConnectedDocuments(connectedDocuments) {
+    this.connectedDocuments = connectedDocuments;
+    return this;
+  }
+
+  removeOtherLanguageTextReferences() {
+    return this.filter((r) => {
+      if (r.filename) {
+        return r.filename === this.connectedDocuments[r.entity].file.filename;
+      }
+      return true;
+    });
+  }
+
+  removeSingleHubs() {
+    const hubRelationshipsCount = this.reduce((data, r) => {
+      data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1;
+      return data;
+    }, {});
+
+    return this.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
+  }
+
+  withConnectedData() {
+    return this.map((_relationship) => {
+      // const relationship = Object.assign({}, { template: null }, _relationship);
+      const relationship = { template: null, ..._relationship };
+      return normalizeConnectedDocumentData(relationship, this.connectedDocuments[relationship.entity]);
+    });
+  }
+}
+
 export default {
   get(query, select, pagination) {
     return model.get(query, select, pagination);
@@ -169,38 +202,22 @@ export default {
 
   getByDocument(id, language, withEntityData = true) {
     return this.getDocumentHubs(id, language)
-    .then((relationships) => {
+    .then((_relationships) => {
       // const relationships = Array.prototype.concat(...hubs.map(hub => hub.relationships));
-      const connectedEntityiesSharedId = relationships.map(relationship => relationship.entity);
+      const connectedEntityiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities.get({ sharedId: { $in: connectedEntityiesSharedId }, language })
       .then((_connectedDocuments) => {
+
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
         }, {});
 
-        const filteredRelationships = relationships.filter((r) => {
-          if (r.filename) {
-            return r.filename === connectedDocuments[r.entity].file.filename;
-          }
-          return true;
-        });
-
-        const hubRelationshipsCount = filteredRelationships.reduce((data, r) => {
-          data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1;
-          return data;
-        }, {});
-
-        const finalRelationships = filteredRelationships.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
-
-        return finalRelationships.map((_relationship) => {
-          const relationship = Object.assign({}, { template: null }, _relationship);
-
-          if (withEntityData) {
-            return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
-          }
-          return relationship;
-        });
+        return new RelationshipCollection(..._relationships)
+        .setConnectedDocuments(connectedDocuments)
+        .removeOtherLanguageTextReferences()
+        .removeSingleHubs()
+        .withConnectedData();
       });
     });
   },
