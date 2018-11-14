@@ -48,12 +48,10 @@ const createRelationship = async (relationship, language) => {
   return model.save({ ...relationship, filename });
 };
 
-const updateRelationship = async (relationship) => {
-  return model.save({
+const updateRelationship = async relationship => model.save({
     ...relationship,
     template: relationship.template && relationship.template._id !== null ? relationship.template : null
-  });
-};
+});
 
 function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   return hubs.reduce((result, hub) => {
@@ -70,7 +68,7 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
 }
 
 function determineDeleteAction(hubId, relation, relationQuery) {
-  let deleteQuery = relationQuery;
+  const deleteQuery = relationQuery;
   // if (relationQuery._id) {
   //   deleteQuery = { _id: relationQuery._id };
   // }
@@ -154,7 +152,10 @@ class RelationshipCollection extends Array {
       return true;
     });
   }
-
+  removeOrphanHubsOf(sharedId) {
+    const hubs = groupByHubs(this).filter(h => h.map(r => r.entity).includes(sharedId));
+    return new RelationshipCollection(...Array.prototype.concat(...hubs));
+  }
   removeSingleHubs() {
     const hubRelationshipsCount = this.reduce((data, r) => {
       data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1;
@@ -195,14 +196,13 @@ export default {
     // ]);
   },
 
-  getByDocument(id, language) {
-    return this.getDocumentHubs(id, language)
+  getByDocument(sharedId, language) {
+    return this.getDocumentHubs(sharedId, language)
     .then((_relationships) => {
       // const relationships = Array.prototype.concat(...hubs.map(hub => hub.relationships));
       const connectedEntityiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities.get({ sharedId: { $in: connectedEntityiesSharedId }, language })
       .then((_connectedDocuments) => {
-
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
@@ -211,6 +211,7 @@ export default {
         return new RelationshipCollection(..._relationships)
         .removeOtherLanguageTextReferences(connectedDocuments)
         .removeSingleHubs()
+        .removeOrphanHubsOf(sharedId)
         .withConnectedData(connectedDocuments);
       });
     });
@@ -420,8 +421,9 @@ export default {
     return response;
   },
 
-  deleteTextReferences(sharedId, language) {
-    return model.delete({ entity: sharedId, language, range: { $exists: true } });
+  async deleteTextReferences(sharedId, language) {
+    const [entity] = await entities.get({ sharedId, language }, 'file');
+    return model.delete({ filename: entity.file.filename });
   },
 
   updateMetadataProperties(template, currentTemplate) {

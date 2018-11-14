@@ -5,7 +5,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import relationships from '../relationships';
 import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6, connectionID8, connectionID9,
-  hub1, hub2, hub7, hub11, hub12, relation1, relation2, template, sharedId4 } from './fixtures';
+  hub1, hub2, hub7, hub8, hub11, hub12, relation1, relation2, template, sharedId4 } from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
@@ -70,6 +70,11 @@ describe('relationships', () => {
 
       expect(relationshipWithoutTemplate.template).toBe(null);
       expect(relationshipWithTemplate.template).not.toBe(null);
+    });
+
+    fit('should not return hubs that are connected only to other languages', async () => {
+      const relations = await relationships.getByDocument('doc2', 'es');
+      expect(relations.filter(r => r.hub.equals(hub8)).length).toBe(0);
     });
   });
 
@@ -355,45 +360,39 @@ describe('relationships', () => {
   });
 
   describe('search()', () => {
-    it('should prepare a query with ids based on an entity id and a searchTerm', (done) => {
+    fit('should prepare a query with ids based on an entity id and a searchTerm', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
       spyOn(search, 'search').and.returnValue(searchResponse);
-      relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en')
-      .then(() => {
-        const actualQuery = search.search.calls.mostRecent().args[0];
-        expect(actualQuery.searchTerm).toEqual('something');
-        expect(actualQuery.ids).containItems(['doc5', 'doc4', 'entity3', 'entity1']);
-        expect(actualQuery.includeUnpublished).toBe(true);
-        expect(actualQuery.limit).toBe(9999);
-        done();
-      })
-      .catch(catchErrors(done));
+      await relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en');
+      const actualQuery = search.search.calls.mostRecent().args[0];
+      expect(actualQuery.searchTerm).toEqual('something');
+      expect(actualQuery.ids).containItems(['doc5', 'doc4', 'entity3', 'entity1']);
+      expect(actualQuery.includeUnpublished).toBe(true);
+      expect(actualQuery.limit).toBe(9999);
     });
 
-    it('should filter out ids based on filtered relation types and templates, and pass the user to search', (done) => {
+    fit('should filter out ids based on filtered relation types and templates, and pass the user to search', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
       spyOn(search, 'search').and.returnValue(searchResponse);
       const query = { filter: {}, searchTerm: 'something' };
       query.filter[relation2] = [relation2 + template];
-      relationships.search('entity2', query, 'en', 'user')
-      .then(() => {
-        const actualQuery = search.search.calls.mostRecent().args[0];
-        const language = search.search.calls.mostRecent().args[1];
-        const user = search.search.calls.mostRecent().args[2];
 
-        expect(actualQuery.searchTerm).toEqual('something');
-        expect(actualQuery.ids).containItems(['doc4', 'entity3']);
-        expect(actualQuery.includeUnpublished).toBe(true);
-        expect(actualQuery.limit).toBe(9999);
+      await relationships.search('entity2', query, 'en', 'user');
 
-        expect(language).toBe('en');
-        expect(user).toBe('user');
-        done();
-      })
-      .catch(catchErrors(done));
+      const actualQuery = search.search.calls.mostRecent().args[0];
+      const language = search.search.calls.mostRecent().args[1];
+      const user = search.search.calls.mostRecent().args[2];
+
+      expect(actualQuery.searchTerm).toEqual('something');
+      expect(actualQuery.ids).containItems(['doc4', 'entity3']);
+      expect(actualQuery.includeUnpublished).toBe(true);
+      expect(actualQuery.limit).toBe(9999);
+
+      expect(language).toBe('en');
+      expect(user).toBe('user');
     });
 
-    it('should return the matching entities with their relationships and the current entity with the respective relationships', (done) => {
+    fit('should return the matching entities with their relationships and the current entity with the respective relationships', async () => {
       const searchResponse = Promise.resolve(
         { rows: [
           { sharedId: 'entity1' },
@@ -403,20 +402,16 @@ describe('relationships', () => {
         ] }
       );
       spyOn(search, 'search').and.returnValue(searchResponse);
-      relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en')
-      .then((result) => {
-        expect(result.rows.length).toBe(5);
-        expect(result.rows[0].connections.length).toBe(1);
-        expect(result.rows[1].connections.length).toBe(3);
-        expect(result.rows[2].connections.length).toBe(1);
-        expect(result.rows[3].connections.length).toBe(1);
-        expect(result.rows[4].connections.length).toBe(4);
-        done();
-      })
-      .catch(catchErrors(done));
+      const result = await relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en');
+      expect(result.rows.length).toBe(5);
+      expect(result.rows[0].connections.length).toBe(1);
+      expect(result.rows[1].connections.length).toBe(4);
+      expect(result.rows[2].connections.length).toBe(1);
+      expect(result.rows[3].connections.length).toBe(1);
+      expect(result.rows[4].connections.length).toBe(5);
     });
 
-    it('should retrun number of hubs (total and requested) and allow limiting the number of HUBs returned', (done) => {
+    fit('should return number of hubs (total and requested) and allow limiting the number of HUBs returned', async () => {
       const searchResponse = Promise.resolve(
         { rows: [
           { sharedId: 'entity1' },
@@ -426,27 +421,24 @@ describe('relationships', () => {
         ] });
       spyOn(search, 'search').and.returnValue(searchResponse);
 
-      relationships.search('entity2', { filter: {}, searchTerm: 'something', limit: 2 }, 'en')
-      .then((result) => {
-        expect(result.totalHubs).toBe(4);
-        expect(result.requestedHubs).toBe(2);
-        const expectedHubIds = result.rows[result.rows.length - 1].connections.map(c => c.hub.toString());
+      const result = await relationships.search('entity2', { filter: {}, searchTerm: 'something', limit: 2 }, 'en');
+      expect(result.totalHubs).toBe(5);
+      expect(result.requestedHubs).toBe(2);
 
-        expect(result.rows[0].sharedId).toBe('entity1');
-        expect(result.rows[0].connections.length).toBe(1);
-        expect(expectedHubIds).toContain(result.rows[0].connections[0].hub.toString());
+      const expectedHubIds = result.rows[result.rows.length - 1].connections.map(c => c.hub.toString());
+      expect(expectedHubIds.length).toBe(2);
+      expect(expectedHubIds).toContain(result.rows[0].connections[0].hub.toString());
+      expect(expectedHubIds).toContain(result.rows[1].connections[0].hub.toString());
+      expect(expectedHubIds).toContain(result.rows[1].connections[1].hub.toString());
 
-        expect(result.rows[1].sharedId).toBe('entity3');
-        expect(result.rows[1].connections.length).toBe(2);
-        expect(expectedHubIds).toContain(result.rows[1].connections[0].hub.toString());
-        expect(expectedHubIds).toContain(result.rows[1].connections[1].hub.toString());
+      expect(result.rows[0].sharedId).toBe('entity1');
+      expect(result.rows[0].connections.length).toBe(1);
 
-        expect(result.rows[2].sharedId).toBe('entity2');
-        expect(result.rows[2].connections.length).toBe(2);
+      expect(result.rows[1].sharedId).toBe('entity3');
+      expect(result.rows[1].connections.length).toBe(2);
 
-        done();
-      })
-      .catch(catchErrors(done));
+      expect(result.rows[2].sharedId).toBe('entity2');
+      expect(result.rows[2].connections.length).toBe(2);
     });
   });
 
@@ -493,8 +485,8 @@ describe('relationships', () => {
     fit('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
     });
 
     describe('when there is no condition', () => {
@@ -512,12 +504,12 @@ describe('relationships', () => {
   });
 
   describe('deleteTextReferences()', () => {
-    it('should delete the entity text relationships (that match language)', (done) => {
-      relationships.deleteTextReferences('entity3', 'en')
-      .then(() => Promise.all([relationships.getByDocument('entity3', 'en'), relationships.getByDocument('entity3', 'ru')]))
-      .then(([relationshipsInEnglish, relationshipsInRusian]) => {
-        expect(relationshipsInEnglish.length).toBe(5);
-        expect(relationshipsInRusian.length).toBe(2);
+    fit('should delete the entity text relationships (that match language)', (done) => {
+      relationships.deleteTextReferences('doc2', 'en')
+      .then(() => Promise.all([relationships.getByDocument('doc2', 'en'), relationships.getByDocument('doc2', 'pt')]))
+      .then(([relationshipsInEnglish, relationshipsInPT]) => {
+        expect(relationshipsInEnglish.length).toBe(4);
+        expect(relationshipsInPT.length).toBe(8);
         done();
       });
     });

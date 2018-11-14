@@ -71,10 +71,13 @@ export default {
     {_id: inbound, entity: value2ID, hub: hub8},
     {entity: 'entity_id', hub: hub8},
     {entity: 'entity_id', hub: hub8},
+    {hub: hub8, entity: 'doc2', range: { end: 9, text: 'another text' }, filename: 'doc2enFile'},
+    {hub: hub8, entity: 'doc2', range: { end: 9, text: 'another text' }, filename: 'doc2ptFile'},
 
     {entity: 'bruceWayne', hub: hub9},
     {entity: 'thomasWayne', hub: hub9, template: family},
     {entity: 'IHaveNoTemplate', hub: hub9, template: null},
+    {hub: hub9, entity: 'doc2'},
 
     {_id: connectionID6, entity: 'entity2', hub: hub11, template: relation2},
     {_id: connectionID7, entity: 'entity3', hub: hub11},
