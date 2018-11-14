@@ -16,8 +16,8 @@ export default {
     .then(response => response.json);
   },
 
-  addLanguage(label, key) {
-    return api.post('translations/languages', { label, key })
+  addLanguage(language) {
+    return api.post('translations/languages', language)
     .then(response => response.json);
   },
 

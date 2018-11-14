@@ -2,6 +2,7 @@ import Joi from 'joi';
 
 import { validateRequest } from 'api/utils';
 import settings from 'api/settings';
+import entities from 'api/entities';
 
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
@@ -63,7 +64,7 @@ export default (app) => {
   );
 
   app.post(
-    '/api/translations/addlanguage',
+    '/api/translations/languages',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
       key: Joi.string(),
@@ -71,10 +72,37 @@ export default (app) => {
     }).required()),
 
     (req, res, next) => {
-      settings.addLanguage(req.body)
-      .then((response) => {
-        req.io.sockets.emit('updateSettings', response);
-        res.json(response);
+      Promise.all([
+        settings.addLanguage(req.body),
+        translations.addLanguage(req.body.key),
+        entities.addLanguage(req.body.key),
+      ])
+      .then(([newSettings, newTranslations]) => {
+        req.io.sockets.emit('updateSettings', newSettings);
+        req.io.sockets.emit('translationsChange', newTranslations);
+        res.json(newSettings);
+      })
+      .catch(next);
+    }
+  );
+
+  app.delete(
+    '/api/translations/languages',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      key: Joi.string(),
+    }).required()),
+
+    (req, res, next) => {
+      Promise.all([
+        settings.deleteLanguage(req.query.key),
+        translations.removeLanguage(req.query.key),
+        entities.removeLanguage(req.query.key),
+      ])
+      .then(([newSettings, newTranslations]) => {
+        req.io.sockets.emit('updateSettings', newSettings);
+        req.io.sockets.emit('translationsChange', newTranslations);
+        res.json(newSettings);
       })
       .catch(next);
     }

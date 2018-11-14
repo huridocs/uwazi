@@ -75,8 +75,6 @@ describe('I18NActions', () => {
       spyOn(basicActions, 'set');
       actions.addLanguage({ label: 'Español', key: 'es' })(dispatch).then(() => {
         expect(I18NApi.addLanguage).toHaveBeenCalledWith({ label: 'Español', key: 'es' });
-        expect(SettingsAPI.get).toHaveBeenCalled();
-        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', 'updated settings');
         done();
       });
     });
@@ -89,8 +87,6 @@ describe('I18NActions', () => {
       spyOn(basicActions, 'set');
       actions.deleteLanguage('es')(dispatch).then(() => {
         expect(I18NApi.deleteLanguage).toHaveBeenCalledWith('es');
-        expect(SettingsAPI.get).toHaveBeenCalled();
-        expect(basicActions.set).toHaveBeenCalledWith('settings/collection', 'updated settings');
         done();
       });
     });

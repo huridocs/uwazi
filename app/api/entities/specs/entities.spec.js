@@ -808,4 +808,16 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('addLanguage()', () => {
+    fit('should duplicate all the entities from the default language to the new one', (done) => {
+      entities.addLanguage('ab')
+      .then(() => entities.get({ language: 'ab' }))
+      .then((newEntities) => {
+        expect(newEntities.length).toBe(7);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
 });

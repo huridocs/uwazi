@@ -330,6 +330,7 @@ const search = {
 
   deleteLanguage(language) {
     const query = { query: { match: { language } } };
+    console.log(query);
     return elastic.deleteByQuery({ index: elasticIndex, body: query });
   }
 };

@@ -457,32 +457,29 @@ export default {
     const { languages } = await settings.get();
 
     const defaultLanguage = languages.find(l => l.default).key;
-
     const duplicate = (offset, totalRows) => {
       const limit = 200;
       if (offset >= totalRows) {
         return Promise.resolve();
       }
 
-      return this.get({ language: defaultLanguage }, null, { skip: offset, limit: 1 })
+      return this.get({ language: defaultLanguage }, null, { skip: offset, limit })
       .then((entities) => {
         const newLanguageEntities = entities.map((_entity) => {
           const entity = Object.assign({}, _entity);
           delete entity._id;
           delete entity.__v;
           entity.language = language;
-          entity.mongoLanguage = language;
           return entity;
         });
 
-        return this.save(newLanguageEntities);
+        return this.saveMultiple(newLanguageEntities);
       })
       .then(() => duplicate(offset + limit, totalRows));
     };
 
     return this.count({ language: defaultLanguage })
-    .then(totalRows => duplicate(0, totalRows))
-    .then(() => this.indexEntities({ language }));
+    .then(totalRows => duplicate(0, totalRows));
   },
 
   async removeLanguage(locale) {

@@ -60,7 +60,7 @@ describe('I18NApi', () => {
 
   describe('addLanguage()', () => {
     it('should post the new language', (done) => {
-      I18NApi.addLanguage('Klingon', 'kl')
+      I18NApi.addLanguage({ label: 'Klingon', key: 'kl' })
       .then((response) => {
         expect(JSON.parse(backend.lastOptions(`${APIURL}translations/languages`).body))
         .toEqual({ label: 'Klingon', key: 'kl' });

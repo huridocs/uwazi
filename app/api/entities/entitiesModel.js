@@ -52,7 +52,7 @@ const schema = mongoose.model('entities', entitySchema);
 const Model = instanceModel(schema);
 
 const { save } = Model;
-const unsuportedLanguages = ['ar', 'sr', 'ka'];
+const suportedLanguages = ['da', 'nl', 'en', 'fi', 'fr', 'de', 'hu', 'it', 'nb', 'pt', 'ro', 'ru', 'es', 'sv', 'tr'];
 
 const setMongoLanguage = (doc) => {
   if (!doc.language) {
@@ -60,7 +60,7 @@ const setMongoLanguage = (doc) => {
   }
 
   let mongoLanguage = doc.language;
-  if (unsuportedLanguages.includes(doc.language)) {
+  if (!suportedLanguages.includes(mongoLanguage)) {
     mongoLanguage = 'none';
   }
 
