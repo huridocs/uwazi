@@ -53,7 +53,7 @@ export class Languages extends Component {
   deleteLanguage(language) {
     this.context.confirm({
       accept: () => this.props.deleteLanguage(language.key),
-      title: 'Confirm delete language',
+      title: `Confirm delete ${language.label}`,
       message: `Are you sure you want to delete ${language.label} language?
       This action may take some time, can not be undone and will delete all the information in that language.`,
       extraConfirm: true
@@ -63,7 +63,7 @@ export class Languages extends Component {
   addLanguage(language) {
     this.context.confirm({
       accept: () => this.props.addLanguage(language),
-      title: 'Confirm add language',
+      title: `Confirm add ${language.label}`,
       message: 'This action may take some time while we add the extra language to the entire collection.',
       extraConfirm: true,
       type: 'success'
@@ -88,7 +88,7 @@ export class Languages extends Component {
               <div className="list-group-item-actions">
                 {!language.default ? this.setAsDeafultButton(language) : ''}
                 <button
-                  disabled={language.key === this.props.locale}
+                  disabled={language.key === this.props.locale || language.default}
                   className="btn btn-danger btn-xs template-remove"
                   onClick={this.deleteLanguage.bind(this, language)}
                   type="button"
@@ -136,7 +136,8 @@ Languages.propTypes = {
   setDefaultLanguage: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps({ settings, locale }) {
+export function mapStateToProps(state) {
+  const { settings, locale } = state;
   return { languages: settings.collection.get('languages'), locale };
 }
 
