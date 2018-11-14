@@ -46,6 +46,20 @@ export class Languages extends Component {
     );
   }
 
+  deleteButton(language) {
+    return (
+      <button
+        disabled={language.key === this.props.locale}
+        className="btn btn-danger btn-xs template-remove"
+        onClick={this.deleteLanguage.bind(this, language)}
+        type="button"
+      >
+        <Icon icon="trash-alt" />&nbsp;
+        <span>{t('System', 'Delete language')}</span>
+      </button>
+    );
+  }
+
   setDefault(language) {
     this.props.setDefaultLanguage(language.key);
   }
@@ -87,15 +101,7 @@ export class Languages extends Component {
               {language.default ? Languages.defaultLanguage() : ''}
               <div className="list-group-item-actions">
                 {!language.default ? this.setAsDeafultButton(language) : ''}
-                <button
-                  disabled={language.key === this.props.locale || language.default}
-                  className="btn btn-danger btn-xs template-remove"
-                  onClick={this.deleteLanguage.bind(this, language)}
-                  type="button"
-                >
-                  <Icon icon="trash-alt" />&nbsp;
-                  <span>{t('System', 'Delete language')}</span>
-                </button>
+                {!language.default ? this.deleteButton(language) : ''}
               </div>
             </li>))}
         </ul>
