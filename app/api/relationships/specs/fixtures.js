@@ -7,6 +7,8 @@ const connectionID4 = db.id();
 const connectionID5 = db.id();
 const connectionID6 = db.id();
 const connectionID7 = db.id();
+const connectionID8 = db.id();
+const connectionID9 = db.id();
 
 const inbound = db.id();
 const template = db.id();
@@ -45,9 +47,9 @@ export default {
     {entity: 'entity1', hub: hub1},
     {entity: 'entity2', hub: hub1, template: relation1},
 
-    {_id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: {text: 'english'}},
-    {entity: 'entity2', hub: hub2, template: relation2},
-    {entity: 'entity3', hub: hub2},
+    {_id: connectionID5, entity: 'entity3', hub: hub2, template: relation2},
+    {_id: connectionID8, entity: 'entity2', hub: hub2, template: relation2},
+    {_id: connectionID9, entity: 'entity3', hub: hub2},
 
     {entity: 'entity2', hub: hub3, template: relation2},
     {entity: 'doc4', hub: hub3, template: relation2},
@@ -175,6 +177,8 @@ export {
   connectionID5,
   connectionID6,
   connectionID7,
+  connectionID8,
+  connectionID9,
   selectValueID,
   value1ID,
   value2ID,

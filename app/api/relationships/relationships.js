@@ -145,15 +145,11 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
 };
 
 class RelationshipCollection extends Array {
-  setConnectedDocuments(connectedDocuments) {
-    this.connectedDocuments = connectedDocuments;
-    return this;
-  }
-
-  removeOtherLanguageTextReferences() {
+  removeOtherLanguageTextReferences(connectedDocuments) {
     return this.filter((r) => {
       if (r.filename) {
-        return r.filename === this.connectedDocuments[r.entity].file.filename;
+        const filename = connectedDocuments[r.entity].file ? connectedDocuments[r.entity].file.filename : '';
+        return r.filename === filename;
       }
       return true;
     });
@@ -168,11 +164,10 @@ class RelationshipCollection extends Array {
     return this.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
   }
 
-  withConnectedData() {
+  withConnectedData(connectedDocuments) {
     return this.map((_relationship) => {
-      // const relationship = Object.assign({}, { template: null }, _relationship);
       const relationship = { template: null, ..._relationship };
-      return normalizeConnectedDocumentData(relationship, this.connectedDocuments[relationship.entity]);
+      return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
     });
   }
 }
@@ -200,7 +195,7 @@ export default {
     // ]);
   },
 
-  getByDocument(id, language, withEntityData = true) {
+  getByDocument(id, language) {
     return this.getDocumentHubs(id, language)
     .then((_relationships) => {
       // const relationships = Array.prototype.concat(...hubs.map(hub => hub.relationships));
@@ -214,10 +209,9 @@ export default {
         }, {});
 
         return new RelationshipCollection(..._relationships)
-        .setConnectedDocuments(connectedDocuments)
-        .removeOtherLanguageTextReferences()
+        .removeOtherLanguageTextReferences(connectedDocuments)
         .removeSingleHubs()
-        .withConnectedData();
+        .withConnectedData(connectedDocuments);
       });
     });
   },

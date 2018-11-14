@@ -4,7 +4,7 @@ import entities from 'api/entities/entities';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import relationships from '../relationships';
-import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6,
+import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6, connectionID8, connectionID9,
   hub1, hub2, hub7, hub11, hub12, relation1, relation2, template, sharedId4 } from './fixtures';
 import search from '../../search/search';
 
@@ -47,120 +47,96 @@ describe('relationships', () => {
     });
 
     fit('should return text references only for the relations that match the filename of the entity', async () => {
-      // const entity1EnRelationships = await relationships.getByDocument('entity1', 'en');
-      // const entity1EsRelationships = await relationships.getByDocument('entity1', 'es');
+      const entity1EnRelationships = await relationships.getByDocument('entity1', 'en');
+      const entity1EsRelationships = await relationships.getByDocument('entity1', 'es');
       const entity1PtRelationships = await relationships.getByDocument('entity1', 'pt');
 
-      // expect(entity1EnRelationships.length).toBe(5);
-      // expect(entity1EnRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
-      // expect(entity1EnRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(3);
+      expect(entity1EnRelationships.length).toBe(5);
+      expect(entity1EnRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
+      expect(entity1EnRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(3);
 
-      // expect(entity1EsRelationships.length).toBe(4);
-      // expect(entity1EsRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
-      // expect(entity1EsRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(2);
+      expect(entity1EsRelationships.length).toBe(4);
+      expect(entity1EsRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
+      expect(entity1EsRelationships.filter(r => r.hub.toString() === hub12.toString()).length).toBe(2);
 
       expect(entity1PtRelationships.length).toBe(2);
       expect(entity1PtRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
     });
 
-    it('should set template to null if no template found', (done) => {
-      relationships.getByDocument('entity2', 'en')
-      .then((results) => {
-        const noTemplateConnection = results.find(connection => connection.sharedId.toString() === sharedId4.toString());
-        expect(noTemplateConnection.template).toBe(null);
-        done();
-      });
+    fit('should set template to null if no template found', async () => {
+      const relations = await relationships.getByDocument('entity2', 'en');
+      const relationshipWithoutTemplate = relations.find(r => r._id.equals(connectionID9));
+      const relationshipWithTemplate = relations.find(r => r._id.equals(connectionID8));
+
+      expect(relationshipWithoutTemplate.template).toBe(null);
+      expect(relationshipWithTemplate.template).not.toBe(null);
     });
   });
 
   describe('getGroupsByConnection()', () => {
-    it('should return groups of connection types and templates of all the relationships of a document', (done) => {
-      relationships.getGroupsByConnection('entity2', 'en')
-      .then((results) => {
-        const group1 = results.find(r => r.key === relation1.toString());
-        expect(group1.key).toBe(relation1.toString());
-        expect(group1.connectionLabel).toBe('relation 1');
-        expect(group1.context).toBe(relation1.toString());
-        expect(group1.templates.length).toBe(1);
-        expect(group1.templates[0].count).toBe(2);
+    fit('should return groups of connection types and templates of all the relationships of a document', async () => {
+      const groups = await relationships.getGroupsByConnection('entity2', 'en');
+      const group1 = groups.find(r => r.key === relation1.toString());
+      expect(group1.key).toBe(relation1.toString());
+      expect(group1.connectionLabel).toBe('relation 1');
+      expect(group1.context).toBe(relation1.toString());
+      expect(group1.templates.length).toBe(1);
+      expect(group1.templates[0].count).toBe(2);
 
-        const group2 = results.find(r => r.key === relation2.toString());
-        expect(group2.key).toBe(relation2.toString());
-        expect(group2.connectionLabel).toBe('relation 2');
-        expect(group2.context).toBe(relation2.toString());
-        expect(group2.templates.length).toBe(1);
+      const group2 = groups.find(r => r.key === relation2.toString());
+      expect(group2.key).toBe(relation2.toString());
+      expect(group2.connectionLabel).toBe('relation 2');
+      expect(group2.context).toBe(relation2.toString());
+      expect(group2.templates.length).toBe(1);
 
-        expect(group2.templates[0]._id.toString()).toBe(template.toString());
-        expect(group2.templates[0].label).toBe('template');
-
-        done();
-      })
-      .catch(catchErrors(done));
+      expect(group2.templates[0]._id.toString()).toBe(template.toString());
+      expect(group2.templates[0].label).toBe('template');
     });
 
-    it('should return groups of connection including unpublished docs if user is found', (done) => {
-      relationships.getGroupsByConnection('entity2', 'en', { user: 'found' })
-      .then((results) => {
-        expect(results.length).toBe(3);
-        const group1 = results.find(r => r.key === relation1.toString());
-        expect(group1.key).toBe(relation1.toString());
-        expect(group1.templates[0]._id.toString()).toBe(template.toString());
+    fit('should return groups of connection including unpublished docs if user is found', async () => {
+      const groups = await relationships.getGroupsByConnection('entity2', 'en', { user: 'found' });
+      expect(groups.length).toBe(3);
+      const group1 = groups.find(r => r.key === relation1.toString());
+      expect(group1.key).toBe(relation1.toString());
+      expect(group1.templates[0]._id.toString()).toBe(template.toString());
 
-        const group2 = results.find(r => r.key === relation2.toString());
-        expect(group2.key).toBe(relation2.toString());
-        expect(group2.templates[0].count).toBe(2);
+      const group2 = groups.find(r => r.key === relation2.toString());
+      expect(group2.key).toBe(relation2.toString());
+      expect(group2.templates[0].count).toBe(2);
 
-        const group3 = results.find(r => !r.key);
-        expect(group3.key).toBe(null);
-        expect(group3.templates[0].count).toBe(1);
-
-        done();
-      })
-      .catch(catchErrors(done));
+      const group3 = groups.find(r => !r.key);
+      expect(group3.key).toBe(null);
+      expect(group3.templates[0].count).toBe(3);
     });
 
-    it('should return groups of connection wihtout refs if excluded', (done) => {
-      relationships.getGroupsByConnection('entity2', 'en', { excludeRefs: true })
-      .then((results) => {
-        expect(results.length).toBe(3);
-        expect(results[0].templates[0].refs).toBeUndefined();
-        expect(results[1].templates[0].refs).toBeUndefined();
-        expect(results[2].templates[0].refs).toBeUndefined();
-
-        done();
-      })
-      .catch(catchErrors(done));
+    fit('should return groups of connection wihtout refs if excluded', async () => {
+      const groups = await relationships.getGroupsByConnection('entity2', 'en', { excludeRefs: true });
+      expect(groups.length).toBe(3);
+      expect(groups[0].templates[0].refs).toBeUndefined();
+      expect(groups[1].templates[0].refs).toBeUndefined();
+      expect(groups[2].templates[0].refs).toBeUndefined();
     });
   });
 
   describe('getHub()', () => {
-    it('should return all the connections of the smae hub', (done) => {
-      relationships.getHub(hub1, 'en')
-      .then((result) => {
-        expect(result.length).toBe(2);
-        expect(result[0].entity).toBe('entity1');
-        expect(result[1].entity).toBe('entity2');
-        done();
-      }).catch(catchErrors(done));
+    fit('should return all the connections of the same hub', async () => {
+      const relations = await relationships.getHub(hub1, 'en');
+      expect(relations.length).toBe(2);
+      expect(relations[0].entity).toBe('entity1');
+      expect(relations[1].entity).toBe('entity2');
     });
   });
 
   describe('countByRelationType()', () => {
-    it('should return number of relationships using a relationType', (done) => {
-      relationships.countByRelationType(relation2.toString())
-      .then((result) => {
-        expect(result).toBe(6);
-        done();
-      }).catch(catchErrors(done));
+    fit('should return number of relationships using a relationType', async () => {
+      const relationsCount = await relationships.countByRelationType(relation2.toString());
+      expect(relationsCount).toBe(5);
     });
 
-    it('should return zero when none is using it', (done) => {
+    fit('should return zero when none is using it', async () => {
       const notUsedRelation = db.id().toString();
-      relationships.countByRelationType(notUsedRelation)
-      .then((result) => {
-        expect(result).toBe(0);
-        done();
-      }).catch(catchErrors(done));
+      const relationsCount = await relationships.countByRelationType(notUsedRelation);
+      expect(relationsCount).toBe(0);
     });
   });
 
