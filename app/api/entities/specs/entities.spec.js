@@ -810,7 +810,7 @@ describe('entities', () => {
   });
 
   describe('addLanguage()', () => {
-    fit('should duplicate all the entities from the default language to the new one', (done) => {
+    it('should duplicate all the entities from the default language to the new one', (done) => {
       entities.addLanguage('ab')
       .then(() => entities.get({ language: 'ab' }))
       .then((newEntities) => {

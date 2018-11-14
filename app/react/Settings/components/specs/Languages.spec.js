@@ -19,6 +19,7 @@ describe('Languages', () => {
       setDefaultLanguage: jasmine.createSpy('setDefaultLanguage').and.returnValue(Promise.resolve('ok')),
       addLanguage: jasmine.createSpy('addLanguage').and.returnValue(Promise.resolve('ok')),
       deleteLanguage: jasmine.createSpy('deleteLanguage').and.returnValue(Promise.resolve('ok')),
+      locale: 'es',
     };
     context = { confirm: jasmine.createSpy('confirm') };
     component = shallow(<Languages {...props} />, { context });
@@ -37,7 +38,7 @@ describe('Languages', () => {
   });
 
   describe('clicking on Delete Language', () => {
-    it('should call setDefaultLanguage', (done) => {
+    it('should call delete languae', (done) => {
       component.find('.btn-danger').at(0).simulate('click');
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];
@@ -48,7 +49,7 @@ describe('Languages', () => {
   });
 
   describe('clicking on Add Language', () => {
-    it('should call setDefaultLanguage', (done) => {
+    it('should call add language', (done) => {
       component.find('.btn-success').at(1).simulate('click');
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];

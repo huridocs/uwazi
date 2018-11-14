@@ -3,8 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { notify } from 'app/Notifications/actions/notificationsActions';
-import { t, I18NApi, actions } from 'app/I18N';
+import { t, actions } from 'app/I18N';
 import { Icon } from 'UI';
 import { languages as elasticLanguages } from '../../../shared/languagesList.js';
 import Warning from '../../Layout/Warning';
@@ -40,7 +39,7 @@ export class Languages extends Component {
 
   setAsDeafultButton(language) {
     return (
-      <button onClick={this.setDefault.bind(this, language)} className="btn btn-success btn-xs template-remove">
+      <button type="button" onClick={this.setDefault.bind(this, language)} className="btn btn-success btn-xs template-remove">
         <Icon prefix="far" icon="star" />&nbsp;
         <span>{t('System', 'Set as default')}</span>
       </button>
@@ -88,7 +87,12 @@ export class Languages extends Component {
               {language.default ? Languages.defaultLanguage() : ''}
               <div className="list-group-item-actions">
                 {!language.default ? this.setAsDeafultButton(language) : ''}
-                <button className="btn btn-danger btn-xs template-remove" onClick={this.deleteLanguage.bind(this, language)}>
+                <button
+                  disabled={language.key === this.props.locale}
+                  className="btn btn-danger btn-xs template-remove"
+                  onClick={this.deleteLanguage.bind(this, language)}
+                  type="button"
+                >
                   <Icon icon="trash-alt" />&nbsp;
                   <span>{t('System', 'Delete language')}</span>
                 </button>
@@ -106,7 +110,7 @@ export class Languages extends Component {
                   {notSupported ? Languages.notSupportedLanguage() : ''}
                 </span>
                 <div className="list-group-item-actions">
-                  &nbsp;<button onClick={this.addLanguage.bind(this, language)} className="btn btn-success btn-xs template-remove">
+                  &nbsp;<button type="button" onClick={this.addLanguage.bind(this, language)} className="btn btn-success btn-xs template-remove">
                     <Icon icon="plus" />&nbsp;
                     <span>{t('System', 'Add language')}</span>
                   </button>
@@ -126,13 +130,14 @@ Languages.contextTypes = {
 
 Languages.propTypes = {
   languages: PropTypes.object,
+  locale: PropTypes.string.isRequired,
   addLanguage: PropTypes.func.isRequired,
   deleteLanguage: PropTypes.func.isRequired,
   setDefaultLanguage: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps({ settings }) {
-  return { languages: settings.collection.get('languages') };
+export function mapStateToProps({ settings, locale }) {
+  return { languages: settings.collection.get('languages'), locale };
 }
 
 function mapDispatchToProps(dispatch) {
