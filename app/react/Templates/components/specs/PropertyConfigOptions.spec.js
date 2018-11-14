@@ -32,11 +32,31 @@ describe('PropertyConfigOptions', () => {
   });
 
   describe('priority sorting option', () => {
-    it('should render for text and date', () => {
-      props.type = 'text';
-      expectMatch();
-      props.type = 'date';
-      expectMatch();
+    describe('when property filter is true', () => {
+      it('should render for text, date, numeric and select if property filter is true', () => {
+        props.property.filter = true;
+        props.type = 'text';
+        expectMatch();
+        props.type = 'date';
+        expectMatch();
+        props.type = 'numeric';
+        expectMatch();
+        props.type = 'select';
+        expectMatch();
+      });
+    });
+    describe('when property filter is not true', () => {
+      it('should not render priority sorting option', () => {
+        props.property.filter = false;
+        props.type = 'text';
+        expectMatch();
+        props.type = 'date';
+        expectMatch();
+        props.type = 'numeric';
+        expectMatch();
+        props.type = 'select';
+        expectMatch();
+      });
     });
   });
 
