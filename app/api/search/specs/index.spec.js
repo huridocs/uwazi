@@ -116,7 +116,7 @@ describe('search', () => {
   });
 
   describe('deleteLanguage', () => {
-    fit('should delete the index', (done) => {
+    it('should delete the index', (done) => {
       search.deleteLanguage('en')
       .then(() => search.search({}, 'en'))
       .then((results) => {

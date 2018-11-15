@@ -233,7 +233,7 @@ const search = {
       }
       return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
       .then(processResponse)
-      .catch((error) => {
+      .catch(() => {
         throw createError('Query error', 400);
       });
     });

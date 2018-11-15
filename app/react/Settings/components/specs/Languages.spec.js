@@ -43,7 +43,7 @@ describe('Languages', () => {
       expect(context.confirm).toHaveBeenCalled();
       const confirmArguments = context.confirm.calls.allArgs()[0][0];
       confirmArguments.accept();
-      expect(props.deleteLanguage).toHaveBeenCalledWith('es');
+      expect(props.deleteLanguage).toHaveBeenCalledWith('en');
       done();
     });
   });

@@ -1,8 +1,6 @@
 import { actions as formActions } from 'react-redux-form';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
-import SettingsAPI from 'app/Settings/SettingsAPI';
-import { actions } from 'app/BasicReducer';
 import t from '../t';
 import I18NApi from '../I18NApi';
 

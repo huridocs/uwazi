@@ -27,22 +27,7 @@ exports[`Languages should render Languages component 1`] = `
       </span>
       <div
         className="list-group-item-actions"
-      >
-        <button
-          className="btn btn-danger btn-xs template-remove"
-          disabled={true}
-          onClick={[Function]}
-          type="button"
-        >
-          <Component
-            icon="trash-alt"
-          />
-           
-          <span>
-            Delete language
-          </span>
-        </button>
-      </div>
+      />
     </li>
     <li
       className="list-group-item"
