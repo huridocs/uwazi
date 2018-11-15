@@ -19,7 +19,7 @@ describe('relationships', () => {
   });
 
   describe('getByDocument()', () => {
-    fit('should return all the relationships of a document', (done) => {
+    it('should return all the relationships of a document', (done) => {
       relationships.getByDocument('entity2', 'en')
       .then((result) => {
         expect(result.length).toBe(12);
@@ -46,7 +46,7 @@ describe('relationships', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should return text references only for the relations that match the filename of the entity', async () => {
+    it('should return text references only for the relations that match the filename of the entity', async () => {
       const entity1EnRelationships = await relationships.getByDocument('entity1', 'en');
       const entity1EsRelationships = await relationships.getByDocument('entity1', 'es');
       const entity1PtRelationships = await relationships.getByDocument('entity1', 'pt');
@@ -63,7 +63,7 @@ describe('relationships', () => {
       expect(entity1PtRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
     });
 
-    fit('should set template to null if no template found', async () => {
+    it('should set template to null if no template found', async () => {
       const relations = await relationships.getByDocument('entity2', 'en');
       const relationshipWithoutTemplate = relations.find(r => r._id.equals(connectionID9));
       const relationshipWithTemplate = relations.find(r => r._id.equals(connectionID8));
@@ -72,14 +72,14 @@ describe('relationships', () => {
       expect(relationshipWithTemplate.template).not.toBe(null);
     });
 
-    fit('should not return hubs that are connected only to other languages', async () => {
+    it('should not return hubs that are connected only to other languages', async () => {
       const relations = await relationships.getByDocument('doc2', 'es');
       expect(relations.filter(r => r.hub.equals(hub8)).length).toBe(0);
     });
   });
 
   describe('getGroupsByConnection()', () => {
-    fit('should return groups of connection types and templates of all the relationships of a document', async () => {
+    it('should return groups of connection types and templates of all the relationships of a document', async () => {
       const groups = await relationships.getGroupsByConnection('entity2', 'en');
       const group1 = groups.find(r => r.key === relation1.toString());
       expect(group1.key).toBe(relation1.toString());
@@ -98,7 +98,7 @@ describe('relationships', () => {
       expect(group2.templates[0].label).toBe('template');
     });
 
-    fit('should return groups of connection including unpublished docs if user is found', async () => {
+    it('should return groups of connection including unpublished docs if user is found', async () => {
       const groups = await relationships.getGroupsByConnection('entity2', 'en', { user: 'found' });
       expect(groups.length).toBe(3);
       const group1 = groups.find(r => r.key === relation1.toString());
@@ -114,7 +114,7 @@ describe('relationships', () => {
       expect(group3.templates[0].count).toBe(3);
     });
 
-    fit('should return groups of connection wihtout refs if excluded', async () => {
+    it('should return groups of connection wihtout refs if excluded', async () => {
       const groups = await relationships.getGroupsByConnection('entity2', 'en', { excludeRefs: true });
       expect(groups.length).toBe(3);
       expect(groups[0].templates[0].refs).toBeUndefined();
@@ -124,7 +124,7 @@ describe('relationships', () => {
   });
 
   describe('getHub()', () => {
-    fit('should return all the connections of the same hub', async () => {
+    it('should return all the connections of the same hub', async () => {
       const relations = await relationships.getHub(hub1, 'en');
       expect(relations.length).toBe(2);
       expect(relations[0].entity).toBe('entity1');
@@ -133,12 +133,12 @@ describe('relationships', () => {
   });
 
   describe('countByRelationType()', () => {
-    fit('should return number of relationships using a relationType', async () => {
+    it('should return number of relationships using a relationType', async () => {
       const relationsCount = await relationships.countByRelationType(relation2.toString());
       expect(relationsCount).toBe(5);
     });
 
-    fit('should return zero when none is using it', async () => {
+    it('should return zero when none is using it', async () => {
       const notUsedRelation = db.id().toString();
       const relationsCount = await relationships.countByRelationType(notUsedRelation);
       expect(relationsCount).toBe(0);
@@ -146,7 +146,7 @@ describe('relationships', () => {
   });
 
   describe('bulk()', () => {
-    fit('should save or delete the relationships', async () => {
+    it('should save or delete the relationships', async () => {
       const data = {
         save: [{ _id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: { text: 'changed text' } }],
         delete: [{ _id: connectionID2 }, { _id: connectionID3 }]
@@ -164,7 +164,7 @@ describe('relationships', () => {
       expect(deletedReference3).toBe(null);
     });
 
-    fit('should first save and then delete to prevent sidefects of hub sanitizing', async () => {
+    it('should first save and then delete to prevent sidefects of hub sanitizing', async () => {
       const data = {
         save: [{ entity: 'new relationship entity', hub: hub11 }],
         delete: [{ _id: connectionID6 }]
@@ -178,7 +178,7 @@ describe('relationships', () => {
 
   describe('save()', () => {
     describe('When creating a new reference to a hub', () => {
-      fit('should save it and return it with the entity data', async () => {
+      it('should save it and return it with the entity data', async () => {
         const [result] = await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
 
         expect(result.entity).toBe('entity3');
@@ -189,14 +189,14 @@ describe('relationships', () => {
         expect(result._id).toBeDefined();
       });
 
-      fit('should call entities to update the metadata', async () => {
+      it('should call entities to update the metadata', async () => {
         await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
         expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
       });
     });
 
     describe('When creating new relationships', () => {
-      fit('should assign them a hub and return them with the entity data', async () => {
+      it('should assign them a hub and return them with the entity data', async () => {
         const [entity3Connection, doc4Connection] = await relationships.save([{ entity: 'entity3' }, { entity: 'doc4' }], 'en');
 
         expect(entity3Connection.entity).toBe('entity3');
@@ -220,7 +220,7 @@ describe('relationships', () => {
       });
 
       describe('when creating text references', () => {
-        fit('should assign them the file they belong to', async () => {
+        it('should assign them the file they belong to', async () => {
           const saveResult = await relationships.save([
             { entity: 'doc5', range: { text: 'one thing' } },
             { entity: 'doc4', range: { text: 'something' } },
@@ -234,7 +234,7 @@ describe('relationships', () => {
     });
 
     describe('when the reference exists', () => {
-      fit('should update it', async () => {
+      it('should update it', async () => {
         const reference = await relationships.getById(connectionID1);
         reference.entity = 'entity1';
         await relationships.save(reference, 'en');
@@ -245,7 +245,7 @@ describe('relationships', () => {
         expect(changedReference._id.equals(connectionID1)).toBe(true);
       });
 
-      fit('should update correctly if ID is not a mongo ObjectId', async () => {
+      it('should update correctly if ID is not a mongo ObjectId', async () => {
         const reference = await relationships.getById(connectionID1);
         reference._id = reference._id.toString();
         reference.entity = 'entity1';
@@ -256,7 +256,7 @@ describe('relationships', () => {
         expect(changedReference._id.equals(connectionID1)).toBe(true);
       });
 
-      fit('should update correctly if template is null', async () => {
+      it('should update correctly if template is null', async () => {
         const reference = await relationships.getById(connectionID1);
         reference.template = { _id: null };
         const [savedReference] = await relationships.save(reference, 'en');
@@ -266,7 +266,7 @@ describe('relationships', () => {
     });
 
     describe('when saving one reference without hub', () => {
-      fit('should throw an error', (done) => {
+      it('should throw an error', (done) => {
         relationships.save({ entity: 'entity3', range: { text: 'range' } }, 'en')
         .then(() => {
           done.fail('Should throw an error');
@@ -280,7 +280,7 @@ describe('relationships', () => {
   });
 
   describe('saveEntityBasedReferences()', () => {
-    it('should create connections based on properties', (done) => {
+    it('should create connections based on properties', async () => {
       const entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
@@ -289,19 +289,15 @@ describe('relationships', () => {
         }
       };
 
-      relationships.saveEntityBasedReferences(entity, 'en')
-      .then(() => relationships.getByDocument('bruceWayne', 'en'))
-      .then((connections) => {
-        expect(connections.length).toBe(4);
-        expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
-        expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
-        expect(connections[0].hub).toEqual(connections[1].hub);
-        done();
-      })
-      .catch(catchErrors(done));
+      await relationships.saveEntityBasedReferences(entity, 'en');
+      const connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.length).toBe(5);
+      expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
+      expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
+      expect(connections[0].hub).toEqual(connections[1].hub);
     });
 
-    it('should not create existing connections based on properties', (done) => {
+    it('should not create existing connections based on properties', async () => {
       const entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
@@ -311,17 +307,13 @@ describe('relationships', () => {
         }
       };
 
-      relationships.saveEntityBasedReferences(entity, 'en')
-      .then(() => relationships.saveEntityBasedReferences(entity, 'en'))
-      .then(() => relationships.getByDocument('bruceWayne', 'en'))
-      .then((connections) => {
-        expect(connections.length).toBe(5);
-        done();
-      })
-      .catch(catchErrors(done));
+      await relationships.saveEntityBasedReferences(entity, 'en');
+      await relationships.saveEntityBasedReferences(entity, 'en');
+      const connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.length).toBe(6);
     });
 
-    it('should delete connections based on properties', (done) => {
+    it('should delete connections based on properties', async () => {
       const entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
@@ -331,36 +323,30 @@ describe('relationships', () => {
         }
       };
 
-      relationships.saveEntityBasedReferences(entity, 'en')
-      .then(() => relationships.getByDocument('bruceWayne', 'en'))
-      .then((connections) => {
-        expect(connections.length).toBe(6);
-        entity.metadata = {
-          family: ['thomasWayne'],
-          friend: ['alfred']
-        };
-        return relationships.saveEntityBasedReferences(entity, 'en');
-      })
-      .then(() => relationships.getByDocument('bruceWayne', 'en'))
-      .then((connections) => {
-        expect(connections.length).toBe(5);
-        entity.metadata = {
-          family: ['alfred'],
-          friend: ['robin']
-        };
-        return relationships.saveEntityBasedReferences(entity, 'en');
-      })
-      .then(() => relationships.getByDocument('bruceWayne', 'en'))
-      .then((connections) => {
-        expect(connections.length).toBe(6);
-        done();
-      })
-      .catch(catchErrors(done));
+      await relationships.saveEntityBasedReferences(entity, 'en');
+      let connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.length).toBe(7);
+
+      entity.metadata = {
+        family: ['thomasWayne'],
+        friend: ['alfred']
+      };
+      await relationships.saveEntityBasedReferences(entity, 'en');
+      connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.length).toBe(6);
+
+      entity.metadata = {
+        family: ['alfred'],
+        friend: ['robin']
+      };
+      await relationships.saveEntityBasedReferences(entity, 'en');
+      connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.length).toBe(7);
     });
   });
 
   describe('search()', () => {
-    fit('should prepare a query with ids based on an entity id and a searchTerm', async () => {
+    it('should prepare a query with ids based on an entity id and a searchTerm', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
       spyOn(search, 'search').and.returnValue(searchResponse);
       await relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en');
@@ -371,7 +357,7 @@ describe('relationships', () => {
       expect(actualQuery.limit).toBe(9999);
     });
 
-    fit('should filter out ids based on filtered relation types and templates, and pass the user to search', async () => {
+    it('should filter out ids based on filtered relation types and templates, and pass the user to search', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
       spyOn(search, 'search').and.returnValue(searchResponse);
       const query = { filter: {}, searchTerm: 'something' };
@@ -392,7 +378,7 @@ describe('relationships', () => {
       expect(user).toBe('user');
     });
 
-    fit('should return the matching entities with their relationships and the current entity with the respective relationships', async () => {
+    it('should return the matching entities with their relationships and the current entity with the respective relationships', async () => {
       const searchResponse = Promise.resolve(
         { rows: [
           { sharedId: 'entity1' },
@@ -411,7 +397,7 @@ describe('relationships', () => {
       expect(result.rows[4].connections.length).toBe(5);
     });
 
-    fit('should return number of hubs (total and requested) and allow limiting the number of HUBs returned', async () => {
+    it('should return number of hubs (total and requested) and allow limiting the number of HUBs returned', async () => {
       const searchResponse = Promise.resolve(
         { rows: [
           { sharedId: 'entity1' },
@@ -443,14 +429,14 @@ describe('relationships', () => {
   });
 
   describe('delete()', () => {
-    fit('should delete the relationship', async () => {
+    it('should delete the relationship', async () => {
       const response = await relationships.delete({ _id: connectionID1 }, 'en');
       const hub7Connections = await relationships.get({ hub: hub7 });
       expect(hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length).toBe(0);
       expect(JSON.parse(response).ok).toBe(1);
     });
 
-    fit('should not leave a lone connection in the hub', async () => {
+    it('should not leave a lone connection in the hub', async () => {
       await relationships.delete({ _id: connectionID1 }, 'en');
       await relationships.delete({ _id: connectionID3 }, 'en');
       await relationships.delete({ _id: connectionID2 }, 'en');
@@ -461,7 +447,7 @@ describe('relationships', () => {
     });
 
     describe('when deleting relations for an entity', () => {
-      fit('should not leave single relationship hubs', async () => {
+      it('should not leave single relationship hubs', async () => {
         await relationships.delete({ entity: 'entity3' }, 'en');
 
         const hub2Relationships = await relationships.get({ hub: hub2 });
@@ -472,7 +458,7 @@ describe('relationships', () => {
       });
     });
 
-    fit('should not delete the hub when specific combos yield a hub with less than 2 connections', async () => {
+    it('should not delete the hub when specific combos yield a hub with less than 2 connections', async () => {
       await relationships.delete({ _id: connectionID4 }, 'es');
 
       const hubRelationships = await relationships.get({ hub: hub12 });
@@ -482,7 +468,7 @@ describe('relationships', () => {
       expect(hubRelationships.filter(c => c.entity === 'doc2').length).toBe(1);
     });
 
-    fit('should call entities to update the metadata', async () => {
+    it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
       expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
@@ -490,7 +476,7 @@ describe('relationships', () => {
     });
 
     describe('when there is no condition', () => {
-      fit('should throw an error', (done) => {
+      it('should throw an error', (done) => {
         relationships.delete()
         .then(() => {
           done.fail('Should throw an error');
@@ -504,14 +490,32 @@ describe('relationships', () => {
   });
 
   describe('deleteTextReferences()', () => {
-    fit('should delete the entity text relationships (that match language)', (done) => {
-      relationships.deleteTextReferences('doc2', 'en')
-      .then(() => Promise.all([relationships.getByDocument('doc2', 'en'), relationships.getByDocument('doc2', 'pt')]))
-      .then(([relationshipsInEnglish, relationshipsInPT]) => {
-        expect(relationshipsInEnglish.length).toBe(4);
-        expect(relationshipsInPT.length).toBe(8);
-        done();
-      });
+    it('should delete the entity text relationships (that match language)', async () => {
+      await relationships.deleteTextReferences('doc2', 'en');
+
+      const [relationshipsInEnglish, relationshipsInPT] = await Promise.all([
+        relationships.getByDocument('doc2', 'en'),
+        relationships.getByDocument('doc2', 'pt'),
+      ]);
+
+      expect(relationshipsInEnglish.length).toBe(4);
+      expect(relationshipsInPT.length).toBe(8);
+    });
+
+    it('should not leave a lone connection in the hub', async () => {
+      await relationships.delete({ entity: 'entity_id' }, 'en');
+      await relationships.deleteTextReferences('doc2', 'en');
+      await relationships.deleteTextReferences('doc2', 'pt');
+
+      const hubRelationships = await relationships.get({ hub: hub8 });
+
+      expect(hubRelationships).toEqual([]);
+    });
+
+    it('should not delete any relationships if entity.file.filename its undefined', async () => {
+      await relationships.deleteTextReferences('entity1', 'en');
+      const hubRelationships = await relationships.getByDocument('entity1', 'en');
+      expect(hubRelationships.length).toEqual(5);
     });
   });
 });

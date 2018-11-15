@@ -130,7 +130,7 @@ export default {
     {sharedId: 'doc2', language: 'pt', title: 'doc2 title', type: 'document', template: template, published: true, file: {filename: 'doc2ptFile'}},
     {sharedId: 'doc2', language: 'es', title: 'doc2 title', type: 'document', template: template, published: true, file: {filename: 'doc2esFile'}},
 
-    {sharedId: 'entity1', language: 'en', title: 'entity1 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {sharedId: 'entity1', language: 'en', title: 'entity1 title', file: {}, type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
     {sharedId: 'entity2', language: 'en', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
     {sharedId: 'entity3', language: 'en', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity3', language: 'ru', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},

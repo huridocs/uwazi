@@ -11,6 +11,7 @@ import { generateID } from 'api/odm';
 import { createError } from 'api/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
+import { RelationshipCollection, groupByHubs } from './relationshipsHelpers';
 
 const normalizeConnectedDocumentData = (relationship, connectedDocument) => {
   relationship.entityData = connectedDocument;
@@ -24,17 +25,6 @@ function excludeRefs(template) {
 
 function getPropertiesToBeConnections(template) {
   return template.properties.filter(prop => prop.type === 'relationship');
-}
-
-function groupByHubs(references) {
-  const hubs = references.reduce((_hubs, reference) => {
-    if (!_hubs[reference.hub]) {
-      _hubs[reference.hub] = [];
-    }
-    _hubs[reference.hub].push(reference);
-    return _hubs;
-  }, []);
-  return Object.keys(hubs).map(key => hubs[key]);
 }
 
 const createRelationship = async (relationship, language) => {
@@ -65,15 +55,6 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
 
     return result;
   }, null);
-}
-
-function determineDeleteAction(hubId, relation, relationQuery) {
-  const deleteQuery = relationQuery;
-  // if (relationQuery._id) {
-  //   deleteQuery = { _id: relationQuery._id };
-  // }
-
-  return model.delete(deleteQuery);
 }
 
 // Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!
@@ -142,37 +123,6 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
   return results;
 };
 
-class RelationshipCollection extends Array {
-  removeOtherLanguageTextReferences(connectedDocuments) {
-    return this.filter((r) => {
-      if (r.filename) {
-        const filename = connectedDocuments[r.entity].file ? connectedDocuments[r.entity].file.filename : '';
-        return r.filename === filename;
-      }
-      return true;
-    });
-  }
-  removeOrphanHubsOf(sharedId) {
-    const hubs = groupByHubs(this).filter(h => h.map(r => r.entity).includes(sharedId));
-    return new RelationshipCollection(...Array.prototype.concat(...hubs));
-  }
-  removeSingleHubs() {
-    const hubRelationshipsCount = this.reduce((data, r) => {
-      data[r.hub.toString()] = data[r.hub.toString()] ? data[r.hub.toString()] + 1 : 1;
-      return data;
-    }, {});
-
-    return this.filter(r => hubRelationshipsCount[r.hub.toString()] > 1);
-  }
-
-  withConnectedData(connectedDocuments) {
-    return this.map((_relationship) => {
-      const relationship = { template: null, ..._relationship };
-      return normalizeConnectedDocumentData(relationship, connectedDocuments[relationship.entity]);
-    });
-  }
-}
-
 export default {
   get(query, select, pagination) {
     return model.get(query, select, pagination);
@@ -186,20 +136,11 @@ export default {
     const ownRelations = await model.get({ entity });
     const hubsIds = ownRelations.map(relationship => relationship.hub);
     return model.get({ hub: { $in: hubsIds } });
-    // return model.db.aggregate([
-    //   { $match: { hub: { $in: hubsIds } } },
-    //   { $group: {
-    //     _id: '$hub',
-    //     relationships: { $push: '$$ROOT' },
-    //     count: { $sum: 1 }
-    //   } }
-    // ]);
   },
 
   getByDocument(sharedId, language) {
-    return this.getDocumentHubs(sharedId, language)
+    return this.getDocumentHubs(sharedId)
     .then((_relationships) => {
-      // const relationships = Array.prototype.concat(...hubs.map(hub => hub.relationships));
       const connectedEntityiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities.get({ sharedId: { $in: connectedEntityiesSharedId }, language })
       .then((_connectedDocuments) => {
@@ -422,8 +363,11 @@ export default {
   },
 
   async deleteTextReferences(sharedId, language) {
-    const [entity] = await entities.get({ sharedId, language }, 'file');
-    return model.delete({ filename: entity.file.filename });
+    const [{ file = {} }] = await entities.get({ sharedId, language }, 'file');
+    if (file.filename) {
+      return this.delete({ filename: file.filename });
+    }
+    return Promise.resolve();
   },
 
   updateMetadataProperties(template, currentTemplate) {
