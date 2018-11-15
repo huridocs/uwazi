@@ -161,11 +161,19 @@ const target = {
       props.addProperty({ label: item.label, type: item.type, inserting: true }, 0);
       return;
     }
+
     if (dragIndex === hoverIndex) {
       return;
     }
+
+    if (item.alreadyReordered) {
+      item.alreadyReordered = false;
+      return;
+    }
+
     props.reorderProperty(dragIndex, hoverIndex);
     item.index = hoverIndex;
+    item.alreadyReordered = true;
   }
 };
 
@@ -175,6 +183,7 @@ const dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, 
 
 const source = {
   beginDrag(props) {
+    console.log('beginDrag');
     return {
       index: props.index,
       label: props.label,
