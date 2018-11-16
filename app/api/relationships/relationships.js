@@ -2,13 +2,13 @@ import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
-import { generateNamesAndIds } from '../templates/utils';
 import entities from 'api/entities/entities';
+import { generateID } from 'api/odm';
+import { createError } from 'api/utils';
 
 import model from './model';
 import search from '../search/search';
-import { generateID } from 'api/odm';
-import { createError } from 'api/utils';
+import { generateNamesAndIds } from '../templates/utils';
 
 import { filterRelevantRelationships, groupRelationships } from './groupByRelationships';
 import { RelationshipCollection, groupByHubs } from './relationshipsHelpers';
