@@ -117,10 +117,11 @@ describe('search', () => {
 
   describe('deleteLanguage', () => {
     it('should delete the index', (done) => {
+      spyOn(elastic, 'deleteByQuery').and.returnValue(Promise.resolve());
       search.deleteLanguage('en')
-      .then(() => search.search({}, 'en'))
-      .then((results) => {
-        expect(results.rows.length).toBe(0);
+      .then(() => {
+        expect(elastic.deleteByQuery)
+        .toHaveBeenCalledWith({ index: elasticIndex, body: { query: { match: { language: 'en' } } } });
         done();
       });
     });
