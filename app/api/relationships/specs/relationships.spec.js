@@ -1,11 +1,31 @@
 /* eslint-disable max-nested-callbacks */
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 
+import fixtures, {
+  connectionID1,
+  connectionID2,
+  connectionID3,
+  connectionID4,
+  connectionID5,
+  connectionID6,
+  connectionID8,
+  connectionID9,
+  hub1,
+  hub2,
+  hub7,
+  hub8,
+  hub9,
+  hub11,
+  friend,
+  family,
+  hub12,
+  relation1,
+  relation2,
+  template
+} from './fixtures';
 import relationships from '../relationships';
-import fixtures, { connectionID1, connectionID2, connectionID3, connectionID4, connectionID5, connectionID6, connectionID8, connectionID9,
-  hub1, hub2, hub7, hub8, hub11, hub12, relation1, relation2, template, sharedId4 } from './fixtures';
 import search from '../../search/search';
 
 describe('relationships', () => {
@@ -153,7 +173,7 @@ describe('relationships', () => {
       };
 
       const response = await relationships.bulk(data, 'en');
-      expect(response).toEqual({ success: 'ok' });
+      expect(response).toMatchSnapshot();
 
       const savedReference = await relationships.getById(connectionID5);
       expect(savedReference.range.text).toBe('changed text');
@@ -291,7 +311,6 @@ describe('relationships', () => {
 
       await relationships.saveEntityBasedReferences(entity, 'en');
       const connections = await relationships.getByDocument('bruceWayne', 'en');
-      expect(connections.length).toBe(5);
       expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
       expect(connections[0].hub).toEqual(connections[1].hub);
@@ -303,14 +322,23 @@ describe('relationships', () => {
         sharedId: 'bruceWayne',
         metadata: {
           family: ['thomasWayne'],
-          friend: ['robin']
+          friend: ['robin', 'alfred']
         }
       };
 
       await relationships.saveEntityBasedReferences(entity, 'en');
       await relationships.saveEntityBasedReferences(entity, 'en');
       const connections = await relationships.getByDocument('bruceWayne', 'en');
-      expect(connections.length).toBe(6);
+
+      const existingHubConnections = connections.filter(c => c.hub.equals(hub9));
+      const newHubCreated = connections.filter(c => !c.hub.equals(hub9));
+
+      expect(existingHubConnections.length).toBe(4);
+
+      expect(newHubCreated.length).toBe(3);
+      expect(newHubCreated.find(c => c.entity === 'robin').template.toString()).toBe(friend.toString());
+      expect(newHubCreated.find(c => c.entity === 'alfred').template.toString()).toBe(friend.toString());
+      expect(newHubCreated.find(c => c.entity === 'bruceWayne').template).toBe(null);
     });
 
     it('should delete connections based on properties', async () => {
@@ -324,16 +352,15 @@ describe('relationships', () => {
       };
 
       await relationships.saveEntityBasedReferences(entity, 'en');
-      let connections = await relationships.getByDocument('bruceWayne', 'en');
-      expect(connections.length).toBe(7);
 
       entity.metadata = {
         family: ['thomasWayne'],
         friend: ['alfred']
       };
       await relationships.saveEntityBasedReferences(entity, 'en');
-      connections = await relationships.getByDocument('bruceWayne', 'en');
+      let connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.length).toBe(6);
+      expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
       entity.metadata = {
         family: ['alfred'],
@@ -341,6 +368,9 @@ describe('relationships', () => {
       };
       await relationships.saveEntityBasedReferences(entity, 'en');
       connections = await relationships.getByDocument('bruceWayne', 'en');
+
+      expect(connections.find(c => c.entity === 'thomasWayne')).not.toBeDefined();
+      expect(connections.find(c => c.entity === 'alfred').template.toString()).toBe(family.toString());
       expect(connections.length).toBe(7);
     });
   });
@@ -512,7 +542,7 @@ describe('relationships', () => {
       expect(hubRelationships).toEqual([]);
     });
 
-    it('should not delete any relationships if entity.file.filename its undefined', async () => {
+    it('should not delete any relationships if entity.file.filename if undefined', async () => {
       await relationships.deleteTextReferences('entity1', 'en');
       const hubRelationships = await relationships.getByDocument('entity1', 'en');
       expect(hubRelationships.length).toEqual(5);

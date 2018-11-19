@@ -190,9 +190,9 @@ export default {
   },
 
   async bulk(bulkData, language) {
-    await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
-    await Promise.all(bulkData.delete.map(reference => this.delete(reference, language)));
-    return { success: 'ok' };
+    const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
+    const deletions = await Promise.all(bulkData.delete.map(reference => this.delete(reference, language)));
+    return saves.concat(deletions);
   },
 
 
