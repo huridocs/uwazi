@@ -8,6 +8,7 @@ import { notify } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
+import defaultTemplate from '../helpers/defaultTemplate';
 
 import * as types from './actionTypes';
 
@@ -40,7 +41,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 
     const sortedTemplates = advancedSort(templates, { property: 'name' });
 
-    if (!entity.template) {
+    if (!entity.template && sortedTemplates.length) {
       entity.template = sortedTemplates[0]._id;
       if (entity.type === 'document' && sortedTemplates.find(t => !t.isEntity)) {
         entity.template = sortedTemplates.find(t => !t.isEntity)._id;
@@ -54,7 +55,7 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
       entity.metadata = {};
     }
 
-    const template = sortedTemplates.find(t => t._id === entity.template);
+    const template = sortedTemplates.find(t => t._id === entity.template) || defaultTemplate;
     resetMetadata(entity.metadata, template, { resetExisting: false });
 
     dispatch(formActions.reset(form));

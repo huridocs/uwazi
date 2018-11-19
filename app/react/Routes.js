@@ -50,14 +50,30 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
 import { trackPage } from 'app/App/GoogleAnalytics';
+import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
 
 function onEnter() {
   trackPage();
 }
 
+function settingsEnter(nxtState, replace) {
+  if (!store.getState().user.get('_id')) {
+    replace('/login');
+  }
+}
+
+function enterOnLibrary(nxtState, replace) {
+  const state = store.getState();
+  if (blankState() && !state.user.get('_id')) {
+    return replace('/login');
+  }
+  trackPage();
+}
+
 function getIndexRoute(nextState, callBack) {
-  const homePageSetting = store.getState().settings.collection.get('home_page');
+  const state = store.getState();
+  const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
   const isPageRoute = customHomePage.includes('page');
 
@@ -83,7 +99,7 @@ function getIndexRoute(nextState, callBack) {
 
 const routes = (
   <Route getIndexRoute={getIndexRoute}>
-    <Route path="settings" component={Settings}>
+    <Route path="settings" component={Settings} onEnter={settingsEnter}>
       <Route path="account" component={AccountSettings} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
@@ -126,7 +142,7 @@ const routes = (
       <Route path="customisation" component={Customisation} />
       <Route path="custom-uploads" component={CustomUploads} />
     </Route>
-    <Route path="library" component={Library} onEnter={onEnter}/>
+    <Route path="library" component={Library} onEnter={enterOnLibrary}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
