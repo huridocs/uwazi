@@ -15,6 +15,7 @@ import fixtures, {
   entity3,
   hub1,
   hub2,
+  hub5,
   hub7,
   hub8,
   hub9,
@@ -549,6 +550,12 @@ describe('relationships', () => {
 
       expect(relationshipsInEnglish.length).toBe(4);
       expect(relationshipsInPT.length).toBe(8);
+    });
+
+    it('should not delete text relationships if filename also used in other languages', async () => {
+      await relationships.deleteTextReferences('doc5', 'en');
+      const doc5Relationships = await relationships.get({ entity: 'doc5', hub: hub5 });
+      expect(doc5Relationships.length).toBe(1);
     });
 
     it('should not leave a lone connection in the hub', async () => {

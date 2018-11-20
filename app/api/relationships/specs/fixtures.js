@@ -61,6 +61,7 @@ export default {
     {entity: 'entity3', hub: hub4, template: relation1},
 
     {entity: 'target', hub: hub5},
+    {entity: 'doc5', hub: hub5, range: {}, filename: 'doc5enFile'},
     {entity: 'target', hub: hub5},
 
     {entity: 'target1', hub: hub6},
