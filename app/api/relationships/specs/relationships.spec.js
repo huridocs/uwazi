@@ -12,15 +12,16 @@ import fixtures, {
   connectionID6,
   connectionID8,
   connectionID9,
+  entity3,
   hub1,
   hub2,
   hub7,
   hub8,
   hub9,
   hub11,
+  hub12,
   friend,
   family,
-  hub12,
   relation1,
   relation2,
   template
@@ -166,6 +167,23 @@ describe('relationships', () => {
   });
 
   describe('bulk()', () => {
+    const cleanSnapshot = (_value) => {
+      const [[_savedItem], ...deletes] = _value;
+      const savedItem = {
+        ..._savedItem,
+        _id: _savedItem._id.equals(connectionID5) ? 'connectionID5' : _savedItem._id,
+        template: _savedItem.template.equals(relation2) ? 'relation2' : _savedItem.relation2,
+        hub: _savedItem.hub.equals(hub2) ? 'hub2' : _savedItem.hub2,
+      };
+
+      savedItem.entityData = {
+        ...savedItem.entityData,
+        _id: savedItem.entityData._id.equals(entity3) ? 'entity3' : savedItem.entityData._id,
+        template: savedItem.entityData.template.equals(template) ? 'entity3' : savedItem.entityData.template,
+      };
+      return [[savedItem], ...deletes];
+    };
+
     it('should save or delete the relationships', async () => {
       const data = {
         save: [{ _id: connectionID5, entity: 'entity3', hub: hub2, template: relation2, range: { text: 'changed text' } }],
@@ -173,7 +191,7 @@ describe('relationships', () => {
       };
 
       const response = await relationships.bulk(data, 'en');
-      expect(response).toMatchSnapshot();
+      expect(cleanSnapshot(response)).toMatchSnapshot();
 
       const savedReference = await relationships.getById(connectionID5);
       expect(savedReference.range.text).toBe('changed text');

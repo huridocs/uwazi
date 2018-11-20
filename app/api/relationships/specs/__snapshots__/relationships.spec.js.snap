@@ -4,10 +4,10 @@ exports[`relationships bulk() should save or delete the relationships 1`] = `
 Array [
   Array [
     Object {
-      "_id": "5bf2e59453845c43e7f5652a",
+      "_id": "connectionID5",
       "entity": "entity3",
       "entityData": Object {
-        "_id": "5bf2e59453845c43e7f56569",
+        "_id": "entity3",
         "creationDate": 456,
         "icon": "icon3",
         "language": "en",
@@ -16,15 +16,15 @@ Array [
         },
         "published": true,
         "sharedId": "entity3",
-        "template": "5bf2e59453845c43e7f56530",
+        "template": "entity3",
         "title": "entity3 title",
         "type": "entity",
       },
-      "hub": "5bf2e59453845c43e7f5653c",
+      "hub": "hub2",
       "range": Object {
         "text": "changed text",
       },
-      "template": "5bf2e59453845c43e7f56538",
+      "template": "relation2",
     },
   ],
   Object {

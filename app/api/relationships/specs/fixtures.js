@@ -10,6 +10,8 @@ const connectionID7 = db.id();
 const connectionID8 = db.id();
 const connectionID9 = db.id();
 
+const entity3 = db.id();
+
 const inbound = db.id();
 const template = db.id();
 const thesauri = db.id();
@@ -132,7 +134,7 @@ export default {
 
     {sharedId: 'entity1', language: 'en', title: 'entity1 title', file: {}, type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
     {sharedId: 'entity2', language: 'en', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
-    {sharedId: 'entity3', language: 'en', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
+    {_id: entity3, sharedId: 'entity3', language: 'en', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity3', language: 'ru', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity4', language: 'en', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity4', language: 'ru', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
@@ -182,6 +184,7 @@ export {
   connectionID7,
   connectionID8,
   connectionID9,
+  entity3,
   selectValueID,
   value1ID,
   value2ID,
