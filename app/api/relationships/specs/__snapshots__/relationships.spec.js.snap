@@ -16,7 +16,7 @@ Array [
         },
         "published": true,
         "sharedId": "entity3",
-        "template": "entity3",
+        "template": "template",
         "title": "entity3 title",
         "type": "entity",
       },

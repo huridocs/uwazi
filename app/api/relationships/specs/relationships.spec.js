@@ -179,7 +179,7 @@ describe('relationships', () => {
       savedItem.entityData = {
         ...savedItem.entityData,
         _id: savedItem.entityData._id.equals(entity3) ? 'entity3' : savedItem.entityData._id,
-        template: savedItem.entityData.template.equals(template) ? 'entity3' : savedItem.entityData.template,
+        template: savedItem.entityData.template.equals(template) ? 'template' : savedItem.entityData.template,
       };
 
       return [[savedItem], ...deletes];
