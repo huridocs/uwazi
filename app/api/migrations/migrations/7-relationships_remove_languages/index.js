@@ -18,7 +18,7 @@ export default {
       const isTextReference = relation.range;
       if (!isTextReference) {
         await db.collection('connections').deleteMany({ sharedId: relation.sharedId, language: { $in: languagesToRemove } });
-        await db.collection('connections').updateMany({ sharedId: relation.sharedId }, { $unset: { language: 1, sharedId: 1 } });
+        await db.collection('connections').update({ sharedId: relation.sharedId }, { $unset: { language: 1, sharedId: 1 } });
       }
 
       if (isTextReference) {
