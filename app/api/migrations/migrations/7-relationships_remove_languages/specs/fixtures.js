@@ -1,5 +1,3 @@
-import { sharedId } from '../../../../attachments/specs/fixtures';
-
 export default {
   settings: [
     {
