@@ -70,7 +70,7 @@ export class MetadataFormFields extends Component {
     case 'image':
       return (
         <div>
-          <Field model={_model}><input className="form-control"/></Field>
+          <Field model={_model}><textarea rows="6" className="form-control"/></Field>
           &nbsp;<em>URL (address for image or media file)</em>
         </div>
       );

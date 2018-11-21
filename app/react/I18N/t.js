@@ -1,5 +1,6 @@
 import { store } from 'app/store';
 import React from 'react';
+import translate, { getLocaleTranslation, getContext } from '../../shared/translate';
 import { Translate } from './';
 
 const testingEnvironment = process.env.NODE_ENV === 'test';
@@ -12,12 +13,12 @@ const t = (contextId, key, _text, returnComponent = true) => {
   if (!t.translation) {
     const state = store.getState();
     const translations = state.translations.toJS();
-    t.translation = translations.find(d => d.locale === state.locale) || { contexts: [] };
+    t.translation = getLocaleTranslation(translations, state.locale);
   }
 
-  const context = t.translation.contexts.find(ctx => ctx.id === contextId) || { values: {} };
+  const context = getContext(t.translation, contextId);
 
-  return context.values[key] || text;
+  return translate(context, key, text);
 };
 
 t.resetCachedTranslation = () => {

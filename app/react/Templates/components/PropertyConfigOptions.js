@@ -29,25 +29,26 @@ class PropertyConfigOptions extends Component {
               </Tip>
             </PropertyConfigOption>
             {property.filter && (
-              <PropertyConfigOption label="Default filter" model={`template.data.properties[${index}].defaultfilter`}>
-                <Tip>
-                  Use this property as a default filter in the library.
-                  When there are no document types selected, this property will show as a default filter for your collection.
-                </Tip>
-              </PropertyConfigOption>
-            )
+              <React.Fragment>
+                <PropertyConfigOption label="Default filter" model={`template.data.properties[${index}].defaultfilter`}>
+                  <Tip>
+                    Use this property as a default filter in the library.
+                    When there are no document types selected, this property will show as a default filter for your collection.
+                  </Tip>
+                </PropertyConfigOption>
+                {['text', 'date', 'numeric', 'select'].includes(type) && (
+                  <PropertyConfigOption label="Priority sorting" model={`template.data.properties[${index}].prioritySorting`}>
+                    <Tip>
+                      Properties marked as priority sorting will be used as default sorting criteria.
+                      If more than one property is marked as priority sorting the system will try to pick-up the best fit.
+                      When listing mixed template types, the system will pick-up the best combined priority sorting.
+                    </Tip>
+                  </PropertyConfigOption>
+                )}
+              </React.Fragment>)
             }
             <FilterSuggestions {...property} />
           </div>
-        )}
-        {(type === 'text' || type === 'date') && (
-          <PropertyConfigOption label="Priority sorting" model={`template.data.properties[${index}].prioritySorting`}>
-            <Tip>
-              Properties marked as priority sorting will be used as default sorting criteria.
-              If more than one property is marked as priority sorting the system will try to pick-up the best fit.
-              When listing mixed template types, the system will pick-up the best combined priority sorting.
-            </Tip>
-          </PropertyConfigOption>
         )}
       </div>
     );

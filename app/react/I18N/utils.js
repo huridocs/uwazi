@@ -1,5 +1,4 @@
 import * as Cookie from 'tiny-cookie';
-
 import { isClient } from 'app/utils';
 
 const I18NUtils = {

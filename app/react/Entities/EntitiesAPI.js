@@ -1,11 +1,14 @@
 import api from 'app/utils/api';
+import { toUrlParams } from 'shared/JSONRequest';
 
 export default {
-  get(id) {
-    let url = 'entities';
+  get(id, params = {}) {
+    let urlParams = params;
     if (id) {
-      url += `?_id=${id}`;
+      urlParams = { ...params, _id: id };
     }
+
+    const url = `entities${toUrlParams(urlParams)}`;
 
     return api.get(url)
     .then(response => response.json.rows);
