@@ -1,9 +1,8 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
-
-import fixtures from './fixtures.js';
 import settings from '../settings.js';
+import fixtures from './fixtures.js';
 
 describe('settings', () => {
   beforeEach((done) => {
@@ -73,17 +72,8 @@ describe('settings', () => {
       it('should create translations for them', (done) => {
         const config = {
           site_name: 'My collection',
-          filters: [{
-            id: 1,
-            name: 'Judge'
-          }, {
-            id: 2,
-            name: 'Documents',
-            items: [{
-              id: 3,
-              name: 'Cause'
-            }]
-          }]
+          filters: [{ id: 1, name: 'Judge' },
+          { id: 2, name: 'Documents', items: [{ id: 3, name: 'Cause' }] }]
         };
         settings.save(config)
         .then(() => {
@@ -132,6 +122,43 @@ describe('settings', () => {
           .catch(catchErrors(done));
         });
       });
+    });
+  });
+
+  describe('setDefaultLanguage()', () => {
+    it('should save the settings with the new default language', (done) => {
+      settings.setDefaultLanguage('en')
+      .then(() => settings.get())
+      .then((result) => {
+        expect(result.languages[1].key).toBe('en');
+        expect(result.languages[1].default).toBe(true);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('addLanguage()', () => {
+    it('should add a to settings list language', (done) => {
+      settings.addLanguage({ key: 'fr', label: 'Frances' })
+      .then(() => settings.get())
+      .then((result) => {
+        expect(result.languages.length).toBe(3);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('deleteLanguage()', () => {
+    it('should add a to settings list language', (done) => {
+      settings.deleteLanguage('en')
+      .then(() => settings.get())
+      .then((result) => {
+        expect(result.languages.length).toBe(1);
+        done();
+      })
+      .catch(catchErrors(done));
     });
   });
 
