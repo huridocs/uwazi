@@ -197,7 +197,7 @@ export default {
       }
 
       return this.get(query, select, { skip: offset, limit })
-      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId, language: entity.language })
+      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId })
       .then((relations) => {
         entity.relationships = relations || [];
         return entity;
@@ -379,7 +379,8 @@ export default {
     if (!entity) {
       throw createError('entity does not exists', 404);
     }
-    if (!entity.fullText[pageNumber]) {
+
+    if (typeof entity.fullText[pageNumber] === 'undefined') {
       throw createError('page does not exist', 404);
     }
 
