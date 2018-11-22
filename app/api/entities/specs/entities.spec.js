@@ -418,15 +418,38 @@ describe('entities', () => {
 
   describe('indexEntities', () => {
     it('should index entities based on query params passed', (done) => {
-      entities.indexEntities({ sharedId: 'shared' }, { title: 1 })
+      entities.indexEntities({ sharedId: 'shared' })
       .then(() => {
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
         expect(documentsToIndex[0].title).toBeDefined();
-        expect(documentsToIndex[0].metadata).not.toBeDefined();
+        expect(documentsToIndex[0].fullText).not.toBeDefined();
+        expect(documentsToIndex[0].relationships.length).toBe(4);
+
         expect(documentsToIndex[1].title).toBeDefined();
-        expect(documentsToIndex[1].metadata).not.toBeDefined();
+        expect(documentsToIndex[1].fullText).not.toBeDefined();
+        expect(documentsToIndex[1].relationships.length).toBe(4);
+
         expect(documentsToIndex[2].title).toBeDefined();
-        expect(documentsToIndex[2].metadata).not.toBeDefined();
+        expect(documentsToIndex[2].fullText).not.toBeDefined();
+        expect(documentsToIndex[2].relationships.length).toBe(4);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should index entities withh fullText', (done) => {
+      entities.indexEntities({ sharedId: 'shared' }, '+fullText')
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex[0].title).toBeDefined();
+        expect(documentsToIndex[0].fullText).toBeDefined();
+        expect(documentsToIndex[0].relationships.length).toBe(4);
+
+        expect(documentsToIndex[1].title).toBeDefined();
+        expect(documentsToIndex[1].relationships.length).toBe(4);
+
+        expect(documentsToIndex[2].title).toBeDefined();
+        expect(documentsToIndex[2].relationships.length).toBe(4);
         done();
       })
       .catch(catchErrors(done));

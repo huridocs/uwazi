@@ -197,7 +197,7 @@ export default {
       }
 
       return this.get(query, select, { skip: offset, limit })
-      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId, language: entity.language })
+      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId })
       .then((relations) => {
         entity.relationships = relations || [];
         return entity;
