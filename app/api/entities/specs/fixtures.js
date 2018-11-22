@@ -33,6 +33,7 @@ export default {
       fullText: {
         1: 'page[[1]] 1[[1]]',
         2: 'page[[2]] 2[[2]]',
+        3: '',
       },
       metadata: {
         property1: 'value1'

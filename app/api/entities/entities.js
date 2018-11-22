@@ -379,7 +379,8 @@ export default {
     if (!entity) {
       throw createError('entity does not exists', 404);
     }
-    if (!entity.fullText[pageNumber]) {
+
+    if (typeof entity.fullText[pageNumber] === 'undefined') {
       throw createError('page does not exist', 404);
     }
 
