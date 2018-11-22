@@ -9,11 +9,11 @@ import { removeDocument, unselectAllDocuments } from 'app/Library/actions/librar
 import api from 'app/utils/api';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 import documents from 'app/Documents';
-import referencesAPI from 'app/Viewer/referencesAPI';
-import * as types from 'app/Viewer/actions/actionTypes';
 
 import { PDFUtils } from '../../PDF/';
+import referencesAPI from '../referencesAPI';
 import * as selectionActions from './selectionActions';
+import * as types from './actionTypes';
 import * as uiActions from './uiActions';
 
 export function setDocument(document, html) {
