@@ -96,8 +96,8 @@ export class MetadataProperty extends Component {
       );
     }
 
-    const result = connectDropTarget(
-      <li className={propertyClass}>
+    const property = (
+      <div className={propertyClass}>
         <span className="property-name">
           <Icon icon="bars" fixedWidth />
           <Icon icon={iconClass} fixedWidth /> {label}
@@ -119,7 +119,13 @@ export class MetadataProperty extends Component {
             <Icon icon="trash-alt" /> Delete
           </button>
         </div>
-        <ShowIf if={editingProperty === localID}>
+      </div>
+    );
+
+    const result = connectDropTarget(
+      <li>
+        {connectDragSource(property)}
+        <ShowIf if={editingProperty === localID && !isDragging}>
           <div className={`propery-form${editingProperty === localID ? ' expand' : ''}`}>
             {this.renderForm()}
           </div>
@@ -127,8 +133,7 @@ export class MetadataProperty extends Component {
       </li>
     );
 
-    if (editingProperty === localID) return result;
-    return connectDragSource(result);
+    return result;
   }
 }
 
@@ -183,7 +188,6 @@ const dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, 
 
 const source = {
   beginDrag(props) {
-    console.log('beginDrag');
     return {
       index: props.index,
       label: props.label,
@@ -202,8 +206,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = ({ template }) => ({
-    uiState: template.uiState,
-    formState: template.formState
+  uiState: template.uiState,
+  formState: template.formState
 });
 
 export { dragSource, dropTarget };
