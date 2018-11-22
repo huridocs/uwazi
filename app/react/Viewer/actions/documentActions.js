@@ -1,20 +1,19 @@
-import { actions as formActions } from 'react-redux-form';
+import api from 'app/utils/api';
+import referencesAPI from 'app/Viewer/referencesAPI';
+import * as types from 'app/Viewer/actions/actionTypes';
+import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
 import { APIURL } from 'app/config.js';
-import { actions } from 'app/BasicReducer';
-import { isClient } from 'app/utils';
-import { notify } from 'app/Notifications';
-import { actions as relationshipActions } from 'app/Relationships';
-import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import api from 'app/utils/api';
-import * as connectionsTypes from 'app/Connections/actions/actionTypes';
-import documents from 'app/Documents';
-
 import { PDFUtils } from '../../PDF/';
-import referencesAPI from '../referencesAPI';
+import { actions } from 'app/BasicReducer';
+import { actions as formActions } from 'react-redux-form';
+import documents from 'app/Documents';
+import { notify } from 'app/Notifications';
+import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as selectionActions from './selectionActions';
-import * as types from './actionTypes';
 import * as uiActions from './uiActions';
+import { isClient } from 'app/utils';
+import { actions as relationshipActions } from 'app/Relationships';
 
 export function setDocument(document, html) {
   return {

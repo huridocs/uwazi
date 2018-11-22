@@ -1,20 +1,19 @@
 /* eslint-disable max-nested-callbacks */
-import { actions as formActions } from 'react-redux-form';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
 import api from 'app/utils/api';
 
+import { PDFUtils } from '../../../PDF/';
 import { mockID } from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import { APIURL } from 'app/config.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import { actions as relationshipActions } from 'app/Relationships';
-
-import { PDFUtils } from '../../../PDF/';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
+import { actions as formActions } from 'react-redux-form';
+import { actions as relationshipActions } from 'app/Relationships';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -156,7 +155,9 @@ describe('documentActions', () => {
       .get(`${APIURL}documents/search?searchTerm=term&fields=%5B%22field%22%5D`, { body: JSON.stringify('documents') })
       .get(`${APIURL}entities?_id=targetId`, { body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }) })
       .get(`${APIURL}entities?_id=docWithPDFRdy`, { body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }) })
-      .get(`${APIURL}entities?_id=docWithPDFNotRdy`, { body: JSON.stringify({ rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted' }] }) })
+      .get(`${APIURL}entities?_id=docWithPDFNotRdy`, {
+        body: JSON.stringify({ rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted' }] })
+      })
       .get(`${APIURL}references/by_document/targetId`, { body: JSON.stringify([{ connectedDocument: '1' }]) });
     });
 
