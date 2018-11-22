@@ -250,4 +250,46 @@ describe('translations', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('addLanguage', () => {
+    it('should clone translations of default language and change language to the one added', async () => {
+      await translations.addLanguage('fr');
+      const allTranslations = await translations.get();
+
+      const frTranslation = allTranslations.find(t => t.locale === 'fr');
+      const defaultTranslation = allTranslations.find(t => t.locale === 'en');
+
+      expect(frTranslation.contexts[0]._id.toString()).not.toBe(defaultTranslation.contexts[0]._id.toString());
+      expect(frTranslation.contexts[1]._id.toString()).not.toBe(defaultTranslation.contexts[1]._id.toString());
+      expect(frTranslation.contexts[2]._id.toString()).not.toBe(defaultTranslation.contexts[2]._id.toString());
+      expect(frTranslation.contexts[3]._id.toString()).not.toBe(defaultTranslation.contexts[3]._id.toString());
+      expect(frTranslation.contexts[4]._id.toString()).not.toBe(defaultTranslation.contexts[4]._id.toString());
+
+      expect(frTranslation.contexts[0].values).toEqual(defaultTranslation.contexts[0].values);
+      expect(frTranslation.contexts[1].values).toEqual(defaultTranslation.contexts[1].values);
+    });
+
+    describe('when translation already exists', () => {
+      it('should not clone it again', async () => {
+        await translations.addLanguage('fr');
+        await translations.addLanguage('fr');
+        const allTranslations = await translations.get();
+
+        const frTranslations = allTranslations.filter(t => t.locale === 'fr');
+
+        expect(frTranslations.length).toBe(1);
+      });
+    });
+  });
+
+  describe('removeLanguage', () => {
+    it('should remove translation for the language passed', async () => {
+      await translations.removeLanguage('es');
+      await translations.removeLanguage('other');
+      const allTranslations = await translations.get();
+
+      expect(allTranslations.length).toBe(1);
+      expect(allTranslations[0].locale).toBe('en');
+    });
+  });
 });

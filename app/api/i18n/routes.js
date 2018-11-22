@@ -1,6 +1,8 @@
 import Joi from 'joi';
 
 import { validateRequest } from 'api/utils';
+import settings from 'api/settings';
+import entities from 'api/entities';
 
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
@@ -17,7 +19,8 @@ export default (app) => {
 
     needsAuthorization(),
 
-    validateRequest(Joi.object().keys({
+    validateRequest(Joi.object()
+    .keys({
       _id: Joi.string(),
       __v: Joi.number(),
       locale: Joi.string().required(),
@@ -40,23 +43,68 @@ export default (app) => {
         res.json(response);
       })
       .catch(next);
-    });
+    }
+  );
 
-  // app.post(
-  //   '/api/translations/addentry',
+  app.post(
+    '/api/translations/setasdeafult',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      key: Joi.string(),
+    }).required()),
 
-  //   needsAuthorization(),
+    (req, res, next) => {
+      settings.setDefaultLanguage(req.body.key)
+      .then((response) => {
+        req.io.sockets.emit('updateSettings', response);
+        res.json(response);
+      })
+      .catch(next);
+    }
+  );
 
-  //   validateRequest(Joi.object().keys({
-  //     context: Joi.string().required(),
-  //     key: Joi.string().required(),
-  //     value: Joi.string().required(),
-  //   }).required()),
+  app.post(
+    '/api/translations/languages',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      key: Joi.string(),
+      label: Joi.string(),
+    }).required()),
 
-  //   (req, res, next) => {
-  //     translations.addEntry(req.body.context, req.body.key, req.body.value)
-  //     .then(response => res.json(response))
-  //     .catch(next);
-  //   }
-  // );
+    (req, res, next) => {
+      Promise.all([
+        settings.addLanguage(req.body),
+        translations.addLanguage(req.body.key),
+        entities.addLanguage(req.body.key),
+      ])
+      .then(([newSettings, newTranslations]) => {
+        req.io.sockets.emit('updateSettings', newSettings);
+        req.io.sockets.emit('translationsChange', newTranslations);
+        res.json(newSettings);
+      })
+      .catch(next);
+    }
+  );
+
+  app.delete(
+    '/api/translations/languages',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      key: Joi.string(),
+    }).required()),
+
+    (req, res, next) => {
+      Promise.all([
+        settings.deleteLanguage(req.query.key),
+        translations.removeLanguage(req.query.key),
+        entities.removeLanguage(req.query.key),
+      ])
+      .then(([newSettings, newTranslations]) => {
+        req.io.sockets.emit('updateSettings', newSettings);
+        req.io.sockets.emit('translationsChange', newTranslations);
+        res.json(newSettings);
+      })
+      .catch(next);
+    }
+  );
 };

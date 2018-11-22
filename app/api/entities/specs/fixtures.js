@@ -62,7 +62,7 @@ export default {
     { _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } }
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en' }] }
+    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] }
   ],
   templates: [
     { _id: templateId,
