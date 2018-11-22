@@ -10,6 +10,7 @@ import RelationTypesList from './components/RelationTypesList';
 import ThesaurisList from './components/ThesaurisList';
 import TranslationsList from './components/TranslationsList';
 import FiltersForm from './components/FiltersForm';
+import Languages from './components/Languages';
 import Customisation from './components/Customisation';
 
 export { default as CustomUploads } from './components/CustomUploads';
@@ -26,5 +27,6 @@ export {
   ThesaurisList,
   TranslationsList,
   FiltersForm,
+  Languages,
   Customisation
 };

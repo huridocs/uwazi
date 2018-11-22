@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm input 1`] = `
+<Modal
+  isOpen={false}
+  type="danger"
+>
+  <Body>
+    <h4>
+      Confirm action
+    </h4>
+    <p>
+      Are you sure you want to continue?
+    </p>
+    <React.Fragment>
+      <p>
+         If you want to continue, please type '
+        CONFIRM
+        ' 
+      </p>
+      <input
+        onChange={[Function]}
+        type="text"
+        value=""
+      />
+    </React.Fragment>
+  </Body>
+  <Footer>
+    <button
+      className="btn btn-default cancel-button"
+      onClick={[Function]}
+      type="button"
+    >
+      Cancel
+    </button>
+    <button
+      className="btn confirm-button btn-danger"
+      disabled={true}
+      onClick={[Function]}
+      type="button"
+    >
+      Accept
+    </button>
+  </Footer>
+</Modal>
+`;
+
+exports[`CantDeleteTemplateAlert noCancel option should hide the cancel button 1`] = `
+<Modal
+  isOpen={false}
+  type="danger"
+>
+  <Body>
+    <h4>
+      Confirm action
+    </h4>
+    <p>
+      Are you sure you want to continue?
+    </p>
+  </Body>
+  <Footer>
+    <button
+      className="btn confirm-button btn-danger"
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      Accept
+    </button>
+  </Footer>
+</Modal>
+`;

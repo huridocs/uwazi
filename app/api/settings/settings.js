@@ -77,6 +77,35 @@ export default {
     }));
   },
 
+  setDefaultLanguage(key) {
+    return this.get()
+    .then((currentSettings) => {
+      const languages = currentSettings.languages.map((_language) => {
+        const language = Object.assign({}, _language);
+        language.default = language.key === key;
+        return language;
+      });
+
+      return model.save(Object.assign(currentSettings, { languages }));
+    });
+  },
+
+  addLanguage(language) {
+    return this.get()
+    .then((currentSettings) => {
+      currentSettings.languages.push(language);
+      return model.save(currentSettings);
+    });
+  },
+
+  deleteLanguage(key) {
+    return this.get()
+    .then((currentSettings) => {
+      const languages = currentSettings.languages.filter(language => language.key !== key);
+      return model.save(Object.assign(currentSettings, { languages }));
+    });
+  },
+
   removeTemplateFromFilters(templateId) {
     return this.get()
     .then((settings) => {
