@@ -715,6 +715,14 @@ describe('entities', () => {
         });
       });
 
+      describe('when page is blank', () => {
+        it('should not throw a 404', async () => {
+          const pageNumber = 3;
+          const page = await entities.getRawPage('shared', 'en', pageNumber);
+
+          expect(page).toBe('');
+        });
+      });
       describe('when page do not exists', () => {
         it('should throw 404 error', async () => {
           const pageNumber = 200;
@@ -738,21 +746,21 @@ describe('entities', () => {
     });
 
     it('should delete the document from the search', done => entities.delete('shared')
-    .then(() => {
-      const argumnets = search.delete.calls.allArgs();
-      expect(search.delete).toHaveBeenCalled();
-      expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-      done();
-    })
-    .catch(catchErrors(done)));
+      .then(() => {
+        const argumnets = search.delete.calls.allArgs();
+        expect(search.delete).toHaveBeenCalled();
+        expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should delete the document relationships', done => entities.delete('shared')
-    .then(() => relationships.get({ entity: 'shared' }))
-    .then((refs) => {
-      expect(refs.length).toBe(0);
-      done();
-    })
-    .catch(catchErrors(done)));
+      .then(() => relationships.get({ entity: 'shared' }))
+      .then((refs) => {
+        expect(refs.length).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should delete the original file', (done) => {
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));
