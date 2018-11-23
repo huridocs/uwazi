@@ -41,7 +41,6 @@ describe('Metadata Actions', () => {
         templates = [{
           _id: 'templateId1',
           name: 'first',
-          isEntity: true,
           properties: [
             { name: 'test' },
             { name: 'newProp' },
@@ -75,23 +74,12 @@ describe('Metadata Actions', () => {
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should set the first document template if document has type document', () => {
+      it('should set the first document template', () => {
         doc = { title: 'test', type: 'document' };
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
-        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-      });
-
-      it('should set the first entity template if document has type entity', () => {
-        doc = { title: 'test', type: 'entity' };
-        templates[0].isEntity = false;
-        templates[1].isEntity = true;
-
-        actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-
-        const expectedDoc = { title: 'test', type: 'entity', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
+        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId1' };
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });

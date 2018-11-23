@@ -40,7 +40,7 @@ const commonTemplate = createSelector(
     const withoutTemplate = entitiesSelected.reduce((memo, entity) => memo && !entity.get('template'), true);
 
     if (withoutTemplate) {
-      return Immutable.fromJS(templates.filter(template => template.isEntity !== true)[0]);
+      return Immutable.fromJS(templates.find(template => template.default));
     }
     return Immutable.fromJS({ _id, properties });
   }
@@ -161,20 +161,7 @@ export class SelectMultiplePanel extends Component {
     const validation = this.validation(template);
     const templateId = template ? template.get('_id') : null;
 
-    const typesSelected = this.props.entitiesSelected.map(entity => entity.get('type'))
-    .filter((type, index, _types) => _types.indexOf(type) === index);
-    const comonTypeSelected = typesSelected.size === 1 ? typesSelected.first() : null;
-
     const templateOptions = templates.toJS()
-    .filter((_template) => {
-      if (!comonTypeSelected) {
-        return false;
-      }
-      if (comonTypeSelected === 'entity') {
-        return _template.isEntity;
-      }
-      return !_template.isEntity;
-    })
     .map(tmpl => ({ label: tmpl.name, value: tmpl._id }));
 
     const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {

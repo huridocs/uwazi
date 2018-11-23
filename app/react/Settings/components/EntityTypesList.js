@@ -32,37 +32,34 @@ export class EntityTypesList extends Component {
   }
 
   render() {
-    return (
-      <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Entity types')}</div>
-        <ul className="list-group document-types">
-          {this.props.templates.toJS().map((template, index) => {
-            if (!template.isEntity) {
-              return false;
-            }
-            return (<li key={index} className="list-group-item">
-              <Link to={`/settings/entities/edit/${template._id}`}>{template.name}</Link>
-              <div className="list-group-item-actions">
-                <Link to={`/settings/entities/edit/${template._id}`} className="btn btn-default btn-xs">
-                  <Icon icon="pencil-alt" />&nbsp;
-                  <span>{t('System', 'Edit')}</span>
-                </Link>
-                <a onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
-                  <Icon icon="trash-alt" />&nbsp;
-                  <span>{t('System', 'Delete')}</span>
-                </a>
-              </div>
-            </li>);
-          })}
-        </ul>
-        <div className="settings-footer">
-          <Link to="/settings/entities/new" className="btn btn-success">
-            <Icon icon="plus" />
-            <span className="btn-label">{t('System', 'Add entity type')}</span>
-          </Link>
-        </div>
+    return (<div className="panel panel-default">
+      <div className="panel-heading">{t('System', 'Entity types')}</div>
+      <ul className="list-group document-types">
+        {this.props.templates.toJS().map((template, index) => (<li key={index} className="list-group-item">
+          <Link to={`/settings/entities/edit/${template._id}`}>{template.name}</Link>
+          <div className="list-group-item-actions">
+            <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
+              <Icon icon="trash-alt" />&nbsp;
+              <span>{t('System', 'Set as default')}</span>
+            </button>
+            <Link to={`/settings/entities/edit/${template._id}`} className="btn btn-default btn-xs">
+              <Icon icon="pencil-alt" />&nbsp;
+              <span>{t('System', 'Edit')}</span>
+            </Link>
+            <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
+              <Icon icon="trash-alt" />&nbsp;
+              <span>{t('System', 'Delete')}</span>
+            </button>
+          </div>
+                                                               </li>))}
+      </ul>
+      <div className="settings-footer">
+        <Link to="/settings/entities/new" className="btn btn-success">
+          <Icon icon="plus" />
+          <span className="btn-label">{t('System', 'Add entity type')}</span>
+        </Link>
       </div>
-    );
+            </div>);
   }
 }
 

@@ -21,13 +21,8 @@ import Immutable from 'immutable';
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
 const selectTemplateOptions = createSelector(
-  [s => s.templates, (s, isEntity) => isEntity],
-  (templates, isEntity) => templates.filter((template) => {
-    if (isEntity) {
-      return template.get('isEntity');
-    }
-    return !template.get('isEntity');
-  })
+  s => s.templates,
+  templates => templates
   .map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
@@ -47,7 +42,7 @@ export class MetadataForm extends Component {
   }
 
   renderTemplateSelect(templateOptions, template) {
-    if (templateOptions.length) {
+    if (templateOptions.size) {
       return (
         <FormGroup>
           <ul className="search__filter">
@@ -58,7 +53,7 @@ export class MetadataForm extends Component {
                 value={template.get('_id')}
                 options={templateOptions.toJS()}
                 onChange={(e) => {
-                  this.props.changeTemplate(model, e.target.value);
+                  this.props.changeTemplate(this.props.model, e.target.value);
                 }}
               />
             </li>
@@ -130,7 +125,7 @@ function mapDispatchToProps(dispatch) {
 
 export const mapStateToProps = (state, ownProps) => ({
   template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) || immutableDefaultTemplate,
-  templateOptions: selectTemplateOptions(state, ownProps.isEntity)
+  templateOptions: selectTemplateOptions(state)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);

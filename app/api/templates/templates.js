@@ -30,7 +30,7 @@ const addTemplateTranslation = (template) => {
     values[property.label] = property.label;
   });
 
-  return translations.addContext(template._id, template.name, values, template.isEntity ? 'Entity' : 'Document');
+  return translations.addContext(template._id, template.name, values, 'Entity');
 };
 
 const updateTranslation = (currentTemplate, template) => {

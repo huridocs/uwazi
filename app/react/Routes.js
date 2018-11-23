@@ -12,7 +12,6 @@ import {
   AccountSettings,
   CollectionSettings,
   NavlinksSettings,
-  DocumentTypesList,
   EntityTypesList,
   RelationTypesList,
   ThesaurisList,
@@ -35,9 +34,7 @@ import EntityView from 'app/Entities/EntityView';
 import Uploads from 'app/Uploads/UploadsRoute';
 
 import EditTemplate from 'app/Templates/EditTemplate';
-import EditEntity from 'app/Templates/EditEntity';
 import NewTemplate from 'app/Templates/NewTemplate';
-import NewEntity from 'app/Templates/NewEntity';
 
 import EditThesauri from 'app/Thesauris/EditThesauri';
 import NewThesauri from 'app/Thesauris/NewThesauri';
@@ -113,15 +110,10 @@ const routes = (
         <Route path="new" component={NewPage} />
         <Route path="edit/:pageId" component={EditPage} />
       </Route>
-      <Route path="documents">
-        <IndexRoute component={DocumentTypesList} />
+      <Route path="templates">
+        <IndexRoute component={EntityTypesList} />
         <Route path="new" component={NewTemplate} />
         <Route path="edit/:templateId" component={EditTemplate} />
-      </Route>
-      <Route path="entities">
-        <IndexRoute component={EntityTypesList} />
-        <Route path="new" component={NewEntity} />
-        <Route path="edit/:templateId" component={EditEntity} />
       </Route>
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />

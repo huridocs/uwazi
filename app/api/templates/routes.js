@@ -13,7 +13,6 @@ export default (app) => {
       _id: Joi.string(),
       __v: Joi.number(),
       name: Joi.string().required(),
-      isEntity: Joi.boolean(),
       properties: Joi.array().required().items(
         Joi.object().keys({
           _id: Joi.string(),

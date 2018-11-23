@@ -43,12 +43,6 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
 
     if (!entity.template && sortedTemplates.length) {
       entity.template = sortedTemplates[0]._id;
-      if (entity.type === 'document' && sortedTemplates.find(t => !t.isEntity)) {
-        entity.template = sortedTemplates.find(t => !t.isEntity)._id;
-      }
-      if (entity.type === 'entity' && sortedTemplates.find(t => t.isEntity)) {
-        entity.template = sortedTemplates.find(t => t.isEntity)._id;
-      }
     }
 
     if (!entity.metadata) {
