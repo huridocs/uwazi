@@ -18,6 +18,7 @@ describe('EntityTypesList', () => {
       ]),
       notify: jasmine.createSpy('notify'),
       deleteTemplate: jasmine.createSpy('deleteTemplate').and.returnValue(Promise.resolve()),
+      setAsDefault: jasmine.createSpy('setAsDefault').and.returnValue(Promise.resolve()),
       checkTemplateCanBeDeleted: jasmine.createSpy('checkTemplateCanBeDeleted').and.returnValue(Promise.resolve())
     };
 

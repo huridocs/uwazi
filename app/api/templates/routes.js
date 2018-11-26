@@ -13,6 +13,7 @@ export default (app) => {
       _id: Joi.string(),
       __v: Joi.number(),
       name: Joi.string().required(),
+      default: Joi.boolean(),
       properties: Joi.array().required().items(
         Joi.object().keys({
           _id: Joi.string(),
@@ -57,6 +58,33 @@ export default (app) => {
       .catch(next);
     }
   );
+
+  app.post('/api/templates/setasdefault',
+  needsAuthorization(),
+  validateRequest(Joi.object().keys({
+    _id: Joi.string().required()
+  })),
+  (req, res, next) => {
+    templates.get()
+    .then((_templates) => {
+      const templateToBeDefault = _templates.find(t => t._id.toString() === req.body._id);
+      const currentDefault = _templates.find(t => t.default);
+      templateToBeDefault.default = true;
+      if (currentDefault) {
+        currentDefault.default = false;
+        templates.save(currentDefault).then((response) => {
+          req.io.sockets.emit('templateChange', response);
+        });
+      }
+
+      templates.save(templateToBeDefault)
+      .then((response) => {
+        res.json(response);
+        req.io.sockets.emit('templateChange', response);
+      });
+    })
+    .catch(next);
+  });
 
   app.get('/api/templates', (req, res, next) => {
     templates.get()

@@ -8,7 +8,7 @@ import { notify } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
-import defaultTemplate from '../helpers/defaultTemplate';
+import emptyTemplate from '../helpers/defaultTemplate';
 
 import * as types from './actionTypes';
 
@@ -40,16 +40,16 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
     const entity = Object.assign({}, onlyReadEntity);
 
     const sortedTemplates = advancedSort(templates, { property: 'name' });
-
-    if (!entity.template && sortedTemplates.length) {
-      entity.template = sortedTemplates[0]._id;
+    const defaultTemplate = sortedTemplates.find(t => t.default);
+    if (!entity.template && defaultTemplate) {
+      entity.template = defaultTemplate._id;
     }
 
     if (!entity.metadata) {
       entity.metadata = {};
     }
 
-    const template = sortedTemplates.find(t => t._id === entity.template) || defaultTemplate;
+    const template = sortedTemplates.find(t => t._id === entity.template) || emptyTemplate;
     resetMetadata(entity.metadata, template, { resetExisting: false });
 
     dispatch(formActions.reset(form));

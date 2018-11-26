@@ -41,6 +41,7 @@ describe('Metadata Actions', () => {
         templates = [{
           _id: 'templateId1',
           name: 'first',
+          default: true,
           properties: [
             { name: 'test' },
             { name: 'newProp' },
