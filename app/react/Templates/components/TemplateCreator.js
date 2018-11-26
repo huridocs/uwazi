@@ -87,7 +87,6 @@ export class TemplateCreator extends Component {
 }
 
 TemplateCreator.defaultProps = {
-  entity: false,
   relationType: false,
   noRelationtypes: true,
   noDictionaries: true,
