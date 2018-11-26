@@ -65,11 +65,11 @@ export class EntityTypesList extends Component {
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => (
           <li key={index} className="list-group-item">
-            <Link to={`/settings/entities/edit/${template._id}`}>{template.name}</Link>
+            <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
             {template.default ? this.defaultTemplateMessage() : ''}
             <div className="list-group-item-actions">
               {!template.default ? this.setAsDefaultButton(template) : ''}
-              <Link to={`/settings/entities/edit/${template._id}`} className="btn btn-default btn-xs">
+              <Link to={`/settings/templates/edit/${template._id}`} className="btn btn-default btn-xs">
                 <Icon icon="pencil-alt" />&nbsp;
                 <span>{t('System', 'Edit')}</span>
               </Link>

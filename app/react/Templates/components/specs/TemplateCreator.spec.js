@@ -34,15 +34,6 @@ describe('TemplateCreator', () => {
     expectSave(saveTemplate);
   });
 
-  describe('when creating different templates', () => {
-    it('should pass the appropriate action to the MetadataTemplate component', () => {
-      props.entity = true;
-      expectSave(saveEntity);
-      props.relationType = true;
-      expectSave(saveRelationType);
-    });
-  });
-
   describe('Property Options', () => {
     it('should include most common options by default (entity)', () => {
       props.entity = true;

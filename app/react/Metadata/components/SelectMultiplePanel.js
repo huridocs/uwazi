@@ -51,6 +51,7 @@ export class SelectMultiplePanel extends Component {
     super(props);
     this.close = this.close.bind(this);
     this.delete = this.delete.bind(this);
+    this.cancel = this.cancel.bind(this);
     this.save = this.save.bind(this);
     this.edit = this.edit.bind(this);
     this.publish = this.publish.bind(this);

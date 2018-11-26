@@ -11,7 +11,7 @@ const localSelectors = {
   templateTitle: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
   saveTemplate: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
   backbutton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > a',
-  template: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(6) > a',
+  template: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(10) > a',
   templatesListItems: '#app > div.content > div > div > div.settings-content > div > ul > li',
   relationShipSelect: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(3) > select',
   superPowersThesauriOption: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(7) > div.propery-form.expand > div > div:nth-child(3) > select > option:nth-child(12)'
