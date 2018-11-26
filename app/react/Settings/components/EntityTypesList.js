@@ -79,7 +79,7 @@ export class EntityTypesList extends Component {
         ))}
       </ul>
       <div className="settings-footer">
-        <Link to="/settings/entities/new" className="btn btn-success">
+        <Link to="/settings/templates/new" className="btn btn-success">
           <Icon icon="plus" />
           <span className="btn-label">{t('System', 'Add entity type')}</span>
         </Link>
