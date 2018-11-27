@@ -16,7 +16,7 @@ export default (app) => {
   app.use(cookieParser());
 
   app.use(session({
-    secret: uniqueID(),
+    secret: app.get('env') === 'production' ? uniqueID() : 'harvey&lola',
     store: new MongoStore({
       mongooseConnection: mongoose.connection
     }),

@@ -14,5 +14,20 @@ export default {
   addEntry(context, key, value) {
     return api.post('translations/addentry', { context, key, value })
     .then(response => response.json);
+  },
+
+  addLanguage(language) {
+    return api.post('translations/languages', language)
+    .then(response => response.json);
+  },
+
+  deleteLanguage(key) {
+    return api.delete('translations/languages', { key })
+    .then(response => response.json);
+  },
+
+  setDefaultLanguage(key) {
+    return api.post('translations/setasdeafult', { key })
+    .then(response => response.json);
   }
 };

@@ -1,18 +1,18 @@
-import pagesAPI from '../PagesAPI';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import pagesAPI from '../PagesAPI';
 
 describe('pagesAPI', () => {
-  let singleResponse = [{pages: 'single'}];
-  let listResponse = [{pages: 'list'}];
+  const singleResponse = [{ pages: 'single' }];
+  const listResponse = [{ pages: 'list' }];
 
   beforeEach(() => {
     backend.restore();
     backend
-    .get(APIURL + 'pages?sharedId=documentId', {body: JSON.stringify(singleResponse)})
-    .get(APIURL + 'pages/list', {body: JSON.stringify({rows: listResponse})})
-    .post(APIURL + 'pages', {body: JSON.stringify({backednResponse: 'post'})})
-    .delete(APIURL + 'pages?sharedId=id', {body: JSON.stringify({backednResponse: 'delete'})});
+    .get(`${APIURL}pages?sharedId=documentId`, { body: JSON.stringify(singleResponse) })
+    .get(`${APIURL}pages/list`, { body: JSON.stringify({ rows: listResponse }) })
+    .post(`${APIURL}pages`, { body: JSON.stringify({ backednResponse: 'post' }) })
+    .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backednResponse: 'delete' }) });
   });
 
   afterEach(() => backend.restore());
@@ -42,11 +42,11 @@ describe('pagesAPI', () => {
 
   describe('save()', () => {
     it('should post the document data to /pages', (done) => {
-      let data = {title: 'document name'};
+      const data = { title: 'document name' };
       pagesAPI.save(data)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'pages').body)).toEqual(data);
-        expect(response).toEqual({backednResponse: 'post'});
+        expect(JSON.parse(backend.lastOptions(`${APIURL}pages`).body)).toEqual(data);
+        expect(response).toEqual({ backednResponse: 'post' });
         done();
       })
       .catch(done.fail);
@@ -55,10 +55,10 @@ describe('pagesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      let document = {sharedId: 'id'};
+      const document = { sharedId: 'id' };
       pagesAPI.delete(document)
       .then((response) => {
-        expect(response).toEqual({backednResponse: 'delete'});
+        expect(response).toEqual({ backednResponse: 'delete' });
         done();
       })
       .catch(done.fail);

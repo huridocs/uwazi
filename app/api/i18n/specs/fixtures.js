@@ -1,4 +1,5 @@
 import db from 'api/utils/testing_db';
+
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
 const englishTranslation = db.id();
@@ -9,30 +10,35 @@ export default {
       locale: 'en',
       contexts: [
         {
+          _id: db.id(),
           id: 'System',
           label: 'System',
           values: [
-            {key: 'Password', value: 'Password'},
-            {key: 'Account', value: 'Account'},
-            {key: 'Email', value: 'E-Mail'},
-            {key: 'Age', value: 'Age'}
+            { key: 'Password', value: 'Password' },
+            { key: 'Account', value: 'Account' },
+            { key: 'Email', value: 'E-Mail' },
+            { key: 'Age', value: 'Age' }
           ]
         },
         {
+          _id: db.id(),
           id: 'Filters',
           label: 'Filters'
         },
         {
+          _id: db.id(),
           id: 'Menu',
           label: 'Menu'
         },
         {
+          _id: db.id(),
           id: entityTemplateId.toString(),
           label: 'Judge',
           values: [],
           type: 'Entity'
         },
         {
+          _id: db.id(),
           id: documentTemplateId.toString(),
           label: 'Court order',
           values: [],
@@ -49,10 +55,10 @@ export default {
           id: 'System',
           label: 'System',
           values: [
-            {key: 'Password', value: 'Contraseña'},
-            {key: 'Account', value: 'Cuenta'},
-            {key: 'Email', value: 'Correo electronico'},
-            {key: 'Age', value: 'Edad'}
+            { key: 'Password', value: 'Contraseña' },
+            { key: 'Account', value: 'Cuenta' },
+            { key: 'Email', value: 'Correo electronico' },
+            { key: 'Age', value: 'Edad' }
           ]
         }
       ]

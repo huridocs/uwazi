@@ -114,4 +114,16 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('deleteLanguage', () => {
+    it('should delete the index', (done) => {
+      spyOn(elastic, 'deleteByQuery').and.returnValue(Promise.resolve());
+      search.deleteLanguage('en')
+      .then(() => {
+        expect(elastic.deleteByQuery)
+        .toHaveBeenCalledWith({ index: elasticIndex, body: { query: { match: { language: 'en' } } } });
+        done();
+      });
+    });
+  });
 });
