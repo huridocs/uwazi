@@ -81,7 +81,11 @@ export class MetadataProperty extends Component {
             <Icon icon={iconClass} fixedWidth /> {label}
           </span>
           <div className="list-group-item-actions">
-            <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(beingEdited ? null : localID)}>
+            <button
+              type="button"
+              className="btn btn-default btn-xs property-edit"
+              onClick={() => this.props.editProperty(beingEdited ? null : localID)}
+            >
               <Icon icon="pencil-alt" /> Edit
             </button>
             <button type="button" className="btn btn-danger btn-xs property-remove" disabled>
@@ -109,7 +113,11 @@ export class MetadataProperty extends Component {
               <Icon icon="exclamation-triangle" /> Duplicated label
             </span>
           </ShowIf>
-          <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(beingEdited ? null : localID)}>
+          <button
+            type="button"
+            className="btn btn-default btn-xs property-edit"
+            onClick={() => this.props.editProperty(beingEdited ? null : localID)}
+          >
             <Icon icon="pencil-alt" /> Edit
           </button>
           <button
