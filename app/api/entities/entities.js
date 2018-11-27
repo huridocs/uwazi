@@ -197,7 +197,7 @@ export default {
       }
 
       return this.get(query, select, { skip: offset, limit })
-      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId, language: entity.language })
+      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId })
       .then((relations) => {
         entity.relationships = relations || [];
         return entity;
@@ -379,7 +379,8 @@ export default {
     if (!entity) {
       throw createError('entity does not exists', 404);
     }
-    if (!entity.fullText[pageNumber]) {
+
+    if (typeof entity.fullText[pageNumber] === 'undefined') {
       throw createError('page does not exist', 404);
     }
 
@@ -446,6 +447,45 @@ export default {
         return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
       });
     });
+  },
+
+  async addLanguage(language) {
+    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
+    if (lanuageTranslationAlreadyExists) {
+      return Promise.resolve();
+    }
+
+    const { languages } = await settings.get();
+
+    const defaultLanguage = languages.find(l => l.default).key;
+    const duplicate = (offset, totalRows) => {
+      const limit = 200;
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get({ language: defaultLanguage }, null, { skip: offset, limit })
+      .then((entities) => {
+        const newLanguageEntities = entities.map((_entity) => {
+          const entity = Object.assign({}, _entity);
+          delete entity._id;
+          delete entity.__v;
+          entity.language = language;
+          return entity;
+        });
+
+        return this.saveMultiple(newLanguageEntities);
+      })
+      .then(() => duplicate(offset + limit, totalRows));
+    };
+
+    return this.count({ language: defaultLanguage })
+    .then(totalRows => duplicate(0, totalRows));
+  },
+
+  async removeLanguage(locale) {
+    return model.delete({ locale })
+    .then(() => search.deleteLanguage(locale));
   },
 
   count: model.count

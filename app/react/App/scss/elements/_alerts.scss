@@ -1,6 +1,6 @@
 .alert-wrapper {
   z-index: 9;
-  
+
   .alert {
     display: block;
     width: 50%;
@@ -86,6 +86,10 @@
   border-radius: 0;
   border: 0;
   box-shadow: $box-shadow;
+
+  .cs-loader {
+    padding: 50px;
+  }
 }
 
 .modal-success {

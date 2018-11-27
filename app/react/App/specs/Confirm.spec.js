@@ -1,12 +1,14 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import Confirm from '../Confirm';
 import Modal from 'app/Layout/Modal';
+import Loader from 'app/components/Elements/Loader';
 
 describe('CantDeleteTemplateAlert', () => {
   let component;
   let props;
+  let instance;
 
   beforeEach(() => {
     props = {
@@ -16,8 +18,9 @@ describe('CantDeleteTemplateAlert', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<Confirm {...props} />);
+    instance = component.instance();
   };
 
   it('should render a default closed modal', () => {
@@ -28,14 +31,59 @@ describe('CantDeleteTemplateAlert', () => {
   it('noCancel option should hide the cancel button', () => {
     props.noCancel = true;
     render();
-    expect(component.find('cancel-button').length).toBe(0);
+    expect(component).toMatchSnapshot();
+  });
+
+  it('extraConfirm option should render a confirm input', () => {
+    props.extraConfirm = true;
+    render();
+    expect(component).toMatchSnapshot();
   });
 
   describe('when clicking ok button', () => {
     it('should call accept function', () => {
+      props.isOpen = true;
       render();
       component.find('.btn-danger').simulate('click');
       expect(props.accept).toHaveBeenCalled();
+      expect(instance.state.isOpen).toBe(false);
+      expect(instance.state.isLoading).toBe(false);
+    });
+
+    describe('when the action is async', () => {
+      let resolve;
+      let reject;
+      let promise;
+      beforeEach(() => {
+        promise = new Promise((_resolve, _reject) => { resolve = _resolve; reject = _reject; });
+        props.accept.and.returnValue(promise);
+        props.isOpen = true;
+        render();
+      });
+
+      it('should show a loading state until the promise resolves and render a Loader', (done) => {
+        component.find('.btn-danger').simulate('click');
+        expect(props.accept).toHaveBeenCalled();
+        expect(instance.state.isOpen).toBe(true);
+        expect(instance.state.isLoading).toBe(true);
+        expect(component.find(Loader).length).toBe(1);
+        resolve();
+        promise.then(() => {
+          expect(instance.state.isOpen).toBe(false);
+          expect(instance.state.isLoading).toBe(false);
+          done();
+        });
+      });
+
+      it('should show a loading state until the promise rejects', (done) => {
+        component.find('.btn-danger').simulate('click');
+        reject();
+        promise.catch(() => {
+          expect(instance.state.isOpen).toBe(false);
+          expect(instance.state.isLoading).toBe(false);
+          done();
+        });
+      });
     });
   });
 

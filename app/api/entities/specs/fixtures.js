@@ -33,6 +33,7 @@ export default {
       fullText: {
         1: 'page[[1]] 1[[1]]',
         2: 'page[[2]] 2[[2]]',
+        3: '',
       },
       metadata: {
         property1: 'value1'
@@ -61,7 +62,7 @@ export default {
     { _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } }
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'es' }, { key: 'pt' }, { key: 'en' }] }
+    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] }
   ],
   templates: [
     { _id: templateId,
@@ -107,16 +108,16 @@ export default {
       ] }
   ],
   connections: [
-    { _id: referenceId, entity: 'shared', template: null, hub: hub1, language: 'en' },
-    { entity: 'shared2', template: 'relation1', hub: hub1, language: 'en' },
-    { entity: 'shared', template: null, hub: hub2, language: 'en' },
-    { entity: 'source2', template: 'relation2', hub: hub2, language: 'en' },
-    { entity: 'another', template: 'relation3', hub: hub3, language: 'en' },
-    { entity: 'document', template: 'relation3', hub: hub3, language: 'en' },
-    { entity: 'shared', template: 'relation2', hub: hub4, language: 'en' },
-    { entity: 'shared1', template: 'relation2', hub: hub4, language: 'en' },
-    { entity: 'shared1', template: 'relation2', hub: hub5, language: 'en' },
-    { entity: 'shared', template: 'relation2', hub: hub5, language: 'en' }
+    { _id: referenceId, entity: 'shared', template: null, hub: hub1 },
+    { entity: 'shared2', template: 'relation1', hub: hub1 },
+    { entity: 'shared', template: null, hub: hub2 },
+    { entity: 'source2', template: 'relation2', hub: hub2 },
+    { entity: 'another', template: 'relation3', hub: hub3 },
+    { entity: 'document', template: 'relation3', hub: hub3 },
+    { entity: 'shared', template: 'relation2', hub: hub4 },
+    { entity: 'shared1', template: 'relation2', hub: hub4 },
+    { entity: 'shared1', template: 'relation2', hub: hub5 },
+    { entity: 'shared', template: 'relation2', hub: hub5 }
   ]
 };
 

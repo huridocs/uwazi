@@ -418,15 +418,38 @@ describe('entities', () => {
 
   describe('indexEntities', () => {
     it('should index entities based on query params passed', (done) => {
-      entities.indexEntities({ sharedId: 'shared' }, { title: 1 })
+      entities.indexEntities({ sharedId: 'shared' })
       .then(() => {
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
         expect(documentsToIndex[0].title).toBeDefined();
-        expect(documentsToIndex[0].metadata).not.toBeDefined();
+        expect(documentsToIndex[0].fullText).not.toBeDefined();
+        expect(documentsToIndex[0].relationships.length).toBe(4);
+
         expect(documentsToIndex[1].title).toBeDefined();
-        expect(documentsToIndex[1].metadata).not.toBeDefined();
+        expect(documentsToIndex[1].fullText).not.toBeDefined();
+        expect(documentsToIndex[1].relationships.length).toBe(4);
+
         expect(documentsToIndex[2].title).toBeDefined();
-        expect(documentsToIndex[2].metadata).not.toBeDefined();
+        expect(documentsToIndex[2].fullText).not.toBeDefined();
+        expect(documentsToIndex[2].relationships.length).toBe(4);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should index entities withh fullText', (done) => {
+      entities.indexEntities({ sharedId: 'shared' }, '+fullText')
+      .then(() => {
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex[0].title).toBeDefined();
+        expect(documentsToIndex[0].fullText).toBeDefined();
+        expect(documentsToIndex[0].relationships.length).toBe(4);
+
+        expect(documentsToIndex[1].title).toBeDefined();
+        expect(documentsToIndex[1].relationships.length).toBe(4);
+
+        expect(documentsToIndex[2].title).toBeDefined();
+        expect(documentsToIndex[2].relationships.length).toBe(4);
         done();
       })
       .catch(catchErrors(done));
@@ -692,6 +715,14 @@ describe('entities', () => {
         });
       });
 
+      describe('when page is blank', () => {
+        it('should not throw a 404', async () => {
+          const pageNumber = 3;
+          const page = await entities.getRawPage('shared', 'en', pageNumber);
+
+          expect(page).toBe('');
+        });
+      });
       describe('when page do not exists', () => {
         it('should throw 404 error', async () => {
           const pageNumber = 200;
@@ -715,21 +746,21 @@ describe('entities', () => {
     });
 
     it('should delete the document from the search', done => entities.delete('shared')
-    .then(() => {
-      const argumnets = search.delete.calls.allArgs();
-      expect(search.delete).toHaveBeenCalled();
-      expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-      done();
-    })
-    .catch(catchErrors(done)));
+      .then(() => {
+        const argumnets = search.delete.calls.allArgs();
+        expect(search.delete).toHaveBeenCalled();
+        expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should delete the document relationships', done => entities.delete('shared')
-    .then(() => relationships.get({ entity: 'shared' }))
-    .then((refs) => {
-      expect(refs.length).toBe(0);
-      done();
-    })
-    .catch(catchErrors(done)));
+      .then(() => relationships.get({ entity: 'shared' }))
+      .then((refs) => {
+        expect(refs.length).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done)));
 
     it('should delete the original file', (done) => {
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));
@@ -803,6 +834,18 @@ describe('entities', () => {
       .then(() => {
         expect(entities.delete).toHaveBeenCalledWith('id1');
         expect(entities.delete).toHaveBeenCalledWith('id2');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('addLanguage()', () => {
+    it('should duplicate all the entities from the default language to the new one', (done) => {
+      entities.addLanguage('ab')
+      .then(() => entities.get({ language: 'ab' }))
+      .then((newEntities) => {
+        expect(newEntities.length).toBe(7);
         done();
       })
       .catch(catchErrors(done));

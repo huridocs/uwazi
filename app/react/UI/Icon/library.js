@@ -58,6 +58,7 @@ import { faSort } from '@fortawesome/free-solid-svg-icons/faSort';
 import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDown';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 import { faSquare } from '@fortawesome/free-regular-svg-icons/faSquare';
+import { faStar } from '@fortawesome/free-solid-svg-icons/faStar';
 import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 import { faTerminal } from '@fortawesome/free-solid-svg-icons/faTerminal';
 import { faTh } from '@fortawesome/free-solid-svg-icons/faTh';
@@ -132,6 +133,7 @@ const icons = {
   faSortAlphaDown,
   faSpinner,
   faSquare,
+  faStar,
   faSync,
   faTerminal,
   faTh,
