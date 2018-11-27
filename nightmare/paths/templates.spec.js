@@ -18,11 +18,11 @@ const localSelectors = {
 };
 
 const propertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > aside > div > ul > li:nth-child(${index}) > button`;
-const editPropertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.list-group-item-actions > button.btn.btn-default.btn-xs.property-edit`;
+const editPropertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div  button.btn.btn-default.btn-xs.property-edit`;
 const hideLabelSelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div:nth-child(2) > div:nth-child(1) > label`;
 const usedAsFilterSelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div:nth-child(2) > div.inline-group > div > label`;
 const propertyNameSelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.propery-form.expand > div > div.form-group > div > input`;
-const deletePropertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) > div.list-group-item-actions > button.btn.btn-danger.btn-xs.property-remove`;
+const deletePropertySelector = index => `#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > ul > li:nth-child(${index}) div > button.btn.btn-danger.btn-xs.property-remove`;
 const textPropertyIndex = 3;
 const relationshipPropertyIndex = 7;
 
