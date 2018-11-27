@@ -28,11 +28,15 @@
 }
 
 .list-group {
+
+  .property-name:hover {
+    cursor: move;
+  }
+
   .propery-form {
     height: 0;
     width: 100%;
     border: 1px solid $c-grey-light;
-
 
     &.expand {
       height: auto;
@@ -44,6 +48,14 @@
     & > div > .well:not(:last-child),
     & > div > .row:not(:last-child) {
       margin-bottom: 10px;
+    }
+  }
+}
+
+.NavlinksSettings {
+  .list-group {
+    .propery-form {
+      border: none;
     }
   }
 }

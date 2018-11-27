@@ -69,7 +69,7 @@ export const LinkTarget = {
 
 export class NavlinkForm extends Component {
   render() {
-    const { link, index, isDragging, connectDragSource, connectDropTarget, formState, uiState } = this.props;
+    const { link, index, isDragging, connectDragPreview, connectDragSource, connectDropTarget, formState, uiState } = this.props;
     let className = `list-group-item${isDragging ? ' dragging' : ''}`;
     let titleClass = 'input-group';
 
@@ -78,14 +78,16 @@ export class NavlinkForm extends Component {
       titleClass += ' has-error';
     }
 
-    return connectDragSource(connectDropTarget(
+    return connectDragPreview(connectDropTarget(
       <li className={className}>
 
         <div>
-          <span className="property-name">
-            <Icon icon="bars" className="reorder" />&nbsp;
-            <Icon icon="link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
-          </span>
+          {connectDragSource(
+            <span className="property-name">
+              <Icon icon="bars" className="reorder" />&nbsp;
+              <Icon icon="link" />&nbsp;&nbsp;{link.title && link.title.trim().length ? link.title : <em>no title</em>}
+            </span>
+          )}
         </div>
         <div>
           <button
@@ -158,6 +160,7 @@ const dropTarget = DropTarget('LINK', LinkTarget, connectDND => ({
 
 const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
   connectDragSource: connectDND.dragSource(),
+  connectDragPreview: connectDND.dragPreview(),
   isDragging: monitor.isDragging()
 }))(dropTarget);
 
