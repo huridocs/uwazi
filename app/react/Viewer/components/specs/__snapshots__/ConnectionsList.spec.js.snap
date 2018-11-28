@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConnectionsList should merge and render references in order with the proper document titles 1`] = `
+<div
+  className="item-group"
+>
+  <Connect(Connection)
+    key="0"
+    reference={
+      Object {
+        "_id": "ref4",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "range": Object {
+          "text": "",
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+  <Connect(Connection)
+    key="1"
+    reference={
+      Object {
+        "_id": "ref2",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "range": Object {
+          "end": 8,
+          "start": 0,
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+  <Connect(Connection)
+    key="2"
+    reference={
+      Object {
+        "_id": "ref3",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "range": Object {
+          "end": 8,
+          "start": 5,
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+  <Connect(Connection)
+    key="3"
+    reference={
+      Object {
+        "_id": "ref1",
+        "associatedRelationship": Object {
+          "entityData": Object {
+            "_id": "1",
+          },
+        },
+        "range": Object {
+          "end": 20,
+          "start": 10,
+        },
+        "relationType": "rel1",
+      }
+    }
+  />
+</div>
+`;
