@@ -1,9 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 
-import ListContainer, { Connection } from 'app/Viewer/components/Connection';
+import { Connection } from 'app/Viewer/components/Connection';
 import { Item } from 'app/Layout';
 
 describe('Connection', () => {
