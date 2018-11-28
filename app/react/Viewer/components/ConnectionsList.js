@@ -11,9 +11,14 @@ import Connection from './Connection';
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
 export class ConnectionsList extends Component {
-  close() {
-    this.props.closePanel();
-    this.props.deactivateReference();
+  static blankStateMessage(title, message) {
+    return (
+      <div className="blank-state">
+        <Icon icon="sitemap" />
+        <h4>{t('System', title)}</h4>
+        <p>{t('System', message)}</p>
+      </div>
+    );
   }
 
   componentWillReceiveProps(newProps) {
@@ -22,6 +27,11 @@ export class ConnectionsList extends Component {
         console.log(key, newProps[key], this.props[key]);
       }
     });
+  }
+
+  close() {
+    this.props.closePanel();
+    this.props.deactivateReference();
   }
 
   render() {
@@ -36,23 +46,11 @@ export class ConnectionsList extends Component {
     }
 
     if (!this.props.references.size && this.props.referencesSection === 'references') {
-      return (
-        <div className="blank-state">
-          <Icon icon="sitemap" />
-          <h4>{t('System', 'No References')}</h4>
-          <p>{t('System', 'No References description')}</p>
-        </div>
-      );
+      return ConnectionsList.blankStateMessage('No References', 'No References description');
     }
 
     if (!this.props.references.size) {
-      return (
-        <div className="blank-state">
-          <Icon icon="sitemap" />
-          <h4>{t('System', 'No Connections')}</h4>
-          <p>{t('System', 'No Connections description')}</p>
-        </div>
-      );
+      return ConnectionsList.blankStateMessage('No Connections', 'No Connections description');
     }
 
     return (
@@ -62,9 +60,6 @@ export class ConnectionsList extends Component {
     );
   }
 }
-ConnectionsList.defaultProps = {
-};
-
 
 ConnectionsList.propTypes = {
   references: PropTypes.object,
@@ -73,10 +68,6 @@ ConnectionsList.propTypes = {
   loading: PropTypes.bool,
   readOnly: PropTypes.bool,
   referencesSection: PropTypes.string,
-};
-
-ConnectionsList.contextTypes = {
-  confirm: PropTypes.func
 };
 
 function mapDispatchToProps(dispatch) {

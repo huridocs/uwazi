@@ -30,4 +30,17 @@ describe('ConnectionsList', () => {
     render();
     expect(component).toMatchSnapshot();
   });
+
+  describe('when there are no references', () => {
+    it('should render a blank state message', () => {
+      props.references = Immutable.fromJS([]);
+      render();
+      expect(component).toMatchSnapshot();
+
+      props.references = Immutable.fromJS([]);
+      props.referencesSection = 'references';
+      render();
+      expect(component).toMatchSnapshot();
+    });
+  });
 });

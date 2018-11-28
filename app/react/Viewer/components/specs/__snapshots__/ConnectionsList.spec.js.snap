@@ -77,3 +77,35 @@ exports[`ConnectionsList should merge and render references in order with the pr
   />
 </div>
 `;
+
+exports[`ConnectionsList when there are no references should render a blank state message 1`] = `
+<div
+  className="blank-state"
+>
+  <Component
+    icon="sitemap"
+  />
+  <h4>
+    No Connections
+  </h4>
+  <p>
+    No Connections description
+  </p>
+</div>
+`;
+
+exports[`ConnectionsList when there are no references should render a blank state message 2`] = `
+<div
+  className="blank-state"
+>
+  <Component
+    icon="sitemap"
+  />
+  <h4>
+    No References
+  </h4>
+  <p>
+    No References description
+  </p>
+</div>
+`;

@@ -115,6 +115,10 @@ export class Connection extends Component {
   }
 }
 
+Connection.contextTypes = {
+  confirm: PropTypes.func
+};
+
 Connection.defaultProps = {
   targetDoc: false,
   useSourceTargetIcons: false,
