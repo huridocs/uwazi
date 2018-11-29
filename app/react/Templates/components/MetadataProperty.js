@@ -71,6 +71,7 @@ export class MetadataProperty extends Component {
     }
 
     const iconClass = Icons[this.props.type] || 'font';
+    const beingEdited = editingProperty === localID;
 
     if (this.props.isCommonProperty) {
       return (
@@ -80,7 +81,11 @@ export class MetadataProperty extends Component {
             <Icon icon={iconClass} fixedWidth /> {label}
           </span>
           <div className="list-group-item-actions">
-            <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
+            <button
+              type="button"
+              className="btn btn-default btn-xs property-edit"
+              onClick={() => this.props.editProperty(beingEdited ? null : localID)}
+            >
               <Icon icon="pencil-alt" /> Edit
             </button>
             <button type="button" className="btn btn-danger btn-xs property-remove" disabled>
@@ -96,8 +101,8 @@ export class MetadataProperty extends Component {
       );
     }
 
-    const result = connectDropTarget(
-      <li className={propertyClass}>
+    const property = (
+      <div className={propertyClass}>
         <span className="property-name">
           <Icon icon="bars" fixedWidth />
           <Icon icon={iconClass} fixedWidth /> {label}
@@ -108,7 +113,11 @@ export class MetadataProperty extends Component {
               <Icon icon="exclamation-triangle" /> Duplicated label
             </span>
           </ShowIf>
-          <button type="button" className="btn btn-default btn-xs property-edit" onClick={() => this.props.editProperty(localID)}>
+          <button
+            type="button"
+            className="btn btn-default btn-xs property-edit"
+            onClick={() => this.props.editProperty(beingEdited ? null : localID)}
+          >
             <Icon icon="pencil-alt" /> Edit
           </button>
           <button
@@ -119,7 +128,13 @@ export class MetadataProperty extends Component {
             <Icon icon="trash-alt" /> Delete
           </button>
         </div>
-        <ShowIf if={editingProperty === localID}>
+      </div>
+    );
+
+    const result = connectDropTarget(
+      <li>
+        {connectDragSource(property)}
+        <ShowIf if={beingEdited && !isDragging}>
           <div className={`propery-form${editingProperty === localID ? ' expand' : ''}`}>
             {this.renderForm()}
           </div>
@@ -127,8 +142,7 @@ export class MetadataProperty extends Component {
       </li>
     );
 
-    if (editingProperty === localID) return result;
-    return connectDragSource(result);
+    return result;
   }
 }
 
@@ -155,17 +169,28 @@ const target = {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
     const item = monitor.getItem();
+    if (props.localID === item.editingProperty) {
+      props.editProperty(null);
+    }
     if (typeof dragIndex === 'undefined') {
       item.inserting = true;
       item.index = 0;
       props.addProperty({ label: item.label, type: item.type, inserting: true }, 0);
       return;
     }
+
     if (dragIndex === hoverIndex) {
       return;
     }
+
+    if (item.alreadyReordered) {
+      item.alreadyReordered = false;
+      return;
+    }
+
     props.reorderProperty(dragIndex, hoverIndex);
     item.index = hoverIndex;
+    item.alreadyReordered = true;
   }
 };
 
@@ -178,8 +203,13 @@ const source = {
     return {
       index: props.index,
       label: props.label,
-      type: props.type
+      type: props.type,
+      editingProperty: props.uiState.get('editingProperty')
     };
+  },
+  endDrag(props, monitor) {
+    const item = monitor.getItem();
+    props.editProperty(item.editingProperty);
   }
 };
 
@@ -193,8 +223,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = ({ template }) => ({
-    uiState: template.uiState,
-    formState: template.formState
+  uiState: template.uiState,
+  formState: template.formState
 });
 
 export { dragSource, dropTarget };

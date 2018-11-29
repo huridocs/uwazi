@@ -1,39 +1,40 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Form} from 'react-redux-form';
-import {isClient} from 'app/utils';
-import { Icon } from 'UI';
-
-import {DragDropContext} from 'react-dnd';
+import { DragDropContext } from 'react-dnd';
+import { Form } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import HTML5Backend from 'react-dnd-html5-backend';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import {loadLinks, addLink, sortLink, saveLinks} from 'app/Settings/actions/navlinksActions';
-import {t} from 'app/I18N';
+import { Icon } from 'UI';
+import { isClient } from 'app/utils';
+import { loadLinks, addLink, sortLink, saveLinks } from 'app/Settings/actions/navlinksActions';
+import { t } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
+
 import NavlinkForm from './NavlinkForm';
 
 
 export class NavlinksSettings extends Component {
-
   componentWillMount() {
     this.props.loadLinks(this.props.collection.get('links').toJS());
   }
 
   render() {
-    const {collection, links} = this.props;
+    const { collection, links } = this.props;
     const nameGroupClass = 'template-name';
     const hostname = isClient ? window.location.origin : '';
 
-    const payload = {_id: collection.get('_id'), _rev: collection.get('_rev'), links};
+    const payload = { _id: collection.get('_id'), _rev: collection.get('_rev'), links };
 
     return (
       <div className="NavlinksSettings">
-        <Form model="settings.navlinksData"
-              onSubmit={this.props.saveLinks.bind(this, payload)}
-              className="navLinks"
-              validators={validator(links)}>
+        <Form
+          model="settings.navlinksData"
+          onSubmit={this.props.saveLinks.bind(this, payload)}
+          className="navLinks"
+          validators={validator(links)}
+        >
 
           <div className="panel panel-default">
 
@@ -53,25 +54,29 @@ export class NavlinksSettings extends Component {
                   </div>
                 </div>
               </li>
-              {links.map((link, i) => {
-                return (
-                  <NavlinkForm key={link.localID || link._id}
-                               index={i}
-                               id={link.localID || link._id}
-                               link={link}
-                               sortLink={this.props.sortLink} />
-                );
-              })}
+              {links.map((link, i) => (
+                <NavlinkForm
+                  key={link.localID || link._id}
+                  index={i}
+                  id={link.localID || link._id}
+                  link={link}
+                  sortLink={this.props.sortLink}
+                />
+                ))}
             </ul>
             <div className="settings-footer">
-              <a className="btn btn-primary"
-                 onClick={this.props.addLink.bind(this, links)}>
+              <a
+                className="btn btn-primary"
+                onClick={this.props.addLink.bind(this, links)}
+              >
                 <Icon icon="plus" />
                 <span className="btn-label">{t('System', 'Add link')}</span>
               </a>
-              <button type="submit"
-                      className="btn btn-success"
-                      disabled={!!this.props.savingNavlinks}>
+              <button
+                type="submit"
+                className="btn btn-success"
+                disabled={!!this.props.savingNavlinks}
+              >
                 <Icon icon="save"/>
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
@@ -94,14 +99,14 @@ NavlinksSettings.propTypes = {
 };
 
 export const mapStateToProps = (state) => {
-  const {settings} = state;
-  const {collection} = settings;
+  const { settings } = state;
+  const { collection } = settings;
   const links = settings.navlinksData.links;
-  return {links, collection, savingNavlinks: settings.uiState.get('savingNavlinks')};
+  return { links, collection, savingNavlinks: settings.uiState.get('savingNavlinks') };
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadLinks, addLink, sortLink, saveLinks}, dispatch);
+  return bindActionCreators({ loadLinks, addLink, sortLink, saveLinks }, dispatch);
 }
 
 export default DragDropContext(HTML5Backend)(
