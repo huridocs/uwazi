@@ -62,6 +62,8 @@ exports[`Map Markdown component should render the data passed by mapStateToProps
   onClick={[Function]}
   renderMarker={null}
   renderPopupInfo={[Function]}
+  scrollZoom={false}
+  showControls={false}
   width={null}
   zoom={1}
 />

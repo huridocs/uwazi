@@ -222,7 +222,6 @@ export default class Map extends Component {
   }
 
   renderControls() {
-    console.log('cont', this.state.showControls);
     if (this.state.showControls) {
       return (
         <div className="mapbox-navigation">

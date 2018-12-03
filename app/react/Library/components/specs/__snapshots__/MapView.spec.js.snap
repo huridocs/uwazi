@@ -72,6 +72,8 @@ exports[`MapView render() should render a map 1`] = `
   onClick={[Function]}
   renderMarker={null}
   renderPopupInfo={[Function]}
+  scrollZoom={true}
+  showControls={false}
   width={null}
   zoom={1}
 />
