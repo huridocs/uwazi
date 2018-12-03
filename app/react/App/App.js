@@ -24,6 +24,7 @@ loadIcons();
 class App extends Component {
   constructor(props, context) {
     super(props, context);
+
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
     this.state = { showmenu: false, confirmOptions: {} };
@@ -65,8 +66,10 @@ class App extends Component {
       navClass += ' is-active';
     }
 
+    const pageClass = this.props.params && this.props.params.pageId ? this.props.params.pageId : '';
+
     return (
-      <div id="app">
+      <div id="app" className={pageClass}>
         <Notifications />
         <div className="content">
           <nav>
