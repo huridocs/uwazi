@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ReactMapGL, { Marker, Popup } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup, NavigationControl } from 'react-map-gl';
 import Immutable from 'immutable';
 
 import { Icon } from 'UI';
@@ -16,13 +16,20 @@ if (isClient) {
 
 const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
   viewport: { latitude: latitude || 46, longitude: longitude || 6, width: width || 250, height: height || 200, zoom },
-  selectedMarker: null
+  selectedMarker: null,
+  settings: { scrollZoom: true, touchZoom: true },
+  showControls: false
 });
 
 export default class Map extends Component {
   constructor(props) {
     super(props);
+
     this.state = getStateDefaults(props);
+    this.state.settings.scrollZoom = props.scrollZoom;
+    this.state.settings.touchZoom = props.scrollZoom;
+    this.state.showControls = props.showControls;
+
     this.mapStyle = Immutable.fromJS(_style);
     this.supercluster = supercluster({
         radius: _style.sources.markers.clusterRadius,
@@ -59,6 +66,7 @@ export default class Map extends Component {
     const latitude = props.latitude || this.state.viewport.latitude;
     const longitude = props.longitude || this.state.viewport.longitude;
     const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
+
     if (JSON.stringify(props.markers) !== JSON.stringify(this.props.markers)) {
       this.centerOnMarkers(markers);
       this.updateMapStyle(props);
@@ -213,13 +221,28 @@ export default class Map extends Component {
     });
   }
 
+  renderControls() {
+    console.log('cont', this.state.showControls);
+    if (this.state.showControls) {
+      return (
+        <div className="mapbox-navigation">
+          <NavigationControl onViewportChange={this._onViewportChange} />
+        </div>
+      );
+    }
+
+    return false;
+  }
+
   render() {
-    const viewport = Object.assign({}, this.state.viewport);
+    const { viewport, settings } = this.state;
+
     return (
       <div className="map-container" ref={(container) => { this.container = container; }} style={{ width: '100%', height: '100%' }}>
         <ReactMapGL
           ref={(ref) => { this.map = ref; }}
           {...viewport}
+          {...settings}
           dragRotate
           mapStyle={this.mapStyle}
           onViewportChange={this._onViewportChange}
@@ -229,6 +252,7 @@ export default class Map extends Component {
         >
           {this.renderMarkers()}
           {this.renderPopup()}
+          {this.renderControls()}
           <span className="mapbox-help">
             <Icon icon="question-circle" />
             <span className="mapbox-tooltip">Hold shift to rotate the map</span>
@@ -253,7 +277,9 @@ Map.defaultProps = {
   renderPopupInfo: null,
   renderMarker: null,
   cluster: false,
-  autoCenter: true
+  autoCenter: true,
+  scrollZoom: true,
+  showControls: false
 };
 
 Map.propTypes = {
@@ -270,5 +296,7 @@ Map.propTypes = {
   hoverOnMarker: PropTypes.func,
   renderMarker: PropTypes.func,
   cluster: PropTypes.bool,
-  autoCenter: PropTypes.bool
+  autoCenter: PropTypes.bool,
+  scrollZoom: PropTypes.bool,
+  showControls: PropTypes.bool
 };
