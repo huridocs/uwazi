@@ -70,17 +70,20 @@ class App extends Component {
       navClass += ' is-active';
     }
 
-    const customPageClass = this.props.routes.reduce((memo, route) => {
+    const customHomePageId = this.props.routes.reduce((memo, route) => {
       if (Object.keys(route).includes('customHomePageId')) {
         return route.customHomePageId;
       }
       return memo;
     }, '');
 
-    const pageClass = this.props.params && this.props.params.pageId ? this.props.params.pageId : '';
+
+    const pageId = this.props.params && this.props.params.pageId ? this.props.params.pageId : '';
+
+    const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
 
     return (
-      <div id="app" className={`_${customPageClass || pageClass}`}>
+      <div id="app" className={appClassName}>
         <Notifications />
         <div className="content">
           <nav>
