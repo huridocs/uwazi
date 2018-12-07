@@ -133,7 +133,7 @@ const routes = (
     <Route path="setpassword/:key" component={ResetPassword} />
     <Route path="document/:documentId*" component={ViewDocument} onEnter={onEnter}/>
     <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
-    <Route path="page/:pageId" component={PageView} onEnter={onEnter} />
+    <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>
     <Route path="404" component={NoMatch} />
   </Route>
 );
@@ -142,7 +142,7 @@ export default (
   <Route path="/" component={App}>
     {routes}
     <Route path=":lang">
-      {routes})
+      {routes}
       <Route path="*" component={NoMatch} />
     </Route>
     <Route path="*" component={NoMatch} />
