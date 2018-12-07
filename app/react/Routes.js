@@ -59,12 +59,12 @@ function onEnter() {
 function getIndexRoute(nextState, callBack) {
   const homePageSetting = store.getState().settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
-
   const isPageRoute = customHomePage.includes('page');
 
+  let pageId = '';
   let component = Library;
   if (isPageRoute) {
-    const pageId = customHomePage[customHomePage.indexOf('page') + 1];
+    pageId = customHomePage[customHomePage.indexOf('page') + 1];
     component = props => <PageView {...props} params={{ pageId }}/>;
     component.requestState = () => PageView.requestState({ pageId });
   }
@@ -75,7 +75,8 @@ function getIndexRoute(nextState, callBack) {
       if (!isPageRoute) {
         replace(customHomePage.join('/'));
       }
-    }
+    },
+    customHomePageId: pageId
   };
   callBack(null, indexRoute);
 }
