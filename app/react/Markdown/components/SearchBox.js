@@ -14,7 +14,7 @@ const SearchBox = ({ placeholder, classname }) => (
   <div className={`search-box ${classname}`}>
     <Form model="library.search" onSubmit={search} >
       <div className="input-group">
-        <button type="submit">
+        <button type="submit" className="btn btn-primary">
           <Icon icon="search" />
         </button>
         <Field model=".searchTerm">
