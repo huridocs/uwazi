@@ -18,6 +18,7 @@ import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
+import PageView from 'app/Pages/PageView';
 
 loadIcons();
 
@@ -77,8 +78,7 @@ class App extends Component {
       return memo;
     }, '');
 
-
-    const pageId = this.props.params && this.props.params.pageId ? this.props.params.pageId : '';
+    const pageId = this.props.children.type === PageView && this.props.params.pageId ? this.props.params.pageId : '';
 
     const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
 
