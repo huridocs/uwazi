@@ -7,6 +7,7 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import Notifications from 'app/Notifications';
 import { TranslateForm } from 'app/I18N';
+import PageView from 'app/Pages/PageView';
 
 import { loadIcons } from 'UI/Icon/library';
 import { Icon } from 'UI';
@@ -18,7 +19,6 @@ import SiteName from './SiteName';
 import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
-import PageView from 'app/Pages/PageView';
 
 loadIcons();
 
