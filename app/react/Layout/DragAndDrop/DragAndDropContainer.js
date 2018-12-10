@@ -47,6 +47,7 @@ export class DragAndDropContainer extends Component {
                         moveItem={this.moveItem.bind(this)}
                         removeItem={this.removeItem.bind(this)}
                         index={index}
+                        iconHandle={item.items ? true : false}
                         key={item.id}
                         name={item.name}
                         container={{id: this.state.id}}

@@ -69,12 +69,14 @@ import { faUndo } from '@fortawesome/free-solid-svg-icons/faUndo';
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload';
 import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 import { faEye } from '@fortawesome/free-solid-svg-icons/faEye';
+import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons/faArrowsAlt';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
 
 const icons = {
   faAngleLeft,
   faAngleRight,
   faArrowLeft,
+  faArrowsAlt,
   faArrowRight,
   faBars,
   faBook,

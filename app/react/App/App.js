@@ -24,9 +24,12 @@ loadIcons();
 class App extends Component {
   constructor(props, context) {
     super(props, context);
+
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
     this.state = { showmenu: false, confirmOptions: {} };
+
+    this.toggleMenu = this.toggleMenu.bind(this);
   }
 
   getChildContext() {
@@ -53,6 +56,8 @@ class App extends Component {
       if (child.type.renderTools) {
         return child.type.renderTools();
       }
+
+      return undefined;
     });
   }
 
@@ -65,20 +70,31 @@ class App extends Component {
       navClass += ' is-active';
     }
 
+    const customHomePageId = this.props.routes.reduce((memo, route) => {
+      if (Object.keys(route).includes('customHomePageId')) {
+        return route.customHomePageId;
+      }
+      return memo;
+    }, '');
+
+    const pageId = !this.props.location.pathname.match('settings') && this.props.params.pageId ? this.props.params.pageId : '';
+
+    const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
+
     return (
-      <div id="app">
+      <div id="app" className={appClassName}>
         <Notifications />
         <div className="content">
           <nav>
             <h1><SiteName/></h1>
           </nav>
           <header>
-            <button className="menu-button" onClick={this.toggleMenu.bind(this)}>
+            <button className="menu-button" onClick={this.toggleMenu}>
               <Icon icon={MenuButtonIcon} />
             </button>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
-            <Menu language={this.context.language} location={this.props.location} onClick={this.toggleMenu.bind(this)} className={navClass} />
+            <Menu language={this.context.language} location={this.props.location} onClick={this.toggleMenu} className={navClass} />
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
@@ -93,10 +109,17 @@ class App extends Component {
   }
 }
 
+App.defaultProps = {
+  params: {},
+  routes: [],
+};
+
 App.propTypes = {
   fetch: PropTypes.func,
   children: PropTypes.object,
-  location: PropTypes.object
+  location: PropTypes.object,
+  params: PropTypes.object,
+  routes: PropTypes.array,
 };
 
 App.childContextTypes = {

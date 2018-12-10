@@ -20,7 +20,7 @@ const renderInfo = marker => (
 );
 
 export const MapComponent = (props) => {
-  const { data, classname } = props;
+  const { data, classname, scrollZoom, showControls } = props;
   const clickOnMarker = marker =>
     props.getAndSelectDocument(marker.properties.entity.sharedId);
   const clickOnCluster = (cluster) => {
@@ -40,6 +40,8 @@ export const MapComponent = (props) => {
               clickOnCluster={clickOnCluster}
               renderPopupInfo={renderInfo}
               cluster
+              scrollZoom={scrollZoom === 'true'}
+              showControls={showControls === 'true'}
             />
           )}
         </Markers>
@@ -50,12 +52,16 @@ export const MapComponent = (props) => {
 
 MapComponent.defaultProps = {
   classname: '',
-  data: null
+  data: null,
+  scrollZoom: null,
+  showControls: null,
 };
 
 MapComponent.propTypes = {
   classname: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
+  scrollZoom: PropTypes.string,
+  showControls: PropTypes.string,
   getAndSelectDocument: PropTypes.func.isRequired,
   selectDocuments: PropTypes.func.isRequired,
   unselectAllDocuments: PropTypes.func.isRequired,

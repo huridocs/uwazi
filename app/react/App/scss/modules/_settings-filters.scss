@@ -13,7 +13,6 @@
     border-radius: $border-radius !important;
     border: 1px solid $c-grey-light !important;
     box-shadow: $box-shadow !important;
-    cursor: move;
   }
   .list-group-item > div {
     width: 100%;
@@ -35,7 +34,7 @@
     padding: 15px 0;
     border: 1px dashed $c-grey;
   }
-  .list-group-item > svg {
+  .list-group-item > svg, .list-group-item > span svg {
     margin: 2px 25px 0 0;
     color: $c-grey;
   }
@@ -77,4 +76,8 @@
       float: right;
     }
   }
+}
+
+.draggable {
+  cursor: move;
 }
