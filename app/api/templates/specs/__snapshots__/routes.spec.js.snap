@@ -159,10 +159,10 @@ Object {
               "type": "string",
             },
             "content": Object {
-              "invalids": Array [
+              "type": "string",
+              "valids": Array [
                 "",
               ],
-              "type": "string",
             },
             "defaultfilter": Object {
               "falsy": Array [
