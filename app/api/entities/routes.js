@@ -10,6 +10,8 @@ export default (app) => {
     (req, res, next) => entities.save(req.body, { user: req.user, language: req.language })
     .then((response) => {
       res.json(response);
+      res.locals.data = response;
+      next();
       return templates.getById(response.template);
     })
     .then(template => thesauris.templateToThesauri(template, req.language, req.user))

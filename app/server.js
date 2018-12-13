@@ -56,7 +56,19 @@ app.use(privateInstanceMiddleware);
 app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 app.use('/uploaded_documents', express.static(uploadDocumentsPath));
 
+app.use((req, res, next) => {
+  req.id = uniqueID;
+  guardarLog({});
+  next();
+});
+
 apiRoutes(app, http);
+
+app.use((req, res, next) => {
+  updateLog({reqId: req.id})
+  next();
+});
+
 serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);

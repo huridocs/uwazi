@@ -483,7 +483,7 @@ describe('relationships', () => {
       const response = await relationships.delete({ _id: connectionID1 }, 'en');
       const hub7Connections = await relationships.get({ hub: hub7 });
       expect(hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length).toBe(0);
-      expect(JSON.parse(response).ok).toBe(1);
+      expect(response.ok).toBe(1);
     });
 
     it('should not leave a lone connection in the hub', async () => {

@@ -24,7 +24,7 @@ export default MongooseModel => ({
 
     get: (query, select = '', pagination = {}) => MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)),
 
-    count: condition => MongooseModel.count(condition),
+    count: condition => MongooseModel.countDocuments(condition),
 
     getById: id => MongooseModel.findById(id, {}, { lean: true }),
 
@@ -33,6 +33,6 @@ export default MongooseModel => ({
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = { _id: condition };
       }
-      return MongooseModel.remove(cond);
+      return MongooseModel.deleteMany(cond);
     }
 });
