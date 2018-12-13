@@ -144,7 +144,7 @@ export default {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       return entities.get(
         { sharedId: { $in: connectedEntitiesSharedId }, language },
-        ['template', 'creationDate', 'title', 'file', 'sharedId', 'uploaded', 'processed', 'type']
+        ['template', 'creationDate', 'title', 'file', 'sharedId', 'uploaded', 'processed', 'type', 'published']
       )
       .then((_connectedDocuments) => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
