@@ -21,14 +21,6 @@ export class ConnectionsList extends Component {
     );
   }
 
-  componentWillReceiveProps(newProps) {
-    Object.keys(newProps).map((key) => {
-      if (newProps[key] !== this.props[key]) {
-        console.log(key, newProps[key], this.props[key]);
-      }
-    });
-  }
-
   close() {
     this.props.closePanel();
     this.props.deactivateReference();
@@ -55,7 +47,7 @@ export class ConnectionsList extends Component {
 
     return (
       <div className="item-group">
-        {(() => references.map((reference, index) => <Connection key={index} readOnly={this.props.readOnly} reference={reference} />))()}
+        {(() => references.map(reference => <Connection key={reference._id} readOnly={this.props.readOnly} reference={reference} />))()}
       </div>
     );
   }

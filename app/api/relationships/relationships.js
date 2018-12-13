@@ -141,14 +141,13 @@ export default {
   getByDocument(sharedId, language) {
     return this.getDocumentHubs(sharedId)
     .then((_relationships) => {
-      const connectedEntityiesSharedId = _relationships.map(relationship => relationship.entity);
-      return entities.get({ sharedId: { $in: connectedEntityiesSharedId }, language })
+      const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
+      return entities.get({ sharedId: { $in: connectedEntitiesSharedId }, language }, ['template', 'creationDate', 'title', 'file', 'sharedId', 'uploaded', 'processed', 'type'])
       .then((_connectedDocuments) => {
         const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-
         return new RelationshipCollection(..._relationships)
         .removeOtherLanguageTextReferences(connectedDocuments)
         .removeSingleHubs()

@@ -10,14 +10,18 @@ import ShowIf from 'app/App/ShowIf';
 import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
+import { createSelector } from 'reselect';
 
 import { APIURL } from '../../config.js';
+
+const selectPdfInfo = createSelector(doc => doc.pdfInfo, pdfInfo => pdfInfo);
 
 export class Document extends Component {
   constructor(props) {
     super(props);
     this.pages = { 1: 0 };
     this.previousMostVisible = props.page;
+    this.pdfLoaded = this.pdfLoaded.bind(this);
   }
 
   handleMouseUp() {
@@ -76,7 +80,6 @@ export class Document extends Component {
     this.text.renderReferences(this.props.references.toJS());
     this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
     this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
-    this.text.highlight(this.props.highlightedReference);
     this.text.activate(this.props.activeReference);
     highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
   }
@@ -124,8 +127,8 @@ export class Document extends Component {
               <PDF
                 onPageChange={this.props.onPageChange}
                 onPDFReady={this.props.onDocumentReady}
-                pdfInfo={doc.pdfInfo}
-                onLoad={this.pdfLoaded.bind(this)}
+                pdfInfo={this.props.doc.get('pdfInfo')}
+                onLoad={this.pdfLoaded}
                 file={`${APIURL}documents/download?_id=${doc._id}`}
                 filename={doc.file ? doc.file.filename : null}
               />
@@ -150,7 +153,6 @@ Document.propTypes = {
   docHTML: PropTypes.object,
   setSelection: PropTypes.func,
   unsetSelection: PropTypes.func,
-  highlightReference: PropTypes.func,
   header: PropTypes.func,
   searchTerm: PropTypes.string,
   selectedSnippet: PropTypes.object,
@@ -158,7 +160,6 @@ Document.propTypes = {
   activateReference: PropTypes.func,
   doScrollToActive: PropTypes.bool,
   scrollToActive: PropTypes.func,
-  highlightedReference: PropTypes.string,
   activeReference: PropTypes.string,
   selection: PropTypes.object,
   references: PropTypes.object,

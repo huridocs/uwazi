@@ -79,6 +79,7 @@ export class Connection extends Component {
         onMouseLeave={this.props.highlightReference.bind(null, null)}
         onClick={this.clickReference.bind(this, reference)}
         doc={doc}
+        noMetadata
         className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''}`}
         data-id={reference._id}
         additionalIcon={<ShowIf if={useSourceTargetIcons}>
