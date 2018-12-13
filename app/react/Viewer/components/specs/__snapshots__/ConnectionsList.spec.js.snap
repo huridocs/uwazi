@@ -5,7 +5,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
   className="item-group"
 >
   <Connect(Connection)
-    key="0"
+    key="ref4"
     reference={
       Object {
         "_id": "ref4",
@@ -22,7 +22,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
     }
   />
   <Connect(Connection)
-    key="1"
+    key="ref2"
     reference={
       Object {
         "_id": "ref2",
@@ -40,7 +40,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
     }
   />
   <Connect(Connection)
-    key="2"
+    key="ref3"
     reference={
       Object {
         "_id": "ref3",
@@ -58,7 +58,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
     }
   />
   <Connect(Connection)
-    key="3"
+    key="ref1"
     reference={
       Object {
         "_id": "ref1",

@@ -71,6 +71,7 @@ exports[`Connection should render the reference 1`] = `
     }
   }
   evalPublished={true}
+  noMetadata={true}
   onClick={[Function]}
   onMouseEnter={[Function]}
   onMouseLeave={[Function]}

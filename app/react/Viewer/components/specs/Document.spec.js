@@ -231,11 +231,6 @@ describe('Document', () => {
         instance.componentDidUpdate();
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{ reference: 'reference' }]);
       });
-
-      it('should highlight the reference', () => {
-        instance.componentDidUpdate();
-        expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
-      });
     });
   });
 });

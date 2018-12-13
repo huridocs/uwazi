@@ -125,13 +125,14 @@ export default function (container) {
     },
 
     renderReferences(references, identifier = 'reference', elementWrapperType = 'a') {
-      console.log('render references!');
+      if (!container.innerHTML) {
+        throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
+      }
       const rangeProperty = 'range';
       const ids = [];
       if (!this.renderedReferences[identifier]) {
         this.renderedReferences[identifier] = {};
       }
-
 
       let toRender = references.filter((ref) => {
         if (this.charRange.start === null && this.charRange.end === null) {
@@ -159,9 +160,6 @@ export default function (container) {
       toRender.forEach((reference) => {
         if (this.renderedReferences[identifier][reference._id] || !reference[rangeProperty]) {
           return;
-        }
-        if (!container.innerHTML) {
-          throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
         }
         let ref = reference[rangeProperty];
         if (this.charRange.start) {
