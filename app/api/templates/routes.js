@@ -31,7 +31,7 @@ export default (app) => {
           sortable: Joi.boolean(),
           showInCard: Joi.boolean(),
           fullWidth: Joi.boolean(),
-          content: Joi.string(),
+          content: Joi.string().allow(['']),
           prioritySorting: Joi.boolean(),
           style: Joi.string(),
           inserting: Joi.any()

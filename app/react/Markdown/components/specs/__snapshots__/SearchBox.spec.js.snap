@@ -12,6 +12,7 @@ exports[`SearchBox should render a basic input that binds to the correct model 1
       className="input-group"
     >
       <button
+        className="btn btn-primary"
         type="submit"
       >
         <Component
