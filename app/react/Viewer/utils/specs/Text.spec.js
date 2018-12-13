@@ -172,20 +172,27 @@ describe('Text', () => {
     });
 
     it('should wrap a collection of references using identifier passed', () => {
-      const references = [{ _id: '1', range: 'targetRange1' }, { _id: '2', range: 'targetRange2' }];
+      const references = [{ _id: '1', range: { start: 1, end: 2 } }, { _id: '2', range: { start: 3, end: 4 } }];
 
+      text.charRange = { start: 0, end: 100 };
       text.renderReferences(references, 'identifier');
-      expect(TextRange.restore).toHaveBeenCalledWith('targetRange1', document);
-      expect(TextRange.restore).toHaveBeenCalledWith('targetRange2', document);
+      expect(TextRange.restore).toHaveBeenCalledWith({ start: 1, end: 2 }, document);
+      expect(TextRange.restore).toHaveBeenCalledWith({ start: 3, end: 4 }, document);
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('1', 'identifier'), 'restoredRange');
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('2', 'identifier'), 'restoredRange');
     });
 
     it('should not render references already rendered', () => {
-      const firstReferneces = [{ _id: '1', range: 'sourceRange1' }, { _id: '2', range: 'sourceRange2' }];
-      const secondReferences = [
-        { _id: '1', range: 'sourceRange1' }, { _id: '2', range: 'sourceRange2' }, { _id: '3', range: 'sourceRange3' }
+      const firstReferneces = [
+        { _id: '1', range: { start: 1, end: 2 } },
+        { _id: '2', range: { start: 3, end: 4 } }
       ];
+      const secondReferences = [
+        { _id: '1', range: { start: 1, end: 2 } },
+        { _id: '2', range: { start: 3, end: 4 } },
+        { _id: '3', range: { start: 5, end: 6 } }
+      ];
+      text.charRange = { start: 0, end: 100 };
       text.renderReferences(firstReferneces);
       TextRange.restore.calls.reset();
       wrapper.wrap.calls.reset();
@@ -193,13 +200,20 @@ describe('Text', () => {
 
       expect(TextRange.restore.calls.count()).toBe(1);
       expect(wrapper.wrap.calls.count()).toBe(1);
-      expect(TextRange.restore).toHaveBeenCalledWith('sourceRange3', document);
+      expect(TextRange.restore).toHaveBeenCalledWith({ start: 5, end: 6 }, document);
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('3'), 'restoredRange');
     });
 
-    it('should unwrap references that are passed by propertyRange in multiple calls', () => {
-      const firstReferneces = [{ _id: '1', range: 'sourceRange1' }, { _id: '2', range: 'sourceRange2' }];
-      const secondReferences = [{ _id: '2', range: 'sourceRange2' }, { _id: '3', range: 'sourceRange3' }];
+    fit('should unwrap references that are passed by propertyRange in multiple calls', () => {
+      const firstReferneces = [
+        { _id: '1', range: { start: 1, end: 2 } },
+        { _id: '2', range: { start: 3, end: 4 } }
+      ];
+      const secondReferences = [
+        { _id: '2', range: { start: 3, end: 4 } },
+        { _id: '3', range: { start: 5, end: 6 } }
+      ];
+      text.charRange = { start: 0, end: 100 };
       text.renderReferences(firstReferneces);
       text.renderReferences(secondReferences);
       text.renderReferences([], 'targetRange');

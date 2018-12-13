@@ -124,6 +124,37 @@ export default function (container) {
       }
     },
 
+    filterInRangeReferences(references, rangeProperty) {
+      return references.filter((ref) => {
+        if (!ref[rangeProperty]) {
+          return false;
+        }
+        if (this.charRange.start === null && this.charRange.end === null) {
+          return false;
+        }
+
+        return ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end ||
+               ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
+      });
+    },
+
+    groupReferencesByRange(references, rangeProperty) {
+      const groupedRanges = {};
+      references.forEach((ref) => {
+        const duplicateKey = `${ref[rangeProperty].start}${ref[rangeProperty].end}`;
+        if (!groupedRanges[duplicateKey]) {
+          groupedRanges[duplicateKey] = [];
+        }
+        groupedRanges[duplicateKey].push(ref);
+      });
+      return Object.keys(groupedRanges).map((key) => {
+        const _references = groupedRanges[key];
+        const ref = { ids: _references.map(r => r._id) };
+        ref[rangeProperty] = _references[0][rangeProperty];
+        return ref;
+      });
+    },
+
     renderReferences(references, identifier = 'reference', elementWrapperType = 'a') {
       if (!container.innerHTML) {
         throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
@@ -134,33 +165,15 @@ export default function (container) {
         this.renderedReferences[identifier] = {};
       }
 
-      let toRender = references.filter((ref) => {
-        if (this.charRange.start === null && this.charRange.end === null) {
-          return false;
-        }
+      const inRangeReferences = this.filterInRangeReferences(references, rangeProperty);
 
-        return ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end ||
-               ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
-      });
-      const groupedByRanges = {};
-      toRender.forEach((ref) => {
+      const toRender = inRangeReferences.filter((ref) => {
         ids.push(ref._id);
-        const duplicateKey = `${ref[rangeProperty].start}${ref[rangeProperty].end}`;
-        if (!groupedByRanges[duplicateKey]) {
-          groupedByRanges[duplicateKey] = [];
-        }
-        groupedByRanges[duplicateKey].push(ref);
+        return !this.renderedReferences[identifier][ref._id];
       });
-      toRender = Object.keys(groupedByRanges).map((key) => {
-        const _references = groupedByRanges[key];
-        const ref = { ids: _references.map(r => r._id) };
-        ref[rangeProperty] = _references[0][rangeProperty];
-        return ref;
-      });
-      toRender.forEach((reference) => {
-        if (this.renderedReferences[identifier][reference._id] || !reference[rangeProperty]) {
-          return;
-        }
+      const groupedReferencesbyRange = this.groupReferencesByRange(toRender, rangeProperty);
+
+      groupedReferencesbyRange.forEach((reference) => {
         let ref = reference[rangeProperty];
         if (this.charRange.start) {
           // test the ref modifications are immutable !!!
