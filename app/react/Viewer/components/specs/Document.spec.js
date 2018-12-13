@@ -122,27 +122,6 @@ describe('Document', () => {
     });
   });
 
-  describe('onMouseOver', () => {
-    describe('when over a reference', () => {
-      it('should highlightReference if over a reference', () => {
-        props.highlightReference = jasmine.createSpy('highlightReference');
-        render();
-
-        component.find('.pages').simulate('mouseover', { target: { className: 'reference', getAttribute: () => 'referenceId' } });
-        expect(props.highlightReference).toHaveBeenCalledWith('referenceId');
-      });
-    });
-    describe('when not over a reference', () => {
-      it('should unHighlight reference', () => {
-        props.highlightReference = jasmine.createSpy('highlightReference');
-        render();
-
-        component.find('.pages').simulate('mouseover', { target: { className: '', getAttribute: () => '' } });
-        expect(props.highlightReference).toHaveBeenCalledWith(null);
-      });
-    });
-  });
-
   describe('onMouseUp/onTouchEnd', () => {
     beforeEach(() => {
       render();
@@ -230,11 +209,6 @@ describe('Document', () => {
       it('should render the references', () => {
         instance.componentDidUpdate();
         expect(instance.text.renderReferences).toHaveBeenCalledWith([{ reference: 'reference' }]);
-      });
-
-      it('should highlight the reference', () => {
-        instance.componentDidUpdate();
-        expect(instance.text.highlight).toHaveBeenCalledWith('highlightedReference');
       });
     });
   });

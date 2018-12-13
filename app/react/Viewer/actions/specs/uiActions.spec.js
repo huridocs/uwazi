@@ -91,8 +91,8 @@ describe('Viewer uiActions', () => {
     it('should scroll to the elements', (done) => {
       actions.activateReference({ _id: 'id' }, {})(dispatch);
       setTimeout(() => {
-        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer', { duration: 100 });
-        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item-id', '.metadata-sidepanel .sidepanel-body', { duration: 100 });
+        expect(scroller.to).toHaveBeenCalledWith('.document-viewer a[data-id="id"]', '.document-viewer', { duration: 50 });
+        expect(scroller.to).toHaveBeenCalledWith('.metadata-sidepanel .item-id', '.metadata-sidepanel .sidepanel-body', { duration: 50 });
         done();
       });
     });
