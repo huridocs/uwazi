@@ -10,11 +10,8 @@ import ShowIf from 'app/App/ShowIf';
 import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
-import { createSelector } from 'reselect';
 
 import { APIURL } from '../../config.js';
-
-const selectPdfInfo = createSelector(doc => doc.pdfInfo, pdfInfo => pdfInfo);
 
 export class Document extends Component {
   constructor(props) {
@@ -50,12 +47,7 @@ export class Document extends Component {
     }
   }
 
-  handleOver(e) {
-    if (e.target.className && e.target.className.indexOf('reference') !== -1) {
-      return this.props.highlightReference(e.target.getAttribute('data-id'));
-    }
-
-    this.props.highlightReference(null);
+  handleOver() {
   }
 
   componentDidMount() {
