@@ -1,15 +1,15 @@
+import { Field } from 'react-redux-form';
+import { fromJS } from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS} from 'immutable';
 
-import {NavlinkForm, LinkSource, LinkTarget, mapStateToProps} from '../NavlinkForm';
+import { shallow } from 'enzyme';
 
-import {Field} from 'react-redux-form';
+import { NavlinkForm, LinkSource, LinkTarget, mapStateToProps } from '../NavlinkForm';
 
 describe('Drag and Drop functions', () => {
   describe('LinkSource', () => {
     it('should have a beginDrag function that returns the index and id of the linked object', () => {
-      expect(LinkSource.beginDrag({localID: 'localID', index: 3})).toEqual({id: 'localID', index: 3});
+      expect(LinkSource.beginDrag({ localID: 'localID', index: 3 })).toEqual({ id: 'localID', index: 3 });
     });
   });
 
@@ -19,10 +19,10 @@ describe('Drag and Drop functions', () => {
     let component;
 
     beforeEach(() => {
-      props = {sortLink: jasmine.createSpy('sortLink')};
+      props = { sortLink: jasmine.createSpy('sortLink') };
       monitor = {
         getItem() {
-          return {index: 3};
+          return { index: 3 };
         }
       };
     });
@@ -45,36 +45,34 @@ describe('NavlinkForm', () => {
   const dragAndDropConnects = {};
 
   beforeEach(() => {
-    dragAndDropConnects.connectDragSource = (dropTargetHtml) => {
-      return dropTargetHtml.html;
-    };
+    dragAndDropConnects.connectDragSource = dropTargetHtml => dropTargetHtml.html;
+    dragAndDropConnects.connectDragPreview = dropTargetHtml => dropTargetHtml.html;
 
-    dragAndDropConnects.connectDropTarget = (html) => {
-      return {html};
-    };
+    dragAndDropConnects.connectDropTarget = html => ({ html });
 
     spyOn(dragAndDropConnects, 'connectDragSource').and.callThrough();
     spyOn(dragAndDropConnects, 'connectDropTarget').and.callThrough();
 
     props = {
-      link: {localID: 'newLink1'},
+      link: { localID: 'newLink1' },
       id: 'newLink1',
       index: 1,
-      uiState: fromJS({editingLink: 0}),
-      formState: {$form: {errors: {}}},
+      uiState: fromJS({ editingLink: 0 }),
+      formState: { $form: { errors: {} } },
       editLink: jasmine.createSpy('editLink'),
       removeLink: jasmine.createSpy('removeLink'),
       sortLink: jasmine.createSpy('sortLink'),
       isDragging: false,
       connectDragSource: dragAndDropConnects.connectDragSource,
-      connectDropTarget: dragAndDropConnects.connectDropTarget
+      connectDropTarget: dragAndDropConnects.connectDropTarget,
+      connectDragPreview: dragAndDropConnects.connectDragPreview,
     };
 
     component = shallow(<NavlinkForm {...props} />);
   });
 
   it('should render a list-group-item wrapped inside dragSource and dropTarget functionality', () => {
-    expect(dragAndDropConnects.connectDragSource.calls.argsFor(0)[0].html.type).toBe('li');
+    expect(dragAndDropConnects.connectDragSource.calls.argsFor(0)[0].type).toBe('span');
     expect(dragAndDropConnects.connectDropTarget.calls.argsFor(0)[0].type).toBe('li');
     expect(component.find('li').props().className).toBe('list-group-item');
   });
@@ -118,7 +116,7 @@ describe('NavlinkForm', () => {
     };
 
     it('should return the right props', () => {
-      expect(mapStateToProps({settings})).toEqual({formState: 'formState', uiState: 'uiState'});
+      expect(mapStateToProps({ settings })).toEqual({ formState: 'formState', uiState: 'uiState' });
     });
   });
 });

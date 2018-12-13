@@ -3,5 +3,5 @@ import DragAndDropItem from './DragAndDropItem';
 
 export {
   DragAndDropContainer,
-  DragAndDropItem
+  DragAndDropItem,
 };

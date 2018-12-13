@@ -27,8 +27,48 @@
   white-space: nowrap;
 }
 
+.list-group {
+
+  .property-name:hover {
+    cursor: move;
+  }
+
+  .propery-form {
+    height: 0;
+    width: 100%;
+    border: 1px solid $c-grey-light;
+
+    &.expand {
+      height: auto;
+      padding: 15px 30px;
+      margin-top: -8px;
+      cursor: default;
+    }
+
+    & > div > .well:not(:last-child),
+    & > div > .row:not(:last-child) {
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.NavlinksSettings {
+  .list-group {
+    .propery-form {
+      border: none;
+    }
+  }
+}
+
 .panel {
   .list-group {
+    list-style: none;
+
+    div.list-group-item:first-child {
+      margin-top: 7px;
+      margin-bottom: 7px;
+    }
+
     .list-group-item {
       small {
         margin-left: 5px;
@@ -54,21 +94,6 @@
         }
       }
 
-      .propery-form {
-        height: 0;
-        width: 100%;
-
-        &.expand {
-          height: auto;
-          padding: 15px 30px;
-          cursor: default;
-        }
-
-        & > div > .well:not(:last-child),
-        & > div > .row:not(:last-child) {
-          margin-bottom: 10px;
-        }
-      }
 
       &.dragging {
         opacity: 0;

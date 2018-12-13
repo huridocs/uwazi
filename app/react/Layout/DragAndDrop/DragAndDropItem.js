@@ -1,7 +1,8 @@
+import { DragSource, DropTarget } from 'react-dnd';
+import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {findDOMNode} from 'react-dom';
-import {DragSource, DropTarget} from 'react-dnd';
+import React, { Component } from 'react';
+
 import { Icon } from 'UI';
 
 export const itemSource = {
@@ -82,26 +83,42 @@ export const itemTarget = {
 
 export class DragAndDropItem extends Component {
   render() {
-    const {isDragging, connectDragSource, connectDropTarget} = this.props;
+    const { iconHandle, isDragging, connectDragPreview, connectDragSource, connectDropTarget } = this.props;
     let propertyClass = 'list-group-item';
     if (isDragging) {
       propertyClass += ' dragging';
     }
 
-    return connectDragSource(connectDropTarget(
+    if (!iconHandle) {
+      propertyClass += ' draggable';
+    }
+
+    const result = connectDropTarget(
       <div className={propertyClass}>
-        <Icon icon="bars" />
+        {iconHandle ? connectDragSource(<span className="draggable"><Icon icon="bars" /></span>) : <Icon icon="bars" />}
         {this.props.children}
       </div>
-    ));
+    );
+
+    if (!iconHandle) {
+      return connectDragSource(result);
+    }
+
+    return connectDragPreview(result);
   }
 }
 
+DragAndDropItem.defaultProps = {
+  iconHandle: false
+};
+
 DragAndDropItem.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
+  connectDragPreview: PropTypes.func.isRequired,
   connectDropTarget: PropTypes.func.isRequired,
   index: PropTypes.number.isRequired,
   isDragging: PropTypes.bool.isRequired,
+  iconHandle: PropTypes.bool,
   id: PropTypes.any.isRequired,
   moveItem: PropTypes.func.isRequired,
   children: PropTypes.any
@@ -113,6 +130,7 @@ let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connect => ({
 
 dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
+  connectDragPreview: connect.dragPreview(),
   isDragging: monitor.isDragging()
 }))(dragAndDropItem);
 
