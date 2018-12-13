@@ -214,12 +214,10 @@ export default {
   },
 
   getWithRelationships(query, select, pagination) {
-    const start = Date.now();
     return model.get(query, select, pagination)
     .then(entities => Promise.all(entities.map(entity => relationships.getByDocument(entity.sharedId, entity.language)
     .then((relations) => {
       entity.relationships = relations;
-      console.log(query, 'took:', Date.now() - start);
       return entity;
     }))));
   },
