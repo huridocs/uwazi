@@ -1,9 +1,19 @@
 import mongoose from 'mongoose';
+import { model as updateLogModel } from 'api/updatelog';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
-export default MongooseModel => ({
+export default (collectionName, schema) => {
+  const MongooseModel = mongoose.model(collectionName, schema);
+
+  schema.post('save', (doc, next) => {
+    const logData = { namespace: collectionName, mongoId: doc._id };
+    updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now() }, { upsert: true, lean: true })
+    .then(() => next());
+  });
+
+  return {
     db: MongooseModel,
     save: (data) => {
       if (Array.isArray(data)) {
@@ -35,4 +45,5 @@ export default MongooseModel => ({
       }
       return MongooseModel.remove(cond);
     }
-});
+  };
+};
