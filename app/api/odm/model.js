@@ -33,6 +33,6 @@ export default MongooseModel => ({
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = { _id: condition };
       }
-      return MongooseModel.deleteMany(cond);
+      return MongooseModel.remove(cond);
     }
 });
