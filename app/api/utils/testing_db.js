@@ -20,7 +20,7 @@ const initMongoServer = () => {
     connected = true;
     db = pow.connect(uri);
     testingDB.clear = db.clear.bind(db);
-    return mongoose.connect(uri, { useNewUrlParser: true });
+    return mongoose.connect(uri, {});
   });
 };
 

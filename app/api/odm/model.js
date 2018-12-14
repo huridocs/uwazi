@@ -24,7 +24,7 @@ export default MongooseModel => ({
 
     get: (query, select = '', pagination = {}) => MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)),
 
-    count: condition => MongooseModel.countDocuments(condition),
+    count: condition => MongooseModel.count(condition),
 
     getById: id => MongooseModel.findById(id, {}, { lean: true }),
 

@@ -475,21 +475,27 @@ async@0.1.15:
   version "0.1.15"
   resolved "https://registry.yarnpkg.com/async/-/async-0.1.15.tgz#2180eaca2cf2a6ca5280d41c0585bec9b3e49bd3"
 
+async@2.1.4:
+  version "2.1.4"
+  resolved "http://registry.npmjs.org/async/-/async-2.1.4.tgz#2d2160c7788032e4dd6cbe2502f1f9a2c8f6cde4"
+  dependencies:
+    lodash "^4.14.0"
+
 async@2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/async/-/async-2.4.0.tgz#4990200f18ea5b837c2cc4f8c031a6985c385611"
   dependencies:
     lodash "^4.14.0"
 
-async@2.6.1, async@^2.1.2, async@^2.6.0:
+async@^1.4.0:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
+
+async@^2.1.2, async@^2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   dependencies:
     lodash "^4.17.10"
-
-async@^1.4.0:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
 async@^2.1.4, async@^2.4.1:
   version "2.6.0"
@@ -1349,7 +1355,11 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@3.5.1, bluebird@^3.3.1, bluebird@^3.4.6, bluebird@^3.5.1:
+bluebird@3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
+
+bluebird@^3.3.1, bluebird@^3.4.6, bluebird@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
@@ -1542,10 +1552,6 @@ bser@^2.0.0:
   resolved "https://registry.yarnpkg.com/bser/-/bser-2.0.0.tgz#9ac78d3ed5d915804fd87acb158bc797147a1719"
   dependencies:
     node-int64 "^0.4.0"
-
-bson@^1.1.0, bson@~1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-1.1.0.tgz#bee57d1fb6a87713471af4e32bcae36de814b5b0"
 
 bson@~1.0.4:
   version "1.0.6"
@@ -2759,7 +2765,7 @@ debug@2.6.9, debug@^2.1.2, debug@^2.1.3, debug@^2.2.0, debug@^2.3.3, debug@^2.6.
   dependencies:
     ms "2.0.0"
 
-debug@3.1.0, debug@^3.0.0, debug@^3.1.0, debug@~3.1.0:
+debug@^3.0.0, debug@^3.1.0, debug@~3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   dependencies:
@@ -6581,9 +6587,9 @@ jvent@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/jvent/-/jvent-1.0.2.tgz#7846c8c9a0697075746681e2cb3cfcaef04296dd"
 
-kareem@2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.3.0.tgz#ef33c42e9024dce511eeaf440cd684f3af1fc769"
+kareem@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/kareem/-/kareem-2.0.1.tgz#f17f77e9032f64aa402b334f91fb4407fe4c042c"
 
 kdbush@^1.0.1:
   version "1.0.1"
@@ -7250,10 +7256,6 @@ memory-fs@^0.4.0, memory-fs@~0.4.1:
     errno "^0.1.3"
     readable-stream "^2.0.1"
 
-memory-pager@^1.0.2:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/memory-pager/-/memory-pager-1.3.1.tgz#1153d2f5e157a407a436bf54ccf4139037515866"
-
 meow@^3.1.0, meow@^3.3.0, meow@^3.5.0, meow@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/meow/-/meow-3.7.0.tgz#72cb668b425228290abbfa856892587308a801fb"
@@ -7503,15 +7505,12 @@ mongodb-core@2.1.19:
     bson "~1.0.4"
     require_optional "~1.0.0"
 
-mongodb-core@3.1.9:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.1.9.tgz#c31ee407bf932b0149eaed775c17ee09974e4ca3"
+mongodb-core@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.0.1.tgz#ff6dc36ee96ff596953d80a6840d6731bc92efed"
   dependencies:
-    bson "^1.1.0"
+    bson "~1.0.4"
     require_optional "^1.0.1"
-    safe-buffer "^5.1.2"
-  optionalDependencies:
-    saslprep "^1.0.0"
 
 mongodb-memory-server@^1.9.3:
   version "1.9.3"
@@ -7529,12 +7528,11 @@ mongodb-memory-server@^1.9.3:
     tmp "^0.0.33"
     uuid "^3.2.1"
 
-mongodb@3.1.10:
-  version "3.1.10"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.1.10.tgz#45ad9b74ea376f4122d0881b75e5489b9e504ed7"
+mongodb@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.0.1.tgz#278ee8006257ec22798594a6259546825d6de1b2"
   dependencies:
-    mongodb-core "3.1.9"
-    safe-buffer "^5.1.2"
+    mongodb-core "3.0.1"
 
 mongodb@^2.0.36, mongodb@~2.2.x:
   version "2.2.35"
@@ -7554,26 +7552,24 @@ mongodb_fixtures@1.0.3:
     optimist "0.3.5"
     underscore "1.8.x"
 
-mongoose-legacy-pluralize@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
+mongoose-legacy-pluralize@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.1.tgz#31ae25db45c30f1448c0f93f52769e903367c701"
 
-mongoose@5.3.16:
-  version "5.3.16"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.3.16.tgz#04af18eaf39f7a91e31285cfb180478874877611"
+mongoose@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.0.0.tgz#85e92fd72d718b21b3d55a62b09434da37354b5a"
   dependencies:
-    async "2.6.1"
-    bson "~1.1.0"
-    kareem "2.3.0"
+    async "2.1.4"
+    bson "~1.0.4"
+    kareem "2.0.1"
     lodash.get "4.4.2"
-    mongodb "3.1.10"
-    mongodb-core "3.1.9"
-    mongoose-legacy-pluralize "1.0.2"
-    mpath "0.5.1"
-    mquery "3.2.0"
+    mongodb "3.0.1"
+    mongoose-legacy-pluralize "1.0.1"
+    mpath "0.3.0"
+    mquery "3.0.0-rc0"
     ms "2.0.0"
     regexp-clone "0.0.1"
-    safe-buffer "5.1.2"
     sliced "1.0.1"
 
 move-concurrently@^1.0.1:
@@ -7595,19 +7591,18 @@ mozjpeg@^5.0.0:
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
 
-mpath@0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.5.1.tgz#17131501f1ff9e6e4fbc8ffa875aa7065b5775ab"
+mpath@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.3.0.tgz#7a58f789e9b5fd3c94520634157960f26bd5ef44"
 
-mquery@3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.2.0.tgz#e276472abd5109686a15eb2a8e0761db813c81cc"
+mquery@3.0.0-rc0:
+  version "3.0.0-rc0"
+  resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.0.0-rc0.tgz#05ec656e92f079828bedf4202e60fb8eaacb9f47"
   dependencies:
-    bluebird "3.5.1"
-    debug "3.1.0"
+    bluebird "3.5.0"
+    debug "2.6.9"
     regexp-clone "0.0.1"
-    safe-buffer "5.1.2"
-    sliced "1.0.1"
+    sliced "0.0.5"
 
 ms@2.0.0:
   version "2.0.0"
@@ -10125,7 +10120,7 @@ safe-buffer@5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 
-safe-buffer@5.1.2, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
@@ -10158,12 +10153,6 @@ sanitize-filename@^1.6.0:
   resolved "https://registry.yarnpkg.com/sanitize-filename/-/sanitize-filename-1.6.1.tgz#612da1c96473fa02dccda92dcd5b4ab164a6772a"
   dependencies:
     truncate-utf8-bytes "^1.0.0"
-
-saslprep@^1.0.0:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/saslprep/-/saslprep-1.0.2.tgz#da5ab936e6ea0bbae911ffec77534be370c9f52d"
-  dependencies:
-    sparse-bitfield "^3.0.3"
 
 sass-graph@^2.2.4:
   version "2.2.4"
@@ -10597,12 +10586,6 @@ sourcemapped-stacktrace@^1.1.6:
 sparkles@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/sparkles/-/sparkles-1.0.0.tgz#1acbbfb592436d10bbe8f785b7cc6f82815012c3"
-
-sparse-bitfield@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/sparse-bitfield/-/sparse-bitfield-3.0.3.tgz#ff4ae6e68656056ba4b3e792ab3334d38273ca11"
-  dependencies:
-    memory-pager "^1.0.2"
 
 spawn-wrap@^1.2.4:
   version "1.4.2"
