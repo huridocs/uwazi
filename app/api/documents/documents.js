@@ -14,7 +14,7 @@ export default {
 
   //test (this is a temporary fix to be able to save pdfInfo from client without being logged)
   savePDFInfo(doc, params) {
-    return this.get(doc.sharedId, params.language)
+    return this.getById(doc.sharedId, params.language)
     .then((existingDoc) => {
       if (existingDoc.pdfInfo) {
         return existingDoc;

@@ -63,7 +63,7 @@ serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);
 
-mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
+mongoose.connect(dbConfig[app.get('env')], {})
 .then(async () => {
   console.info('==> Processing system keys...');
   await translations.processSystemKeys(systemKeys);
