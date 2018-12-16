@@ -1,11 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
-import { NeedAuthorization } from 'app/Auth';
 
 import { AttachmentsList } from '../AttachmentsList';
 import Attachment from '../Attachment';
-import UploadAttachment from '../UploadAttachment';
 
 describe('AttachmentsList', () => {
   let component;

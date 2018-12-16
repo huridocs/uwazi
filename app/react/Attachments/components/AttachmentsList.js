@@ -60,7 +60,9 @@ export class AttachmentsList extends Component {
         <div className="attachment-buttons">
           <h2>
             {t('System', 'Document')}
-            <Tip>This entity has no document yet, uploading a document will change how this entity is displayed. The type of the document affects how is it displayed.</Tip>
+            <Tip>This entity has no document yet, uploading a document will change how this entity is displayed.
+            The type of the document affects how is it displayed.
+            </Tip>
           </h2>
           <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
         </div>

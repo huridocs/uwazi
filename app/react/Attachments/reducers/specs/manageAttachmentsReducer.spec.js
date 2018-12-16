@@ -69,7 +69,10 @@ describe('manageAttachmentsReducer', () => {
       it('should rename the selected attachment title', () => {
         action.type = 'ATTACHMENT_RENAMED';
         action.file = { _id: 2, originalname: 'new name' };
-        state = state.set('attachments', Immutable.fromJS([{ _id: 1, originalname: 'file to remain' }, { _id: 2, originalname: 'file to be edited' }]));
+        state = state.set(
+          'attachments',
+          Immutable.fromJS([{ _id: 1, originalname: 'file to remain' }, { _id: 2, originalname: 'file to be edited' }])
+        );
 
         const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
