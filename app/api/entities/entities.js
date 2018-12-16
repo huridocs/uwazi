@@ -149,10 +149,6 @@ export default {
       doc.published = false;
     }
 
-    if (!doc.type) {
-      doc.type = 'entity';
-    }
-
     const sharedId = doc.sharedId || ID();
     return Promise.all([
       settings.get(),

@@ -90,13 +90,14 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     superagent.post(`${APIURL}reupload`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
-    .field('document', docId)
+    .field('document', docSharedId)
     .attach('file', file, file.name)
     .on('progress', (data) => {
       dispatch({ type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
     })
-    .on('response', () => {
-      dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file, __reducerKey });
+    .on('response', (response) => {
+      const newFile = { filename: response.body.filename, size: response.body.size, originalname: response.body.originalname };
+      dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: newFile, __reducerKey });
       requestViewerState({ documentId: docSharedId }, { templates: getState().templates })
       .then((state) => {
         dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });

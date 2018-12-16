@@ -8,6 +8,7 @@ import ID from 'shared/uniqueID';
 import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
+import relationships from 'api/relationships';
 
 import { attachmentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
@@ -146,9 +147,16 @@ export default (app) => {
     (req, res) => entities.getById(req.query.entityId)
     .then((entity) => {
       const attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
+      let deleteTextReferences = Promise.resolve();
+      if (entity.file && entity.file.filename === req.query.filename) {
+        entity.file = null;
+        entity.toc = null;
+        deleteTextReferences = relationships.deleteTextReferences(entity.sharedId, entity.language);
+      }
       return Promise.all([
         entities.saveMultiple([{ ...entity, attachments }]),
-        entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } }, { attachments: 1 })
+        entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } }, { attachments: 1 }),
+        deleteTextReferences
       ]);
     })
     .then(([response, siblings]) => {

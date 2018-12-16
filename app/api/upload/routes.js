@@ -55,7 +55,6 @@ export default (app) => {
     debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
     debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
 
-
     return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })))
     .then(() =>
       Promise.all(docs
@@ -164,10 +163,18 @@ export default (app) => {
 
     upload.any(),
 
-    (req, res, next) => entities.getById(req.body.document)
-    .then(doc => Promise.all([doc, relationships.deleteTextReferences(doc.sharedId, doc.language)]))
+    (req, res, next) => entities.getById(req.body.document, req.language)
+    .then((doc) => {
+      let deleteReferences = Promise.resolve();
+      if (doc.file) {
+        deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
+      }
+      return Promise.all([doc, deleteReferences]);
+    })
     .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))
-    .then(() => uploadProcess(req, res, false))
+    .then(([{ sharedId }]) => entities.get({ sharedId }))
+    .then(docs => docs.reduce((addToAllLanguages, doc) => addToAllLanguages && !doc.file, true))
+    .then(addToAllLanguages => uploadProcess(req, res, addToAllLanguages))
     .catch(next)
   );
 };

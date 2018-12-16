@@ -209,15 +209,15 @@ describe('Metadata Actions', () => {
         { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
-        { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file, __reducerKey: 'storeKey' }
+        { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'filename', size: 34, originalname: 'name' }, __reducerKey: 'storeKey' }
       ];
 
-      expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+      expect(mockUpload.field).toHaveBeenCalledWith('document', 'sharedId');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
 
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
-      mockUpload.emit('response');
+      mockUpload.emit('response', { body: { filename: 'filename', size: 34, originalname: 'name' } });
       expect(store.getActions()).toEqual(expectedActions);
     });
 
@@ -226,7 +226,7 @@ describe('Metadata Actions', () => {
 
       beforeEach(() => {
         jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve(state));
-        mockUpload.emit('response');
+        mockUpload.emit('response', { body: { filename: 'filename', size: 34, originalname: 'name' } });
       });
 
       it('should request and set viewer states, along with library actions', () => {

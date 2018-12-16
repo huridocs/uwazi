@@ -6,7 +6,7 @@ describe('manageAttachmentsReducer', () => {
   let originalReducer;
 
   beforeEach(() => {
-    originalReducer = (state, action) => JSON.stringify(state) + ', ' + JSON.stringify(action);
+    originalReducer = (state, action) => `${JSON.stringify(state)}, ${JSON.stringify(action)}`;
   });
 
   it('should return defaults if no state and action passed', () => {
@@ -14,12 +14,12 @@ describe('manageAttachmentsReducer', () => {
   });
 
   it('should return the original reducer if no action match (extend the original reducer)', () => {
-    const byPass = manageAttachmentsReducer(originalReducer)({state: 'originalState'}, {type: 'unmatched'});
+    const byPass = manageAttachmentsReducer(originalReducer)({ state: 'originalState' }, { type: 'unmatched' });
     expect(byPass).toBe('{"state":"originalState"}, {"type":"unmatched"}');
   });
 
   it('should not assign defaults if passed option as false', () => {
-    expect(manageAttachmentsReducer(originalReducer, {useDefaults: false})()).toBe('undefined, {}');
+    expect(manageAttachmentsReducer(originalReducer, { useDefaults: false })()).toBe('undefined, {}');
   });
 
   describe('When state._id matches action.entity', () => {
@@ -27,14 +27,14 @@ describe('manageAttachmentsReducer', () => {
     let state;
 
     beforeEach(() => {
-      action = {entity: 'eId'};
-      state = Immutable.fromJS({_id: 'eId'});
+      action = { entity: 'eId' };
+      state = Immutable.fromJS({ _id: 'eId' });
     });
 
     describe('When ATTACHMENT_COMPLETE', () => {
       it('should append the action file to attachments', () => {
         action.type = 'ATTACHMENT_COMPLETE';
-        action.file = {file: 'file'};
+        action.file = { file: 'file' };
         const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
         expect(attachments.length).toBe(1);
@@ -45,21 +45,21 @@ describe('manageAttachmentsReducer', () => {
     describe('When ATTACHMENT_DELETED', () => {
       it('should remove the action file from attachments', () => {
         action.type = 'ATTACHMENT_DELETED';
-        action.file = {filename: 'file to be deleted'};
-        state = state.set('attachments', Immutable.fromJS([{filename: 'file to be deleted'}, {filename: 'file to remain'}]));
+        action.file = { filename: 'file to be deleted' };
+        state = state.set('attachments', Immutable.fromJS([{ filename: 'file to be deleted' }, { filename: 'file to remain' }]));
 
         const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
         expect(attachments.length).toBe(1);
-        expect(attachments[0]).toEqual({filename: 'file to remain'});
+        expect(attachments[0]).toEqual({ filename: 'file to remain' });
       });
     });
 
     describe('When ATTACHMENT_RENAMED', () => {
       it('should rename the document file originalname', () => {
         action.type = 'ATTACHMENT_RENAMED';
-        action.file = {_id: 'eId', originalname: 'new name'};
-        state = state.set('file', Immutable.fromJS({originalname: 'original name'}));
+        action.file = { _id: 'eId', originalname: 'new name' };
+        state = state.set('file', Immutable.fromJS({ originalname: 'original name' }));
 
         const file = manageAttachmentsReducer()(state, action).get('file').toJS();
 
@@ -68,8 +68,8 @@ describe('manageAttachmentsReducer', () => {
 
       it('should rename the selected attachment title', () => {
         action.type = 'ATTACHMENT_RENAMED';
-        action.file = {_id: 2, originalname: 'new name'};
-        state = state.set('attachments', Immutable.fromJS([{_id: 1, originalname: 'file to remain'}, {_id: 2, originalname: 'file to be edited'}]));
+        action.file = { _id: 2, originalname: 'new name' };
+        state = state.set('attachments', Immutable.fromJS([{ _id: 1, originalname: 'file to remain' }, { _id: 2, originalname: 'file to be edited' }]));
 
         const attachments = manageAttachmentsReducer()(state, action).get('attachments').toJS();
 
@@ -85,16 +85,16 @@ describe('manageAttachmentsReducer', () => {
     let state;
 
     beforeEach(() => {
-      action = {entity: 'eId'};
-      state = Immutable.fromJS({selectedDocuments: [{_id: 'eId'}]});
+      action = { entity: 'eId' };
+      state = Immutable.fromJS({ selectedDocuments: [{ _id: 'eId' }] });
     });
 
     describe('When ATTACHMENT_COMPLETE', () => {
       it('should append the action file to attachments', () => {
         action.type = 'ATTACHMENT_COMPLETE';
-        action.file = {file: 'file'};
-        const attachments = manageAttachmentsReducer(unchagedState => unchagedState, {setInArray: ['selectedDocuments', 0]})(state, action)
-                            .getIn(['selectedDocuments', 0, 'attachments']).toJS();
+        action.file = { file: 'file' };
+        const attachments = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
+        .getIn(['selectedDocuments', 0, 'attachments']).toJS();
 
         expect(attachments.length).toBe(1);
         expect(attachments[0]).toEqual(action.file);
@@ -104,38 +104,38 @@ describe('manageAttachmentsReducer', () => {
     describe('When ATTACHMENT_DELETED', () => {
       it('should remove the action file from attachments', () => {
         action.type = 'ATTACHMENT_DELETED';
-        action.file = {filename: 'file to be deleted'};
+        action.file = { filename: 'file to be deleted' };
         state = state.setIn(['selectedDocuments', 0, 'attachments'],
-                            Immutable.fromJS([{filename: 'file to be deleted'}, {filename: 'file to remain'}]));
+                            Immutable.fromJS([{ filename: 'file to be deleted' }, { filename: 'file to remain' }]));
 
-        const attachments = manageAttachmentsReducer(unchagedState => unchagedState, {setInArray: ['selectedDocuments', 0]})(state, action)
-                            .getIn(['selectedDocuments', 0, 'attachments']).toJS();
+        const attachments = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
+        .getIn(['selectedDocuments', 0, 'attachments']).toJS();
 
         expect(attachments.length).toBe(1);
-        expect(attachments[0]).toEqual({filename: 'file to remain'});
+        expect(attachments[0]).toEqual({ filename: 'file to remain' });
       });
     });
 
     describe('When ATTACHMENT_RENAMED', () => {
       it('should rename the document file originalname', () => {
         action.type = 'ATTACHMENT_RENAMED';
-        action.file = {_id: 'eId', originalname: 'new name'};
-        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({originalname: 'original name'}));
+        action.file = { _id: 'eId', originalname: 'new name' };
+        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({ originalname: 'original name' }));
 
-        const file = manageAttachmentsReducer(unchagedState => unchagedState, {setInArray: ['selectedDocuments', 0]})(state, action)
-                     .getIn(['selectedDocuments', 0, 'file']).toJS();
+        const file = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
+        .getIn(['selectedDocuments', 0, 'file']).toJS();
 
         expect(file.originalname).toBe('new name');
       });
 
       it('should rename the selected attachment title', () => {
         action.type = 'ATTACHMENT_RENAMED';
-        action.file = {_id: 2, originalname: 'new name'};
+        action.file = { _id: 2, originalname: 'new name' };
         state = state.setIn(['selectedDocuments', 0, 'attachments'],
-                            Immutable.fromJS([{_id: 1, originalname: 'file to remain'}, {_id: 2, originalname: 'file to be edited'}]));
+                            Immutable.fromJS([{ _id: 1, originalname: 'file to remain' }, { _id: 2, originalname: 'file to be edited' }]));
 
-        const attachments = manageAttachmentsReducer(unchagedState => unchagedState, {setInArray: ['selectedDocuments', 0]})(state, action)
-                            .getIn(['selectedDocuments', 0, 'attachments']).toJS();
+        const attachments = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
+        .getIn(['selectedDocuments', 0, 'attachments']).toJS();
 
         expect(attachments.length).toBe(2);
         expect(attachments[0].originalname).toBe('file to remain');
@@ -147,11 +147,11 @@ describe('manageAttachmentsReducer', () => {
       it('should rename the document file originalname and size', () => {
         action.type = metadataTypes.REUPLOAD_COMPLETE;
         action.doc = 'eId';
-        action.file = {name: 'new name', size: 12345};
-        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({originalname: 'original name', size: 999}));
+        action.file = { originalname: 'new name', size: 12345 };
+        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({ originalname: 'original name', size: 999 }));
 
-        const file = manageAttachmentsReducer(unchagedState => unchagedState, {setInArray: ['selectedDocuments', 0]})(state, action)
-                     .getIn(['selectedDocuments', 0, 'file']).toJS();
+        const file = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
+        .getIn(['selectedDocuments', 0, 'file']).toJS();
 
         expect(file.originalname).toBe('new name');
         expect(file.size).toBe(12345);
@@ -160,12 +160,12 @@ describe('manageAttachmentsReducer', () => {
       it('should not affect if the selected document has changed', () => {
         action.type = metadataTypes.REUPLOAD_COMPLETE;
         action.doc = 'eId';
-        action.file = {name: 'new name', size: 12345};
+        action.file = { name: 'new name', size: 12345 };
         state = state.setIn(['selectedDocuments', 0, '_id'], 'anotherId');
-        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({originalname: 'original name', size: 999}));
+        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({ originalname: 'original name', size: 999 }));
 
-        const file = manageAttachmentsReducer(unchagedState => unchagedState, {setInArray: ['selectedDocuments', 0]})(state, action)
-                     .getIn(['selectedDocuments', 0, 'file']).toJS();
+        const file = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
+        .getIn(['selectedDocuments', 0, 'file']).toJS();
 
         expect(file.originalname).toBe('original name');
         expect(file.size).toBe(999);

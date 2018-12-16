@@ -223,7 +223,6 @@ export class DocumentSidePanel extends Component {
                 if (docBeingEdited && this.props.doc.get('type') === 'entity') {
                   return <EntityForm storeKey={this.props.storeKey} />;
                 }
-
                 return (
                   <div>
                     <ShowMetadata entity={this.props.doc.toJS()} showTitle showType />
