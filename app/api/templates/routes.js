@@ -65,23 +65,13 @@ export default (app) => {
     _id: Joi.string().required()
   })),
   (req, res, next) => {
-    templates.get()
-    .then((_templates) => {
-      const templateToBeDefault = _templates.find(t => t._id.toString() === req.body._id);
-      const currentDefault = _templates.find(t => t.default);
-      templateToBeDefault.default = true;
-      if (currentDefault) {
-        currentDefault.default = false;
-        templates.save(currentDefault).then((response) => {
-          req.io.sockets.emit('templateChange', response);
-        });
+    templates.setAsDefault(req.body._id)
+    .then(([newDefault, oldDefault]) => {
+      req.io.sockets.emit('templateChange', newDefault);
+      if (oldDefault) {
+        req.io.sockets.emit('templateChange', oldDefault);
       }
-
-      templates.save(templateToBeDefault)
-      .then((response) => {
-        res.json(response);
-        req.io.sockets.emit('templateChange', response);
-      });
+      res.json(newDefault);
     })
     .catch(next);
   });

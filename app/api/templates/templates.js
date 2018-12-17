@@ -95,6 +95,23 @@ export default {
     return model.get(query);
   },
 
+  setAsDefault(templateId) {
+    return this.get()
+    .then((_templates) => {
+      const templateToBeDefault = _templates.find(t => t._id.toString() === templateId);
+      const currentDefault = _templates.find(t => t.default);
+      templateToBeDefault.default = true;
+      let saveCurrentDefault = Promise.resolve();
+      if (currentDefault) {
+        currentDefault.default = false;
+        saveCurrentDefault = this.save(currentDefault);
+      }
+
+      return Promise.all([this.save(templateToBeDefault), saveCurrentDefault]);
+    })
+    .catch(console.log);
+  },
+
   getById(templateId) {
     return model.getById(templateId);
   },
