@@ -88,6 +88,9 @@ function getIndexRoute(nextState, callBack) {
       if (!isPageRoute) {
         replace(customHomePage.join('/'));
       }
+      if (!homePageSetting) {
+        enterOnLibrary(nxtState, replace);
+      }
     },
     customHomePageId: pageId
   };
