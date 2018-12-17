@@ -163,7 +163,10 @@ export default (app) => {
 
     (req, res, next) => entities.getById(req.body.document, req.language)
     .then((doc) => {
-      const deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
+      let deleteReferences = Promise.resolve();
+      if (doc.file) {
+        deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
+      }
       return Promise.all([doc, deleteReferences]);
     })
     .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))

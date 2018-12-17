@@ -6,7 +6,7 @@ const uploadId = db.id();
 
 export default {
   entities: [
-    { _id: entityId, sharedId: 'sharedId1', language: 'es', title: 'Gadgets 01 ES', toc: [{ _id: db.id(), label: 'existingToc' }] },
+    { _id: entityId, sharedId: 'sharedId1', language: 'es', title: 'Gadgets 01 ES', toc: [{ _id: db.id(), label: 'existingToc' }], file: {} },
     { _id: entityEnId, sharedId: 'sharedId1', language: 'en', title: 'Gadgets 01 EN' }
   ],
   uploads: [

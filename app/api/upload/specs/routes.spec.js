@@ -249,7 +249,7 @@ describe('upload routes', () => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
-
+      await entitiesModel.save({ _id: entityId, file: null });
       await onSocketRespond('post', '/api/reupload', req);
 
       const _entities = await entities.get({ sharedId });
