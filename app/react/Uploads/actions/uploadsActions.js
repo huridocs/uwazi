@@ -45,7 +45,8 @@ export function upload(docId, file, endpoint = 'upload') {
       dispatch({ type: types.UPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
     })
     .on('response', (response) => {
-      dispatch({ type: types.UPLOAD_COMPLETE, doc: docId });
+      const _file = { filename: response.body.filename, originalname: response.body.originalname, size: response.body.size };
+      dispatch({ type: types.UPLOAD_COMPLETE, doc: docId, file: _file });
       resolve(JSON.parse(response.text));
     })
     .end();

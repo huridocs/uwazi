@@ -31,7 +31,7 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
-    const itemClassName = `item-document'} ${this.props.className || ''}`;
+    const itemClassName = `item-document ${this.props.className || ''}`;
     const itemProps = { className: itemClassName, onClick, onMouseEnter, onMouseLeave, active, tabIndex: '1' };
 
     return (

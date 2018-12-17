@@ -168,7 +168,7 @@ Nightmare.action('isVisible', function (selector, done) {
 
 Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
   this.wait((title) => {
-    const cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
+    const cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item');
 
     let found = false;
 
@@ -186,7 +186,6 @@ Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
 Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
   this.wait((cardSelector, cardStatus) => {
     const cardLabel = document.querySelector(`${cardSelector} .label`);
-
     if (cardLabel) {
       return cardLabel.innerText.match(cardStatus);
     }
