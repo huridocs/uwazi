@@ -41,25 +41,23 @@ const deleteFile = filename => new Promise((resolve) => {
 export default (app) => {
   const upload = multer({ storage });
 
-  const getDocuments = (id, allLanguages) => {
+  const getDocuments = (sharedId, allLanguages, language) => {
     if (allLanguages) {
-      return entities.getAllLanguages(id);
+      return entities.getAllLanguages(sharedId);
     }
 
-    return entities.getById(id).then(doc => [doc]);
+    return entities.get({ sharedId, language });
   };
 
-  const uploadProcess = (req, res, allLanguages = true) => getDocuments(req.body.document, allLanguages)
+  const uploadProcess = (req, res, allLanguages = true) => getDocuments(req.body.document, allLanguages, req.language)
   .then((docs) => {
     debugLog.debug(`Upload Process for ${docs[0]._id.toString()}`);
     debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
     debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
-
     return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })))
-    .then(() =>
-      Promise.all(docs
-      .filter(doc => doc.file && doc.file.filename)
-      .map(doc => deleteFile(doc.file.filename))));
+    .then(() => Promise.all(docs
+    .filter(doc => doc.file && doc.file.filename)
+    .map(doc => deleteFile(doc.file.filename))));
   })
   .then(() => {
     debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
@@ -72,7 +70,7 @@ export default (app) => {
     debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
     return Promise.all([
       new PDF(file, req.files[0].originalname).convert(),
-      getDocuments(req.body.document, allLanguages),
+      getDocuments(req.body.document, allLanguages, req.language),
       file
     ]);
   })
@@ -111,7 +109,7 @@ export default (app) => {
     errorLog.error(err.error);
     debugLog.debug(err.error);
 
-    getDocuments(req.body.document, allLanguages)
+    getDocuments(req.body.document, allLanguages, req.language)
     .then((docs) => {
       entities.saveMultiple(docs.map(doc => ({ ...doc, processed: false })));
     });
@@ -165,10 +163,7 @@ export default (app) => {
 
     (req, res, next) => entities.getById(req.body.document, req.language)
     .then((doc) => {
-      let deleteReferences = Promise.resolve();
-      if (doc.file) {
-        deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
-      }
+      const deleteReferences = relationships.deleteTextReferences(doc.sharedId, doc.language);
       return Promise.all([doc, deleteReferences]);
     })
     .then(([doc]) => entities.saveMultiple([{ _id: doc._id, toc: [] }]))

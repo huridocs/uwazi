@@ -97,7 +97,7 @@ describe('upload routes', () => {
   });
 
   describe('POST/upload', () => {
-    fit('should process the document after upload', async () => {
+    it('should process the document after upload', async () => {
       await onSocketRespond('post', '/api/upload', req);
       const [docES, docEN] = await Promise.all([
         documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
@@ -141,8 +141,8 @@ describe('upload routes', () => {
         await onSocketRespond('post', '/api/upload', req);
 
         const [docES, docEN] = await Promise.all([
-          documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+          documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
+          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
         ]);
         expect(docEN[0].file.language).toBe('spa');
         expect(docEN[0].file.originalname).toBeDefined();
@@ -201,13 +201,13 @@ describe('upload routes', () => {
     it('should reupload a document', (done) => {
       iosocket.emit.and.callFake((eventName) => {
         if (eventName === 'documentProcessed') {
-          expect(relationships.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
-
-          documents.getById('id', 'es')
+          expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, 'es');
+          documents.getById(sharedId, 'es')
           .then((modifiedDoc) => {
             expect(modifiedDoc.toc.length).toBe(0);
             done();
-          });
+          })
+          .catch(done.fail);
         }
       });
       req.body.document = sharedId;
@@ -222,13 +222,11 @@ describe('upload routes', () => {
     it('should not remove old document when assigned to other entities', async () => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
       req.body.document = sharedId;
-
       await writeFile(`${__dirname}/uploads/test`, 'data');
       await Promise.all([
         entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
         entitiesModel.save({ file: { filename: 'test' } }),
       ]);
-
       await onSocketRespond('post', '/api/reupload', req);
       await fileExists(path.resolve(`${__dirname}/uploads/test`));
     });
@@ -245,6 +243,25 @@ describe('upload routes', () => {
         await fileExists(path.resolve(`${__dirname}/uploads/test`));
         fail('file should be deleted on reupload');
       } catch (e) {} //eslint-disable-line
+    });
+
+    it('should upload too all entities when none has file', async () => {
+      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      req.body.document = sharedId;
+      await writeFile(`${__dirname}/uploads/test`, 'data');
+
+      await onSocketRespond('post', '/api/reupload', req);
+
+      const _entities = await entities.get({ sharedId });
+      const _file = {
+        filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+        language: 'other',
+        mimetype: 'application/octet-stream',
+        originalname: 'gadgets-01.pdf',
+        size: 171411271
+      };
+      expect(_entities[0].file).toEqual(_file);
+      expect(_entities[1].file).toEqual(_file);
     });
   });
 
