@@ -5,26 +5,30 @@ const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
 export default (collectionName, schema) => {
-  const postUpsert = async (doc, next) => {
+  const getAffectedIds = async conditions => mongoose.models[collectionName].find(conditions, { _id: true });
+
+  const upsertLogOne = async (doc, next) => {
     const logData = { namespace: collectionName, mongoId: doc._id };
     await updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now() }, { upsert: true, lean: true });
     next();
   };
 
-  async function postAffectMany(doc, next) {
-    const affectedIds = await mongoose.models[collectionName].find(this._conditions, { _id: true });
+  async function upsertLogMany(affectedIds, deleted = false) {
     await updateLogModel.updateMany(
       { mongoId: { $in: affectedIds.map(i => i._id) }, namespace: collectionName },
-      { $set: { timestamp: Date.now() } },
+      { $set: { timestamp: Date.now(), deleted } },
       { upsert: true, lean: true }
     );
-    next();
   }
 
-  schema.post('save', postUpsert);
-  schema.post('findOneAndUpdate', postUpsert);
-  schema.post('updateMany', postAffectMany);
-  schema.post('deleteMany', postAffectMany);
+  schema.post('save', upsertLogOne);
+  schema.post('findOneAndUpdate', upsertLogOne);
+
+  schema.post('updateMany', async function updateMany(doc, next) {
+    const affectedIds = await getAffectedIds(this._conditions);
+    await upsertLogMany(affectedIds);
+    next();
+  });
 
   const MongooseModel = mongoose.model(collectionName, schema);
 
@@ -53,12 +57,16 @@ export default (collectionName, schema) => {
 
     getById: id => MongooseModel.findById(id, {}, { lean: true }),
 
-    delete: (condition) => {
+    delete: async (condition) => {
       let cond = condition;
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = { _id: condition };
       }
-      return MongooseModel.deleteMany(cond);
+      const affectedIds = await getAffectedIds(condition);
+      const result = await MongooseModel.deleteMany(cond);
+      await upsertLogMany(affectedIds, true);
+
+      return result;
     }
   };
 };
