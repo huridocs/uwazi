@@ -5,13 +5,26 @@ const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
 export default (collectionName, schema) => {
-  const MongooseModel = mongoose.model(collectionName, schema);
-
-  schema.post('save', (doc, next) => {
+  const postUpsert = async (doc, next) => {
     const logData = { namespace: collectionName, mongoId: doc._id };
-    updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now() }, { upsert: true, lean: true })
-    .then(() => next());
+    await updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now() }, { upsert: true, lean: true });
+    next();
+  };
+
+  schema.post('save', postUpsert);
+  schema.post('findOneAndUpdate', postUpsert);
+
+  schema.post('updateMany', async function updateMany(doc, next) {
+    const affectedIds = await mongoose.models[collectionName].find(this._conditions, { _id: true });
+    await updateLogModel.updateMany(
+      { mongoId: { $in: affectedIds.map(i => i._id) }, namespace: collectionName },
+      { $set: { timestamp: Date.now() } },
+      { upsert: true, lean: true }
+    );
+    next();
   });
+
+  const MongooseModel = mongoose.model(collectionName, schema);
 
   return {
     db: MongooseModel,
