@@ -4,7 +4,7 @@ const docState = createSelector(
   (state, props) => state.progress.get(props.doc.get('sharedId')),
   (state, props) => props.doc.get('uploaded'),
   (state, props) => props.doc.get('processed'),
-  (state, props) => props.doc.get('type') === 'entity',
+  (state, props) => !props.doc.get('file'),
   (state, props) => props.doc.get('template'),
   (progress, uploaded, processed, isEntity, template) => {
     if (!uploaded && !isEntity && (progress || progress === 0)) {

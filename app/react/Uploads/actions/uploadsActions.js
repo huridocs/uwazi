@@ -122,11 +122,11 @@ export function unpublishDocument(doc) {
 }
 
 export function publish(entity) {
-  return dispatch => entity.type === 'entity' ? dispatch(publishEntity(entity)) : dispatch(publishDocument(entity));
+  return dispatch => !entity.file ? dispatch(publishEntity(entity)) : dispatch(publishDocument(entity));
 }
 
 export function unpublish(entity) {
-  return dispatch => entity.type === 'entity' ? dispatch(unpublishEntity(entity)) : dispatch(unpublishDocument(entity));
+  return dispatch => !entity.file ? dispatch(unpublishEntity(entity)) : dispatch(unpublishDocument(entity));
 }
 
 export function conversionComplete(docId) {

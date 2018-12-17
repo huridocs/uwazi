@@ -166,7 +166,7 @@ export class SelectMultiplePanel extends Component {
     .map(tmpl => ({ label: tmpl.name, value: tmpl._id }));
 
     const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {
-      const isEntity = entity.get('type') === 'entity';
+      const isEntity = !entity.get('file');
       return previousCan && (entity.get('processed') || isEntity) && !entity.get('published') && !!entity.get('template');
     }, true);
 
