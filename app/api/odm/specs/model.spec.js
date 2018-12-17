@@ -57,5 +57,20 @@ describe('ODM Model', () => {
       expect(logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString()).timestamp).toBe(3);
       expect(logEntries.find(e => e.mongoId.toString() === newDocument3._id.toString()).timestamp).toBe(1);
     });
+
+    fit('should intercept model delete', async () => {
+      Date.now = () => 4;
+      await extendedModel.delete({ _id: newDocument2._id });
+      const logEntries = await updateLogModel.find({});
+
+      console.log(logEntries);
+      expect(logEntries.length).toBe(2);
+
+      expect(logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString()).timestamp).toBe(1);
+
+      const document2Log = logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString());
+      expect(document2Log.timestamp).toBe(4);
+      expect(document2Log.deleted).toBe(true);
+    });
   });
 });

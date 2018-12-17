@@ -11,10 +11,7 @@ export default (collectionName, schema) => {
     next();
   };
 
-  schema.post('save', postUpsert);
-  schema.post('findOneAndUpdate', postUpsert);
-
-  schema.post('updateMany', async function updateMany(doc, next) {
+  async function postAffectMany(doc, next) {
     const affectedIds = await mongoose.models[collectionName].find(this._conditions, { _id: true });
     await updateLogModel.updateMany(
       { mongoId: { $in: affectedIds.map(i => i._id) }, namespace: collectionName },
@@ -22,7 +19,12 @@ export default (collectionName, schema) => {
       { upsert: true, lean: true }
     );
     next();
-  });
+  }
+
+  schema.post('save', postUpsert);
+  schema.post('findOneAndUpdate', postUpsert);
+  schema.post('updateMany', postAffectMany);
+  schema.post('deleteMany', postAffectMany);
 
   const MongooseModel = mongoose.model(collectionName, schema);
 
@@ -56,7 +58,7 @@ export default (collectionName, schema) => {
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = { _id: condition };
       }
-      return MongooseModel.remove(cond);
+      return MongooseModel.deleteMany(cond);
     }
   };
 };
