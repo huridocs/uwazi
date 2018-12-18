@@ -36,23 +36,6 @@ export default {
     return entities.countByTemplate(templateId);
   },
 
-  updateMetadataProperties(templateId, nameMatches, deleteProperties) {
-    return request.get(`${dbURL}/_design/documents/_view/metadata_by_template?key="${templateId}"`)
-    .then((response) => {
-      let documents = response.json.rows.map(r => r.value);
-      documents = updateMetadataNames(documents, nameMatches);
-      documents = deleteMetadataProperties(documents, deleteProperties);
-
-      const updates = [];
-      documents.forEach((document) => {
-        const url = `${dbURL}/_design/documents/_update/partialUpdate/${document._id}`;
-        updates.push(request.post(url, document));
-      });
-
-      return Promise.all(updates);
-    });
-  },
-
   getHTML(id, language) {
     return this.get(id, language)
     .then((docResponse) => {

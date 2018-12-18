@@ -2,6 +2,8 @@ import 'isomorphic-fetch';
 
 import rison from 'rison';
 
+let cookie;
+
 const attemptRisonDecode = (string) => {
   const errcb = (e) => {
     throw Error(`rison decoder error: ${e}`);
@@ -51,7 +53,8 @@ const _fetch = (url, data, method, _headers) => {
 
   const headers = Object.assign({
     Accept: 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    Cookie: cookie,
   }, _headers);
 
   if (method === 'GET' || method === 'DELETE') {
@@ -86,6 +89,7 @@ const _fetch = (url, data, method, _headers) => {
   });
 };
 
+
 export default {
   post: (url, data, headers) => _fetch(url, data, 'POST', headers),
 
@@ -94,4 +98,8 @@ export default {
   get: (url, data, headers) => _fetch(url, data, 'GET', headers),
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
+
+  cookie: (c) => {
+    cookie = c;
+  }
 };

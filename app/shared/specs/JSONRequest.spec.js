@@ -57,6 +57,15 @@ describe('JSONRequest', () => {
         .catch(done.fail);
       });
     });
+
+    describe('when authorizing', () => {
+      it('should send the authorization cookie in the headers', async () => {
+        request.cookie('cookie');
+        await request.get('http://localhost:3000/api/test');
+        const { headers } = backend.calls().matched[0][1];
+        expect(headers.Cookie).toBe('cookie');
+      });
+    });
   });
 
   describe('put()', () => {
