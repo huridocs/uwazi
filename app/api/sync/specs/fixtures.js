@@ -12,61 +12,62 @@ export default {
   sync: [
     {
       lastSync: 10000,
-    }
+    },
   ],
   updateLogs: [
     {
       timestamp: 6000,
       namespace: 'entities',
       mongoId: oldDoc1,
-      deleted: false
-    }, {
+      deleted: false,
+    },
+    {
       timestamp: 7000,
       namespace: 'entities',
       mongoId: oldDoc2,
-      deleted: false
-    }, {
-      timestamp: 9000,
-      namespace: 'entities',
-      mongoId: newDoc1,
-      deleted: false
-    }, {
+      deleted: false,
+    },
+    {
       timestamp: 10000,
       namespace: 'entities',
       mongoId: newDoc2,
-      deleted: false
-    }, {
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'entities',
+      mongoId: newDoc1,
+      deleted: false,
+    },
+    {
       timestamp: 20000,
       namespace: 'connections',
       mongoId: newDoc3,
-      deleted: false
-    }, {
+      deleted: false,
+    },
+    {
       timestamp: 20000,
       namespace: 'entities',
       mongoId: newDoc4,
-      deleted: true
+      deleted: true,
     },
   ],
   entities: [
     {
       _id: newDoc1,
       title: 'a new entity',
-    }, {
+    },
+    {
       _id: newDoc2,
       title: 'another new entity',
-    }
+    },
   ],
   connections: [
     {
       _id: newDoc3,
-      entity: newDoc1
-    }
-  ]
+      entity: newDoc1,
+    },
+  ],
 };
 
-export {
-  newDoc1,
-  newDoc2,
-  newDoc3,
-  newDoc4,
-};
+export { newDoc1, newDoc2, newDoc3, newDoc4 };
