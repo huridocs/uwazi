@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { model as updateLogModel } from 'api/updatelog';
+import models from './models';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
@@ -32,7 +33,7 @@ export default (collectionName, schema) => {
 
   const MongooseModel = mongoose.model(collectionName, schema);
 
-  return {
+  const odmModel = {
     db: MongooseModel,
     save: (data) => {
       if (Array.isArray(data)) {
@@ -69,4 +70,7 @@ export default (collectionName, schema) => {
       return result;
     }
   };
+
+  models[collectionName] = odmModel;
+  return odmModel;
 };

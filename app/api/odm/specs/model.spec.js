@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { model as updateLogModel } from 'api/updatelog';
-import odmModel from '../model.js';
+import odmModel from '../model';
+import models from '../models';
 import testingDB from '../../utils/testing_db';
 
 const testSchema = new mongoose.Schema({
@@ -17,6 +18,15 @@ describe('ODM Model', () => {
   afterAll(async () => {
     Date.now = originalDatenow;
     await testingDB.disconnect();
+  });
+
+  it('should register all the models to the requirable models hashmap', () => {
+    expect(models).toEqual({});
+    const model1 = odmModel('tempSchema', testSchema);
+    const model2 = odmModel('anotherSchema', new mongoose.Schema({ name: String }));
+
+    expect(models.tempSchema).toBe(model1);
+    expect(models.anotherSchema).toBe(model2);
   });
 
   describe('Logging functionality', () => {

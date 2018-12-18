@@ -2,9 +2,9 @@ import 'api/utils/jasmineHelpers';
 // import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import search from 'api/search/search';
+import { models } from 'api/odm';
 import syncRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import models from '../models';
 
 describe('sync', () => {
   let routes;
@@ -12,7 +12,6 @@ describe('sync', () => {
 
   beforeEach(async () => {
     routes = instrumentRoutes(syncRoutes);
-    // await db.clearAllAndLoad({});
     req.body = {
       namespace: 'model1',
       data: 'data'
@@ -29,10 +28,6 @@ describe('sync', () => {
     spyOn(search, 'delete');
     spyOn(entities, 'indexEntities');
   });
-
-  // afterAll(async () => {
-  //   await db.disconnect();
-  // });
 
   describe('POST', () => {
     it('should need authorization', () => {

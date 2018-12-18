@@ -1,7 +1,7 @@
 import entities from 'api/entities';
 import search from 'api/search/search';
+import { models } from 'api/odm';
 import needsAuthorization from '../auth/authMiddleware';
-import models from './models';
 
 export default (app) => {
   app.post(
