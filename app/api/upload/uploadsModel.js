@@ -11,7 +11,6 @@ const uploadSchema = new mongoose.Schema({
   creationDate: { type: Number, default: date.currentUTC },
 }, { emitIndexErrors: true });
 
-const schema = mongoose.model('uploads', uploadSchema);
-const Model = instanceModel(schema);
+const Model = instanceModel('uploads', uploadSchema);
 
 export default Model;

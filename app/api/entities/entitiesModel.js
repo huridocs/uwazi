@@ -48,9 +48,8 @@ const entitySchema = new mongoose.Schema({
 
 entitySchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
-const schema = mongoose.model('entities', entitySchema);
-schema.collection.dropIndex('title_text', () => { schema.ensureIndexes(); });
-const Model = instanceModel(schema);
+const Model = instanceModel('entities', entitySchema);
+Model.db.collection.dropIndex('title_text', () => { Model.db.ensureIndexes(); });
 const { save } = Model;
 const suportedLanguages = ['da', 'nl', 'en', 'fi', 'fr', 'de', 'hu', 'it', 'nb', 'pt', 'ro', 'ru', 'es', 'sv', 'tr'];
 

@@ -62,7 +62,7 @@ export default (collectionName, schema) => {
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = { _id: condition };
       }
-      const affectedIds = await getAffectedIds(condition);
+      const affectedIds = await getAffectedIds(cond);
       const result = await MongooseModel.deleteMany(cond);
       await upsertLogMany(affectedIds, true);
 

@@ -802,14 +802,10 @@ describe('entities', () => {
       });
 
       describe('when there is no multiselects but there is selects', () => {
-        it('should only delete selects and not throw an error', (done) => {
-          entities.delete('shared10')
-          .then(() => {
-            const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-            expect(documentsToIndex[0].metadata.select).toBe('');
-            done();
-          })
-          .catch(catchErrors(done));
+        it('should only delete selects and not throw an error', async () => {
+          await entities.delete('shared10');
+          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+          expect(documentsToIndex[0].metadata.select).toBe('');
         });
       });
 

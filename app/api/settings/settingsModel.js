@@ -34,5 +34,4 @@ const settingsSchema = new mongoose.Schema({
   customCSS: String
 });
 
-const Model = mongoose.model('settings', settingsSchema);
-export default instanceModel(Model);
+export default instanceModel('settings', settingsSchema);

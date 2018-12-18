@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import instanceModel from 'api/odm';
 
 const propertiesSchema = new mongoose.Schema({
   id: String,
@@ -34,5 +35,4 @@ const templateSchema = new mongoose.Schema({
   commonProperties: [commonPropertiesSchema]
 });
 
-const Model = mongoose.model('templates', templateSchema);
-export default Model;
+export default instanceModel('templates', templateSchema);

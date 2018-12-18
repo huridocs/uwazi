@@ -13,6 +13,5 @@ const pagesSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', select: false }
 });
 
-const Model = mongoose.model('pages', pagesSchema);
-export default instanceModel(Model);
+export default instanceModel('pages', pagesSchema);
 
