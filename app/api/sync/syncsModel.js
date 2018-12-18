@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const syncSchema = new mongoose.Schema({
-  lastSync: Number
+  lastSync: Number,
 });
 
-export default mongoose.model('sync', syncSchema);
+export default mongoose.model('syncs', syncSchema);
 

@@ -7,5 +7,5 @@ const updateLogSchema = new mongoose.Schema({
   deleted: Boolean,
 });
 
-const Model = mongoose.model('updatelog', updateLogSchema);
+const Model = mongoose.model('updatelogs', updateLogSchema);
 export default Model;

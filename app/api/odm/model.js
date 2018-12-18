@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { model as updateLogModel } from 'api/updatelog';
+import { model as updatelogsModel } from 'api/updatelogs';
 import models from './models';
 
 const generateID = mongoose.Types.ObjectId;
@@ -10,12 +10,12 @@ export default (collectionName, schema) => {
 
   const upsertLogOne = async (doc, next) => {
     const logData = { namespace: collectionName, mongoId: doc._id };
-    await updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now(), deleted: false }, { upsert: true, lean: true });
+    await updatelogsModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now(), deleted: false }, { upsert: true, lean: true });
     next();
   };
 
   async function upsertLogMany(affectedIds, deleted = false) {
-    await updateLogModel.updateMany(
+    await updatelogsModel.updateMany(
       { mongoId: { $in: affectedIds.map(i => i._id) }, namespace: collectionName },
       { $set: { timestamp: Date.now(), deleted } },
       { upsert: true, lean: true }

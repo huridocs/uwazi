@@ -9,12 +9,12 @@ const newDoc3 = db.id();
 const newDoc4 = db.id();
 
 export default {
-  sync: [
+  syncs: [
     {
       lastSync: 10000,
     },
   ],
-  updateLogs: [
+  updatelogs: [
     {
       timestamp: 6000,
       namespace: 'entities',
