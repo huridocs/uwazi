@@ -1,3 +1,5 @@
+import entities from 'api/entities';
+import search from 'api/search/search';
 import needsAuthorization from '../auth/authMiddleware';
 import models from './models';
 
@@ -8,6 +10,9 @@ export default (app) => {
     async (req, res, next) => {
       try {
         await models[req.body.namespace].save(req.body.data);
+        if (req.body.namespace === 'entities') {
+          await entities.indexEntities({ _id: req.body.data._id }, '+fullText');
+        }
         res.json('ok');
       } catch (e) {
         next(e);
@@ -21,6 +26,9 @@ export default (app) => {
     async (req, res, next) => {
       try {
         await models[req.body.namespace].delete(req.body.data);
+        if (req.body.namespace === 'entities') {
+          await search.delete({ _id: req.body.data._id });
+        }
         res.json('ok');
       } catch (e) {
         next(e);
