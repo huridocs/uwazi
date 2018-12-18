@@ -2,11 +2,12 @@ import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import request from 'shared/JSONRequest';
+import 'api/entities';
+import 'api/relationships';
+
 import fixtures, { newDoc1, newDoc2, newDoc3, newDoc4 } from './fixtures';
 import syncWorker from '../syncWorker';
 
-import 'api/entities';
-import 'api/relationships';
 
 // import syncModel from '../syncModel';
 
