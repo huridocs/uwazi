@@ -10,7 +10,7 @@ export default (collectionName, schema) => {
 
   const upsertLogOne = async (doc, next) => {
     const logData = { namespace: collectionName, mongoId: doc._id };
-    await updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now() }, { upsert: true, lean: true });
+    await updateLogModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now(), deleted: false }, { upsert: true, lean: true });
     next();
   };
 
