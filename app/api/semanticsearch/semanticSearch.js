@@ -5,12 +5,14 @@ import model from './model';
 import api from './api';
 import documentsModel from '../documents';
 
-const eachLimitAsync = promisify(async.eachLimit);
-
 const PENDING = 'pending';
 const COMPLETED = 'completed';
 const PROCESSING = 'processing';
 const IN_PROGRESS = 'inProgress';
+
+const SEARCH_BATCH_SIZE = 5;
+
+const eachLimitAsync = promisify(async.eachLimit);
 
 const getSearchDocuments = async ({ documents, query }, language, user) => {
   if (documents && documents.length) {
@@ -27,15 +29,25 @@ const updateSearchDocument = async (searchId, sharedId, update) => {
   }, update, { new: true, lean: true });
 };
 
-const processDocument = async (searchId, sharedId, language) => {
-  const doc = await documentsModel.getById(sharedId, language);
+const processDocument = async (searchId, searchTerm, sharedId, language) => {
+  const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
   const { fullText } = doc;
   await updateSearchDocument(searchId, sharedId, {
     $set: {
       'documents.$.status': PROCESSING
     }
   });
-  const results = await api.processDocument(fullText);
+  if (!fullText) {
+    return updateSearchDocument(searchId, sharedId, {
+      $set: {
+        'documents.$.status': COMPLETED
+      }
+    });
+  }
+  const results = await api.processDocument({
+    searchTerm,
+    contents: fullText
+  });
   return updateSearchDocument(searchId, sharedId, {
     $set: {
       'documents.$.results': results,
@@ -44,20 +56,20 @@ const processDocument = async (searchId, sharedId, language) => {
   });
 };
 
-const updateSearchStatus = (searchId, status) => model.update({
+const updateSearchStatus = (searchId, status) => model.save({
   _id: searchId,
   status
 });
 
 const processSearchLimit = async (searchId, docLimit) => {
-  const searchObject = await updateSearchStatus(IN_PROGRESS);
-  const { language } = searchObject;
+  const searchObject = await updateSearchStatus(searchId, IN_PROGRESS);
+  const { language, searchTerm } = searchObject;
   const docs = searchObject.documents
   .filter(doc => doc.status !== COMPLETED);
   const docsToSearch = docs.length > 5 ?
     docs.slice(0, docLimit) : docs;
-  await eachLimitAsync(docsToSearch, async doc =>
-    processDocument(searchId, doc.sharedId, language));
+  await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc =>
+    processDocument(searchId, searchTerm, doc.sharedId, language));
   return updateSearchStatus(searchId, COMPLETED);
 };
 

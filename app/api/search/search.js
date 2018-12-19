@@ -144,9 +144,7 @@ const processResponse = (response) => {
     }
   });
 
-  const res = { rows, totalRows: response.hits.total, aggregations: response.aggregations };
-  console.log('res', res);
-  return res;
+  return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
 };
 
 const search = {
