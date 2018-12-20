@@ -79,7 +79,7 @@ const processSearchLimit = async (searchId, docLimit) => {
   const { language, searchTerm } = searchObject;
   const docs = searchObject.documents
   .filter(doc => doc.status !== COMPLETED);
-  const docsToSearch = docs.length > 5 ?
+  const docsToSearch = docs.length > docLimit ?
     docs.slice(0, docLimit) : docs;
   await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc =>
     processDocument(searchId, searchTerm, doc.sharedId, language));
