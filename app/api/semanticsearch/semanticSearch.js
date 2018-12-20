@@ -2,6 +2,7 @@ import { promisify } from 'util';
 import async from 'async';
 import { search } from '../search';
 import model from './model';
+import resultsModel from './resultsModel';
 import api from './api';
 import documentsModel from '../documents';
 
@@ -19,47 +20,57 @@ const getSearchDocuments = async ({ documents, query }, language, user) => {
     return documents;
   }
   const res = await search.search(query, language, user);
+  console.log('res', res);
   return res.rows.map(document => document.sharedId);
 };
 
-const updateSearchDocument = async (searchId, sharedId, update) => {
+const updateSearchDocumentStatus = async (searchId, sharedId, status) => {
   return model.db.findOneAndUpdate({
     _id: searchId,
     'documents.sharedId': sharedId
-  }, update, { new: true, lean: true });
+  }, {
+    $set: { 'documents.$.status': status }
+  }, { new: true, lean: true });
+};
+
+const setSearchDocumentResults = async (searchId, sharedId, results) => {
+  const docResults = await resultsModel.db.findOneAndUpdate({
+    sharedId,
+    searchId
+  }, {
+    sharedId,
+    searchId,
+    results,
+    status: COMPLETED
+  }, { upsert: true, new: true });
+  return docResults;
 };
 
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
   const { fullText } = doc;
-  await updateSearchDocument(searchId, sharedId, {
-    $set: {
-      'documents.$.status': PROCESSING
-    }
-  });
+  await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   if (!fullText) {
-    return updateSearchDocument(searchId, sharedId, {
-      $set: {
-        'documents.$.status': COMPLETED
-      }
-    });
+    return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
   }
   const results = await api.processDocument({
     searchTerm,
     contents: fullText
   });
-  return updateSearchDocument(searchId, sharedId, {
-    $set: {
-      'documents.$.results': results,
-      'documents.$.status': COMPLETED
-    }
-  });
+  const savedResults = await setSearchDocumentResults(searchId, sharedId, results);
+  await updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
+  return savedResults;
 };
 
 const updateSearchStatus = (searchId, status) => model.save({
   _id: searchId,
   status
 });
+
+const getDocumentResultsByID = async (searchId, sharedId) => {
+  const [docResults] = await resultsModel.get({ searchId, sharedId });
+  return docResults;
+};
 
 const processSearchLimit = async (searchId, docLimit) => {
   const searchObject = await updateSearchStatus(searchId, IN_PROGRESS);
@@ -75,10 +86,10 @@ const processSearchLimit = async (searchId, docLimit) => {
 
 const create = async (args, language, user) => {
   const docs = await getSearchDocuments(args, language, user);
+  console.log('docs', docs, args);
   const newSearch = {
     documents: docs.map(docId => ({
       sharedId: docId,
-      results: [],
       status: PENDING
     })),
     status: PENDING,
@@ -90,7 +101,8 @@ const create = async (args, language, user) => {
 
 const semanticSearch = {
   create,
-  processSearchLimit
+  processSearchLimit,
+  getDocumentResultsByID
 };
 
 export default semanticSearch;
