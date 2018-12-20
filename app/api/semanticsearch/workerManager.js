@@ -1,12 +1,13 @@
 import EventEmitter from 'events';
 import Worker from './worker';
-import search, { IN_PROGRESS, PENDING } from './semanticSearch';
+import { IN_PROGRESS, PENDING } from './semanticSearch';
 import searchModel from './model';
 
 const NUM_WORKERS = 3;
 
-class WorkerManager {
+class WorkerManager extends EventEmitter {
   constructor() {
+    super();
     this.workers = {};
   }
   get currentWorkersCount() {
@@ -16,11 +17,11 @@ class WorkerManager {
     return this.currentWorkersCount < NUM_WORKERS;
   }
   async start() {
-    let searchesToStart = searchModel.get(
+    let searchesToStart = await searchModel.get(
       { status: IN_PROGRESS }, '', { limit: NUM_WORKERS });
     const remainingSlots = NUM_WORKERS - searchesToStart.length;
     if (remainingSlots > 0) {
-      const pendingSearches = searchModel.get(
+      const pendingSearches = await searchModel.get(
         { status: PENDING }, '', { limit: remainingSlots });
       searchesToStart = [...searchesToStart, ...pendingSearches];
     }
@@ -37,12 +38,12 @@ class WorkerManager {
     }
   }
   async onWorkerDone(searchId) {
-    this.deleteAndReplaceWorker(searchId);
     this.emit('searchDone', searchId);
+    this.deleteAndReplaceWorker(searchId);
   }
   async onWorkerError(searchId, error) {
-    this.deleteAndReplaceWorker(searchId);
     this.emit('searchError', searchId, error);
+    this.deleteAndReplaceWorker(searchId);
   }
   onWorkerUpdate(searchId, update) {
     this.emit('searchUpdated', searchId, update);
@@ -53,7 +54,11 @@ class WorkerManager {
   }
   async startNewSearchIfFree() {
     if (this.canAddWorker) {
-      const [newSearch] = await search.getPendingSearches();
+      const currentSearches = Object.keys(this.workers);
+      let [newSearch] = await searchModel.get({ status: IN_PROGRESS, _id: { $nin: currentSearches } }, '', { limit: 1 });
+      if (!newSearch) {
+        [newSearch] = await searchModel.get({ status: PENDING }, '', { limit: 1 });
+      }
       if (newSearch) {
         this.notifyNewSearch(newSearch._id);
       }
