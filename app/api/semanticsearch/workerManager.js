@@ -1,5 +1,6 @@
 import Worker from './worker';
-import search from './semanticSearch';
+import search, { IN_PROGRESS, PENDING } from './semanticSearch';
+import searchModel from './model';
 
 const NUM_WORKERS = 3;
 
@@ -10,27 +11,44 @@ class WorkerManager {
   get currentWorkersCount() {
     return Object.keys(this.workers).length;
   }
+  get canAddWorker() {
+    return this.currentWorkersCount < NUM_WORKERS;
+  }
   async start() {
-    const pendingSearches = await search.getPendingSearches();
-    const toProcess = pendingSearches > NUM_WORKERS ?
-      pendingSearches.slice(0, NUM_WORKERS) : pendingSearches;
-    toProcess.forEach(newSearch => this.notifyNewSearch(newSearch._id));
+    let searchesToStart = searchModel.get(
+      { status: IN_PROGRESS }, '', { limit: NUM_WORKERS });
+    const remainingSlots = NUM_WORKERS - searchesToStart.length;
+    if (remainingSlots > 0) {
+      const pendingSearches = searchModel.get(
+        { status: PENDING }, '', { limit: remainingSlots });
+      searchesToStart = [...searchesToStart, ...pendingSearches];
+    }
+    searchesToStart.forEach(newSearch => this.notifyNewSearch(newSearch._id));
   }
   notifyNewSearch(searchId) {
-    console.log('NEW SEARCH', searchId);
-    if (this.currentWorkersCount > NUM_WORKERS) {
-      return;
+    if (this.canAddWorker) {
+      const worker = new Worker(searchId);
+      worker.on('done', () => this.onWorkerDone(searchId));
+      worker.on('update', update => this.onWorkerUpdate(searchId, update));
+      worker.on('error', error => this.onWorkerError(searchId, error));
+      this.workers[searchId] = worker;
+      worker.start();
     }
-    const worker = new Worker(searchId);
-    worker.on('done', () => this.onWorkerDone(searchId));
-    worker.on('update', update => console.log('SEARCH UPDATE', searchId, update));
-    this.workers[searchId] = worker;
-    worker.start();
   }
   async onWorkerDone(searchId) {
-    console.log('SEARCH DONE', searchId);
     delete this.workers[searchId];
-    if (this.currentWorkersCount < NUM_WORKERS) {
+    this.checkAndPushNewSearch();
+  }
+  async onWorkerError(searchId, error) {
+    console.log('SEARCH ERROR', searchId, error);
+    delete this.workers[searchId];
+    this.checkAndPushNewSearch();
+  }
+  onWorkerUpdate(searchId, update) {
+    console.log('SEARCH UPDATE', searchId, update)
+  }
+  async checkAndPushNewSearch() {
+    if (this.canAddWorker) {
       const [newSearch] = await search.getPendingSearches();
       if (newSearch) {
         this.notifyNewSearch(newSearch._id);
