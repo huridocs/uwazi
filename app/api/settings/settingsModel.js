@@ -31,6 +31,7 @@ const settingsSchema = new mongoose.Schema({
   matomoConfig: String,
   dateFormat: String,
   custom: mongoose.Schema.Types.Mixed,
+  sync: mongoose.Schema.Types.Mixed,
   customCSS: String
 });
 

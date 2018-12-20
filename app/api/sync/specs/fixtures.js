@@ -7,6 +7,7 @@ const newDoc1 = db.id();
 const newDoc2 = db.id();
 const newDoc3 = db.id();
 const newDoc4 = db.id();
+const newDoc5 = db.id();
 
 export default {
   syncs: [
@@ -15,6 +16,24 @@ export default {
     },
   ],
   updatelogs: [
+    {
+      timestamp: 20000,
+      namespace: 'entities',
+      mongoId: newDoc4,
+      deleted: true,
+    },
+    {
+      timestamp: 22000,
+      namespace: 'connections',
+      mongoId: newDoc5,
+      deleted: false,
+    },
+    {
+      timestamp: 20000,
+      namespace: 'connections',
+      mongoId: newDoc3,
+      deleted: false,
+    },
     {
       timestamp: 6000,
       namespace: 'entities',
@@ -28,7 +47,7 @@ export default {
       deleted: false,
     },
     {
-      timestamp: 10000,
+      timestamp: 12000,
       namespace: 'entities',
       mongoId: newDoc2,
       deleted: false,
@@ -38,18 +57,6 @@ export default {
       namespace: 'entities',
       mongoId: newDoc1,
       deleted: false,
-    },
-    {
-      timestamp: 20000,
-      namespace: 'connections',
-      mongoId: newDoc3,
-      deleted: false,
-    },
-    {
-      timestamp: 20000,
-      namespace: 'entities',
-      mongoId: newDoc4,
-      deleted: true,
     },
   ],
   entities: [
@@ -67,11 +74,17 @@ export default {
       _id: newDoc3,
       entity: newDoc1,
     },
+    {
+      _id: newDoc5,
+      entity: newDoc1,
+    },
   ],
   settings: [
     {
+      languages: [{ key: 'es', default: true }],
       sync: {
-        url: 'url'
+        url: 'url',
+        active: true,
       }
     },
   ],
