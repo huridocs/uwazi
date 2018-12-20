@@ -36,18 +36,20 @@ class WorkerManager {
     }
   }
   async onWorkerDone(searchId) {
-    delete this.workers[searchId];
-    this.checkAndPushNewSearch();
+    this.deleteAndReplaceWorker(searchId);
   }
   async onWorkerError(searchId, error) {
     console.log('SEARCH ERROR', searchId, error);
-    delete this.workers[searchId];
-    this.checkAndPushNewSearch();
+    this.deleteAndReplaceWorker(searchId);
   }
   onWorkerUpdate(searchId, update) {
     console.log('SEARCH UPDATE', searchId, update)
   }
-  async checkAndPushNewSearch() {
+  deleteAndReplaceWorker(searchId) {
+    delete this.workers[searchId];
+    this.startNewSearchIfFree();
+  }
+  async startNewSearchIfFree() {
     if (this.canAddWorker) {
       const [newSearch] = await search.getPendingSearches();
       if (newSearch) {
