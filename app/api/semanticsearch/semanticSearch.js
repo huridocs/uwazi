@@ -5,11 +5,12 @@ import model from './model';
 import resultsModel from './resultsModel';
 import api from './api';
 import documentsModel from '../documents';
+import workers from './workerManager';
 
-const PENDING = 'pending';
-const COMPLETED = 'completed';
-const PROCESSING = 'processing';
-const IN_PROGRESS = 'inProgress';
+export const PENDING = 'pending';
+export const COMPLETED = 'completed';
+export const PROCESSING = 'processing';
+export const IN_PROGRESS = 'inProgress';
 
 const SEARCH_BATCH_SIZE = 5;
 
@@ -20,7 +21,6 @@ const getSearchDocuments = async ({ documents, query }, language, user) => {
     return documents;
   }
   const res = await search.search(query, language, user);
-  console.log('res', res);
   return res.rows.map(document => document.sharedId);
 };
 
@@ -72,6 +72,8 @@ const getDocumentResultsByID = async (searchId, sharedId) => {
   return docResults;
 };
 
+const getAllDocumentResults = async searchId => resultsModel.get({ searchId });
+
 const processSearchLimit = async (searchId, docLimit) => {
   const searchObject = await updateSearchStatus(searchId, IN_PROGRESS);
   const { language, searchTerm } = searchObject;
@@ -81,12 +83,14 @@ const processSearchLimit = async (searchId, docLimit) => {
     docs.slice(0, docLimit) : docs;
   await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc =>
     processDocument(searchId, searchTerm, doc.sharedId, language));
-  return updateSearchStatus(searchId, COMPLETED);
+  const updatedSearch = await model.getById(searchId);
+  const isNotDone = updatedSearch.documents.some(doc => doc.status !== COMPLETED);
+  const newStatus = isNotDone ? IN_PROGRESS : COMPLETED;
+  return updateSearchStatus(searchId, newStatus);
 };
 
 const create = async (args, language, user) => {
   const docs = await getSearchDocuments(args, language, user);
-  console.log('docs', docs, args);
   const newSearch = {
     documents: docs.map(docId => ({
       sharedId: docId,
@@ -96,13 +100,19 @@ const create = async (args, language, user) => {
     searchTerm: args.searchTerm,
     language
   };
-  return model.save(newSearch);
+  const savedSearch = await model.save(newSearch);
+  workers.notifyNewSearch(savedSearch._id);
+  return savedSearch;
 };
+
+const getPendingSearches = async () => model.get({ status: PENDING });
 
 const semanticSearch = {
   create,
   processSearchLimit,
-  getDocumentResultsByID
+  getDocumentResultsByID,
+  getAllDocumentResults,
+  getPendingSearches
 };
 
 export default semanticSearch;

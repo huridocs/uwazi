@@ -15,6 +15,14 @@ export default (app) => {
       .catch(next);
     }
   );
+  app.get('/api/semantic-search/:searchId/results',
+    (req, res, next) => {
+      const { searchId } = req.params;
+      semanticSearch.getAllDocumentResults(searchId)
+      .then(results => res.json(results))
+      .catch(next);
+    }
+  );
   app.get('/api/semantic-search/:searchId/results/:docId',
     (req, res, next) => {
       const { searchId, docId } = req.params;

@@ -20,6 +20,7 @@ import serverRenderingRoutes from './react/server.js';
 import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
 import uwaziMessage from '../message';
+import { workerManager as semanticSearchManager } from './api/semanticsearch';
 
 mongoose.Promise = Promise;
 
@@ -69,6 +70,8 @@ mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
   const port = ports[app.get('env')];
 
   const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
+
+  semanticSearchManager.start();
 
   http.listen(port, bindAddress, () => {
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
