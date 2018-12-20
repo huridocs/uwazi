@@ -1,3 +1,4 @@
+import EventEmitter from 'events';
 import Worker from './worker';
 import search, { IN_PROGRESS, PENDING } from './semanticSearch';
 import searchModel from './model';
@@ -37,13 +38,14 @@ class WorkerManager {
   }
   async onWorkerDone(searchId) {
     this.deleteAndReplaceWorker(searchId);
+    this.emit('searchDone', searchId);
   }
   async onWorkerError(searchId, error) {
-    console.log('SEARCH ERROR', searchId, error);
     this.deleteAndReplaceWorker(searchId);
+    this.emit('searchError', searchId, error);
   }
   onWorkerUpdate(searchId, update) {
-    console.log('SEARCH UPDATE', searchId, update)
+    this.emit('searchUpdated', searchId, update);
   }
   deleteAndReplaceWorker(searchId) {
     delete this.workers[searchId];
