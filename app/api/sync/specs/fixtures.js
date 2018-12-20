@@ -68,6 +68,13 @@ export default {
       entity: newDoc1,
     },
   ],
+  settings: [
+    {
+      sync: {
+        url: 'url'
+      }
+    },
+  ],
 };
 
 export { newDoc1, newDoc2, newDoc3, newDoc4 };

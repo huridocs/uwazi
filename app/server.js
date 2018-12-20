@@ -20,6 +20,7 @@ import serverRenderingRoutes from './react/server.js';
 import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
 import uwaziMessage from '../message';
+import syncWorker from './api/sync/syncWorker';
 
 mongoose.Promise = Promise;
 
@@ -73,6 +74,7 @@ mongoose.connect(dbConfig[app.get('env')], {})
   const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
 
   http.listen(port, bindAddress, () => {
+    syncWorker.start();
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');
