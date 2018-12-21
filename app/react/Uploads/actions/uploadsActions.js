@@ -5,6 +5,7 @@ import { notify } from 'app/Notifications';
 import { selectSingleDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
 import uniqueID from 'shared/uniqueID';
 
 import { APIURL } from '../../config.js';
@@ -74,8 +75,16 @@ export function uploadDocument(docId, file) {
   return dispatch => upload(docId, file)(dispatch);
 }
 
-export function documentProcessed(sharedId) {
-  return { type: types.DOCUMENT_PROCESSED, sharedId };
+export function documentProcessed(sharedId, __reducerKey) {
+  return (dispatch) => {
+    dispatch({ type: types.DOCUMENT_PROCESSED, sharedId });
+    api.get('entities', { _id: sharedId })
+    .then((response) => {
+      dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json.rows[0], __reducerKey });
+      dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+      dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json.rows[0], __reducerKey });
+    });
+  };
 }
 
 export function documentProcessError(sharedId) {

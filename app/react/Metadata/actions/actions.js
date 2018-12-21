@@ -6,8 +6,6 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { api as entitiesAPI } from 'app/Entities';
 import { notify } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
 import emptyTemplate from '../helpers/defaultTemplate';
 
 import * as types from './actionTypes';
@@ -85,7 +83,7 @@ export function loadTemplate(form, template) {
 }
 
 export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
     superagent.post(`${APIURL}reupload`)
     .set('Accept', 'application/json')
@@ -95,16 +93,9 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('progress', (data) => {
       dispatch({ type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
     })
-    .on('response', (response) => {
-      const newFile = { filename: response.body.filename, size: response.body.size, originalname: response.body.originalname };
-      dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: newFile, __reducerKey });
-      requestViewerState({ documentId: docSharedId }, { templates: getState().templates })
-      .then((state) => {
-        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
-        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
-        dispatch(setViewerState(state));
-      });
+    .on('response', ({ body }) => {
+      const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
+      dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
     })
     .end();
   };

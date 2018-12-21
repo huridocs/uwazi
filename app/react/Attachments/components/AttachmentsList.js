@@ -81,7 +81,7 @@ export class AttachmentsList extends Component {
     if (!this.props.isTargetDoc) {
       uploadAttachmentButton = (<NeedAuthorization roles={['admin', 'editor']}>
         <div className="attachment-add">
-          <UploadAttachment entityId={this.props.parentId} storeKey={storeKey}/>
+          <UploadAttachment entityId={this.props.parentSharedId} storeKey={storeKey}/>
         </div>
       </NeedAuthorization>);
     }

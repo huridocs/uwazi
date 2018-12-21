@@ -220,23 +220,5 @@ describe('Metadata Actions', () => {
       mockUpload.emit('response', { body: { filename: 'filename', size: 34, originalname: 'name' } });
       expect(store.getActions()).toEqual(expectedActions);
     });
-
-    describe('upon response', () => {
-      const state = { documentViewer: { doc: 'doc' } };
-
-      beforeEach(() => {
-        jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve(state));
-        mockUpload.emit('response', { body: { filename: 'filename', size: 34, originalname: 'name' } });
-      });
-
-      it('should request and set viewer states, along with library actions', () => {
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'sharedId' }, { templates: 'immutableTemplates' });
-        expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
-        expect(store.getActions()).toContainEqual({ type: 'LIBRARY/UPDATE_DOCUMENT', doc: 'doc', __reducerKey: 'storeKey' });
-        expect(store.getActions()).toContainEqual({ type: 'UNSELECT_ALL_DOCUMENTS', __reducerKey: 'storeKey' });
-        expect(store.getActions()).toContainEqual({ type: 'SELECT_DOCUMENT', doc: 'doc', __reducerKey: 'storeKey' });
-        expect(store.getActions()).toContainEqual({ type: 'setViewerState' });
-      });
-    });
   });
 });

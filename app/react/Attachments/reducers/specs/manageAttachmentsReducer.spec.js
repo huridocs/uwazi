@@ -145,34 +145,5 @@ describe('manageAttachmentsReducer', () => {
         expect(attachments[1].originalname).toBe('new name');
       });
     });
-
-    describe('When REUPLOAD_COMPLETE', () => {
-      it('should rename the document file originalname and size', () => {
-        action.type = metadataTypes.REUPLOAD_COMPLETE;
-        action.doc = 'eId';
-        action.file = { originalname: 'new name', size: 12345 };
-        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({ originalname: 'original name', size: 999 }));
-
-        const file = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
-        .getIn(['selectedDocuments', 0, 'file']).toJS();
-
-        expect(file.originalname).toBe('new name');
-        expect(file.size).toBe(12345);
-      });
-
-      it('should not affect if the selected document has changed', () => {
-        action.type = metadataTypes.REUPLOAD_COMPLETE;
-        action.doc = 'eId';
-        action.file = { name: 'new name', size: 12345 };
-        state = state.setIn(['selectedDocuments', 0, '_id'], 'anotherId');
-        state = state.setIn(['selectedDocuments', 0, 'file'], Immutable.fromJS({ originalname: 'original name', size: 999 }));
-
-        const file = manageAttachmentsReducer(unchagedState => unchagedState, { setInArray: ['selectedDocuments', 0] })(state, action)
-        .getIn(['selectedDocuments', 0, 'file']).toJS();
-
-        expect(file.originalname).toBe('original name');
-        expect(file.size).toBe(999);
-      });
-    });
   });
 });

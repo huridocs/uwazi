@@ -43,10 +43,6 @@ export default function manageAttachmentsReducer(originalReducer, { useDefaults 
       }));
     }
 
-    if (action.type === metadataTypes.REUPLOAD_COMPLETE && getId(state, setInArray) === action.doc) {
-      return state.setIn(setInArray.concat(['file']), Immutable(action.file));
-    }
-
     return originalReducer(state, action);
   };
 }
