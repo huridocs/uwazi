@@ -105,20 +105,42 @@ describe('syncWorker', () => {
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
     });
 
-    it('should retry when syncronize throws a request error', async () => {
+    it('should retry when syncronize returns a request error', async () => {
       let syncCalls = 0;
       spyOn(syncWorker, 'syncronize').and.callFake(() => {
         if (syncCalls === 2) {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject(new Error('sync failed'));
+        return Promise.reject({ status: 500 }); // eslint-disable-line prefer-promise-reject-errors
       });
 
       const interval = 0;
       await syncWorker.intervalSync('url', interval);
       expect(syncWorker.syncronize).toHaveBeenCalledWith('url');
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not retry, and thtow when error instanceof error', async () => {
+      expect.assertions(3);
+
+      let syncCalls = 0;
+      spyOn(syncWorker, 'syncronize').and.callFake(() => {
+        if (syncCalls === 1) {
+          syncWorker.stop();
+        }
+        syncCalls += 1;
+        return Promise.reject(new Error('error'));
+      });
+
+      const interval = 0;
+      try {
+        await syncWorker.intervalSync('url', interval);
+      } catch (e) {
+        expect(e).toEqual(new Error('error'));
+        expect(syncWorker.syncronize).toHaveBeenCalledWith('url');
+        expect(syncWorker.syncronize).toHaveBeenCalledTimes(1);
+      }
     });
   });
 

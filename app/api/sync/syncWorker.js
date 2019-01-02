@@ -4,9 +4,10 @@ import { models } from 'api/odm';
 import { model as updateLog } from 'api/updatelogs';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
-import { FetchError } from 'node-fetch/lib/fetch-error';
 
 import syncsModel from './syncsModel';
+import urljoin from 'url-join';
+import { FetchError } from 'node-fetch';
 
 const oneSecond = 1000;
 
@@ -15,12 +16,8 @@ const timeout = async interval => new Promise((resolve) => {
 });
 
 const syncData = async (url, action, change, data) => {
-  try {
-    await request[action](`${url}api/sync`, { namespace: change.namespace, data });
-    return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
-  } catch (e) {
-    return Promise.reject(e);
-  }
+  await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
+  return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };
 
 export default {
@@ -48,9 +45,9 @@ export default {
     try {
       await this.syncronize(url);
     } catch (e) {
-      // console.log(FetchError);
-      console.log(e);
-      // empty
+      if (e instanceof Error) {
+        throw e;
+      }
     }
     await timeout(interval);
     await this.intervalSync(url, interval);
