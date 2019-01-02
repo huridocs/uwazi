@@ -29,6 +29,16 @@ describe('ODM Model', () => {
     expect(models.anotherSchema).toBe(model2);
   });
 
+  describe('Save', () => {
+    it('should be able to create when passing an _id and it does not exists', async () => {
+      const extendedModel = odmModel('tempSchema', testSchema);
+      const id = testingDB.id();
+      await extendedModel.save({ _id: id, name: 'document 1' });
+      const [createdDocument] = await extendedModel.get({ _id: id });
+      expect(createdDocument).toBeDefined();
+    });
+  });
+
   describe('Logging functionality', () => {
     let extendedModel;
     let newDocument1;

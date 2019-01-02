@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
+
 import { model as updatelogsModel } from 'api/updatelogs';
+
 import models from './models';
 
 const generateID = mongoose.Types.ObjectId;
@@ -33,23 +35,24 @@ export default (collectionName, schema) => {
 
   const MongooseModel = mongoose.model(collectionName, schema);
 
+  const saveOne = async (data) => {
+    const documentExists = await MongooseModel.findById(data._id, '_id');
+
+    if (documentExists) {
+      return MongooseModel.findOneAndUpdate({ _id: data._id }, data, { new: true, lean: true });
+    }
+    return MongooseModel.create(data).then(saved => saved.toObject());
+  };
+
   const odmModel = {
     db: MongooseModel,
     save: (data) => {
       if (Array.isArray(data)) {
-        const promises = data.map((entry) => {
-          if (entry._id) {
-            return MongooseModel.findOneAndUpdate({ _id: entry._id }, entry, { new: true, lean: true });
-          }
-          return MongooseModel.create(entry).then(saved => saved.toObject());
-        });
+        const promises = data.map(entry => saveOne(entry));
         return Promise.all(promises);
       }
 
-      if (data._id) {
-        return MongooseModel.findOneAndUpdate({ _id: data._id }, data, { new: true, lean: true });
-      }
-      return MongooseModel.create(data).then(saved => saved.toObject());
+      return saveOne(data);
     },
 
     get: (query, select = '', pagination = {}) => MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)),
