@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import * as metadataTypes from 'app/Metadata/actions/actionTypes';
 import manageAttachmentsReducer from '../manageAttachmentsReducer';
 
 describe('manageAttachmentsReducer', () => {

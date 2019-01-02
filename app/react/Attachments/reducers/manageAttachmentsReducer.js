@@ -1,6 +1,5 @@
 import { fromJS as Immutable } from 'immutable';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import * as metadataTypes from 'app/Metadata/actions/actionTypes';
 
 const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
 
