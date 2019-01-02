@@ -25,7 +25,22 @@ export default {
 
   async syncronize(url) {
     const [{ lastSync }] = await syncsModel.find();
-    const lastChanges = await updateLog.find({ timestamp: { $gte: lastSync - oneSecond } }, null, { sort: { timestamp: 1 }, lean: true });
+    const lastChanges = await updateLog.find({
+      timestamp: {
+        $gte: lastSync - oneSecond
+      },
+      // namespace: {
+      //   $nin: ['migrations']
+      // }
+    }, null, {
+      sort: {
+        timestamp: 1
+      },
+      lean: true
+    });
+
+    // there is always one ??
+    console.log(lastChanges[0]);
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;
@@ -45,9 +60,10 @@ export default {
     try {
       await this.syncronize(url);
     } catch (e) {
-      if (e instanceof Error) {
-        throw e;
-      }
+      console.error(e);
+      // if (e instanceof Error) {
+      //   throw e;
+      // }
     }
     await timeout(interval);
     await this.intervalSync(url, interval);
