@@ -6,7 +6,7 @@ import needsAuthorization from '../auth/authMiddleware';
 export default (app) => {
   app.post(
     '/api/sync',
-    // needsAuthorization(['admin']),
+    needsAuthorization(['admin']),
     async (req, res, next) => {
       try {
         await models[req.body.namespace].save(req.body.data);
@@ -22,7 +22,7 @@ export default (app) => {
 
   app.delete(
     '/api/sync',
-    // needsAuthorization(['admin']),
+    needsAuthorization(['admin']),
     async (req, res, next) => {
       try {
         await models[req.body.namespace].delete(req.body.data);

@@ -72,13 +72,18 @@ const _fetch = (url, data, method, _headers) => {
     body
   })
   .then((res) => {
+    let setCookie;
+    if (res.headers._headers['set-cookie']) {
+      setCookie = res.headers._headers['set-cookie'];
+    }
     response = res;
-    return res.json();
+    return Promise.all([res.json(), setCookie]);
   })
-  .then((json) => {
+  .then(([json, setCookie]) => {
     const procesedResponse = {
       json,
-      status: response.status
+      status: response.status,
+      cookie: setCookie,
     };
 
     if (response.status > 399) {

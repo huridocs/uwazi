@@ -58,6 +58,12 @@ export default {
       mongoId: newDoc1,
       deleted: false,
     },
+    {
+      timestamp: 9000,
+      namespace: 'migrations',
+      mongoId: newDoc1,
+      deleted: false,
+    },
   ],
   entities: [
     {

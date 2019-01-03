@@ -1,5 +1,6 @@
 import 'api/entities';
 import 'api/relationships';
+import backend from 'fetch-mock';
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -112,7 +113,7 @@ describe('syncWorker', () => {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject({ status: 500 }); // eslint-disable-line prefer-promise-reject-errors
+        return Promise.reject({ status: 500, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
       });
 
       const interval = 0;
@@ -121,26 +122,30 @@ describe('syncWorker', () => {
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
     });
 
-    it('should not retry, and thtow when error instanceof error', async () => {
-      expect.assertions(3);
-
+    it('should login when a sync response its "Unauthorized"', async () => {
+      spyOn(syncWorker, 'login').and.returnValue(Promise.resolve());
       let syncCalls = 0;
       spyOn(syncWorker, 'syncronize').and.callFake(() => {
         if (syncCalls === 1) {
           syncWorker.stop();
         }
         syncCalls += 1;
-        return Promise.reject(new Error('error'));
+        return Promise.reject({ status: 401, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
       });
 
-      const interval = 0;
-      try {
-        await syncWorker.intervalSync('url', interval);
-      } catch (e) {
-        expect(e).toEqual(new Error('error'));
-        expect(syncWorker.syncronize).toHaveBeenCalledWith('url');
-        expect(syncWorker.syncronize).toHaveBeenCalledTimes(1);
-      }
+      await syncWorker.intervalSync('url', 0);
+      expect(syncWorker.login).toHaveBeenCalledWith('url', 'admin', 'admin');
+    });
+
+  });
+
+  describe('login', () => {
+    it('should login to the target api and set the cookie', async () => {
+      backend.restore();
+      backend.post('http://localhost/api/login', { body: '{}', headers: { 'set-cookie': 'cookie' } });
+      spyOn(request, 'cookie');
+      await syncWorker.login('http://localhost', 'username', 'password');
+      expect(request.cookie).toHaveBeenCalledWith(['cookie']);
     });
   });
 

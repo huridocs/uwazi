@@ -1,13 +1,14 @@
 import 'api/entities';
 
+import urljoin from 'url-join';
+
 import { models } from 'api/odm';
 import { model as updateLog } from 'api/updatelogs';
+import handleError from 'api/utils/handleError';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 
 import syncsModel from './syncsModel';
-import urljoin from 'url-join';
-import { FetchError } from 'node-fetch';
 
 const oneSecond = 1000;
 
@@ -29,9 +30,9 @@ export default {
       timestamp: {
         $gte: lastSync - oneSecond
       },
-      // namespace: {
-      //   $nin: ['migrations']
-      // }
+      namespace: {
+        $nin: ['migrations']
+      }
     }, null, {
       sort: {
         timestamp: 1
@@ -40,7 +41,7 @@ export default {
     });
 
     // there is always one ??
-    console.log(lastChanges[0]);
+    // console.log(lastChanges[0]);
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;
@@ -60,13 +61,18 @@ export default {
     try {
       await this.syncronize(url);
     } catch (e) {
-      console.error(e);
-      // if (e instanceof Error) {
-      //   throw e;
-      // }
+      if (e.status === 401) {
+        await this.login(url, 'admin', 'admin');
+      }
+      // handleError(e);
     }
     await timeout(interval);
     await this.intervalSync(url, interval);
+  },
+
+  async login(url, username, password) {
+    const response = await request.post(urljoin(url, 'api/login'), { username, password });
+    request.cookie(response.cookie);
   },
 
   async start(interval) {
