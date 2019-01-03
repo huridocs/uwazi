@@ -14,7 +14,7 @@ describe('migration default-template', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(8);
+    expect(migration.delta).toBe(9);
   });
 
   it('should set a default template', async () => {

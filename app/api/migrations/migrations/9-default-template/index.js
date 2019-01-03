@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 export default {
-  delta: 8,
+  delta: 9,
 
   name: 'default-template',
 
