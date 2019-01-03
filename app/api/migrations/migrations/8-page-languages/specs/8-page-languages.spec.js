@@ -20,7 +20,6 @@ describe('migration page-languages', () => {
   it('should remove duplicated relationships, sharedIds and languages', async () => {
     await migration.up(testingDB.mongodb);
     const pages = await testingDB.mongodb.collection('pages').find().toArray();
-    console.log(pages);
     expect(pages.length).toBe(4);
     const pagesInES = pages.filter(p => p.language === 'es');
     const pagesInPT = pages.filter(p => p.language === 'pt');
