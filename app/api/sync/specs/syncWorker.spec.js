@@ -1,4 +1,5 @@
 import 'api/entities';
+import errorLog from 'api/log/errorLog';
 import 'api/relationships';
 import backend from 'fetch-mock';
 
@@ -13,6 +14,7 @@ import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
   beforeEach((done) => {
+    spyOn(errorLog, 'error');
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
     syncWorker.stopped = false;
   });
@@ -136,7 +138,6 @@ describe('syncWorker', () => {
       await syncWorker.intervalSync('url', 0);
       expect(syncWorker.login).toHaveBeenCalledWith('url', 'admin', 'admin');
     });
-
   });
 
   describe('login', () => {
@@ -146,6 +147,12 @@ describe('syncWorker', () => {
       spyOn(request, 'cookie');
       await syncWorker.login('http://localhost', 'username', 'password');
       expect(request.cookie).toHaveBeenCalledWith(['cookie']);
+    });
+
+    it('should catch errors and log them', async () => {
+      spyOn(request, 'post').and.callFake(() => Promise.reject(new Error('post failed')));
+      await syncWorker.login('http://localhost', 'username', 'password');
+      expect(errorLog.error.calls.argsFor(0)).toMatchSnapshot();
     });
   });
 

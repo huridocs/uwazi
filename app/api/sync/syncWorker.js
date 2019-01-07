@@ -1,10 +1,11 @@
 import 'api/entities';
 
 import urljoin from 'url-join';
+import errorLog from 'api/log/errorLog';
+import { prettifyError } from 'api/utils/handleError';
 
 import { models } from 'api/odm';
 import { model as updateLog } from 'api/updatelogs';
-import handleError from 'api/utils/handleError';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 
@@ -63,16 +64,21 @@ export default {
     } catch (e) {
       if (e.status === 401) {
         await this.login(url, 'admin', 'admin');
+      } else {
+        errorLog.error(prettifyError(e).prettyMessage);
       }
-      // handleError(e);
     }
     await timeout(interval);
     await this.intervalSync(url, interval);
   },
 
   async login(url, username, password) {
-    const response = await request.post(urljoin(url, 'api/login'), { username, password });
-    request.cookie(response.cookie);
+    try {
+      const response = await request.post(urljoin(url, 'api/login'), { username, password });
+      request.cookie(response.cookie);
+    } catch (e) {
+      errorLog.error(prettifyError(e).prettyMessage);
+    }
   },
 
   async start(interval) {
