@@ -15,6 +15,7 @@ const linksSchema = new mongoose.Schema({
 const filtersSchema = new mongoose.Schema({
   id: String,
   name: String,
+  index: Number,
   items: mongoose.Schema.Types.Mixed
 });
 

@@ -79,9 +79,19 @@ export class FiltersForm extends Component {
     this.setState({ inactiveFilters: items });
   }
 
+  sanitizeFilterForSave(filter) {
+    delete filter.container;
+    if (filter.items) {
+      filter.items = filter.items.map(item => this.sanitizeFilterForSave(item));
+    }
+
+    return filter;
+  }
+
   save() {
     const settings = this.props.settings.collection.toJS();
-    settings.filters = this.state.activeFilters;
+    const filters = this.state.activeFilters.map(filter => this.sanitizeFilterForSave(filter));
+    settings.filters = filters;
     SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated', null, false), 'success');
