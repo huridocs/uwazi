@@ -840,10 +840,28 @@ describe('entities', () => {
 
   describe('addLanguage()', () => {
     it('should duplicate all the entities from the default language to the new one', (done) => {
+      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
       entities.addLanguage('ab')
       .then(() => entities.get({ language: 'ab' }))
       .then((newEntities) => {
+        expect(entities.createThumbnail).toHaveBeenCalled();
         expect(newEntities.length).toBe(7);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('removeLanguage()', () => {
+    it('should delete all entities from the language', (done) => {
+      spyOn(search, 'deleteLanguage');
+      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
+      entities.addLanguage('ab')
+      .then(() => entities.removeLanguage('ab'))
+      .then(() => entities.get({ language: 'ab' }))
+      .then((newEntities) => {
+        expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
+        expect(newEntities.length).toBe(0);
         done();
       })
       .catch(catchErrors(done));
