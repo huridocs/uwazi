@@ -25,7 +25,7 @@ const syncData = async (url, action, change, data) => {
 export default {
   stopped: false,
 
-  async syncronize(url) {
+  async syncronize({ url, config }) {
     const [{ lastSync }] = await syncsModel.find();
     const lastChanges = await updateLog.find({
       timestamp: {
@@ -50,7 +50,16 @@ export default {
         return syncData(url, 'delete', change, { _id: change.mongoId });
       }
 
+      if (change.namepsace === 'templates' && !config[change.namespace] || (config[change.namespace] && !config[change.namespace][change.mongoId.toString()])) {
+        return;
+      }
+
       const data = await models[change.namespace].getById(change.mongoId);
+
+      if (change.namespace === 'entities' && config.templates && !Object.keys(config.templates).includes(data.template.toString())) {
+        return;
+      }
+
       return syncData(url, 'post', change, data);
     }, Promise.resolve());
   },

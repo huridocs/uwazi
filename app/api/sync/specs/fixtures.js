@@ -8,6 +8,11 @@ const newDoc2 = db.id();
 const newDoc3 = db.id();
 const newDoc4 = db.id();
 const newDoc5 = db.id();
+const newDoc6 = db.id();
+
+const template1 = db.id();
+const template2 = db.id();
+const template3 = db.id();
 
 export default {
   syncs: [
@@ -60,6 +65,30 @@ export default {
     },
     {
       timestamp: 9000,
+      namespace: 'entities',
+      mongoId: newDoc6,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'templates',
+      mongoId: template1,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'templates',
+      mongoId: template2,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
+      namespace: 'templates',
+      mongoId: template3,
+      deleted: false,
+    },
+    {
+      timestamp: 9000,
       namespace: 'migrations',
       mongoId: newDoc1,
       deleted: false,
@@ -69,10 +98,17 @@ export default {
     {
       _id: newDoc1,
       title: 'a new entity',
+      template: template1,
     },
     {
       _id: newDoc2,
       title: 'another new entity',
+      template: template1,
+    },
+    {
+      _id: newDoc6,
+      title: 'not to sync',
+      template: template3,
     },
   ],
   connections: [
@@ -85,15 +121,27 @@ export default {
       entity: newDoc1,
     },
   ],
+  templates: [
+    {
+      _id: template1
+    },
+    {
+      _id: template2
+    },
+    {
+      _id: template3
+    }
+  ],
   settings: [
     {
       languages: [{ key: 'es', default: true }],
       sync: {
         url: 'url',
         active: true,
+        config: {}
       }
     },
   ],
 };
 
-export { newDoc1, newDoc2, newDoc3, newDoc4 };
+export { newDoc1, newDoc2, newDoc3, newDoc4, template1, template2, template3 };

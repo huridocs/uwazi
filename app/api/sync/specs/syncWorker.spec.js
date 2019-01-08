@@ -8,7 +8,7 @@ import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 
-import fixtures, { newDoc1, newDoc2, newDoc3, newDoc4 } from './fixtures';
+import fixtures, { newDoc1, newDoc2, newDoc3, newDoc4, template1, template2, template3 } from './fixtures';
 import syncWorker from '../syncWorker';
 import syncsModel from '../syncsModel';
 
@@ -24,6 +24,84 @@ describe('syncWorker', () => {
   });
 
   describe('syncronize', () => {
+    describe('templates', () => {
+      fit('should only sync configured templates', async () => {
+        spyOn(request, 'post').and.returnValue(Promise.resolve());
+        spyOn(request, 'delete').and.returnValue(Promise.resolve());
+
+        await syncWorker.syncronize({
+          url: 'url',
+          config: {
+            templates: {
+              [template1.toString()]: {},
+              [template2.toString()]: {},
+            }
+          }
+        });
+
+        expect(request.post).toHaveBeenCalledWith('url/api/sync', {
+          namespace: 'templates',
+          data: { _id: template1, }
+        });
+        expect(request.post).toHaveBeenCalledWith('url/api/sync', {
+          namespace: 'templates',
+          data: { _id: template2, }
+        });
+        expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
+          namespace: 'templates',
+          data: { _id: template3, }
+        });
+      });
+    });
+
+    describe('entities', () => {
+      fit('should only sync entities belonging to a configured template', async () => {
+        spyOn(request, 'post').and.returnValue(Promise.resolve());
+        spyOn(request, 'delete').and.returnValue(Promise.resolve());
+
+        await syncWorker.syncronize({
+          url: 'url',
+          config: {
+            templates: {
+              [template1.toString()]: {},
+              [template2.toString()]: {},
+            }
+          }
+        });
+
+        expect(request.post).toHaveBeenCalledWith('url/api/sync', {
+          namespace: 'entities',
+          data: expect.objectContaining({ _id: newDoc1 })
+        });
+
+        expect(request.post).toHaveBeenCalledWith('url/api/sync', {
+          namespace: 'entities',
+          data: expect.objectContaining({ _id: newDoc2 })
+        });
+
+        expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
+          namespace: 'entities',
+          data: expect.objectContaining({ title: 'not to sync' })
+        });
+      });
+
+      fit('should only sync entities properties configured on the template', async () => {
+        spyOn(request, 'post').and.returnValue(Promise.resolve());
+        spyOn(request, 'delete').and.returnValue(Promise.resolve());
+
+        await syncWorker.syncronize({
+          url: 'url',
+          config: {
+            templates: {
+              [template1.toString()]: {},
+              [template2.toString()]: {},
+            }
+          }
+        });
+
+      });
+    });
+
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
       spyOn(request, 'post').and.returnValue(Promise.resolve());
       spyOn(request, 'delete').and.returnValue(Promise.resolve());
@@ -152,7 +230,7 @@ describe('syncWorker', () => {
     it('should catch errors and log them', async () => {
       spyOn(request, 'post').and.callFake(() => Promise.reject(new Error('post failed')));
       await syncWorker.login('http://localhost', 'username', 'password');
-      expect(errorLog.error.calls.argsFor(0)).toMatchSnapshot();
+      expect(errorLog.error.calls.argsFor(0)[0]).toMatch('post failed');
     });
   });
 
