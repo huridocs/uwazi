@@ -1,11 +1,11 @@
 import 'api/entities';
 
 import urljoin from 'url-join';
-import errorLog from 'api/log/errorLog';
-import { prettifyError } from 'api/utils/handleError';
 
 import { models } from 'api/odm';
+import { prettifyError } from 'api/utils/handleError';
 import { model as updateLog } from 'api/updatelogs';
+import errorLog from 'api/log/errorLog';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 
@@ -50,14 +50,20 @@ export default {
         return syncData(url, 'delete', change, { _id: change.mongoId });
       }
 
-      if (change.namepsace === 'templates' && !config[change.namespace] || (config[change.namespace] && !config[change.namespace][change.mongoId.toString()])) {
-        return;
+      const templatesConfig = config.templates || {};
+
+      if (change.namespace === 'templates' && !templatesConfig[change.mongoId.toString()]) {
+        return Promise.resolve();
       }
 
       const data = await models[change.namespace].getById(change.mongoId);
 
-      if (change.namespace === 'entities' && config.templates && !Object.keys(config.templates).includes(data.template.toString())) {
-        return;
+      if (change.namespace === 'entities' && !Object.keys(templatesConfig).includes(data.template.toString())) {
+        return Promise.resolve();
+      }
+
+      if (change.namespace === 'templates' && data.properties) {
+        data.properties = data.properties.filter(property => templatesConfig[data._id.toString()].includes(property._id.toString()));
       }
 
       return syncData(url, 'post', change, data);

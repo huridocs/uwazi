@@ -11,6 +11,11 @@ const newDoc5 = db.id();
 const newDoc6 = db.id();
 
 const template1 = db.id();
+
+const template1Property1 = db.id();
+const template1Property2 = db.id();
+const template1Property3 = db.id();
+
 const template2 = db.id();
 const template3 = db.id();
 
@@ -123,7 +128,18 @@ export default {
   ],
   templates: [
     {
-      _id: template1
+      _id: template1,
+      properties: [
+        {
+          _id: template1Property1
+        },
+        {
+          _id: template1Property2
+        },
+        {
+          _id: template1Property3
+        },
+      ],
     },
     {
       _id: template2
@@ -144,4 +160,15 @@ export default {
   ],
 };
 
-export { newDoc1, newDoc2, newDoc3, newDoc4, template1, template2, template3 };
+export {
+  newDoc1,
+  newDoc2,
+  newDoc3,
+  newDoc4,
+  template1,
+  template1Property1,
+  template1Property2,
+  template1Property3,
+  template2,
+  template3
+};
