@@ -17,6 +17,7 @@ import fixtures, {
   template1Property1,
   template1Property3,
   template2,
+  template3,
 } from './fixtures';
 import syncWorker from '../syncWorker';
 import syncsModel from '../syncsModel';
@@ -31,6 +32,19 @@ describe('syncWorker', () => {
   afterAll((done) => {
     db.disconnect().then(done);
   });
+
+  const syncAllTemplates = async () => {
+    return syncWorker.syncronize({
+      url: 'url',
+      config: {
+        templates: {
+          [template1.toString()]: [],
+          [template2.toString()]: [],
+          [template3.toString()]: [],
+        }
+      }
+    });
+  };
 
   describe('syncronize', () => {
     describe('templates', () => {
@@ -142,7 +156,7 @@ describe('syncWorker', () => {
       spyOn(request, 'post').and.returnValue(Promise.resolve());
       spyOn(request, 'delete').and.returnValue(Promise.resolve());
 
-      await syncWorker.syncronize('url');
+      await syncAllTemplates();
       const [{ lastSync }] = await syncsModel.find();
       expect(lastSync).toBe(22000);
     });
@@ -156,7 +170,7 @@ describe('syncWorker', () => {
       );
 
       try {
-        await syncWorker.syncronize('url');
+        await syncAllTemplates();
       } catch (e) {
         const [{ lastSync }] = await syncsModel.find();
         expect(lastSync).toBe(12000);
