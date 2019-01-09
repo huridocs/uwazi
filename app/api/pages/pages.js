@@ -41,5 +41,45 @@ export default {
 
   delete(sharedId) {
     return model.delete({ sharedId });
-  }
+  },
+
+  async addLanguage(language) {
+    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
+    if (lanuageTranslationAlreadyExists) {
+      return Promise.resolve();
+    }
+
+    const { languages } = await settings.get();
+
+    const defaultLanguage = languages.find(l => l.default).key;
+    const duplicate = (offset, totalRows) => {
+      const limit = 200;
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get({ language: defaultLanguage }, null, { skip: offset, limit })
+      .then((pages) => {
+        const savePages = pages.map((_page) => {
+          const page = Object.assign({}, _page);
+          delete page._id;
+          delete page.__v;
+          page.language = language;
+          return this.save(page);
+        });
+
+        return Promise.all(savePages);
+      })
+      .then(() => duplicate(offset + limit, totalRows));
+    };
+
+    return this.count({ language: defaultLanguage })
+    .then(totalRows => duplicate(0, totalRows));
+  },
+
+  async removeLanguage(language) {
+    return model.delete({ language });
+  },
+
+  count: model.count
 };
