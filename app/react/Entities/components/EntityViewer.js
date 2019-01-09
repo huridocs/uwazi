@@ -124,6 +124,7 @@ export class EntityViewer extends Component {
                       <AttachmentsList
                         files={Immutable(attachments)}
                         parentId={entity._id}
+                        parentSharedId={entity.sharedId}
                       />
                     </div>
                   );
