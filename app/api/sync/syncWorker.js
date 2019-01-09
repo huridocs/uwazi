@@ -62,8 +62,28 @@ export default {
         return Promise.resolve();
       }
 
+
       if (change.namespace === 'templates' && data.properties) {
         data.properties = data.properties.filter(property => templatesConfig[data._id.toString()].includes(property._id.toString()));
+      }
+
+      if (change.namespace === 'entities' && data.metadata) {
+        const templateData = await models.templates.getById(data.template);
+
+        const validPropertyNames = templateData.properties.reduce((memo, property) => {
+          if (templatesConfig[templateData._id.toString()].includes(property._id.toString())) {
+            memo.push(property.name);
+          }
+          return memo;
+        }, []);
+
+        data.metadata = Object.keys(data.metadata).reduce((_memo, propertyName) => {
+          const memo = _memo;
+          if (validPropertyNames.includes(propertyName)) {
+            memo[propertyName] = data.metadata[propertyName];
+          }
+          return memo;
+        }, {});
       }
 
       return syncData(url, 'post', change, data);

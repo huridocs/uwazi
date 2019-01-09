@@ -15,6 +15,7 @@ import fixtures, {
   newDoc4,
   template1,
   template1Property1,
+  template1Property2,
   template1Property3,
   template2,
   template3,
@@ -33,22 +34,20 @@ describe('syncWorker', () => {
     db.disconnect().then(done);
   });
 
-  const syncAllTemplates = async () => {
-    return syncWorker.syncronize({
-      url: 'url',
-      config: {
-        templates: {
-          [template1.toString()]: [],
-          [template2.toString()]: [],
-          [template3.toString()]: [],
-        }
+  const syncAllTemplates = async () => syncWorker.syncronize({
+    url: 'url',
+    config: {
+      templates: {
+        [template1.toString()]: [],
+        [template2.toString()]: [],
+        [template3.toString()]: [],
       }
-    });
-  };
+    }
+  });
 
   describe('syncronize', () => {
     describe('templates', () => {
-      it('should only sync white listed', async () => {
+      it('should only sync white listed templates and properties', async () => {
         spyOn(request, 'post').and.returnValue(Promise.resolve());
         spyOn(request, 'delete').and.returnValue(Promise.resolve());
 
@@ -70,7 +69,13 @@ describe('syncWorker', () => {
 
         expect(template1Call).toEqual(['url/api/sync', {
           namespace: 'templates',
-          data: { _id: template1, properties: [{ _id: template1Property1 }, { _id: template1Property3 }] }
+          data: {
+            _id: template1,
+            properties: [
+              expect.objectContaining({ _id: template1Property1 }),
+              expect.objectContaining({ _id: template1Property3 })
+            ]
+          }
         }]);
         expect(template2Call).toEqual(['url/api/sync', {
           namespace: 'templates',
@@ -80,7 +85,7 @@ describe('syncWorker', () => {
     });
 
     describe('entities', () => {
-      it('should only sync entities belonging to a white listed template', async () => {
+      it('should only sync entities belonging to a white listed template and properties', async () => {
         spyOn(request, 'post').and.returnValue(Promise.resolve());
         spyOn(request, 'delete').and.returnValue(Promise.resolve());
 
@@ -88,21 +93,34 @@ describe('syncWorker', () => {
           url: 'url',
           config: {
             templates: {
-              [template1.toString()]: [],
+              [template1.toString()]: [template1Property2.toString(), template1Property3.toString()],
               [template2.toString()]: [],
             }
           }
         });
 
-        expect(request.post).toHaveBeenCalledWith('url/api/sync', {
-          namespace: 'entities',
-          data: expect.objectContaining({ _id: newDoc1 })
-        });
+        const entitiesCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === 'entities');
+        const entity1Call = entitiesCallsOnly.find(call => call[1].data._id.toString() === newDoc1.toString());
+        const entity2Call = entitiesCallsOnly.find(call => call[1].data._id.toString() === newDoc2.toString());
 
-        expect(request.post).toHaveBeenCalledWith('url/api/sync', {
+        expect(entity1Call).toEqual(['url/api/sync', {
           namespace: 'entities',
-          data: expect.objectContaining({ _id: newDoc2 })
-        });
+          data: expect.objectContaining({
+            _id: newDoc1,
+            metadata: {
+              t1Property2: 'sync property 2',
+              t1Property3: 'sync property 3',
+            }
+          })
+        }]);
+
+        expect(entity2Call).toEqual(['url/api/sync', {
+          namespace: 'entities',
+          data: expect.objectContaining({
+            _id: newDoc2,
+            metadata: { t1Property2: 'another doc property 2' },
+          })
+        }]);
 
         expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
           namespace: 'entities',
@@ -111,46 +129,15 @@ describe('syncWorker', () => {
       });
     });
 
-    // it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
-    //   spyOn(request, 'post').and.returnValue(Promise.resolve());
-    //   spyOn(request, 'delete').and.returnValue(Promise.resolve());
+    it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
+      spyOn(request, 'post').and.returnValue(Promise.resolve());
+      spyOn(request, 'delete').and.returnValue(Promise.resolve());
 
-    //   await syncWorker.syncronize('url');
+      await syncAllTemplates();
 
-    //   expect(request.post.calls.count()).toBe(4);
-    //   expect(request.delete.calls.count()).toBe(1);
-
-    //   expect(request.post).toHaveBeenCalledWith('url/api/sync', {
-    //     namespace: 'entities',
-    //     data: {
-    //       _id: newDoc1,
-    //       title: 'a new entity',
-    //     }
-    //   });
-
-    //   expect(request.post).toHaveBeenCalledWith('url/api/sync', {
-    //     namespace: 'entities',
-    //     data: {
-    //       _id: newDoc2,
-    //       title: 'another new entity',
-    //     }
-    //   });
-
-    //   expect(request.post).toHaveBeenCalledWith('url/api/sync', {
-    //     namespace: 'connections',
-    //     data: {
-    //       _id: newDoc3,
-    //       entity: newDoc1
-    //     }
-    //   });
-
-    //   expect(request.delete).toHaveBeenCalledWith('url/api/sync', {
-    //     namespace: 'entities',
-    //     data: {
-    //       _id: newDoc4
-    //     }
-    //   });
-    // });
+      expect(request.post.calls.count()).toBe(8);
+      expect(request.delete.calls.count()).toBe(1);
+    });
 
     it('should update lastSync timestamp with the last change', async () => {
       spyOn(request, 'post').and.returnValue(Promise.resolve());

@@ -104,11 +104,20 @@ export default {
       _id: newDoc1,
       title: 'a new entity',
       template: template1,
+      metadata: {
+        t1Property1: 'sync property 1',
+        t1Property2: 'sync property 2',
+        t1Property3: 'sync property 3',
+      }
     },
     {
       _id: newDoc2,
       title: 'another new entity',
       template: template1,
+      metadata: {
+        t1Property1: 'another doc property 1',
+        t1Property2: 'another doc property 2',
+      }
     },
     {
       _id: newDoc6,
@@ -131,13 +140,16 @@ export default {
       _id: template1,
       properties: [
         {
-          _id: template1Property1
+          _id: template1Property1,
+          name: 't1Property1',
         },
         {
-          _id: template1Property2
+          _id: template1Property2,
+          name: 't1Property2',
         },
         {
-          _id: template1Property3
+          _id: template1Property3,
+          name: 't1Property3',
         },
       ],
     },
