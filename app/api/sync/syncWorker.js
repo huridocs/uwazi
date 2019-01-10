@@ -26,10 +26,6 @@ export default {
   stopped: false,
 
   async syncronize({ url, config }) {
-    const syncs = await syncsModel.find();
-    if (syncs.length === 0) {
-      await syncsModel.create({ lastSync: 0 });
-    }
     const [{ lastSync }] = await syncsModel.find();
     const lastChanges = await updateLog.find({
       timestamp: {
@@ -123,6 +119,10 @@ export default {
   async start(interval) {
     const { sync } = await settings.get();
     if (sync && sync.active) {
+      const syncs = await syncsModel.find();
+      if (syncs.length === 0) {
+        await syncsModel.create({ lastSync: 0 });
+      }
       this.intervalSync(sync, interval);
     }
   },
