@@ -6,7 +6,7 @@ import Doc from 'app/Library/components/Doc';
 import SortButtons from 'app/Library/components/SortButtons';
 import Footer from 'app/App/Footer';
 
-import DocumentsList from '../DocumentsList';
+import { DocumentsList } from '../DocumentsList';
 import { RowList } from '../Lists';
 
 describe('DocumentsList', () => {
@@ -23,7 +23,8 @@ describe('DocumentsList', () => {
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       searchDocuments: () => {},
-      deleteConnection: () => {}
+      deleteConnection: () => {},
+      location: { query: { q: '', pathname: 'library/' } }
     };
   });
 
@@ -103,11 +104,11 @@ describe('DocumentsList', () => {
   });
 
   describe('Load More button', () => {
-    it('should render by default a load more button', () => {
+    fit('should render by default a load more button', () => {
       props.documents = props.documents.set('totalRows', 3);
       render();
 
-      expect(component.find('.btn-load-more').length).toBe(1);
+      expect(component.find('.btn-load-more').length).toBe(2);
     });
 
     it('should render a custom passed load more', () => {
