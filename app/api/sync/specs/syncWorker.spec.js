@@ -47,6 +47,20 @@ describe('syncWorker', () => {
   });
 
   describe('syncronize', () => {
+    it('should lazy create lastSync entry if not exists', async () => {
+      spyOn(request, 'post').and.callFake(() => Promise.reject());
+      spyOn(request, 'delete').and.callFake(() => Promise.reject());
+
+      await syncsModel.remove({});
+
+      try {
+        await syncWorker.syncronize({ url: 'url', config: {} });
+      } catch (e) {
+        const [{ lastSync }] = await syncsModel.find();
+        expect(lastSync).toBe(0);
+      }
+    });
+
     describe('templates', () => {
       it('should only sync white listed templates and properties', async () => {
         spyOn(request, 'post').and.returnValue(Promise.resolve());
