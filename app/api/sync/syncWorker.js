@@ -90,21 +90,21 @@ export default {
     }, Promise.resolve());
   },
 
-  async intervalSync(url, interval = 5000) {
+  async intervalSync(config, interval = 5000) {
     if (this.stopped) {
       return;
     }
     try {
-      await this.syncronize(url);
+      await this.syncronize(config);
     } catch (e) {
       if (e.status === 401) {
-        await this.login(url, 'admin', 'admin');
+        await this.login(config.url, 'admin', 'admin');
       } else {
         errorLog.error(prettifyError(e).prettyMessage);
       }
     }
     await timeout(interval);
-    await this.intervalSync(url, interval);
+    await this.intervalSync(config, interval);
   },
 
   async login(url, username, password) {
@@ -119,7 +119,7 @@ export default {
   async start(interval) {
     const { sync } = await settings.get();
     if (sync && sync.active) {
-      this.intervalSync(sync.url, interval);
+      this.intervalSync(sync, interval);
     }
   },
 

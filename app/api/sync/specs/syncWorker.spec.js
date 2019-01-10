@@ -178,8 +178,8 @@ describe('syncWorker', () => {
       });
 
       const interval = 0;
-      await syncWorker.intervalSync('url', interval);
-      expect(syncWorker.syncronize).toHaveBeenCalledWith('url');
+      await syncWorker.intervalSync({ url: 'url' }, interval);
+      expect(syncWorker.syncronize).toHaveBeenCalledWith({ url: 'url' });
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
     });
 
@@ -194,8 +194,8 @@ describe('syncWorker', () => {
       });
 
       const interval = 0;
-      await syncWorker.intervalSync('url', interval);
-      expect(syncWorker.syncronize).toHaveBeenCalledWith('url');
+      await syncWorker.intervalSync({ url: 'url' }, interval);
+      expect(syncWorker.syncronize).toHaveBeenCalledWith({ url: 'url' });
       expect(syncWorker.syncronize).toHaveBeenCalledTimes(3);
     });
 
@@ -210,7 +210,8 @@ describe('syncWorker', () => {
         return Promise.reject({ status: 401, message: 'error' }); // eslint-disable-line prefer-promise-reject-errors
       });
 
-      await syncWorker.intervalSync('url', 0);
+      const interval = 0;
+      await syncWorker.intervalSync({ url: 'url' }, interval);
       expect(syncWorker.login).toHaveBeenCalledWith('url', 'admin', 'admin');
     });
   });
@@ -250,7 +251,7 @@ describe('syncWorker', () => {
       const interval = 2000;
 
       await syncWorker.start(interval);
-      expect(syncWorker.intervalSync).toHaveBeenCalledWith('url', interval);
+      expect(syncWorker.intervalSync).toHaveBeenCalledWith({ url: 'url', active: true, config: {} }, interval);
     });
 
     describe('when there is no sync config', () => {
