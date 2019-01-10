@@ -7,6 +7,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
+import settingsModel from 'api/settings/settingsModel';
 
 import fixtures, {
   newDoc1,
@@ -231,6 +232,19 @@ describe('syncWorker', () => {
   });
 
   describe('start', () => {
+    it('should not fail on sync not in settings', async () => {
+      await settingsModel.db.update({}, { $unset: { sync: '' } });
+      spyOn(syncWorker, 'intervalSync');
+      const interval = 2000;
+
+      let thrown;
+      try {
+        await syncWorker.start(interval);
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).not.toBeDefined();
+    });
     it('should get sync config and start the sync', async () => {
       spyOn(syncWorker, 'intervalSync');
       const interval = 2000;
