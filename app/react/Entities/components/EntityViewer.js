@@ -64,7 +64,9 @@ export class EntityViewer extends Component {
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups } = this.props;
     const selectedTab = tab || 'info';
-    const attachments = entity.attachments ? entity.attachments : [];
+
+    const docAttachments = entity.attachments ? entity.attachments : [];
+    const attachments = entity.file ? [entity.file].concat(docAttachments) : docAttachments;
 
     const summary = connectionsGroups.reduce((summaryData, g) => {
       g.get('templates').forEach((template) => {
@@ -125,6 +127,9 @@ export class EntityViewer extends Component {
                         files={Immutable(attachments)}
                         parentId={entity._id}
                         parentSharedId={entity.sharedId}
+                        isDocumentAttachments={Boolean(entity.file)}
+                        entityView
+                        processed={entity.processed}
                       />
                     </div>
                   );

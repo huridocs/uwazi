@@ -127,8 +127,12 @@
     }
     .attachment {
       border: 1px solid $c-grey-lighten;
-      width: 49%;
-      padding: 0 7px;
+      width: 50%;
+      padding: 0 12px;
     }
+  }
+  a.btn {
+    margin-left: 15px;
+    margin-top: 5px;
   }
 }

@@ -9,6 +9,7 @@ import { NeedAuthorization } from 'app/Auth';
 import Attachment from 'app/Attachments/components/Attachment';
 import UploadAttachment from 'app/Attachments/components/UploadAttachment';
 import UploadButton from 'app/Metadata/components/UploadButton';
+import ViewDocButton from 'app/Library/components/ViewDocButton';
 import Tip from '../../Layout/Tip';
 
 export class AttachmentsList extends Component {
@@ -51,6 +52,9 @@ export class AttachmentsList extends Component {
               isSourceDocument
             />
           </div>
+          {this.props.entityView && mainFile &&
+            <ViewDocButton file={mainFile} sharedId={parentSharedId} processed={this.props.processed} storeKey={storeKey}/>
+          }
         </div>
       );
     }
@@ -118,6 +122,8 @@ AttachmentsList.propTypes = {
   parentSharedId: PropTypes.string,
   isDocumentAttachments: PropTypes.bool,
   readOnly: PropTypes.bool,
+  entityView: PropTypes.bool,
+  processed: PropTypes.bool,
   isTargetDoc: PropTypes.bool,
   deleteAttachment: PropTypes.func,
   loadForm: PropTypes.func,

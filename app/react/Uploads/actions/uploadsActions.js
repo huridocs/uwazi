@@ -80,9 +80,12 @@ export function documentProcessed(sharedId, __reducerKey) {
     dispatch({ type: types.DOCUMENT_PROCESSED, sharedId });
     api.get('entities', { _id: sharedId })
     .then((response) => {
-      dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json.rows[0], __reducerKey });
+      const doc = response.json.rows[0];
+      dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
       dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-      dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json.rows[0], __reducerKey });
+      dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
+      dispatch(basicActions.set('entityView/entity', doc));
+      dispatch(basicActions.set('viewer/doc', doc));
     });
   };
 }
