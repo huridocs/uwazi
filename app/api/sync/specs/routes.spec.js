@@ -8,14 +8,15 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 
 describe('sync', () => {
   let routes;
-  const req = { body: {} };
+  let req;
+
+  const setReqDefault = (property) => {
+    req = {};
+    req[property] = { namespace: 'model1', data: 'data' };
+  };
 
   beforeEach(async () => {
     routes = instrumentRoutes(syncRoutes);
-    req.body = {
-      namespace: 'model1',
-      data: 'data'
-    };
     models.model1 = {
       save: jasmine.createSpy('model1.save'),
       delete: jasmine.createSpy('model1.delete')
@@ -30,6 +31,10 @@ describe('sync', () => {
   });
 
   describe('POST', () => {
+    beforeEach(() => {
+      setReqDefault('body');
+    });
+
     it('should need authorization', () => {
       expect(routes._post('/api/sync', {})).toNeedAuthorization();
     });
@@ -75,6 +80,10 @@ describe('sync', () => {
   });
 
   describe('DELETE', () => {
+    beforeEach(() => {
+      setReqDefault('query');
+    });
+
     it('should need authorization', () => {
       expect(routes._delete('/api/sync', {})).toNeedAuthorization();
     });
@@ -84,7 +93,7 @@ describe('sync', () => {
       expect(models.model1.delete).toHaveBeenCalledWith('data');
       expect(response).toBe('ok');
 
-      req.body.namespace = 'model2';
+      req.query.namespace = 'model2';
       await routes.delete('/api/sync', req);
       expect(models.model2.delete).toHaveBeenCalledWith('data');
       expect(search.delete).not.toHaveBeenCalled();
@@ -108,7 +117,7 @@ describe('sync', () => {
           delete: jasmine.createSpy('entities.delete'),
         };
 
-        req.body = {
+        req.query = {
           namespace: 'entities',
           data: { _id: 'id' }
         };
