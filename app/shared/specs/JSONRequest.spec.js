@@ -24,7 +24,7 @@ describe('JSONRequest', () => {
         backend.restore();
         backend.post('http://localhost:3000/api/test', { body: JSON.stringify({ response: 'post' }), headers: { 'set-cookie': 'cookie' } });
         const response = await request.post('http://localhost:3000/api/test');
-        expect(response.cookie).toEqual(['cookie']);
+        expect(response.cookie).toEqual('cookie');
       });
     });
 

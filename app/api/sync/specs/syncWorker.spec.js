@@ -220,7 +220,7 @@ describe('syncWorker', () => {
       backend.post('http://localhost/api/login', { body: '{}', headers: { 'set-cookie': 'cookie' } });
       spyOn(request, 'cookie');
       await syncWorker.login('http://localhost', 'username', 'password');
-      expect(request.cookie).toHaveBeenCalledWith(['cookie']);
+      expect(request.cookie).toHaveBeenCalledWith('cookie');
     });
 
     it('should catch errors and log them', async () => {

@@ -118,7 +118,7 @@ export default {
 
   async start(interval) {
     const { sync } = await settings.get();
-    if (sync.active) {
+    if (sync && sync.active) {
       this.intervalSync(sync.url, interval);
     }
   },

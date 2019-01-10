@@ -73,8 +73,8 @@ const _fetch = (url, data, method, _headers) => {
   })
   .then((res) => {
     let setCookie;
-    if (res.headers._headers['set-cookie']) {
-      setCookie = res.headers._headers['set-cookie'];
+    if (res.headers.get('set-cookie')) {
+      setCookie = res.headers.get('set-cookie');
     }
     response = res;
     return Promise.all([res.json(), setCookie]);
