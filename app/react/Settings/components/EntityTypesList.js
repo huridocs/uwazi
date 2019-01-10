@@ -61,7 +61,7 @@ export class EntityTypesList extends Component {
 
   render() {
     return (<div className="panel panel-default">
-      <div className="panel-heading">{t('System', 'Entity types')}</div>
+      <div className="panel-heading">{t('System', 'Templates')}</div>
       <ul className="list-group document-types">
         {this.props.templates.toJS().map((template, index) => (
           <li key={index} className="list-group-item">
@@ -81,7 +81,7 @@ export class EntityTypesList extends Component {
       <div className="settings-footer">
         <Link to="/settings/templates/new" className="btn btn-success">
           <Icon icon="plus" />
-          <span className="btn-label">{t('System', 'Add entity type')}</span>
+          <span className="btn-label">{t('System', 'Add template')}</span>
         </Link>
       </div>
             </div>);
