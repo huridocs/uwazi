@@ -55,12 +55,12 @@ describe('JSONRequest', () => {
     });
 
     describe('when passing headers', () => {
-      it('should send them', (done) => {
+      it('should send them (with some default headers)', (done) => {
         request.post('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
           const headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
-
+          expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
           done();
         })
         .catch(done.fail);

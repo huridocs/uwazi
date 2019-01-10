@@ -54,6 +54,7 @@ const _fetch = (url, data, method, _headers) => {
   const headers = Object.assign({
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
     Cookie: cookie,
   }, _headers);
 
