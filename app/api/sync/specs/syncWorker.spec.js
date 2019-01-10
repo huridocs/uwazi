@@ -248,9 +248,6 @@ describe('syncWorker', () => {
     });
 
     it('should lazy create lastSync entry if not exists', async () => {
-      spyOn(request, 'post').and.callFake(() => Promise.reject());
-      spyOn(request, 'delete').and.callFake(() => Promise.reject());
-
       await syncsModel.remove({});
 
       await syncWorker.start();
