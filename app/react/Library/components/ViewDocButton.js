@@ -6,14 +6,13 @@ import { Icon } from 'UI';
 
 export class ViewDocButton extends Component {
   render() {
-    const { sharedId, type, processed, searchTerm } = this.props;
-    const isEntity = type === 'entity';
+    const { sharedId, processed, searchTerm, file } = this.props;
+    const isEntity = !file;
+    const type = isEntity ? 'entity' : 'document';
     const documentViewUrl = searchTerm ? `/${type}/${sharedId}?searchTerm=${searchTerm}` : `/${type}/${sharedId}`;
-
     if (!processed && !isEntity) {
       return false;
     }
-
     return (
       <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={e => e.stopPropagation()}>
         <Icon icon="angle-right" /> { t('System', 'View') }
@@ -27,7 +26,7 @@ ViewDocButton.defaultProps = {
 };
 
 ViewDocButton.propTypes = {
-  type: PropTypes.string.isRequired,
+  file: PropTypes.object,
   sharedId: PropTypes.string.isRequired,
   processed: PropTypes.bool,
   searchTerm: PropTypes.string,

@@ -135,11 +135,6 @@ export default {
     return model.get(query);
   },
 
-  entities(language) {
-    return templates.get({ isEntity: true })
-    .then(_templates => _templates.map(template => this.templateToThesauri(template, language)));
-  },
-
   delete(id) {
     return templates.countByThesauri(id)
     .then((count) => {

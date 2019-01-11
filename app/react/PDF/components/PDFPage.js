@@ -23,9 +23,11 @@ class PDFPage extends Component {
   }
 
   scroll() {
-    if (this.pageShouldRender()) {
+    if (this.pageShouldRender() && !this.rendered) {
       this.renderPage();
-    } else if (this.pdfPageView) {
+    }
+
+    if (!this.pageShouldRender() && this.pdfPageView) {
       this.pdfPageView.cancelRendering();
       this.pdfPageView.destroy();
       if (this.rendered) {
@@ -76,6 +78,7 @@ class PDFPage extends Component {
       this.pdfPageView.draw()
       .catch(e => e);
       this.rendered = true;
+      return;
     }
     if (!this.rendered) {
       this.props.onLoading(this.props.page);

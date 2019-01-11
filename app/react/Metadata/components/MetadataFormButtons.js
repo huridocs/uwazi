@@ -51,9 +51,8 @@ export class MetadataFormButtons extends Component {
         type: 'warning'
       });
     };
-    const isEntity = data.type === 'entity';
+    const isEntity = !data.file;
     const canBePublished = (data.processed || isEntity) && !data.published && !!data.template;
-
     return (
       <span>
         <ShowIf if={this.props.includeViewButton}>

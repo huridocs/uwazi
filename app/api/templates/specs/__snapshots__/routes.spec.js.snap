@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`templates routes /api/templates/setasdefault should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`templates routes /templates/count_by_thesauri should have a validation schema 1`] = `
 Object {
   "children": Object {
@@ -123,7 +140,7 @@ Object {
       ],
       "type": "array",
     },
-    "isEntity": Object {
+    "default": Object {
       "falsy": Array [
         false,
       ],
@@ -159,10 +176,10 @@ Object {
               "type": "string",
             },
             "content": Object {
-              "invalids": Array [
+              "type": "string",
+              "valids": Array [
                 "",
               ],
-              "type": "string",
             },
             "defaultfilter": Object {
               "falsy": Array [

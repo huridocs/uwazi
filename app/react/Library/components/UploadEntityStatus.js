@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {ItemFooter} from 'app/Layout/Lists';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { ItemFooter } from 'app/Layout/Lists';
+import { connect } from 'react-redux';
 import docState from '../docState';
 
 export class UploadEntityStatus extends Component {
-
   renderProgressBar() {
     const isInProgress = this.props.progress || this.props.progress === 0;
 
@@ -21,12 +20,12 @@ export class UploadEntityStatus extends Component {
 
     const ProgressBar = this.renderProgressBar();
 
-    return <div>
+    return (<div>
       {ProgressBar}
       <ItemFooter.Label status={this.props.status}>
         {this.props.message}
       </ItemFooter.Label>
-    </div>;
+            </div>);
   }
 }
 

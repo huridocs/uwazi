@@ -4,6 +4,7 @@ import { PDFJS } from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js'
 
 import PDF from '../PDF';
 import PDFPage from '../PDFPage.js';
+import Immutable from 'immutable';
 
 describe('PDF', () => {
   let component;
@@ -17,7 +18,14 @@ describe('PDF', () => {
     props = {
       file: 'file_url',
       filename: 'original.pdf',
-      onLoad: jasmine.createSpy('onLoad')
+      onLoad: jasmine.createSpy('onLoad'),
+      pdfInfo: Immutable.fromJS({
+        1: { chars: 10 },
+        2: { chars: 20 },
+        3: { chars: 30 },
+        4: { chars: 40 },
+        5: { chars: 50 }
+      })
     };
   });
 
@@ -150,14 +158,6 @@ describe('PDF', () => {
 
   describe('loaded', () => {
     it('should call onLoad only when the pages are consecutive', () => {
-      props.pdfInfo = {
-        1: { chars: 10 },
-        2: { chars: 20 },
-        3: { chars: 30 },
-        4: { chars: 40 },
-        5: { chars: 50 }
-      };
-
       render();
       instance.pageLoaded(1);
       expect(props.onLoad).toHaveBeenCalled();
@@ -170,39 +170,8 @@ describe('PDF', () => {
     });
   });
 
-  describe('scrollToPage', () => {
-    // it('should be called on the first onLoad when page prop is passed', () => {
-    //   props.scrollToPage = jasmine.createSpy('scrollToPage');
-    //   props.pdfInfo = {
-    //     1: { chars: 10 },
-    //     2: { chars: 20 }
-    //   };
-    //   render();
-    //   instance.setState({ pdf: { numPages: 5 } });
-    //   instance.pageLoaded(1);
-    //   instance.pageLoading(2);
-    //   instance.pageLoaded(2);
-    //   expect(props.scrollToPage).not.toHaveBeenCalled();
-
-    //   props.page = 5;
-    //   render();
-    //   instance.setState({ pdf: { numPages: 5 } });
-    //   instance.pageLoaded(1);
-    //   instance.pageLoading(2);
-    //   instance.pageLoaded(2);
-    //   expect(props.scrollToPage).toHaveBeenCalledWith(5);
-    // });
-  });
-
   describe('onLoad', () => {
     it('should be called when there is no pages loading with the range of characters being rendered', () => {
-      props.pdfInfo = {
-        1: { chars: 10 },
-        2: { chars: 20 },
-        3: { chars: 30 },
-        4: { chars: 40 },
-        5: { chars: 50 }
-      };
       render();
       instance.setState({ pdf: { numPages: 5 } });
       instance.pageLoaded(1);
@@ -215,13 +184,6 @@ describe('PDF', () => {
     });
 
     it('should be called when a pages is unloaded', () => {
-      props.pdfInfo = {
-        1: { chars: 10 },
-        2: { chars: 20 },
-        3: { chars: 30 },
-        4: { chars: 40 },
-        5: { chars: 50 }
-      };
       render();
       instance.setState({ pdf: { numPages: 5 } });
 

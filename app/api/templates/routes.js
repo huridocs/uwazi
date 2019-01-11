@@ -13,7 +13,7 @@ export default (app) => {
       _id: Joi.string(),
       __v: Joi.number(),
       name: Joi.string().required(),
-      isEntity: Joi.boolean(),
+      default: Joi.boolean(),
       properties: Joi.array().required().items(
         Joi.object().keys({
           _id: Joi.string(),
@@ -31,7 +31,7 @@ export default (app) => {
           sortable: Joi.boolean(),
           showInCard: Joi.boolean(),
           fullWidth: Joi.boolean(),
-          content: Joi.string(),
+          content: Joi.string().allow(['']),
           prioritySorting: Joi.boolean(),
           style: Joi.string(),
           inserting: Joi.any()
@@ -58,6 +58,23 @@ export default (app) => {
       .catch(next);
     }
   );
+
+  app.post('/api/templates/setasdefault',
+  needsAuthorization(),
+  validateRequest(Joi.object().keys({
+    _id: Joi.string().required()
+  })),
+  (req, res, next) => {
+    templates.setAsDefault(req.body._id)
+    .then(([newDefault, oldDefault]) => {
+      req.io.sockets.emit('templateChange', newDefault);
+      if (oldDefault) {
+        req.io.sockets.emit('templateChange', oldDefault);
+      }
+      res.json(newDefault);
+    })
+    .catch(next);
+  });
 
   app.get('/api/templates', (req, res, next) => {
     templates.get()

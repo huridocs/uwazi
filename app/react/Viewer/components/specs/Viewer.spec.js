@@ -1,6 +1,7 @@
 import { fromJS as Immutable } from 'immutable';
 import React from 'react';
 
+
 import { CreateConnectionPanel } from 'app/Connections';
 import { Viewer } from 'app/Viewer/components/Viewer';
 import { shallow } from 'enzyme';
@@ -16,7 +17,7 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({ _id: 'id', sharedId: 'sharedId' }),
+      doc: Immutable({ _id: 'id', sharedId: 'sharedId', file: {} }),
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {},

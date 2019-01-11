@@ -61,7 +61,7 @@ Nightmare.action('gotoLibrary', function (done) {
 });
 
 Nightmare.action('countFiltersResults', function (done) {
-  this.evaluate_now(() => document.querySelectorAll('.item-entity').length, done);
+  this.evaluate_now(() => document.querySelectorAll('.item-document').length, done);
 });
 
 Nightmare.action('goToUploads', function (done) {
@@ -168,7 +168,7 @@ Nightmare.action('isVisible', function (selector, done) {
 
 Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
   this.wait((title) => {
-    const cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
+    const cards = document.querySelectorAll('.main-wrapper div.item-document, .main-wrapper div.item');
 
     let found = false;
 
@@ -186,7 +186,6 @@ Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
 Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
   this.wait((cardSelector, cardStatus) => {
     const cardLabel = document.querySelector(`${cardSelector} .label`);
-
     if (cardLabel) {
       return cardLabel.innerText.match(cardStatus);
     }
@@ -277,7 +276,7 @@ Nightmare.action('selectText', function (selector, done) {
 //.wait(selectors.libraryView.anyItemSnippet)
 Nightmare.action('clickCardOnLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    const cards = document.querySelectorAll('.main-wrapper div.item-entity,.main-wrapper div.item-document');
+    const cards = document.querySelectorAll('.main-wrapper div.item-document,.main-wrapper div.item-document');
     let found = false;
     cards.forEach((card) => {
       if (found) {
@@ -298,7 +297,7 @@ Nightmare.action('clickCardOnLibrary', function (itemName, done) {
 Nightmare.action('getResultsAsJson', function (done) {
   this.evaluate_now(() => {
     const normalizedCards = [];
-    const cards = document.querySelectorAll('.main-wrapper div.item-entity, .main-wrapper div.item-document');
+    const cards = document.querySelectorAll('.main-wrapper div.item-document, .main-wrapper div.item-document');
     cards.forEach((card) => {
       const normalized = {};
       normalized.title = card.querySelector('.item-name span').innerText;
@@ -313,7 +312,7 @@ Nightmare.action('getResultsAsJson', function (done) {
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    const cards = document.querySelectorAll('.main-wrapper div.item-entity');
+    const cards = document.querySelectorAll('.main-wrapper div.item-document');
     let found = false;
     cards.forEach((card) => {
       if (found) {
@@ -334,7 +333,7 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
 
 Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   this.evaluate((nameToFind) => {
-    const cards = document.querySelectorAll('div.item-entity');
+    const cards = document.querySelectorAll('div.item-document');
     let found = false;
     cards.forEach((card) => {
       if (found) {

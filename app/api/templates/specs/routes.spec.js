@@ -110,4 +110,25 @@ describe('templates routes', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('/api/templates/setasdefault', () => {
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/templates/setasdefault')).toMatchSnapshot();
+    });
+
+    it('should call templates to set the new default', (done) => {
+      spyOn(templates, 'setAsDefault').and.returnValue(Promise.resolve([{ name: 'newDefault' }, { name: 'oldDefault' }]));
+      const emit = jasmine.createSpy('emit');
+      const req = { body: { _id: 'abc1' }, io: { sockets: { emit } } };
+      routes.post('/api/templates/setasdefault', req)
+      .then((result) => {
+        expect(result).toEqual({ name: 'newDefault' });
+        expect(templates.setAsDefault).toHaveBeenCalledWith('abc1');
+        expect(emit).toHaveBeenCalledWith('templateChange', { name: 'newDefault' });
+        expect(emit).toHaveBeenCalledWith('templateChange', { name: 'oldDefault' });
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
 });

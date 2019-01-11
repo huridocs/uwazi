@@ -6,8 +6,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { api as entitiesAPI } from 'app/Entities';
 import { notify } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import { requestViewerState, setViewerState } from 'app/Viewer/actions/routeActions';
-import * as libraryTypes from 'app/Library/actions/actionTypes';
+import emptyTemplate from '../helpers/defaultTemplate';
 
 import * as types from './actionTypes';
 
@@ -39,22 +38,16 @@ export function loadInReduxForm(form, onlyReadEntity, templates) {
     const entity = Object.assign({}, onlyReadEntity);
 
     const sortedTemplates = advancedSort(templates, { property: 'name' });
-
-    if (!entity.template) {
-      entity.template = sortedTemplates[0]._id;
-      if (entity.type === 'document' && sortedTemplates.find(t => !t.isEntity)) {
-        entity.template = sortedTemplates.find(t => !t.isEntity)._id;
-      }
-      if (entity.type === 'entity' && sortedTemplates.find(t => t.isEntity)) {
-        entity.template = sortedTemplates.find(t => t.isEntity)._id;
-      }
+    const defaultTemplate = sortedTemplates.find(t => t.default);
+    if (!entity.template && defaultTemplate) {
+      entity.template = defaultTemplate._id;
     }
 
     if (!entity.metadata) {
       entity.metadata = {};
     }
 
-    const template = sortedTemplates.find(t => t._id === entity.template);
+    const template = sortedTemplates.find(t => t._id === entity.template) || emptyTemplate;
     resetMetadata(entity.metadata, template, { resetExisting: false });
 
     dispatch(formActions.reset(form));
@@ -90,25 +83,19 @@ export function loadTemplate(form, template) {
 }
 
 export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
     superagent.post(`${APIURL}reupload`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
-    .field('document', docId)
+    .field('document', docSharedId)
     .attach('file', file, file.name)
     .on('progress', (data) => {
       dispatch({ type: types.REUPLOAD_PROGRESS, doc: docId, progress: Math.floor(data.percent) });
     })
-    .on('response', () => {
-      dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file, __reducerKey });
-      requestViewerState({ documentId: docSharedId }, { templates: getState().templates })
-      .then((state) => {
-        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
-        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: state.documentViewer.doc, __reducerKey });
-        dispatch(setViewerState(state));
-      });
+    .on('response', ({ body }) => {
+      const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
+      dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
     })
     .end();
   };

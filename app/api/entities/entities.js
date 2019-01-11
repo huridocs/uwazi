@@ -6,6 +6,7 @@ import createError from 'api/utils/Error';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import path from 'path';
+import PDF from 'api/upload/PDF';
 import { uploadDocumentsPath } from 'api/config/paths';
 
 import { deleteFiles } from '../utils/files.js';
@@ -147,10 +148,6 @@ export default {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
       doc.published = false;
-    }
-
-    if (!doc.type) {
-      doc.type = 'entity';
     }
 
     const sharedId = doc.sharedId || ID();
@@ -449,6 +446,24 @@ export default {
     });
   },
 
+  async createThumbnail(entity) {
+    const filePath = path.join(uploadDocumentsPath, entity.file.filename);
+    return new PDF(filePath).createThumbnail(entity._id.toString());
+  },
+
+  async deleteLanguageFiles(entity) {
+    const filesToDelete = [];
+    filesToDelete.push(path.normalize(`${uploadDocumentsPath}/${entity._id.toString()}.jpg`));
+    const sibilings = await this.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } });
+    if (entity.file) {
+      const shouldUnlinkFile = sibilings.reduce((should, sibiling) => should && !(sibiling.file.filename === entity.file.filename), true);
+      if (shouldUnlinkFile) {
+        filesToDelete.push(path.normalize(`${uploadDocumentsPath}/${entity.file.filename}`));
+      }
+    }
+    if (entity.file) { return deleteFiles(filesToDelete); }
+  },
+
   async addLanguage(language) {
     const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
     if (lanuageTranslationAlreadyExists) {
@@ -473,10 +488,16 @@ export default {
           entity.language = language;
           return entity;
         });
-
         return this.saveMultiple(newLanguageEntities);
       })
-      .then(() => duplicate(offset + limit, totalRows));
+      .then((newEntities) => {
+        newEntities.map((entity) => {
+          if (entity.file) {
+            this.createThumbnail(entity);
+          }
+        });
+        return duplicate(offset + limit, totalRows);
+      });
     };
 
     return this.count({ language: defaultLanguage })
@@ -484,7 +505,20 @@ export default {
   },
 
   async removeLanguage(locale) {
-    return model.delete({ locale })
+    const deleteFilesByLanguage = (offset, totalRows) => {
+      const limit = 200;
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+
+      return this.get({ language: locale }, null, { skip: offset, limit })
+      .then(entities => Promise.all(entities.map(entity => this.deleteLanguageFiles(entity))))
+      .then(() => deleteFilesByLanguage(offset + limit, totalRows));
+    };
+
+    return this.count({ language: locale })
+    .then(totalRows => deleteFilesByLanguage(0, totalRows))
+    .then(() => model.delete({ language: locale }))
     .then(() => search.deleteLanguage(locale));
   },
 

@@ -89,13 +89,11 @@ export default {
   templates: [
     {
       _id: entityTemplateId,
-      type: 'template',
-      isEntity: true
+      type: 'template'
     },
     {
       _id: documentTemplateId,
-      type: 'template',
-      isEntity: false
+      type: 'template'
     }
   ]
 };

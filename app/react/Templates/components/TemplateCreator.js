@@ -7,7 +7,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { resetTemplate, saveTemplate, saveEntity } from 'app/Templates/actions/templateActions';
+import { resetTemplate, saveTemplate } from 'app/Templates/actions/templateActions';
 import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import PropertyOption from 'app/Templates/components/PropertyOption';
@@ -19,14 +19,8 @@ export class TemplateCreator extends Component {
 
   render() {
     let save = this.props.saveTemplate;
-    let backUrl = '/settings/documents';
+    let backUrl = '/settings/templates';
     let environment = 'document';
-
-    if (this.props.entity) {
-      save = this.props.saveEntity;
-      backUrl = '/settings/entities';
-      environment = 'entity';
-    }
 
     if (this.props.relationType) {
       save = this.props.saveRelationType;
@@ -93,7 +87,6 @@ export class TemplateCreator extends Component {
 }
 
 TemplateCreator.defaultProps = {
-  entity: false,
   relationType: false,
   noRelationtypes: true,
   noDictionaries: true,
@@ -103,9 +96,7 @@ TemplateCreator.defaultProps = {
 TemplateCreator.propTypes = {
   resetTemplate: PropTypes.func.isRequired,
   saveTemplate: PropTypes.func.isRequired,
-  saveEntity: PropTypes.func.isRequired,
   saveRelationType: PropTypes.func.isRequired,
-  entity: PropTypes.bool,
   relationType: PropTypes.bool,
   noRelationtypes: PropTypes.bool,
   noDictionaries: PropTypes.bool,
@@ -117,7 +108,7 @@ TemplateCreator.contextTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ resetTemplate, saveTemplate, saveEntity, saveRelationType }, dispatch);
+  return bindActionCreators({ resetTemplate, saveTemplate, saveRelationType }, dispatch);
 }
 
 const mapStateToProps = ({ settings, relationTypes, thesauris }) => ({

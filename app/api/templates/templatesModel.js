@@ -29,7 +29,7 @@ const commonPropertiesSchema = new mongoose.Schema({
 
 const templateSchema = new mongoose.Schema({
   name: String,
-  isEntity: Boolean,
+  default: Boolean,
   properties: [propertiesSchema],
   commonProperties: [commonPropertiesSchema]
 });

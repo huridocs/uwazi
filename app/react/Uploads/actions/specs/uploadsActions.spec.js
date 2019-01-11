@@ -77,7 +77,7 @@ describe('uploadsActions', () => {
         const expectedActions = [
           { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
           { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
-          { type: types.UPLOAD_COMPLETE, doc: 'abc1' }
+          { type: types.UPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'a', originalname: 'a', size: 1 } }
         ];
         const store = mockStore({});
 
@@ -95,7 +95,7 @@ describe('uploadsActions', () => {
 
         mockUpload.emit('progress', { percent: 55.1 });
         mockUpload.emit('progress', { percent: 65 });
-        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }) });
+        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
         expect(store.getActions()).toEqual(expectedActions);
       });
     });
@@ -110,7 +110,7 @@ describe('uploadsActions', () => {
         const expectedActions = [
           { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 65 },
           { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 75 },
-          { type: types.UPLOAD_COMPLETE, doc: 'customUpload_unique_id' },
+          { type: types.UPLOAD_COMPLETE, doc: 'customUpload_unique_id', file: { filename: 'a', originalname: 'a', size: 1 } },
           basicActions.push('customUploads', { test: 'test' })
         ];
         const store = mockStore({});
@@ -132,7 +132,7 @@ describe('uploadsActions', () => {
 
         mockUpload.emit('progress', { percent: 65.1 });
         mockUpload.emit('progress', { percent: 75 });
-        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }) });
+        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
       });
     });
 

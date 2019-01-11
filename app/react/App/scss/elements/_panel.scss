@@ -76,7 +76,7 @@
         color: $c-grey-dark;
         text-decoration: none;
       }
-      .btn:not(:first-of-type) {
+      .btn:not(:first-child) {
         margin-left: 5px;
       }
 

@@ -1,10 +1,10 @@
 import TextRange from 'batarange';
 import wrapper from 'app/utils/wrapper';
-import {events} from 'app/utils';
+import { events } from 'app/utils';
 
 export default function (container) {
   return {
-    charRange: {start: null, end: null},
+    charRange: { start: null, end: null },
     container,
     renderedReferences: {},
     highlightedReference: null,
@@ -18,9 +18,9 @@ export default function (container) {
     },
 
     getSelection() {
-      let selection = window.getSelection();
-      let range = selection.getRangeAt(0);
-      let serializedRange = TextRange.serialize(range, container);
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+      const serializedRange = TextRange.serialize(range, container);
       serializedRange.start += this.charRange.start;
       serializedRange.end += this.charRange.start;
       serializedRange.text = selection.toString().replace(/\s+/g, ' ');
@@ -38,8 +38,8 @@ export default function (container) {
     },
 
     highlight(referenceId) {
-      let reference = this.searchRenderedReference(referenceId);
-      let highlightedReference = this.searchRenderedReference(this.highlightedReference);
+      const reference = this.searchRenderedReference(referenceId);
+      const highlightedReference = this.searchRenderedReference(this.highlightedReference);
 
       if (highlightedReference) {
         highlightedReference.nodes.forEach((node) => {
@@ -57,8 +57,8 @@ export default function (container) {
     },
 
     activate(referenceId) {
-      let reference = this.searchRenderedReference(referenceId);
-      let activeReference = this.searchRenderedReference(this.activeReference);
+      const reference = this.searchRenderedReference(referenceId);
+      const activeReference = this.searchRenderedReference(this.activeReference);
 
       if (activeReference) {
         activeReference.nodes.forEach((node) => {
@@ -83,12 +83,12 @@ export default function (container) {
 
       if (range.start >= this.charRange.start && range.start <= this.charRange.end ||
           range.end <= this.charRange.end && range.end >= this.charRange.start) {
-        let offsetRange = Object.assign({}, range);
+        const offsetRange = Object.assign({}, range);
         offsetRange.start -= this.charRange.start;
         offsetRange.end -= this.charRange.start;
 
-        let restoredRange = TextRange.restore(offsetRange, container);
-        let elementWrapper = document.createElement('span');
+        const restoredRange = TextRange.restore(offsetRange, container);
+        const elementWrapper = document.createElement('span');
         elementWrapper.classList.add('fake-selection');
         this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
       }
@@ -124,29 +124,56 @@ export default function (container) {
       }
     },
 
+    filterInRangeReferences(references, rangeProperty) {
+      return references.filter((ref) => {
+        if (!ref[rangeProperty]) {
+          return false;
+        }
+        if (this.charRange.start === null && this.charRange.end === null) {
+          return false;
+        }
+
+        return ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end ||
+               ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
+      });
+    },
+
+    groupReferencesByRange(references, rangeProperty) {
+      const groupedRanges = {};
+      references.forEach((ref) => {
+        const duplicateKey = `${ref[rangeProperty].start}${ref[rangeProperty].end}`;
+        if (!groupedRanges[duplicateKey]) {
+          groupedRanges[duplicateKey] = [];
+        }
+        groupedRanges[duplicateKey].push(ref);
+      });
+      return Object.keys(groupedRanges).map((key) => {
+        const _references = groupedRanges[key];
+        const ref = { ids: _references.map(r => r._id) };
+        ref[rangeProperty] = _references[0][rangeProperty];
+        return ref;
+      });
+    },
+
     renderReferences(references, identifier = 'reference', elementWrapperType = 'a') {
-      let rangeProperty = 'range';
-      let ids = [];
+      if (!container.innerHTML) {
+        throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
+      }
+      const rangeProperty = 'range';
+      const ids = [];
       if (!this.renderedReferences[identifier]) {
         this.renderedReferences[identifier] = {};
       }
 
-      let toRender = references.filter((ref) => {
-        if (this.charRange.start === null && this.charRange.end === null) {
-          return true;
-        }
-        return ref[rangeProperty].start >= this.charRange.start && ref[rangeProperty].start <= this.charRange.end ||
-               ref[rangeProperty].end <= this.charRange.end && ref[rangeProperty].end >= this.charRange.start;
-      });
+      const inRangeReferences = this.filterInRangeReferences(references, rangeProperty);
 
-      toRender.forEach((reference) => {
-        if (!container.innerHTML) {
-          throw new Error('Container does not have any html yet, make sure you are loading the html before the references');
-        }
-        ids.push(reference._id);
-        if (this.renderedReferences[identifier][reference._id] || !reference[rangeProperty]) {
-          return;
-        }
+      const toRender = inRangeReferences.filter((ref) => {
+        ids.push(ref._id);
+        return !this.renderedReferences[identifier][ref._id];
+      });
+      const groupedReferencesbyRange = this.groupReferencesByRange(toRender, rangeProperty);
+
+      groupedReferencesbyRange.forEach((reference) => {
         let ref = reference[rangeProperty];
         if (this.charRange.start) {
           // test the ref modifications are immutable !!!
@@ -158,12 +185,19 @@ export default function (container) {
         if (ref.start < 0) {
           ref.start = 0;
         }
-        let restoredRange = TextRange.restore(ref, container);
+        const restoredRange = TextRange.restore(ref, container);
 
-        let elementWrapper = document.createElement(elementWrapperType);
+        const elementWrapper = document.createElement(elementWrapperType);
         elementWrapper.classList.add(identifier);
-        elementWrapper.setAttribute('data-id', reference._id);
-        this.renderedReferences[identifier][reference._id] = wrapper.wrap(elementWrapper, restoredRange);
+        reference.ids.forEach((id) => {
+          elementWrapper.setAttribute(`data-${id}`, id);
+        });
+        elementWrapper.setAttribute('data-id', reference.ids[0]);
+        const renderedReference = wrapper.wrap(elementWrapper, restoredRange);
+        reference.ids.forEach((id) => {
+          this.renderedReferences[identifier][id] = renderedReference;
+        });
+
         events.emit('referenceRendered', reference);
       });
 

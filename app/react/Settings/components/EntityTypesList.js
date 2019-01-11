@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router';
-import { deleteTemplate, checkTemplateCanBeDeleted } from 'app/Templates/actions/templatesActions';
+import { deleteTemplate, checkTemplateCanBeDeleted, setAsDefault } from 'app/Templates/actions/templatesActions';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
-
 import { notify } from 'app/Notifications/actions/notificationsActions';
+import Tip from '../../Layout/Tip';
 
 export class EntityTypesList extends Component {
   deleteTemplate(template) {
@@ -31,46 +31,69 @@ export class EntityTypesList extends Component {
     });
   }
 
-  render() {
+  defaultTemplateMessage() {
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Entity types')}</div>
-        <ul className="list-group document-types">
-          {this.props.templates.toJS().map((template, index) => {
-            if (!template.isEntity) {
-              return false;
-            }
-            return (<li key={index} className="list-group-item">
-              <Link to={`/settings/entities/edit/${template._id}`}>{template.name}</Link>
-              <div className="list-group-item-actions">
-                <Link to={`/settings/entities/edit/${template._id}`} className="btn btn-default btn-xs">
-                  <Icon icon="pencil-alt" />&nbsp;
-                  <span>{t('System', 'Edit')}</span>
-                </Link>
-                <a onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
-                  <Icon icon="trash-alt" />&nbsp;
-                  <span>{t('System', 'Delete')}</span>
-                </a>
-              </div>
-            </li>);
-          })}
-        </ul>
-        <div className="settings-footer">
-          <Link to="/settings/entities/new" className="btn btn-success">
-            <Icon icon="plus" />
-            <span className="btn-label">{t('System', 'Add entity type')}</span>
-          </Link>
-        </div>
-      </div>
+      <span>
+        {t('System', 'Default template')}
+        <Tip>
+          This template will be used as default for new entities.
+        </Tip>
+      </span>
     );
+  }
+
+  setAsDefaultButton(template) {
+    return (
+      <button onClick={this.props.setAsDefault.bind(null, template)} className="btn btn-success btn-xs">
+        <span>{t('System', 'Set as default')}</span>
+      </button>
+    );
+  }
+
+  deleteTemplateButton(template) {
+    return (
+      <button onClick={this.deleteTemplate.bind(this, template)} className="btn btn-danger btn-xs template-remove">
+        <Icon icon="trash-alt" />&nbsp;
+        <span>{t('System', 'Delete')}</span>
+      </button>
+    );
+  }
+
+  render() {
+    return (<div className="panel panel-default">
+      <div className="panel-heading">{t('System', 'Templates')}</div>
+      <ul className="list-group document-types">
+        {this.props.templates.toJS().map((template, index) => (
+          <li key={index} className="list-group-item">
+            <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
+            {template.default ? this.defaultTemplateMessage() : ''}
+            <div className="list-group-item-actions">
+              {!template.default ? this.setAsDefaultButton(template) : ''}
+              <Link to={`/settings/templates/edit/${template._id}`} className="btn btn-default btn-xs">
+                <Icon icon="pencil-alt" />&nbsp;
+                <span>{t('System', 'Edit')}</span>
+              </Link>
+              {!template.default ? this.deleteTemplateButton(template) : ''}
+            </div>
+          </li>
+        ))}
+      </ul>
+      <div className="settings-footer">
+        <Link to="/settings/templates/new" className="btn btn-success">
+          <Icon icon="plus" />
+          <span className="btn-label">{t('System', 'Add template')}</span>
+        </Link>
+      </div>
+            </div>);
   }
 }
 
 EntityTypesList.propTypes = {
-  templates: PropTypes.object,
-  deleteTemplate: PropTypes.func,
-  notify: PropTypes.func,
-  checkTemplateCanBeDeleted: PropTypes.func
+  templates: PropTypes.object.isRequired,
+  deleteTemplate: PropTypes.func.isRequired,
+  setAsDefault: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired,
+  checkTemplateCanBeDeleted: PropTypes.func.isRequired
 };
 
 EntityTypesList.contextTypes = {
@@ -82,7 +105,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ notify, deleteTemplate, checkTemplateCanBeDeleted }, dispatch);
+  return bindActionCreators({ notify, deleteTemplate, checkTemplateCanBeDeleted, setAsDefault }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityTypesList);

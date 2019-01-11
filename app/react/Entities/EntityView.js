@@ -49,9 +49,7 @@ export default class Entity extends RouteHandler {
 
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
-    // TEST!!!
     this.context.store.dispatch(relationships.emptyState());
-    // -------
   }
 
   setReduxState(state) {
