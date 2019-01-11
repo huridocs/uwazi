@@ -53,9 +53,8 @@
     cursor: pointer;
   }
 
-  &.connections a.is-active {
-    background-color: transparentize(yellow, 0.4);
-    cursor: pointer;
+  &.connections a.reference a.reference {
+    background-color: transparent;
   }
 }
 

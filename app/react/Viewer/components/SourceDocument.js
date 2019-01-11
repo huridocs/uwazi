@@ -9,7 +9,6 @@ import Document from 'app/Viewer/components/Document';
 import { createSelector } from 'reselect';
 
 const selectSourceRange = createSelector(s => s.uiState, u => u.toJS().reference.sourceRange);
-const selectHighlightedRef = createSelector(s => s.uiState, u => u.toJS().highlightedReference);
 const selectActiveRef = createSelector(s => s.uiState, u => u.toJS().activeReference);
 
 const mapStateToProps = (state) => {
@@ -21,7 +20,6 @@ const mapStateToProps = (state) => {
     doc: selectDoc(state),
     references: selectReferences(state),
     className: 'sourceDocument',
-    highlightedReference: selectHighlightedRef(documentViewer),
     activeReference: selectActiveRef(documentViewer),
     executeOnClickHandler: !!documentViewer.targetDoc.get('_id'),
     disableTextSelection: !user.get('_id'),

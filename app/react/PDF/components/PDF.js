@@ -47,6 +47,21 @@ class PDF extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.file !== this.props.file ||
+    nextProps.filename !== this.props.filename ||
+    nextProps.pdfInfo !== this.props.pdfInfo ||
+    nextProps.style !== this.props.style ||
+    nextState.pdf !== this.state.pdf;
+  }
+
+  componentDidUpdate() {
+    if (this.state.pdf.numPages && !this.pdfReady) {
+      this.pdfReady = true;
+      this.props.onPDFReady();
+    }
+  }
+
   onPageVisible(page, visibility) {
     this.pages[page] = visibility;
 
@@ -84,13 +99,6 @@ class PDF extends Component {
     }
   }
 
-  componentDidUpdate() {
-    if (this.state.pdf.numPages && !this.pdfReady) {
-      this.pdfReady = true;
-      this.props.onPDFReady();
-    }
-  }
-
   loaded() {
     const pages = Object.keys(this.pagesLoaded).map(n => parseInt(n, 10));
 
@@ -107,8 +115,9 @@ class PDF extends Component {
     }, null);
 
     if (allConsecutives) {
-      const start = this.props.pdfInfo[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1] || { chars: 0 };
-      const end = this.props.pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))] || { chars: 0 };
+      const pdfInfo = this.props.pdfInfo.toJS();
+      const start = pdfInfo[Math.min.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10))) - 1] || { chars: 0 };
+      const end = pdfInfo[Math.max.apply(null, Object.keys(this.pagesLoaded).map(n => parseInt(n, 10)))] || { chars: 0 };
       this.props.onLoad({
         start: start.chars,
         end: end.chars,

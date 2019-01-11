@@ -3,6 +3,7 @@ import Joi from 'joi';
 import { validateRequest } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
+import pages from 'api/pages';
 
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
@@ -76,6 +77,7 @@ export default (app) => {
         settings.addLanguage(req.body),
         translations.addLanguage(req.body.key),
         entities.addLanguage(req.body.key),
+        pages.addLanguage(req.body.key),
       ])
       .then(([newSettings, newTranslations]) => {
         req.io.sockets.emit('updateSettings', newSettings);
@@ -98,6 +100,7 @@ export default (app) => {
         settings.deleteLanguage(req.query.key),
         translations.removeLanguage(req.query.key),
         entities.removeLanguage(req.query.key),
+        pages.removeLanguage(req.query.key),
       ])
       .then(([newSettings, newTranslations]) => {
         req.io.sockets.emit('updateSettings', newSettings);
