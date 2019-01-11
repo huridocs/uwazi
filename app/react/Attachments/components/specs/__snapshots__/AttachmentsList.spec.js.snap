@@ -42,21 +42,23 @@ exports[`AttachmentsList When parent is Target Document should treat all Attachm
 
 exports[`AttachmentsList should render a sorted list of attachments (files) 1`] = `
 <div>
-  <div
-    className="attachment-buttons"
-  >
-    <h2>
-      Document
-      <Tip>
-        This entity has no document yet, uploading a document will change how this entity is displayed. The type of the document affects how is it displayed.
-      </Tip>
-    </h2>
-    <Connect(UploadButton)
-      documentId="parentId"
-      documentSharedId="parentSharedId"
-      storeKey="storeKey"
-    />
-  </div>
+  <Connect(NeedAuthorization)>
+    <div
+      className="attachment-buttons main-file"
+    >
+      <h2>
+        Document
+        <Tip>
+          Main file: add a file as the main content
+        </Tip>
+      </h2>
+      <Connect(UploadButton)
+        documentId="parentId"
+        documentSharedId="parentSharedId"
+        storeKey="storeKey"
+      />
+    </div>
+  </Connect(NeedAuthorization)>
   <h2>
     Attachments
   </h2>
@@ -114,21 +116,23 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
 
 exports[`AttachmentsList when files is empty should add button in Downloads section 1`] = `
 <div>
-  <div
-    className="attachment-buttons"
-  >
-    <h2>
-      Document
-      <Tip>
-        This entity has no document yet, uploading a document will change how this entity is displayed. The type of the document affects how is it displayed.
-      </Tip>
-    </h2>
-    <Connect(UploadButton)
-      documentId="parentId"
-      documentSharedId="parentSharedId"
-      storeKey="storeKey"
-    />
-  </div>
+  <Connect(NeedAuthorization)>
+    <div
+      className="attachment-buttons main-file"
+    >
+      <h2>
+        Document
+        <Tip>
+          Main file: add a file as the main content
+        </Tip>
+      </h2>
+      <Connect(UploadButton)
+        documentId="parentId"
+        documentSharedId="parentSharedId"
+        storeKey="storeKey"
+      />
+    </div>
+  </Connect(NeedAuthorization)>
   <h2>
     Attachments
   </h2>
@@ -157,21 +161,23 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
 
 exports[`AttachmentsList when files is empty should render nothing if user not logged in 1`] = `
 <div>
-  <div
-    className="attachment-buttons"
-  >
-    <h2>
-      Document
-      <Tip>
-        This entity has no document yet, uploading a document will change how this entity is displayed. The type of the document affects how is it displayed.
-      </Tip>
-    </h2>
-    <Connect(UploadButton)
-      documentId="parentId"
-      documentSharedId="parentSharedId"
-      storeKey="storeKey"
-    />
-  </div>
+  <Connect(NeedAuthorization)>
+    <div
+      className="attachment-buttons main-file"
+    >
+      <h2>
+        Document
+        <Tip>
+          Main file: add a file as the main content
+        </Tip>
+      </h2>
+      <Connect(UploadButton)
+        documentId="parentId"
+        documentSharedId="parentSharedId"
+        storeKey="storeKey"
+      />
+    </div>
+  </Connect(NeedAuthorization)>
   <h2>
     Attachments
   </h2>
