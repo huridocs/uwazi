@@ -164,10 +164,10 @@ export default (app) => {
         entity.file = null;
         entity.toc = null;
         deleteTextReferences.push(relationships.deleteTextReferences(entity.sharedId, entity.language));
-        deleteThumbnails.push(deleteFile(`${attachmentsPath + entity._id}.jpg`));
+        deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${entity._id}.jpg`)));
         siblings = siblings.map((e) => {
           deleteTextReferences.push(relationships.deleteTextReferences(e.sharedId, e.language));
-          deleteThumbnails.push(deleteFile(`${attachmentsPath + e._id}.jpg`));
+          deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${e._id}.jpg`)));
           e.attachments = (e.attachments || []).filter(a => a.filename !== req.query.filename);
           e.file = null;
           e.toc = null;
@@ -189,7 +189,7 @@ export default (app) => {
         return memo;
       }, true);
 
-      return !shouldUnlink ? res.json(entity) : deleteFile(attachmentsPath + req.query.filename).then(() => res.json(entity));
+      return !shouldUnlink ? res.json(entity) : deleteFile(path.join(attachmentsPath, req.query.filename)).then(() => res.json(entity));
     })
     .catch((error) => {
       res.json({ error });
