@@ -27,6 +27,65 @@ export class FiltersForm extends Component {
     this.state = { activeFilters, inactiveFilters };
   }
 
+  activesChange(items) {
+    this.setState({ activeFilters: items });
+  }
+
+  unactivesChange(items) {
+    this.setState({ inactiveFilters: items });
+  }
+
+  sanitizeFilterForSave(filter) {
+    delete filter.container;
+    delete filter.index;
+    if (filter.items) {
+      filter.items = filter.items.map(item => this.sanitizeFilterForSave(item));
+    }
+
+    return filter;
+  }
+
+  save() {
+    const settings = this.props.settings.collection.toJS();
+    const filters = this.state.activeFilters.map(filter => this.sanitizeFilterForSave(filter));
+    settings.filters = filters;
+    SettingsAPI.save(settings)
+    .then((result) => {
+      this.props.notify(t('System', 'Settings updated', null, false), 'success');
+      this.props.setSettings(Object.assign(settings, result));
+    });
+  }
+
+  addGroup() {
+    this.state.activeFilters.push({
+      id: ID(),
+      name: 'New group',
+      items: []
+    });
+
+    this.setState({ activeFilters: this.state.activeFilters });
+  }
+
+  removeGroup(group) {
+    const activeFilters = this.state.activeFilters.filter(item => item.id !== group.id);
+    this.setState({ activeFilters });
+  }
+
+  removeItem(item) {
+    const removeItemFunction = items => items
+    .filter(_item => _item.id !== item.id)
+    .map((_item) => {
+      if (_item.items) {
+        _item.items = removeItemFunction(_item.items);
+      }
+      return _item;
+    });
+
+    const activeFilters = removeItemFunction(this.state.activeFilters);
+    this.state.inactiveFilters.push(item);
+    this.setState({ activeFilters, inactiveFilters: this.state.inactiveFilters });
+  }
+
   renderGroup(group) {
     const onChange = (items) => {
       group.items = items;
@@ -69,54 +128,6 @@ export class FiltersForm extends Component {
       return this.renderGroup(item);
     }
     return (<div><span>{item.name}</span></div>);
-  }
-
-  activesChange(items) {
-    this.setState({ activeFilters: items });
-  }
-
-  unactivesChange(items) {
-    this.setState({ inactiveFilters: items });
-  }
-
-  save() {
-    const settings = this.props.settings.collection.toJS();
-    settings.filters = this.state.activeFilters;
-    SettingsAPI.save(settings)
-    .then((result) => {
-      this.props.notify(t('System', 'Settings updated', null, false), 'success');
-      this.props.setSettings(Object.assign(settings, result));
-    });
-  }
-
-  addGroup() {
-    this.state.activeFilters.push({
-      id: ID(),
-      name: 'New group',
-      items: []
-    });
-
-    this.setState({ activeFilters: this.state.activeFilters });
-  }
-
-  removeGroup(group) {
-    const activeFilters = this.state.activeFilters.filter(item => item.id !== group.id);
-    this.setState({ activeFilters });
-  }
-
-  removeItem(item) {
-    const removeItemFunction = items => items
-    .filter(_item => _item.id !== item.id)
-    .map((_item) => {
-      if (_item.items) {
-        _item.items = removeItemFunction(_item.items);
-      }
-      return _item;
-    });
-
-    const activeFilters = removeItemFunction(this.state.activeFilters);
-    this.state.inactiveFilters.push(item);
-    this.setState({ activeFilters, inactiveFilters: this.state.inactiveFilters });
   }
 
   render() {
