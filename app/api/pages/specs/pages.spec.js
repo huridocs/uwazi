@@ -90,6 +90,18 @@ describe('pages', () => {
     });
   });
 
+  describe('addLanguage()', () => {
+    it('should duplicate all the pages from the default language to the new one', (done) => {
+      pages.addLanguage('ab')
+      .then(() => pages.get({ language: 'ab' }))
+      .then((newPages) => {
+        expect(newPages.length).toBe(2);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('getById', () => {
     it('Throws 404 error on unexistent id', (done) => {
       pages.getById('unexistent_id').then(() => {
