@@ -40,7 +40,6 @@ export class AttachmentsList extends Component {
         <div>
           <h2>
             {t('System', 'Document')}
-            <Tip>This is the document that is displayed when visiting the entity. The type of the document affects how is it displayed.</Tip>
           </h2>
           <div className="attachments-list">
             <Attachment
@@ -61,15 +60,17 @@ export class AttachmentsList extends Component {
 
     if (!forcedReadOnly) {
       return (
-        <div className="attachment-buttons">
-          <h2>
-            {t('System', 'Document')}
-            <Tip>This entity has no document yet, uploading a document will change how this entity is displayed.
-            The type of the document affects how is it displayed.
-            </Tip>
-          </h2>
-          <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
-        </div>
+        <NeedAuthorization>
+          <div className="attachment-buttons main-file">
+            <h2>
+              {t('System', 'Document')}
+              <Tip>
+              Main file: add a file as the main content
+              </Tip>
+            </h2>
+            <UploadButton documentId={parentId} documentSharedId={parentSharedId} storeKey={storeKey}/>
+          </div>
+        </NeedAuthorization>
       );
     }
 
