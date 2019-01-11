@@ -37,6 +37,7 @@ export class FiltersForm extends Component {
 
   sanitizeFilterForSave(filter) {
     delete filter.container;
+    delete filter.index;
     if (filter.items) {
       filter.items = filter.items.map(item => this.sanitizeFilterForSave(item));
     }

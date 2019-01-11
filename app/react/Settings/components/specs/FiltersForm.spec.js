@@ -14,11 +14,12 @@ describe('FiltersForm', () => {
 
   beforeEach(() => {
     filters = [
-      { id: 1, name: 'Country', container: '' },
-      { id: 2, name: 'Case', container: '' },
+      { id: 1, name: 'Country', container: '', index: 0 },
+      { id: 2, name: 'Case', container: '', index: 1 },
       { id: 'asd',
         name: 'Institutions',
         container: '',
+        index: 2,
         items: [{ id: 4, name: 'Court' }]
       }
     ];
