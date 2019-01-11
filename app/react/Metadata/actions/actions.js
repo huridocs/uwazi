@@ -4,7 +4,6 @@ import superagent from 'superagent';
 import { APIURL } from 'app/config.js';
 import { advancedSort } from 'app/utils/advancedSort';
 import { api as entitiesAPI } from 'app/Entities';
-import { actions as basicActions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import emptyTemplate from '../helpers/defaultTemplate';

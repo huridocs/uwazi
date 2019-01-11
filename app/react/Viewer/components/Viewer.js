@@ -53,24 +53,29 @@ export class Viewer extends Component {
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
 
+  renderNoDoc() {
+    const { doc } = this.props;
+    return (
+      <div className="row">
+        <div className="content-header content-header-document">
+          <div className="content-header-title">
+            <Icon icon="lightbulb" />
+            <Translate>
+              This entity has no document, you probably want to see the metadata
+            </Translate>
+            &nbsp;
+            <I18NLink to={`/entity/${doc.get('sharedId')}`}><Translate>view</Translate></I18NLink>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   render() {
     const { doc, sidepanelTab } = this.props;
     if (!doc.get('file')) {
-      return (
-        <div className="row">
-          <div className="content-header content-header-document">
-            <div className="content-header-title">
-              <Icon icon="lightbulb" />
-              <Translate>
-                This entity has no document, you probably want to see the metadata
-              </Translate>
-              &nbsp;
-              <I18NLink to={`/entity/${doc.get('sharedId')}`}><Translate>view</Translate></I18NLink>
-            </div>
-          </div>
-        </div>
-      );
+      return this.renderNoDoc();
     }
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
