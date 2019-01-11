@@ -52,10 +52,10 @@ describe('syncWorker', () => {
       spyOn(request, 'delete').and.returnValue(Promise.resolve());
     });
 
-    it('should only sync whitelisted collections', async () => {
+    it('should only sync whitelisted collections (forbidding certain collections even if present)', async () => {
       await syncWorker.syncronize({
         url: 'url',
-        config: {}
+        config: { migrations: {}, settings: {}, sessions: {} }
       });
 
       expect(request.post.calls.count()).toBe(0);

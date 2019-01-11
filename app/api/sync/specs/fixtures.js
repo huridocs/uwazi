@@ -19,12 +19,16 @@ const template1Property3 = db.id();
 const template2 = db.id();
 const template3 = db.id();
 
+const settingsId = db.id();
+const sessionsId = db.id();
+
 export default {
   syncs: [
     {
       lastSync: 10000,
     },
   ],
+
   updatelogs: [
     {
       timestamp: 20000,
@@ -98,7 +102,20 @@ export default {
       mongoId: newDoc1,
       deleted: false,
     },
+    {
+      timestamp: 9001,
+      namespace: 'settings',
+      mongoId: settingsId,
+      deleted: false,
+    },
+    {
+      timestamp: 9002,
+      namespace: 'sessions',
+      mongoId: sessionsId,
+      deleted: false,
+    },
   ],
+
   entities: [
     {
       _id: newDoc1,
@@ -125,6 +142,7 @@ export default {
       template: template3,
     },
   ],
+
   connections: [
     {
       _id: newDoc3,
@@ -135,6 +153,7 @@ export default {
       entity: newDoc1,
     },
   ],
+
   templates: [
     {
       _id: template1,
@@ -160,8 +179,10 @@ export default {
       _id: template3
     }
   ],
+
   settings: [
     {
+      _id: settingsId,
       languages: [{ key: 'es', default: true }],
       sync: {
         url: 'url',
@@ -170,6 +191,10 @@ export default {
       }
     },
   ],
+
+  sessions: [
+    { _id: sessionsId }
+  ]
 };
 
 export {

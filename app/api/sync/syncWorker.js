@@ -29,7 +29,9 @@ const determineWhitelistedCollections = (config) => {
     whitelistedCollections.push('connections');
   }
 
-  return whitelistedCollections;
+  const blacklistedCollections = ['migrations', 'settings', 'sessions'];
+
+  return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
 };
 
 export default {
@@ -42,7 +44,7 @@ export default {
         $gte: lastSync - oneSecond
       },
       namespace: {
-        $nin: ['migrations']
+        $in: determineWhitelistedCollections(config)
       }
     }, null, {
       sort: {
@@ -56,12 +58,6 @@ export default {
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;
-
-      const whitelistedCollections = determineWhitelistedCollections(config);
-
-      if (!whitelistedCollections.includes(change.namespace)) {
-        return Promise.resolve();
-      }
 
       if (change.deleted) {
         return syncData(url, 'delete', change, { _id: change.mongoId });
