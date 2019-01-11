@@ -74,7 +74,7 @@ export class Viewer extends Component {
 
   render() {
     const { doc, sidepanelTab } = this.props;
-    if (!doc.get('file')) {
+    if (doc.get('_id') && !doc.get('file')) {
       return this.renderNoDoc();
     }
     let className = 'document-viewer';
