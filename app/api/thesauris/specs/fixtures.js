@@ -18,7 +18,7 @@ values: [
 ] }
   ],
   templates: [
-    { _id: db.id(entityTemplateId), name: 'entityTemplate', isEntity: true, properties: [{}] },
+    { _id: db.id(entityTemplateId), name: 'entityTemplate', properties: [{}] },
     { _id: db.id(), name: 'documentTemplate', properties: [{}] }
   ],
   entities: [

@@ -6,6 +6,9 @@ aside,
     position: relative;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    .property-help {
+      text-transform: none;
+    }
     small {
       position: absolute;
       top: -2px;

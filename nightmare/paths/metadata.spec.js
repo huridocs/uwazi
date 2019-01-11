@@ -79,10 +79,10 @@ describe('metadata path', () => {
     });
   });
 
-  describe('Documents tests', () => {
+  describe('Templates tests', () => {
     it('should click Documents button and then click on add new document button', (done) => {
       nightmare
-      .waitToClick(selectors.settingsView.documentsButton)
+      .waitToClick(selectors.settingsView.entitiesButton)
       .waitToClick(selectors.settingsView.addNewDocument)
       .wait(selectors.settingsView.saveDocumentButton)
       .isVisible(selectors.settingsView.saveDocumentButton)
@@ -93,7 +93,7 @@ describe('metadata path', () => {
       .catch(catchErrors(done));
     });
 
-    it('should create a new document template with no properties added', (done) => {
+    it('should create a new template with no properties added', (done) => {
       nightmare
       .write(selectors.settingsView.documentTemplateNameForm, 'new document')
       .waitToClick(selectors.settingsView.saveDocumentButton)
@@ -102,7 +102,7 @@ describe('metadata path', () => {
       .catch(catchErrors(done));
     });
 
-    it('should go back to Documents then edit the created document', (done) => {
+    it('should go back and then edit the created template', (done) => {
       nightmare
       .waitToClick(selectors.settingsView.documentsBackButton)
       .wait(selectors.settingsView.liElementsOfSection)

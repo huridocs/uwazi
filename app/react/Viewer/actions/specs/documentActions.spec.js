@@ -156,7 +156,7 @@ describe('documentActions', () => {
       .get(`${APIURL}entities?_id=targetId`, { body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }) })
       .get(`${APIURL}entities?_id=docWithPDFRdy`, { body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }) })
       .get(`${APIURL}entities?_id=docWithPDFNotRdy`, {
-        body: JSON.stringify({ rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted' }] })
+        body: JSON.stringify({ rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted', file: {} }] })
       })
       .get(`${APIURL}references/by_document/targetId`, { body: JSON.stringify([{ connectedDocument: '1' }]) });
     });

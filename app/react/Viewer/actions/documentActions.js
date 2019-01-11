@@ -79,7 +79,7 @@ export function getDocument(id) {
     if (!isClient) {
       return doc;
     }
-    if (doc.pdfInfo) {
+    if (doc.pdfInfo || !doc.file) {
       return doc;
     }
     return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)

@@ -24,6 +24,7 @@ describe('upload routes', () => {
   let req;
   let file;
   let iosocket;
+  const sharedId = 'sharedId1';
 
   const onSocketRespond = (method, url, reqObject, eventName = 'documentProcessed') => {
     const promise = new Promise((resolve) => {
@@ -81,7 +82,7 @@ describe('upload routes', () => {
         path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
         size: 171411271
       };
-      req = { language: 'es', user: 'admin', headers: {}, body: { document: 'id' }, files: [file], io };
+      req = { language: 'es', user: 'admin', headers: {}, body: { document: 'sharedId1' }, files: [file], io };
 
       db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
       spyOn(errorLog, 'error'); //just to avoid annoying console output
@@ -99,11 +100,11 @@ describe('upload routes', () => {
     it('should process the document after upload', async () => {
       await onSocketRespond('post', '/api/upload', req);
       const [docES, docEN] = await Promise.all([
-        documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-        documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+        documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
+        documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
       ]);
-      expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'id');
-      expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'id');
+      expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
+      expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
       expect(docEN[0].processed).toBe(true);
       expect(docEN[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
       expect(docEN[0].totalPages).toBe(1);
@@ -125,8 +126,8 @@ describe('upload routes', () => {
         await onSocketRespond('post', '/api/upload', req);
 
         const [docES, docEN] = await Promise.all([
-          documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+          documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
+          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
         ]);
 
         expect(docEN[0].file.language).toBe('eng');
@@ -140,8 +141,8 @@ describe('upload routes', () => {
         await onSocketRespond('post', '/api/upload', req);
 
         const [docES, docEN] = await Promise.all([
-          documents.get({ sharedId: 'id', language: 'es' }, '+fullText'),
-          documents.get({ sharedId: 'id', language: 'en' }, '+fullText')
+          documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
+          documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
         ]);
         expect(docEN[0].file.language).toBe('spa');
         expect(docEN[0].file.originalname).toBeDefined();
@@ -149,15 +150,12 @@ describe('upload routes', () => {
       });
     });
 
-    // -----------------------------------------------------------------------
-
     describe('when conversion fails', () => {
       it('should set document processed to false and emit a socket conversionFailed event with the id of the document', (done) => {
-        //spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({items: []}));
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'conversionFailed') {
             setTimeout(() => {
-              entities.getAllLanguages('id')
+              entities.getAllLanguages('sharedId1')
               .then((docs) => {
                 expect(docs[0].processed).toBe(false);
                 expect(docs[1].processed).toBe(false);
@@ -177,7 +175,7 @@ describe('upload routes', () => {
       it('should update the document with the file path and uploaded flag to true', (done) => {
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'documentProcessed') {
-            documents.getById('id', 'es')
+            documents.getById('sharedId1', 'es')
             .then((modifiedDoc) => {
               expect(modifiedDoc.file.originalname).toEqual(file.originalname);
               expect(modifiedDoc.file.filename).toEqual(file.filename);
@@ -203,16 +201,16 @@ describe('upload routes', () => {
     it('should reupload a document', (done) => {
       iosocket.emit.and.callFake((eventName) => {
         if (eventName === 'documentProcessed') {
-          expect(relationships.deleteTextReferences).toHaveBeenCalledWith('id', 'es');
-
-          documents.getById('id', 'es')
+          expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, 'es');
+          documents.getById(sharedId, 'es')
           .then((modifiedDoc) => {
             expect(modifiedDoc.toc.length).toBe(0);
             done();
-          });
+          })
+          .catch(done.fail);
         }
       });
-      req.body.document = entityId;
+      req.body.document = sharedId;
 
       routes.post('/api/reupload', req)
       .then((response) => {
@@ -223,21 +221,19 @@ describe('upload routes', () => {
 
     it('should not remove old document when assigned to other entities', async () => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
-      req.body.document = entityId;
-
+      req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
       await Promise.all([
         entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
         entitiesModel.save({ file: { filename: 'test' } }),
       ]);
-
       await onSocketRespond('post', '/api/reupload', req);
       await fileExists(path.resolve(`${__dirname}/uploads/test`));
     });
 
     it('should remove old document on reupload', async () => {
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
-      req.body.document = entityId;
+      req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
 
       await entitiesModel.save({ _id: entityId, file: { filename: 'test' } });
@@ -247,6 +243,25 @@ describe('upload routes', () => {
         await fileExists(path.resolve(`${__dirname}/uploads/test`));
         fail('file should be deleted on reupload');
       } catch (e) {} //eslint-disable-line
+    });
+
+    it('should upload too all entities when none has file', async () => {
+      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      req.body.document = sharedId;
+      await writeFile(`${__dirname}/uploads/test`, 'data');
+      await entitiesModel.save({ _id: entityId, file: null });
+      await onSocketRespond('post', '/api/reupload', req);
+
+      const _entities = await entities.get({ sharedId });
+      const _file = {
+        filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+        language: 'other',
+        mimetype: 'application/octet-stream',
+        originalname: 'gadgets-01.pdf',
+        size: 171411271
+      };
+      expect(_entities[0].file).toEqual(_file);
+      expect(_entities[1].file).toEqual(_file);
     });
   });
 

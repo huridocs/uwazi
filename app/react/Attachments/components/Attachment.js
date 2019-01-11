@@ -20,7 +20,7 @@ const getItemOptions = (isSourceDocument, parentId, filename) => {
   options.itemClassName = isSourceDocument ? 'item-source-document' : '';
   options.typeClassName = isSourceDocument ? 'primary' : 'empty';
   options.icon = isSourceDocument ? 'file-pdf-o' : 'paperclip';
-  options.deletable = !isSourceDocument;
+  options.deletable = true;
   options.replaceable = isSourceDocument;
   options.downloadHref = isSourceDocument ?
     `/api/documents/download?_id=${parentId}` :
