@@ -27,50 +27,6 @@ export class FiltersForm extends Component {
     this.state = { activeFilters, inactiveFilters };
   }
 
-  renderGroup(group) {
-    const onChange = (items) => {
-      group.items = items;
-      this.setState(this.state);
-    };
-
-    const nameChange = (e) => {
-      const name = e.target.value;
-      group.name = name;
-      this.setState(this.state);
-    };
-
-    return (<div>
-      <div className="input-group">
-        <input type="text" className="form-control" value={group.name} onChange={nameChange.bind(this)} />
-        <span className="input-group-btn">
-          <button className="btn btn-danger" onClick={this.removeGroup.bind(this, group)} disabled={group.items.length}>
-            <Icon icon="trash-alt" />
-          </button>
-        </span>
-      </div>
-      <DragAndDropContainer id={group.id} onChange={onChange.bind(this)} renderItem={this.renderActiveItems.bind(this)} items={group.items}/>
-    </div>);
-  }
-
-  renderActiveItems(item) {
-    if (item.items) {
-      return this.renderGroup(item);
-    }
-    return (<div>
-      <span>{item.name}</span>
-      <button className="btn btn-xs btn-danger" onClick={this.removeItem.bind(this, item)}>
-        <Icon icon="trash-alt" />
-      </button>
-    </div>);
-  }
-
-  renderInactiveItems(item) {
-    if (item.items) {
-      return this.renderGroup(item);
-    }
-    return (<div><span>{item.name}</span></div>);
-  }
-
   activesChange(items) {
     this.setState({ activeFilters: items });
   }
@@ -127,6 +83,50 @@ export class FiltersForm extends Component {
     const activeFilters = removeItemFunction(this.state.activeFilters);
     this.state.inactiveFilters.push(item);
     this.setState({ activeFilters, inactiveFilters: this.state.inactiveFilters });
+  }
+
+  renderGroup(group) {
+    const onChange = (items) => {
+      group.items = items;
+      this.setState(this.state);
+    };
+
+    const nameChange = (e) => {
+      const name = e.target.value;
+      group.name = name;
+      this.setState(this.state);
+    };
+
+    return (<div>
+      <div className="input-group">
+        <input type="text" className="form-control" value={group.name} onChange={nameChange.bind(this)} />
+        <span className="input-group-btn">
+          <button className="btn btn-danger" onClick={this.removeGroup.bind(this, group)} disabled={group.items.length}>
+            <Icon icon="trash-alt" />
+          </button>
+        </span>
+      </div>
+      <DragAndDropContainer id={group.id} onChange={onChange.bind(this)} renderItem={this.renderActiveItems.bind(this)} items={group.items}/>
+    </div>);
+  }
+
+  renderActiveItems(item) {
+    if (item.items) {
+      return this.renderGroup(item);
+    }
+    return (<div>
+      <span>{item.name}</span>
+      <button className="btn btn-xs btn-danger" onClick={this.removeItem.bind(this, item)}>
+        <Icon icon="trash-alt" />
+      </button>
+    </div>);
+  }
+
+  renderInactiveItems(item) {
+    if (item.items) {
+      return this.renderGroup(item);
+    }
+    return (<div><span>{item.name}</span></div>);
   }
 
   render() {
