@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router';
+import { toUrlParams } from 'shared/JSONRequest';
+import rison from 'rison';
 
 import Doc from 'app/Library/components/Doc';
 import SearchBar from 'app/Library/components/SearchBar';
@@ -12,21 +15,15 @@ import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
-export default class DocumentsList extends Component {
+class DocumentsList extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = { loading: false };
     this.clickOnDocument = this.clickOnDocument.bind(this);
-    this.loadMoreDocuments = this.loadMoreDocuments.bind(this);
   }
 
   componentWillReceiveProps() {
     this.setState({ loading: false });
-  }
-
-  loadMoreDocuments() {
-    this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, this.props.documents.get('rows').size + this.props.loadMoreAmmount);
   }
 
   clickOnDocument() {
@@ -35,9 +32,22 @@ export default class DocumentsList extends Component {
     }
   }
 
+  loadMoreButton(amount) {
+    const query = Object.assign({}, this.props.location.query);
+    const q = query.q ? rison.decode(query.q) : {};
+    q.limit = (parseInt(q.limit, 10) || 30) + amount;
+    query.q = rison.encode(q);
+    const url = `${this.props.location.pathname}${toUrlParams(query)}`;
+    return (
+      <Link to={url} className="btn btn-default btn-load-more">
+        {amount} {t('System', 'x more')}
+      </Link>
+    );
+  }
+
   render() {
     const { documents, connections, GraphView, view, searchCentered, hideFooter,
-            connectionsGroups, LoadMoreButton, loadMoreAmmount, rowListZoomLevel } = this.props;
+            connectionsGroups, LoadMoreButton, rowListZoomLevel } = this.props;
     let counter = <span><b>{documents.get('totalRows')}</b> <Translate>documents</Translate></span>;
     if (connections) {
       const summary = connectionsGroups.reduce((summaryData, g) => {
@@ -121,9 +131,8 @@ export default class DocumentsList extends Component {
               if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
                 return (
                   <div className="col-sm-12 text-center">
-                    <button onClick={this.loadMoreDocuments} className="btn btn-default btn-load-more">
-                      {`${loadMoreAmmount}`} {t('System', 'x more')}
-                    </button>
+                    {this.loadMoreButton(30)}
+                    {this.loadMoreButton(300)}
                   </div>
                 );
               }
@@ -151,7 +160,6 @@ export default class DocumentsList extends Component {
 
 DocumentsList.defaultProps = {
   SearchBar,
-  loadMoreAmmount: 30,
   rowListZoomLevel: 0,
 };
 
@@ -176,10 +184,16 @@ DocumentsList.propTypes = {
     PropTypes.object
   ]),
   rowListZoomLevel: PropTypes.number,
-  // TEST!!!
   connectionsGroups: PropTypes.object,
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
-  loadMoreAmmount: PropTypes.number,
-  view: PropTypes.string
+  view: PropTypes.string,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object
+  }),
 };
+
+export { DocumentsList };
+
+export default withRouter(DocumentsList);
