@@ -22,6 +22,16 @@ const syncData = async (url, action, change, data) => {
   return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };
 
+const determineWhitelistedCollections = (config) => {
+  const whitelistedCollections = Object.keys(config);
+  if (whitelistedCollections.includes('templates')) {
+    whitelistedCollections.push('entities');
+    whitelistedCollections.push('connections');
+  }
+
+  return whitelistedCollections;
+};
+
 export default {
   stopped: false,
 
@@ -46,6 +56,13 @@ export default {
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;
+
+      const whitelistedCollections = determineWhitelistedCollections(config);
+
+      if (!whitelistedCollections.includes(change.namespace)) {
+        return Promise.resolve();
+      }
+
       if (change.deleted) {
         return syncData(url, 'delete', change, { _id: change.mongoId });
       }

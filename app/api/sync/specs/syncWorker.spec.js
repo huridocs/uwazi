@@ -47,11 +47,23 @@ describe('syncWorker', () => {
   });
 
   describe('syncronize', () => {
-    describe('templates', () => {
-      it('should only sync white listed templates and properties', async () => {
-        spyOn(request, 'post').and.returnValue(Promise.resolve());
-        spyOn(request, 'delete').and.returnValue(Promise.resolve());
+    beforeEach(() => {
+      spyOn(request, 'post').and.returnValue(Promise.resolve());
+      spyOn(request, 'delete').and.returnValue(Promise.resolve());
+    });
 
+    it('should only sync whitelisted collections', async () => {
+      await syncWorker.syncronize({
+        url: 'url',
+        config: {}
+      });
+
+      expect(request.post.calls.count()).toBe(0);
+      expect(request.delete.calls.count()).toBe(0);
+    });
+
+    describe('templates', () => {
+      it('should only sync whitelisted templates and properties', async () => {
         await syncWorker.syncronize({
           url: 'url',
           config: {
@@ -86,10 +98,7 @@ describe('syncWorker', () => {
     });
 
     describe('entities', () => {
-      it('should only sync entities belonging to a white listed template and properties', async () => {
-        spyOn(request, 'post').and.returnValue(Promise.resolve());
-        spyOn(request, 'delete').and.returnValue(Promise.resolve());
-
+      it('should only sync entities belonging to a whitelisted template and properties', async () => {
         await syncWorker.syncronize({
           url: 'url',
           config: {
@@ -131,9 +140,6 @@ describe('syncWorker', () => {
     });
 
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
-      spyOn(request, 'post').and.returnValue(Promise.resolve());
-      spyOn(request, 'delete').and.returnValue(Promise.resolve());
-
       await syncAllTemplates();
 
       expect(request.post.calls.count()).toBe(8);
@@ -141,19 +147,16 @@ describe('syncWorker', () => {
     });
 
     it('should update lastSync timestamp with the last change', async () => {
-      spyOn(request, 'post').and.returnValue(Promise.resolve());
-      spyOn(request, 'delete').and.returnValue(Promise.resolve());
-
       await syncAllTemplates();
       const [{ lastSync }] = await syncsModel.find();
       expect(lastSync).toBe(22000);
     });
 
     it('should update lastSync on each operation', async () => {
-      spyOn(request, 'post').and.callFake((url, body) =>
+      request.post.and.callFake((url, body) =>
         body.data._id.equals(newDoc3) ? Promise.reject(new Error('post failed')) : Promise.resolve()
       );
-      spyOn(request, 'delete').and.callFake((url, body) =>
+      request.delete.and.callFake((url, body) =>
         body.data._id.equals(newDoc4) ? Promise.reject(new Error('delete failed')) : Promise.resolve()
       );
 
