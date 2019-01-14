@@ -33,7 +33,7 @@ describe('MetadataForm', () => {
       metadata: { _id: 'docId', template: 'templateId', title: 'testTitle', metadata: { field1: 'field1value', field2: 'field2value' } },
       templates,
       template: templates.get(0),
-      templateOptions: Immutable.fromJS([]),
+      templateOptions: Immutable.fromJS([{ label: 'template1', value: 'templateId' }]),
       thesauris: Immutable.fromJS([{ _id: 2, name: 'thesauri', values: [{ label: 'option1', id: '1' }] }]),
       onSubmit: jasmine.createSpy('onSubmit'),
       changeTemplate: jasmine.createSpy('changeTemplate'),
@@ -108,15 +108,6 @@ describe('MetadataForm', () => {
     beforeEach(() => {
       state = { templates };
       ownProps = { templates, templateId: templates.get(1).get('_id') };
-    });
-
-    it('should select templateOptions according to entity type', () => {
-      let expectedOptions = [{ label: 'template1', value: 'templateId' }, { label: 'template2', value: '2' }];
-      expect(mapStateToProps(state, ownProps).templateOptions.toJS()).toEqual(expectedOptions);
-
-      ownProps.isEntity = true;
-      expectedOptions = [{ label: 'template3', value: '3' }];
-      expect(mapStateToProps(state, ownProps).templateOptions.toJS()).toEqual(expectedOptions);
     });
 
     it('should return template based on metadata.template', () => {

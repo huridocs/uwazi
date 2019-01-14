@@ -52,11 +52,13 @@ describe('templates', () => {
         spyOn(translations, 'updateContext');
         spyOn(entities, 'removeValuesFromEntities');
         spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
-        const changedTemplate = { _id: templateWithContents,
-name: 'changed',
-properties:
+        const changedTemplate = {
+          _id: templateWithContents,
+          name: 'changed',
+          properties:
           [{ id: '1', type: 'select', content: 'new_thesauri', label: 'select' },
-          { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' }] };
+          { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' }]
+        };
 
         templates.save(changedTemplate)
         .then(() => {
@@ -68,14 +70,16 @@ properties:
     });
 
     it('should validate properties not having repeated names and return an error', (done) => {
-      const newTemplate = { name: 'created_template',
-properties: [
-        { label: 'label 1' },
-        { label: 'label 1' },
-        { label: 'Label 2' },
-        { label: 'label 2' },
-        { label: 'label 3' }
-        ] };
+      const newTemplate = {
+        name: 'created_template',
+        properties: [
+          { label: 'label 1' },
+          { label: 'label 1' },
+          { label: 'Label 2' },
+          { label: 'label 2' },
+          { label: 'label 3' }
+        ]
+      };
 
       templates.save(newTemplate)
       .then(() => done.fail('properties have repeated names, should have failed with an error'))
@@ -86,58 +90,39 @@ properties: [
       });
     });
 
-    it('should add it to the translations with Document type', (done) => {
-      const newTemplate = { name: 'created template',
+    it('should add it to translations with Entity type', (done) => {
+      const newTemplate = {
+        name: 'created template',
         properties: [
           { label: 'label 1' },
           { label: 'label 2' }
-        ] };
+        ]
+      };
 
       templates.save(newTemplate)
       .then((response) => {
         const expectedValues = {
-          'created template': 'created template',
-          'label 1': 'label 1',
-          'label 2': 'label 2'
+            'created template': 'created template',
+            'label 1': 'label 1',
+            'label 2': 'label 2'
         };
 
-        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Document');
+        expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Entity');
         done();
       });
     });
 
-    describe('when isEntity', () => {
-      it('should add it to translations with Entity type', (done) => {
-        const newTemplate = { name: 'created template',
-          isEntity: true,
-          properties: [
-            { label: 'label 1' },
-            { label: 'label 2' }
-          ] };
-
-        templates.save(newTemplate)
-        .then((response) => {
-          const expectedValues = {
-            'created template': 'created template',
-            'label 1': 'label 1',
-            'label 2': 'label 2'
-          };
-
-          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'created template', expectedValues, 'Entity');
-          done();
-        });
-      });
-    });
-
     it('should assign a safe property name based on the label ', (done) => {
-      const newTemplate = { name: 'created_template',
+      const newTemplate = {
+        name: 'created_template',
         properties: [
           { label: 'label 1' },
           { label: 'label 2' },
           { label: 'label 3' },
           { label: 'label 4', name: 'name' },
           { label: 'label 5', type: 'geolocation' }
-        ] };
+        ]
+      };
 
       templates.save(newTemplate)
       .then(() => templates.get())
@@ -174,7 +159,7 @@ properties: [
 
       it('should updateMetadataProperties', (done) => {
         spyOn(translations, 'updateContext');
-        const template = { _id: templateToBeEditedId, name: 'template to be edited', properties: [] };
+        const template = { _id: templateToBeEditedId, name: 'template to be edited', properties: [], default: true };
         const toSave = { _id: templateToBeEditedId, name: 'changed name' };
         templates.save(toSave, 'en')
         .then(() => {
@@ -203,7 +188,6 @@ properties: [
         templates.save(newTemplate)
         .then((template) => {
           template.name = 'new title';
-          template.isEntity = true;
           template.properties[0].label = 'new label 1';
           template.properties.pop();
           template.properties.push({ label: 'label 3' });
@@ -311,6 +295,21 @@ properties: [
       templates.countByThesauri('not_used_relation')
       .then((result) => {
         expect(result).toBe(0);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('setAsDefault()', () => {
+    beforeEach(() => {
+      spyOn(translations, 'updateContext');
+    });
+    it('should set the given ID as the default template', (done) => {
+      templates.setAsDefault(templateWithContents.toString())
+      .then(([newDefault, oldDefault]) => {
+        expect(newDefault.name).toBe('content template');
+        expect(oldDefault.name).toBe('template to be edited');
         done();
       })
       .catch(catchErrors(done));

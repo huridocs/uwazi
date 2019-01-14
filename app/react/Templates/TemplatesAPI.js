@@ -16,6 +16,11 @@ export default {
     .then(response => response.json);
   },
 
+  setAsDefault(template) {
+    return api.post('templates/setasdefault', { _id: template._id })
+    .then(response => response.json);
+  },
+
   countByThesauri(thesauri) {
     return api.get('templates/count_by_thesauri', { _id: thesauri._id })
     .then(response => response.json);

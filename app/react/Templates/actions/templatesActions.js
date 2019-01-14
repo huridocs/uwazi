@@ -18,3 +18,7 @@ export function checkTemplateCanBeDeleted(template) {
     return Promise.resolve();
   });
 }
+
+export function setAsDefault(template) {
+  return () => api.setAsDefault(template);
+}

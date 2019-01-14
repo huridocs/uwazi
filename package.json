@@ -1,6 +1,6 @@
 {
   "name": "Uwazi",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "main": "server.js",
   "repository": {
@@ -68,7 +68,7 @@
     "batarange": "0.2.0",
     "bluebird": "^3.4.6",
     "body-parser": "1.18.2",
-    "bootstrap": "3.3.6",
+    "bootstrap": "3.4.0",
     "child-process-promise": "^2.2.1",
     "compression": "^1.6.0",
     "compression-webpack-plugin": "^1.0.0",

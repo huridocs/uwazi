@@ -21,13 +21,6 @@ export default {
     .then(response => response.json.rows);
   },
 
-  getEntities() {
-    const url = '/thesauris/entities';
-
-    return api.get(url)
-    .then(response => response.json.rows);
-  },
-
   save(thesauri) {
     return api.post('thesauris', thesauri)
     .then(response => response.json);

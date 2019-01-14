@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { store } from 'app/store';
 import Welcome from 'app/Library/components/Welcome';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 import Helmet from 'react-helmet';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { t } from 'app/I18N';
+import blankState from './helpers/blankState';
 
 export default class LibraryLayout extends Component {
   render() {
-    const state = store.getState();
-    if (!state.templates.size) {
+    if (blankState()) {
       return <Welcome/>;
     }
 
