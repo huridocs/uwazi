@@ -1,9 +1,26 @@
-import entities from 'api/entities';
-import search from 'api/search/search';
+import multer from 'multer';
+
 import { models } from 'api/odm';
-import needsAuthorization from '../auth/authMiddleware';
+import entities from 'api/entities';
+import path from 'path';
+import search from 'api/search/search';
+
+import { uploadDocumentsPath } from '../config/paths';
+import { needsAuthorization } from '../auth';
+
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, path.normalize(`${uploadDocumentsPath}/`));
+  },
+  filename(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
 
 export default (app) => {
+  const upload = multer({ storage });
+
   app.post(
     '/api/sync',
     needsAuthorization(['admin']),
@@ -18,6 +35,12 @@ export default (app) => {
         next(e);
       }
     }
+  );
+
+  app.post(
+    '/api/sync/upload',
+    needsAuthorization(['admin']),
+    upload.any(),
   );
 
   app.delete(
