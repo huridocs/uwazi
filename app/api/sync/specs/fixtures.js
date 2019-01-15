@@ -15,8 +15,13 @@ const template1 = db.id();
 const template1Property1 = db.id();
 const template1Property2 = db.id();
 const template1Property3 = db.id();
+const template1PropertyThesauri1Select = db.id();
+const template1PropertyThesauri2Select = db.id();
+const template1PropertyThesauri3MultiSelect = db.id();
 
 const template2 = db.id();
+const template2PropertyThesauri5Select = db.id();
+
 const template3 = db.id();
 
 const thesauri1 = db.id();
@@ -30,6 +35,7 @@ const thesauri3Value1 = db.id();
 const thesauri3Value2 = db.id();
 
 const thesauri4 = db.id();
+const thesauri5 = db.id();
 
 const settingsId = db.id();
 const sessionsId = db.id();
@@ -133,6 +139,12 @@ export default {
       deleted: true,
     },
     {
+      timestamp: 9001,
+      namespace: 'dictionaries',
+      mongoId: thesauri5,
+      deleted: false,
+    },
+    {
       timestamp: 9000,
       namespace: 'migrations',
       mongoId: newDoc1,
@@ -161,6 +173,9 @@ export default {
         t1Property1: 'sync property 1',
         t1Property2: 'sync property 2',
         t1Property3: 'sync property 3',
+        t1Thesauri1Select: thesauri1Value2,
+        t1Thesauri2Select: db.id(),
+        t1Thesauri3MultiSelect: [thesauri3Value2, thesauri3Value1],
       }
     },
     {
@@ -170,6 +185,7 @@ export default {
       metadata: {
         t1Property1: 'another doc property 1',
         t1Property2: 'another doc property 2',
+        t1Thesauri3MultiSelect: [thesauri3Value2],
       }
     },
     {
@@ -206,10 +222,36 @@ export default {
           _id: template1Property3,
           name: 't1Property3',
         },
+        {
+          _id: template1PropertyThesauri1Select,
+          name: 't1Thesauri1Select',
+          type: 'select',
+          content: thesauri1
+        },
+        {
+          _id: template1PropertyThesauri2Select,
+          name: 't1Thesauri2Select',
+          type: 'select',
+          content: thesauri2
+        },
+        {
+          _id: template1PropertyThesauri3MultiSelect,
+          name: 't1Thesauri3MultiSelect',
+          type: 'multiselect',
+          content: thesauri3
+        }
       ],
     },
     {
-      _id: template2
+      _id: template2,
+      properties: [
+        {
+          _id: template2PropertyThesauri5Select,
+          name: 't2Thesauri3MultiSelect',
+          type: 'select',
+          content: thesauri5
+        }
+      ]
     },
     {
       _id: template3
@@ -248,6 +290,9 @@ export default {
     },
     {
       _id: thesauri4
+    },
+    {
+      _id: thesauri5
     }
   ],
 
@@ -277,10 +322,19 @@ export {
   template1Property1,
   template1Property2,
   template1Property3,
+  template1PropertyThesauri1Select,
+  template1PropertyThesauri2Select,
+  template1PropertyThesauri3MultiSelect,
   template2,
+  template2PropertyThesauri5Select,
   template3,
   thesauri1,
+  thesauri1Value1,
+  thesauri1Value2,
   thesauri2,
   thesauri3,
-  thesauri4
+  thesauri3Value1,
+  thesauri3Value2,
+  thesauri4,
+  thesauri5,
 };

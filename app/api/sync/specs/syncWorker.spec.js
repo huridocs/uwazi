@@ -19,11 +19,18 @@ import fixtures, {
   template1Property1,
   template1Property2,
   template1Property3,
+  template1PropertyThesauri1Select,
+  template1PropertyThesauri3MultiSelect,
   template2,
+  template2PropertyThesauri5Select,
   template3,
   thesauri1,
+  thesauri2,
+  thesauri1Value1,
+  thesauri1Value2,
   thesauri3,
   thesauri4,
+  thesauri5,
 } from './fixtures';
 
 import syncWorker from '../syncWorker';
@@ -100,24 +107,39 @@ describe('syncWorker', () => {
           ]
         });
 
-        expectCallToEqual(template2Call, 'templates', { _id: template2 });
+        expectCallToEqual(template2Call, 'templates', expect.objectContaining({ _id: template2 }));
       });
     });
 
     describe('thesauris (dictionaries collection)', () => {
-      it('should only sync whitelisted thesauris (deleting even non whitelisted ones)', async () => {
+      it('should only sync whitelisted thesauris through template configs (deleting even non whitelisted ones)', async () => {
         await syncWorkerWithConfig({
-          dictionaries: {
-            [thesauri1.toString()]: true,
-            [thesauri3.toString()]: true,
+          templates: {
+            [template1.toString()]: [
+              template1Property2.toString(),
+              template1PropertyThesauri1Select.toString(),
+              template1PropertyThesauri3MultiSelect.toString(),
+            ],
+            [template2.toString()]: [template2PropertyThesauri5Select.toString()],
           }
         });
 
-        expect(request.post.calls.count()).toBe(2);
-        expect(request.delete.calls.count()).toBe(1);
+        const thesauriCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === 'dictionaries');
+        const thesauri1Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri1.toString());
+        const thesauri2Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri2.toString());
+        const thesauri3Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri3.toString());
+        const thesauri5Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri5.toString());
 
-        expectCallWith(request.post, 'dictionaries', expect.objectContaining({ _id: thesauri1 }));
-        expectCallWith(request.post, 'dictionaries', expect.objectContaining({ _id: thesauri3 }));
+        expect(thesauriCallsOnly.length).toBe(3);
+
+        expectCallToEqual(thesauri1Call, 'dictionaries', {
+          _id: thesauri1,
+          values: [expect.objectContaining({ _id: thesauri1Value1 }), expect.objectContaining({ _id: thesauri1Value2 })]
+        });
+
+        expect(thesauri2Call).not.toBeDefined();
+        expect(thesauri3Call).toBeDefined();
+        expect(thesauri5Call).toBeDefined();
         expectCallWith(request.delete, 'dictionaries', expect.objectContaining({ _id: thesauri4 }));
       });
     });
@@ -126,7 +148,7 @@ describe('syncWorker', () => {
       it('should only sync entities belonging to a whitelisted template and properties', async () => {
         await syncWorkerWithConfig({
           templates: {
-            [template1.toString()]: [template1Property2.toString(), template1Property3.toString()],
+            [template1.toString()]: [template1Property2.toString(), template1Property3.toString(), template1PropertyThesauri1Select.toString()],
             [template2.toString()]: [],
           }
         });
@@ -137,7 +159,7 @@ describe('syncWorker', () => {
 
         expectCallToEqual(entity1Call, 'entities', expect.objectContaining({
           _id: newDoc1,
-          metadata: { t1Property2: 'sync property 2', t1Property3: 'sync property 3' }
+          metadata: { t1Property2: 'sync property 2', t1Property3: 'sync property 3', t1Thesauri1Select: thesauri1Value2 }
         }));
 
         expectCallToEqual(entity2Call, 'entities', expect.objectContaining({
@@ -150,17 +172,13 @@ describe('syncWorker', () => {
           data: expect.objectContaining({ title: 'not to sync' })
         });
       });
-
-      it('should exclude values of non whitelisted thesauris', async () => {
-
-      });
     });
 
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
       await syncAllTemplates();
 
       expect(request.post.calls.count()).toBe(8);
-      expect(request.delete.calls.count()).toBe(1);
+      expect(request.delete.calls.count()).toBe(2);
     });
 
     it('should update lastSync timestamp with the last change', async () => {

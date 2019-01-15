@@ -27,11 +27,28 @@ const determineWhitelistedCollections = (config) => {
   if (whitelistedCollections.includes('templates')) {
     whitelistedCollections.push('entities');
     whitelistedCollections.push('connections');
+    whitelistedCollections.push('dictionaries');
   }
 
   const blacklistedCollections = ['migrations', 'settings', 'sessions'];
 
   return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
+};
+
+const determineWhitelistedThesauris = async (config) => {
+  const templatesConfig = config.templates || {};
+
+  return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
+    const validList = await prev;
+    const template = await models.templates.getById(templateId);
+    (template.properties || []).forEach((p) => {
+      if (templatesConfig[templateId].includes(p._id.toString()) && (p.type === 'select' || p.type === 'multiselect')) {
+        validList.push(p.content.toString());
+      }
+    });
+
+    return Promise.resolve(validList);
+  }, Promise.resolve([]));
 };
 
 export default {
@@ -53,6 +70,8 @@ export default {
       lean: true
     });
 
+    const whitelistedThesauris = await determineWhitelistedThesauris(config);
+
     // there is always one ??
     // console.log(lastChanges[0]);
 
@@ -64,13 +83,12 @@ export default {
       }
 
       const templatesConfig = config.templates || {};
-      const thesaurisConfig = config.dictionaries || {};
 
       if (change.namespace === 'templates' && !templatesConfig[change.mongoId.toString()]) {
         return Promise.resolve();
       }
 
-      if (change.namespace === 'dictionaries' && !thesaurisConfig[change.mongoId.toString()]) {
+      if (change.namespace === 'dictionaries' && !whitelistedThesauris.includes(change.mongoId.toString())) {
         return Promise.resolve();
       }
 
