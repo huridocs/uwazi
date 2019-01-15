@@ -64,8 +64,13 @@ export default {
       }
 
       const templatesConfig = config.templates || {};
+      const thesaurisConfig = config.dictionaries || {};
 
       if (change.namespace === 'templates' && !templatesConfig[change.mongoId.toString()]) {
+        return Promise.resolve();
+      }
+
+      if (change.namespace === 'dictionaries' && !thesaurisConfig[change.mongoId.toString()]) {
         return Promise.resolve();
       }
 
@@ -74,7 +79,6 @@ export default {
       if (change.namespace === 'entities' && !Object.keys(templatesConfig).includes(data.template.toString())) {
         return Promise.resolve();
       }
-
 
       if (change.namespace === 'templates' && data.properties) {
         data.properties = data.properties.filter(property => templatesConfig[data._id.toString()].includes(property._id.toString()));

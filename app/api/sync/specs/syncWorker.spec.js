@@ -1,4 +1,5 @@
 import 'api/entities';
+import 'api/thesauris/dictionariesModel';
 import errorLog from 'api/log/errorLog';
 import 'api/relationships';
 import backend from 'fetch-mock';
@@ -20,7 +21,11 @@ import fixtures, {
   template1Property3,
   template2,
   template3,
+  thesauri1,
+  thesauri3,
+  thesauri4,
 } from './fixtures';
+
 import syncWorker from '../syncWorker';
 import syncsModel from '../syncsModel';
 
@@ -45,6 +50,14 @@ describe('syncWorker', () => {
       }
     }
   });
+
+  const expectCallToEqual = (call, namespace, data) => {
+    expect(call).toEqual(['url/api/sync', { namespace, data }]);
+  };
+
+  const expectCallWith = (spy, namespace, data) => {
+    expect(spy).toHaveBeenCalledWith('url/api/sync', { namespace, data });
+  };
 
   describe('syncronize', () => {
     beforeEach(() => {
@@ -80,20 +93,36 @@ describe('syncWorker', () => {
 
         expect(templateCallsOnly.length).toBe(2);
 
-        expect(template1Call).toEqual(['url/api/sync', {
-          namespace: 'templates',
-          data: {
-            _id: template1,
-            properties: [
-              expect.objectContaining({ _id: template1Property1 }),
-              expect.objectContaining({ _id: template1Property3 })
-            ]
+        expectCallToEqual(template1Call, 'templates', {
+          _id: template1,
+          properties: [
+            expect.objectContaining({ _id: template1Property1 }),
+            expect.objectContaining({ _id: template1Property3 })
+          ]
+        });
+
+        expectCallToEqual(template2Call, 'templates', { _id: template2 });
+      });
+    });
+
+    describe('thesauris (dictionaries collection)', () => {
+      it('should only sync whitelisted thesauris (deleting even non whitelisted ones)', async () => {
+        await syncWorker.syncronize({
+          url: 'url',
+          config: {
+            dictionaries: {
+              [thesauri1.toString()]: true,
+              [thesauri3.toString()]: true,
+            }
           }
-        }]);
-        expect(template2Call).toEqual(['url/api/sync', {
-          namespace: 'templates',
-          data: { _id: template2 }
-        }]);
+        });
+
+        expect(request.post.calls.count()).toBe(2);
+        expect(request.delete.calls.count()).toBe(1);
+
+        expectCallWith(request.post, 'dictionaries', expect.objectContaining({ _id: thesauri1 }));
+        expectCallWith(request.post, 'dictionaries', expect.objectContaining({ _id: thesauri3 }));
+        expectCallWith(request.delete, 'dictionaries', expect.objectContaining({ _id: thesauri4 }));
       });
     });
 
@@ -113,24 +142,15 @@ describe('syncWorker', () => {
         const entity1Call = entitiesCallsOnly.find(call => call[1].data._id.toString() === newDoc1.toString());
         const entity2Call = entitiesCallsOnly.find(call => call[1].data._id.toString() === newDoc2.toString());
 
-        expect(entity1Call).toEqual(['url/api/sync', {
-          namespace: 'entities',
-          data: expect.objectContaining({
-            _id: newDoc1,
-            metadata: {
-              t1Property2: 'sync property 2',
-              t1Property3: 'sync property 3',
-            }
-          })
-        }]);
+        expectCallToEqual(entity1Call, 'entities', expect.objectContaining({
+          _id: newDoc1,
+          metadata: { t1Property2: 'sync property 2', t1Property3: 'sync property 3' }
+        }));
 
-        expect(entity2Call).toEqual(['url/api/sync', {
-          namespace: 'entities',
-          data: expect.objectContaining({
-            _id: newDoc2,
-            metadata: { t1Property2: 'another doc property 2' },
-          })
-        }]);
+        expectCallToEqual(entity2Call, 'entities', expect.objectContaining({
+          _id: newDoc2,
+          metadata: { t1Property2: 'another doc property 2' },
+        }));
 
         expect(request.post).not.toHaveBeenCalledWith('url/api/sync', {
           namespace: 'entities',

@@ -19,6 +19,18 @@ const template1Property3 = db.id();
 const template2 = db.id();
 const template3 = db.id();
 
+const thesauri1 = db.id();
+const thesauri1Value1 = db.id();
+const thesauri1Value2 = db.id();
+
+const thesauri2 = db.id();
+
+const thesauri3 = db.id();
+const thesauri3Value1 = db.id();
+const thesauri3Value2 = db.id();
+
+const thesauri4 = db.id();
+
 const settingsId = db.id();
 const sessionsId = db.id();
 
@@ -95,6 +107,30 @@ export default {
       namespace: 'templates',
       mongoId: template3,
       deleted: false,
+    },
+    {
+      timestamp: 9006,
+      namespace: 'dictionaries',
+      mongoId: thesauri1,
+      deleted: false,
+    },
+    {
+      timestamp: 9009,
+      namespace: 'dictionaries',
+      mongoId: thesauri2,
+      deleted: false,
+    },
+    {
+      timestamp: 9007,
+      namespace: 'dictionaries',
+      mongoId: thesauri3,
+      deleted: false,
+    },
+    {
+      timestamp: 9008,
+      namespace: 'dictionaries',
+      mongoId: thesauri4,
+      deleted: true,
     },
     {
       timestamp: 9000,
@@ -180,6 +216,41 @@ export default {
     }
   ],
 
+  dictionaries: [
+    {
+      _id: thesauri1,
+      values: [
+        {
+          _id: thesauri1Value1,
+          label: 'th1value1',
+        },
+        {
+          _id: thesauri1Value2,
+          label: 'th1value2',
+        },
+      ],
+    },
+    {
+      _id: thesauri2
+    },
+    {
+      _id: thesauri3,
+      values: [
+        {
+          _id: thesauri3Value1,
+          label: 'th3value1',
+        },
+        {
+          _id: thesauri3Value2,
+          label: 'th3value2',
+        },
+      ],
+    },
+    {
+      _id: thesauri4
+    }
+  ],
+
   settings: [
     {
       _id: settingsId,
@@ -207,5 +278,9 @@ export {
   template1Property2,
   template1Property3,
   template2,
-  template3
+  template3,
+  thesauri1,
+  thesauri2,
+  thesauri3,
+  thesauri4
 };
