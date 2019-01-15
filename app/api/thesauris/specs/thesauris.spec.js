@@ -24,7 +24,7 @@ describe('thesauris', () => {
         expect(dictionaties[0].name).toBe('dictionary');
         expect(dictionaties[1].name).toBe('dictionary 2');
         expect(dictionaties[3].name).toBe('entityTemplate');
-        expect(dictionaties[3].values).toEqual([{ id: 'sharedId', label: 'spanish entity', icon: 'Icon' }]);
+        expect(dictionaties[3].values).toEqual([{ id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' }]);
         expect(dictionaties[3].type).toBe('template');
         done();
       })
@@ -36,8 +36,8 @@ describe('thesauris', () => {
       .then((dictionaties) => {
         expect(dictionaties.length).toBe(5);
         expect(dictionaties[3].values).toEqual([
-          { id: 'sharedId', label: 'spanish entity', icon: 'Icon' },
-          { id: 'other', label: 'unpublished entity' }
+          { id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' },
+          { id: 'other', label: 'unpublished entity', type: 'entity' }
         ]);
         done();
       })

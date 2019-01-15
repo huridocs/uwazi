@@ -102,7 +102,7 @@ export class Connection extends Component {
 
             <ShowIf if={!this.props.targetDoc}>
               <I18NLink
-                to={`/${doc.get('type')}/${doc.get('sharedId')}`}
+                to={`/${doc.get('file') ? 'document' : 'entity'}/${doc.get('sharedId')}`}
                 onClick={e => e.stopPropagation()}
                 className="item-shortcut btn btn-default"
               >

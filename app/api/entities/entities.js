@@ -260,7 +260,7 @@ export default {
 
   getByTemplate(template, language, onlyPublished = true) {
     const query = Object.assign({ template, language }, onlyPublished ? { published: true } : {});
-    return model.get(query);
+    return model.get(query, ['title', 'icon', 'file', 'sharedId']);
   },
 
   updateMetdataFromRelationships(entities, language) {
@@ -373,7 +373,7 @@ export default {
 
   async getRawPage(sharedId, language, pageNumber) {
     const [entity] = await model.get({ sharedId, language }, { [`fullText.${pageNumber}`]: true });
-    if (!entity) {
+    if (!entity || !entity.fullText) {
       throw createError('entity does not exists', 404);
     }
 
