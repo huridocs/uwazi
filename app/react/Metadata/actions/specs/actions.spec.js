@@ -23,7 +23,7 @@ describe('Metadata Actions', () => {
       const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2', newProp: '', testRelation: [] } };
+      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', newProp: '', testRelation: [] } };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
@@ -97,7 +97,7 @@ describe('Metadata Actions', () => {
       jasmine.clock().uninstall();
     });
 
-    it('should change the document template and reset metadata properties (preserving types)', () => {
+    it('should change the document template preserve matching values', () => {
       spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
 
@@ -107,7 +107,7 @@ describe('Metadata Actions', () => {
       const state = {
         templates: Immutable.fromJS([
           template,
-          { _id: 'anotherTemplate' }
+          { _id: 'templateId', properties: [{ name: 'test' }, { name: 'test2' }] }
         ])
       };
 
@@ -116,7 +116,7 @@ describe('Metadata Actions', () => {
       actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
       expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
 
-      const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: '', newProp: [] } };
+      const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: 'test', newProp: [] } };
       expect(dispatch).toHaveBeenCalledWith('formReset');
       expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
 
