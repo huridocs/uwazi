@@ -40,6 +40,11 @@ describe('syncWorker', () => {
     db.disconnect().then(done);
   });
 
+  const syncWorkerWithConfig = async config => syncWorker.syncronize({
+    url: 'url',
+    config
+  });
+
   const syncAllTemplates = async () => syncWorker.syncronize({
     url: 'url',
     config: {
@@ -66,10 +71,7 @@ describe('syncWorker', () => {
     });
 
     it('should only sync whitelisted collections (forbidding certain collections even if present)', async () => {
-      await syncWorker.syncronize({
-        url: 'url',
-        config: { migrations: {}, settings: {}, sessions: {} }
-      });
+      await syncWorkerWithConfig({ migrations: {}, settings: {}, sessions: {} });
 
       expect(request.post.calls.count()).toBe(0);
       expect(request.delete.calls.count()).toBe(0);
@@ -77,13 +79,10 @@ describe('syncWorker', () => {
 
     describe('templates', () => {
       it('should only sync whitelisted templates and properties', async () => {
-        await syncWorker.syncronize({
-          url: 'url',
-          config: {
-            templates: {
-              [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
-              [template2.toString()]: [],
-            }
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
+            [template2.toString()]: [],
           }
         });
 
@@ -107,13 +106,10 @@ describe('syncWorker', () => {
 
     describe('thesauris (dictionaries collection)', () => {
       it('should only sync whitelisted thesauris (deleting even non whitelisted ones)', async () => {
-        await syncWorker.syncronize({
-          url: 'url',
-          config: {
-            dictionaries: {
-              [thesauri1.toString()]: true,
-              [thesauri3.toString()]: true,
-            }
+        await syncWorkerWithConfig({
+          dictionaries: {
+            [thesauri1.toString()]: true,
+            [thesauri3.toString()]: true,
           }
         });
 
@@ -128,13 +124,10 @@ describe('syncWorker', () => {
 
     describe('entities', () => {
       it('should only sync entities belonging to a whitelisted template and properties', async () => {
-        await syncWorker.syncronize({
-          url: 'url',
-          config: {
-            templates: {
-              [template1.toString()]: [template1Property2.toString(), template1Property3.toString()],
-              [template2.toString()]: [],
-            }
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [template1Property2.toString(), template1Property3.toString()],
+            [template2.toString()]: [],
           }
         });
 
@@ -156,6 +149,10 @@ describe('syncWorker', () => {
           namespace: 'entities',
           data: expect.objectContaining({ title: 'not to sync' })
         });
+      });
+
+      it('should exclude values of non whitelisted thesauris', async () => {
+
       });
     });
 
