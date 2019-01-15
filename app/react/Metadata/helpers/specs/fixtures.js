@@ -33,7 +33,6 @@ export const templates = Immutable.fromJS([
   {
     _id: 'templateID',
     name: 'Mecanismo',
-    isEntity: true,
     properties: [
       { name: 'text', type: 'text', label: 'Text', showInCard: true },
       { name: 'date', type: 'date', label: 'Date' },
@@ -60,15 +59,15 @@ export const thesauris = Immutable.fromJS([
     name: 'Multiselect',
     type: 'template',
     values: [
-      { label: 'Value 1', id: 'value1', _id: 'value1' },
-      { label: 'Value 2', id: 'value2', _id: 'value2' },
+      { label: 'Value 1', id: 'value1', _id: 'value1', type: 'document' },
+      { label: 'Value 2', id: 'value2', _id: 'value2', type: 'document' },
       {
         label: 'Value 3',
         id: 'value3',
         _id: 'value3',
         values: [
-          { label: 'Value 5', id: 'value5', _id: 'value5' },
-          { label: 'Value 6', id: 'value6', _id: 'value6' },
+          { label: 'Value 5', id: 'value5', _id: 'value5', type: 'document' },
+          { label: 'Value 6', id: 'value6', _id: 'value6', type: 'document' },
         ] }
     ]
   },
@@ -76,7 +75,6 @@ export const thesauris = Immutable.fromJS([
     _id: 'thesauriId2',
     name: 'Multiselect2',
     type: 'template',
-    isEntity: true,
-    values: [{ label: 'Value 4', id: 'value4', _id: 'value4' }]
+    values: [{ label: 'Value 4', id: 'value4', _id: 'value4', type: 'entity' }]
   }
 ]);

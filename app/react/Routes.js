@@ -12,7 +12,6 @@ import {
   AccountSettings,
   CollectionSettings,
   NavlinksSettings,
-  DocumentTypesList,
   EntityTypesList,
   RelationTypesList,
   ThesaurisList,
@@ -35,9 +34,7 @@ import EntityView from 'app/Entities/EntityView';
 import Uploads from 'app/Uploads/UploadsRoute';
 
 import EditTemplate from 'app/Templates/EditTemplate';
-import EditEntity from 'app/Templates/EditEntity';
 import NewTemplate from 'app/Templates/NewTemplate';
-import NewEntity from 'app/Templates/NewEntity';
 
 import EditThesauri from 'app/Thesauris/EditThesauri';
 import NewThesauri from 'app/Thesauris/NewThesauri';
@@ -50,14 +47,30 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
 import { trackPage } from 'app/App/GoogleAnalytics';
+import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
 
 function onEnter() {
   trackPage();
 }
 
+function settingsEnter(nxtState, replace) {
+  if (!store.getState().user.get('_id')) {
+    replace('/login');
+  }
+}
+
+function enterOnLibrary(nxtState, replace) {
+  const state = store.getState();
+  if (blankState() && !state.user.get('_id')) {
+    return replace('/login');
+  }
+  trackPage();
+}
+
 function getIndexRoute(nextState, callBack) {
-  const homePageSetting = store.getState().settings.collection.get('home_page');
+  const state = store.getState();
+  const homePageSetting = state.settings.collection.get('home_page');
   const customHomePage = homePageSetting ? homePageSetting.split('/') : [];
   const isPageRoute = customHomePage.includes('page');
 
@@ -75,6 +88,9 @@ function getIndexRoute(nextState, callBack) {
       if (!isPageRoute) {
         replace(customHomePage.join('/'));
       }
+      if (!homePageSetting) {
+        enterOnLibrary(nxtState, replace);
+      }
     },
     customHomePageId: pageId
   };
@@ -83,7 +99,7 @@ function getIndexRoute(nextState, callBack) {
 
 const routes = (
   <Route getIndexRoute={getIndexRoute}>
-    <Route path="settings" component={Settings}>
+    <Route path="settings" component={Settings} onEnter={settingsEnter}>
       <Route path="account" component={AccountSettings} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
@@ -97,15 +113,10 @@ const routes = (
         <Route path="new" component={NewPage} />
         <Route path="edit/:pageId" component={EditPage} />
       </Route>
-      <Route path="documents">
-        <IndexRoute component={DocumentTypesList} />
+      <Route path="templates">
+        <IndexRoute component={EntityTypesList} />
         <Route path="new" component={NewTemplate} />
         <Route path="edit/:templateId" component={EditTemplate} />
-      </Route>
-      <Route path="entities">
-        <IndexRoute component={EntityTypesList} />
-        <Route path="new" component={NewEntity} />
-        <Route path="edit/:templateId" component={EditEntity} />
       </Route>
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
@@ -126,7 +137,7 @@ const routes = (
       <Route path="customisation" component={Customisation} />
       <Route path="custom-uploads" component={CustomUploads} />
     </Route>
-    <Route path="library" component={Library} onEnter={onEnter}/>
+    <Route path="library" component={Library} onEnter={enterOnLibrary}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />

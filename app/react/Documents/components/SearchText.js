@@ -57,7 +57,7 @@ export class SearchText extends Component {
 
   render() {
     const { doc, snippets } = this.props;
-    const documentViewUrl = doc.get('type') === 'document' ?
+    const documentViewUrl = doc.get('file') ?
       `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
     return (
       <div>

@@ -197,8 +197,7 @@ const allowedRoute = (user = {}, url) => {
     '/settings/pages',
     '/settings/translations',
     '/settings/filters',
-    '/settings/documents',
-    '/settings/entities',
+    '/settings/templates',
     '/settings/dictionaries',
     '/settings/connections'
   ];
@@ -250,7 +249,7 @@ function getAssets() {
 function ServerRouter(req, res) {
   if (!allowedRoute(req.user, req.url)) {
     const url = req.user ? '/' : '/login';
-    return res.redirect(302, url);
+    return res.redirect(401, url);
   }
 
   const { PORT } = process.env;

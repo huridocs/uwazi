@@ -25,7 +25,7 @@ export class UploadBox extends Component {
     super(props);
     this.onDrop = this.onDrop.bind(this);
     socket.on('documentProcessed', (sharedId) => {
-      this.props.documentProcessed(sharedId);
+      this.props.documentProcessed(sharedId, 'uploads');
     });
 
     socket.on('conversionFailed', (sharedId) => {

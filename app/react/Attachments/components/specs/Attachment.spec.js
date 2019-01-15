@@ -133,12 +133,6 @@ describe('Attachment', () => {
       props.isSourceDocument = true;
     });
 
-    it('should not render the delete button on the first item', () => {
-      render();
-      const deleteButton = component.find('.attachment-buttons').find('button').at(1);
-      expect(deleteButton.parent().props().if).toBe(false);
-    });
-
     it('should include an authorized replace button on the first item', () => {
       render();
       const replaceButton = component.find('.attachment-buttons').find(UploadButton);

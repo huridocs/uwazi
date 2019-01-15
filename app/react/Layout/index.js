@@ -1,6 +1,7 @@
 export { default as Item } from './Item';
 export { default as TemplateLabel } from './TemplateLabel';
 export { default as Icon } from './Icon';
+export { default as Tip } from './Tip';
 export { default as SidePanel } from './SidePanel';
 export { default as DocumentLanguage } from './DocumentLanguage';
 export { default as Thumbnail } from './Thumbnail';
