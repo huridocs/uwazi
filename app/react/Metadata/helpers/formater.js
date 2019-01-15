@@ -251,11 +251,6 @@ export default {
     const type = property.get('type');
 
     if (this[type] && (value || type === 'preview')) {
-      // console.log('En transform:', doc);
-      // console.log('type:', type);
-      // console.log('value:', value);
-      // console.log('property.toJS():', property.toJS());
-      // console.log('----------------------');
       return Object.assign(
         {},
         { translateContext: template.get('_id'), ...property.toJS() },
