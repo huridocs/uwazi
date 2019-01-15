@@ -104,7 +104,12 @@ export default {
     const onlyPublished = !user;
     return entities.getByTemplate(template._id, language, onlyPublished)
     .then((response) => {
-      template.values = response.map(entity => ({ id: entity.sharedId, label: entity.title, icon: entity.icon }));
+      template.values = response.map(entity => ({
+        id: entity.sharedId,
+        label: entity.title,
+        icon: entity.icon,
+        type: entity.file ? 'document' : 'entity'
+      }));
       template.type = 'template';
       return template;
     });
