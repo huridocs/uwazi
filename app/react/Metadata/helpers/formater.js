@@ -23,9 +23,9 @@ const getOption = (thesauri, id) => {
     }
   });
 
-  if (option) {
-    option = option.set('type', thesauri.get('isEntity') ? 'entity' : 'document');
-  }
+  // if (option) {
+  //   option = option.set('type', thesauri.get('isEntity') ? 'entity' : 'document');
+  // }
 
   return option;
 };
@@ -103,7 +103,8 @@ export default {
 
     let url;
     if (option && thesauri.get('type') === 'template') {
-      url = `/${option.get('type') ? option.get('type') : 'entity'}/${option.get('id')}`;
+      const type = option.get('type');
+      url = `/${type}/${option.get('id')}`;
     }
 
     return { value, url, icon };
@@ -144,7 +145,7 @@ export default {
   },
 
   preview(property, value, thesauris, { doc }) {
-    let reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
+    const reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
     return this.multimedia(property, `/api/attachment/${doc._id}.jpg${reloadHack ? `?r=${reloadHack}` : ''}`, 'image');
   },
 

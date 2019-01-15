@@ -88,10 +88,3 @@ export function saveTemplate(data) {
     });
   };
 }
-
-export function saveEntity(data) {
-  const entity = Object.assign({}, data, { isEntity: true });
-  return (dispatch) => {
-    saveTemplate(entity)(dispatch);
-  };
-}

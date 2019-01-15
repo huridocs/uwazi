@@ -22,7 +22,7 @@ exports[`TemplateCreator Property Options should include document specific optio
           className="col-xs-12 col-sm-9"
         >
           <Connect(DropTarget(MetadataTemplate))
-            backUrl="/settings/documents"
+            backUrl="/settings/templates"
             relationType={false}
             saveTemplate={[Function]}
           />
@@ -136,7 +136,7 @@ exports[`TemplateCreator Property Options should include most common options by 
           className="col-xs-12 col-sm-9"
         >
           <Connect(DropTarget(MetadataTemplate))
-            backUrl="/settings/entities"
+            backUrl="/settings/templates"
             relationType={false}
             saveTemplate={[Function]}
           />
@@ -201,6 +201,10 @@ exports[`TemplateCreator Property Options should include most common options by 
               <Connect(DragSource(PropertyOption))
                 label="Image"
                 type="image"
+              />
+              <Connect(DragSource(PropertyOption))
+                label="Preview"
+                type="preview"
               />
               <Connect(DragSource(PropertyOption))
                 label="Media"

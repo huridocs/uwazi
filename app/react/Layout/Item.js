@@ -31,7 +31,7 @@ export class Item extends Component {
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
-    const itemClassName = `item-${doc.type === 'entity' ? 'entity' : 'document'} ${this.props.className || ''}`;
+    const itemClassName = `item-document ${this.props.className || ''}`;
     const itemProps = { className: itemClassName, onClick, onMouseEnter, onMouseLeave, active, tabIndex: '1' };
 
     return (
@@ -50,7 +50,7 @@ export class Item extends Component {
         </div>
         <div className="item-metadata">
           <FormatMetadata
-            entity={doc}
+            entity={this.props.noMetadata ? {} : doc}
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
             renderLabel={(prop, label) => !prop.noLabel && label}
@@ -69,7 +69,8 @@ export class Item extends Component {
 Item.defaultProps = {
   onClick: () => {},
   onMouseEnter: () => {},
-  onMouseLeave: () => {}
+  onMouseLeave: () => {},
+  noMetadata: false,
 };
 
 Item.propTypes = {
@@ -81,6 +82,7 @@ Item.propTypes = {
   onMouseEnter: PropTypes.func,
   onMouseLeave: PropTypes.func,
   active: PropTypes.bool,
+  noMetadata: PropTypes.bool,
   additionalIcon: PropTypes.object,
   additionalText: PropTypes.string,
   additionalMetadata: PropTypes.array,

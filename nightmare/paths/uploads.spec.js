@@ -12,7 +12,7 @@ describe('Uploads', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
-  it('should log in as admin', (done) => {
+  fit('should log in as admin', (done) => {
     nightmare
     .login('admin', 'admin')
     .goToUploads()
@@ -56,13 +56,25 @@ describe('Uploads', () => {
     });
 
     describe('when processing fails', () => {
-      it('should create the document and show "Conversion failed"', (done) => {
+      fit('should create the document and show "Conversion failed"', (done) => {
         const expectedTitle = 'Invalid';
 
         nightmare
         .upload('.upload-box input', `${__dirname}/test_files/invalid.pdf`)
+        .wait(() => {
+          console.log(0);
+          return true;
+        })
         .waitForCardToBeCreated(expectedTitle)
+        .wait(() => {
+          console.log(1);
+          return true;
+        })
         .waitForCardStatus(selectors.uploadsView.firstDocument, 'Conversion failed')
+        .wait(() => {
+          console.log(2);
+          return true;
+        })
         .getResultsAsJson()
         .then((results) => {
           expect(results[0].title).toBe(expectedTitle);

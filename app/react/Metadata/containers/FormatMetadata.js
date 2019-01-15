@@ -15,7 +15,7 @@ const FormatMetadata = ({ additionalMetadata, sortedProperty, entity, ...props }
 
 FormatMetadata.defaultProps = {
   sortedProperty: '',
-  additionalMetadata: []
+  additionalMetadata: [],
 };
 
 FormatMetadata.propTypes = {

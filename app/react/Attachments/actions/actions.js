@@ -3,6 +3,7 @@ import superagent from 'superagent';
 
 import { APIURL } from 'app/config.js';
 import { notify } from 'app/Notifications/actions/notificationsActions';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
 import api from 'app/utils/api';
 
 import * as types from './actionTypes';
@@ -21,6 +22,12 @@ export function uploadAttachment(entityId, file, __reducerKey, options = {}) {
     })
     .on('response', (result) => {
       dispatch({ type: types.ATTACHMENT_COMPLETE, entity: entityId, file: JSON.parse(result.text), __reducerKey });
+      api.get('entities', { _id: entityId })
+      .then((response) => {
+        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json.rows[0], __reducerKey });
+        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json.rows[0], __reducerKey });
+      });
     })
     .end();
   };
@@ -40,8 +47,11 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
 
 export function deleteAttachment(entityId, attachment, __reducerKey) {
   return dispatch => api.delete('attachments/delete', { entityId, filename: attachment.filename })
-  .then(() => {
+  .then((response) => {
     dispatch({ type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment, __reducerKey });
+    dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json, __reducerKey });
+    dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+    dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json, __reducerKey });
     dispatch(notify('Attachment deleted', 'success'));
   });
 }

@@ -6,9 +6,9 @@ import React, { Component } from 'react';
 
 import { ConnectionsList } from 'app/ConnectionsList';
 import { CreateConnectionPanel } from 'app/Connections';
-import { CurrentLocationLink } from 'app/Layout';
+import { CurrentLocationLink, Icon } from 'app/Layout';
 import { RelationshipsFormButtons } from 'app/Relationships';
-import { Translate } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { actions } from 'app/BasicReducer';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import ContextMenu from 'app/ContextMenu';
@@ -53,10 +53,30 @@ export class Viewer extends Component {
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
 
+  renderNoDoc() {
+    const { doc } = this.props;
+    return (
+      <div className="row">
+        <div className="content-header content-header-document">
+          <div className="content-header-title">
+            <Icon icon="lightbulb" />
+            <Translate>
+              This entity has no document, you probably want to see the metadata
+            </Translate>
+            &nbsp;
+            <I18NLink to={`/entity/${doc.get('sharedId')}`}><Translate>view</Translate></I18NLink>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   render() {
     const { doc, sidepanelTab } = this.props;
-
+    if (doc.get('_id') && !doc.get('file')) {
+      return this.renderNoDoc();
+    }
     let className = 'document-viewer';
     if (this.props.panelIsOpen) {
       className += ' with-panel is-active';

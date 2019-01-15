@@ -114,24 +114,23 @@ export function scrollTo(reference, docInfo, element = 'a') {
   //
   const page = Object.keys(docInfo).find(pageNumber => docInfo[pageNumber].chars >= reference.range.start);
   //
-
-  if (window.document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')) {
-    scroller.to(`.document-viewer a[data-id="${reference._id}"]`, '.document-viewer', { duration: 100 });
+  if (window.document.querySelector(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer')) {
+    scroller.to(`.document-viewer a[data-${reference._id}="${reference._id}"]`, '.document-viewer', { duration: 50 });
   } else {
     const scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration: 0, dividerOffset: 1 });
 
     events.on('referenceRendered', (renderedReference) => {
-      if (renderedReference._id === reference._id &&
-          window.document.querySelector(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer')
+      if (renderedReference.ids.includes(reference._id) &&
+          window.document.querySelector(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer')
       ) {
         window.clearInterval(scroll);
-        scroller.to(`.document-viewer ${element}[data-id="${reference._id}"]`, '.document-viewer', { duration: 100 });
+        scroller.to(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer', { duration: 50 });
         events.removeAllListeners('referenceRendered');
       }
     });
   }
 
-  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 100 });
+  scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 50 });
 }
 
 export function selectSnippet(page, snippet) {

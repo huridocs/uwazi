@@ -41,7 +41,7 @@ exports[`SearchText should render SnippetList and pass down same props to it 1`]
       "type": "document",
     }
   }
-  documentViewUrl="/document/sharedId"
+  documentViewUrl="/entity/sharedId"
   searchTerm=""
   selectSnippet={[MockFunction]}
   snippets={

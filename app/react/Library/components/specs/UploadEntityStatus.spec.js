@@ -1,9 +1,8 @@
 import React from 'react';
-import {fromJS as Immutable} from 'immutable';
-import {mapStateToProps} from '../UploadEntityStatus';
-import {shallow} from 'enzyme';
-import {UploadEntityStatus} from '../UploadEntityStatus';
-import {ItemFooter} from 'app/Layout/Lists';
+import { fromJS as Immutable } from 'immutable';
+import { shallow } from 'enzyme';
+import { ItemFooter } from 'app/Layout/Lists';
+import { UploadEntityStatus, mapStateToProps } from '../UploadEntityStatus';
 
 
 describe('UploadEntityStatus', () => {
@@ -15,7 +14,7 @@ describe('UploadEntityStatus', () => {
       props = {};
     });
 
-    let render = () => {
+    const render = () => {
       component = shallow(<UploadEntityStatus {...props}/>);
     };
 
@@ -52,20 +51,21 @@ describe('UploadEntityStatus', () => {
 
     beforeEach(() => {
       store = {
-        progress: Immutable({docId: 30}),
-        user: Immutable({_id: 'batId'})
+        progress: Immutable({ docId: 30 }),
+        user: Immutable({ _id: 'batId' })
       };
 
       doc = Immutable({
         _id: '123',
         sharedId: 'docId',
-        uploaded: false
+        uploaded: false,
+        file: {}
       });
     });
 
     describe('when is a document and not uploaded', () => {
       it('should return uploading props', () => {
-        const props = mapStateToProps(store, {doc});
+        const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Uploading...');
         expect(props.progress).toBe(30);
@@ -74,8 +74,8 @@ describe('UploadEntityStatus', () => {
 
     describe('when progress is 0', () => {
       it('should return uploading props', () => {
-        store.progress = Immutable({docId: 0});
-        const props = mapStateToProps(store, {doc});
+        store.progress = Immutable({ docId: 0 });
+        const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Uploading...');
         expect(props.progress).toBe(0);
@@ -85,7 +85,7 @@ describe('UploadEntityStatus', () => {
     describe('when is a document, uploaded but not processed', () => {
       it('should return processing props', () => {
         doc = doc.set('uploaded', true);
-        const props = mapStateToProps(store, {doc});
+        const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('processing');
         expect(props.message).toBe('Processing...');
         expect(props.progress).toBe(100);
@@ -96,7 +96,7 @@ describe('UploadEntityStatus', () => {
       it('should return error props', () => {
         doc = doc.set('uploaded', true);
         doc = doc.set('processed', false);
-        const props = mapStateToProps(store, {doc});
+        const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('danger');
         expect(props.message).toBe('Conversion failed');
       });
@@ -106,7 +106,7 @@ describe('UploadEntityStatus', () => {
       it('should return No type selected props', () => {
         doc = doc.set('uploaded', true);
         doc = doc.set('processed', true);
-        const props = mapStateToProps(store, {doc});
+        const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('warning');
         expect(props.message).toBe('No type selected');
       });
@@ -116,7 +116,7 @@ describe('UploadEntityStatus', () => {
       it('should return No type selected props', () => {
         doc = doc.set('uploaded', false);
         store.progress = Immutable({});
-        const props = mapStateToProps(store, {doc});
+        const props = mapStateToProps(store, { doc });
         expect(props.status).toBe('danger');
         expect(props.message).toBe('Upload failed');
       });
@@ -127,7 +127,7 @@ describe('UploadEntityStatus', () => {
         doc = doc.set('uploaded', true);
         doc = doc.set('processed', true);
         doc = doc.set('template', '1');
-        const props = mapStateToProps(store, {doc});
+        const props = mapStateToProps(store, { doc });
         expect(props).toEqual({});
       });
     });

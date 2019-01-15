@@ -1,19 +1,14 @@
-import {fromJS as Immutable} from 'immutable';
+import { fromJS as Immutable } from 'immutable';
 import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
-import * as metadataTypes from 'app/Metadata/actions/actionTypes';
 
-const getId = (state, setInArray) => {
-  return state.getIn(setInArray.concat(['_id']));
-};
+const getId = (state, setInArray) => state.getIn(setInArray.concat(['_id']));
 
-const getAttachments = (state, setInArray) => {
-  return state.getIn(setInArray.concat(['attachments'])) || Immutable([]);
-};
+const getAttachments = (state, setInArray) => state.getIn(setInArray.concat(['attachments'])) || Immutable([]);
 
-export default function manageAttachmentsReducer(originalReducer, {useDefaults = true, setInArray = []} = {}) {
+export default function manageAttachmentsReducer(originalReducer, { useDefaults = true, setInArray = [] } = {}) {
   return (orignialState, originalAction) => {
     let state = orignialState;
-    let action = originalAction || {};
+    const action = originalAction || {};
 
     if (useDefaults) {
       state = orignialState || {};
@@ -26,7 +21,10 @@ export default function manageAttachmentsReducer(originalReducer, {useDefaults =
 
     if (action.type === attachmentsTypes.ATTACHMENT_DELETED && getId(state, setInArray) === action.entity) {
       const attachments = getAttachments(state, setInArray);
-      return state.setIn(setInArray.concat(['attachments']), attachments.filterNot(a => a.get('filename') === action.file.filename));
+      const mainFile = state.getIn(setInArray.concat(['file'])) || Immutable({});
+      const deleteMainFile = mainFile.get('filename') === action.file.filename;
+      const newState = deleteMainFile ? state.setIn(setInArray.concat(['file']), null) : state;
+      return newState.setIn(setInArray.concat(['attachments']), attachments.filterNot(a => a.get('filename') === action.file.filename));
     }
 
     if (action.type === attachmentsTypes.ATTACHMENT_RENAMED && getId(state, setInArray) === action.entity) {
@@ -35,18 +33,13 @@ export default function manageAttachmentsReducer(originalReducer, {useDefaults =
       }
 
       const attachments = getAttachments(state, setInArray);
-      return state.setIn(setInArray.concat(['attachments']), attachments.map(a => {
+      return state.setIn(setInArray.concat(['attachments']), attachments.map((a) => {
         if (a.get('_id') === action.file._id) {
           return a.set('originalname', action.file.originalname);
         }
 
         return a;
       }));
-    }
-
-    if (action.type === metadataTypes.REUPLOAD_COMPLETE && getId(state, setInArray) === action.doc) {
-      const newState = state.setIn(setInArray.concat(['file', 'originalname']), action.file.name);
-      return newState.setIn(setInArray.concat(['file', 'size']), action.file.size);
     }
 
     return originalReducer(state, action);

@@ -80,10 +80,10 @@ export class DocumentSidePanel extends Component {
     const docFile = Object.assign({}, doc.get('file') ? doc.get('file').toJS() : {});
     const attachments = doc.get('file') ? [docFile].concat(docAttachments) : docAttachments;
 
-    const docType = this.props.doc.get('type');
+    const isEntity = !this.props.doc.get('file');
 
     let { tab } = this.props;
-    if (docType === 'entity' && (tab === 'references' || tab === 'toc')) {
+    if (isEntity && (tab === 'references' || tab === 'toc')) {
       tab = 'metadata';
     }
 
@@ -112,7 +112,7 @@ export class DocumentSidePanel extends Component {
                 }
               })()}
               {(() => {
-                if (docType !== 'entity' && !this.props.raw) {
+                if (!isEntity && !this.props.raw) {
                   return (<li>
                     <TabLink to="toc">
                       <Icon icon="font" />
@@ -123,7 +123,7 @@ export class DocumentSidePanel extends Component {
                 return <span/>;
               })()}
               {(() => {
-                if (docType !== 'entity' && !this.props.raw) {
+                if (!isEntity && !this.props.raw) {
                   return (<li>
                     <TabLink to="references">
                       <Icon icon="sitemap" />
@@ -217,13 +217,12 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="metadata">
               {(() => {
-                if (docBeingEdited && this.props.doc.get('type') === 'document') {
+                if (docBeingEdited && !isEntity) {
                   return <DocumentForm storeKey={this.props.storeKey} />;
                 }
-                if (docBeingEdited && this.props.doc.get('type') === 'entity') {
+                if (docBeingEdited && isEntity) {
                   return <EntityForm storeKey={this.props.storeKey} />;
                 }
-
                 return (
                   <div>
                     <ShowMetadata entity={this.props.doc.toJS()} showTitle showType />

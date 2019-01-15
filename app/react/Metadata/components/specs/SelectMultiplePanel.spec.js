@@ -128,6 +128,7 @@ describe('SelectMultiplePanel', () => {
         {
           _id: '1',
           name: 'first',
+          default: true,
           properties: [
             { name: 'year', type: 'numeric' },
             { name: 'powers', content: '1', type: 'multiselect' },
@@ -183,6 +184,7 @@ describe('SelectMultiplePanel', () => {
           const expectedTemplate = {
             _id: '1',
             name: 'first',
+            default: true,
             properties: [
               { name: 'year', type: 'numeric' },
               { name: 'powers', content: '1', type: 'multiselect' },

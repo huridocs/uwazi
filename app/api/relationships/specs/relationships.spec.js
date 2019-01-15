@@ -47,19 +47,15 @@ describe('relationships', () => {
         expect(result.length).toBe(12);
         const entity1Connection = result.find(connection => connection.entity === 'entity1');
         expect(entity1Connection.entityData.title).toBe('entity1 title');
-        expect(entity1Connection.entityData.icon).toBe('icon1');
         expect(entity1Connection.entityData.type).toBe('document');
         expect(entity1Connection.entityData.template).toEqual(template);
-        expect(entity1Connection.entityData.metadata).toEqual({ data: 'data1' });
         expect(entity1Connection.entityData.creationDate).toEqual(123);
 
         const entity3Connection = result.find(connection => connection.entity === 'entity3');
         expect(entity3Connection.entityData.title).toBe('entity3 title');
-        expect(entity3Connection.entityData.icon).toBe('icon3');
         expect(entity3Connection.entityData.type).toBe('entity');
         expect(entity3Connection.entityData.template).toEqual(template);
         expect(entity3Connection.entityData.published).toBe(true);
-        expect(entity3Connection.entityData.metadata).toEqual({ data: 'data2' });
         expect(entity3Connection.entityData.creationDate).toEqual(456);
         expect(entity3Connection.entityData.file).toBeUndefined();
 

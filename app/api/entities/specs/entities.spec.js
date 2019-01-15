@@ -62,13 +62,11 @@ describe('entities', () => {
 
         expect(createdDocumentEs.title).toBe(doc.title);
         expect(createdDocumentEs.user.equals(user._id)).toBe(true);
-        expect(createdDocumentEs.type).toBe('entity');
         expect(createdDocumentEs.published).toBe(false);
         expect(createdDocumentEs.creationDate).toEqual(universalTime);
 
         expect(createdDocumentEn.title).toBe(doc.title);
         expect(createdDocumentEn.user.equals(user._id)).toBe(true);
-        expect(createdDocumentEn.type).toBe('entity');
         expect(createdDocumentEn.published).toBe(false);
         expect(createdDocumentEn.creationDate).toEqual(universalTime);
         done();
@@ -746,21 +744,21 @@ describe('entities', () => {
     });
 
     it('should delete the document from the search', done => entities.delete('shared')
-      .then(() => {
-        const argumnets = search.delete.calls.allArgs();
-        expect(search.delete).toHaveBeenCalled();
-        expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
-        done();
-      })
-      .catch(catchErrors(done)));
+    .then(() => {
+      const argumnets = search.delete.calls.allArgs();
+      expect(search.delete).toHaveBeenCalled();
+      expect(argumnets[0][0]._id.toString()).toBe(batmanFinishesId.toString());
+      done();
+    })
+    .catch(catchErrors(done)));
 
     it('should delete the document relationships', done => entities.delete('shared')
-      .then(() => relationships.get({ entity: 'shared' }))
-      .then((refs) => {
-        expect(refs.length).toBe(0);
-        done();
-      })
-      .catch(catchErrors(done)));
+    .then(() => relationships.get({ entity: 'shared' }))
+    .then((refs) => {
+      expect(refs.length).toBe(0);
+      done();
+    })
+    .catch(catchErrors(done)));
 
     it('should delete the original file', (done) => {
       fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));
@@ -838,10 +836,28 @@ describe('entities', () => {
 
   describe('addLanguage()', () => {
     it('should duplicate all the entities from the default language to the new one', (done) => {
+      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
       entities.addLanguage('ab')
       .then(() => entities.get({ language: 'ab' }))
       .then((newEntities) => {
+        expect(entities.createThumbnail).toHaveBeenCalled();
         expect(newEntities.length).toBe(7);
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('removeLanguage()', () => {
+    it('should delete all entities from the language', (done) => {
+      spyOn(search, 'deleteLanguage');
+      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
+      entities.addLanguage('ab')
+      .then(() => entities.removeLanguage('ab'))
+      .then(() => entities.get({ language: 'ab' }))
+      .then((newEntities) => {
+        expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
+        expect(newEntities.length).toBe(0);
         done();
       })
       .catch(catchErrors(done));

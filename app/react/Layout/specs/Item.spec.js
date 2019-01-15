@@ -51,7 +51,7 @@ describe('Item', () => {
 
   it('should extend RowList.Item and append active, type and classNames correctly', () => {
     render();
-    expect(component.find(RowList.Item).props().className).toContain('item-entity');
+    expect(component.find(RowList.Item).props().className).toContain('item-document');
     expect(component.find(RowList.Item).props().className).toContain('custom-class');
     expect(component.find(RowList.Item).props().active).toBe(true);
   });

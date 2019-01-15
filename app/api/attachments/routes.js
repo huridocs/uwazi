@@ -8,6 +8,7 @@ import ID from 'shared/uniqueID';
 import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
+import relationships from 'api/relationships';
 
 import { attachmentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
@@ -20,6 +21,16 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
+});
+
+const deleteFile = filePath => new Promise((resolve, reject) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve(filePath);
+  });
 });
 
 const assignAttachment = (entity, addedFile) => {
@@ -82,7 +93,7 @@ export default (app) => {
     '/api/attachments/upload',
     needsAuthorization(['admin', 'editor']),
     upload.any(),
-    (req, res, next) => entities.getById(req.body.entityId)
+    (req, res, next) => entities.getById(req.body.entityId, req.language)
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
       processSingleLanguage(entity, req))
     .then(([addedFile]) => {
@@ -144,14 +155,33 @@ export default (app) => {
     }).required(), 'query'),
 
     (req, res) => entities.getById(req.query.entityId)
-    .then((entity) => {
-      const attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
+    .then(entity => Promise.all([entity, entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } })]))
+    .then(([entity, siblings]) => {
+      entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
+      const deleteTextReferences = [];
+      const deleteThumbnails = [];
+      if (entity.file && entity.file.filename === req.query.filename) {
+        entity.file = null;
+        entity.toc = null;
+        deleteTextReferences.push(relationships.deleteTextReferences(entity.sharedId, entity.language));
+        deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${entity._id}.jpg`)));
+        siblings = siblings.map((e) => {
+          deleteTextReferences.push(relationships.deleteTextReferences(e.sharedId, e.language));
+          deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${e._id}.jpg`)));
+          e.attachments = (e.attachments || []).filter(a => a.filename !== req.query.filename);
+          e.file = null;
+          e.toc = null;
+          return e;
+        });
+      }
       return Promise.all([
-        entities.saveMultiple([{ ...entity, attachments }]),
-        entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } }, { attachments: 1 })
+        entities.saveMultiple([entity]),
+        entities.saveMultiple(siblings),
+        deleteTextReferences,
+        deleteThumbnails
       ]);
     })
-    .then(([response, siblings]) => {
+    .then(([[entity], siblings]) => {
       const shouldUnlink = siblings.reduce((memo, sibling) => {
         if (sibling.attachments && sibling.attachments.find(a => a.filename === req.query.filename)) {
           return false;
@@ -159,15 +189,7 @@ export default (app) => {
         return memo;
       }, true);
 
-      return !shouldUnlink ? res.json(response[0]) : new Promise((resolve, reject) => {
-        fs.unlink(attachmentsPath + req.query.filename, (err) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve(res.json(response[0]));
-        });
-      });
+      return !shouldUnlink ? res.json(entity) : deleteFile(path.join(attachmentsPath, req.query.filename)).then(() => res.json(entity));
     })
     .catch((error) => {
       res.json({ error });

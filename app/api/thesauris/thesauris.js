@@ -104,7 +104,12 @@ export default {
     const onlyPublished = !user;
     return entities.getByTemplate(template._id, language, onlyPublished)
     .then((response) => {
-      template.values = response.map(entity => ({ id: entity.sharedId, label: entity.title, icon: entity.icon }));
+      template.values = response.map(entity => ({
+        id: entity.sharedId,
+        label: entity.title,
+        icon: entity.icon,
+        type: entity.file ? 'document' : 'entity'
+      }));
       template.type = 'template';
       return template;
     });
@@ -133,11 +138,6 @@ export default {
 
   dictionaries(query) {
     return model.get(query);
-  },
-
-  entities(language) {
-    return templates.get({ isEntity: true })
-    .then(_templates => _templates.map(template => this.templateToThesauri(template, language)));
   },
 
   delete(id) {

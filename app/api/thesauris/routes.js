@@ -58,12 +58,6 @@ export default (app) => {
     }
   );
 
-  app.get('/api/thesauris/entities', (req, res, next) => {
-    thesauris.entities(req.language)
-    .then(response => res.json({ rows: response }))
-    .catch(next);
-  });
-
   app.delete('/api/thesauris',
     needsAuthorization(),
     validateRequest(Joi.object().keys({

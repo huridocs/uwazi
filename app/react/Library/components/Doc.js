@@ -58,14 +58,14 @@ export class Doc extends Component {
   render() {
     const { className, additionalText } = this.props;
     const doc = this.props.doc.toJS();
-    const { sharedId, type, processed } = doc;
+    const { sharedId, file, processed } = doc;
 
     let itemConnections = null;
     if (doc.connections && doc.connections.length) {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = (<div><ViewDocButton type={type} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/></div>);
+    const buttons = (<div><ViewDocButton file={file} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/></div>);
 
     return (<Item
       onClick={this.onClick.bind(this)}

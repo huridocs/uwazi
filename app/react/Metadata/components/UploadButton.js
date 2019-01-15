@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { reuploadDocument } from 'app/Metadata/actions/actions';
+import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import socket from 'app/socket';
 import { Icon } from 'UI';
 
@@ -37,7 +38,8 @@ export class UploadButton extends Component {
     });
 
     socket.on('documentProcessed', (docId) => {
-      if (docId === this.props.documentId) {
+      if (docId === this.props.documentSharedId) {
+        this.props.documentProcessed(docId);
         this.setState({ processing: false, failed: false, completed: true }, () => {
           setTimeout(() => {
             this.setState({ processing: false, failed: false, completed: false });
@@ -130,6 +132,7 @@ export class UploadButton extends Component {
 
 UploadButton.propTypes = {
   reuploadDocument: PropTypes.func,
+  documentProcessed: PropTypes.func,
   documentId: PropTypes.string,
   documentSharedId: PropTypes.string,
   progress: PropTypes.object,
@@ -143,7 +146,7 @@ UploadButton.contextTypes = {
 const mapStateToProps = ({ metadata }) => ({ progress: metadata.progress });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ reuploadDocument }, dispatch);
+  return bindActionCreators({ reuploadDocument, documentProcessed }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadButton);

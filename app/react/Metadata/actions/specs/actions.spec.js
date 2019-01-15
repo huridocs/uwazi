@@ -23,7 +23,7 @@ describe('Metadata Actions', () => {
       const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
 
       actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2', newProp: '', testRelation: [] } };
+      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', newProp: '', testRelation: [] } };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
     });
@@ -41,7 +41,7 @@ describe('Metadata Actions', () => {
         templates = [{
           _id: 'templateId1',
           name: 'first',
-          isEntity: true,
+          default: true,
           properties: [
             { name: 'test' },
             { name: 'newProp' },
@@ -75,23 +75,12 @@ describe('Metadata Actions', () => {
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
 
-      it('should set the first document template if document has type document', () => {
+      it('should set the first document template', () => {
         doc = { title: 'test', type: 'document' };
 
         actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
-        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
-        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-      });
-
-      it('should set the first entity template if document has type entity', () => {
-        doc = { title: 'test', type: 'entity' };
-        templates[0].isEntity = false;
-        templates[1].isEntity = true;
-
-        actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-
-        const expectedDoc = { title: 'test', type: 'entity', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId2' };
+        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId1' };
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });
@@ -108,7 +97,7 @@ describe('Metadata Actions', () => {
       jasmine.clock().uninstall();
     });
 
-    it('should change the document template and reset metadata properties (preserving types)', () => {
+    it('should change the document template preserve matching values', () => {
       spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
 
@@ -118,7 +107,7 @@ describe('Metadata Actions', () => {
       const state = {
         templates: Immutable.fromJS([
           template,
-          { _id: 'anotherTemplate' }
+          { _id: 'templateId', properties: [{ name: 'test' }, { name: 'test2' }] }
         ])
       };
 
@@ -127,7 +116,7 @@ describe('Metadata Actions', () => {
       actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
       expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
 
-      const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: '', newProp: [] } };
+      const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: 'test', newProp: [] } };
       expect(dispatch).toHaveBeenCalledWith('formReset');
       expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
 
@@ -220,34 +209,16 @@ describe('Metadata Actions', () => {
         { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
-        { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file, __reducerKey: 'storeKey' }
+        { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'filename', size: 34, originalname: 'name' }, __reducerKey: 'storeKey' }
       ];
 
-      expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
+      expect(mockUpload.field).toHaveBeenCalledWith('document', 'sharedId');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
 
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
-      mockUpload.emit('response');
+      mockUpload.emit('response', { body: { filename: 'filename', size: 34, originalname: 'name' } });
       expect(store.getActions()).toEqual(expectedActions);
-    });
-
-    describe('upon response', () => {
-      const state = { documentViewer: { doc: 'doc' } };
-
-      beforeEach(() => {
-        jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve(state));
-        mockUpload.emit('response');
-      });
-
-      it('should request and set viewer states, along with library actions', () => {
-        expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'sharedId' }, { templates: 'immutableTemplates' });
-        expect(routeActions.setViewerState).toHaveBeenCalledWith(state);
-        expect(store.getActions()).toContainEqual({ type: 'LIBRARY/UPDATE_DOCUMENT', doc: 'doc', __reducerKey: 'storeKey' });
-        expect(store.getActions()).toContainEqual({ type: 'UNSELECT_ALL_DOCUMENTS', __reducerKey: 'storeKey' });
-        expect(store.getActions()).toContainEqual({ type: 'SELECT_DOCUMENT', doc: 'doc', __reducerKey: 'storeKey' });
-        expect(store.getActions()).toContainEqual({ type: 'setViewerState' });
-      });
     });
   });
 });
