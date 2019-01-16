@@ -110,7 +110,7 @@ describe('Users', () => {
         role: 'admin'
       };
     });
-    const testLogin = async (username, password) => users.login(username, password);
+    const testLogin = async (username, password) => users.login({ username, password });
     const createUserAndTestLogin = async (username, password) => {
       await usersModel.save(testUser);
       return testLogin(username, password);

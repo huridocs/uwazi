@@ -110,7 +110,7 @@ export default {
       return Promise.reject(createError('Can not delete last user', 403));
     });
   },
-  async login(username, password) {
+  async login({ username, password }) {
     const [user] = await this.get({ username }, '+password +accountLocked +failedLogins +accountUnlockCode');
     if (!user) {
       throw createError('Invalid username or password', 401);
