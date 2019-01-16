@@ -13,7 +13,6 @@ import settingsModel from 'api/settings/settingsModel';
 import fixtures, {
   newDoc1,
   newDoc2,
-  newDoc3,
   newDoc4,
   template1,
   template1Property1,
@@ -21,8 +20,10 @@ import fixtures, {
   template1Property3,
   template1PropertyThesauri1Select,
   template1PropertyThesauri3MultiSelect,
+  template1PropertyRelationship1,
   template2,
   template2PropertyThesauri5Select,
+  template2PropertyRelationship2,
   template3,
   thesauri1,
   thesauri2,
@@ -31,6 +32,12 @@ import fixtures, {
   thesauri3,
   thesauri4,
   thesauri5,
+  relationship1,
+  relationship3,
+  relationtype1,
+  relationtype3,
+  relationtype4,
+  relationtype7,
 } from './fixtures';
 
 import syncWorker from '../syncWorker';
@@ -71,6 +78,14 @@ describe('syncWorker', () => {
     expect(spy).toHaveBeenCalledWith('url/api/sync', { namespace, data });
   };
 
+  const getCallsToIds = (namespace, ids) => {
+    const namespaceCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === namespace);
+    return {
+      calls: ids.map(id => namespaceCallsOnly.find(c => c[1].data._id.toString() === id.toString())),
+      callsCount: namespaceCallsOnly.length
+    };
+  };
+
   describe('syncronize', () => {
     beforeEach(() => {
       spyOn(request, 'post').and.returnValue(Promise.resolve());
@@ -93,11 +108,9 @@ describe('syncWorker', () => {
           }
         });
 
-        const templateCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === 'templates');
-        const template1Call = templateCallsOnly.find(call => call[1].data._id.toString() === template1.toString());
-        const template2Call = templateCallsOnly.find(call => call[1].data._id.toString() === template2.toString());
+        const { calls: [template1Call, template2Call], callsCount } = getCallsToIds('templates', [template1, template2]);
 
-        expect(templateCallsOnly.length).toBe(2);
+        expect(callsCount).toBe(2);
 
         expectCallToEqual(template1Call, 'templates', {
           _id: template1,
@@ -112,7 +125,7 @@ describe('syncWorker', () => {
     });
 
     describe('thesauris (dictionaries collection)', () => {
-      it('should only sync whitelisted thesauris through template configs (deleting even non whitelisted ones)', async () => {
+      it('should sync whitelisted thesauris through template configs (deleting even non whitelisted ones)', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [
@@ -124,23 +137,41 @@ describe('syncWorker', () => {
           }
         });
 
-        const thesauriCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === 'dictionaries');
-        const thesauri1Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri1.toString());
-        const thesauri2Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri2.toString());
-        const thesauri3Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri3.toString());
-        const thesauri5Call = thesauriCallsOnly.find(call => call[1].data._id.toString() === thesauri5.toString());
+        const { calls: [thesauri1Call, thesauri3Call, thesauri5Call], callsCount } = getCallsToIds('dictionaries', [thesauri1, thesauri3, thesauri5]);
 
-        expect(thesauriCallsOnly.length).toBe(3);
+        expect(callsCount).toBe(3);
 
         expectCallToEqual(thesauri1Call, 'dictionaries', {
           _id: thesauri1,
           values: [expect.objectContaining({ _id: thesauri1Value1 }), expect.objectContaining({ _id: thesauri1Value2 })]
         });
 
-        expect(thesauri2Call).not.toBeDefined();
         expect(thesauri3Call).toBeDefined();
         expect(thesauri5Call).toBeDefined();
         expectCallWith(request.delete, 'dictionaries', expect.objectContaining({ _id: thesauri4 }));
+      });
+    });
+
+    describe('relationtypes', () => {
+      it('should sync whitelisted relationtypes and those from approved metadata properties', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [template1PropertyRelationship1.toString()],
+            [template2.toString()]: [template2PropertyRelationship2.toString()],
+          },
+          relationtypes: [relationtype1.toString(), relationtype3.toString()]
+        });
+
+        const {
+          calls: [relationtype1Call, relationtype3Call, relationtype4Call, relationtype7Call],
+          callsCount
+        } = getCallsToIds('relationtypes', [relationtype1, relationtype3, relationtype4, relationtype7]);
+
+        expect(callsCount).toBe(4);
+        expect(relationtype1Call).toBeDefined();
+        expect(relationtype3Call).toBeDefined();
+        expect(relationtype4Call).toBeDefined();
+        expect(relationtype7Call).toBeDefined();
       });
     });
 
@@ -153,9 +184,9 @@ describe('syncWorker', () => {
           }
         });
 
-        const entitiesCallsOnly = request.post.calls.allArgs().filter(args => args[1].namespace === 'entities');
-        const entity1Call = entitiesCallsOnly.find(call => call[1].data._id.toString() === newDoc1.toString());
-        const entity2Call = entitiesCallsOnly.find(call => call[1].data._id.toString() === newDoc2.toString());
+        const { calls: [entity1Call, entity2Call], callsCount } = getCallsToIds('entities', [newDoc1, newDoc2]);
+
+        expect(callsCount).toBe(2);
 
         expectCallToEqual(entity1Call, 'entities', expect.objectContaining({
           _id: newDoc1,
@@ -189,7 +220,7 @@ describe('syncWorker', () => {
 
     it('should update lastSync on each operation', async () => {
       request.post.and.callFake((url, body) =>
-        body.data._id.equals(newDoc3) ? Promise.reject(new Error('post failed')) : Promise.resolve()
+        body.data._id.equals(relationship1) ? Promise.reject(new Error('post failed')) : Promise.resolve()
       );
       request.delete.and.callFake((url, body) =>
         body.data._id.equals(newDoc4) ? Promise.reject(new Error('delete failed')) : Promise.resolve()

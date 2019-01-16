@@ -5,9 +5,7 @@ const oldDoc1 = db.id();
 const oldDoc2 = db.id();
 const newDoc1 = db.id();
 const newDoc2 = db.id();
-const newDoc3 = db.id();
 const newDoc4 = db.id();
-const newDoc5 = db.id();
 const newDoc6 = db.id();
 
 const template1 = db.id();
@@ -18,9 +16,13 @@ const template1Property3 = db.id();
 const template1PropertyThesauri1Select = db.id();
 const template1PropertyThesauri2Select = db.id();
 const template1PropertyThesauri3MultiSelect = db.id();
+const template1PropertyRelationship1 = db.id();
+const template1PropertyRelationship2 = db.id();
 
 const template2 = db.id();
 const template2PropertyThesauri5Select = db.id();
+const template2PropertyRelationship1 = db.id();
+const template2PropertyRelationship2 = db.id();
 
 const template3 = db.id();
 
@@ -36,6 +38,22 @@ const thesauri3Value2 = db.id();
 
 const thesauri4 = db.id();
 const thesauri5 = db.id();
+
+const relationship1 = db.id();
+const relationship2 = db.id();
+const relationship3 = db.id();
+const relationship4 = db.id();
+const relationship5 = db.id();
+const relationship6 = db.id();
+const relationship7 = db.id();
+
+const relationtype1 = db.id();
+const relationtype2 = db.id();
+const relationtype3 = db.id();
+const relationtype4 = db.id();
+const relationtype5 = db.id();
+const relationtype6 = db.id();
+const relationtype7 = db.id();
 
 const settingsId = db.id();
 const sessionsId = db.id();
@@ -57,13 +75,13 @@ export default {
     {
       timestamp: 22000,
       namespace: 'connections',
-      mongoId: newDoc5,
+      mongoId: relationship2,
       deleted: false,
     },
     {
       timestamp: 20000,
       namespace: 'connections',
-      mongoId: newDoc3,
+      mongoId: relationship1,
       deleted: false,
     },
     {
@@ -145,6 +163,48 @@ export default {
       deleted: false,
     },
     {
+      timestamp: 9100,
+      namespace: 'relationtypes',
+      mongoId: relationtype1,
+      deleted: false,
+    },
+    {
+      timestamp: 9103,
+      namespace: 'relationtypes',
+      mongoId: relationtype2,
+      deleted: false,
+    },
+    {
+      timestamp: 9102,
+      namespace: 'relationtypes',
+      mongoId: relationtype3,
+      deleted: false,
+    },
+    {
+      timestamp: 9101,
+      namespace: 'relationtypes',
+      mongoId: relationtype4,
+      deleted: false,
+    },
+    {
+      timestamp: 9107,
+      namespace: 'relationtypes',
+      mongoId: relationtype5,
+      deleted: false,
+    },
+    {
+      timestamp: 9106,
+      namespace: 'relationtypes',
+      mongoId: relationtype6,
+      deleted: false,
+    },
+    {
+      timestamp: 9105,
+      namespace: 'relationtypes',
+      mongoId: relationtype7,
+      deleted: false,
+    },
+    {
       timestamp: 9000,
       namespace: 'migrations',
       mongoId: newDoc1,
@@ -197,13 +257,23 @@ export default {
 
   connections: [
     {
-      _id: newDoc3,
+      _id: relationship1,
       entity: newDoc1,
     },
     {
-      _id: newDoc5,
+      _id: relationship2,
       entity: newDoc1,
     },
+  ],
+
+  relationtypes: [
+    { _id: relationtype1 },
+    { _id: relationtype2 },
+    { _id: relationtype3 },
+    { _id: relationtype4 },
+    { _id: relationtype5 },
+    { _id: relationtype6 },
+    { _id: relationtype7 },
   ],
 
   templates: [
@@ -239,6 +309,20 @@ export default {
           name: 't1Thesauri3MultiSelect',
           type: 'multiselect',
           content: thesauri3
+        },
+        {
+          _id: template1PropertyRelationship1,
+          name: 't1Relationship1',
+          type: 'relationship',
+          content: '',
+          relationType: relationtype4
+        },
+        {
+          _id: template1PropertyRelationship2,
+          name: 't1Relationship2',
+          type: 'relationship',
+          content: '',
+          relationType: relationtype5
         }
       ],
     },
@@ -250,6 +334,20 @@ export default {
           name: 't2Thesauri3MultiSelect',
           type: 'select',
           content: thesauri5
+        },
+        {
+          _id: template2PropertyRelationship1,
+          name: 't1Relationship1',
+          type: 'relationship',
+          content: '',
+          relationType: relationtype6
+        },
+        {
+          _id: template2PropertyRelationship2,
+          name: 't1Relationship2',
+          type: 'relationship',
+          content: '',
+          relationType: relationtype7
         }
       ]
     },
@@ -316,7 +414,6 @@ export default {
 export {
   newDoc1,
   newDoc2,
-  newDoc3,
   newDoc4,
   template1,
   template1Property1,
@@ -325,8 +422,12 @@ export {
   template1PropertyThesauri1Select,
   template1PropertyThesauri2Select,
   template1PropertyThesauri3MultiSelect,
+  template1PropertyRelationship1,
+  template1PropertyRelationship2,
   template2,
   template2PropertyThesauri5Select,
+  template2PropertyRelationship1,
+  template2PropertyRelationship2,
   template3,
   thesauri1,
   thesauri1Value1,
@@ -337,4 +438,18 @@ export {
   thesauri3Value2,
   thesauri4,
   thesauri5,
+  relationship1,
+  relationship2,
+  relationship3,
+  relationship4,
+  relationship5,
+  relationship6,
+  relationship7,
+  relationtype1,
+  relationtype2,
+  relationtype3,
+  relationtype4,
+  relationtype5,
+  relationtype6,
+  relationtype7,
 };

@@ -22,7 +22,23 @@ const syncData = async (url, action, change, data) => {
   return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };
 
-const determineWhitelistedCollections = (config) => {
+const getValuesFromTemplateProperties = async (config, validTypes, valueProperty) => {
+  const templatesConfig = config.templates || {};
+
+  return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
+    const validList = await prev;
+    const template = await models.templates.getById(templateId);
+    (template.properties || []).forEach((p) => {
+      if (templatesConfig[templateId].includes(p._id.toString()) && validTypes.includes(p.type)) {
+        validList.push(p[valueProperty].toString());
+      }
+    });
+
+    return Promise.resolve(validList);
+  }, Promise.resolve([]));
+};
+
+const getApprovedCollections = (config) => {
   const whitelistedCollections = Object.keys(config);
   if (whitelistedCollections.includes('templates')) {
     whitelistedCollections.push('entities');
@@ -35,20 +51,12 @@ const determineWhitelistedCollections = (config) => {
   return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
 };
 
-const determineWhitelistedThesauris = async (config) => {
-  const templatesConfig = config.templates || {};
+const getApprovedThesauris = async config => getValuesFromTemplateProperties(config, ['select', 'multiselect'], 'content');
 
-  return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
-    const validList = await prev;
-    const template = await models.templates.getById(templateId);
-    (template.properties || []).forEach((p) => {
-      if (templatesConfig[templateId].includes(p._id.toString()) && (p.type === 'select' || p.type === 'multiselect')) {
-        validList.push(p.content.toString());
-      }
-    });
-
-    return Promise.resolve(validList);
-  }, Promise.resolve([]));
+const getApprovedRelationtypes = async (config) => {
+  const relationtypesConfig = config.relationtypes || [];
+  const validTemplateRelationtypes = await getValuesFromTemplateProperties(config, ['relationship'], 'relationType');
+  return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
 export default {
@@ -61,7 +69,7 @@ export default {
         $gte: lastSync - oneSecond
       },
       namespace: {
-        $in: determineWhitelistedCollections(config)
+        $in: getApprovedCollections(config)
       }
     }, null, {
       sort: {
@@ -70,7 +78,8 @@ export default {
       lean: true
     });
 
-    const whitelistedThesauris = await determineWhitelistedThesauris(config);
+    const whitelistedThesauris = await getApprovedThesauris(config);
+    const whitelistedRelationtypes = await getApprovedRelationtypes(config);
 
     // there is always one ??
     // console.log(lastChanges[0]);
@@ -89,6 +98,10 @@ export default {
       }
 
       if (change.namespace === 'dictionaries' && !whitelistedThesauris.includes(change.mongoId.toString())) {
+        return Promise.resolve();
+      }
+
+      if (change.namespace === 'relationtypes' && !whitelistedRelationtypes.includes(change.mongoId.toString())) {
         return Promise.resolve();
       }
 
