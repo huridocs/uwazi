@@ -1,4 +1,5 @@
 import SHA256 from 'crypto-js/sha256';
+import crypto from 'crypto';
 
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
@@ -7,8 +8,13 @@ import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
 import settings from '../settings/settings';
+import usersModel from './usersModel';
 
 const encryptPassword = password => SHA256(password).toString();
+
+const verifyPassword = (plain, hashed) => encryptPassword(plain) === hashed;
+
+const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
 const conformRecoverText = (options, _settings, domain, key, user) => {
   const response = {};
@@ -44,6 +50,7 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
 };
 
 export default {
+  encryptPassword,
   save(user, currentUser) {
     return model.get({ _id: user._id })
     .then(([userInTheDatabase]) => {
@@ -102,6 +109,32 @@ export default {
 
       return Promise.reject(createError('Can not delete last user', 403));
     });
+  },
+  async login(username, password) {
+    const [user] = await this.get({ username }, '+password +accountLocked +failedLogins +accountUnlockCode');
+    if (!user) {
+      throw createError('Invalid username or password', 401);
+    }
+    if (user.accountLocked) {
+      throw createError('Account locked. Check your email to unlock.', 401);
+    }
+
+    if (!verifyPassword(password, user.password)) {
+      const updatedUser = await usersModel.db.findOneAndUpdate({ _id: user._id },
+          { $inc: { failedLogins: 1 } }, { new: true, fields: '+failedLogins' });
+      if (updatedUser.failedLogins >= 3) {
+        const accountUnlockCode = generateUnlockCode();
+        await usersModel.db.findOneAndUpdate({ _id: user._id }, { $set: { accountLocked: true, accountUnlockCode } });
+        throw createError('Account locked. Check your email to unlock.', 401);
+      }
+      throw createError('Invalid username or password', 401);
+    }
+    await usersModel.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
+    delete user.password;
+    delete user.accountLocked;
+    delete user.failedLogins;
+    delete user.accountUnlockCode;
+    return user;
   },
 
   recoverPassword(email, domain, options = {}) {

@@ -7,6 +7,7 @@ import db from 'api/utils/testing_db';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import usersModel from '../usersModel.js';
 
 describe('Users', () => {
   beforeEach((done) => {
@@ -96,6 +97,90 @@ describe('Users', () => {
         done();
       })
       .catch(catchErrors(done)));
+    });
+  });
+
+  describe('login', () => {
+    let testUser;
+    beforeEach(() => {
+      testUser = {
+        username: 'someuser1',
+        password: users.encryptPassword('password'),
+        email: 'someuser1@mailer.com',
+        role: 'admin'
+      };
+    });
+    const testLogin = async (username, password) => users.login(username, password);
+    const createUserAndTestLogin = async (username, password) => {
+      await usersModel.save(testUser);
+      return testLogin(username, password);
+    };
+    it('should return user with matching username and password', async () => {
+      const user = await createUserAndTestLogin('someuser1', 'password');
+      delete user._id;
+      expect(user).toMatchSnapshot();
+    });
+    it('should reset failedLogins counter when login is successful', async () => {
+      testUser.failedLogins = 2;
+      await createUserAndTestLogin('someuser1', 'password');
+      const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
+      expect(user.failedLogins).toBeFalsy();
+    });
+    it('should throw error if username does not exist', async () => {
+      try {
+        await createUserAndTestLogin('unknownuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or password', 401));
+      }
+    });
+    it('should throw error if password is incorrect and increment failedLogins', async () => {
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
+        expect(user.failedLogins).toEqual(1);
+      }
+      try {
+        await testLogin('someuser1', 'incorrect again');
+        fail('should throw error');
+      } catch (e) {
+        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
+        expect(user.failedLogins).toEqual(2);
+      }
+    });
+    it('should lock account after third failed login attempt and generate unlock code', async () => {
+      testUser.failedLogins = 2;
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+      } catch (e) {
+        expect(e).toEqual(createError('Account locked. Check your email to unlock.', 401));
+        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
+        expect(user.accountLocked).toBe(true);
+        expect(typeof user.accountUnlockCode).toBe('string');
+        expect(user.accountUnlockCode.length).toBe(64);
+      }
+    });
+    it('should prevent login if account is locked when credentials are correct', async () => {
+      testUser.accountLocked = true;
+      try {
+        await createUserAndTestLogin('someuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/account locked/i);
+        expect(e.code).toBe(401);
+      }
+    });
+    it('should prevent login if account is locked when credentials are not correct', async () => {
+      testUser.accountLocked = true;
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/account locked/i);
+        expect(e.code).toBe(401);
+      }
     });
   });
 

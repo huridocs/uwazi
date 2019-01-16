@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Users login should return user with matching username and password 1`] = `
+Object {
+  "__v": 0,
+  "email": "someuser1@mailer.com",
+  "role": "admin",
+  "username": "someuser1",
+}
+`;
