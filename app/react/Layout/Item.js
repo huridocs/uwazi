@@ -8,6 +8,7 @@ import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteri
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
+import Tip from './Tip';
 import ItemSnippet from './ItemSnippet';
 import TemplateLabel from './TemplateLabel';
 
@@ -58,6 +59,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}
+          {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
           {this.props.labels}
           {buttons}
         </ItemFooter>
