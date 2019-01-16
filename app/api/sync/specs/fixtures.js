@@ -3,10 +3,16 @@ import db from 'api/utils/testing_db';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();
+
 const newDoc1 = db.id();
 const newDoc2 = db.id();
+const newDoc3 = db.id();
 const newDoc4 = db.id();
+const newDoc5 = db.id();
 const newDoc6 = db.id();
+const newDoc7 = db.id();
+const newDoc8 = db.id();
+const newDoc9 = db.id();
 
 const template1 = db.id();
 
@@ -25,6 +31,7 @@ const template2PropertyRelationship1 = db.id();
 const template2PropertyRelationship2 = db.id();
 
 const template3 = db.id();
+const template3PropertyRelationship1 = db.id();
 
 const thesauri1 = db.id();
 const thesauri1Value1 = db.id();
@@ -46,6 +53,10 @@ const relationship4 = db.id();
 const relationship5 = db.id();
 const relationship6 = db.id();
 const relationship7 = db.id();
+const relationship8 = db.id();
+const relationship9 = db.id();
+const relationship10 = db.id();
+const relationship11 = db.id();
 
 const relationtype1 = db.id();
 const relationtype2 = db.id();
@@ -54,6 +65,10 @@ const relationtype4 = db.id();
 const relationtype5 = db.id();
 const relationtype6 = db.id();
 const relationtype7 = db.id();
+
+const hub1 = db.id();
+const hub2 = db.id();
+const hub3 = db.id();
 
 const settingsId = db.id();
 const sessionsId = db.id();
@@ -82,6 +97,54 @@ export default {
       timestamp: 20000,
       namespace: 'connections',
       mongoId: relationship1,
+      deleted: false,
+    },
+    {
+      timestamp: 11000,
+      namespace: 'connections',
+      mongoId: relationship3,
+      deleted: false,
+    },
+    {
+      timestamp: 11002,
+      namespace: 'connections',
+      mongoId: relationship5,
+      deleted: false,
+    },
+    {
+      timestamp: 11001,
+      namespace: 'connections',
+      mongoId: relationship6,
+      deleted: false,
+    },
+    {
+      timestamp: 11010,
+      namespace: 'connections',
+      mongoId: relationship7,
+      deleted: false,
+    },
+    {
+      timestamp: 11011,
+      namespace: 'connections',
+      mongoId: relationship8,
+      deleted: false,
+    },
+    {
+      timestamp: 11012,
+      namespace: 'connections',
+      mongoId: relationship9,
+      deleted: false,
+    },
+    {
+      timestamp: 11012,
+      namespace: 'connections',
+      mongoId: relationship10,
+      deleted: false,
+    },
+    {
+      timestamp: 11013,
+      namespace: 'connections',
+      mongoId: relationship11,
       deleted: false,
     },
     {
@@ -249,9 +312,34 @@ export default {
       }
     },
     {
+      _id: newDoc3,
+      title: 'New Doc 3',
+      template: template2,
+    },
+    {
+      _id: newDoc5,
+      title: 'New Doc 5',
+      template: template1,
+    },
+    {
       _id: newDoc6,
       title: 'not to sync',
       template: template3,
+    },
+    {
+      _id: newDoc7,
+      title: 'New Doc 7',
+      template: template2,
+    },
+    {
+      _id: newDoc8,
+      title: 'New Doc 8',
+      template: template2,
+    },
+    {
+      _id: newDoc9,
+      title: 'New Doc 9',
+      template: template2,
     },
   ],
 
@@ -259,11 +347,69 @@ export default {
     {
       _id: relationship1,
       entity: newDoc1,
+      template: relationtype1,
+      hub: hub1,
     },
     {
       _id: relationship2,
+      template: relationtype3,
       entity: newDoc1,
+      hub: hub1,
     },
+    {
+      _id: relationship3,
+      entity: newDoc6,
+      template: relationtype1,
+      hub: hub1,
+    },
+    {
+      _id: relationship4,
+      entity: newDoc1,
+      template: relationtype2,
+      hub: hub2,
+    },
+    {
+      _id: relationship5,
+      entity: newDoc5,
+      template: relationtype7,
+      hub: hub2,
+    },
+    {
+      _id: relationship8,
+      entity: newDoc7,
+      template: relationtype7,
+      hub: hub2,
+    },
+    {
+      _id: relationship6,
+      entity: newDoc5,
+      template: relationtype6,
+      hub: hub2,
+    },
+    {
+      _id: relationship7,
+      entity: newDoc3,
+      template: null,
+      hub: hub2,
+    },
+    {
+      _id: relationship9,
+      entity: newDoc1,
+      template: null,
+      hub: hub3,
+    },
+    {
+      _id: relationship10,
+      entity: newDoc8,
+      template: relationtype4,
+      hub: hub3,
+    },
+    {
+      _id: relationship11,
+      entity: newDoc9,
+      template: relationtype4,
+      hub: hub3,
+    }
   ],
 
   relationtypes: [
@@ -337,22 +483,31 @@ export default {
         },
         {
           _id: template2PropertyRelationship1,
-          name: 't1Relationship1',
+          name: 't2Relationship1',
           type: 'relationship',
           content: '',
           relationType: relationtype6
         },
         {
           _id: template2PropertyRelationship2,
-          name: 't1Relationship2',
+          name: 't2Relationship2',
           type: 'relationship',
-          content: '',
+          content: template1,
           relationType: relationtype7
         }
       ]
     },
     {
-      _id: template3
+      _id: template3,
+      properties: [
+        {
+          _id: template3PropertyRelationship1,
+          name: 't3Relationship2',
+          type: 'relationship',
+          content: '',
+          relationType: relationtype1
+        }
+      ]
     }
   ],
 
@@ -429,6 +584,7 @@ export {
   template2PropertyRelationship1,
   template2PropertyRelationship2,
   template3,
+  template3PropertyRelationship1,
   thesauri1,
   thesauri1Value1,
   thesauri1Value2,
