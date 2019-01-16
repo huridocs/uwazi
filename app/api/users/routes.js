@@ -44,7 +44,7 @@ export default (app) => {
     '/api/unlockaccount',
     validateRequest(Joi.object().keys({
       username: Joi.string().required(),
-      code: Joi.string.required()
+      code: Joi.string().required()
     }).required()),
     (req, res, next) => {
       users.unlockAccount(req.body)
