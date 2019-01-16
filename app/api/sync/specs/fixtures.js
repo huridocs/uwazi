@@ -106,6 +106,12 @@ export default {
       deleted: false,
     },
     {
+      timestamp: 11001,
+      namespace: 'connections',
+      mongoId: relationship4,
+      deleted: false,
+    },
+    {
       timestamp: 11002,
       namespace: 'connections',
       mongoId: relationship5,

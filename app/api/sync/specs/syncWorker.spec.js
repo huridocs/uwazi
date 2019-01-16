@@ -26,13 +26,13 @@ import fixtures, {
   template2PropertyRelationship2,
   template3,
   thesauri1,
-  thesauri2,
   thesauri1Value1,
   thesauri1Value2,
   thesauri3,
   thesauri4,
   thesauri5,
   relationship1,
+  relationship2,
   relationship3,
   relationtype1,
   relationtype3,
@@ -205,17 +205,56 @@ describe('syncWorker', () => {
       });
     });
 
+    describe('relationships (connections collection)', () => {
+      it('should sync from approved templates and raw whitelisted relationtypes', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [],
+            [template2.toString()]: [],
+          },
+          relationtypes: [relationtype1.toString(), relationtype3.toString()]
+        });
+
+        const { calls: [relationship1Call, relationship2Call], callsCount } = getCallsToIds('connections', [relationship1, relationship2]);
+
+        expect(callsCount).toBe(2);
+        expect(relationship1Call).toBeDefined();
+        expect(relationship2Call).toBeDefined();
+      });
+
+      // it('should sync from approved templates, raw whitelisted relationtypes and only specific types inlcuded through metadata', async () => {
+      //   await syncWorkerWithConfig({
+      //     templates: {
+      //       [template1.toString()]: [template1PropertyRelationship1.toString()],
+      //       [template2.toString()]: [template2PropertyRelationship2.toString()],
+      //     },
+      //     relationtypes: [relationtype1.toString(), relationtype3.toString()]
+      //   });
+
+      //   const {
+      //     calls: [relationtype1Call, relationtype3Call, relationtype4Call, relationtype7Call],
+      //     callsCount
+      //   } = getCallsToIds('relationtypes', [relationtype1, relationtype3, relationtype4, relationtype7]);
+
+      //   expect(callsCount).toBe(4);
+      //   expect(relationtype1Call).toBeDefined();
+      //   expect(relationtype3Call).toBeDefined();
+      //   expect(relationtype4Call).toBeDefined();
+      //   expect(relationtype7Call).toBeDefined();
+      // });
+    });
+
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(8);
+      expect(request.post.calls.count()).toBe(6);
       expect(request.delete.calls.count()).toBe(2);
     });
 
     it('should update lastSync timestamp with the last change', async () => {
       await syncAllTemplates();
       const [{ lastSync }] = await syncsModel.find();
-      expect(lastSync).toBe(22000);
+      expect(lastSync).toBe(20000);
     });
 
     it('should update lastSync on each operation', async () => {

@@ -92,6 +92,7 @@ export default {
       }
 
       const templatesConfig = config.templates || {};
+      const relationtypesConfig = config.relationtypes || [];
 
       if (change.namespace === 'templates' && !templatesConfig[change.mongoId.toString()]) {
         return Promise.resolve();
@@ -106,6 +107,17 @@ export default {
       }
 
       const data = await models[change.namespace].getById(change.mongoId);
+
+      if (change.namespace === 'connections') {
+        const entityData = await models.entities.getById(data.entity);
+        if (!Object.keys(templatesConfig).includes(entityData.template.toString())) {
+          return Promise.resolve();
+        }
+
+        if (!relationtypesConfig.includes(data.template ? data.template.toString() : null)) {
+          return Promise.resolve();
+        }
+      }
 
       if (change.namespace === 'entities' && !Object.keys(templatesConfig).includes(data.template.toString())) {
         return Promise.resolve();
