@@ -39,5 +39,8 @@ export default {
 
     return getMigrations(this.migrationsDir)
     .then(migrations => promiseInSequence(migrations.map(migration => () => migration.up(db).then(() => saveMigration(migration)))));
+  },
+  shouldMigrate() {
+    return getMigrations(this.migrationsDir).then(migrations => Boolean(migrations.length));
   }
 };
