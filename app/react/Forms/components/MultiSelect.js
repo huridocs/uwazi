@@ -53,6 +53,10 @@ export default class MultiSelect extends Component {
     return this.props.value.includes(option[this.props.optionsValue]);
   }
 
+  anyChildChecked(parent) {
+    return Boolean(parent.options && !!parent.options.find(itm => this.checked(itm)));
+  }
+
   change(value) {
     let newValues = this.props.value ? this.props.value.slice(0) : [];
     if (newValues.includes(value)) {
@@ -82,7 +86,7 @@ export default class MultiSelect extends Component {
     let sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
-        sorting = this.checked(b) - this.checked(a);
+        sorting = (this.checked(b) || this.anyChildChecked(b)) - (this.checked(a) || this.anyChildChecked(a));
       }
 
       if (sorting === 0 && typeof options[0].results !== 'undefined' && a.results !== b.results) {
