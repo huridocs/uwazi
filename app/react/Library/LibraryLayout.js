@@ -8,6 +8,8 @@ import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultipleP
 import { t } from 'app/I18N';
 import blankState from './helpers/blankState';
 
+import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
+
 export default class LibraryLayout extends Component {
   render() {
     if (blankState()) {
@@ -23,6 +25,7 @@ export default class LibraryLayout extends Component {
         <LibraryFilters storeKey="library"/>
         <ViewMetadataPanel storeKey="library"/>
         <SelectMultiplePanelContainer storeKey="library"/>
+        <SemanticSearchPanel storeKey="library" />
       </div>
     );
   }
