@@ -136,7 +136,14 @@ export default {
     delete user.accountUnlockCode;
     return user;
   },
-
+  async unlockAccount({ username, code }) {
+    const user = await usersModel.db.findOneAndUpdate({ username, accountUnlockCode: code, accountLocked: true }, {
+      $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 }
+    });
+    if (!user) {
+      throw createError('Invalid username or unlock code', 401);
+    }
+  },
   recoverPassword(email, domain, options = {}) {
     const key = SHA256(email + Date.now()).toString();
     return Promise.all([

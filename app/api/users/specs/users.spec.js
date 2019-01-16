@@ -183,6 +183,54 @@ describe('Users', () => {
       }
     });
   });
+  describe('unlockAccount', () => {
+    let testUser;
+    beforeEach(() => {
+      testUser = {
+        username: 'someuser1',
+        password: users.encryptPassword('password'),
+        email: 'someuser1@mailer.com',
+        role: 'admin',
+        accountLocked: true,
+        accountUnlockCode: 'code',
+        failedLogins: 3,
+      };
+    });
+    const testUnlock = async (username, code) => users.unlockAccount({ username, code });
+    const createUserAndTestUnlock = async (username, code) => {
+      await usersModel.save(testUser);
+      return testUnlock(username, code);
+    };
+    it('should unlock account if username and code are correct', async () => {
+      await createUserAndTestUnlock('someuser1', 'code');
+      const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
+      expect(user.accountLocked).toBeFalsy();
+      expect(user.accountLockCode).toBeFalsy();
+      expect(user.failedLogins).toBeFalsy();
+    });
+    it('should throw error if username is incorrect', async () => {
+      try {
+        await createUserAndTestUnlock('unknownuser1', 'code');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or unlock code', 401));
+        const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
+        expect(user.accountLocked).toBe(true);
+        expect(user.accountUnlockCode).toBe('code');
+      }
+    });
+    it('should throw error if code is incorrect', async () => {
+      try {
+        await createUserAndTestUnlock('someruser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or unlock code', 401));
+        const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
+        expect(user.accountLocked).toBe(true);
+        expect(user.accountUnlockCode).toBe('code');
+      }
+    });
+  });
 
   describe('recoverPassword', () => {
     it('should find the matching email create a recover password doc in the database and send an email', (done) => {
