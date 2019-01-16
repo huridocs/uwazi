@@ -34,6 +34,14 @@ import fixtures, {
   relationship1,
   relationship2,
   relationship3,
+  relationship4,
+  relationship5,
+  relationship6,
+  relationship7,
+  relationship8,
+  relationship9,
+  relationship10,
+  relationship11,
   relationtype1,
   relationtype3,
   relationtype4,
@@ -206,7 +214,7 @@ describe('syncWorker', () => {
     });
 
     describe('relationships (connections collection)', () => {
-      it('should sync from approved templates and raw whitelisted relationtypes', async () => {
+      it('should sync from approved template / entities and raw whitelisted relationtypes', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [],
@@ -222,26 +230,30 @@ describe('syncWorker', () => {
         expect(relationship2Call).toBeDefined();
       });
 
-      // it('should sync from approved templates, raw whitelisted relationtypes and only specific types inlcuded through metadata', async () => {
-      //   await syncWorkerWithConfig({
-      //     templates: {
-      //       [template1.toString()]: [template1PropertyRelationship1.toString()],
-      //       [template2.toString()]: [template2PropertyRelationship2.toString()],
-      //     },
-      //     relationtypes: [relationtype1.toString(), relationtype3.toString()]
-      //   });
+      it('should allow including null relationTypes', () => {
+        expect('should allow including nulls').toBe(true);
+      });
 
-      //   const {
-      //     calls: [relationtype1Call, relationtype3Call, relationtype4Call, relationtype7Call],
-      //     callsCount
-      //   } = getCallsToIds('relationtypes', [relationtype1, relationtype3, relationtype4, relationtype7]);
+      it('should include from specific types inlcuded through metadata (taking null left hand-side relationships)', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [template1PropertyRelationship1.toString()],
+            [template2.toString()]: [template2PropertyRelationship2.toString()],
+          }
+        });
 
-      //   expect(callsCount).toBe(4);
-      //   expect(relationtype1Call).toBeDefined();
-      //   expect(relationtype3Call).toBeDefined();
-      //   expect(relationtype4Call).toBeDefined();
-      //   expect(relationtype7Call).toBeDefined();
-      // });
+        const {
+          calls: [relationsihp5Call, relationsihp7Call, relationsihp9Call, relationsihp10Call, relationsihp11Call],
+          callsCount
+        } = getCallsToIds('connections', [relationship5, relationship7, relationship9, relationship10, relationship11]);
+
+        expect(callsCount).toBe(5);
+        expect(relationsihp5Call).toBeDefined();
+        expect(relationsihp7Call).toBeDefined();
+        expect(relationsihp9Call).toBeDefined();
+        expect(relationsihp10Call).toBeDefined();
+        expect(relationsihp11Call).toBeDefined();
+      });
     });
 
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {

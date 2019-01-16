@@ -110,11 +110,47 @@ export default {
 
       if (change.namespace === 'connections') {
         const entityData = await models.entities.getById(data.entity);
-        if (!Object.keys(templatesConfig).includes(entityData.template.toString())) {
+
+        const belongsToValidEntity = Object.keys(templatesConfig).includes(entityData.template.toString());
+        if (!belongsToValidEntity) {
           return Promise.resolve();
         }
 
-        if (!relationtypesConfig.includes(data.template ? data.template.toString() : null)) {
+        const belongsToWhitelistedType = relationtypesConfig.includes(data.template ? data.template.toString() : null);
+
+        const templateData = await models.templates.getById(entityData.template);
+        const templateHasValidRelationProperties = templateData.properties.reduce((isValid, p) => {
+          if (p.type === 'relationship' && templatesConfig[templateData._id.toString()].includes(p._id.toString())) {
+            return true;
+          }
+
+          return isValid;
+        }, false);
+
+        const isPossibleLeftMetadataRelationship = templateHasValidRelationProperties && !data.template;
+
+        const hubOtherConnections = await models.connections.get({ hub: data.hub, _id: { $ne: data._id } });
+        const hubOtherEntities = await models.entities.get({ _id: { $in: hubOtherConnections.map(h => h.entity) } });
+        const hubTemplateIds = hubOtherEntities.map(h => h.template.toString());
+        const hubWhitelistedTemplateIds = hubTemplateIds.filter(id => Object.keys(templatesConfig).includes(id));
+        const hubOtherTemplates = await models.templates.get({ _id: { $in: hubWhitelistedTemplateIds } });
+        const isPosssbleRightMetadataRelationship = hubOtherTemplates.reduce((_isRightRelationship, template) => {
+          let isRightRelationship = _isRightRelationship;
+          template.properties.forEach((p) => {
+            if (p.type === 'relationship' && templatesConfig[template._id.toString()].includes(p._id.toString())) {
+              const belongsToType = p.relationType.toString() === (data.template ? data.template.toString() : null);
+              const belongsToSpecificContent = p.content.toString() === templateData._id.toString();
+              const belongsToGenericContent = p.content === '';
+              if (belongsToType && (belongsToSpecificContent || belongsToGenericContent)) {
+                isRightRelationship = true;
+              }
+            }
+          });
+
+          return isRightRelationship;
+        }, false);
+
+        if (!belongsToWhitelistedType && !isPossibleLeftMetadataRelationship && !isPosssbleRightMetadataRelationship) {
           return Promise.resolve();
         }
       }
