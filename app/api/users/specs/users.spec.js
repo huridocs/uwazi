@@ -1,5 +1,6 @@
 import { createError } from 'api/utils';
 import SHA256 from 'crypto-js/sha256';
+import crypto from 'crypto';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
@@ -102,6 +103,7 @@ describe('Users', () => {
 
   describe('login', () => {
     let testUser;
+    const codeBuffer = Buffer.from('code');
     beforeEach(() => {
       testUser = {
         username: 'someuser1',
@@ -109,8 +111,14 @@ describe('Users', () => {
         email: 'someuser1@mailer.com',
         role: 'admin'
       };
+      jest.spyOn(crypto, 'randomBytes').mockReturnValue(codeBuffer);
+      jest.spyOn(mailer, 'send').mockResolvedValue();
     });
-    const testLogin = async (username, password) => users.login({ username, password });
+    afterEach(() => {
+      crypto.randomBytes.mockRestore();
+      mailer.send.mockRestore();
+    });
+    const testLogin = async (username, password) => users.login({ username, password }, 'http://host.domain');
     const createUserAndTestLogin = async (username, password) => {
       await usersModel.save(testUser);
       return testLogin(username, password);
@@ -154,12 +162,23 @@ describe('Users', () => {
       testUser.failedLogins = 2;
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
       } catch (e) {
         expect(e).toEqual(createError('Account locked. Check your email to unlock.', 403));
         const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
         expect(user.accountLocked).toBe(true);
-        expect(typeof user.accountUnlockCode).toBe('string');
-        expect(user.accountUnlockCode.length).toBe(64);
+        expect(user.accountUnlockCode).toBe(codeBuffer.toString('hex'));
+        expect(crypto.randomBytes).toHaveBeenCalledWith(32);
+      }
+    });
+    it('after locking account, it should send user and email with the unlock link', async () => {
+      testUser.failedLogins = 2;
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        // const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
+        expect(mailer.send.mock.calls[0]).toMatchSnapshot();
       }
     });
     it('should prevent login if account is locked when credentials are correct', async () => {

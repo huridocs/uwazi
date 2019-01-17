@@ -49,6 +49,29 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
   return response;
 };
 
+const sendAccountLockedEmail = (user, domain) => {
+  const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
+  const htmlLink = `<a href="${url}">${url}</a>`;
+  const text =
+    'Hello,\n\n' +
+    'Your account has been locked because of too many failed login attempts. ' +
+    'To unlock your account open the following link:\n' +
+    `${url}`;
+  const html = `<p>${
+    text.replace(url, htmlLink)
+  }</p>`;
+
+  const mailOptions = {
+    from: '"Uwazi" <no-reply@uwazi.io',
+    to: user.email,
+    subject: 'Account locked',
+    text,
+    html
+  };
+
+  return mailer.send(mailOptions);
+};
+
 export default {
   encryptPassword,
   save(user, currentUser) {
@@ -110,7 +133,7 @@ export default {
       return Promise.reject(createError('Can not delete last user', 403));
     });
   },
-  async login({ username, password }) {
+  async login({ username, password }, domain) {
     const [user] = await this.get({ username }, '+password +accountLocked +failedLogins +accountUnlockCode');
     if (!user) {
       throw createError('Invalid username or password', 401);
@@ -124,7 +147,9 @@ export default {
           { $inc: { failedLogins: 1 } }, { new: true, fields: '+failedLogins' });
       if (updatedUser.failedLogins >= 3) {
         const accountUnlockCode = generateUnlockCode();
-        await usersModel.db.findOneAndUpdate({ _id: user._id }, { $set: { accountLocked: true, accountUnlockCode } });
+        const lockedUser = await usersModel.db.findOneAndUpdate({ _id: user._id }, { $set: { accountLocked: true, accountUnlockCode } },
+          { new: true, fields: '+accountUnlockCode' });
+        await sendAccountLockedEmail(lockedUser, domain);
         throw createError('Account locked. Check your email to unlock.', 403);
       }
       throw createError('Invalid username or password', 401);

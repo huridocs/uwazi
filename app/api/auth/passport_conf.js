@@ -2,9 +2,14 @@ import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import users from 'api/users/users';
 
+const getDomain = req => `${req.protocol}://${req.get('host')}`;
+
 passport.use('local', new LocalStrategy(
-  (username, password, done) => {
-    users.login({ username, password })
+  {
+    passReqToCallback: true
+  },
+  (req, username, password, done) => {
+    users.login({ username, password }, getDomain(req))
     .then(user => done(null, user))
     .catch(e => e.code === 401 ? done(null, false) : done(e));
   })

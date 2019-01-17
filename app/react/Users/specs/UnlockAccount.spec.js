@@ -18,10 +18,10 @@ describe('UnlockAccount', () => {
     context = { router: { location: '' } };
   });
 
-  const getComponent = () => shallow(<UnlockAccount {...props} />, { context });
+  const renderComponent = () => shallow(<UnlockAccount {...props} />, { context });
 
   it('should call unlockAccount with params', (done) => {
-    getComponent();
+    renderComponent();
     setImmediate(() => {
       expect(props.unlockAccount).toHaveBeenCalledWith(props.params);
       done();
@@ -29,7 +29,7 @@ describe('UnlockAccount', () => {
   });
 
   it('should redirect to login on success', (done) => {
-    getComponent();
+    renderComponent();
     setImmediate(() => {
       expect(browserHistory.push).toHaveBeenCalledWith('/login');
       done();
@@ -38,7 +38,7 @@ describe('UnlockAccount', () => {
 
   it('should redirect to login on failure', (done) => {
     props.resetPassword = jest.fn().mockRejectedValue('error');
-    getComponent();
+    renderComponent();
     setImmediate(() => {
       expect(browserHistory.push).toHaveBeenCalledWith('/login');
       done();
