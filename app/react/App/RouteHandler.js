@@ -80,7 +80,8 @@ class RouteHandler extends Component {
   urlHasChanged(props) {
     const { params = {} } = props;
     const sameParams = Object.keys(params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
-    return !sameParams;
+    const sameAmountOfparams = Object.keys(params).length === Object.keys(this.props.params).length;
+    return !sameParams || !sameAmountOfparams;
   }
 
   componentWillReceiveProps(props) {
