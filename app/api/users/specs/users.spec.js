@@ -8,7 +8,7 @@ import db from 'api/utils/testing_db';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
-import { comparePasswords } from 'api/auth/encryptPassword';
+import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import usersModel from '../usersModel.js';
 
 describe('Users', () => {
@@ -105,10 +105,10 @@ describe('Users', () => {
   describe('login', () => {
     let testUser;
     const codeBuffer = Buffer.from('code');
-    beforeEach(() => {
+    beforeEach(async () => {
       testUser = {
         username: 'someuser1',
-        password: users.encryptPassword('password'),
+        password: await encryptPassword('password'),
         email: 'someuser1@mailer.com',
         role: 'admin'
       };
@@ -205,10 +205,10 @@ describe('Users', () => {
   });
   describe('unlockAccount', () => {
     let testUser;
-    beforeEach(() => {
+    beforeEach(async () => {
       testUser = {
         username: 'someuser1',
-        password: users.encryptPassword('password'),
+        password: await encryptPassword('password'),
         email: 'someuser1@mailer.com',
         role: 'admin',
         accountLocked: true,

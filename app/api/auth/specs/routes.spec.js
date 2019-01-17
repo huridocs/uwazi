@@ -19,6 +19,10 @@ describe('Auth Routes', () => {
     await db.clearAllAndLoad(fixtures);
   });
 
+  afterAll((done) => {
+    db.disconnect().then(done);
+  });
+
   describe('/login', () => {
     beforeEach(() => {
       app = express();
