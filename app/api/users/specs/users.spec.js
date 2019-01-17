@@ -8,6 +8,7 @@ import db from 'api/utils/testing_db';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import { comparePasswords } from 'api/auth/encryptPassword';
 import usersModel from '../usersModel.js';
 
 describe('Users', () => {
@@ -24,8 +25,8 @@ describe('Users', () => {
 
     it('should save user matching id', done => users.save({ _id: userId.toString(), password: 'new_password' }, currentUser)
     .then(() => users.get({ _id: userId }, '+password'))
-    .then(([user]) => {
-      expect(user.password).toBe(SHA256('new_password').toString());
+    .then(async ([user]) => {
+      expect(await comparePasswords('new_password', user.password)).toBe(true);
       expect(user.username).toBe('username');
       done();
     })
@@ -359,8 +360,8 @@ describe('Users', () => {
     it('should reset the password for the user based on the provided key', (done) => {
       users.resetPassword({ key: expectedKey, password: '1234' })
       .then(() => users.get({ _id: recoveryUserId }, '+password'))
-      .then(([user]) => {
-        expect(user.password).toBe(SHA256('1234').toString());
+      .then(async ([user]) => {
+        expect(await comparePasswords('1234', user.password)).toBe(true);
         done();
       })
       .catch(catchErrors(done));

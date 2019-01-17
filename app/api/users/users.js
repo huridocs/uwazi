@@ -3,6 +3,7 @@ import crypto from 'crypto';
 
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
+import encryptPassword from 'api/auth/encryptPassword';
 
 import mailer from '../utils/mailer';
 import model from './usersModel';
@@ -76,7 +77,7 @@ export default {
   encryptPassword,
   save(user, currentUser) {
     return model.get({ _id: user._id })
-    .then(([userInTheDatabase]) => {
+    .then(async ([userInTheDatabase]) => {
       if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
         return Promise.reject(createError('Can not change your own role', 403));
       }
@@ -87,7 +88,7 @@ export default {
 
       return model.save({
         ...user,
-        password: user.password ? encryptPassword(user.password) : undefined,
+        password: user.password ? await encryptPassword(user.password) : undefined,
       });
     });
   },
@@ -97,7 +98,7 @@ export default {
       model.get({ username: user.username }),
       model.get({ email: user.email })
     ])
-    .then(([userNameMatch, emailMatch]) => {
+    .then(async ([userNameMatch, emailMatch]) => {
       if (userNameMatch.length) {
         return Promise.reject(createError('Username already exists', 409));
       }
@@ -106,7 +107,7 @@ export default {
         return Promise.reject(createError('Email already exists', 409));
       }
 
-      return model.save({ ...user, password: encryptPassword(random()) })
+      return model.save({ ...user, password: await encryptPassword(random()) })
       .then(_user => this.recoverPassword(user.email, domain, { newUser: true }).then(() => _user));
     });
   },
@@ -202,7 +203,7 @@ export default {
     if (key) {
       return Promise.all([
         passwordRecoveriesModel.delete(key._id),
-        model.save({ _id: key.user, password: encryptPassword(credentials.password) })
+        model.save({ _id: key.user, password: await encryptPassword(credentials.password) })
       ]);
     }
     throw createError('key not found', 403);
