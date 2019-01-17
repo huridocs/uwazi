@@ -155,7 +155,7 @@ describe('Users', () => {
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
       } catch (e) {
-        expect(e).toEqual(createError('Account locked. Check your email to unlock.', 401));
+        expect(e).toEqual(createError('Account locked. Check your email to unlock.', 403));
         const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
         expect(user.accountLocked).toBe(true);
         expect(typeof user.accountUnlockCode).toBe('string');
@@ -169,7 +169,7 @@ describe('Users', () => {
         fail('should throw error');
       } catch (e) {
         expect(e.message).toMatch(/account locked/i);
-        expect(e.code).toBe(401);
+        expect(e.code).toBe(403);
       }
     });
     it('should prevent login if account is locked when credentials are not correct', async () => {
@@ -179,7 +179,7 @@ describe('Users', () => {
         fail('should throw error');
       } catch (e) {
         expect(e.message).toMatch(/account locked/i);
-        expect(e.code).toBe(401);
+        expect(e.code).toBe(403);
       }
     });
   });
@@ -213,7 +213,7 @@ describe('Users', () => {
         await createUserAndTestUnlock('unknownuser1', 'code');
         fail('should throw error');
       } catch (e) {
-        expect(e).toEqual(createError('Invalid username or unlock code', 401));
+        expect(e).toEqual(createError('Invalid username or unlock code', 403));
         const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
         expect(user.accountLocked).toBe(true);
         expect(user.accountUnlockCode).toBe('code');
@@ -224,7 +224,7 @@ describe('Users', () => {
         await createUserAndTestUnlock('someruser1', 'incorrect');
         fail('should throw error');
       } catch (e) {
-        expect(e).toEqual(createError('Invalid username or unlock code', 401));
+        expect(e).toEqual(createError('Invalid username or unlock code', 403));
         const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
         expect(user.accountLocked).toBe(true);
         expect(user.accountUnlockCode).toBe('code');

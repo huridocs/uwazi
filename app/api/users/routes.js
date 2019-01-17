@@ -48,7 +48,7 @@ export default (app) => {
     }).required()),
     (req, res, next) => {
       users.unlockAccount(req.body)
-      .then(response => res.json(response))
+      .then(() => res.json('OK'))
       .catch(next);
     }
   );

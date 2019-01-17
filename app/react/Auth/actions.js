@@ -23,3 +23,11 @@ export function resetPassword(password, key) {
     dispatch(notify('Password changed success', 'success'));
   });
 }
+
+export function unlockAccount(credentials) {
+  return dispatch => api.post('unlockaccount', credentials)
+  .then(() => {
+    console.log('unlocked');
+    dispatch(notify('Account unlocked successfully', 'success'));
+  });
+}

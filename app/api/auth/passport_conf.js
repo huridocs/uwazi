@@ -5,7 +5,8 @@ import users from 'api/users/users';
 passport.use('local', new LocalStrategy(
   (username, password, done) => {
     users.login({ username, password })
-    .then(user => done(null, user), () => done(null, false));
+    .then(user => done(null, user))
+    .catch(e => e.code === 401 ? done(null, false) : done(e));
   })
 );
 

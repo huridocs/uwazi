@@ -116,7 +116,7 @@ export default {
       throw createError('Invalid username or password', 401);
     }
     if (user.accountLocked) {
-      throw createError('Account locked. Check your email to unlock.', 401);
+      throw createError('Account locked. Check your email to unlock.', 403);
     }
 
     if (!verifyPassword(password, user.password)) {
@@ -125,7 +125,7 @@ export default {
       if (updatedUser.failedLogins >= 3) {
         const accountUnlockCode = generateUnlockCode();
         await usersModel.db.findOneAndUpdate({ _id: user._id }, { $set: { accountLocked: true, accountUnlockCode } });
-        throw createError('Account locked. Check your email to unlock.', 401);
+        throw createError('Account locked. Check your email to unlock.', 403);
       }
       throw createError('Invalid username or password', 401);
     }
@@ -141,7 +141,7 @@ export default {
       $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 }
     });
     if (!user) {
-      throw createError('Invalid username or unlock code', 401);
+      throw createError('Invalid username or unlock code', 403);
     }
   },
   recoverPassword(email, domain, options = {}) {
