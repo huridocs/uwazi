@@ -230,8 +230,18 @@ describe('syncWorker', () => {
         expect(relationship2Call).toBeDefined();
       });
 
-      it('should allow including null relationTypes', () => {
-        expect('should allow including nulls').toBe(true);
+      it('should allow including null relationTypes', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: []
+          },
+          relationtypes: [null]
+        });
+
+        const { calls: [relationship9Call], callsCount } = getCallsToIds('connections', [relationship9]);
+
+        expect(callsCount).toBe(1);
+        expect(relationship9Call).toBeDefined();
       });
 
       it('should include from specific types inlcuded through metadata (taking null left hand-side relationships)', async () => {
