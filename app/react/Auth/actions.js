@@ -27,7 +27,6 @@ export function resetPassword(password, key) {
 export function unlockAccount(credentials) {
   return dispatch => api.post('unlockaccount', credentials)
   .then(() => {
-    console.log('unlocked');
     dispatch(notify('Account unlocked successfully', 'success'));
   });
 }
