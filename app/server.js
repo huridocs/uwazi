@@ -61,7 +61,6 @@ apiRoutes(app, http);
 serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);
-migrator.shouldMigrate();
 
 mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
 .then(async () => {
