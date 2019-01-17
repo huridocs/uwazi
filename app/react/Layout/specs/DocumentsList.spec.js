@@ -22,6 +22,8 @@ describe('DocumentsList', () => {
       filters: Immutable.fromJS({ documentTypes: [] }),
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
+      loadMoreDocuments: jasmine.createSpy('loadMoreDocuments'),
+      storeKey: 'library',
       searchDocuments: () => {},
       deleteConnection: () => {},
       location: { query: { q: '', pathname: 'library/' } }
@@ -104,11 +106,13 @@ describe('DocumentsList', () => {
   });
 
   describe('Load More button', () => {
-    fit('should render by default a load more button', () => {
+    it('should render by default a load more button', () => {
       props.documents = props.documents.set('totalRows', 3);
       render();
 
       expect(component.find('.btn-load-more').length).toBe(2);
+      component.find('.btn-load-more').at(0).simulate('click');
+      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 32);
     });
 
     it('should render a custom passed load more', () => {
