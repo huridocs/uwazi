@@ -81,9 +81,6 @@ export default {
     const whitelistedThesauris = await getApprovedThesauris(config);
     const whitelistedRelationtypes = await getApprovedRelationtypes(config);
 
-    // there is always one ??
-    // console.log(lastChanges[0]);
-
     await lastChanges.reduce(async (prev, change) => {
       await prev;
 
