@@ -14,7 +14,7 @@ export const LoadMoreRelationshipsButton = ({ totalHubs, requestedHubs, action, 
     };
 
     return (
-      <div>
+      <div className="text-center">
         <p className="col-sm-12 text-center documents-counter">
           <b>{requestedHubs}</b> {t('System', 'of')} <b>{totalHubs}</b> {t('System', 'hubs')}
         </p>
