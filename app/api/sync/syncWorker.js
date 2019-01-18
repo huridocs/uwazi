@@ -44,6 +44,7 @@ const getApprovedCollections = (config) => {
     whitelistedCollections.push('entities');
     whitelistedCollections.push('connections');
     whitelistedCollections.push('dictionaries');
+    whitelistedCollections.push('translations');
   }
 
   const blacklistedCollections = ['migrations', 'settings', 'sessions'];
@@ -150,6 +151,38 @@ export default {
         if (!belongsToWhitelistedType && !isPossibleLeftMetadataRelationship && !isPosssbleRightMetadataRelationship) {
           return Promise.resolve();
         }
+      }
+
+      if (change.namespace === 'translations') {
+        const templatesData = await models.templates.get({ _id: { $in: Object.keys(templatesConfig) } });
+
+        data.contexts = data.contexts
+        .map((_context) => {
+          const context = _context;
+
+          const isSystem = context.id.toString() === 'System';
+          const isApprovedRelationtype = whitelistedRelationtypes.includes(context.id.toString());
+          const isApprovedThesauri = whitelistedThesauris.includes(context.id.toString());
+
+          if (isSystem || isApprovedRelationtype || isApprovedThesauri) {
+            return context;
+          }
+
+          if (Object.keys(templatesConfig).includes(context.id.toString())) {
+            const contextTemplate = templatesData.find(t => t._id.toString() === context.id.toString());
+            const approvedKeys = ([contextTemplate.name]).concat(
+              contextTemplate.properties
+              .filter(p => templatesConfig[context.id.toString()].includes(p._id.toString()))
+              .map(p => p.label)
+            );
+
+            context.values = (context.values || []).filter(v => approvedKeys.includes(v.key));
+            return context;
+          }
+
+          return null;
+        })
+        .filter(c => Boolean(c));
       }
 
       if (change.namespace === 'entities' && !Object.keys(templatesConfig).includes(data.template.toString())) {

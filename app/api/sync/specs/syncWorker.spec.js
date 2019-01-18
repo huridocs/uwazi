@@ -42,6 +42,7 @@ import fixtures, {
   relationtype3,
   relationtype4,
   relationtype7,
+  translation1,
 } from './fixtures';
 
 import syncWorker from '../syncWorker';
@@ -116,13 +117,12 @@ describe('syncWorker', () => {
 
         expect(callsCount).toBe(2);
 
-        expectCallToEqual(template1Call, 'templates', {
-          _id: template1,
+        expectCallToEqual(template1Call, 'templates', expect.objectContaining({
           properties: [
             expect.objectContaining({ _id: template1Property1 }),
             expect.objectContaining({ _id: template1Property3 })
           ]
-        });
+        }));
 
         expectCallToEqual(template2Call, 'templates', expect.objectContaining({ _id: template2 }));
       });
@@ -176,6 +176,48 @@ describe('syncWorker', () => {
         expect(relationtype3Call).toBeDefined();
         expect(relationtype4Call).toBeDefined();
         expect(relationtype7Call).toBeDefined();
+      });
+    });
+
+    describe('translations', () => {
+      it('should include System context and exclude non-whitelisted templates, thesauris and relationtypes', async () => {
+        await syncWorkerWithConfig({ templates: {} });
+        const { calls: [translation1Call] } = getCallsToIds('translations', [translation1]);
+        const { contexts } = translation1Call[1].data;
+
+        expect(contexts.find(c => c.id === 'System').values).toEqual([{ key: 'Sytem Key', value: 'System Value' }]);
+        expect(contexts.length).toBe(1);
+      });
+
+      it('should include from whitelisted templates and relationstypes, as well as derived thesauris and relationstypes', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [
+              template1PropertyRelationship1.toString(),
+              template1PropertyThesauri3MultiSelect.toString(),
+            ],
+            [template2.toString()]: [template2PropertyRelationship2.toString()],
+          },
+          relationtypes: [relationtype1.toString()],
+        });
+
+        const { calls: [translation1Call] } = getCallsToIds('translations', [translation1]);
+        const { contexts } = translation1Call[1].data;
+
+        expect(contexts.find(c => c.id.toString() === template1.toString()).values).toEqual([
+          { key: 'template1', value: 'template1T' },
+          { key: 't1Relationship1L', value: 't1Relationship1T' },
+          { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+        ]);
+        expect(contexts.find(c => c.id.toString() === template2.toString()).values).toEqual([
+          { key: 'template2', value: 'template2T' },
+          { key: 't2Relationship2L', value: 't2Relationship2T' },
+        ]);
+        expect(contexts.find(c => c.id.toString() === relationtype1.toString()).values).toBe('All values from r1');
+        expect(contexts.find(c => c.id.toString() === relationtype4.toString()).values).toBe('All values from r4');
+        expect(contexts.find(c => c.id.toString() === relationtype7.toString()).values).toBe('All values from r7');
+        expect(contexts.find(c => c.id.toString() === thesauri3.toString()).values).toBe('All values from t3');
+        expect(contexts.length).toBe(7);
       });
     });
 
@@ -265,7 +307,7 @@ describe('syncWorker', () => {
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(6);
+      expect(request.post.calls.count()).toBe(7);
       expect(request.delete.calls.count()).toBe(2);
     });
 

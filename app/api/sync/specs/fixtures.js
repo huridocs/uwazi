@@ -70,6 +70,8 @@ const hub1 = db.id();
 const hub2 = db.id();
 const hub3 = db.id();
 
+const translation1 = db.id();
+
 const settingsId = db.id();
 const sessionsId = db.id();
 
@@ -291,6 +293,12 @@ export default {
       mongoId: sessionsId,
       deleted: false,
     },
+    {
+      timestamp: 11500,
+      namespace: 'translations',
+      mongoId: translation1,
+      deleted: false,
+    },
   ],
 
   entities: [
@@ -431,40 +439,48 @@ export default {
   templates: [
     {
       _id: template1,
+      name: 'template1',
       properties: [
         {
           _id: template1Property1,
           name: 't1Property1',
+          label: 't1Property1L',
         },
         {
           _id: template1Property2,
           name: 't1Property2',
+          label: 't1Property2L',
         },
         {
           _id: template1Property3,
           name: 't1Property3',
+          label: 't1Property3L',
         },
         {
           _id: template1PropertyThesauri1Select,
           name: 't1Thesauri1Select',
+          label: 't1Thesauri1SelectL',
           type: 'select',
           content: thesauri1
         },
         {
           _id: template1PropertyThesauri2Select,
           name: 't1Thesauri2Select',
+          label: 't1Thesauri2SelectL',
           type: 'select',
           content: thesauri2
         },
         {
           _id: template1PropertyThesauri3MultiSelect,
           name: 't1Thesauri3MultiSelect',
+          label: 't1Thesauri3MultiSelectL',
           type: 'multiselect',
           content: thesauri3
         },
         {
           _id: template1PropertyRelationship1,
           name: 't1Relationship1',
+          label: 't1Relationship1L',
           type: 'relationship',
           content: '',
           relationType: relationtype4
@@ -472,6 +488,7 @@ export default {
         {
           _id: template1PropertyRelationship2,
           name: 't1Relationship2',
+          label: 't1Relationship2L',
           type: 'relationship',
           content: '',
           relationType: relationtype5
@@ -480,16 +497,19 @@ export default {
     },
     {
       _id: template2,
+      name: 'template2',
       properties: [
         {
           _id: template2PropertyThesauri5Select,
           name: 't2Thesauri3MultiSelect',
+          label: 't2Thesauri3MultiSelectL',
           type: 'select',
           content: thesauri5
         },
         {
           _id: template2PropertyRelationship1,
           name: 't2Relationship1',
+          label: 't2Relationship1L',
           type: 'relationship',
           content: '',
           relationType: relationtype6
@@ -497,6 +517,7 @@ export default {
         {
           _id: template2PropertyRelationship2,
           name: 't2Relationship2',
+          label: 't2Relationship2L',
           type: 'relationship',
           content: template1,
           relationType: relationtype7
@@ -552,6 +573,76 @@ export default {
     },
     {
       _id: thesauri5
+    }
+  ],
+
+  translations: [
+    {
+      _id: translation1,
+      locale: 'en',
+      contexts: [
+        {
+          id: 'System',
+          values: [{ key: 'Sytem Key', value: 'System Value' }]
+        },
+        {
+          type: 'Entity',
+          id: template1,
+          values: [
+            { key: 'template1', value: 'template1T' },
+            { key: 't1Property1L', value: 't1Property1T' },
+            { key: 't1Relationship1L', value: 't1Relationship1T' },
+            { key: 't1Relationship2L', value: 't1Relationship2T' },
+            { key: 't1Thesauri2SelectL', value: 't1Thesauri2SelectT' },
+            { key: 't1Thesauri3MultiSelectL', value: 't1Thesauri3MultiSelectT' },
+          ]
+        },
+        {
+          type: 'Entity',
+          id: template2,
+          values: [
+            { key: 'template2', value: 'template2T' },
+            { key: 't2Relationship2L', value: 't2Relationship2T' },
+            { key: 'anotherL', value: 'anotherT' },
+          ]
+        },
+        {
+          type: 'Entity',
+          id: template3
+        },
+        {
+          type: 'Dictionary',
+          id: thesauri1
+        },
+        {
+          type: 'Dictionary',
+          id: thesauri2
+        },
+        {
+          type: 'Dictionary',
+          id: thesauri3,
+          values: 'All values from t3'
+        },
+        {
+          type: 'Connection',
+          id: relationtype1,
+          values: 'All values from r1'
+        },
+        {
+          type: 'Connection',
+          id: relationtype2,
+        },
+        {
+          type: 'Connection',
+          id: relationtype4,
+          values: 'All values from r4'
+        },
+        {
+          type: 'Connection',
+          id: relationtype7,
+          values: 'All values from r7'
+        }
+      ]
     }
   ],
 
@@ -618,4 +709,5 @@ export {
   relationtype5,
   relationtype6,
   relationtype7,
+  translation1,
 };
