@@ -41,6 +41,19 @@ export default (app) => {
     });
 
   app.post(
+    '/api/unlockaccount',
+    validateRequest(Joi.object().keys({
+      username: Joi.string().required(),
+      code: Joi.string().required()
+    }).required()),
+    (req, res, next) => {
+      users.unlockAccount(req.body)
+      .then(() => res.json('OK'))
+      .catch(next);
+    }
+  );
+
+  app.post(
     '/api/recoverpassword',
     validateRequest(Joi.object().keys({
       email: Joi.string().required(),
