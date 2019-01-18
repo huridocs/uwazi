@@ -91,6 +91,23 @@ describe('users routes', () => {
         .catch(catchErrors(done));
       });
     });
+
+    describe('/unlockaccount', () => {
+      it('should have a validation schema', () => {
+        expect(routes.post.validation('/api/unlockaccount')).toMatchSnapshot();
+      });
+
+      it('should call users.unlockAccount with the body', (done) => {
+        jest.spyOn(users, 'unlockAccount').mockResolvedValue();
+        const req = { body: 'credentials' };
+        routes.post('/api/unlockaccount', req)
+        .then(() => {
+          expect(users.unlockAccount).toHaveBeenCalledWith('credentials');
+          done();
+        })
+        .catch(catchErrors(done));
+      });
+    });
   });
 
   describe('GET', () => {
