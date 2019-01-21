@@ -14,9 +14,18 @@ import fixtures, {
 describe('migration sync-starting-point', () => {
   let updatelogs;
 
-  const expectLog = id => ({ toHave: (value) => {
+  const expectLog = id => ({ toBelongTo: (namespace) => {
     const log = updatelogs.find(l => l.mongoId.toString() === id.toString());
-    expect(log).toEqual(expect.objectContaining(Object.assign({ timestamp: 1, deleted: false }, value)));
+    const expectedOrder = {
+      settings: 1,
+      dictionaries: 2,
+      relationtypes: 2,
+      translations: 2,
+      templates: 3,
+      entities: 4,
+      connections: 5
+    };
+    expect(log).toEqual(expect.objectContaining({ namespace, timestamp: expectedOrder[namespace], deleted: false }));
   } });
 
   beforeEach((done) => {
@@ -37,12 +46,12 @@ describe('migration sync-starting-point', () => {
     updatelogs = await testingDB.mongodb.collection('updatelogs').find().toArray();
 
     expect(updatelogs.length).toBe(10);
-    expectLog(template1).toHave({ namespace: 'templates' });
-    expectLog(template2).toHave({ namespace: 'templates' });
-    expectLog(entity1).toHave({ namespace: 'entities' });
-    expectLog(entity3).toHave({ namespace: 'entities' });
-    expectLog(translation1).toHave({ namespace: 'translations' });
-    expectLog(connection1).toHave({ namespace: 'connections' });
+    expectLog(template1).toBelongTo('templates');
+    expectLog(template2).toBelongTo('templates');
+    expectLog(entity1).toBelongTo('entities');
+    expectLog(entity3).toBelongTo('entities');
+    expectLog(translation1).toBelongTo('translations');
+    expectLog(connection1).toBelongTo('connections');
 
     expect(updatelogs.find(l => l.mongoId.toString() === migration1.toString())).not.toBeDefined();
   });
