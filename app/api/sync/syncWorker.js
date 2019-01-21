@@ -41,13 +41,15 @@ const getValuesFromTemplateProperties = async (config, validTypes, valueProperty
 const getApprovedCollections = (config) => {
   const whitelistedCollections = Object.keys(config);
   if (whitelistedCollections.includes('templates')) {
+    whitelistedCollections.push('settings');
     whitelistedCollections.push('entities');
     whitelistedCollections.push('connections');
     whitelistedCollections.push('dictionaries');
     whitelistedCollections.push('translations');
+    whitelistedCollections.push('relationtypes');
   }
 
-  const blacklistedCollections = ['migrations', 'settings', 'sessions'];
+  const blacklistedCollections = ['migrations', 'sessions'];
 
   return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
 };
@@ -104,7 +106,11 @@ export default {
         return Promise.resolve();
       }
 
-      const data = await models[change.namespace].getById(change.mongoId);
+      let data = await models[change.namespace].getById(change.mongoId);
+
+      if (change.namespace === 'settings') {
+        data = { _id: data._id, languages: data.languages };
+      }
 
       if (change.namespace === 'connections') {
         const entityData = await models.entities.getById(data.entity);

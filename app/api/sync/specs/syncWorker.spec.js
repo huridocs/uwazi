@@ -11,6 +11,7 @@ import settings from 'api/settings';
 import settingsModel from 'api/settings/settingsModel';
 
 import fixtures, {
+  settingsId,
   newDoc1,
   newDoc2,
   newDoc4,
@@ -98,10 +99,27 @@ describe('syncWorker', () => {
     });
 
     it('should only sync whitelisted collections (forbidding certain collections even if present)', async () => {
-      await syncWorkerWithConfig({ migrations: {}, settings: {}, sessions: {} });
+      await syncWorkerWithConfig({ migrations: {}, sessions: {} });
 
       expect(request.post.calls.count()).toBe(0);
       expect(request.delete.calls.count()).toBe(0);
+    });
+
+    describe('settings', () => {
+      it('should only include languages from settings', async () => {
+        await syncWorkerWithConfig({
+          templates: {}
+        });
+
+        const { calls: [settingsCall], callsCount } = getCallsToIds('settings', [settingsId]);
+
+        expect(callsCount).toBe(1);
+
+        expectCallToEqual(settingsCall, 'settings', {
+          _id: settingsId,
+          languages: [{ key: 'es', default: true }]
+        });
+      });
     });
 
     describe('templates', () => {
@@ -145,10 +163,9 @@ describe('syncWorker', () => {
 
         expect(callsCount).toBe(3);
 
-        expectCallToEqual(thesauri1Call, 'dictionaries', {
-          _id: thesauri1,
+        expectCallToEqual(thesauri1Call, 'dictionaries', expect.objectContaining({
           values: [expect.objectContaining({ _id: thesauri1Value1 }), expect.objectContaining({ _id: thesauri1Value2 })]
-        });
+        }));
 
         expect(thesauri3Call).toBeDefined();
         expect(thesauri5Call).toBeDefined();
@@ -176,6 +193,17 @@ describe('syncWorker', () => {
         expect(relationtype3Call).toBeDefined();
         expect(relationtype4Call).toBeDefined();
         expect(relationtype7Call).toBeDefined();
+      });
+
+      it('should allow syncing only from templates, without whitelisting a whole relationtype', async () => {
+        await syncWorkerWithConfig({
+          templates: { [template1.toString()]: [template1PropertyRelationship1.toString()] }
+        });
+
+        const { calls: [relationtype4Call], callsCount } = getCallsToIds('relationtypes', [relationtype4]);
+
+        expect(callsCount).toBe(1);
+        expect(relationtype4Call).toBeDefined();
       });
     });
 
@@ -235,12 +263,10 @@ describe('syncWorker', () => {
         expect(callsCount).toBe(2);
 
         expectCallToEqual(entity1Call, 'entities', expect.objectContaining({
-          _id: newDoc1,
           metadata: { t1Property2: 'sync property 2', t1Property3: 'sync property 3', t1Thesauri1Select: thesauri1Value2 }
         }));
 
         expectCallToEqual(entity2Call, 'entities', expect.objectContaining({
-          _id: newDoc2,
           metadata: { t1Property2: 'another doc property 2' },
         }));
 
@@ -307,7 +333,7 @@ describe('syncWorker', () => {
     it('should process the log records newer than the current sync time (minus 1 sec)', async () => {
       await syncAllTemplates();
 
-      expect(request.post.calls.count()).toBe(7);
+      expect(request.post.calls.count()).toBe(8);
       expect(request.delete.calls.count()).toBe(2);
     });
 

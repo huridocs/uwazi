@@ -664,6 +664,7 @@ export default {
 };
 
 export {
+  settingsId,
   newDoc1,
   newDoc2,
   newDoc4,
