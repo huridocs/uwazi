@@ -2,11 +2,14 @@ import entities from './entities';
 import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
+import { validateRequest } from '../utils';
+import { endpointSchema } from '.';
 
 export default (app) => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor']),
+    validateRequest(endpointSchema),
     (req, res, next) => entities.save(req.body, { user: req.user, language: req.language })
     .then((response) => {
       res.json(response);
