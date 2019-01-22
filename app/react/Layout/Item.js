@@ -28,7 +28,7 @@ export class Item extends Component {
 
   render() {
     const { onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
-           additionalText, buttons, evalPublished } = this.props;
+           additionalText, buttons } = this.props;
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
@@ -58,7 +58,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}
-          {evalPublished && doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
+          {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
           {this.props.labels}
           {buttons}
         </ItemFooter>
