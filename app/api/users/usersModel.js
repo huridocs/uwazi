@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 import instanceModel from 'api/odm';
 
 const userSchema = new mongoose.Schema({
@@ -11,5 +12,5 @@ const userSchema = new mongoose.Schema({
   accountUnlockCode: { type: String, select: false }
 });
 
-let Model = mongoose.model('users', userSchema);
+const Model = mongoose.model('users', userSchema);
 export default instanceModel(Model);
