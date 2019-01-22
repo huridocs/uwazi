@@ -62,7 +62,17 @@ serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);
 
-mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
+let dbAuth = {};
+
+if (process.env.DBUSER) {
+  dbAuth = {
+    auth: { authSource: 'admin' },
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  };
+}
+
+mongoose.connect(dbConfig[app.get('env')], { ...dbAuth, useMongoClient: true })
 .then(async () => {
   console.info('==> Processing system keys...');
   await translations.processSystemKeys(systemKeys);
