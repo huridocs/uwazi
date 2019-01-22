@@ -1,14 +1,16 @@
 import SHA256 from 'crypto-js/sha256';
+import crypto from 'crypto';
 
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
+import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 
 import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
 import settings from '../settings/settings';
 
-const encryptPassword = password => SHA256(password).toString();
+const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
 const conformRecoverText = (options, _settings, domain, key, user) => {
   const response = {};
@@ -43,10 +45,33 @@ const conformRecoverText = (options, _settings, domain, key, user) => {
   return response;
 };
 
+const sendAccountLockedEmail = (user, domain) => {
+  const url = `${domain}/unlockaccount/${user.username}/${user.accountUnlockCode}`;
+  const htmlLink = `<a href="${url}">${url}</a>`;
+  const text =
+    'Hello,\n\n' +
+    'Your account has been locked because of too many failed login attempts. ' +
+    'To unlock your account open the following link:\n' +
+    `${url}`;
+  const html = `<p>${
+    text.replace(url, htmlLink)
+  }</p>`;
+
+  const mailOptions = {
+    from: '"Uwazi" <no-reply@uwazi.io',
+    to: user.email,
+    subject: 'Account locked',
+    text,
+    html
+  };
+
+  return mailer.send(mailOptions);
+};
+
 export default {
   save(user, currentUser) {
     return model.get({ _id: user._id })
-    .then(([userInTheDatabase]) => {
+    .then(async ([userInTheDatabase]) => {
       if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
         return Promise.reject(createError('Can not change your own role', 403));
       }
@@ -57,7 +82,7 @@ export default {
 
       return model.save({
         ...user,
-        password: user.password ? encryptPassword(user.password) : undefined,
+        password: user.password ? await encryptPassword(user.password) : undefined,
       });
     });
   },
@@ -67,7 +92,7 @@ export default {
       model.get({ username: user.username }),
       model.get({ email: user.email })
     ])
-    .then(([userNameMatch, emailMatch]) => {
+    .then(async ([userNameMatch, emailMatch]) => {
       if (userNameMatch.length) {
         return Promise.reject(createError('Username already exists', 409));
       }
@@ -76,7 +101,7 @@ export default {
         return Promise.reject(createError('Email already exists', 409));
       }
 
-      return model.save({ ...user, password: encryptPassword(random()) })
+      return model.save({ ...user, password: await encryptPassword(random()) })
       .then(_user => this.recoverPassword(user.email, domain, { newUser: true }).then(() => _user));
     });
   },
@@ -103,7 +128,49 @@ export default {
       return Promise.reject(createError('Can not delete last user', 403));
     });
   },
+  async login({ username, password }, domain) {
+    const [user] = await this.get({ username }, '+password +accountLocked +failedLogins +accountUnlockCode');
+    if (!user) {
+      throw createError('Invalid username or password', 401);
+    }
+    if (user.accountLocked) {
+      throw createError('Account locked. Check your email to unlock.', 403);
+    }
 
+    const passwordValidated = await comparePasswords(password, user.password);
+    const oldPasswordValidated = user.password === SHA256(password).toString();
+
+    if (oldPasswordValidated) {
+      await model.save({ _id: user._id, password: await encryptPassword(password) });
+    }
+
+    if (!oldPasswordValidated && !passwordValidated) {
+      const updatedUser = await model.db.findOneAndUpdate({ _id: user._id },
+          { $inc: { failedLogins: 1 } }, { new: true, fields: '+failedLogins' });
+      if (updatedUser.failedLogins >= 3) {
+        const accountUnlockCode = generateUnlockCode();
+        const lockedUser = await model.db.findOneAndUpdate({ _id: user._id }, { $set: { accountLocked: true, accountUnlockCode } },
+          { new: true, fields: '+accountUnlockCode' });
+        await sendAccountLockedEmail(lockedUser, domain);
+        throw createError('Account locked. Check your email to unlock.', 403);
+      }
+      throw createError('Invalid username or password', 401);
+    }
+    await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
+    delete user.password;
+    delete user.accountLocked;
+    delete user.failedLogins;
+    delete user.accountUnlockCode;
+    return user;
+  },
+  async unlockAccount({ username, code }) {
+    const user = await model.db.findOneAndUpdate({ username, accountUnlockCode: code, accountLocked: true }, {
+      $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 }
+    });
+    if (!user) {
+      throw createError('Invalid username or unlock code', 403);
+    }
+  },
   recoverPassword(email, domain, options = {}) {
     const key = SHA256(email + Date.now()).toString();
     return Promise.all([
@@ -137,7 +204,7 @@ export default {
     if (key) {
       return Promise.all([
         passwordRecoveriesModel.delete(key._id),
-        model.save({ _id: key.user, password: encryptPassword(credentials.password) })
+        model.save({ _id: key.user, password: await encryptPassword(credentials.password) })
       ]);
     }
     throw createError('key not found', 403);

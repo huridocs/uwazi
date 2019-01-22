@@ -69,6 +69,35 @@ Object {
 }
 `;
 
+exports[`users routes POST /unlockaccount should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "code": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "username": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
 exports[`users routes POST /users should have a validation schema 1`] = `
 Object {
   "children": Object {
