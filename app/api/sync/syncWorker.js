@@ -113,16 +113,17 @@ export default {
       }
 
       if (change.namespace === 'connections') {
-        const entityData = await models.entities.getById(data.entity);
+        const entitiesData = await models.entities.get({ sharedId: data.entity });
+        const entityTemplate = entitiesData[0].template.toString();
 
-        const belongsToValidEntity = Object.keys(templatesConfig).includes(entityData.template.toString());
+        const belongsToValidEntity = Object.keys(templatesConfig).includes(entityTemplate);
         if (!belongsToValidEntity) {
           return Promise.resolve();
         }
 
         const belongsToWhitelistedType = relationtypesConfig.includes(data.template ? data.template.toString() : null);
 
-        const templateData = await models.templates.getById(entityData.template);
+        const templateData = await models.templates.getById(entityTemplate);
         const templateHasValidRelationProperties = templateData.properties.reduce((isValid, p) => {
           if (p.type === 'relationship' && templatesConfig[templateData._id.toString()].includes(p._id.toString())) {
             return true;
@@ -134,7 +135,7 @@ export default {
         const isPossibleLeftMetadataRelationship = templateHasValidRelationProperties && !data.template;
 
         const hubOtherConnections = await models.connections.get({ hub: data.hub, _id: { $ne: data._id } });
-        const hubOtherEntities = await models.entities.get({ _id: { $in: hubOtherConnections.map(h => h.entity) } });
+        const hubOtherEntities = await models.entities.get({ sharedId: { $in: hubOtherConnections.map(h => h.entity) } });
         const hubTemplateIds = hubOtherEntities.map(h => h.template.toString());
         const hubWhitelistedTemplateIds = hubTemplateIds.filter(id => Object.keys(templatesConfig).includes(id));
         const hubOtherTemplates = await models.templates.get({ _id: { $in: hubWhitelistedTemplateIds } });

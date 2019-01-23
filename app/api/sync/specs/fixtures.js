@@ -304,6 +304,7 @@ export default {
   entities: [
     {
       _id: newDoc1,
+      sharedId: 'newDoc1SharedId',
       title: 'a new entity',
       template: template1,
       metadata: {
@@ -327,31 +328,37 @@ export default {
     },
     {
       _id: newDoc3,
+      sharedId: 'newDoc3SharedId',
       title: 'New Doc 3',
       template: template2,
     },
     {
       _id: newDoc5,
+      sharedId: 'newDoc5SharedId',
       title: 'New Doc 5',
       template: template1,
     },
     {
       _id: newDoc6,
+      sharedId: 'newDoc6SharedId',
       title: 'not to sync',
       template: template3,
     },
     {
       _id: newDoc7,
+      sharedId: 'newDoc7SharedId',
       title: 'New Doc 7',
       template: template2,
     },
     {
       _id: newDoc8,
+      sharedId: 'newDoc8SharedId',
       title: 'New Doc 8',
       template: template2,
     },
     {
       _id: newDoc9,
+      sharedId: 'newDoc9SharedId',
       title: 'New Doc 9',
       template: template2,
     },
@@ -360,67 +367,67 @@ export default {
   connections: [
     {
       _id: relationship1,
-      entity: newDoc1,
+      entity: 'newDoc1SharedId',
       template: relationtype1,
       hub: hub1,
     },
     {
       _id: relationship2,
+      entity: 'newDoc1SharedId',
       template: relationtype3,
-      entity: newDoc1,
       hub: hub1,
     },
     {
       _id: relationship3,
-      entity: newDoc6,
+      entity: 'newDoc6SharedId',
       template: relationtype1,
       hub: hub1,
     },
     {
       _id: relationship4,
-      entity: newDoc1,
+      entity: 'newDoc1SharedId',
       template: relationtype2,
       hub: hub2,
     },
     {
       _id: relationship5,
-      entity: newDoc5,
+      entity: 'newDoc5SharedId',
       template: relationtype7,
       hub: hub2,
     },
     {
       _id: relationship8,
-      entity: newDoc7,
+      entity: 'newDoc7SharedId',
       template: relationtype7,
       hub: hub2,
     },
     {
       _id: relationship6,
-      entity: newDoc5,
+      entity: 'newDoc5SharedId',
       template: relationtype6,
       hub: hub2,
     },
     {
       _id: relationship7,
-      entity: newDoc3,
+      entity: 'newDoc3SharedId',
       template: null,
       hub: hub2,
     },
     {
       _id: relationship9,
-      entity: newDoc1,
+      entity: 'newDoc1SharedId',
       template: null,
       hub: hub3,
     },
     {
       _id: relationship10,
-      entity: newDoc8,
+      entity: 'newDoc8SharedId',
       template: relationtype4,
       hub: hub3,
     },
     {
       _id: relationship11,
-      entity: newDoc9,
+      entity: 'newDoc9SharedId',
       template: relationtype4,
       hub: hub3,
     }
