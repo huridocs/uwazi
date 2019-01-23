@@ -57,8 +57,7 @@ function renderComponentWithRoot(Component, componentProps, initialData, user, i
 }
 
 function handle404(res) {
-  const wholeHtml = renderComponentWithRoot(NoMatch);
-  res.status(404).send(wholeHtml);
+  res.redirect(301, '/404');
 }
 
 function respondError(res, error) {
@@ -153,7 +152,7 @@ function handleRoute(res, renderProps, req) {
       }
 
       if (error.status === 404) {
-        res.redirect(302, '/404');
+        res.redirect(404, '/404');
         return Promise.reject(error);
       }
 
@@ -211,8 +210,11 @@ const allowedRoute = (user = {}, url) => {
     !isAdminRoute && !isAuthRoute;
 };
 
-function routeMatch(req, res, location) {
+function routeMatch(req, res, location, languages) {
   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
+    if (renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
+      return handle404(res);
+    }
     if (error) {
       return respondError(res, error);
     } else if (redirectLocation) {
@@ -257,9 +259,10 @@ function ServerRouter(req, res) {
 
   const location = req.url;
 
-  getAssets()
-  .then(() => {
-    routeMatch(req, res, location);
+  Promise.all([settingsApi.get(), getAssets()])
+  .then(([settings]) => {
+    const languages = settings.languages.map(l => l.key);
+    routeMatch(req, res, location, languages);
   });
 }
 
