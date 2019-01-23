@@ -1,14 +1,14 @@
 import Joi from 'joi';
 
-const metadataSchema = Joi.object().keys().pattern(Joi.string(), Joi.alternatives().try(
-  Joi.number(),
-  Joi.string(),
+const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.alternatives().try(
+  Joi.number().allow(''),
+  Joi.string().allow(''),
   Joi.array().items(Joi.alternatives().try(
     Joi.number(),
     Joi.string()
-  )),
+  )).allow(''),
   Joi.array().items(Joi.object().pattern(Joi.string(),
-    Joi.array().items(Joi.string())))
+    Joi.array().items(Joi.string()))).allow('')
 ));
 
 const iconSchema = Joi.object().keys({
