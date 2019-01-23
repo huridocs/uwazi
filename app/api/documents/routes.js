@@ -46,7 +46,7 @@ export default (app) => {
   app.get(
     '/api/documents',
     validateRequest(Joi.object().keys({
-      _id: Joi.string()
+      _id: Joi.string().required()
     }), 'query'),
     (req, res, next) => {
       let id;

@@ -4,6 +4,9 @@ exports[`documents /api/documents should have a validation schema 1`] = `
 Object {
   "children": Object {
     "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         "",
       ],

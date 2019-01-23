@@ -4,6 +4,9 @@ exports[`entities /api/entities/count_by_template should have a validation schem
 Object {
   "children": Object {
     "templateId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         "",
       ],
@@ -21,6 +24,9 @@ exports[`entities DELETE /api/entities should have a validation schema 1`] = `
 Object {
   "children": Object {
     "sharedId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         "",
       ],
@@ -38,10 +44,19 @@ exports[`entities DELETE /api/entities/multiple should have a validation schema 
 Object {
   "children": Object {
     "sharedIds": Object {
-      "invalids": Array [
-        "",
+      "flags": Object {
+        "presence": "required",
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
       ],
-      "type": "string",
+      "type": "array",
     },
   },
   "flags": Object {
@@ -55,6 +70,9 @@ exports[`entities GET should have a validation schema 1`] = `
 Object {
   "children": Object {
     "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         "",
       ],
@@ -63,6 +81,9 @@ Object {
     "omitRelationships": Object {
       "type": "any",
     },
+  },
+  "flags": Object {
+    "presence": "required",
   },
   "type": "object",
 }
@@ -73,6 +94,7 @@ Object {
   "children": Object {
     "ids": Object {
       "flags": Object {
+        "presence": "required",
         "sparse": false,
       },
       "items": Array [
@@ -221,6 +243,9 @@ Object {
           "type": "string",
         },
       },
+      "flags": Object {
+        "presence": "required",
+      },
       "type": "object",
     },
   },
@@ -235,6 +260,9 @@ exports[`entities POST get_raw_page should have a validation schema 1`] = `
 Object {
   "children": Object {
     "pageNumber": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         Infinity,
         -Infinity,
@@ -242,6 +270,9 @@ Object {
       "type": "number",
     },
     "sharedId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         "",
       ],

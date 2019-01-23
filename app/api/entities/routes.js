@@ -27,13 +27,13 @@ export default (app) => {
     '/api/entities/multipleupdate',
     needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
-      ids: Joi.array().items(Joi.string()),
+      ids: Joi.array().items(Joi.string()).required(),
       values: Joi.object().keys({
         metadata: metadataSchema,
         template: Joi.string(),
         published: Joi.boolean(),
         icon: iconSchema
-      })
+      }).required()
     }).required()),
     (req, res, next) => entities.multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })
     .then((docs) => {
@@ -44,7 +44,7 @@ export default (app) => {
   app.get(
     '/api/entities/count_by_template',
     validateRequest(Joi.object().keys({
-      templateId: Joi.string()
+      templateId: Joi.string().required()
     }).required(), 'query'),
     (req, res, next) => entities.countByTemplate(req.query.templateId)
     .then(response => res.json(response))
@@ -54,8 +54,8 @@ export default (app) => {
   app.get(
     '/api/entities/get_raw_page',
     validateRequest(Joi.object().keys({
-      sharedId: Joi.string(),
-      pageNumber: Joi.number()
+      sharedId: Joi.string().required(),
+      pageNumber: Joi.number().required()
     }).required(), 'query'),
     (req, res, next) => entities.getRawPage(req.query.sharedId, req.language, req.query.pageNumber)
     .then(data => res.json({ data }))
@@ -64,9 +64,9 @@ export default (app) => {
 
   app.get('/api/entities',
     validateRequest(Joi.object().keys({
-      _id: Joi.string(),
+      _id: Joi.string().required(),
       omitRelationships: Joi.any()
-    }), 'query'),
+    }).required(), 'query'),
     (req, res, next) => {
       const action = req.query.omitRelationships ? 'get' : 'getWithRelationships';
       entities[action]({ sharedId: req.query._id, language: req.language })
@@ -84,7 +84,7 @@ export default (app) => {
   app.delete('/api/entities',
     needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
-      sharedId: Joi.string()
+      sharedId: Joi.string().required()
     }).required(), 'query'),
     (req, res, next) => {
       entities.delete(req.query.sharedId)
@@ -95,7 +95,7 @@ export default (app) => {
   app.delete('/api/entities/multiple',
     needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
-      sharedIds: Joi.string()
+      sharedIds: Joi.array().items(Joi.string()).required()
     }).required(), 'query'),
     (req, res, next) => {
       entities.deleteMultiple(JSON.parse(req.query.sharedIds))
