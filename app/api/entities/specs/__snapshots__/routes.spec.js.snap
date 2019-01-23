@@ -143,12 +143,15 @@ Object {
                       -Infinity,
                     ],
                     "type": "number",
-                  },
-                  Object {
-                    "invalids": Array [
+                    "valids": Array [
                       "",
                     ],
+                  },
+                  Object {
                     "type": "string",
+                    "valids": Array [
+                      "",
+                    ],
                   },
                   Object {
                     "flags": Object {
@@ -175,6 +178,9 @@ Object {
                       },
                     ],
                     "type": "array",
+                    "valids": Array [
+                      "",
+                    ],
                   },
                   Object {
                     "flags": Object {
@@ -210,15 +216,18 @@ Object {
                       },
                     ],
                     "type": "array",
+                    "valids": Array [
+                      "",
+                    ],
                   },
                 ],
                 "type": "alternatives",
               },
               "schema": Object {
-                "invalids": Array [
+                "type": "string",
+                "valids": Array [
                   "",
                 ],
-                "type": "string",
               },
             },
           ],
@@ -426,12 +435,15 @@ Object {
                   -Infinity,
                 ],
                 "type": "number",
-              },
-              Object {
-                "invalids": Array [
+                "valids": Array [
                   "",
                 ],
+              },
+              Object {
                 "type": "string",
+                "valids": Array [
+                  "",
+                ],
               },
               Object {
                 "flags": Object {
@@ -458,6 +470,9 @@ Object {
                   },
                 ],
                 "type": "array",
+                "valids": Array [
+                  "",
+                ],
               },
               Object {
                 "flags": Object {
@@ -493,15 +508,18 @@ Object {
                   },
                 ],
                 "type": "array",
+                "valids": Array [
+                  "",
+                ],
               },
             ],
             "type": "alternatives",
           },
           "schema": Object {
-            "invalids": Array [
+            "type": "string",
+            "valids": Array [
               "",
             ],
-            "type": "string",
           },
         },
       ],
