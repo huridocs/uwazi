@@ -1,6 +1,23 @@
 import Joi from 'joi';
 
-const schema = Joi.object().keys({
+const metadataSchema = Joi.object().keys().pattern(Joi.string(), Joi.alternatives().try(
+  Joi.number(),
+  Joi.string(),
+  Joi.array().items(Joi.alternatives().try(
+    Joi.number(),
+    Joi.string()
+  )),
+  Joi.array().items(Joi.object().pattern(Joi.string(),
+    Joi.array().items(Joi.string())))
+));
+
+const iconSchema = Joi.object().keys({
+  _id: Joi.string(),
+  label: Joi.string(),
+  type: Joi.string()
+});
+
+const saveSchema = Joi.object().keys({
   _id: Joi.string(),
   __v: Joi.number(),
   language: Joi.string(),
@@ -18,11 +35,7 @@ const schema = Joi.object().keys({
   }),
   fullText: Joi.any(),
   totalPages: Joi.number(),
-  icon: Joi.object().keys({
-    _id: Joi.string(),
-    label: Joi.string(),
-    type: Joi.string()
-  }),
+  icon: iconSchema,
   toc: Joi.array().items(Joi.object().keys({
     label: Joi.string(),
     indentation: Joi.number(),
@@ -41,18 +54,13 @@ const schema = Joi.object().keys({
   processed: Joi.boolean(),
   uploaded: Joi.boolean(),
   published: Joi.boolean(),
-  metadata: Joi.object().keys().pattern(Joi.string(), Joi.alternatives().try(
-    Joi.number(),
-    Joi.string(),
-    Joi.array().items(Joi.alternatives().try(
-      Joi.number(),
-      Joi.string()
-    )),
-    Joi.array().items(Joi.object().pattern(Joi.string(),
-      Joi.array().items(Joi.string())))
-  )),
+  metadata: metadataSchema,
   pdfInfo: Joi.any(),
   user: Joi.string()
 }).required();
 
-export default schema;
+export {
+  iconSchema,
+  metadataSchema,
+  saveSchema
+};
