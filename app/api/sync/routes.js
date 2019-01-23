@@ -48,9 +48,9 @@ export default (app) => {
     needsAuthorization(['admin']),
     async (req, res, next) => {
       try {
-        await models[req.query.namespace].delete(req.query.data);
+        await models[req.query.namespace].delete(JSON.parse(req.query.data));
         if (req.query.namespace === 'entities') {
-          await search.delete({ _id: req.query.data._id });
+          await search.delete({ _id: JSON.parse(req.query.data)._id });
         }
         res.json('ok');
       } catch (e) {
