@@ -13,7 +13,6 @@ import fs from 'fs';
 
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
-import NoMatch from './App/NoMatch';
 import Root from './App/Root';
 import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
