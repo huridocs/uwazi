@@ -63,36 +63,46 @@ const processAllLanguages = (entity, req) => processSingleLanguage(entity, req)
 export default (app) => {
   const upload = multer({ storage });
 
-  app.get('/api/attachment/:file', (req, res) => {
-    const filePath = `${path.resolve(attachmentsPath)}/${path.basename(req.params.file)}`;
-    fs.stat(filePath, (err) => {
-      if (err) {
-        return res.redirect('/public/no-preview.png');
-      }
-      return res.sendFile(filePath);
+  app.get(
+    '/api/attachment/:file',
+    (req, res) => {
+      const filePath = `${path.resolve(attachmentsPath)}/${path.basename(req.params.file)}`;
+      fs.stat(filePath, (err) => {
+        if (err) {
+          return res.redirect('/public/no-preview.png');
+        }
+        return res.sendFile(filePath);
+      });
     });
-  });
 
-  app.get('/api/attachments/download', (req, res, next) => {
-    entities.getById(req.query._id)
-    .then((response) => {
-      if (!response) {
-        throw createError('entitiy does not exist', 404);
-      }
-      const file = response.attachments.find(a => a.filename === req.query.file);
-      if (!file) {
-        throw createError('file not found', 404);
-      }
-      const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
-      res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
-    })
-    .catch(next);
-  });
+  app.get(
+    '/api/attachments/download',
+    validateRequest(Joi.object().keys({
+      _id: Joi.string().required()
+    }).required()),
+    (req, res, next) => {
+      entities.getById(req.query._id)
+      .then((response) => {
+        if (!response) {
+          throw createError('entitiy does not exist', 404);
+        }
+        const file = response.attachments.find(a => a.filename === req.query.file);
+        if (!file) {
+          throw createError('file not found', 404);
+        }
+        const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
+        res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
+      })
+      .catch(next);
+    });
 
   app.post(
     '/api/attachments/upload',
     needsAuthorization(['admin', 'editor']),
     upload.any(),
+    validateRequest(Joi.object().keys({
+      entityId: Joi.string().required()
+    }).required()),
     (req, res, next) => entities.getById(req.body.entityId, req.language)
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
       processSingleLanguage(entity, req))
