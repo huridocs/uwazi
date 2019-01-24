@@ -32,9 +32,7 @@ describe('ViewDocument', () => {
       }
       return action;
     }) } };
-    props = {
-      location: { query: {} }
-    };
+    props = { location: { query: {} }, routes: [] };
 
     render();
 
@@ -158,7 +156,7 @@ describe('ViewDocument', () => {
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
 
       entitiesAPI.getRawPage.calls.reset();
-      instance.componentWillReceiveProps({params: { documentId: 'documentId' }, location: { query: { page: 17, raw: 'true' } } })
+      instance.componentWillReceiveProps({ params: { documentId: 'documentId' }, location: { query: { page: 17, raw: 'true' } } })
       .then(() => {
         expect(context.store.dispatch).toHaveBeenCalledWith(actions.set('viewer/rawText', 'raw text'));
         expect(entitiesAPI.getRawPage).toHaveBeenCalledWith('documentId', 17);

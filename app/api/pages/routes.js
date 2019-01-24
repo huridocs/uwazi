@@ -12,13 +12,13 @@ export default (app) => {
     needsAuthorization(),
 
     validateRequest(Joi.object().keys({
-      _id: Joi.string(),
+      _id: Joi.objectId(),
       __v: Joi.number(),
       sharedId: Joi.string(),
       title: Joi.string().required(),
       language: Joi.string(),
       metadata: Joi.object().keys({
-        _id: Joi.string(),
+        _id: Joi.objectId(),
         content: Joi.string().allow(''),
       }),
     }).required()),

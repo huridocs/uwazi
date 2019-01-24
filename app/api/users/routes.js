@@ -12,7 +12,7 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object().keys({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
       __v: Joi.number(),
       username: Joi.string(),
       email: Joi.string(),

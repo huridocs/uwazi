@@ -7,7 +7,7 @@ export default (app) => {
   app.post('/api/relationtypes',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
-      _id: Joi.string(),
+      _id: Joi.objectId(),
       __v: Joi.number(),
       name: Joi.string(),
       properties: Joi.array().items(
@@ -37,7 +37,7 @@ export default (app) => {
 
   app.get('/api/relationtypes',
     validateRequest(Joi.object().keys({
-      _id: Joi.string()
+      _id: Joi.objectId()
     }), 'query'),
     (req, res, next) => {
       if (req.query._id) {
@@ -55,7 +55,7 @@ export default (app) => {
   app.delete('/api/relationtypes',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
-      _id: Joi.string()
+      _id: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => {
       relationtypes.delete(req.query._id)

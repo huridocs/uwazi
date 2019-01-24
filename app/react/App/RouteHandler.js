@@ -78,9 +78,13 @@ class RouteHandler extends Component {
   }
 
   urlHasChanged(props) {
-    const { params = {} } = props;
+    const { params = {}, routes = [] } = props;
     const sameParams = Object.keys(params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
-    return !sameParams;
+    const sameAmountOfparams = Object.keys(params).length === Object.keys(this.props.params).length;
+    const currentPath = this.props.routes.reduce((path, r) => path + r.path, '');
+    const newPath = routes.reduce((path, r) => path + r.path, '');
+    const samePath = currentPath === newPath;
+    return !sameParams || !sameAmountOfparams || !samePath;
   }
 
   componentWillReceiveProps(props) {
@@ -107,6 +111,7 @@ RouteHandler.contextTypes = {
 
 RouteHandler.propTypes = {
   params: PropTypes.object,
+  routes: PropTypes.array,
   location: PropTypes.object
 };
 
