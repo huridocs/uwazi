@@ -22,7 +22,7 @@ export default (app) => {
 
     validateRequest(Joi.object()
     .keys({
-      _id: Joi.string(),
+      _id: Joi.objectId(),
       __v: Joi.number(),
       locale: Joi.string().required(),
       contexts: Joi.array().required().items(
