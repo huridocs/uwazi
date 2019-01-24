@@ -7,7 +7,7 @@ export default (app) => {
   app.post('/api/settings',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
-      _id: Joi.string(),
+      _id: Joi.objectId(),
       __v: Joi.number(),
       project: Joi.string(),
       site_name: Joi.string().allow(''),

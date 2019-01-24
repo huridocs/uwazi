@@ -13,9 +13,6 @@ import relationships from 'api/relationships';
 import { attachmentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
-import objectId from 'joi-objectid';
-
-Joi.objectId = objectId(Joi);
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {

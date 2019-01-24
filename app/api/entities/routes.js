@@ -1,10 +1,13 @@
 import Joi from 'joi';
+import objectId from 'joi-objectid';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
 import { validateRequest } from '../utils';
 import { saveSchema, metadataSchema, iconSchema } from './endpointSchema';
+
+Joi.objectId = objectId(Joi);
 
 export default (app) => {
   app.post(
@@ -44,7 +47,7 @@ export default (app) => {
   app.get(
     '/api/entities/count_by_template',
     validateRequest(Joi.object().keys({
-      templateId: Joi.string().required()
+      templateId: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => entities.countByTemplate(req.query.templateId)
     .then(response => res.json(response))

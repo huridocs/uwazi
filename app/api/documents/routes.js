@@ -9,9 +9,6 @@ import { validateRequest } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates';
-import objectId from 'joi-objectid';
-
-Joi.objectId = objectId(Joi);
 
 import { endpointSchema } from '../entities';
 
@@ -27,7 +24,7 @@ export default (app) => {
   app.post(
     '/api/documents/pdfInfo',
     validateRequest(Joi.object().keys({
-      _id: Joi.string(),
+      _id: Joi.objectId(),
       sharedId: Joi.string(),
       pdfInfo: Joi.object().pattern(Joi.number(), Joi.object().keys({
         chars: Joi.number()
@@ -40,7 +37,7 @@ export default (app) => {
   app.get(
     '/api/documents/count_by_template',
     validateRequest(Joi.object().keys({
-      templateId: Joi.string().required()
+      templateId: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => templates.countByTemplate(req.query.templateId)
     .then(results => res.json(results))
