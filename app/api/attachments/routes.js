@@ -13,6 +13,9 @@ import relationships from 'api/relationships';
 import { attachmentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import objectId from 'joi-objectid';
+
+Joi.objectId = objectId(Joi);
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -73,7 +76,13 @@ export default (app) => {
     });
   });
 
-  app.get('/api/attachments/download', (req, res, next) => {
+  app.get('/api/attachments/download',
+
+  validateRequest(Joi.object({
+    _id: Joi.objectId().required()
+  }).required(), 'query'),
+
+  (req, res, next) => {
     entities.getById(req.query._id)
     .then((response) => {
       if (!response) {
@@ -108,7 +117,7 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
       entityId: Joi.string().required(),
       originalname: Joi.string().required(),
       language: Joi.string(),

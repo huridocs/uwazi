@@ -21,7 +21,7 @@ describe('MetadataFormButtons', () => {
       delete: jasmine.createSpy('delete'),
       publish: jasmine.createSpy('publish'),
       unpublish: jasmine.createSpy('unpublish'),
-      data: immutable({ test: 'test', sharedId: 'shId', type: 'type' }),
+      data: immutable({ test: 'test', sharedId: 'shId', file: {} }),
       templates: immutable([{ test: 'test' }]),
       formName: 'FormName',
       formStatePath: 'form',
@@ -41,7 +41,7 @@ describe('MetadataFormButtons', () => {
 
     it('should include a visible view button with the correct link', () => {
       const link = component.find(I18NLink);
-      expect(link.props().to).toBe('type/shId');
+      expect(link.props().to).toBe('document/shId');
       expect(link.parent().props().if).toBe(true);
     });
 
@@ -134,7 +134,7 @@ describe('MetadataFormButtons', () => {
 
     it('should only render a view button', () => {
       const link = component.find(I18NLink);
-      expect(link.props().to).toBe('type/shId');
+      expect(link.props().to).toBe('document/shId');
       expect(component.find('.edit-metadata').length).toBe(1);
       expect(component.find('.edit-metadata').at(0).find(Icon).props().icon).toBe('file');
       expect(component.find('.btn-success').length).toBe(0);

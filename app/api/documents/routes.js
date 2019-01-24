@@ -9,6 +9,9 @@ import { validateRequest } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates';
+import objectId from 'joi-objectid';
+
+Joi.objectId = objectId(Joi);
 
 export default (app) => {
   app.post('/api/documents', needsAuthorization(['admin', 'editor']), (req, res, next) => documents
@@ -60,7 +63,7 @@ export default (app) => {
     '/api/documents/download',
 
     validateRequest(Joi.object({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
     }).required(), 'query'),
 
     (req, res, next) => {
