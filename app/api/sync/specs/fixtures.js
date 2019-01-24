@@ -13,6 +13,7 @@ const newDoc6 = db.id();
 const newDoc7 = db.id();
 const newDoc8 = db.id();
 const newDoc9 = db.id();
+const newDoc10 = db.id();
 
 const template1 = db.id();
 
@@ -183,6 +184,12 @@ export default {
       timestamp: 9000,
       namespace: 'entities',
       mongoId: newDoc6,
+      deleted: false,
+    },
+    {
+      timestamp: 9003,
+      namespace: 'entities',
+      mongoId: newDoc10,
       deleted: false,
     },
     {
@@ -361,6 +368,12 @@ export default {
       sharedId: 'newDoc9SharedId',
       title: 'New Doc 9',
       template: template2,
+    },
+    {
+      _id: newDoc10,
+      sharedId: 'newDoc10SharedId',
+      title: 'New Doc 10',
+      template: null,
     },
   ],
 
@@ -675,6 +688,7 @@ export {
   newDoc1,
   newDoc2,
   newDoc4,
+  newDoc10,
   template1,
   template1Property1,
   template1Property2,

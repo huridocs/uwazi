@@ -213,7 +213,7 @@ export default {
         .filter(c => Boolean(c));
       }
 
-      if (change.namespace === 'entities' && !Object.keys(templatesConfig).includes(data.template.toString())) {
+      if (change.namespace === 'entities' && !(data.template && Object.keys(templatesConfig).includes(data.template.toString()))) {
         return Promise.resolve();
       }
 

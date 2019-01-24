@@ -272,7 +272,7 @@ describe('syncWorker', () => {
     });
 
     describe('entities', () => {
-      it('should only sync entities belonging to a whitelisted template and properties', async () => {
+      it('should only sync entities belonging to a whitelisted template and properties and exclude non-templated entities', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [template1Property2.toString(), template1Property3.toString(), template1PropertyThesauri1Select.toString()],
