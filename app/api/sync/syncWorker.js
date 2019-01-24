@@ -252,7 +252,7 @@ export default {
       await this.syncronize(config);
     } catch (e) {
       if (e.status === 401) {
-        await this.login(config.url, 'admin', 'admin');
+        await this.login(config.url, config.username, config.password);
       } else {
         errorLog.error(prettifyError(e).prettyMessage);
       }

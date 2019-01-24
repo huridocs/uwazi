@@ -427,8 +427,8 @@ describe('syncWorker', () => {
       });
 
       const interval = 0;
-      await syncWorker.intervalSync({ url: 'url' }, interval);
-      expect(syncWorker.login).toHaveBeenCalledWith('url', 'admin', 'admin');
+      await syncWorker.intervalSync({ url: 'url', username: 'configUser', password: 'configPassword' }, interval);
+      expect(syncWorker.login).toHaveBeenCalledWith('url', 'configUser', 'configPassword');
     });
   });
 
