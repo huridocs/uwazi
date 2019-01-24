@@ -22,6 +22,25 @@ const syncData = async (url, action, change, data) => {
   return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };
 
+const sanitizeConfig = async config => Object.keys(config).reduce(async (prev, key) => {
+  const sanitized = await prev;
+  if (key === 'templates') {
+    const templatesData = await models.templates.get({});
+
+    sanitized.templates = Object.keys(config.templates).reduce((_templates, templateId) => {
+      const templates = _templates;
+      if (templatesData.find(t => t._id.toString() === templateId)) {
+        templates[templateId] = config.templates[templateId];
+      }
+      return templates;
+    }, {});
+  } else {
+    sanitized[key] = config[key];
+  }
+
+  return sanitized;
+}, Promise.resolve({}));
+
 const getValuesFromTemplateProperties = async (config, validTypes, valueProperty) => {
   const templatesConfig = config.templates || {};
 
@@ -65,7 +84,9 @@ const getApprovedRelationtypes = async (config) => {
 export default {
   stopped: false,
 
-  async syncronize({ url, config }) {
+  async syncronize({ url, config: _config }) {
+    const config = await sanitizeConfig(_config);
+
     const [{ lastSync }] = await syncsModel.find();
     const lastChanges = await updateLog.find({
       timestamp: {

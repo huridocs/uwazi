@@ -98,6 +98,27 @@ describe('syncWorker', () => {
       spyOn(request, 'delete').and.returnValue(Promise.resolve());
     });
 
+    it('should sanitize the config to prevent deleted values to affect the process', async () => {
+      const deletedTemplate = db.id();
+      const deletedProperty = db.id();
+      const deletedRelationtype = db.id();
+
+      await syncWorkerWithConfig({
+        templates: {
+          [template1.toString()]: [template1Property1.toString(), deletedProperty.toString()],
+          [deletedTemplate.toString()]: [],
+          [template2.toString()]: [],
+        },
+        relationtypes: [relationtype1.toString(), deletedRelationtype.toString()]
+      });
+
+      const { callsCount: templateCalls } = getCallsToIds('templates', []);
+      const { callsCount: relationtypesCalls } = getCallsToIds('relationtypes', []);
+
+      expect(templateCalls).toBe(2);
+      expect(relationtypesCalls).toBe(1);
+    });
+
     it('should only sync whitelisted collections (forbidding certain collections even if present)', async () => {
       await syncWorkerWithConfig({ migrations: {}, sessions: {} });
 
@@ -124,9 +145,10 @@ describe('syncWorker', () => {
 
     describe('templates', () => {
       it('should only sync whitelisted templates and properties', async () => {
+        const deletedProperty = db.id();
         await syncWorkerWithConfig({
           templates: {
-            [template1.toString()]: [template1Property1.toString(), template1Property3.toString()],
+            [template1.toString()]: [template1Property1.toString(), template1Property3.toString(), deletedProperty.toString()],
             [template2.toString()]: [],
           }
         });
