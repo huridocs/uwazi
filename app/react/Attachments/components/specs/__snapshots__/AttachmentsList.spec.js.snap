@@ -48,7 +48,9 @@ exports[`AttachmentsList should render a sorted list of attachments (files) 1`] 
     >
       <h2>
         Document
-        <Tip>
+        <Tip
+          icon="question-circle"
+        >
           Main file: add a file as the main content
         </Tip>
       </h2>
@@ -122,7 +124,9 @@ exports[`AttachmentsList when files is empty should add button in Downloads sect
     >
       <h2>
         Document
-        <Tip>
+        <Tip
+          icon="question-circle"
+        >
           Main file: add a file as the main content
         </Tip>
       </h2>
@@ -167,7 +171,9 @@ exports[`AttachmentsList when files is empty should render nothing if user not l
     >
       <h2>
         Document
-        <Tip>
+        <Tip
+          icon="question-circle"
+        >
           Main file: add a file as the main content
         </Tip>
       </h2>
