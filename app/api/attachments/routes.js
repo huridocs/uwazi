@@ -13,6 +13,9 @@ import relationships from 'api/relationships';
 import { attachmentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import objectId from 'joi-objectid';
+
+Joi.objectId = objectId(Joi);
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -75,26 +78,27 @@ export default (app) => {
       });
     });
 
-  app.get(
-    '/api/attachments/download',
-    validateRequest(Joi.object().keys({
-      _id: Joi.string().required()
-    }).required()),
-    (req, res, next) => {
-      entities.getById(req.query._id)
-      .then((response) => {
-        if (!response) {
-          throw createError('entitiy does not exist', 404);
-        }
-        const file = response.attachments.find(a => a.filename === req.query.file);
-        if (!file) {
-          throw createError('file not found', 404);
-        }
-        const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
-        res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
-      })
-      .catch(next);
-    });
+  app.get('/api/attachments/download',
+
+  validateRequest(Joi.object({
+    _id: Joi.objectId().required()
+  }).required(), 'query'),
+
+  (req, res, next) => {
+    entities.getById(req.query._id)
+    .then((response) => {
+      if (!response) {
+        throw createError('entitiy does not exist', 404);
+      }
+      const file = response.attachments.find(a => a.filename === req.query.file);
+      if (!file) {
+        throw createError('file not found', 404);
+      }
+      const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
+      res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
+    })
+    .catch(next);
+  });
 
   app.post(
     '/api/attachments/upload',
@@ -118,7 +122,7 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
       entityId: Joi.string().required(),
       originalname: Joi.string().required(),
       language: Joi.string(),

@@ -47,6 +47,14 @@ Object {
       "invalids": Array [
         "",
       ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
       "type": "string",
     },
   },
