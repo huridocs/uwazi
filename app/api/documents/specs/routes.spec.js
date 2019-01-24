@@ -35,6 +35,10 @@ describe('documents', () => {
       expect(routes.post('/api/documents', req)).toNeedAuthorization();
     });
 
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/documents')).toMatchSnapshot();
+    });
+
     it('should create a new document with current user', (done) => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
       routes.post('/api/documents', req)
@@ -48,9 +52,14 @@ describe('documents', () => {
   });
 
   describe('/api/documents', () => {
+    beforeEach(() => {
+      spyOn(documents, 'getById').and.returnValue(new Promise(resolve => resolve('documents')));
+    });
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/documents')).toMatchSnapshot();
+    });
     it('should return documents.get', (done) => {
       const req = { query: { _id: 'id' }, language: 'es' };
-      spyOn(documents, 'getById').and.returnValue(new Promise(resolve => resolve('documents')));
       routes.get('/api/documents', req)
       .then((response) => {
         expect(documents.getById).toHaveBeenCalledWith(req.query._id, req.language);
@@ -62,8 +71,13 @@ describe('documents', () => {
   });
 
   describe('/api/documents/count_by_template', () => {
-    it('should return count of documents using a specific template', (done) => {
+    beforeEach(() => {
       spyOn(templates, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
+    });
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/documents/count_by_template')).toMatchSnapshot();
+    });
+    it('should return count of documents using a specific template', (done) => {
       const req = { query: { templateId: 'templateId' } };
 
       routes.get('/api/documents/count_by_template', req)

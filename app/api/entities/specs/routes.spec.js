@@ -34,6 +34,10 @@ describe('entities', () => {
       expect(routes._post('/api/entities', req)).toNeedAuthorization();
     });
 
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/entities')).toMatchSnapshot();
+    });
+
     it('should create a new document with current user', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
@@ -78,6 +82,10 @@ describe('entities', () => {
     });
 
     describe('get_raw_page', () => {
+      it('should have a validation schema', () => {
+        expect(routes.get.validation('/api/entities/get_raw_page')).toMatchSnapshot();
+      });
+
       it('should return getRawPage', async () => {
         spyOn(entities, 'getRawPage').and.returnValue(Promise.resolve('page text'));
 
@@ -105,6 +113,10 @@ describe('entities', () => {
         expect(routes._post('/api/entities/multipleupdate', req)).toNeedAuthorization();
       });
 
+      it('should have a validation schema', () => {
+        expect(routes.post.validation('/api/entities/multipleupdate')).toMatchSnapshot();
+      });
+
       it('should call multipleUpdate with the ids and the metadata in the body', (done) => {
         spyOn(entities, 'multipleUpdate').and.returnValue(new Promise(resolve => resolve([{ sharedId: '1' }, { sharedId: '2' }])));
         routes.post('/api/entities/multipleupdate', req)
@@ -124,6 +136,9 @@ describe('entities', () => {
   });
 
   describe('GET', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/entities')).toMatchSnapshot();
+    });
     it('should return matching document', (done) => {
       const expectedEntity = [{ sharedId: 'sharedId', published: true }];
       spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
@@ -209,6 +224,9 @@ describe('entities', () => {
   // });
 
   describe('/api/entities/count_by_template', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/entities/count_by_template')).toMatchSnapshot();
+    });
     it('should return count of entities using a specific template', (done) => {
       spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
       const req = { query: { templateId: 'templateId' } };
@@ -228,6 +246,10 @@ describe('entities', () => {
       spyOn(entities, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
     });
 
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/entities')).toMatchSnapshot();
+    });
+
     it('should use entities to delete it', (done) => {
       const req = { query: { sharedId: 123, _rev: 456 } };
       return routes.delete('/api/entities', req)
@@ -242,6 +264,10 @@ describe('entities', () => {
   describe('DELETE /api/entities/multiple', () => {
     beforeEach(() => {
       spyOn(entities, 'deleteMultiple').and.returnValue(Promise.resolve({ json: 'ok' }));
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.delete.validation('/api/entities/multiple')).toMatchSnapshot();
     });
 
     it('should use entities to delete it', (done) => {
