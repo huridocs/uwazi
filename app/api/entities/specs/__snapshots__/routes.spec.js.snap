@@ -1,23 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`documents /api/documents should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "_id": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`documents /api/documents/count_by_template should have a validation schema 1`] = `
+exports[`entities /api/entities/count_by_template should have a validation schema 1`] = `
 Object {
   "children": Object {
     "templateId": Object {
@@ -45,35 +28,7 @@ Object {
 }
 `;
 
-exports[`documents /download should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "_id": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "rules": Array [
-        Object {
-          "arg": Object {
-            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
-          },
-          "name": "regex",
-        },
-      ],
-      "type": "string",
-    },
-  },
-  "flags": Object {
-    "presence": "required",
-  },
-  "type": "object",
-}
-`;
-
-exports[`documents DELETE should have a validation schema 1`] = `
+exports[`entities DELETE /api/entities should have a validation schema 1`] = `
 Object {
   "children": Object {
     "sharedId": Object {
@@ -93,7 +48,262 @@ Object {
 }
 `;
 
-exports[`documents POST should have a validation schema 1`] = `
+exports[`entities DELETE /api/entities/multiple should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "sharedIds": Object {
+      "flags": Object {
+        "presence": "required",
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`entities GET should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "omitRelationships": Object {
+      "type": "any",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`entities POST /entities/multipleupdate should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "ids": Object {
+      "flags": Object {
+        "presence": "required",
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
+    "values": Object {
+      "children": Object {
+        "icon": Object {
+          "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "label": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "type": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "metadata": Object {
+          "patterns": Array [
+            Object {
+              "rule": Object {
+                "alternatives": Array [
+                  Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                  Object {
+                    "type": "string",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                  Object {
+                    "flags": Object {
+                      "sparse": false,
+                    },
+                    "items": Array [
+                      Object {
+                        "alternatives": Array [
+                          Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                          Object {
+                            "invalids": Array [
+                              "",
+                            ],
+                            "type": "string",
+                          },
+                        ],
+                        "type": "alternatives",
+                      },
+                    ],
+                    "type": "array",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                  Object {
+                    "flags": Object {
+                      "sparse": false,
+                    },
+                    "items": Array [
+                      Object {
+                        "patterns": Array [
+                          Object {
+                            "rule": Object {
+                              "flags": Object {
+                                "sparse": false,
+                              },
+                              "items": Array [
+                                Object {
+                                  "invalids": Array [
+                                    "",
+                                  ],
+                                  "type": "string",
+                                },
+                              ],
+                              "type": "array",
+                            },
+                            "schema": Object {
+                              "invalids": Array [
+                                "",
+                              ],
+                              "type": "string",
+                            },
+                          },
+                        ],
+                        "type": "object",
+                      },
+                    ],
+                    "type": "array",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                ],
+                "type": "alternatives",
+              },
+              "schema": Object {
+                "type": "string",
+                "valids": Array [
+                  "",
+                ],
+              },
+            },
+          ],
+          "type": "object",
+        },
+        "published": Object {
+          "falsy": Array [
+            false,
+          ],
+          "flags": Object {
+            "insensitive": true,
+          },
+          "truthy": Array [
+            true,
+          ],
+          "type": "boolean",
+        },
+        "template": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      },
+      "flags": Object {
+        "presence": "required",
+      },
+      "type": "object",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`entities POST get_raw_page should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "pageNumber": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "sharedId": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`entities POST should have a validation schema 1`] = `
 Object {
   "children": Object {
     "__v": Object {

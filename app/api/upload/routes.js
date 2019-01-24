@@ -118,7 +118,19 @@ export default (app) => {
     sessionSockets.emit('conversionFailed', req.body.document);
   });
 
-  app.post('/api/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res) => uploadProcess(req, res));
+  app.post(
+    '/api/upload',
+
+    needsAuthorization(['admin', 'editor']),
+
+    upload.any(),
+
+    validateRequest(Joi.object({
+      document: Joi.string().required()
+    }).required()),
+
+    (req, res) => uploadProcess(req, res)
+  );
 
   app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {
     uploads.save(req.files[0])
@@ -160,6 +172,10 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     upload.any(),
+
+    validateRequest(Joi.object({
+      document: Joi.string().required()
+    }).required()),
 
     (req, res, next) => entities.getById(req.body.document, req.language)
     .then((doc) => {
