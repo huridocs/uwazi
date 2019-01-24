@@ -78,32 +78,44 @@ describe('ODM Model', () => {
       expect(logEntries.find(e => e.mongoId.toString() === newDocument3._id.toString()).timestamp).toBe(1);
     });
 
-    it('should intercept model delete', async () => {
-      Date.now = () => 4;
-      await extendedModel.delete({ _id: newDocument2._id });
-      const logEntries = await updatelogsModel.find({});
+    describe('delete', () => {
+      beforeEach(() => {
+        Date.now = () => 4;
+      });
 
-      expect(logEntries.length).toBe(2);
+      it('should intercept model delete', async () => {
+        await extendedModel.delete({ _id: newDocument2._id });
+        const logEntries = await updatelogsModel.find({});
 
-      expect(logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString()).timestamp).toBe(1);
+        expect(logEntries.length).toBe(2);
 
-      const document2Log = logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString());
-      expect(document2Log.timestamp).toBe(4);
-      expect(document2Log.deleted).toBe(true);
-    });
+        expect(logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString()).timestamp).toBe(1);
 
-    it('should intercept model delete with id as string', async () => {
-      Date.now = () => 4;
-      await extendedModel.delete(newDocument2._id.toString());
-      const logEntries = await updatelogsModel.find({});
+        const document2Log = logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString());
+        expect(document2Log.timestamp).toBe(4);
+        expect(document2Log.deleted).toBe(true);
+      });
 
-      expect(logEntries.length).toBe(2);
+      it('should not add undefined affected ids, it would cause deletion of entire collections', async () => {
+        await extendedModel.delete({ hub: 'non existent' });
 
-      expect(logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString()).timestamp).toBe(1);
+        const logEntries = await updatelogsModel.find({});
+        const undefinedIdLog = logEntries.find(e => !e.mongoId);
+        expect(undefinedIdLog).not.toBeDefined();
+      });
 
-      const document2Log = logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString());
-      expect(document2Log.timestamp).toBe(4);
-      expect(document2Log.deleted).toBe(true);
+      it('should intercept model delete with id as string', async () => {
+        await extendedModel.delete(newDocument2._id.toString());
+        const logEntries = await updatelogsModel.find({});
+
+        expect(logEntries.length).toBe(2);
+
+        expect(logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString()).timestamp).toBe(1);
+
+        const document2Log = logEntries.find(e => e.mongoId.toString() === newDocument2._id.toString());
+        expect(document2Log.timestamp).toBe(4);
+        expect(document2Log.deleted).toBe(true);
+      });
     });
   });
 });

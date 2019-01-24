@@ -8,7 +8,7 @@ const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
 export default (collectionName, schema) => {
-  const getAffectedIds = async conditions => mongoose.models[collectionName].find(conditions, { _id: true });
+  const getAffectedIds = async conditions => mongoose.models[collectionName].distinct('_id', conditions);
 
   const upsertLogOne = async (doc, next) => {
     const logData = { namespace: collectionName, mongoId: doc._id };
@@ -18,7 +18,7 @@ export default (collectionName, schema) => {
 
   async function upsertLogMany(affectedIds, deleted = false) {
     await updatelogsModel.updateMany(
-      { mongoId: { $in: affectedIds.map(i => i._id) }, namespace: collectionName },
+      { mongoId: { $in: affectedIds }, namespace: collectionName },
       { $set: { timestamp: Date.now(), deleted } },
       { upsert: true, lean: true }
     );
@@ -66,9 +66,13 @@ export default (collectionName, schema) => {
       if (mongoose.Types.ObjectId.isValid(condition)) {
         cond = { _id: condition };
       }
+
       const affectedIds = await getAffectedIds(cond);
       const result = await MongooseModel.deleteMany(cond);
-      await upsertLogMany(affectedIds, true);
+
+      if (affectedIds.length) {
+        await upsertLogMany(affectedIds, true);
+      }
 
       return result;
     }
