@@ -26,7 +26,13 @@ export default (app) => {
     needsAuthorization(['admin']),
     async (req, res, next) => {
       try {
+        if (req.body.namespace === 'settings') {
+          const [settings] = await models.settings.get({});
+          req.body.data._id = settings._id;
+        }
+
         await models[req.body.namespace].save(req.body.data);
+
         if (req.body.namespace === 'entities') {
           await entities.indexEntities({ _id: req.body.data._id }, '+fullText');
         }

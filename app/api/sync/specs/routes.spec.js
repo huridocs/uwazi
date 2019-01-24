@@ -88,6 +88,23 @@ describe('sync', () => {
       });
     });
 
+    describe('when namespace is settings', () => {
+      it('should replace the incomming id with the local id', async () => {
+        models.settings = {
+          save: jasmine.createSpy('settings.save'),
+          get: () => Promise.resolve([{ _id: 'slaveId' }]),
+        };
+
+        req.body = {
+          namespace: 'settings',
+          data: { _id: 'masterId', languages: 'ln' }
+        };
+
+        await routes.post('/api/sync', req);
+        expect(models.settings.save).toHaveBeenCalledWith({ _id: 'slaveId', languages: 'ln' });
+      });
+    });
+
     describe('sync/upload', () => {
       it('should need authorization', () => {
         expect(routes._post('/api/sync/upload', {})).toNeedAuthorization();
