@@ -56,7 +56,11 @@ export default (app) => {
       try {
         await models[req.query.namespace].delete(JSON.parse(req.query.data));
         if (req.query.namespace === 'entities') {
-          await search.delete({ _id: JSON.parse(req.query.data)._id });
+          try {
+            await search.delete({ _id: JSON.parse(req.query.data)._id });
+          } catch (err) {
+            if (err.statusCode !== 404) { throw err; }
+          }
         }
         res.json('ok');
       } catch (e) {
