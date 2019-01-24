@@ -17,10 +17,12 @@ import pathsConfig from '../../config/paths';
 describe('sync', () => {
   let routes;
   let req;
+  let dataObject;
 
-  const setReqDefault = (property) => {
+  const setReqDefault = (property, type = 'object') => {
     req = {};
-    req[property] = { namespace: 'model1', data: 'data' };
+    dataObject = { _id: 'dataId' };
+    req[property] = { namespace: 'model1', data: type === 'string' ? JSON.stringify(dataObject) : dataObject };
   };
 
   beforeEach(async () => {
@@ -49,12 +51,12 @@ describe('sync', () => {
 
     it('should save on the namespaced model', async () => {
       const response = await routes.post('/api/sync', req);
-      expect(models.model1.save).toHaveBeenCalledWith('data');
+      expect(models.model1.save).toHaveBeenCalledWith(dataObject);
       expect(response).toBe('ok');
 
       req.body.namespace = 'model2';
       await routes.post('/api/sync', req);
-      expect(models.model2.save).toHaveBeenCalledWith('data');
+      expect(models.model2.save).toHaveBeenCalledWith(dataObject);
       expect(entities.indexEntities).not.toHaveBeenCalled();
     });
 
@@ -117,7 +119,7 @@ describe('sync', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      setReqDefault('query');
+      setReqDefault('query', 'string');
     });
 
     it('should need authorization', () => {
@@ -126,12 +128,12 @@ describe('sync', () => {
 
     it('should remove on the namespaced model', async () => {
       const response = await routes.delete('/api/sync', req);
-      expect(models.model1.delete).toHaveBeenCalledWith('data');
+      expect(models.model1.delete).toHaveBeenCalledWith(dataObject);
       expect(response).toBe('ok');
 
       req.query.namespace = 'model2';
       await routes.delete('/api/sync', req);
-      expect(models.model2.delete).toHaveBeenCalledWith('data');
+      expect(models.model2.delete).toHaveBeenCalledWith(dataObject);
       expect(search.delete).not.toHaveBeenCalled();
     });
 
@@ -155,7 +157,7 @@ describe('sync', () => {
 
         req.query = {
           namespace: 'entities',
-          data: { _id: 'id' }
+          data: JSON.stringify({ _id: 'id' })
         };
 
         await routes.delete('/api/sync', req);
