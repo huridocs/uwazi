@@ -42,6 +42,7 @@ const assignAttachment = (entity, addedFile) => {
 const processSingleLanguage = (entity, req) => {
   const addedFile = req.files[0];
   addedFile._id = mongoose.Types.ObjectId();
+  addedFile.timestamp = Date.now();
   return Promise.all([addedFile, entities.saveMultiple([assignAttachment(entity, addedFile)])]);
 };
 

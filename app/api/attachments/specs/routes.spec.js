@@ -112,12 +112,14 @@ describe('Attachments Routes', () => {
       expect(routes._post('/api/attachments/upload', req)).toNeedAuthorization();
     });
 
-    it('should add the uploaded file to attachments and return it, including its new ID', (done) => {
+    it('should add the uploaded file to attachments, add current timestamp and return the attachment, including its new ID', (done) => {
+      spyOn(Date, 'now').and.returnValue(1000);
       routes.post('/api/attachments/upload', req)
       .then(addedFile => Promise.all([addedFile, entities.getById(req.body.entityId)]))
       .then(([addedFile, dbEntity]) => {
         expect(dbEntity.attachments[2].filename).toEqual(file.filename);
         expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
+        expect(dbEntity.attachments[2].timestamp).toBe(1000);
         expect(addedFile.filename).toBe('mockfile.doc');
         expect(addedFile._id).toBeDefined();
         expect(addedFile._id.toString()).toBe(dbEntity.attachments[2]._id.toString());
@@ -128,6 +130,7 @@ describe('Attachments Routes', () => {
 
     it('should add the uploaded file to all shared entities and return the file, including its new ID', (done) => {
       req.body.allLanguages = 'true';
+      spyOn(Date, 'now').and.returnValue(1000);
 
       routes.post('/api/attachments/upload', req)
       .then(addedFile => Promise.all([addedFile, entities.get({ sharedId: 'sharedId' })]))
@@ -140,6 +143,7 @@ describe('Attachments Routes', () => {
         expect(dbEntity.attachments[2].filename).toBe(file.filename);
         expect(dbEntity.attachments[2].originalname).toBe(file.originalname);
         expect(dbEntity.attachments[2]._id.toString()).toBe(addedFile._id.toString());
+        expect(dbEntity.attachments[2].timestamp).toBe(1000);
         expect(addedFile.filename).toBe('mockfile.doc');
 
         expect(dbEntityEn.attachments.length).toBe(2);
@@ -148,12 +152,14 @@ describe('Attachments Routes', () => {
         expect(dbEntityEn.attachments[1].filename).toBe(file.filename);
         expect(dbEntityEn.attachments[1].originalname).toBe(file.originalname);
         expect(dbEntityEn.attachments[1]._id.toString()).not.toBe(addedFile._id.toString());
+        expect(dbEntityEn.attachments[1].timestamp).toBe(1000);
 
         expect(dbEntityPt.attachments.length).toBe(1);
         expect(dbEntityPt.file.filename).toBe('filenamePt');
         expect(dbEntityPt.attachments[0].filename).toBe(file.filename);
         expect(dbEntityPt.attachments[0].originalname).toBe(file.originalname);
         expect(dbEntityPt.attachments[0]._id.toString()).not.toBe(addedFile._id.toString());
+        expect(dbEntityPt.attachments[0].timestamp).toBe(1000);
 
         done();
       })
