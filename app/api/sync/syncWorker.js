@@ -8,6 +8,9 @@ import { model as updateLog } from 'api/updatelogs';
 import errorLog from 'api/log/errorLog';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
+import { uploadDocumentsPath } from 'api/config/paths';
+import path from 'path';
+import fs from 'fs';
 
 import syncsModel from './syncsModel';
 
@@ -17,8 +20,13 @@ const timeout = async interval => new Promise((resolve) => {
   setTimeout(resolve, interval);
 });
 
-const syncData = async (url, action, change, data) => {
+const syncData = async (url, action, change, data, lastSync) => {
   await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
+  if (data.file && (data.file.timestamp >= lastSync - oneSecond)) {
+    const filepath = path.join(uploadDocumentsPath, data.file.filename);
+    const file = fs.readFileSync(filepath);
+    await request.uploadFile(urljoin(url, 'api/sync/upload'), data.file.filename, file);
+  }
   return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };
 
@@ -240,7 +248,7 @@ export default {
         }, {});
       }
 
-      return syncData(url, 'post', change, data);
+      return syncData(url, 'post', change, data, lastSync);
     }, Promise.resolve());
   },
 

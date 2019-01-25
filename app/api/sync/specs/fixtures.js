@@ -314,6 +314,10 @@ export default {
       sharedId: 'newDoc1SharedId',
       title: 'a new entity',
       template: template1,
+      file: {
+        filename: 'test.txt',
+        timestamp: 9500
+      },
       metadata: {
         t1Property1: 'sync property 1',
         t1Property2: 'sync property 2',
@@ -327,6 +331,10 @@ export default {
       _id: newDoc2,
       title: 'another new entity',
       template: template1,
+      file: {
+        filename: 'test.txt',
+        timestamp: 7000
+      },
       metadata: {
         t1Property1: 'another doc property 1',
         t1Property2: 'another doc property 2',
@@ -348,8 +356,11 @@ export default {
     {
       _id: newDoc6,
       sharedId: 'newDoc6SharedId',
-      title: 'not to sync',
+      title: 'new doc 6',
       template: template3,
+      file: {
+        filename: 'test.txt'
+      },
     },
     {
       _id: newDoc7,

@@ -47,6 +47,9 @@ export default (app) => {
     '/api/sync/upload',
     needsAuthorization(['admin']),
     upload.any(),
+    (req, res) => {
+      res.json('ok');
+    }
   );
 
   app.delete(

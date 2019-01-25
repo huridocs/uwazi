@@ -1,5 +1,7 @@
 import 'api/entities';
 import 'api/thesauris/dictionariesModel';
+import fs from 'fs';
+import path from 'path';
 import errorLog from 'api/log/errorLog';
 import 'api/relationships';
 import backend from 'fetch-mock';
@@ -9,6 +11,7 @@ import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
 import settingsModel from 'api/settings/settingsModel';
+import paths from 'api/config/paths';
 
 import fixtures, {
   settingsId,
@@ -51,6 +54,8 @@ import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
   beforeEach((done) => {
+    paths.uploadDocumentsPath = __dirname;
+    spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
     syncWorker.stopped = false;
@@ -296,6 +301,18 @@ describe('syncWorker', () => {
           namespace: 'entities',
           data: expect.objectContaining({ title: 'not to sync' })
         });
+      });
+
+      it('should upload main file when file timestamp is newer than lastSync', async () => {
+        await syncWorkerWithConfig({
+          templates: {
+            [template1.toString()]: [],
+            [template3.toString()]: [],
+          }
+        });
+
+        expect(request.uploadFile).toHaveBeenCalledWith('url/api/sync/upload', 'test.txt', fs.readFileSync(path.join(__dirname, 'test.txt')));
+        expect(request.uploadFile.calls.count()).toBe(1);
       });
     });
 

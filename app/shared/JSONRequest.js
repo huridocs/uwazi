@@ -1,4 +1,5 @@
 import 'isomorphic-fetch';
+import superagent from 'superagent';
 
 import rison from 'rison';
 
@@ -62,7 +63,7 @@ const _fetch = (url, data, method, _headers) => {
     params = toUrlParams(data);
   }
 
-  if (method === 'POST' || method === 'PUT') {
+  if (method === 'POST' || method === 'PUT' && typeof data.read === 'function') {
     body = JSON.stringify(data);
   }
 
@@ -104,6 +105,22 @@ export default {
   get: (url, data, headers) => _fetch(url, data, 'GET', headers),
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
+
+  uploadFile: (url, filename, file) => {
+    return new Promise((resolve, reject) => {
+      superagent.post(url)
+      .set('Accept', 'application/json')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Cookie', cookie || '')
+      .attach('file', file, filename)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+    });
+  },
 
   cookie: (c) => {
     cookie = c;

@@ -13,7 +13,8 @@ const entitySchema = new mongoose.Schema({
     filename: String,
     mimetype: String,
     size: Number,
-    language: String
+    timestamp: Number,
+    language: String,
   },
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
   totalPages: Number,
@@ -34,7 +35,8 @@ const entitySchema = new mongoose.Schema({
     originalname: String,
     filename: String,
     mimetype: String,
-    size: Number
+    timestamp: Number,
+    size: Number,
   }],
   creationDate: Number,
   processed: Boolean,
