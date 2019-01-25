@@ -7,6 +7,7 @@ import Counter from './Counter';
 import ItemList from './ItemList';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
+import PayPalDonateLink from './PayPalDonateLink';
 import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
 import ListChart from './ListChart';
@@ -18,6 +19,7 @@ export default {
   MarkdownMedia,
   ItemList,
   MarkdownLink,
+  PayPalDonateLink,
   SearchBox,
   Counter,
   BarChart,
