@@ -63,17 +63,25 @@ const processAllLanguages = (entity, req) => processSingleLanguage(entity, req)
 export default (app) => {
   const upload = multer({ storage });
 
-  app.get('/api/attachment/:file', (req, res) => {
-    const filePath = `${path.resolve(attachmentsPath)}/${path.basename(req.params.file)}`;
-    fs.stat(filePath, (err) => {
-      if (err) {
-        return res.redirect('/public/no-preview.png');
-      }
-      return res.sendFile(filePath);
+  app.get(
+    '/api/attachment/:file',
+    (req, res) => {
+      const filePath = `${path.resolve(attachmentsPath)}/${path.basename(req.params.file)}`;
+      fs.stat(filePath, (err) => {
+        if (err) {
+          return res.redirect('/public/no-preview.png');
+        }
+        return res.sendFile(filePath);
+      });
     });
-  });
 
-  app.get('/api/attachments/download', (req, res, next) => {
+  app.get('/api/attachments/download',
+
+  validateRequest(Joi.object({
+    _id: Joi.objectId().required()
+  }).required(), 'query'),
+
+  (req, res, next) => {
     entities.getById(req.query._id)
     .then((response) => {
       if (!response) {
@@ -93,6 +101,9 @@ export default (app) => {
     '/api/attachments/upload',
     needsAuthorization(['admin', 'editor']),
     upload.any(),
+    validateRequest(Joi.object().keys({
+      entityId: Joi.string().required()
+    }).required()),
     (req, res, next) => entities.getById(req.body.entityId, req.language)
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
       processSingleLanguage(entity, req))
@@ -108,7 +119,7 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
       entityId: Joi.string().required(),
       originalname: Joi.string().required(),
       language: Joi.string(),

@@ -54,7 +54,7 @@ exports[`Connection should render the reference 1`] = `
         <Connect(I18NLink)
           className="item-shortcut btn btn-default"
           onClick={[Function]}
-          to="/undefined/undefined"
+          to="/entity/undefined"
         >
           <Unknown
             icon="file"

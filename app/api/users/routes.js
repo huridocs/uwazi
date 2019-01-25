@@ -12,7 +12,7 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object().keys({
-      _id: Joi.string().required(),
+      _id: Joi.objectId().required(),
       __v: Joi.number(),
       username: Joi.string(),
       email: Joi.string(),
@@ -39,6 +39,19 @@ export default (app) => {
       .then(response => res.json(response))
       .catch(next);
     });
+
+  app.post(
+    '/api/unlockaccount',
+    validateRequest(Joi.object().keys({
+      username: Joi.string().required(),
+      code: Joi.string().required()
+    }).required()),
+    (req, res, next) => {
+      users.unlockAccount(req.body)
+      .then(() => res.json('OK'))
+      .catch(next);
+    }
+  );
 
   app.post(
     '/api/recoverpassword',

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Users login after locking account, it should send user and email with the unlock link 1`] = `
+Array [
+  Object {
+    "from": "\\"Uwazi\\" <no-reply@uwazi.io",
+    "html": "<p>Hello,
+
+Your account has been locked because of too many failed login attempts. To unlock your account open the following link:
+<a href=\\"http://host.domain/unlockaccount/someuser1/636f6465\\">http://host.domain/unlockaccount/someuser1/636f6465</a></p>",
+    "subject": "Account locked",
+    "text": "Hello,
+
+Your account has been locked because of too many failed login attempts. To unlock your account open the following link:
+http://host.domain/unlockaccount/someuser1/636f6465",
+    "to": "someuser1@mailer.com",
+  },
+]
+`;
+
+exports[`Users login should return user with matching username and password 1`] = `
+Object {
+  "__v": 0,
+  "email": "someuser1@mailer.com",
+  "role": "admin",
+  "username": "someuser1",
+}
+`;
