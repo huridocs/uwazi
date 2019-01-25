@@ -11,9 +11,11 @@ import settings from 'api/settings';
 import { uploadDocumentsPath } from 'api/config/paths';
 import path from 'path';
 import fs from 'fs';
+import util from 'util';
 
 import syncsModel from './syncsModel';
 
+const readFile = util.promisify(fs.readFile);
 const oneSecond = 1000;
 
 const timeout = async interval => new Promise((resolve) => {
@@ -24,8 +26,13 @@ const syncData = async (url, action, change, data, lastSync) => {
   await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
   if (data.file && (data.file.timestamp >= lastSync - oneSecond)) {
     const filepath = path.join(uploadDocumentsPath, data.file.filename);
-    const file = fs.readFileSync(filepath);
+    const file = await readFile(filepath);
     await request.uploadFile(urljoin(url, 'api/sync/upload'), data.file.filename, file);
+
+    const thumbnailFilename = `${data._id.toString()}.jpg`;
+    const thumbnailpath = path.join(uploadDocumentsPath, thumbnailFilename);
+    const thumbnail = await readFile(thumbnailpath);
+    await request.uploadFile(urljoin(url, 'api/sync/upload'), thumbnailFilename, thumbnail);
   }
   return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };

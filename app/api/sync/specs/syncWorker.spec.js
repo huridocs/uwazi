@@ -53,16 +53,18 @@ import syncWorker from '../syncWorker';
 import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
-  beforeEach((done) => {
+  beforeEach(async () => {
     paths.uploadDocumentsPath = __dirname;
     spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
     syncWorker.stopped = false;
+    fs.writeFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`));
+    await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll((done) => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    fs.unlinkSync(path.join(__dirname, `${newDoc1.toString()}.jpg`));
+    await db.disconnect();
   });
 
   const syncWorkerWithConfig = async config => syncWorker.syncronize({
@@ -303,7 +305,7 @@ describe('syncWorker', () => {
         });
       });
 
-      it('should upload main file when file timestamp is newer than lastSync', async () => {
+      it('should upload main file, and thumbnail when file timestamp is newer than lastSync', async () => {
         await syncWorkerWithConfig({
           templates: {
             [template1.toString()]: [],
@@ -311,8 +313,13 @@ describe('syncWorker', () => {
           }
         });
 
+        expect(request.uploadFile.calls.count()).toBe(2);
         expect(request.uploadFile).toHaveBeenCalledWith('url/api/sync/upload', 'test.txt', fs.readFileSync(path.join(__dirname, 'test.txt')));
-        expect(request.uploadFile.calls.count()).toBe(1);
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          `${newDoc1.toString()}.jpg`,
+          fs.readFileSync(path.join(__dirname, `${newDoc1.toString()}.jpg`))
+        );
       });
     });
 
