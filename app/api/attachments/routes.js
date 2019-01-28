@@ -102,7 +102,8 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
     upload.any(),
     validateRequest(Joi.object().keys({
-      entityId: Joi.string().required()
+      entityId: Joi.string().required(),
+      allLanguages: Joi.boolean(),
     }).required()),
     (req, res, next) => entities.getById(req.body.entityId, req.language)
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
