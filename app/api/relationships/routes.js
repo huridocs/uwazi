@@ -43,7 +43,7 @@ export default (app) => {
   app.post('/api/references',
     needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
-      _id: Joi.string(),
+      _id: Joi.objectId(),
       __v: Joi.number(),
       entity: Joi.string(),
       hub: Joi.string().allow(''),
@@ -66,7 +66,7 @@ export default (app) => {
   app.delete('/api/references',
     needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
-      _id: Joi.string().required()
+      _id: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => {
       relationships.delete({ _id: req.query._id }, req.language)
@@ -108,7 +108,7 @@ export default (app) => {
 
   app.get('/api/references/count_by_relationtype',
     validateRequest(Joi.object().keys({
-      relationtypeId: Joi.string().required()
+      relationtypeId: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => {
       relationships.countByRelationType(req.query.relationtypeId)

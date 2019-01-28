@@ -1258,6 +1258,13 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
+bcrypt@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/bcrypt/-/bcrypt-3.0.3.tgz#7d1e9e5d533c5ea060e6ac8834942c004dbffe9c"
+  dependencies:
+    nan "2.12.1"
+    node-pre-gyp "0.12.0"
+
 beeper@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/beeper/-/beeper-1.1.1.tgz#e6d5ea8c5dad001304a70b22638447f69cb2f809"
@@ -3040,6 +3047,10 @@ detect-libc@^1.0.2:
 detect-newline@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/detect-newline/-/detect-newline-2.1.0.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
+
+detect-passive-events@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/detect-passive-events/-/detect-passive-events-1.0.4.tgz#6ed477e6e5bceb79079735dcd357789d37f9a91a"
 
 diacritics@^1.3.0:
   version "1.3.0"
@@ -6420,6 +6431,10 @@ jest@^23.5.0:
     import-local "^1.0.0"
     jest-cli "^23.5.0"
 
+joi-objectid@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/joi-objectid/-/joi-objectid-2.0.0.tgz#56549573a66ba795dcf6b9e226de5f3b2d36ec3a"
+
 joi@^13.6.0:
   version "13.6.0"
   resolved "https://registry.yarnpkg.com/joi/-/joi-13.6.0.tgz#877d820e3ad688a49c32421ffefc746bfbe2d0a0"
@@ -7649,6 +7664,10 @@ n-gram@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/n-gram/-/n-gram-1.0.1.tgz#d29a465e4debcff7f9eed9fb57d9da6c806f4112"
 
+nan@2.12.1:
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
+
 nan@^2.3.0, nan@^2.3.2, nan@^2.9.2:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
@@ -7685,6 +7704,14 @@ nearley@^2.7.10:
 needle@^2.2.0:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.1.tgz#b5e325bd3aae8c2678902fa296f729455d1d3a7d"
+  dependencies:
+    debug "^2.1.2"
+    iconv-lite "^0.4.4"
+    sax "^1.2.4"
+
+needle@^2.2.1:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-2.2.4.tgz#51931bff82533b1928b7d1d69e01f1b00ffd2a4e"
   dependencies:
     debug "^2.1.2"
     iconv-lite "^0.4.4"
@@ -7830,6 +7857,21 @@ node-plop@=0.9.0:
     mkdirp "^0.5.1"
     pify "^3.0.0"
     resolve "^1.2.0"
+
+node-pre-gyp@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.12.0.tgz#39ba4bb1439da030295f899e3b520b7785766149"
+  dependencies:
+    detect-libc "^1.0.2"
+    mkdirp "^0.5.1"
+    needle "^2.2.1"
+    nopt "^4.0.1"
+    npm-packlist "^1.1.6"
+    npmlog "^4.0.2"
+    rc "^1.2.7"
+    rimraf "^2.6.1"
+    semver "^5.3.0"
+    tar "^4"
 
 node-pre-gyp@^0.10.0:
   version "0.10.2"
@@ -9366,6 +9408,16 @@ react-hot-loader@^3.1.3:
     redbox-react "^1.3.6"
     source-map "^0.6.1"
 
+react-image-gallery@^0.8.12:
+  version "0.8.12"
+  resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-0.8.12.tgz#d27f498e28fef03aa80841f18d6ba03379a02517"
+  dependencies:
+    lodash.debounce "^4.0.8"
+    lodash.throttle "^4.1.1"
+    prop-types "^15.5.8"
+    react-swipeable "^4.2.2"
+    resize-observer-polyfill "^1.5.0"
+
 react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
@@ -9494,6 +9546,13 @@ react-smooth@~1.0.0:
     prop-types "^15.6.0"
     raf "^3.4.0"
     react-transition-group "^2.5.0"
+
+react-swipeable@^4.2.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/react-swipeable/-/react-swipeable-4.3.2.tgz#8bacfd17f74bd24bdd770fc522739dbdc9a9d493"
+  dependencies:
+    detect-passive-events "^1.0.4"
+    prop-types "^15.5.8"
 
 react-tabs-redux@2.0.1:
   version "2.0.1"
@@ -10994,9 +11053,9 @@ supercluster@^2.3.0:
   dependencies:
     kdbush "^1.0.1"
 
-supertest@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/supertest/-/supertest-3.3.0.tgz#79b27bd7d34392974ab33a31fa51a3e23385987e"
+supertest@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/supertest/-/supertest-3.4.1.tgz#91b19ea34804c205769d0ff5ad947aff3eb2731d"
   dependencies:
     methods "^1.1.2"
     superagent "^3.8.3"

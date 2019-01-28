@@ -10,6 +10,14 @@ import { notify } from 'app/Notifications/actions/notificationsActions';
 import Tip from '../../Layout/Tip';
 
 export class EntityTypesList extends Component {
+  setAsDefaultButton(template) {
+    return (
+      <button onClick={this.props.setAsDefault.bind(null, template)} className="btn btn-success btn-xs">
+        <span>{t('System', 'Set as default')}</span>
+      </button>
+    );
+  }
+
   deleteTemplate(template) {
     return this.props.checkTemplateCanBeDeleted(template)
     .then(() => {
@@ -25,8 +33,8 @@ export class EntityTypesList extends Component {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
-        title: `Cannot delete document type: ${template.name}`,
-        message: 'This document type has associated documents and cannot be deleted.'
+        title: `Can not delete document type: ${template.name}`,
+        message: 'This document type has associated documents or is used in another template and cannot be deleted.'
       });
     });
   }
@@ -39,14 +47,6 @@ export class EntityTypesList extends Component {
           This template will be used as default for new entities.
         </Tip>
       </span>
-    );
-  }
-
-  setAsDefaultButton(template) {
-    return (
-      <button onClick={this.props.setAsDefault.bind(null, template)} className="btn btn-success btn-xs">
-        <span>{t('System', 'Set as default')}</span>
-      </button>
     );
   }
 

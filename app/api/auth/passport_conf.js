@@ -1,20 +1,25 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-import SHA256 from 'crypto-js/sha256';
 import users from 'api/users/users';
 
+const getDomain = req => `${req.protocol}://${req.get('host')}`;
+
 passport.use('local', new LocalStrategy(
-  function (username, password, done) {
-    users.get({username, password: SHA256(password).toString()})
-    .then(results => done(null, results[0]), () => done(null, false));
+  {
+    passReqToCallback: true
+  },
+  (req, username, password, done) => {
+    users.login({ username, password }, getDomain(req))
+    .then(user => done(null, user))
+    .catch(e => e.code === 401 ? done(null, false) : done(e));
   })
 );
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
   done(null, user._id);
 });
 
-passport.deserializeUser(function (id, done) {
+passport.deserializeUser((id, done) => {
   users.getById(id)
   .then((user) => {
     delete user.password;

@@ -16,6 +16,7 @@ describe('auth actions', () => {
     .post(`${APIURL}login`, { body: JSON.stringify({ success: true }) })
     .post(`${APIURL}recoverpassword`, { body: JSON.stringify({ success: true }) })
     .post(`${APIURL}resetpassword`, { body: JSON.stringify({ success: true }) })
+    .post(`${APIURL}unlockaccount`, { body: JSON.stringify({ success: true }) })
     .get(`${APIURL}user`, { body: JSON.stringify({ username: 'username' }) });
   });
 
@@ -61,6 +62,20 @@ describe('auth actions', () => {
       actions.resetPassword('asd123', 'uniqueKey')(jasmine.createSpy('dispatch'))
       .then(() => {
         expect(backend.calls(`${APIURL}resetpassword`)[0][1].body).toEqual(JSON.stringify({ password: 'asd123', key: 'uniqueKey' }));
+        expect(notifications.notify).toHaveBeenCalled();
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('unlockAccount', () => {
+    it('should post to unlockaccount with username and code', (done) => {
+      spyOn(notifications, 'notify');
+      const creds = { username: 'username', code: 'code' };
+      actions.unlockAccount(creds)(jasmine.createSpy('dispatch'))
+      .then(() => {
+        expect(backend.calls(`${APIURL}unlockaccount`)[0][1].body).toEqual(JSON.stringify(creds));
         expect(notifications.notify).toHaveBeenCalled();
         done();
       })

@@ -2,17 +2,22 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Icon } from 'UI';
 
-const Tip = ({ children }) => (
+const Tip = ({ children, icon }) => (
   <span className="property-help">
-    <Icon icon="question-circle" />
+    <Icon icon={icon} />
     <div className="property-description">
       {children}
     </div>
   </span>
 );
 
+Tip.defaultProps = {
+  icon: 'question-circle'
+};
+
 Tip.propTypes = {
-  children: PropTypes.string.isRequired
+  children: PropTypes.string.isRequired,
+  icon: PropTypes.string
 };
 
 export default Tip;

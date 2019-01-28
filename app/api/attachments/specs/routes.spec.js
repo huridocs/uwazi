@@ -60,6 +60,9 @@ describe('Attachments Routes', () => {
         done();
       });
     }
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/attachments/download')).toMatchSnapshot();
+    });
     it('should download the document with the title as file name (replacing extension with file ext)', (done) => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
@@ -110,6 +113,10 @@ describe('Attachments Routes', () => {
 
     it('should need authorization', () => {
       expect(routes._post('/api/attachments/upload', req)).toNeedAuthorization();
+    });
+
+    it('should have a validation schema', () => {
+      expect(routes.post.validation('/api/attachments/upload')).toMatchSnapshot();
     });
 
     it('should add the uploaded file to attachments, add current timestamp and return the attachment, including its new ID', (done) => {
