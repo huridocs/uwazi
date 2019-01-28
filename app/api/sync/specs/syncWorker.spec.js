@@ -313,8 +313,18 @@ describe('syncWorker', () => {
           }
         });
 
-        expect(request.uploadFile.calls.count()).toBe(2);
+        expect(request.uploadFile.calls.count()).toBe(4);
         expect(request.uploadFile).toHaveBeenCalledWith('url/api/sync/upload', 'test.txt', fs.readFileSync(path.join(__dirname, 'test.txt')));
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test_attachment.txt',
+          fs.readFileSync(path.join(__dirname, 'test_attachment.txt'))
+        );
+        expect(request.uploadFile).toHaveBeenCalledWith(
+          'url/api/sync/upload',
+          'test_attachment2.txt',
+          fs.readFileSync(path.join(__dirname, 'test_attachment2.txt'))
+        );
         expect(request.uploadFile).toHaveBeenCalledWith(
           'url/api/sync/upload',
           `${newDoc1.toString()}.jpg`,

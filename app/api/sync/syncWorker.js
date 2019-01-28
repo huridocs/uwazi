@@ -34,6 +34,19 @@ const syncData = async (url, action, change, data, lastSync) => {
     const thumbnail = await readFile(thumbnailpath);
     await request.uploadFile(urljoin(url, 'api/sync/upload'), thumbnailFilename, thumbnail);
   }
+
+  if (data.attachments && data.attachments.length) {
+    await data.attachments.reduce(async (prev, attachment) => {
+      await prev;
+      if ((attachment.timestamp >= lastSync - oneSecond)) {
+        const filepath = path.join(uploadDocumentsPath, attachment.filename);
+        const file = await readFile(filepath);
+        return request.uploadFile(urljoin(url, 'api/sync/upload'), attachment.filename, file);
+      }
+      return Promise.resolve();
+    }, Promise.resolve());
+  }
+
   return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
 };
 

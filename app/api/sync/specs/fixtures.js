@@ -318,6 +318,20 @@ export default {
         filename: 'test.txt',
         timestamp: 9500
       },
+      attachments: [
+        {
+          filename: 'test_attachment.txt',
+          timestamp: 10000
+        },
+        {
+          filename: 'test_attachment2.txt',
+          timestamp: 9500
+        },
+        {
+          filename: 'test_attachment3.txt',
+          timestamp: 7000
+        },
+      ],
       metadata: {
         t1Property1: 'sync property 1',
         t1Property2: 'sync property 2',
