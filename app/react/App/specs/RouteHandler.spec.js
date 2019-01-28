@@ -49,7 +49,7 @@ describe('RouteHandler', () => {
     spyOn(TestController, 'requestState').and.callThrough();
 
     RouteHandler.renderedFromServer = false;
-    component = shallow(<TestController params={routeParams} location={location}/>, { context });
+    component = shallow(<TestController params={routeParams} location={location} routes={[{ path: '' }]}/>, { context });
     instance = component.instance();
     instance.constructor = TestController;
   });
@@ -78,17 +78,31 @@ describe('RouteHandler', () => {
   });
 
   describe('componentWillReceiveProps', () => {
+    let props;
+    beforeEach(() => {
+      props = { params: { id: '456' }, location: { pathname: '/es', query: '' }, routes: [{ path: '' }] };
+    });
+
     describe('when params change', () => {
       it('should request the clientState', () => {
         spyOn(instance, 'getClientState');
-        instance.componentWillReceiveProps({ params: { id: '456' }, location: { pathname: '/es', query: '' } });
-        expect(instance.getClientState).toHaveBeenCalledWith({ params: { id: '456' }, location: { pathname: '/es', query: '' } });
+        instance.componentWillReceiveProps(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(props);
       });
 
       it('should call emptyState', () => {
         spyOn(instance, 'emptyState');
-        instance.componentWillReceiveProps({ params: { id: '456' }, location: { pathname: '/es', query: '' } });
+        instance.componentWillReceiveProps(props);
         expect(instance.emptyState).toHaveBeenCalled();
+      });
+    });
+
+    describe('when path changes', () => {
+      it('should request the clientState', () => {
+        spyOn(instance, 'getClientState');
+        props = { params: { ...routeParams }, location, routes: [{ path: '' }, { path: 'subpath' }] };
+        instance.componentWillReceiveProps(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(props);
       });
     });
 

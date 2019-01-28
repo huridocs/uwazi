@@ -1,5 +1,6 @@
 import { createError } from 'api/utils';
 import SHA256 from 'crypto-js/sha256';
+import crypto from 'crypto';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
@@ -7,6 +8,8 @@ import db from 'api/utils/testing_db';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
+import usersModel from '../usersModel.js';
 
 describe('Users', () => {
   beforeEach((done) => {
@@ -22,8 +25,8 @@ describe('Users', () => {
 
     it('should save user matching id', done => users.save({ _id: userId.toString(), password: 'new_password' }, currentUser)
     .then(() => users.get({ _id: userId }, '+password'))
-    .then(([user]) => {
-      expect(user.password).toBe(SHA256('new_password').toString());
+    .then(async ([user]) => {
+      expect(await comparePasswords('new_password', user.password)).toBe(true);
       expect(user.username).toBe('username');
       done();
     })
@@ -96,6 +99,156 @@ describe('Users', () => {
         done();
       })
       .catch(catchErrors(done)));
+    });
+  });
+
+  describe('login', () => {
+    let testUser;
+    const codeBuffer = Buffer.from('code');
+    beforeEach(async () => {
+      testUser = {
+        username: 'someuser1',
+        password: await encryptPassword('password'),
+        email: 'someuser1@mailer.com',
+        role: 'admin'
+      };
+      jest.spyOn(crypto, 'randomBytes').mockReturnValue(codeBuffer);
+      jest.spyOn(mailer, 'send').mockResolvedValue();
+    });
+    afterEach(() => {
+      crypto.randomBytes.mockRestore();
+      mailer.send.mockRestore();
+    });
+    const testLogin = async (username, password) => users.login({ username, password }, 'http://host.domain');
+    const createUserAndTestLogin = async (username, password) => {
+      await usersModel.save(testUser);
+      return testLogin(username, password);
+    };
+    it('should return user with matching username and password', async () => {
+      const user = await createUserAndTestLogin('someuser1', 'password');
+      delete user._id;
+      expect(user).toMatchSnapshot();
+    });
+    it('should reset failedLogins counter when login is successful', async () => {
+      testUser.failedLogins = 2;
+      await createUserAndTestLogin('someuser1', 'password');
+      const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
+      expect(user.failedLogins).toBeFalsy();
+    });
+    it('should throw error if username does not exist', async () => {
+      try {
+        await createUserAndTestLogin('unknownuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or password', 401));
+      }
+    });
+    it('should throw error if password is incorrect and increment failedLogins', async () => {
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
+        expect(user.failedLogins).toEqual(1);
+      }
+      try {
+        await testLogin('someuser1', 'incorrect again');
+        fail('should throw error');
+      } catch (e) {
+        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
+        expect(user.failedLogins).toEqual(2);
+      }
+    });
+    it('should lock account after third failed login attempt and generate unlock code', async () => {
+      testUser.failedLogins = 2;
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Account locked. Check your email to unlock.', 403));
+        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
+        expect(user.accountLocked).toBe(true);
+        expect(user.accountUnlockCode).toBe(codeBuffer.toString('hex'));
+        expect(crypto.randomBytes).toHaveBeenCalledWith(32);
+      }
+    });
+    it('after locking account, it should send user and email with the unlock link', async () => {
+      testUser.failedLogins = 2;
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        // const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
+        expect(mailer.send.mock.calls[0]).toMatchSnapshot();
+      }
+    });
+    it('should prevent login if account is locked when credentials are correct', async () => {
+      testUser.accountLocked = true;
+      try {
+        await createUserAndTestLogin('someuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/account locked/i);
+        expect(e.code).toBe(403);
+      }
+    });
+    it('should prevent login if account is locked when credentials are not correct', async () => {
+      testUser.accountLocked = true;
+      try {
+        await createUserAndTestLogin('someuser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/account locked/i);
+        expect(e.code).toBe(403);
+      }
+    });
+  });
+  describe('unlockAccount', () => {
+    let testUser;
+    beforeEach(async () => {
+      testUser = {
+        username: 'someuser1',
+        password: await encryptPassword('password'),
+        email: 'someuser1@mailer.com',
+        role: 'admin',
+        accountLocked: true,
+        accountUnlockCode: 'code',
+        failedLogins: 3,
+      };
+    });
+    const testUnlock = async (username, code) => users.unlockAccount({ username, code });
+    const createUserAndTestUnlock = async (username, code) => {
+      await usersModel.save(testUser);
+      return testUnlock(username, code);
+    };
+    it('should unlock account if username and code are correct', async () => {
+      await createUserAndTestUnlock('someuser1', 'code');
+      const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
+      expect(user.accountLocked).toBeFalsy();
+      expect(user.accountLockCode).toBeFalsy();
+      expect(user.failedLogins).toBeFalsy();
+    });
+    it('should throw error if username is incorrect', async () => {
+      try {
+        await createUserAndTestUnlock('unknownuser1', 'code');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or unlock code', 403));
+        const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
+        expect(user.accountLocked).toBe(true);
+        expect(user.accountUnlockCode).toBe('code');
+      }
+    });
+    it('should throw error if code is incorrect', async () => {
+      try {
+        await createUserAndTestUnlock('someruser1', 'incorrect');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Invalid username or unlock code', 403));
+        const [user] = await users.get({ username: 'someuser1' }, '+accountLocked +accountUnlockCode +failedLogins');
+        expect(user.accountLocked).toBe(true);
+        expect(user.accountUnlockCode).toBe('code');
+      }
     });
   });
 
@@ -207,8 +360,8 @@ describe('Users', () => {
     it('should reset the password for the user based on the provided key', (done) => {
       users.resetPassword({ key: expectedKey, password: '1234' })
       .then(() => users.get({ _id: recoveryUserId }, '+password'))
-      .then(([user]) => {
-        expect(user.password).toBe(SHA256('1234').toString());
+      .then(async ([user]) => {
+        expect(await comparePasswords('1234', user.password)).toBe(true);
         done();
       })
       .catch(catchErrors(done));

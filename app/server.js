@@ -12,6 +12,7 @@ import { uploadDocumentsPath } from './api/config/paths';
 import apiRoutes from './api/api';
 import authRoutes from './api/auth/routes';
 import dbConfig from './api/config/database';
+import migrator from './api/migrations/migrator';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
 import handleError from './api/utils/handleError.js';
 import ports from './api/config/ports.js';
@@ -61,10 +62,26 @@ serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);
 
-mongoose.connect(dbConfig[app.get('env')], { useMongoClient: true })
+let dbAuth = {};
+
+if (process.env.DBUSER) {
+  dbAuth = {
+    auth: { authSource: 'admin' },
+    user: process.env.DBUSER,
+    pass: process.env.DBPASS,
+  };
+}
+
+mongoose.connect(dbConfig[app.get('env')], { ...dbAuth, useMongoClient: true })
 .then(async () => {
   console.info('==> Processing system keys...');
   await translations.processSystemKeys(systemKeys);
+
+  const shouldMigrate = await migrator.shouldMigrate();
+  if (shouldMigrate) {
+    console.info('\x1b[33m%s\x1b[0m', '==> Your database needs to be migrated, please wait.');
+    await migrator.migrate();
+  }
 
   const port = ports[app.get('env')];
 

@@ -6,6 +6,7 @@ import NoMatch from 'app/App/NoMatch';
 
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
+import UnlockAccount from 'app/Users/UnlockAccount';
 
 import {
   Settings,
@@ -142,6 +143,7 @@ const routes = (
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />
+    <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
     <Route path="document/:documentId*" component={ViewDocument} onEnter={onEnter}/>
     <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
     <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>

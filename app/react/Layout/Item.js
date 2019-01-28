@@ -8,6 +8,7 @@ import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteri
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
 import Icon from './Icon';
+import Tip from './Tip';
 import ItemSnippet from './ItemSnippet';
 import TemplateLabel from './TemplateLabel';
 
@@ -27,7 +28,7 @@ export class Item extends Component {
 
   render() {
     const { onClick, onMouseEnter, onMouseLeave, active, additionalIcon,
-           additionalText, buttons, evalPublished } = this.props;
+           additionalText, buttons } = this.props;
 
     const doc = this.props.doc.toJS();
     const Snippet = additionalText ? <div className="item-snippet-wrapper"><div className="item-snippet">{additionalText}</div></div> : null;
@@ -39,7 +40,6 @@ export class Item extends Component {
         {this.props.itemHeader}
         <div className="item-info">
           <div className="item-name">
-            {evalPublished && !doc.published ? <i className="item-private-icon fa fa-lock" /> : false }
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc[this.props.titleProperty]}</span>
@@ -58,6 +58,7 @@ export class Item extends Component {
         </div>
         <ItemFooter>
           {doc.template ? <TemplateLabel template={doc.template}/> : false}
+          {doc.published ? '' : <Tip icon="eye-slash">This entity is not public.</Tip>}
           {this.props.labels}
           {buttons}
         </ItemFooter>
