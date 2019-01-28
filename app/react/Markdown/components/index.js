@@ -5,6 +5,7 @@ import { Icon } from 'UI';
 import BarChart from './BarChart';
 import Counter from './Counter';
 import ItemList from './ItemList';
+import Slideshow from './Slideshow';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
 import PayPalDonateLink from './PayPalDonateLink';
@@ -18,6 +19,7 @@ import SearchBox from './SearchBox';
 export default {
   MarkdownMedia,
   ItemList,
+  Slideshow,
   MarkdownLink,
   PayPalDonateLink,
   SearchBox,

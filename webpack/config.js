@@ -62,7 +62,7 @@ module.exports = function(production) {
           })),
           include: [
             path.join(rootPath, 'app'),
-            path.join(rootPath, 'node_modules/react-widgets/lib/scss/')
+            path.join(rootPath, 'node_modules/')
           ]
         },
         {
