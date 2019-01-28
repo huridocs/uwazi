@@ -63,7 +63,7 @@ const _fetch = (url, data, method, _headers) => {
     params = toUrlParams(data);
   }
 
-  if (method === 'POST' || method === 'PUT' && typeof data.read === 'function') {
+  if (method === 'POST' || method === 'PUT') {
     body = JSON.stringify(data);
   }
 
