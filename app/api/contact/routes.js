@@ -10,6 +10,7 @@ export default (app) => {
       name: Joi.string().required(),
       message: Joi.string().required(),
     }).required()),
-    (req, res, next) => contact.sendMessage(req.body).then(res.json)
+    (req, res, next) => contact.sendMessage(req.body)
+    .then(() => res.json('ok'))
     .catch(next));
 };

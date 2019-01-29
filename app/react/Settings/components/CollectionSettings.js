@@ -271,7 +271,13 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
-              <input name="collectionContactEmail" onChange={this.changeContactEmail.bind(this)} value={this.state.contactEmail} type="text" className="form-control"/>
+              <input
+                name="collectionContactEmail"
+                onChange={this.changeContactEmail.bind(this)}
+                value={this.state.contactEmail}
+                type="text"
+                className="form-control"
+              />
             </div>
             <div className="alert alert-info">
               <Icon icon="envelope" size="2x" />
