@@ -2,13 +2,13 @@ import mailer from 'api/utils/mailer';
 import settings from 'api/settings/settings';
 
 export default {
-  async sendMessage({ email, name, text }) {
+  async sendMessage({ email, name, message }) {
     const siteSettings = await settings.get();
     const mailOptions = {
-      from: `"${name}" <${email}`,
+      from: '"Uwazi" <no-reply@uwazi.io',
       to: siteSettings.contactEmail,
-      subject: 'Contact form',
-      text,
+      subject: `Contact mesage from ${name} ${email}`,
+      text: message,
     };
 
     return mailer.send(mailOptions);

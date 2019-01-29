@@ -17,11 +17,11 @@ describe('contact', () => {
 
   describe('sendMessage', () => {
     it('should send an email with the mailer to the configured email', (done) => {
-      contact.sendMessage({ email: 'bruce@wayne.com', name: 'Bruce Wayne', text: 'I want to contact you.' })
+      contact.sendMessage({ email: 'bruce@wayne.com', name: 'Bruce Wayne', message: 'I want to contact you.' })
       .then(() => {
         expect(mailer.send).toHaveBeenCalledWith({
-          from: '"Bruce Wayne" <bruce@wayne.com',
-          subject: 'Contact form',
+          from: '"Uwazi" <no-reply@uwazi.io',
+          subject: 'Contact mesage from Bruce Wayne bruce@wayne.com',
           text: 'I want to contact you.',
           to: 'contact@uwazi.com'
         });
