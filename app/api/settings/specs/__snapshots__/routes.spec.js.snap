@@ -30,6 +30,12 @@ Object {
         "",
       ],
     },
+    "contactEmail": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
     "custom": Object {
       "type": "any",
     },
