@@ -19,6 +19,7 @@ export default (app, server) => {
   require('./thesauris/routes.js')(app);
   require('./relationtypes/routes.js')(app);
   require('./documents/routes.js')(app);
+  require('./contact/routes.js')(app);
   require('./entities/routes.js')(app);
   require('./pages/routes.js')(app);
   require('./upload/routes.js')(app);

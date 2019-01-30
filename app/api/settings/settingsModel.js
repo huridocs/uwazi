@@ -21,6 +21,7 @@ const filtersSchema = new mongoose.Schema({
 const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
+  contactEmail: String,
   home_page: String,
   private: Boolean,
   languages: [languagesSchema],
