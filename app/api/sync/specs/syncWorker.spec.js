@@ -6,7 +6,6 @@ import errorLog from 'api/log/errorLog';
 import 'api/relationships';
 import backend from 'fetch-mock';
 
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';

@@ -1,6 +1,3 @@
-import { db_url as dbURL } from 'api/config/database';
-import request from 'shared/JSONRequest';
-import { updateMetadataNames, deleteMetadataProperties } from 'api/documents/utils';
 import fs from 'fs';
 import entities from '../entities';
 import model from '../entities/entitiesModel';
