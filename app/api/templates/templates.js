@@ -1,14 +1,11 @@
 import entities from 'api/entities';
-import instanceModel from 'api/odm';
 import request from 'shared/JSONRequest.js';
 import translations from 'api/i18n/translations';
 import validateTemplate from 'api/templates/validateTemplate';
 
 import { db_url as dbURL } from '../config/database.js';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
-import templatesModel from './templatesModel.js';
-
-const model = instanceModel(templatesModel);
+import model from './templatesModel.js';
 
 const checkDuplicated = template => model.get()
 .then((templates) => {

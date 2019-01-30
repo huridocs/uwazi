@@ -164,12 +164,13 @@ export default {
     return user;
   },
   async unlockAccount({ username, code }) {
-    const user = await model.db.findOneAndUpdate({ username, accountUnlockCode: code, accountLocked: true }, {
-      $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 }
-    });
+    const [user] = await model.get({ username, accountUnlockCode: code }, '_id');
+
     if (!user) {
       throw createError('Invalid username or unlock code', 403);
     }
+
+    return model.save({ ...user, accountLocked: false, accountUnlockCode: false, failedLogins: false });
   },
   recoverPassword(email, domain, options = {}) {
     const key = SHA256(email + Date.now()).toString();

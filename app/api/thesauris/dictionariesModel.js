@@ -10,5 +10,4 @@ const dictionarySchema = new mongoose.Schema({
   }]
 });
 
-const Model = mongoose.model('dictionaries', dictionarySchema);
-export default instanceModel(Model);
+export default instanceModel('dictionaries', dictionarySchema);

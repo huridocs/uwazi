@@ -12,5 +12,4 @@ const userSchema = new mongoose.Schema({
   accountUnlockCode: { type: String, select: false }
 });
 
-const Model = mongoose.model('users', userSchema);
-export default instanceModel(Model);
+export default instanceModel('users', userSchema);
