@@ -21,6 +21,7 @@ import serverRenderingRoutes from './react/server.js';
 import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
 import uwaziMessage from '../message';
+import syncWorker from './api/sync/syncWorker';
 
 mongoose.Promise = Promise;
 
@@ -49,7 +50,7 @@ app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
 app.use('/public', express.static(path.resolve(__dirname, '../public')));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '1mb' }));
 
 authRoutes(app);
 
@@ -57,7 +58,9 @@ app.use(privateInstanceMiddleware);
 app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 app.use('/uploaded_documents', express.static(uploadDocumentsPath));
 
+
 apiRoutes(app, http);
+
 serverRenderingRoutes(app);
 
 app.use(errorHandlingMiddleware);
@@ -72,7 +75,7 @@ if (process.env.DBUSER) {
   };
 }
 
-mongoose.connect(dbConfig[app.get('env')], { ...dbAuth, useMongoClient: true })
+mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
 .then(async () => {
   console.info('==> Processing system keys...');
   await translations.processSystemKeys(systemKeys);
@@ -88,6 +91,7 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth, useMongoClient: true })
   const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
 
   http.listen(port, bindAddress, () => {
+    syncWorker.start();
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');

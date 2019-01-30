@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import instanceModel from 'api/odm';
 
 const contextSchema = new mongoose.Schema({
   id: String,
@@ -15,5 +16,4 @@ const translationSchema = new mongoose.Schema({
   contexts: [contextSchema]
 });
 
-let Model = mongoose.model('translations', translationSchema);
-export default Model;
+export default instanceModel('translations', translationSchema);

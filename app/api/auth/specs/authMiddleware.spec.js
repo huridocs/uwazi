@@ -19,7 +19,7 @@ describe('authMiddleware', () => {
     middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized', message: 'Unauthorized' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -29,7 +29,7 @@ describe('authMiddleware', () => {
     middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized', message: 'Unauthorized' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -41,7 +41,7 @@ describe('authMiddleware', () => {
     middleWare(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized', message: 'Unauthorized' });
     expect(next).not.toHaveBeenCalled();
   });
 
