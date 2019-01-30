@@ -244,6 +244,28 @@ Object {
                 ],
               },
               Object {
+                "children": Object {
+                  "lat": Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                  },
+                  "lon": Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                  },
+                },
+                "type": "object",
+                "valids": Array [
+                  "",
+                ],
+              },
+              Object {
                 "flags": Object {
                   "sparse": false,
                 },

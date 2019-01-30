@@ -162,6 +162,28 @@ Object {
                     ],
                   },
                   Object {
+                    "children": Object {
+                      "lat": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                      "lon": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                    },
+                    "type": "object",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                  Object {
                     "flags": Object {
                       "sparse": false,
                     },
@@ -449,6 +471,28 @@ Object {
               },
               Object {
                 "type": "string",
+                "valids": Array [
+                  "",
+                ],
+              },
+              Object {
+                "children": Object {
+                  "lat": Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                  },
+                  "lon": Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                  },
+                },
+                "type": "object",
                 "valids": Array [
                   "",
                 ],
