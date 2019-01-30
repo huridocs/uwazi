@@ -15,5 +15,4 @@ const relationshipsSchema = new mongoose.Schema({
   }
 });
 
-const Model = mongoose.model('connections', relationshipsSchema);
-export default instanceModel(Model);
+export default instanceModel('connections', relationshipsSchema);

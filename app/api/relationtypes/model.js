@@ -20,5 +20,4 @@ const templateSchema = new mongoose.Schema({
   properties: [propertiesSchema]
 });
 
-let Model = mongoose.model('relationtypes', templateSchema);
-export default instanceModel(Model);
+export default instanceModel('relationtypes', templateSchema);

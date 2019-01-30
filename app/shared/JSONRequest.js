@@ -1,6 +1,9 @@
 import 'isomorphic-fetch';
+import superagent from 'superagent';
 
 import rison from 'rison';
+
+let cookie;
 
 const attemptRisonDecode = (string) => {
   const errcb = (e) => {
@@ -51,7 +54,9 @@ const _fetch = (url, data, method, _headers) => {
 
   const headers = Object.assign({
     Accept: 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    Cookie: cookie,
   }, _headers);
 
   if (method === 'GET' || method === 'DELETE') {
@@ -69,13 +74,18 @@ const _fetch = (url, data, method, _headers) => {
     body
   })
   .then((res) => {
+    let setCookie;
+    if (res.headers.get('set-cookie')) {
+      setCookie = res.headers.get('set-cookie');
+    }
     response = res;
-    return res.json();
+    return Promise.all([res.json(), setCookie]);
   })
-  .then((json) => {
+  .then(([json, setCookie]) => {
     const procesedResponse = {
       json,
-      status: response.status
+      status: response.status,
+      cookie: setCookie,
     };
 
     if (response.status > 399) {
@@ -86,6 +96,7 @@ const _fetch = (url, data, method, _headers) => {
   });
 };
 
+
 export default {
   post: (url, data, headers) => _fetch(url, data, 'POST', headers),
 
@@ -94,4 +105,24 @@ export default {
   get: (url, data, headers) => _fetch(url, data, 'GET', headers),
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
+
+  uploadFile: (url, filename, file) => {
+    return new Promise((resolve, reject) => {
+      superagent.post(url)
+      .set('Accept', 'application/json')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .set('Cookie', cookie || '')
+      .attach('file', file, filename)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+    });
+  },
+
+  cookie: (c) => {
+    cookie = c;
+  }
 };

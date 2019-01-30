@@ -99,7 +99,7 @@ export default (app) => {
     return Promise.all(thumbnailCreations)
     .then(() => {
       debugLog.debug('Saving documents');
-      return entities.saveMultiple(docs).then(() => {
+      return entities.saveMultiple(docs.map(doc => ({ ...doc, file: { ...doc.file, timestamp: Date.now() } }))).then(() => {
         const sessionSockets = req.io.getCurrentSessionSockets();
         sessionSockets.emit('documentProcessed', req.body.document);
       });

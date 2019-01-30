@@ -1,9 +1,6 @@
-import instanceModel from 'api/odm';
 import settings from 'api/settings/settings';
 
-import translationsModel from './translationsModel.js';
-
-const model = instanceModel(translationsModel);
+import model from './translationsModel.js';
 
 function prepareContexts(contexts) {
   return contexts.map(context => ({
