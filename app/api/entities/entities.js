@@ -436,8 +436,8 @@ export default {
       return Promise.all([
         selectQuery.$or.length ? this.get(selectQuery, { _id: 1 }) : [],
         multiSelectQuery.$or.length ? this.get(multiSelectQuery, { _id: 1 }) : [],
-        model.db.updateMany(selectQuery, { $set: selectChanges }),
-        model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges })
+        selectQuery.$or.length ? model.db.updateMany(selectQuery, { $set: selectChanges }) : null,
+        multiSelectQuery.$or.length ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges }) : null
       ])
       .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
         const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);

@@ -98,6 +98,7 @@ describe('upload routes', () => {
 
   describe('POST/upload', () => {
     it('should process the document after upload', async () => {
+      spyOn(Date, 'now').and.returnValue(1000);
       await onSocketRespond('post', '/api/upload', req);
       const [docES, docEN] = await Promise.all([
         documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
@@ -109,11 +110,15 @@ describe('upload routes', () => {
       expect(docEN[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
       expect(docEN[0].totalPages).toBe(1);
       expect(docEN[0].language).toBe('en');
+      expect(docEN[0].file.filename).toBe(file.filename);
+      expect(docEN[0].file.timestamp).toBe(1000);
 
       expect(docES[0].processed).toBe(true);
       expect(docES[0].fullText[1]).toMatch(/Test\[\[1\]\] file/);
       expect(docES[0].totalPages).toBe(1);
       expect(docES[0].language).toBe('es');
+      expect(docES[0].file.filename).toBe(file.filename);
+      expect(docES[0].file.timestamp).toBe(1000);
 
       await checkThumbnails();
     });
@@ -246,6 +251,7 @@ describe('upload routes', () => {
     });
 
     it('should upload too all entities when none has file', async () => {
+      spyOn(Date, 'now').and.returnValue(1100);
       pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
@@ -258,7 +264,8 @@ describe('upload routes', () => {
         language: 'other',
         mimetype: 'application/octet-stream',
         originalname: 'gadgets-01.pdf',
-        size: 171411271
+        size: 171411271,
+        timestamp: 1100
       };
       expect(_entities[0].file).toEqual(_file);
       expect(_entities[1].file).toEqual(_file);

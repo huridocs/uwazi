@@ -8,7 +8,6 @@ const entitySchema = new mongoose.Schema({
   migrationDate: { type: Date, default: Date.now },
 });
 
-const schema = mongoose.model('migrations', entitySchema);
-const Model = instanceModel(schema);
+const Model = instanceModel('migrations', entitySchema);
 
 export default Model;

@@ -4,6 +4,6 @@ export default function (roles = ['admin']) {
       return next();
     }
     res.status(401);
-    return res.json({ error: 'Unauthorized' });
+    return res.json({ error: 'Unauthorized', message: 'Unauthorized' });
   };
 }

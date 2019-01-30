@@ -8,7 +8,6 @@ import loadingBar from 'app/App/LoadingProgressBar';
 import { APIURL } from '../config.js';
 import request from '../../shared/JSONRequest';
 
-let cookie;
 let locale;
 let API_URL = APIURL;
 
@@ -48,7 +47,7 @@ const handleError = (e, endpoint) => {
 
 const _request = (url, data, method) => {
   loadingBar.start();
-  return request[method](API_URL + url, data, { 'Content-language': locale, Cookie: cookie, 'X-Requested-With': 'XMLHttpRequest' })
+  return request[method](API_URL + url, data, { 'Content-language': locale, 'X-Requested-With': 'XMLHttpRequest' })
   .then(doneLoading)
   .catch(e => handleError(e, { url, method }));
 };
@@ -61,7 +60,7 @@ export default {
   delete: (url, data) => _request(url, data, 'delete'),
 
   cookie(c) {
-    cookie = c;
+    request.cookie(c);
   },
 
   locale(key) {

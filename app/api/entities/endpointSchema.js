@@ -3,6 +3,10 @@ import Joi from 'joi';
 const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.alternatives().try(
   Joi.number().allow(''),
   Joi.string().allow(''),
+  Joi.object().keys({
+    lat: Joi.number(),
+    lon: Joi.number(),
+  }).allow(''),
   Joi.array().items(Joi.alternatives().try(
     Joi.number(),
     Joi.string()

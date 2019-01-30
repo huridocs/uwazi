@@ -47,7 +47,7 @@ describe('migrator', () => {
 
     it('should save migrations run on the db', (done) => {
       migrator.migrate()
-      .then(migrationsModel.get)
+      .then(() => migrationsModel.get())
       .then((migrations) => {
         expect(migrations.map(m => m.delta)).toEqual([1, 2, 10]);
         done();
