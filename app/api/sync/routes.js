@@ -5,8 +5,8 @@ import entities from 'api/entities';
 import path from 'path';
 import search from 'api/search/search';
 
-import { uploadDocumentsPath } from '../config/paths';
 import { needsAuthorization } from '../auth';
+import { uploadDocumentsPath } from '../config/paths';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
