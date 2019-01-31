@@ -8,47 +8,16 @@ import { model as updateLog } from 'api/updatelogs';
 import errorLog from 'api/log/errorLog';
 import request from 'shared/JSONRequest';
 import settings from 'api/settings';
-import { uploadDocumentsPath } from 'api/config/paths';
-import path from 'path';
-import fs from 'fs';
-import util from 'util';
 
+import synchronizer from './synchronizer';
+import syncConfig from './syncConfig';
 import syncsModel from './syncsModel';
 
-const readFile = util.promisify(fs.readFile);
 const oneSecond = 1000;
 
 const timeout = async interval => new Promise((resolve) => {
   setTimeout(resolve, interval);
 });
-
-const syncData = async (url, action, change, data, lastSync) => {
-  await request[action](urljoin(url, 'api/sync'), { namespace: change.namespace, data });
-  if (data.file && (data.file.timestamp >= lastSync - oneSecond)) {
-    const filepath = path.join(uploadDocumentsPath, data.file.filename);
-    const file = await readFile(filepath);
-    await request.uploadFile(urljoin(url, 'api/sync/upload'), data.file.filename, file);
-
-    const thumbnailFilename = `${data._id.toString()}.jpg`;
-    const thumbnailpath = path.join(uploadDocumentsPath, thumbnailFilename);
-    const thumbnail = await readFile(thumbnailpath);
-    await request.uploadFile(urljoin(url, 'api/sync/upload'), thumbnailFilename, thumbnail);
-  }
-
-  if (data.attachments && data.attachments.length) {
-    await data.attachments.reduce(async (prev, attachment) => {
-      await prev;
-      if ((attachment.timestamp >= lastSync - oneSecond)) {
-        const filepath = path.join(uploadDocumentsPath, attachment.filename);
-        const file = await readFile(filepath);
-        return request.uploadFile(urljoin(url, 'api/sync/upload'), attachment.filename, file);
-      }
-      return Promise.resolve();
-    }, Promise.resolve());
-  }
-
-  return syncsModel.updateMany({}, { $set: { lastSync: change.timestamp } });
-};
 
 const sanitizeConfig = async config => Object.keys(config).reduce(async (prev, key) => {
   const sanitized = await prev;
@@ -113,35 +82,24 @@ export default {
   stopped: false,
 
   async syncronize({ url, config: _config }) {
-    const config = await sanitizeConfig(_config);
+    const config = await syncConfig(_config);
 
-    const [{ lastSync }] = await syncsModel.find();
-    const lastChanges = await updateLog.find({
-      timestamp: {
-        $gte: lastSync - oneSecond
-      },
-      namespace: {
-        $in: getApprovedCollections(config)
-      }
-    }, null, {
-      sort: {
-        timestamp: 1
-      },
-      lean: true
-    });
+    const { lastSync } = config;
 
-    const whitelistedThesauris = await getApprovedThesauris(config);
-    const whitelistedRelationtypes = await getApprovedRelationtypes(config);
+    const lastChanges = await config.lastChanges();
+
+    const whitelistedThesauris = await getApprovedThesauris(config.config);
+    const whitelistedRelationtypes = await getApprovedRelationtypes(config.config);
 
     await lastChanges.reduce(async (prev, change) => {
       await prev;
 
       if (change.deleted) {
-        return syncData(url, 'delete', change, { _id: change.mongoId });
+        return synchronizer.syncData(url, 'delete', change, { _id: change.mongoId });
       }
 
-      const templatesConfig = config.templates || {};
-      const relationtypesConfig = config.relationtypes || [];
+      const templatesConfig = config.config.templates || {};
+      const relationtypesConfig = config.config.relationtypes || [];
 
       if (change.namespace === 'templates' && !templatesConfig[change.mongoId.toString()]) {
         return Promise.resolve();
@@ -268,7 +226,7 @@ export default {
         }, {});
       }
 
-      return syncData(url, 'post', change, data, lastSync);
+      return synchronizer.syncData(url, 'post', change, data, lastSync);
     }, Promise.resolve());
   },
 
