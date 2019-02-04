@@ -373,6 +373,12 @@ Object {
               ],
               "type": "number",
             },
+            "timestamp": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
           },
           "type": "object",
         },
@@ -418,6 +424,12 @@ Object {
             -Infinity,
           ],
           "type": "number",
+        },
+        "timestamp": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
         },
       },
       "type": "object",
@@ -635,6 +647,12 @@ Object {
       "items": Array [
         Object {
           "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
             "indentation": Object {
               "invalids": Array [
                 Infinity,
