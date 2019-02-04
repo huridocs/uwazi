@@ -35,12 +35,14 @@ const saveSchema = Joi.object().keys({
     filename: Joi.string(),
     mimetype: Joi.string(),
     size: Joi.number(),
-    language: Joi.string()
+    language: Joi.string(),
+    timestamp: Joi.string(),
   }),
   fullText: Joi.any(),
   totalPages: Joi.number(),
   icon: iconSchema,
   toc: Joi.array().items(Joi.object().keys({
+    _id: Joi.string(),
     label: Joi.string(),
     indentation: Joi.number(),
     range: Joi.object().keys({
@@ -52,7 +54,8 @@ const saveSchema = Joi.object().keys({
     originalname: Joi.string(),
     filename: Joi.string(),
     mimetype: Joi.string(),
-    size: Joi.number()
+    size: Joi.number(),
+    timestamp: Joi.string(),
   })),
   creationDate: Joi.number(),
   processed: Joi.boolean(),
