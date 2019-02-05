@@ -25,6 +25,14 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
   }
 
+  if (req.body && req.body.password) {
+    req.body.password = '########';
+  }
+
+  if (req.body && req.body.username) {
+    req.body.username = '########';
+  }
+
   const errorMessage = (req.originalUrl ? `\nurl: ${req.originalUrl}` : '') +
     (req.body && Object.keys(req.body).length ? `\nbody: ${JSON.stringify(req.body, null, ' ')}` : '') +
     (req.query && Object.keys(req.query).length ? `\nquery: ${JSON.stringify(req.query, null, ' ')}` : '') +

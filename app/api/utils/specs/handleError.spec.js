@@ -83,4 +83,11 @@ describe('handleError', () => {
       expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
     });
   });
+
+  describe('when the body contains the user and password', () => {
+    it('should not show them in the log', () => {
+      handleError(createError('test error', 400), { req: { body: { username: 'admin', password: '1234' } } });
+      expect(debugLog.debug.calls.allArgs()).toMatchSnapshot();
+    });
+  });
 });
