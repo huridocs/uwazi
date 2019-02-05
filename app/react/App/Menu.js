@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t } from 'app/I18N';
-import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { processFilters, encodeSearch, toggleSemanticSearch } from 'app/Library/actions/libraryActions';
 import { Icon } from 'UI';
 
 export class Menu extends Component {
@@ -11,7 +13,7 @@ export class Menu extends Component {
     const { searchTerm } = this.props.location.query;
     const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
     params.searchTerm = searchTerm;
-    return `/library/${encodeSearch(params)}`;
+    return `/library/${encodeSearch(params)}&semantic-search=true`;
   }
 
   uploadsUrl() {
@@ -47,6 +49,12 @@ export class Menu extends Component {
         </li>
         <li className="menuActions">
           <ul className="menuNav-list">
+            <li className="menuNav-item">
+              <I18NLink onClick={this.props.toggleSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+                <Icon icon="th" />
+                <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+              </I18NLink>
+            </li>
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                 <Icon icon="th" />
@@ -116,4 +124,11 @@ export function mapStateToProps({ user, settings, library, uploads }) {
   };
 }
 
-export default connect(mapStateToProps)(Menu);
+export function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    toggleSemanticSearch
+  }, wrapDispatch(dispatch, 'library'));
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

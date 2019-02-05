@@ -11,6 +11,7 @@ import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown';
 import { faCaretUp } from '@fortawesome/free-solid-svg-icons/faCaretUp';
 import { faChartBar } from '@fortawesome/free-solid-svg-icons/faChartBar';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
 import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
@@ -59,6 +60,7 @@ import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDo
 import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 import { faSquare } from '@fortawesome/free-regular-svg-icons/faSquare';
 import { faStar } from '@fortawesome/free-solid-svg-icons/faStar';
+import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { faSync } from '@fortawesome/free-solid-svg-icons/faSync';
 import { faTerminal } from '@fortawesome/free-solid-svg-icons/faTerminal';
 import { faTh } from '@fortawesome/free-solid-svg-icons/faTh';
@@ -86,6 +88,7 @@ const icons = {
   faCaretUp,
   faChartBar,
   faCheck,
+  faCheckCircle,
   faChevronLeft,
   faChevronRight,
   faCircle,
@@ -134,6 +137,7 @@ const icons = {
   faSpinner,
   faSquare,
   faStar,
+  faStop,
   faSync,
   faTerminal,
   faTh,
