@@ -1,0 +1,41 @@
+.semantic-search-list-item {
+  border-top: 1px solid $c-grey-light;
+  padding: 20px 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 170px;
+
+  .item-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .item-footer {
+    display: flex;
+    justify-content: space-evenly;
+    margin: {
+      left: 50px;
+      right: 50px;
+    }
+    .btn {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+    }
+  }
+}
+
+.uw-progress-bar {
+  height: 9px;
+  border-radius: 5px;
+  border: 1px solid $c-info-light;
+  overflow: hidden;
+
+  &--progress {
+    background-color: $c-type-5;
+    height: 100%;
+  }
+}
