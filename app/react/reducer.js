@@ -13,6 +13,7 @@ import connections from 'app/Connections/reducers/reducer';
 import relationships from 'app/Relationships';
 import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
 import { reducer as attachments } from 'app/Attachments';
+import semanticSearch from 'app/SemanticSearch/reducers/reducer';
 
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
@@ -49,6 +50,7 @@ export default combineReducers({
   translations: createReducer('translations', []),
   translationsForm: modelReducer('translationsForm', []),
   translationsFormState: formReducer('translationsForm'),
+  semanticSearch,
   pages: createReducer('pages', []),
   users: createReducer('users', []),
   documentViewer,
