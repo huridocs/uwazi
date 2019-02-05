@@ -105,6 +105,7 @@ const create = async (args, language, user) => {
   return savedSearch;
 };
 
+const getAllSearches = () => model.get();
 const getInProgress = async () => model.get({ status: IN_PROGRESS });
 const getPending = async () => model.get({ status: PENDING });
 
@@ -113,6 +114,7 @@ const semanticSearch = {
   processSearchLimit,
   getDocumentResultsByID,
   getAllDocumentResults,
+  getAllSearches,
   getPending,
   getInProgress
 };
