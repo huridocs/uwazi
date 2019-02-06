@@ -111,6 +111,7 @@ const getPending = async () => model.get({ status: PENDING });
 
 const semanticSearch = {
   create,
+  processDocument,
   processSearchLimit,
   getDocumentResultsByID,
   getAllDocumentResults,

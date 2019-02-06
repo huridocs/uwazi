@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`semanticSearch create should create and save new search 1`] = `
+Object {
+  "__v": 0,
+  "documents": Array [
+    Object {
+      "sharedId": "doc1",
+      "status": "pending",
+    },
+    Object {
+      "sharedId": "doc2",
+      "status": "pending",
+    },
+  ],
+  "language": "en",
+  "searchTerm": "Test term",
+  "status": "pending",
+}
+`;
