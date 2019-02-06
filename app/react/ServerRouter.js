@@ -100,7 +100,8 @@ function handleRoute(res, renderProps, req) {
     return settingsApi.get()
     .then((settings) => {
       const { languages } = settings;
-      locale = I18NUtils.getLocale(req.language, languages, req.cookies);
+      const urlLanguage = renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
+      locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
       api.locale(locale);
 
       return settings;
