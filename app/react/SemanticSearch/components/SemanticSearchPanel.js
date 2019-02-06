@@ -3,69 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, LocalForm, actions } from 'react-redux-form';
 
-import { t, I18NLink } from 'app/I18N';
-import { Icon, ProgressBar } from 'UI';
+import { t } from 'app/I18N';
+import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 
 import api from '../SemanticSearchAPI';
 
 import SidePanel from 'app/Layout/SidePanel';
-
-function SearchList({ searches }) {
-  return (
-    <div className="semantic-search-list">
-      {searches.map(search => <SearchItem search={search} key={search._id} />)}
-    </div>
-  );
-}
-
-SearchList.defaultProps = {
-  searches: []
-};
-
-SearchList.propTypes = {
-  searches: PropTypes.array
-};
-
-function SearchItem({ search }) {
-  const { status, documents } = search;
-  const [completed, max] = documents.reduce(([completedAgg, maxAgg], doc) => [
-    completedAgg + (doc.status === 'completed' ? 1 : 0),
-    maxAgg + 1
-  ], [0, 0]);
-  return (
-    <div className="semantic-search-list-item">
-      <div className="item-header">
-        <I18NLink to={`semanticsearch/${search._id}`}>{search.searchTerm}</I18NLink>
-        { status === 'in_progress' &&
-          <Icon icon="spinner" spin />
-        }
-        {
-          status === 'completed' &&
-          <Icon className="text-primary" icon="check-circle" />
-        }
-      </div>
-      <ProgressBar value={completed} max={max} />
-      <div className="item-footer">
-        <button className="btn btn-danger">
-          <Icon icon="trash-alt" />
-        </button>
-        { status === 'in_progress' &&
-          <button className="btn btn-warning">
-            <Icon icon="stop" />
-          </button>
-        }
-        <button className="btn btn-success">
-          <Icon icon="paper-plane" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-SearchItem.propTypes = {
-  search: PropTypes.object.isRequired
-};
+import SearchList from './SearchList';
 
 export class SemanticSearchSidePanel extends Component {
   constructor(props) {
