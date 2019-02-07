@@ -86,7 +86,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Abkhazian (ab) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -115,7 +117,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Afar (aa) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -144,7 +148,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Afrikaans (af) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -173,7 +179,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Akan (ak) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -202,7 +210,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Albanian (sq) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -231,7 +241,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Amharic (am) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -286,7 +298,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Aragonese (an) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -341,7 +355,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Assamese (as) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -370,7 +386,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Avaric (av) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -399,7 +417,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Avestan (ae) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -428,7 +448,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Aymara (ay) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -457,7 +479,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Azerbaijani (az) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -486,7 +510,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bambara (bm) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -515,7 +541,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bashkir (ba) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -570,7 +598,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Belarusian (be) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -599,7 +629,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bengali (Bangla) (bn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -628,7 +660,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bihari (bh) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -657,7 +691,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bislama (bi) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -686,7 +722,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bosnian (bs) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -715,7 +753,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Breton (br) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -770,7 +810,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Burmese (my) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -825,7 +867,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chamorro (ch) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -854,7 +898,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chechen (ce) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -883,7 +929,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chichewa, Chewa, Nyanja (ny) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -912,7 +960,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chinese (zh) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -941,7 +991,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chinese (Simplified) (zh-Hans) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -970,7 +1022,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chinese (Traditional) (zh-Hant) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -999,7 +1053,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chuvash (cv) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1028,7 +1084,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Cornish (kw) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1057,7 +1115,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Corsican (co) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1086,7 +1146,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Cree (cr) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1115,7 +1177,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Croatian (hr) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1196,7 +1260,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Divehi, Dhivehi, Maldivian (dv) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1251,7 +1317,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Dzongkha (dz) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1280,7 +1348,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Esperanto (eo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1309,7 +1379,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Estonian (et) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1338,7 +1410,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ewe (ee) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1367,7 +1441,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Faroese (fo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1396,7 +1472,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Fijian (fj) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1477,7 +1555,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Fula, Fulah, Pulaar, Pular (ff) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1532,7 +1612,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Gaelic Scottish (gd) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1561,7 +1643,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Gaelic (Manx) (gv) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1590,7 +1674,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Georgian (ka) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1671,7 +1757,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Guarani (gn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1700,7 +1788,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Gujarati (gu) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1729,7 +1819,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Haitian Creole (ht) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1758,7 +1850,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Hausa (ha) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1787,7 +1881,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Hebrew (he) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1816,7 +1912,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Herero (hz) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1871,7 +1969,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Hiri Motu (ho) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1926,7 +2026,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Icelandic (is) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1955,7 +2057,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ido (io) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -1984,7 +2088,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Igbo (ig) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2013,7 +2119,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Indonesian (in) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2042,7 +2150,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Interlingua (ia) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2071,7 +2181,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Interlingue (ie) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2100,7 +2212,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Inuktitut (iu) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2129,7 +2243,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Inupiak (ik) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2210,7 +2326,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Japanese (ja) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2239,7 +2357,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Javanese (jv) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2268,7 +2388,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kalaallisut, Greenlandic (kl) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2297,7 +2419,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kannada (kn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2326,7 +2450,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kanuri (kr) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2355,7 +2481,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kashmiri (ks) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2384,7 +2512,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kazakh (kk) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2413,7 +2543,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Khmer (km) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2442,7 +2574,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kikuyu (ki) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2471,7 +2605,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kinyarwanda (Rwanda) (rw) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2500,7 +2636,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kirundi (rn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2529,7 +2667,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kyrgyz (ky) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2558,7 +2698,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Komi (kv) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2587,7 +2729,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kongo (kg) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2616,7 +2760,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Korean (ko) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2645,7 +2791,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kurdish (ku) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2674,7 +2822,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kwanyama (kj) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2703,7 +2853,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Lao (lo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2732,7 +2884,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Latin (la) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2787,7 +2941,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Limburgish (Limburger) (li) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2816,7 +2972,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Lingala (ln) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2871,7 +3029,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Luga-Katanga (lu) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2900,7 +3060,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Luganda, Ganda (lg) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2929,7 +3091,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Luxembourgish (lb) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2958,7 +3122,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Macedonian (mk) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -2987,7 +3153,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Malagasy (mg) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3016,7 +3184,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Malay (ms) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3045,7 +3215,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Malayalam (ml) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3074,7 +3246,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Maltese (mt) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3103,7 +3277,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Maori (mi) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3132,7 +3308,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Marathi (mr) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3161,7 +3339,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Marshallese (mh) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3190,7 +3370,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Moldavian (mo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3219,7 +3401,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Mongolian (mn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3248,7 +3432,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Nauru (na) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3277,7 +3463,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Navajo (nv) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3306,7 +3494,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ndonga (ng) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3335,7 +3525,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Northern Ndebele (nd) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3364,7 +3556,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Nepali (ne) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3393,7 +3587,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Norwegian (no) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3474,7 +3670,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Occitan (oc) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3503,7 +3701,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ojibwe (oj) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3532,7 +3732,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Old Church Slavonic, Old Bulgarian (cu) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3561,7 +3763,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Oriya (or) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3590,7 +3794,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Oromo (Afaan Oromo) (om) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3619,7 +3825,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ossetian (os) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3648,7 +3856,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Pāli (pi) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3677,7 +3887,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Pashto, Pushto (ps) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3732,7 +3944,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Polish (pl) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3787,7 +4001,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Punjabi (Eastern) (pa) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3816,7 +4032,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Quechua (qu) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3845,7 +4063,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Romansh (rm) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3926,7 +4146,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sami (se) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3955,7 +4177,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Samoan (sm) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -3984,7 +4208,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sango (sg) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4013,7 +4239,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sanskrit (sa) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4042,7 +4270,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Serbian (sr) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4071,7 +4301,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Serbo-Croatian (sh) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4100,7 +4332,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sesotho (st) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4129,7 +4363,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Setswana (tn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4158,7 +4394,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Shona (sn) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4187,7 +4425,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sichuan Yi, Nuosu (ii) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4216,7 +4456,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sindhi (sd) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4245,7 +4487,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sinhalese (si) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4274,7 +4518,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Siswati, Swati (ss) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4303,7 +4549,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Slovak (sk) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4332,7 +4580,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Slovenian (sl) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4361,7 +4611,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Somali (so) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4390,7 +4642,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Southern Ndebele (nr) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4419,7 +4673,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sundanese (su) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4448,7 +4704,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Swahili (Kiswahili) (sw) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4503,7 +4761,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tagalog (tl) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4532,7 +4792,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tahitian (ty) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4561,7 +4823,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tajik (tg) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4590,7 +4854,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tamil (ta) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4619,7 +4885,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tatar (tt) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4648,7 +4916,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Telugu (te) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4703,7 +4973,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tibetan (bo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4732,7 +5004,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tigrinya (ti) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4761,7 +5035,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tonga (to) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4790,7 +5066,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tsonga (ts) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4845,7 +5123,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Turkmen (tk) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4874,7 +5154,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Twi (tw) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4903,7 +5185,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Uyghur (ug) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4932,7 +5216,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ukrainian (uk) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4961,7 +5247,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Urdu (ur) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -4990,7 +5278,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Uzbek (uz) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5019,7 +5309,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Venda (ve) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5048,7 +5340,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Vietnamese (vi) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5077,7 +5371,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Volapük (vo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5106,7 +5402,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Wallon (wa) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5135,7 +5433,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Welsh (cy) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5164,7 +5464,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Wolof (wo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5193,7 +5495,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Western Frisian (fy) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5222,7 +5526,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Xhosa (xh) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5251,7 +5557,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Yiddish (yi) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5280,7 +5588,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Yoruba (yo) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5309,7 +5619,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Zhuang, Chuang (za) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
@@ -5338,7 +5650,9 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Zulu (zu) 
-        <Tip>
+        <Tip
+          inline={false}
+        >
           Some adavanced search features may not be available for this language.
         </Tip>
       </span>
