@@ -65,7 +65,7 @@ describe('ThesauriForm', () => {
       };
       instance.save(thesauri);
       const sanitizedThesauri = {
-        values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }]
+        values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 }]
       };
       expect(props.saveThesauri).toHaveBeenCalledWith(sanitizedThesauri);
     });
