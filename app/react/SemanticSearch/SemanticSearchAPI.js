@@ -14,11 +14,6 @@ export default {
   getSearch(searchId) {
     const url = `semantic-search/${searchId}`;
     return api.get(url).then(response => response.json);
-  },
-  getSearchResults(searchId) {
-    const url = `semantic-search/${searchId}/results`;
-    return api.get(url)
-    .then(response => response.json);
   }
 };
 

@@ -17,16 +17,8 @@ export default (app) => {
   );
   app.get('/api/semantic-search/:searchId',
     (req, res, next) => {
-      semanticSearch.processSearchLimit(req.params.searchId, 10)
-      .then(result => res.json(result))
-      .catch(next);
-    }
-  );
-  app.get('/api/semantic-search/:searchId/results',
-    (req, res, next) => {
-      const { searchId } = req.params;
-      semanticSearch.getAllDocumentResults(searchId)
-      .then(results => res.json(results))
+      semanticSearch.getSearch(req.params.searchId)
+      .then(search => res.json(search))
       .catch(next);
     }
   );

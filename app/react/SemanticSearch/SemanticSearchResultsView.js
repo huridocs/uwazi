@@ -9,15 +9,12 @@ import semanticSearchAPI from './SemanticSearchAPI';
 
 export default class SemanticSearchResultsView extends RouteHandler {
   static requestState({ searchId }) {
-    return Promise.all([
-      semanticSearchAPI.getSearch(searchId),
-      semanticSearchAPI.getSearchResults(searchId)
-    ]).then(([search, results]) => ({ search, results }));
+    return semanticSearchAPI.getSearch(searchId)
+    .then(search => ({ search }));
   }
 
   setReduxState(state) {
     this.context.store.dispatch(actions.set('semanticSearch/search', state.search));
-    this.context.store.dispatch(actions.set('semanticSearch/searchResults', state.results));
   }
 
   static renderTools() {

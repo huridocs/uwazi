@@ -6,6 +6,7 @@ import resultsModel from './resultsModel';
 import api from './api';
 import documentsModel from '../documents';
 import workers from './workerManager';
+import { createError } from '../utils';
 
 export const PENDING = 'pending';
 export const COMPLETED = 'completed';
@@ -102,6 +103,9 @@ const create = async (args, language, user) => {
 
 const getSearch = async (searchId) => {
   const theSearch = await model.getById(searchId);
+  if (!theSearch) {
+    throw createError('Search not found', 404);
+  }
   theSearch.results = await resultsModel.get({ searchId });
   return theSearch;
 };

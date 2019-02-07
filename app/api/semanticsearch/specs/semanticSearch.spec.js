@@ -8,6 +8,7 @@ import api from '../api';
 
 import fixtures from './fixtures';
 import { search1Id, search2Id, search3Id, doc1Id, docWithoutTextId } from './fixtures';
+import { createError } from '../../utils';
 
 describe('semanticSearch', () => {
   beforeEach((done) => {
@@ -185,6 +186,14 @@ describe('semanticSearch', () => {
       delete res._id;
       expect(res.results.length).toBe(2);
       expect(res).toMatchSnapshot();
+    });
+    it('should return 404 if search does not exist', async () => {
+      try {
+        await semanticSearch.getSearch(db.id());
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Search not found', 404));
+      }
     });
   });
 });

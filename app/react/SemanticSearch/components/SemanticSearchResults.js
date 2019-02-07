@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Map } from 'immutable';
 
 import Helmet from 'react-helmet';
 import SidePanel from 'app/Layout/SidePanel';
@@ -10,33 +11,41 @@ import ResultItem from './ResultItem';
 
 export class SemanticSearchResults extends Component {
   render() {
-    const { search, results } = this.props;
+    const { search } = this.props;
     return (
       <div className="row panels-layout">
-        <Helmet title={`${search.get('searchTerm')} - Semantic search results`} />
-        <main className="semantic-search-results-viewer document-viewer with-panel">
-          <RowList>
-            {results.map(result => (
-              <ResultItem result={result} />
-            ))}
-          </RowList>
-        </main>
-        <SidePanel>
-          <div>test</div>
-        </SidePanel>
+        { search.isEmpty() &&
+          <React.Fragment>
+            <p>Search not found</p>
+            <Helmet title="Semantic search not found" />
+          </React.Fragment>
+        }
+        { !search.isEmpty() &&
+          <React.Fragment>
+            <Helmet title={`${search.get('searchTerm')} - Semantic search results`} />
+            <main className="semantic-search-results-viewer document-viewer with-panel">
+              <RowList>
+                {search.get('results').map(result => (
+                  <ResultItem result={result} key={result.sharedId} />
+                ))}
+              </RowList>
+            </main>
+            <SidePanel>
+              <div>test</div>
+            </SidePanel>
+          </React.Fragment>
+        }
       </div>
     );
   }
 }
 
 SemanticSearchResults.propTypes = {
-  search: PropTypes.object.isRequired,
-  results: PropTypes.object.isRequired
+  search: PropTypes.instanceOf(Map).isRequired
 };
 
 const mapStateToProps = state => ({
-  search: state.semanticSearch.search,
-  results: state.semanticSearch.searchResults
+  search: state.semanticSearch.search
 });
 
 export default connect(mapStateToProps)(SemanticSearchResults);
