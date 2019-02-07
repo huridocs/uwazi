@@ -5,7 +5,7 @@ import searchModel from './model';
 
 const NUM_WORKERS = 3;
 
-class WorkerManager extends EventEmitter {
+export class WorkerManager extends EventEmitter {
   constructor() {
     super();
     this.workers = {};

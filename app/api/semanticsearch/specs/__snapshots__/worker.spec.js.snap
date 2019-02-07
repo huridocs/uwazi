@@ -1,5 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`worker start should emit update event after each batch is processed 1`] = `
+Array [
+  Array [
+    "update",
+    Object {
+      "status": "inProgress",
+    },
+  ],
+  Array [
+    "update",
+    Object {
+      "status": "inProgress",
+    },
+  ],
+  Array [
+    "update",
+    Object {
+      "status": "completed",
+    },
+  ],
+  Array [
+    "done",
+  ],
+]
+`;
+
 exports[`worker start should process documents in the search in batches and emit event when done 1`] = `
 Array [
   Array [
