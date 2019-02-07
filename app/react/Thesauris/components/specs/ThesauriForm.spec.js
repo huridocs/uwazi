@@ -48,12 +48,7 @@ describe('ThesauriForm', () => {
   describe('render', () => {
     it('should render groups and values', () => {
       render();
-      const groups = component.find('.sub-group');
-      expect(groups.length).toBe(2);
-      const firstGroupValues = groups.first().find('input');
-      const lastGroupValues = groups.last().find('input');
-      expect(firstGroupValues.length).toBe(3);
-      expect(lastGroupValues.length).toBe(3);
+      expect(component).toMatchSnapshot();
     });
   });
 
@@ -62,10 +57,10 @@ describe('ThesauriForm', () => {
       render();
       const thesauri = {
         values: [
-          { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] },
-          { label: '', values: [{ label: 'Joker' }, { label: 'Penguin' }] },
-          { label: 'I have no values', values: [] },
-          { label: '' }
+          { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 },
+          { label: '', values: [{ label: 'Joker' }, { label: 'Penguin' }], id: 1 },
+          { label: 'I have no values', values: [], id: 3 },
+          { label: '', id: 4 }
         ]
       };
       instance.save(thesauri);
