@@ -67,11 +67,6 @@ const updateSearchStatus = (searchId, status) => model.save({
   status
 });
 
-const getDocumentResultsByID = async (searchId, sharedId) => {
-  const [docResults] = await resultsModel.get({ searchId, sharedId });
-  return docResults;
-};
-
 const getAllDocumentResults = async searchId => resultsModel.get({ searchId });
 
 const processSearchLimit = async (searchId, docLimit) => {
@@ -105,6 +100,12 @@ const create = async (args, language, user) => {
   return savedSearch;
 };
 
+const getSearch = async (searchId) => {
+  const theSearch = await model.getById(searchId);
+  theSearch.results = await resultsModel.get({ searchId });
+  return theSearch;
+};
+
 const getAllSearches = () => model.get();
 const getInProgress = async () => model.get({ status: IN_PROGRESS });
 const getPending = async () => model.get({ status: PENDING });
@@ -113,11 +114,11 @@ const semanticSearch = {
   create,
   processDocument,
   processSearchLimit,
-  getDocumentResultsByID,
   getAllDocumentResults,
   getAllSearches,
   getPending,
-  getInProgress
+  getInProgress,
+  getSearch
 };
 
 export default semanticSearch;

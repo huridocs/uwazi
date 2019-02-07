@@ -30,12 +30,4 @@ export default (app) => {
       .catch(next);
     }
   );
-  app.get('/api/semantic-search/:searchId/results/:docId',
-    (req, res, next) => {
-      const { searchId, docId } = req.params;
-      semanticSearch.getDocumentResultsByID(searchId, docId)
-      .then(results => res.json(results))
-      .catch(next);
-    }
-  );
 };

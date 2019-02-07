@@ -7,10 +7,10 @@ import resultsModel from '../resultsModel';
 import api from '../api';
 
 import fixtures from './fixtures';
-import { search1Id, doc1Id, docWithoutTextId } from './fixtures';
+import { search1Id, search2Id, search3Id, doc1Id, docWithoutTextId } from './fixtures';
 
 describe('semanticSearch', () => {
-  beforeAll((done) => {
+  beforeEach((done) => {
     db.clearAllAndLoad(fixtures).then(done);
   });
   afterAll((done) => {
@@ -97,6 +97,94 @@ describe('semanticSearch', () => {
         const docRes = await resultsModel.get({ searchId: search1Id, sharedId: docWithoutTextId });
         expect(docRes.length).toBe(0);
       });
+    });
+  });
+
+  describe('processSearchLimit', () => {
+    const expectedResults = [
+      { page: 1, sentence: 'page 1', score: 0.6 },
+      { page: 2, sentence: 'page 2', score: 0.2 }
+    ];
+    beforeEach(() => {
+      jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
+      api.processDocument.mockClear();
+    });
+    it('should process only up to specified number of unprocessed docs in the search', async () => {
+      await semanticSearch.processSearchLimit(search2Id, 2);
+      expect(api.processDocument).toHaveBeenCalledTimes(2);
+      expect(api.processDocument).toHaveBeenCalledWith({
+        searchTerm: 'injustice',
+        contents: { 1: 'text2' }
+      });
+      expect(api.processDocument).toHaveBeenCalledWith({
+        searchTerm: 'injustice',
+        contents: { 1: 'text3' }
+      });
+      const theSearch = await model.getById(search2Id);
+      expect(theSearch.documents.some(
+        doc => doc.sharedId === 'doc2' && doc.status === 'completed')).toBe(true);
+      expect(theSearch.documents.some(
+        doc => doc.sharedId === 'doc3' && doc.status === 'completed')).toBe(true);
+      expect(theSearch.documents.some(
+        doc => doc.sharedId === 'doc5' && doc.status === 'pending')).toBe(true);
+      const res = await resultsModel.get({ searchId: search2Id });
+      expect(res.some(r => r.sharedId === 'doc2')).toBe(true);
+      expect(res.some(r => r.sharedId === 'doc3')).toBe(true);
+
+      expect(theSearch.status).toBe('inProgress');
+    });
+    it('should mark search as complete if all documents are processed', async () => {
+      await semanticSearch.processSearchLimit(search2Id, 5);
+      const theSearch = await model.getById(search2Id);
+      expect(theSearch.status).toBe('completed');
+    });
+  });
+
+  describe('getAllSearches', () => {
+    it('should return all searches', async () => {
+      const searches = await semanticSearch.getAllSearches();
+      expect(searches[0]._id).toEqual(search1Id);
+      expect(searches.length).toBe(3);
+    });
+  });
+
+  describe('getPending', () => {
+    it('should return pending searches', async () => {
+      const pending = await semanticSearch.getPending();
+      expect(pending.length).toBe(1);
+      expect(pending[0]._id).toEqual(search2Id);
+    });
+  });
+
+  describe('getInProgress', () => {
+    it('should return all searches in progress', async () => {
+      const inProgress = await semanticSearch.getInProgress();
+      expect(inProgress.length).toBe(1);
+      expect(inProgress[0]._id).toEqual(search1Id);
+    });
+  });
+
+  describe('getAllDocumentResults', () => {
+    it('should return all document results of the specified search', async () => {
+      const results = await semanticSearch.getAllDocumentResults(search3Id);
+      expect(results.length).toEqual(2);
+      expect(results.some(doc => doc.sharedId === 'doc1')).toBe(true);
+      expect(results.some(doc => doc.sharedId === 'doc2')).toBe(true);
+    });
+  });
+
+  describe('getSearch', () => {
+    it('should fetch a search by id and its document results', async () => {
+      const res = await semanticSearch.getSearch(search3Id);
+      res.results.forEach((result) => {
+        //eslint-disable-next-line no-param-reassign
+        delete result._id;
+        //eslint-disable-next-line no-param-reassign
+        delete result.searchId;
+      });
+      delete res._id;
+      expect(res.results.length).toBe(2);
+      expect(res).toMatchSnapshot();
     });
   });
 });

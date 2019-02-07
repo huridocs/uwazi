@@ -1,6 +1,8 @@
 import db from 'api/utils/testing_db';
 
 const search1Id = db.id();
+const search2Id = db.id();
+const search3Id = db.id();
 const doc1Id = 'doc1';
 const docWithoutTextId = 'docWithoutText';
 
@@ -9,27 +11,94 @@ export default {
     {
       _id: search1Id,
       searchTerm: 'legal',
-      status: 'in_progress',
+      status: 'inProgress',
       language: 'en',
       documents: [
         { sharedId: doc1Id, status: 'pending' },
         { sharedId: docWithoutTextId, status: 'pending' }
       ]
+    },
+    {
+      _id: search2Id,
+      searchTerm: 'injustice',
+      status: 'pending',
+      language: 'en',
+      documents: [
+        { sharedId: 'doc1', status: 'completed' },
+        { sharedId: 'doc2', status: 'pending' },
+        { sharedId: 'doc3', status: 'pending' },
+        { sharedId: 'doc4', status: 'completed' },
+        { sharedId: 'doc5', status: 'pending' }
+      ]
+    },
+    {
+      _id: search3Id,
+      searchTerm: 'torture',
+      status: 'completed',
+      language: 'en',
+      documents: [
+        { sharedId: 'doc1', status: 'completed' },
+        { sharedId: 'doc2', status: 'completed' }
+      ]
     }
   ],
   entities: [
     {
-      _id: db.id(), sharedId: 'doc1', language: 'en',
+      _id: db.id(), sharedId: doc1Id, language: 'en',
       fullText: { 1: 'page 1', 2: 'page 2' }
     },
     {
-      _id: db.id(), sharedId: 'docWithoutText', language: 'en'
+      _id: db.id(), sharedId: docWithoutTextId, language: 'en'
+    },
+    {
+      _id: db.id(), sharedId: 'doc2', language: 'en',
+      fullText: { 1: 'text2' }
+    },
+    {
+      _id: db.id(), sharedId: 'doc3', language: 'en',
+      fullText: { 1: 'text3' }
+    },
+    {
+      _id: db.id(), sharedId: 'doc4', language: 'en',
+      fullText: { 1: 'text4' }
+    },
+    {
+      _id: db.id(), sharedId: 'doc5', language: 'en',
+      fullText: { 1: 'text5' }
+    }
+  ],
+  semanticsearchresults: [
+    {
+      _id: db.id(),
+      searchId: search3Id,
+      sharedId: 'doc1',
+      results: [
+        { page: 1, sentence: 'stuff', score: 0.5 },
+        { page: 2, sentence: 'this', score: 0.2 }
+      ]
+    },
+    {
+      _id: db.id(),
+      searchId: search3Id,
+      sharedId: 'doc2',
+      results: [
+        { page: 1, sentence: 'that', score: 0.8 },
+        { page: 2, sentence: 'what', score: 0.1 }
+      ]
+    },
+    {
+      _id: db.id(),
+      searchId: db.id(),
+      sharedId: 'someOtherDoc',
+      results: []
     }
   ]
 };
 
 export {
   search1Id,
+  search2Id,
+  search3Id,
   doc1Id,
   docWithoutTextId
 };

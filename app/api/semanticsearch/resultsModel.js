@@ -3,7 +3,7 @@ import instanceModel from 'api/odm';
 
 const resultSchema = new mongoose.Schema({
   sharedId: String,
-  searchId: String,
+  searchId: mongoose.Schema.Types.ObjectId,
   status: String,
   results: [{
       sentence: String,
