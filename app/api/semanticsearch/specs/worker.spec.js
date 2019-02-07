@@ -18,10 +18,11 @@ describe('worker', () => {
       worker.on('done', () => {
         expect(semanticSearch.processSearchLimit).toHaveBeenCalledTimes(3);
         expect(semanticSearch.processSearchLimit.mock.calls).toMatchSnapshot();
+        semanticSearch.processSearchLimit.mockClear();
         done();
       });
     });
-    it('should emit error event when an error occurs', (done) => {
+    it('should stop processing when error occurs and emit error event', (done) => {
       const error = new Error('error');
       jest.spyOn(semanticSearch, 'processSearchLimit')
       .mockResolvedValueOnce({ status: 'inProgress' })
@@ -33,6 +34,7 @@ describe('worker', () => {
 
       worker.on('error', (e) => {
         expect(e).toEqual(error);
+        expect(semanticSearch.processSearchLimit).toHaveBeenCalledTimes(2);
         done();
       });
       worker.on('done', () => {
