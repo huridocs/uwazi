@@ -13,6 +13,10 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
     lat: Joi.number(),
     lon: Joi.number(),
   }).allow(''),
+  Joi.object().keys({
+    label: Joi.string(),
+    url: Joi.string(),
+  }).allow(''),
   Joi.array().items(Joi.alternatives().try(
     Joi.number(),
     Joi.string(),
