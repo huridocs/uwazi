@@ -306,6 +306,26 @@ Object {
                 ],
               },
               Object {
+                "children": Object {
+                  "label": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  "url": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+                "valids": Array [
+                  "",
+                ],
+              },
+              Object {
                 "flags": Object {
                   "sparse": false,
                 },

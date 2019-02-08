@@ -37,6 +37,7 @@ export const fontawesomeIcons = [
   'arrow-up',
   'arrows',
   'arrows-alt',
+  'arrows-alt-h',
   'arrows-h',
   'arrows-v',
   'assistive-listening-systems',
