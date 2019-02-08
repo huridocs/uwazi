@@ -1,7 +1,14 @@
+import Joi from 'joi';
 import semanticSearch from './semanticSearch';
+import { validateRequest } from '../utils';
 
 export default (app) => {
   app.post('/api/semantic-search',
+    validateRequest(Joi.object().keys({
+      searchTerm: Joi.string().required(),
+      documents: Joi.array().items(Joi.string()),
+      query: Joi.object()
+    }).required()),
     (req, res, next) => {
       semanticSearch.create(req.body, req.language, req.user)
       .then(results => res.json(results))

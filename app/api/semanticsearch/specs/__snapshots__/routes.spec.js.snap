@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`search routes POST /api/semantic-search should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "documents": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
+    "query": Object {
+      "type": "object",
+    },
+    "searchTerm": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
