@@ -47,7 +47,6 @@ class ViewDocument extends RouteHandler {
       this.changePage(query.page);
     }
     if ((query.page !== this.props.location.query.page || query.raw !== this.props.location.query.raw) && query.raw === 'true') {
-      console.log('**');
       return entitiesAPI.getRawPage(props.params.documentId, query.page)
       .then((pageText) => {
         this.context.store.dispatch(actions.set('viewer/rawText', pageText));
