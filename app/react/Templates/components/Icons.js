@@ -16,4 +16,5 @@ export default {
   preview: 'passport',
   media: 'video',
   geolocation: 'map-marker',
+  link: 'link',
 };
