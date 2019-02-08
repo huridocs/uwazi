@@ -26,7 +26,6 @@ export class MetadataProperty extends Component {
     if (this.props.isCommonProperty) {
       return <FormConfigCommon index={index} type={type}/>;
     }
-
     if (type === 'relationship') {
       defaultInput = <FormConfigRelationship index={index} type={type}/>;
     }
@@ -49,7 +48,7 @@ export class MetadataProperty extends Component {
         />
       );
     }
-    if (type === 'geolocation') {
+    if (type === 'geolocation' || type === 'link') {
       defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false}/>;
     }
     return defaultInput;
