@@ -4,7 +4,7 @@ import { WorkerManager } from '../workerManager';
 import model from '../model';
 import fixtures, { search1Id, search2Id, search3Id, search4Id } from './workersFixtures';
 
-
+const mockWorkerOnFn = jest.fn();
 jest.mock('../worker');
 
 describe('WorkerManager', () => {
@@ -37,6 +37,74 @@ describe('WorkerManager', () => {
       };
       manager.notifyNewSearch('search4');
       expect(Worker).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handling worker events', () => {
+    beforeEach(() => {
+      mockWorkerOnFn.mockClear();
+      Worker.mockImplementation(() => ({
+        on: mockWorkerOnFn,
+        start: jest.fn()
+      }));
+    });
+    function createManager() {
+      const manager = new WorkerManager();
+      jest.spyOn(manager, 'startNewSearchIfFree').mockImplementation(() => {});
+      jest.spyOn(manager, 'emit');
+      return manager;
+    }
+    function testWorkerDeletedAndReplaced(_manager, searchId) {
+      expect(searchId in _manager.workers).toBe(false);
+      expect(_manager.startNewSearchIfFree).toHaveBeenCalled();
+    }
+    describe('handling worker error event', () => {
+      it('should replace worker and emit searchError event', () => {
+        const manager = createManager();
+        const searchId = 'search';
+        const error = new Error('test error');
+        manager.notifyNewSearch(searchId);
+        const eventCall = mockWorkerOnFn.mock.calls.find(([event]) => event === 'error');
+        const handler = eventCall[1];
+        handler(error);
+        expect(manager.emit).toHaveBeenCalledWith('searchError', searchId, error);
+        testWorkerDeletedAndReplaced(manager, searchId);
+      });
+    });
+    describe('handling worker update event', () => {
+      it('should emit searchUpdated event', () => {
+        const manager = createManager();
+        const searchId = 'search';
+        const update = { _id: searchId, status: 'inProgress' };
+        manager.notifyNewSearch(searchId);
+        const eventCall = mockWorkerOnFn.mock.calls.find(([event]) => event === 'update');
+        const handler = eventCall[1];
+        handler(update);
+        expect(manager.emit).toHaveBeenCalledWith('searchUpdated', searchId, update);
+      });
+      it('should not replace worker', () => {
+        const manager = createManager();
+        const searchId = 'search';
+        const update = { _id: searchId, status: 'inProgress' };
+        manager.notifyNewSearch(searchId);
+        const eventCall = mockWorkerOnFn.mock.calls.find(([event]) => event === 'update');
+        const handler = eventCall[1];
+        handler(update);
+        expect(manager.startNewSearchIfFree).not.toHaveBeenCalled();
+        expect(searchId in manager.workers).toBe(true);
+      });
+    });
+    describe('handling worker done event', () => {
+      it('should emit searchDone event and replace worker', () => {
+        const manager = createManager();
+        const searchId = 'search';
+        manager.notifyNewSearch(searchId);
+        const eventCall = mockWorkerOnFn.mock.calls.find(([event]) => event === 'done');
+        const handler = eventCall[1];
+        handler();
+        expect(manager.emit).toHaveBeenCalledWith('searchDone', searchId);
+        testWorkerDeletedAndReplaced(manager, searchId);
+      });
     });
   });
 
