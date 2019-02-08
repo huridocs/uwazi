@@ -163,6 +163,34 @@ Object {
                   },
                   Object {
                     "children": Object {
+                      "from": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                        "valids": Array [
+                          null,
+                        ],
+                      },
+                      "to": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                        "valids": Array [
+                          null,
+                        ],
+                      },
+                    },
+                    "type": "object",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                  Object {
+                    "children": Object {
                       "lat": Object {
                         "invalids": Array [
                           Infinity,
@@ -202,6 +230,34 @@ Object {
                               "",
                             ],
                             "type": "string",
+                          },
+                          Object {
+                            "children": Object {
+                              "from": Object {
+                                "invalids": Array [
+                                  Infinity,
+                                  -Infinity,
+                                ],
+                                "type": "number",
+                                "valids": Array [
+                                  null,
+                                ],
+                              },
+                              "to": Object {
+                                "invalids": Array [
+                                  Infinity,
+                                  -Infinity,
+                                ],
+                                "type": "number",
+                                "valids": Array [
+                                  null,
+                                ],
+                              },
+                            },
+                            "type": "object",
+                            "valids": Array [
+                              "",
+                            ],
                           },
                         ],
                         "type": "alternatives",
@@ -489,6 +545,34 @@ Object {
               },
               Object {
                 "children": Object {
+                  "from": Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                    "valids": Array [
+                      null,
+                    ],
+                  },
+                  "to": Object {
+                    "invalids": Array [
+                      Infinity,
+                      -Infinity,
+                    ],
+                    "type": "number",
+                    "valids": Array [
+                      null,
+                    ],
+                  },
+                },
+                "type": "object",
+                "valids": Array [
+                  "",
+                ],
+              },
+              Object {
+                "children": Object {
                   "lat": Object {
                     "invalids": Array [
                       Infinity,
@@ -528,6 +612,34 @@ Object {
                           "",
                         ],
                         "type": "string",
+                      },
+                      Object {
+                        "children": Object {
+                          "from": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                            "valids": Array [
+                              null,
+                            ],
+                          },
+                          "to": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                            "valids": Array [
+                              null,
+                            ],
+                          },
+                        },
+                        "type": "object",
+                        "valids": Array [
+                          "",
+                        ],
                       },
                     ],
                     "type": "alternatives",
