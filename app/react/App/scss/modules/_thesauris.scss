@@ -25,9 +25,16 @@
     display: block;
     padding-left: 0;
     padding-right: 0;
+    padding-top: 0;
+    border-bottom: 2px solid #a9a9a9;
+    border-top: 1px solid #a9a9a9;
     > .form-group {
       padding-left: 10px;
       padding-right: 20px;
+      padding-top: 5px;
+      input {
+        font-weight: 600;
+      }
     }
     ul {
       padding-left: 0;
@@ -42,7 +49,6 @@
     padding: 5px 20px 5px 10px;
   }
   .list-group-item:first-child {
-    border: 0;
     padding: 15px 20px 0 25px;
     z-index: 1;
     .btn:last-of-type {
