@@ -23,9 +23,9 @@ class RouteHandler extends Component {
     return result;
   }
 
-  setLocale(props) {
-    const locale = this.getLocale(props);
+  setLocale(locale) {
     if (locale) {
+      moment.locale(locale);
       api.locale(locale);
       this.setStateLocale(locale);
     }
@@ -42,9 +42,7 @@ class RouteHandler extends Component {
 
   setStateLocale(locale) {
     this.context.store.dispatch(actions.set('locale', locale));
-    if (!I18NUtils.getCoockieLocale()) {
-      I18NUtils.saveLocale(locale);
-    }
+    I18NUtils.saveLocale(locale);
   }
 
   constructor(props, context) {
@@ -52,8 +50,7 @@ class RouteHandler extends Component {
 
     //test ?
     const locale = this.getLocale(props);
-    moment.locale(locale);
-    api.locale(locale);
+    this.setLocale(locale);
     //test ?
     if (!this.isRenderedFromServer() && this.setReduxState) {
       this.getClientState(this.props);
@@ -90,7 +87,8 @@ class RouteHandler extends Component {
   componentWillReceiveProps(props) {
     if (this.urlHasChanged(props)) {
       this.emptyState();
-      this.setLocale(props);
+      const locale = this.getLocale(props);
+      this.setLocale(locale);
       this.getClientState(props);
     }
   }
