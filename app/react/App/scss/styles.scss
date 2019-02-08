@@ -9,6 +9,7 @@
 @import "elements/controls";
 @import "elements/alerts";
 @import "elements/item";
+@import "elements/linkField";
 @import "elements/panel";
 @import "elements/breadcrumbs";
 @import "elements/draggable";
@@ -61,5 +62,6 @@
 
 @import "vendor/react-datepicker";
 @import "vendor/recharts";
+@import "vendor/slideshow";
 @import "vendor/nprogress";
 @import "vendor/fa-svg-with-js";

@@ -213,7 +213,6 @@ describe('templates', () => {
 
       it('should return the saved template', (done) => {
         spyOn(translations, 'updateContext');
-        spyOn(documents, 'updateMetadataProperties').and.returnValue(new Promise(resolve => resolve()));
         const edited = { _id: templateToBeEditedId, name: 'changed name' };
         return templates.save(edited)
         .then((template) => {

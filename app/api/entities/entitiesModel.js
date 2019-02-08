@@ -13,7 +13,8 @@ const entitySchema = new mongoose.Schema({
     filename: String,
     mimetype: String,
     size: Number,
-    language: String
+    timestamp: Number,
+    language: String,
   },
   fullText: { type: mongoose.Schema.Types.Mixed, select: false },
   totalPages: Number,
@@ -34,7 +35,8 @@ const entitySchema = new mongoose.Schema({
     originalname: String,
     filename: String,
     mimetype: String,
-    size: Number
+    timestamp: Number,
+    size: Number,
   }],
   creationDate: Number,
   processed: Boolean,
@@ -47,9 +49,8 @@ const entitySchema = new mongoose.Schema({
 
 entitySchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
-const schema = mongoose.model('entities', entitySchema);
-schema.collection.dropIndex('title_text', () => { schema.ensureIndexes(); });
-const Model = instanceModel(schema);
+const Model = instanceModel('entities', entitySchema);
+Model.db.collection.dropIndex('title_text', () => { Model.db.ensureIndexes(); });
 const { save } = Model;
 const suportedLanguages = ['da', 'nl', 'en', 'fi', 'fr', 'de', 'hu', 'it', 'nb', 'pt', 'ro', 'ru', 'es', 'sv', 'tr'];
 

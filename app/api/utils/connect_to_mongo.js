@@ -9,7 +9,7 @@ const index = 'development';
 indexConfig.index = indexConfig[index];
 
 export default () => new Promise((resolve, reject) => {
-  mongoose.connect(dbConfig[index], { useMongoClient: true });
+  mongoose.connect(dbConfig[index]);
   const db = mongoose.connection;
   db.on('error', reject);
   db.once('open', () => {

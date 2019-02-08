@@ -11,6 +11,7 @@ export default (app) => {
       __v: Joi.number(),
       project: Joi.string(),
       site_name: Joi.string().allow(''),
+      contactEmail: Joi.string().allow(''),
       home_page: Joi.string().allow(''),
       private: Joi.boolean(),
       mailerConfig: Joi.string().allow(''),

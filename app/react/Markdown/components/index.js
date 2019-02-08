@@ -4,9 +4,12 @@ import { Icon } from 'UI';
 
 import BarChart from './BarChart';
 import Counter from './Counter';
+import ContactForm from './ContactForm';
 import ItemList from './ItemList';
+import Slideshow from './Slideshow';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
+import PayPalDonateLink from './PayPalDonateLink';
 import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
 import ListChart from './ListChart';
@@ -16,8 +19,11 @@ import SearchBox from './SearchBox';
 
 export default {
   MarkdownMedia,
+  ContactForm,
   ItemList,
+  Slideshow,
   MarkdownLink,
+  PayPalDonateLink,
   SearchBox,
   Counter,
   BarChart,

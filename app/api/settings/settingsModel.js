@@ -21,6 +21,7 @@ const filtersSchema = new mongoose.Schema({
 const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
+  contactEmail: String,
   home_page: String,
   private: Boolean,
   languages: [languagesSchema],
@@ -31,8 +32,8 @@ const settingsSchema = new mongoose.Schema({
   matomoConfig: String,
   dateFormat: String,
   custom: mongoose.Schema.Types.Mixed,
+  sync: mongoose.Schema.Types.Mixed,
   customCSS: String
 });
 
-const Model = mongoose.model('settings', settingsSchema);
-export default instanceModel(Model);
+export default instanceModel('settings', settingsSchema);

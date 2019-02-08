@@ -42,6 +42,7 @@ const assignAttachment = (entity, addedFile) => {
 const processSingleLanguage = (entity, req) => {
   const addedFile = req.files[0];
   addedFile._id = mongoose.Types.ObjectId();
+  addedFile.timestamp = Date.now();
   return Promise.all([addedFile, entities.saveMultiple([assignAttachment(entity, addedFile)])]);
 };
 
@@ -102,7 +103,8 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
     upload.any(),
     validateRequest(Joi.object().keys({
-      entityId: Joi.string().required()
+      entityId: Joi.string().required(),
+      allLanguages: Joi.boolean(),
     }).required()),
     (req, res, next) => entities.getById(req.body.entityId, req.language)
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :

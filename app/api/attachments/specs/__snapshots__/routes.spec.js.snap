@@ -112,6 +112,18 @@ Object {
 exports[`Attachments Routes /upload should have a validation schema 1`] = `
 Object {
   "children": Object {
+    "allLanguages": Object {
+      "falsy": Array [
+        false,
+      ],
+      "flags": Object {
+        "insensitive": true,
+      },
+      "truthy": Array [
+        true,
+      ],
+      "type": "boolean",
+    },
     "entityId": Object {
       "flags": Object {
         "presence": "required",

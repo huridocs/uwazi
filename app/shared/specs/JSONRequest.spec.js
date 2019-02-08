@@ -19,6 +19,15 @@ describe('JSONRequest', () => {
   });
 
   describe('post()', () => {
+    describe('set-cookie', () => {
+      it('should return the set-cookie param when set', async () => {
+        backend.restore();
+        backend.post('http://localhost:3000/api/test', { body: JSON.stringify({ response: 'post' }), headers: { 'set-cookie': 'cookie' } });
+        const response = await request.post('http://localhost:3000/api/test');
+        expect(response.cookie).toEqual('cookie');
+      });
+    });
+
     it('should POST to the url and return the response json and the status', (done) => {
       request.post('http://localhost:3000/api/test')
       .then((response) => {
@@ -46,15 +55,24 @@ describe('JSONRequest', () => {
     });
 
     describe('when passing headers', () => {
-      it('should send them', (done) => {
+      it('should send them (with some default headers)', (done) => {
         request.post('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
           const headers = backend.calls().matched[0][1].headers;
           expect(headers.Cookie).toBe('cookie');
-
+          expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
           done();
         })
         .catch(done.fail);
+      });
+    });
+
+    describe('when authorizing', () => {
+      it('should send the authorization cookie in the headers', async () => {
+        request.cookie('cookie');
+        await request.get('http://localhost:3000/api/test');
+        const { headers } = backend.calls().matched[0][1];
+        expect(headers.Cookie).toBe('cookie');
       });
     });
   });

@@ -68,6 +68,12 @@ export class CollectionSettings extends Component {
     this.props.setSettings(settings);
   }
 
+  changeContactEmail(e) {
+    this.setState({ contactEmail: e.target.value });
+    const settings = Object.assign(this.props.settings, { contactEmail: e.target.value });
+    this.props.setSettings(settings);
+  }
+
   changeAnalyticsTrackingId(e) {
     this.setState({ analyticsTrackingId: e.target.value });
     const settings = Object.assign(this.props.settings, { analyticsTrackingId: e.target.value });
@@ -261,6 +267,16 @@ export class CollectionSettings extends Component {
                 type="text"
                 className="form-control"
                 rows="5"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
+              <input
+                name="collectionContactEmail"
+                onChange={this.changeContactEmail.bind(this)}
+                value={this.state.contactEmail}
+                type="text"
+                className="form-control"
               />
             </div>
             <div className="alert alert-info">

@@ -29,7 +29,7 @@ describe('handleError', () => {
   describe('when error is created with createError', () => {
     it('should return the error', () => {
       const error = handleError(createError('test error', 400));
-      expect(error).toEqual(createError('test error', 400));
+      expect(error).toMatchSnapshot();
     });
     it('should not log the error when code is not 500', () => {
       handleError(createError('test error', 400));
@@ -81,6 +81,13 @@ describe('handleError', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));
       expect(debugLog.debug).toHaveBeenCalledWith('\ntest error');
+    });
+  });
+
+  describe('when the body contains the user and password', () => {
+    it('should not show them in the log', () => {
+      handleError(createError('test error', 400), { req: { body: { username: 'admin', password: '1234' } } });
+      expect(debugLog.debug.calls.allArgs()).toMatchSnapshot();
     });
   });
 });

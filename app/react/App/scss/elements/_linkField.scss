@@ -1,0 +1,30 @@
+.link.form-inline {
+  .form-row {
+    margin-top: 10px;
+    .form-group:first-child {
+      width: 30%;
+    }
+    .form-group:last-child {
+      width: 70%;
+    }
+    .form-group {
+      padding-left: 5px;
+      padding-right: 5px;
+      display: inline-block;
+      float: left;
+
+      label {
+        display: inline-block;
+      }
+
+      input {
+        width: -moz-available;
+        width: -webkit-fill-available;
+      }
+    }
+  }
+
+  .overlays {
+    cursor: pointer;
+  }
+}

@@ -5,6 +5,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
+import { faBullhorn } from '@fortawesome/free-solid-svg-icons/faBullhorn';
 import { faCalculator } from '@fortawesome/free-solid-svg-icons/faCalculator';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons/faCalendar';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons/faCaretDown';
@@ -73,6 +74,9 @@ import { faVideo } from '@fortawesome/free-solid-svg-icons/faVideo';
 import { faEye } from '@fortawesome/free-solid-svg-icons/faEye';
 import { faArrowsAlt } from '@fortawesome/free-solid-svg-icons/faArrowsAlt';
 import { faEyeSlash } from '@fortawesome/free-solid-svg-icons/faEyeSlash';
+import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers';
+import { faUserTimes } from '@fortawesome/free-solid-svg-icons/faUserTimes';
+import { faHandPaper } from '@fortawesome/free-solid-svg-icons/faHandPaper';
 
 const icons = {
   faAngleLeft,
@@ -82,6 +86,7 @@ const icons = {
   faArrowRight,
   faBars,
   faBook,
+  faBullhorn,
   faCalculator,
   faCalendar,
   faCaretDown,
@@ -148,7 +153,10 @@ const icons = {
   faUpload,
   faVideo,
   faEye,
-  faEyeSlash
+  faEyeSlash,
+  faUsers,
+  faUserTimes,
+  faHandPaper,
 };
 
 export const loadIcons = () => {
