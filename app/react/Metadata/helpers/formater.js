@@ -1,6 +1,5 @@
 import moment from 'moment';
 import React from 'react';
-
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
@@ -22,10 +21,6 @@ const getOption = (thesauri, id) => {
       });
     }
   });
-
-  // if (option) {
-  //   option = option.set('type', thesauri.get('isEntity') ? 'entity' : 'document');
-  // }
 
   return option;
 };
@@ -151,6 +146,11 @@ export default {
 
   media(property, value) {
     return this.multimedia(property, value, 'media');
+  },
+
+  link(property, value) {
+    const link = <a href={value.url} target="_blank">{value.label}</a>;
+    return { label: property.get('label'), name: property.get('name'), value: link };
   },
 
   geolocation(property, value, thesauris, { onlyForCards }) {
