@@ -1,8 +1,14 @@
 import Joi from 'joi';
 
+const dateRangeSchema = Joi.object().keys({
+  from: Joi.number().allow([null]),
+  to: Joi.number().allow([null]),
+}).allow('');
+
 const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.alternatives().try(
   Joi.number().allow(''),
   Joi.string().allow(''),
+  dateRangeSchema,
   Joi.object().keys({
     lat: Joi.number(),
     lon: Joi.number(),
@@ -13,7 +19,8 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
   }).allow(''),
   Joi.array().items(Joi.alternatives().try(
     Joi.number(),
-    Joi.string()
+    Joi.string(),
+    dateRangeSchema
   )).allow(''),
   Joi.array().items(Joi.object().pattern(Joi.string(),
     Joi.array().items(Joi.string()))).allow('')
