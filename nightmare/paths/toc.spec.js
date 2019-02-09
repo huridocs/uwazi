@@ -53,8 +53,8 @@ describe('toc path', () => {
 
       nightmare
       .scrollElement(selectors.documentView.viewer, 850)
-      // .selectText(doc.firstTocEntry)
-      // .waitToClick(doc.addToTocButton)
+      .selectText(doc.firstTocEntry)
+      .waitToClick(doc.addToTocButton)
       // .scrollElement(selectors.documentView.viewer, 2250)
       // .selectText(doc.secondTocEntry)
       // .waitToClick(doc.addToTocButton)
