@@ -56,7 +56,7 @@ describe('toc path', () => {
       .selectText(doc.firstTocEntry)
       .waitToClick(doc.addToTocButton)
       .scrollElement(selectors.documentView.viewer, 2250)
-      .selectText(doc.secondTocEntry)
+      // .selectText(doc.secondTocEntry)
       // .waitToClick(doc.addToTocButton)
       // .scrollElement(selectors.documentView.viewer, 2930)
       // .selectText(doc.secondTocSubEntry)
