@@ -15,7 +15,8 @@ import {
   MultiDate,
   MultiDateRange,
   Numeric,
-  Geolocation
+  Geolocation,
+  LinkField,
 } from '../../ReactReduxForms';
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 
@@ -66,6 +67,8 @@ export class MetadataFormFields extends Component {
       return <MultiDateRange model={_model} format={this.props.dateFormat}/>;
     case 'geolocation':
       return <Geolocation model={_model} />;
+    case 'link':
+      return <LinkField model={_model} />;
     case 'media':
     case 'image':
       return (
