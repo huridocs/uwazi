@@ -12,7 +12,6 @@ import { uploadDocumentsPath } from 'api/config/paths';
 import path from 'path';
 import fs from 'fs';
 import util from 'util';
-
 import syncsModel from './syncsModel';
 
 const readFile = util.promisify(fs.readFile);

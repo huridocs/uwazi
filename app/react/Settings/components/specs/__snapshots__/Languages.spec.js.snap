@@ -86,11 +86,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Abkhazian (ab) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -117,11 +117,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Afar (aa) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -148,11 +148,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Afrikaans (af) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -179,11 +179,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Akan (ak) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -210,11 +210,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Albanian (sq) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -241,11 +241,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Amharic (am) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -298,11 +298,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Aragonese (an) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -355,11 +355,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Assamese (as) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -386,11 +386,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Avaric (av) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -417,11 +417,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Avestan (ae) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -448,11 +448,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Aymara (ay) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -479,11 +479,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Azerbaijani (az) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -510,11 +510,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bambara (bm) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -541,11 +541,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bashkir (ba) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -598,11 +598,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Belarusian (be) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -629,11 +629,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bengali (Bangla) (bn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -660,11 +660,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bihari (bh) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -691,11 +691,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bislama (bi) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -722,11 +722,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Bosnian (bs) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -753,11 +753,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Breton (br) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -810,11 +810,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Burmese (my) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -867,11 +867,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chamorro (ch) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -898,11 +898,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chechen (ce) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -929,11 +929,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chichewa, Chewa, Nyanja (ny) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -960,11 +960,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chinese (zh) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -991,11 +991,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chinese (Simplified) (zh-Hans) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1022,11 +1022,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chinese (Traditional) (zh-Hant) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1053,11 +1053,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Chuvash (cv) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1084,11 +1084,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Cornish (kw) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1115,11 +1115,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Corsican (co) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1146,11 +1146,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Cree (cr) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1177,11 +1177,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Croatian (hr) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1260,11 +1260,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Divehi, Dhivehi, Maldivian (dv) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1317,11 +1317,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Dzongkha (dz) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1348,11 +1348,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Esperanto (eo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1379,11 +1379,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Estonian (et) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1410,11 +1410,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ewe (ee) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1441,11 +1441,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Faroese (fo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1472,11 +1472,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Fijian (fj) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1555,11 +1555,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Fula, Fulah, Pulaar, Pular (ff) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1612,11 +1612,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Gaelic Scottish (gd) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1643,11 +1643,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Gaelic (Manx) (gv) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1674,11 +1674,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Georgian (ka) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1757,11 +1757,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Guarani (gn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1788,11 +1788,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Gujarati (gu) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1819,11 +1819,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Haitian Creole (ht) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1850,11 +1850,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Hausa (ha) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1881,11 +1881,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Hebrew (he) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1912,11 +1912,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Herero (hz) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -1969,11 +1969,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Hiri Motu (ho) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2026,11 +2026,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Icelandic (is) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2057,11 +2057,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ido (io) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2088,11 +2088,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Igbo (ig) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2119,11 +2119,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Indonesian (in) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2150,11 +2150,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Interlingua (ia) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2181,11 +2181,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Interlingue (ie) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2212,11 +2212,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Inuktitut (iu) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2243,11 +2243,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Inupiak (ik) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2326,11 +2326,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Japanese (ja) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2357,11 +2357,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Javanese (jv) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2388,11 +2388,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kalaallisut, Greenlandic (kl) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2419,11 +2419,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kannada (kn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2450,11 +2450,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kanuri (kr) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2481,11 +2481,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kashmiri (ks) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2512,11 +2512,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kazakh (kk) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2543,11 +2543,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Khmer (km) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2574,11 +2574,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kikuyu (ki) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2605,11 +2605,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kinyarwanda (Rwanda) (rw) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2636,11 +2636,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kirundi (rn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2667,11 +2667,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kyrgyz (ky) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2698,11 +2698,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Komi (kv) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2729,11 +2729,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kongo (kg) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2760,11 +2760,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Korean (ko) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2791,11 +2791,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kurdish (ku) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2822,11 +2822,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Kwanyama (kj) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2853,11 +2853,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Lao (lo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2884,11 +2884,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Latin (la) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2941,11 +2941,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Limburgish (Limburger) (li) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -2972,11 +2972,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Lingala (ln) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3029,11 +3029,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Luga-Katanga (lu) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3060,11 +3060,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Luganda, Ganda (lg) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3091,11 +3091,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Luxembourgish (lb) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3122,11 +3122,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Macedonian (mk) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3153,11 +3153,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Malagasy (mg) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3184,11 +3184,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Malay (ms) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3215,11 +3215,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Malayalam (ml) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3246,11 +3246,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Maltese (mt) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3277,11 +3277,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Maori (mi) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3308,11 +3308,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Marathi (mr) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3339,11 +3339,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Marshallese (mh) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3370,11 +3370,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Moldavian (mo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3401,11 +3401,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Mongolian (mn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3432,11 +3432,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Nauru (na) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3463,11 +3463,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Navajo (nv) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3494,11 +3494,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ndonga (ng) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3525,11 +3525,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Northern Ndebele (nd) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3556,11 +3556,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Nepali (ne) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3587,11 +3587,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Norwegian (no) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3670,11 +3670,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Occitan (oc) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3701,11 +3701,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ojibwe (oj) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3732,11 +3732,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Old Church Slavonic, Old Bulgarian (cu) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3763,11 +3763,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Oriya (or) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3794,11 +3794,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Oromo (Afaan Oromo) (om) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3825,11 +3825,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ossetian (os) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3856,11 +3856,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Pāli (pi) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3887,11 +3887,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Pashto, Pushto (ps) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -3944,11 +3944,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Polish (pl) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4001,11 +4001,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Punjabi (Eastern) (pa) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4032,11 +4032,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Quechua (qu) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4063,11 +4063,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Romansh (rm) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4146,11 +4146,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sami (se) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4177,11 +4177,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Samoan (sm) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4208,11 +4208,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sango (sg) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4239,11 +4239,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sanskrit (sa) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4270,11 +4270,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Serbian (sr) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4301,11 +4301,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Serbo-Croatian (sh) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4332,11 +4332,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sesotho (st) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4363,11 +4363,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Setswana (tn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4394,11 +4394,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Shona (sn) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4425,11 +4425,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sichuan Yi, Nuosu (ii) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4456,11 +4456,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sindhi (sd) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4487,11 +4487,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sinhalese (si) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4518,11 +4518,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Siswati, Swati (ss) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4549,11 +4549,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Slovak (sk) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4580,11 +4580,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Slovenian (sl) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4611,11 +4611,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Somali (so) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4642,11 +4642,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Southern Ndebele (nr) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4673,11 +4673,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Sundanese (su) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4704,11 +4704,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Swahili (Kiswahili) (sw) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4761,11 +4761,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tagalog (tl) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4792,11 +4792,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tahitian (ty) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4823,11 +4823,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tajik (tg) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4854,11 +4854,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tamil (ta) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4885,11 +4885,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tatar (tt) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4916,11 +4916,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Telugu (te) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -4973,11 +4973,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tibetan (bo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5004,11 +5004,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tigrinya (ti) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5035,11 +5035,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tonga (to) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5066,11 +5066,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Tsonga (ts) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5123,11 +5123,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Turkmen (tk) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5154,11 +5154,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Twi (tw) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5185,11 +5185,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Uyghur (ug) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5216,11 +5216,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Ukrainian (uk) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5247,11 +5247,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Urdu (ur) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5278,11 +5278,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Uzbek (uz) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5309,11 +5309,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Venda (ve) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5340,11 +5340,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Vietnamese (vi) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5371,11 +5371,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Volapük (vo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5402,11 +5402,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Wallon (wa) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5433,11 +5433,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Welsh (cy) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5464,11 +5464,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Wolof (wo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5495,11 +5495,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Western Frisian (fy) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5526,11 +5526,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Xhosa (xh) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5557,11 +5557,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Yiddish (yi) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5588,11 +5588,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Yoruba (yo) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5619,11 +5619,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Zhuang, Chuang (za) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"
@@ -5650,11 +5650,11 @@ exports[`Languages should render Languages component 1`] = `
     >
       <span>
         Zulu (zu) 
-        <Tip
+        <Warning
           inline={false}
         >
           Some adavanced search features may not be available for this language.
-        </Tip>
+        </Warning>
       </span>
       <div
         className="list-group-item-actions"

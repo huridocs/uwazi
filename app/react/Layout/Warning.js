@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Icon } from 'UI';
 
-const Tip = ({ children, inline }) => (
+const Warning = ({ children, inline }) => (
   inline ?
     <div className="alert alert-warning fade in">
       <Icon icon="exclamation-triangle" />
@@ -17,13 +17,16 @@ const Tip = ({ children, inline }) => (
     </span>
 );
 
-Tip.defaultProps = {
+Warning.defaultProps = {
   inline: false
 };
 
-Tip.propTypes = {
-  children: PropTypes.string.isRequired,
+Warning.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.node,
+  ]).isRequired,
   inline: PropTypes.bool
 };
 
-export default Tip;
+export default Warning;
