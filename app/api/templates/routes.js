@@ -31,7 +31,11 @@ export default (app) => {
           sortable: Joi.boolean(),
           showInCard: Joi.boolean(),
           fullWidth: Joi.boolean(),
-          content: Joi.string().allow(['']),
+          content: Joi.alternatives().when('type', {
+            is: 'relationship',
+            then: Joi.string().allow(['']),
+            otherwise: Joi.string(),
+          }),
           prioritySorting: Joi.boolean(),
           style: Joi.string(),
           inserting: Joi.any()
