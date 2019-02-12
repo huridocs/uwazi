@@ -145,7 +145,7 @@ export class ThesauriForm extends Component {
               </li>
               {values.map((value, index) =>
                 (<ThesauriFormField
-                  key={value.id}
+                  key={index}
                   ref={f => this.groups.push(f)}
                   value={value}
                   index={index}

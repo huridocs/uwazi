@@ -176,10 +176,37 @@ Object {
               "type": "string",
             },
             "content": Object {
-              "type": "string",
-              "valids": Array [
-                "",
+              "alternatives": Array [
+                Object {
+                  "is": Object {
+                    "flags": Object {
+                      "allowOnly": true,
+                      "presence": "required",
+                    },
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                    "valids": Array [
+                      "relationship",
+                    ],
+                  },
+                  "otherwise": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                  "ref": "ref:type",
+                  "then": Object {
+                    "type": "string",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                },
               ],
+              "type": "alternatives",
             },
             "defaultfilter": Object {
               "falsy": Array [
