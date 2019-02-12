@@ -60,7 +60,14 @@ describe('settings', () => {
           })
           .then(() => {
             expect(translations.updateContext)
-            .toHaveBeenCalledWith('Menu', 'Menu', { 'Page one': 'Page 1' }, ['Page two'], { 'Page 1': 'Page 1', 'Page three': 'Page three' }, 'Uwazi UI');
+            .toHaveBeenCalledWith(
+              'Menu',
+              'Menu',
+              { 'Page one': 'Page 1' },
+              ['Page two'],
+              { 'Page 1': 'Page 1', 'Page three': 'Page three' },
+              'Uwazi UI'
+            );
             done();
           })
           .catch(catchErrors(done));
