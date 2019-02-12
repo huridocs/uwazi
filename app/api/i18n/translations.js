@@ -115,7 +115,7 @@ export default {
     });
   },
 
-  updateContext(id, newContextName, keyNamesChanges, deletedProperties, values) {
+  updateContext(id, newContextName, keyNamesChanges, deletedProperties, values, type) {
     const translatedValues = [];
     Object.keys(values).forEach((key) => {
       translatedValues.push({ key, value: values[key] });
@@ -127,12 +127,13 @@ export default {
       return Promise.all(translations.map((translation) => {
         const context = translation.contexts.find(tr => tr.id.toString() === id.toString());
         if (!context) {
-          translation.contexts.push({ id, label: newContextName, values: translatedValues });
+          translation.contexts.push({ id, label: newContextName, values: translatedValues, type });
           return this.save(translation);
         }
 
         context.values = context.values || [];
         context.values = context.values.filter(v => !deletedProperties.includes(v.key));
+        context.type = type;
 
         Object.keys(keyNamesChanges).forEach((originalKey) => {
           const newKey = keyNamesChanges[originalKey];

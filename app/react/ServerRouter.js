@@ -212,7 +212,7 @@ const allowedRoute = (user = {}, url) => {
 
 function routeMatch(req, res, location, languages) {
   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
-    if (renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
+    if (renderProps && renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
       return handle404(res);
     }
     if (error) {

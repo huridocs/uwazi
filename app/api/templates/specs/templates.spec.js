@@ -204,7 +204,8 @@ describe('templates', () => {
               'created template': 'new title'
             },
             ['label 2'],
-            { 'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title' }
+            { 'new label 1': 'new label 1', 'label 3': 'label 3', 'new title': 'new title' },
+            'Entity'
           );
           done();
         })
