@@ -119,6 +119,10 @@
   &.has-error .required {
     color: $c-danger;
   }
+
+  div.alert {
+    border: 0;
+  }
 }
 
 .form-group-label {

@@ -1,10 +1,11 @@
-import React from 'react';
-import { shallow } from 'enzyme';
+import { Field } from 'react-redux-form';
 import Immutable from 'immutable';
+import React from 'react';
 
 import { FormConfigSelect } from 'app/Templates/components/FormConfigSelect';
-import { Field } from 'react-redux-form';
 import { Select } from 'app/ReactReduxForms';
+import { shallow } from 'enzyme';
+import { Warning } from 'app/Layout';
 
 describe('FormConfigSelect', () => {
   let component;
@@ -50,6 +51,27 @@ describe('FormConfigSelect', () => {
     it('should render the label without errors', () => {
       component = shallow(<FormConfigSelect {...props}/>);
       expect(component.find('.has-error').length).toBe(0);
+    });
+  });
+
+  describe('when changing content', () => {
+    it('should show a warning', () => {
+      props.data = {
+        properties: [{ content: '1' }]
+      };
+      component = shallow(<FormConfigSelect {...props}/>);
+      expect(component.find(Warning).length).toBe(0);
+
+      const newProps = { ...props, data: { properties: [{ content: '2' }] } };
+      component.setProps(newProps);
+      component.update();
+
+      expect(component.find(Warning).length).toBe(1);
+
+      component.setProps(props);
+      component.update();
+
+      expect(component.find(Warning).length).toBe(0);
     });
   });
 
