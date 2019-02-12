@@ -90,8 +90,8 @@ describe('MetadataProperty', () => {
 
     describe('ui actions', () => {
       describe('delete button', () => {
-        it('should be disabled', () => {
-          expect(component.find('.property-remove').props().disabled).toBe(true);
+        it('should not be there', () => {
+          expect(component.find('.property-remove').length).toBe(0);
         });
       });
 

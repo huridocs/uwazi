@@ -7,3 +7,4 @@ export { default as DocumentLanguage } from './DocumentLanguage';
 export { default as Thumbnail } from './Thumbnail';
 export { default as ConfirmButton } from './ConfirmButton';
 export { default as CurrentLocationLink } from './CurrentLocationLink';
+export { default as Warning } from './Warning';

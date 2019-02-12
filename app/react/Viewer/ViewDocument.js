@@ -43,6 +43,9 @@ class ViewDocument extends RouteHandler {
   componentWillReceiveProps(props) {
     super.componentWillReceiveProps(props);
     const { query = {} } = props.location;
+    if (query.page !== this.props.location.query.page && query.raw !== 'true') {
+      this.changePage(query.page);
+    }
     if ((query.page !== this.props.location.query.page || query.raw !== this.props.location.query.raw) && query.raw === 'true') {
       return entitiesAPI.getRawPage(props.params.documentId, query.page)
       .then((pageText) => {

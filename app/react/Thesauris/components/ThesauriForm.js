@@ -10,6 +10,7 @@ import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
+import ThesauriFormField from './ThesauriFormField';
 
 export class ThesauriForm extends Component {
   static validation(thesauris, id) {
@@ -25,7 +26,8 @@ export class ThesauriForm extends Component {
     super(props);
     this.state = { movingValues: [] };
     this.save = this.save.bind(this);
-    this.renderValue = this.renderValue.bind(this);
+    this.toggleToMove = this.toggleToMove.bind(this);
+    this.moveToGroup = this.moveToGroup.bind(this);
   }
 
   componentWillMount() {
@@ -92,83 +94,12 @@ export class ThesauriForm extends Component {
       movingValues.push(value);
     }
     this.setState({ movingValues });
+    console.log(movingValues);
   }
 
   moveToGroup(groupIndex) {
     this.props.moveValues(this.state.movingValues, groupIndex);
     this.setState({ movingValues: [] });
-  }
-
-  renderGroup(value, groupIndex) {
-    return (
-      <li key={`group-${groupIndex}`} className="list-group-item sub-group">
-        <FormGroup>
-          <Field model={`thesauri.data.values[${groupIndex}].label`}>
-            <input ref={i => this.groups.push(i)} className="form-control" type="text" placeholder="Group name" />
-            <button
-              tabIndex={groupIndex + 500}
-              type="button"
-              className="btn btn-xs btn-danger"
-              onClick={this.props.removeValue.bind(null, groupIndex, null)}
-            >
-              <Icon icon="trash-alt" /> Delete Group
-            </button>
-            <button
-              tabIndex={groupIndex + 500}
-              type="button"
-              className="rounded-icon-small"
-              alt="move"
-              onClick={this.moveToGroup.bind(this, groupIndex, null)}
-            >
-              <Icon icon="arrow-left" size="xs" />
-            </button>
-          </Field>
-        </FormGroup>
-        <ul className="">
-          {value.values.map((_value, index) => (
-              this.renderValue(_value, index, groupIndex)
-            ))}
-        </ul>
-      </li>
-    );
-  }
-
-  renderValue(value, index, groupIndex) {
-    if (value.values) {
-      return this.renderGroup(value, index);
-    }
-    const beenMove = this.beenMove(value) ? 'moving' : '';
-
-    let model = `thesauri.data.values[${index}].label`;
-    if (groupIndex !== undefined) {
-      model = `thesauri.data.values[${groupIndex}].values[${index}].label`;
-    }
-    return (
-      <li key={`item-${groupIndex || ''}${index}`} className={`list-group-item ${beenMove}`}>
-        <FormGroup>
-          <Field model={model}>
-            <input className="form-control" type="text" placeholder="Item name" />
-            <button
-              tabIndex={index + 500}
-              type="button"
-              className="btn btn-xs btn-danger"
-              onClick={this.props.removeValue.bind(null, index, groupIndex)}
-            >
-              <Icon icon="trash-alt" /> Delete
-            </button>
-            <button
-              tabIndex={index + 500}
-              type="button"
-              className="rounded-icon-small"
-              alt="move"
-              onClick={this.toggleToMove.bind(this, value)}
-            >
-              <Icon icon="check" size="xs" />
-            </button>
-          </Field>
-        </FormGroup>
-      </li>
-    );
   }
 
   render() {
@@ -212,7 +143,18 @@ export class ThesauriForm extends Component {
                   <Icon icon="arrow-left" size="xs"/>
                 </button>
               </li>
-              {values.map((value, index) => this.renderValue(value, index))}
+              {values.map((value, index) =>
+                (<ThesauriFormField
+                  key={index}
+                  ref={f => this.groups.push(f)}
+                  value={value}
+                  index={index}
+                  moveToGroup={this.moveToGroup}
+                  toggleToMove={this.toggleToMove}
+                  removeValue={this.props.removeValue}
+                  moving={this.beenMove(value)}
+                />)
+              )}
             </ul>
             <div className="settings-footer">
               <I18NLink to="/settings/dictionaries" className="btn btn-default">
