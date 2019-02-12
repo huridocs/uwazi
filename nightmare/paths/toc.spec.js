@@ -72,7 +72,7 @@ describe('toc path', () => {
         done();
       })
       .catch(catchErrors(done));
-    }, 45000);
+    });
 
     it('should save the toc for other languages too as fallback', (done) => {
       nightmare
@@ -85,12 +85,5 @@ describe('toc path', () => {
       })
       .catch(catchErrors(done));
     });
-  });
-
-  it('should go back to english', (done) => {
-    nightmare
-    .waitToClick(selectors.navigation.english)
-    .then(() => { done(); })
-    .catch(catchErrors(done));
   });
 });
