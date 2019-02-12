@@ -111,11 +111,9 @@ export function scrollTomark() {
 }
 
 export function scrollTo(reference, docInfo, element = 'a') {
-  //
   const page = Object.keys(docInfo).find(pageNumber => docInfo[pageNumber].chars >= reference.range.start);
-  //
   if (window.document.querySelector(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer')) {
-    scroller.to(`.document-viewer a[data-${reference._id}="${reference._id}"]`, '.document-viewer', { duration: 50 });
+    scroller.to(`.document-viewer ${element}[data-${reference._id}="${reference._id}"]`, '.document-viewer', { duration: 50 });
   } else {
     const scroll = scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', { duration: 0, dividerOffset: 1 });
 
@@ -129,7 +127,6 @@ export function scrollTo(reference, docInfo, element = 'a') {
       }
     });
   }
-
   scroller.to(`.metadata-sidepanel .item-${reference._id}`, '.metadata-sidepanel .sidepanel-body', { duration: 50 });
 }
 

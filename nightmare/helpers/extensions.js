@@ -268,7 +268,8 @@ Nightmare.action('selectText', function (selector, done) {
     sel.addRange(range);
   }, selector)
   .mouseup(selector)
-  .then(() => { done(); });
+  .then(() => { done(); })
+  .catch(done);
 });
 
 //this.write(selectors.libraryView.searchInput, itemName)
