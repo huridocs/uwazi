@@ -106,7 +106,16 @@ const getSearch = async (searchId) => {
   if (!theSearch) {
     throw createError('Search not found', 404);
   }
-  theSearch.results = await resultsModel.get({ searchId });
+  const results = await resultsModel.get({ searchId });
+  const docIds = results.map(r => r.sharedId);
+  const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
+  const docsWithResults = docs.map((doc, index) => (
+    {
+      ...doc,
+      semanticSearch: results[index]
+    }
+  ));
+  theSearch.results = docsWithResults;
   return theSearch;
 };
 

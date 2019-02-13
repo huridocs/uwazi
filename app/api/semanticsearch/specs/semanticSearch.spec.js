@@ -175,7 +175,7 @@ describe('semanticSearch', () => {
   });
 
   describe('getSearch', () => {
-    it('should fetch a search by id and its document results', async () => {
+    it('should fetch a search by id and its document entities with semantic search results', async () => {
       const res = await semanticSearch.getSearch(search3Id);
       res.results.forEach((result) => {
         //eslint-disable-next-line no-param-reassign
