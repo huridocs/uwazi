@@ -12,5 +12,4 @@ const resultSchema = new mongoose.Schema({
   }]
 });
 
-const Model = mongoose.model('semanticsearchresults', resultSchema);
-export default instanceModel(Model);
+export default instanceModel('semanticsearchresults', resultSchema);

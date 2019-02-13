@@ -12,5 +12,4 @@ const searchSchema = new mongoose.Schema({
   }]
 });
 
-const Model = mongoose.model('semanticsearches', searchSchema);
-export default instanceModel(Model);
+export default instanceModel('semanticsearches', searchSchema);
