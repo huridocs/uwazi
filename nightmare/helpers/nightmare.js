@@ -16,6 +16,7 @@ export default function createNightmare(width = 1200, height = 600) {
   const nightmare = new Nightmare({
     show,
     typeInterval: 10,
+    waitTimeout: 60000,
     x: 0,
     y: 0,
     webPreferences: {

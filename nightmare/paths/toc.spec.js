@@ -72,7 +72,7 @@ describe('toc path', () => {
         done();
       })
       .catch(catchErrors(done));
-    });
+    }, 60000);
 
     it('should save the toc for other languages too as fallback', (done) => {
       nightmare
