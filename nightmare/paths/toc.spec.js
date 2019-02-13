@@ -86,11 +86,4 @@ describe('toc path', () => {
       .catch(catchErrors(done));
     });
   });
-
-  it('should go back to english', (done) => {
-    nightmare
-    .waitToClick(selectors.navigation.english)
-    .then(() => { done(); })
-    .catch(catchErrors(done));
-  });
 });

@@ -62,6 +62,7 @@ export class TemplateCreator extends Component {
                       <PropertyOption label="Multi Date" type="multidate"/>
                       <PropertyOption label="Multi Date Range" type="multidaterange"/>
                       <PropertyOption label="Rich Text" type="markdown"/>
+                      <PropertyOption label="Link" type="link"/>
                       <PropertyOption label="Image" type="image"/>
                       { environment === 'document' && <PropertyOption label="Preview" type="preview"/> }
                       <PropertyOption label="Media" type="media"/>

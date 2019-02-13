@@ -100,7 +100,8 @@ function handleRoute(res, renderProps, req) {
     return settingsApi.get()
     .then((settings) => {
       const { languages } = settings;
-      locale = I18NUtils.getLocale(req.language, languages, req.cookies);
+      const urlLanguage = renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
+      locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
       api.locale(locale);
 
       return settings;
@@ -211,14 +212,16 @@ const allowedRoute = (user = {}, url) => {
 
 function routeMatch(req, res, location, languages) {
   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
-    if (renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
+    if (redirectLocation) {
+      return handleRedirect(res, redirectLocation);
+    }
+    if (renderProps && renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
       return handle404(res);
     }
     if (error) {
       return respondError(res, error);
-    } else if (redirectLocation) {
-      return handleRedirect(res, redirectLocation);
-    } else if (renderProps) {
+    }
+    if (renderProps) {
       return handleRoute(res, renderProps, req);
     }
 

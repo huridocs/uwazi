@@ -7,6 +7,7 @@ Object {
   "daterange": "calendar",
   "geolocation": "map-marker",
   "image": "image",
+  "link": "link",
   "markdown": "file",
   "media": "video",
   "multidate": "calendar",

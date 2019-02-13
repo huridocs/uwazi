@@ -26,7 +26,6 @@ export class MetadataProperty extends Component {
     if (this.props.isCommonProperty) {
       return <FormConfigCommon index={index} type={type}/>;
     }
-
     if (type === 'relationship') {
       defaultInput = <FormConfigRelationship index={index} type={type}/>;
     }
@@ -49,7 +48,7 @@ export class MetadataProperty extends Component {
         />
       );
     }
-    if (type === 'geolocation') {
+    if (type === 'geolocation' || type === 'link') {
       defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false}/>;
     }
     return defaultInput;
@@ -73,38 +72,10 @@ export class MetadataProperty extends Component {
     const iconClass = Icons[this.props.type] || 'font';
     const beingEdited = editingProperty === localID;
 
-    if (this.props.isCommonProperty) {
-      return (
-        <li className="list-group-item">
-          <span className="property-name">
-            <Icon icon="lock" fixedWidth />
-            <Icon icon={iconClass} fixedWidth /> {label}
-          </span>
-          <div className="list-group-item-actions">
-            <button
-              type="button"
-              className="btn btn-default btn-xs property-edit"
-              onClick={() => this.props.editProperty(beingEdited ? null : localID)}
-            >
-              <Icon icon="pencil-alt" /> Edit
-            </button>
-            <button type="button" className="btn btn-danger btn-xs property-remove" disabled>
-              <Icon icon="trash-alt" /> Delete
-            </button>
-          </div>
-          <ShowIf if={editingProperty === localID}>
-            <div className={`propery-form${editingProperty === localID ? ' expand' : ''}`}>
-              {this.renderForm()}
-            </div>
-          </ShowIf>
-        </li>
-      );
-    }
-
     const property = (
       <div className={propertyClass}>
         <span className="property-name">
-          <Icon icon="bars" fixedWidth />
+          <Icon icon={this.props.isCommonProperty ? 'lock' : 'bars'} fixedWidth />
           <Icon icon={iconClass} fixedWidth /> {label}
         </span>
         <div className="list-group-item-actions">
@@ -120,18 +91,33 @@ export class MetadataProperty extends Component {
           >
             <Icon icon="pencil-alt" /> Edit
           </button>
-          <button
-            type="button"
-            className="btn btn-danger btn-xs property-remove"
-            onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
-          >
-            <Icon icon="trash-alt" /> Delete
-          </button>
+          { !this.props.isCommonProperty &&
+            <button
+              type="button"
+              className="btn btn-danger btn-xs property-remove"
+              onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
+            >
+              <Icon icon="trash-alt" /> Delete
+            </button>
+          }
         </div>
       </div>
     );
 
-    const result = connectDropTarget(
+    if (this.props.isCommonProperty) {
+      return (
+        <li>
+          {property}
+          <ShowIf if={beingEdited && !isDragging}>
+            <div className={`propery-form${editingProperty === localID ? ' expand' : ''}`}>
+              {this.renderForm()}
+            </div>
+          </ShowIf>
+        </li>
+      );
+    }
+
+    return connectDropTarget(
       <li>
         {connectDragSource(property)}
         <ShowIf if={beingEdited && !isDragging}>
@@ -141,8 +127,6 @@ export class MetadataProperty extends Component {
         </ShowIf>
       </li>
     );
-
-    return result;
   }
 }
 
