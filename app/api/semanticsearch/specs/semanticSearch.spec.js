@@ -177,11 +177,13 @@ describe('semanticSearch', () => {
   describe('getSearch', () => {
     it('should fetch a search by id and its document entities with semantic search results', async () => {
       const res = await semanticSearch.getSearch(search3Id);
-      res.results.forEach((result) => {
+      res.results.forEach((doc) => {
         //eslint-disable-next-line no-param-reassign
-        delete result._id;
+        delete doc._id;
         //eslint-disable-next-line no-param-reassign
-        delete result.searchId;
+        delete doc.semanticSearch._id;
+        //eslint-disable-next-line no-param-reassign
+        delete doc.semanticSearch.searchId;
       });
       delete res._id;
       expect(res.results.length).toBe(2);

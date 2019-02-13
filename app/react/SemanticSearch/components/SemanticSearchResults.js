@@ -11,20 +11,15 @@ import ItemList from '../../Markdown/components/ItemList';
 import ResultItem from './ResultItem';
 import ResultsSidePanel from './ResultsSidePanel';
 
-const renderItems = (items, props) => {
-  return items.map(result => (
-    <ResultItem result={result} key={result.sharedId} />
-  ));
-};
 
-const processItem = (result, threshold) => {
-  const [aboveThreshold, totalThreshold] = result.results
+const processItem = (doc, threshold) => {
+  const [aboveThreshold, totalThreshold] = doc.semanticSearch.results
   .reduce(([aboveThresh, totalThresh], r) => (
     [
       aboveThresh + (r.score > threshold ? 1 : 0),
       totalThresh + r.score
     ]), [0, 0]);
-  const avgThreshold = totalThreshold / result.results.length;
+  const avgThreshold = totalThreshold / doc.semanticSearch.results.length;
   return { aboveThreshold, avgThreshold };
 };
 
@@ -42,25 +37,26 @@ const processItems = (items, { threshold, minRelevantSentences }) => {
 export class SemanticSearchResults extends Component {
   render() {
     const { search, filters } = this.props;
-    const items = processItems(search.get('results').toJS(), filters);
+    const items = processItems(search.results, filters);
+    const isEmpty = Object.keys(search).length === 0;
     return (
       <div className="row panels-layout">
-        { search.isEmpty() &&
+        { isEmpty &&
           <React.Fragment>
             <p>Search not found</p>
             <Helmet title="Semantic search not found" />
           </React.Fragment>
         }
-        { !search.isEmpty() &&
+        { !isEmpty &&
           <React.Fragment>
-            <Helmet title={`${search.get('searchTerm')} - Semantic search results`} />
+            <Helmet title={`${search.searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
-              <RowList>
+              {/* <RowList>
                 {items.map(result => (
                   <ResultItem result={result} key={result.sharedId} />
                 ))}
-              </RowList>
-              {/* <ItemList items={search.get('results').toJS()} renderItems={renderItems} /> */}
+              </RowList> */}
+              <ItemList items={items} link=""/>
             </main>
             <ResultsSidePanel />
           </React.Fragment>
@@ -76,7 +72,7 @@ SemanticSearchResults.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  search: state.semanticSearch.search,
+  search: state.semanticSearch.search.toJS(),
   filters: state.library.semanticSearch.resultsFilters
 });
 

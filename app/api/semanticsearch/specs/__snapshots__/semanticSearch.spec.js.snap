@@ -36,7 +36,6 @@ Object {
     Object {
       "language": "en",
       "semanticSearch": Object {
-        "_id": "5c6408b8d3cd845b7638c551",
         "results": Array [
           Object {
             "page": 1,
@@ -49,7 +48,6 @@ Object {
             "sentence": "this",
           },
         ],
-        "searchId": "5c6408b8d3cd845b7638c54a",
         "sharedId": "doc1",
       },
       "sharedId": "doc1",
@@ -57,7 +55,6 @@ Object {
     Object {
       "language": "en",
       "semanticSearch": Object {
-        "_id": "5c6408b8d3cd845b7638c552",
         "results": Array [
           Object {
             "page": 1,
@@ -70,59 +67,8 @@ Object {
             "sentence": "what",
           },
         ],
-        "searchId": "5c6408b8d3cd845b7638c54a",
         "sharedId": "doc2",
       },
-      "sharedId": "doc2",
-    },
-  ],
-  "searchTerm": "torture",
-  "status": "completed",
-}
-`;
-
-exports[`semanticSearch getSearch should fetch a search by id and its document results 1`] = `
-Object {
-  "documents": Array [
-    Object {
-      "sharedId": "doc1",
-      "status": "completed",
-    },
-    Object {
-      "sharedId": "doc2",
-      "status": "completed",
-    },
-  ],
-  "language": "en",
-  "results": Array [
-    Object {
-      "results": Array [
-        Object {
-          "page": 1,
-          "score": 0.5,
-          "sentence": "stuff",
-        },
-        Object {
-          "page": 2,
-          "score": 0.2,
-          "sentence": "this",
-        },
-      ],
-      "sharedId": "doc1",
-    },
-    Object {
-      "results": Array [
-        Object {
-          "page": 1,
-          "score": 0.8,
-          "sentence": "that",
-        },
-        Object {
-          "page": 2,
-          "score": 0.1,
-          "sentence": "what",
-        },
-      ],
       "sharedId": "doc2",
     },
   ],
