@@ -6,7 +6,8 @@ import Immutable from 'immutable';
 import t from 'app/I18N/t';
 
 export function ResultItem(props) {
-  const result = props.result.toJS();
+  // const result = props.result.toJS();
+  const { result } = props;
   const { threshold, onClick, onMouseEnter, onMouseLeave, active } = props;
   const [aboveThreshold, totalThreshold] = result.results
   .reduce(([aboveThresh, totalThresh], r) => (

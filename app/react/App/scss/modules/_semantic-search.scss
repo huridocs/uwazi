@@ -28,6 +28,20 @@
   }
 }
 
+.semantic-search-filters {
+  margin-top: 16px;
+  border-top: 1px solid $c-grey-light;
+
+  .semantic-search-filters-item {
+    padding: 20px 30px;
+    border-bottom: 1px solid $c-grey-light;
+
+    .item-header {
+      margin-bottom: 15px;
+    }
+  }
+}
+
 .uw-progress-bar {
   height: 9px;
   border-radius: 5px;

@@ -27,7 +27,7 @@ export function SearchItem({ search }) {
         <button className="btn btn-danger">
           <Icon icon="trash-alt" />
         </button>
-        { status === 'in_progress' &&
+        { status === 'inProgress' &&
           <button className="btn btn-warning">
             <Icon icon="stop" />
           </button>
