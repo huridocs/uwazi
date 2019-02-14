@@ -23,12 +23,8 @@ const storage = multer.diskStorage({
   }
 });
 
-const deleteFile = filePath => new Promise((resolve, reject) => {
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      reject(err);
-      return;
-    }
+const deleteFile = filePath => new Promise((resolve) => {
+  fs.unlink(filePath, () => {
     resolve(filePath);
   });
 });
@@ -163,17 +159,17 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object({
-      entityId: Joi.string().required(),
-      filename: Joi.string().required(),
+      attachemtnId: Joi.string().required(),
     }).required(), 'query'),
 
-    (req, res) => entities.getById(req.query.entityId)
-    .then(entity => Promise.all([entity, entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } })]))
+    (req, res, next) => entities.get({ 'attachments._id': req.query.attachmentId })
+    .then(([entity]) => Promise.all([entity, entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } })]))
     .then(([entity, siblings]) => {
-      entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
+      const attachmentToDelete = entity.attachments.find(a => a._id.equals(req.query.attachmentId));
+      entity.attachments = (entity.attachments || []).filter(a => !a._id.equals(req.query.attachmentId));
       const deleteTextReferences = [];
       const deleteThumbnails = [];
-      if (entity.file && entity.file.filename === req.query.filename) {
+      if (entity.file && entity.file.filename === attachmentToDelete.filename) {
         entity.file = null;
         entity.toc = null;
         deleteTextReferences.push(relationships.deleteTextReferences(entity.sharedId, entity.language));
@@ -181,7 +177,7 @@ export default (app) => {
         siblings = siblings.map((e) => {
           deleteTextReferences.push(relationships.deleteTextReferences(e.sharedId, e.language));
           deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${e._id}.jpg`)));
-          e.attachments = (e.attachments || []).filter(a => a.filename !== req.query.filename);
+          e.attachments = (e.attachments || []).filter(a => a.filename !== attachmentToDelete.filename);
           e.file = null;
           e.toc = null;
           return e;
@@ -190,21 +186,21 @@ export default (app) => {
       return Promise.all([
         entities.saveMultiple([entity]),
         entities.saveMultiple(siblings),
+        attachmentToDelete,
         deleteTextReferences,
         deleteThumbnails
       ]);
     })
-    .then(([[entity], siblings]) => {
+    .then(([[entity], siblings, attachmentToDelete]) => {
       const shouldUnlink = siblings.reduce((memo, sibling) => {
-        if (sibling.attachments && sibling.attachments.find(a => a.filename === req.query.filename)) {
+        if (sibling.attachments && sibling.attachments.find(a => a.filename === attachmentToDelete.filename)) {
           return false;
         }
         return memo;
       }, true);
 
-      return !shouldUnlink ? res.json(entity) : deleteFile(path.join(attachmentsPath, req.query.filename)).then(() => res.json(entity));
+      return !shouldUnlink ? res.json(entity) : deleteFile(path.join(attachmentsPath, attachmentToDelete.filename)).then(() => res.json(entity));
     })
-    .catch((error) => {
-      res.json({ error });
-    }));
+    .catch(next)
+  );
 };
