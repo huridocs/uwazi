@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
 import selectors from '../helpers/selectors.js';
@@ -12,19 +11,14 @@ describe('toc path', () => {
   afterAll(async () => nightmare.end());
 
   describe('login', () => {
-    it('should log in as admin', (done) => {
-      nightmare
-      .login('admin', 'admin')
-      .then(() => {
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should log in as admin', async () => {
+      await nightmare.login('admin', 'admin');
     });
   });
 
   describe('search for document', () => {
-    it('should find a document then open it', (done) => {
-      nightmare
+    it('should find a document then open it', async () => {
+      await nightmare
       .wait(selectors.libraryView.librarySecondDocumentTitle)
       .evaluate(getInnerText, selectors.libraryView.librarySecondDocumentTitle)
       .then(itemName => nightmare
@@ -33,12 +27,10 @@ describe('toc path', () => {
       .isVisible(selectors.documentView.documentPage)
       .then((result) => {
         expect(result).toBe(true);
-        done();
-      }))
-      .catch(catchErrors(done));
+      }));
     });
 
-    it('select a word from the document, fill the form and click the next button', (done) => {
+    it('select a word from the document, fill the form and click the next button', async () => {
       selectors.documentView.firstTocEntry = '#pageContainer1 > div.textLayer > div:nth-child(152)';
       selectors.documentView.secondTocEntry = '#pageContainer3 > div.textLayer > div:nth-child(11)';
       selectors.documentView.secondTocSubEntry = '#pageContainer3 > div.textLayer > div:nth-child(108)';
@@ -51,7 +43,7 @@ describe('toc path', () => {
 
       const doc = selectors.documentView;
 
-      nightmare
+      await nightmare
       .scrollElement(selectors.documentView.viewer, 850)
       .selectText(doc.firstTocEntry)
       .waitToClick(doc.addToTocButton)
@@ -67,23 +59,17 @@ describe('toc path', () => {
       .scrollElement(selectors.documentView.viewer, 4700)
       .selectText(doc.thirdTocEntry)
       .waitToClick(doc.addToTocButton)
-      .waitToClick(doc.saveTocButton)
-      .then(() => {
-        done();
-      })
-      .catch(catchErrors(done));
+      .waitToClick(doc.saveTocButton);
     });
 
-    it('should save the toc for other languages too as fallback', (done) => {
-      nightmare
+    it('should save the toc for other languages too as fallback', async () => {
+      await nightmare
       .waitToClick(selectors.navigation.spanish)
       .waitToClick(selectors.documentView.tocPannelLink)
       .getInnerText(selectors.documentView.tocPannel)
       .then((text) => {
         expect(text).toContain('Frank Miller');
-        done();
-      })
-      .catch(catchErrors(done));
+      });
     });
   });
 });
