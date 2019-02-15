@@ -25,37 +25,38 @@ export default {
       _id: { $ne: entity._id },
     });
 
-    // textReferencesDeletions.push(
-    //   deleteTextReferences(entity.sharedId, entity.language),
-    // );
+    textReferencesDeletions.push(
+      deleteTextReferences(entity.sharedId, entity.language),
+    );
     deleteThumbnails.push(deleteFile(`${entity._id}.jpg`));
 
-    // siblings = siblings.map((e) => {
-    //   // textReferencesDeletions.push(
-    //   //   deleteTextReferences(e.sharedId, e.language),
-    //   // );
-    //   // deleteThumbnails.push(deleteFile(`${e._id}.jpg`));
-    //   // e.attachments = (e.attachments || []).filter(a => a.filename !== attachmentToDelete.filename);
-    //   return { ...e, file: null, toc: null };
-    // });
+    siblings = siblings.map((e) => {
+      textReferencesDeletions.push(
+        deleteTextReferences(e.sharedId, e.language),
+      );
+      deleteThumbnails.push(deleteFile(`${e._id}.jpg`));
+      // e.attachments = (e.attachments || []).filter(a => a.filename !== attachmentToDelete.filename);
+      return { ...e, file: null, toc: null };
+    });
 
-    return Promise.all([
+    const [savedEntity] = await Promise.all([
       model.save({ ...entity, file: null, toc: null }),
-      // model.save(siblings),
-      // textReferencesDeletions,
+      model.save(siblings),
+      textReferencesDeletions,
       deleteThumbnails,
       deleteFile(entity.file.filename)
-    ]).then(([entity]) => entity);
+    ]);
+
+    return savedEntity;
   },
 
   async removeAttachment(entity, attachmentId) {
-    let siblings = await model.get({
+    const siblings = await model.get({
       sharedId: entity.sharedId,
       _id: { $ne: entity._id },
     });
 
     const attachmentToDelete = entity.attachments.find(a => a._id.equals(attachmentId));
-    entity.attachments = (entity.attachments || []).filter(a => !a._id.equals(attachmentId));
 
     const shouldUnlink = siblings.reduce((memo, sibling) => {
       if (sibling.attachments && sibling.attachments.find(a => a.filename === attachmentToDelete.filename)) {
@@ -64,13 +65,16 @@ export default {
       return memo;
     }, true);
 
-    await model.save(entity);
+    const savedEntity = await model.save({
+      ...entity,
+      attachments: (entity.attachments || []).filter(a => !a._id.equals(attachmentId))
+    });
 
     if (!shouldUnlink) {
-      return entity;
+      return savedEntity;
     }
 
     await deleteFile(attachmentToDelete.filename);
-    return entity;
+    return savedEntity;
   }
 };

@@ -2,10 +2,11 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import fs from 'fs';
 import path from 'path';
+import relationships from 'api/relationships';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
-import fixtures, { entityId, entityIdEn, entityIdPt, attachmentToDelete, toDeleteId, attachmentToEdit } from './fixtures';
+import fixtures, { sharedId, entityId, entityIdEn, entityIdPt, attachmentToDelete, toDeleteId, attachmentToEdit } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import paths from '../../config/paths';
 
@@ -250,6 +251,9 @@ describe('Attachments Routes', () => {
       await createFile('attachment.txt');
       await createFile('mainFile.txt');
       await createFile(`${toDeleteId.toString()}.jpg`);
+      await createFile(`${entityId.toString()}.jpg`);
+      await createFile(`${entityIdEn.toString()}.jpg`);
+      spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
     it('should have a validation schema', () => {
@@ -271,8 +275,31 @@ describe('Attachments Routes', () => {
       expect(response._id.toString()).toBe(toDeleteId.toString());
       expect(response.attachments.length).toBe(2);
       expect(dbEntity.attachments.length).toBe(2);
+      expect(response.file).toBe(null);
+      expect(dbEntity.file).toBe(null);
       expect(fs.existsSync(path.join(paths.attachmentsPath, 'mainFile.txt'))).toBe(false);
       expect(fs.existsSync(path.join(paths.attachmentsPath, `${toDeleteId.toString()}.jpg`))).toBe(false);
+    });
+
+    it('should remove main file on sibling entities', async () => {
+      expect(fs.existsSync(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
+      const response = await routes.delete('/api/attachments/delete', {
+        user: 'admin',
+        headers: {},
+        query: { attachmentId: entityId },
+      });
+
+      expect(response._id.toString()).toBe(entityId.toString());
+      expect(response.file).toBe(null);
+      expect(response.toc).toBe(null);
+
+      const changedEntities = await entities.get({ sharedId });
+      changedEntities.forEach((e) => {
+        expect(fs.existsSync(path.join(paths.attachmentsPath, `${e._id.toString()}.jpg`))).toBe(false);
+        expect(e.file).toBe(null);
+        expect(e.file).toBe(null);
+        expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, e.language);
+      });
     });
 
     it('should remove the passed file from attachments and delte the local file', (done) => {

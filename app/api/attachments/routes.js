@@ -8,7 +8,6 @@ import ID from 'shared/uniqueID';
 import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
-import relationships from 'api/relationships';
 
 import { attachmentsPath } from '../config/paths';
 import attachments from './attachments';
@@ -22,12 +21,6 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
-});
-
-const deleteFile = filePath => new Promise((resolve) => {
-  fs.unlink(filePath, () => {
-    resolve(filePath);
-  });
 });
 
 const assignAttachment = (entity, addedFile) => {
@@ -133,16 +126,17 @@ export default (app) => {
           entityWithRenamedAttachment = { ...entity, file: { ...entity.file, originalname: req.body.originalname, language: req.body.language } };
           renamedAttachment = Object.assign({ _id: entity._id.toString() }, entityWithRenamedAttachment.file);
         } else {
-          const attachments = (entity.attachments || []).map((attachment) => {
-            if (attachment._id.toString() === req.body._id) {
-              renamedAttachment = { ...attachment, originalname: req.body.originalname };
-              return renamedAttachment;
-            }
+          entityWithRenamedAttachment = {
+            ...entity,
+            attachments: (entity.attachments || []).map((attachment) => {
+              if (attachment._id.toString() === req.body._id) {
+                renamedAttachment = { ...attachment, originalname: req.body.originalname };
+                return renamedAttachment;
+              }
 
-            return attachment;
-          });
-
-          entityWithRenamedAttachment = { ...entity, attachments };
+              return attachment;
+            })
+          };
         }
 
 
@@ -168,10 +162,8 @@ export default (app) => {
         let [entity] = await entities.get({ 'attachments._id': req.query.attachmentId });
         if (entity) {
           const result = await attachments.removeAttachment(entity, req.query.attachmentId);
-          return res.json(result);
+          res.json(result);
         }
-
-        // return res.json({});
 
         entity = await entities.getById(req.query.attachmentId);
         if (entity) {
