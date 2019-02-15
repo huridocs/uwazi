@@ -37,7 +37,7 @@ const processItems = (items, { threshold, minRelevantSentences }) => {
 export class SemanticSearchResults extends Component {
   render() {
     const { search, filters } = this.props;
-    const items = processItems(search.results, filters);
+    const items = search.results ? processItems(search.results, filters) : [];
     const isEmpty = Object.keys(search).length === 0;
     return (
       <div className="row panels-layout">
@@ -56,7 +56,7 @@ export class SemanticSearchResults extends Component {
                   <ResultItem result={result} key={result.sharedId} />
                 ))}
               </RowList> */}
-              <ItemList items={items} link=""/>
+              <ItemList items={items} link="" storeKey="library"/>
             </main>
             <ResultsSidePanel />
           </React.Fragment>

@@ -103,7 +103,6 @@ Doc.contextTypes = {
 export function mapStateToProps(state, ownProps) {
   const active = ownProps.storeKey ? !!state[ownProps.storeKey].ui.get('selectedDocuments')
   .find(doc => doc.get('_id') === ownProps.doc.get('_id')) : false;
-
   return {
     active
   };
