@@ -1,9 +1,9 @@
 import relationtypes from '../relationtypes.js';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
 import db from 'api/utils/testing_db';
-import fixtures, {canNotBeDeleted, against} from './fixtures.js';
+import fixtures, { canNotBeDeleted, against } from './fixtures.js';
 
 describe('relationtypes', () => {
   beforeEach((done) => {
@@ -44,7 +44,7 @@ describe('relationtypes', () => {
     });
 
     it('should generate names and ids for the properties', (done) => {
-      relationtypes.save({name: 'Indiferent', properties: [{label: 'Property one'}]})
+      relationtypes.save({ name: 'Indiferent', properties: [{ label: 'Property one' }] })
       .then((result) => {
         expect(result.properties[0].name).toBe('property_one');
         expect(result.properties[0]._id).toBeDefined();
@@ -55,7 +55,7 @@ describe('relationtypes', () => {
 
     describe('when the relation type did not exist', () => {
       it('should create a new one and return it', (done) => {
-        relationtypes.save({name: 'Indiferent', properties: []})
+        relationtypes.save({ name: 'Indiferent', properties: [] })
         .then((result) => {
           expect(result.name).toBe('Indiferent');
           done();
@@ -64,9 +64,9 @@ describe('relationtypes', () => {
       });
 
       it('should create a new translation for it', (done) => {
-        relationtypes.save({name: 'Indiferent', properties: []})
+        relationtypes.save({ name: 'Indiferent', properties: [] })
         .then((response) => {
-          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', {Indiferent: 'Indiferent'}, 'Connection');
+          expect(translations.addContext).toHaveBeenCalledWith(response._id, 'Indiferent', { Indiferent: 'Indiferent' }, 'Connection');
           done();
         }).catch(catchErrors(done));
       });
@@ -93,7 +93,7 @@ describe('relationtypes', () => {
           return relationtypes.save(relationtype);
         })
         .then((response) => {
-          expect(translations.updateContext).toHaveBeenCalledWith(response._id, 'Pro', {Against: 'Pro'}, [], {Pro: 'Pro'});
+          expect(translations.updateContext).toHaveBeenCalledWith(response._id, 'Pro', { Against: 'Pro' }, [], { Pro: 'Pro' }, 'Connection');
           done();
         })
         .catch(catchErrors(done));
@@ -102,7 +102,7 @@ describe('relationtypes', () => {
 
     describe('when its duplicated', () => {
       it('should return an error', (done) => {
-        let relationtype = {name: 'Against', properties: []};
+        const relationtype = { name: 'Against', properties: [] };
         return relationtypes.save(relationtype)
         .then(catchErrors(done))
         .catch((error) => {
@@ -123,7 +123,7 @@ describe('relationtypes', () => {
           expect(result).toBe(true);
           return relationtypes.getById(against);
         })
-        .then((response) =>{
+        .then((response) => {
           expect(response).toBe(null);
           done();
         });
