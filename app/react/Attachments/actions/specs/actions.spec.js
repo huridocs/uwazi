@@ -94,10 +94,19 @@ describe('Attachments actions', () => {
       spyOn(api, 'delete').and.returnValue(Promise.resolve({}));
       mockID();
       const dispatch = jasmine.createSpy('dispatch');
-      actions.deleteAttachment('id', { filename: 'filename' }, 'storeKey')(dispatch).then(() => {
-        expect(api.delete).toHaveBeenCalledWith('attachments/delete', { entityId: 'id', filename: 'filename' });
-        expect(dispatch)
-        .toHaveBeenCalledWith({ type: types.ATTACHMENT_DELETED, entity: 'id', file: { filename: 'filename' }, __reducerKey: 'storeKey' });
+      actions.deleteAttachment('id', { _id: 'attachmentId', filename: 'filename' }, 'storeKey')(dispatch).then(() => {
+        expect(api.delete).toHaveBeenCalledWith('attachments/delete', {
+          attachmentId: 'attachmentId'
+        });
+        expect(dispatch).toHaveBeenCalledWith({
+          type: types.ATTACHMENT_DELETED,
+          entity: 'id',
+          file: {
+            _id: 'attachmentId',
+            filename: 'filename'
+          },
+          __reducerKey: 'storeKey'
+        });
         done();
       });
     });

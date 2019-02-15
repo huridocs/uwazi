@@ -1,8 +1,6 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 
-import { hub5 } from '../../relationships/specs/fixtures';
-
 const entityId = db.id();
 const entityIdEn = db.id();
 const entityIdPt = db.id();
