@@ -47,7 +47,7 @@ const saveSchema = Joi.object().keys({
     mimetype: Joi.string(),
     size: Joi.number(),
     language: Joi.string(),
-    timestamp: Joi.string(),
+    timestamp: Joi.number(),
   }),
   fullText: Joi.any(),
   totalPages: Joi.number(),
