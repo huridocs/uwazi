@@ -14,11 +14,12 @@ export default {
     {
       sharedId: toDeleteId.toString(),
       _id: toDeleteId,
+      file: { originalname: 'source doc', filename: 'mainFile.txt' },
       attachments: [
         { _id: db.id(), filename: 'other.doc' },
         {
           _id: attachmentToDelete,
-          filename: 'toDelete.txt',
+          filename: 'attachment.txt',
           originalname: 'common name 1.not',
         },
       ],

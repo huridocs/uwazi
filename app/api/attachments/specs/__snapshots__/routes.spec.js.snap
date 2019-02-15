@@ -3,7 +3,7 @@
 exports[`Attachments Routes /delete should have a validation schema 1`] = `
 Object {
   "children": Object {
-    "attachemtnId": Object {
+    "attachmentId": Object {
       "flags": Object {
         "presence": "required",
       },

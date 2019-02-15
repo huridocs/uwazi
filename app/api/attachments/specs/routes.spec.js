@@ -1,12 +1,22 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import fs from 'fs';
+import path from 'path';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
 import fixtures, { entityId, entityIdEn, entityIdPt, attachmentToDelete, toDeleteId, attachmentToEdit } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import paths from '../../config/paths';
+
+const createFile = filename => new Promise((resolve, reject) => {
+  fs.writeFile(path.join(paths.attachmentsPath, filename), 'dummy file', (err) => {
+    if (err) {
+      reject(err);
+    }
+    resolve();
+  });
+});
 
 describe('Attachments Routes', () => {
   let routes;
@@ -230,19 +240,16 @@ describe('Attachments Routes', () => {
   describe('/delete', () => {
     let req;
 
-    beforeEach((done) => {
+    beforeEach(async () => {
       req = {
         user: 'admin',
         headers: {},
         query: { attachmentId: attachmentToDelete },
       };
 
-      fs.writeFile(`${paths.attachmentsPath}toDelete.txt`, 'dummy file', (err) => {
-        if (err) {
-          done.fail(err);
-        }
-        done();
-      });
+      await createFile('attachment.txt');
+      await createFile('mainFile.txt');
+      await createFile(`${toDeleteId.toString()}.jpg`);
     });
 
     it('should have a validation schema', () => {
@@ -253,8 +260,23 @@ describe('Attachments Routes', () => {
       expect(routes._delete('/api/attachments/delete', { query: { attachmentId: attachmentToDelete } })).toNeedAuthorization();
     });
 
+    it('should remove main file and thumbnail if id matches entity', async () => {
+      expect(fs.existsSync(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
+      const response = await routes.delete('/api/attachments/delete', {
+        user: 'admin',
+        headers: {},
+        query: { attachmentId: toDeleteId },
+      });
+      const dbEntity = await entities.getById(toDeleteId);
+      expect(response._id.toString()).toBe(toDeleteId.toString());
+      expect(response.attachments.length).toBe(2);
+      expect(dbEntity.attachments.length).toBe(2);
+      expect(fs.existsSync(path.join(paths.attachmentsPath, 'mainFile.txt'))).toBe(false);
+      expect(fs.existsSync(path.join(paths.attachmentsPath, `${toDeleteId.toString()}.jpg`))).toBe(false);
+    });
+
     it('should remove the passed file from attachments and delte the local file', (done) => {
-      expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
+      expect(fs.existsSync(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
       routes.delete('/api/attachments/delete', req)
       .then(response => Promise.all([response, entities.getById(toDeleteId)]))
       .then(([response, dbEntity]) => {
@@ -262,32 +284,32 @@ describe('Attachments Routes', () => {
         expect(response.attachments.length).toBe(1);
         expect(dbEntity.attachments.length).toBe(1);
         expect(dbEntity.attachments[0].filename).toBe('other.doc');
-        expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(false);
+        expect(fs.existsSync(path.join(paths.attachmentsPath, 'attachment.txt'))).toBe(false);
         done();
       })
       .catch(done.fail);
     });
 
     it('should not delte the local file if other siblings are using it', (done) => {
-      expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
-      const sibling = { sharedId: toDeleteId.toString(), attachments: [{ filename: 'toDelete.txt', originalname: 'common name 1.not' }] };
+      expect(fs.existsSync(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
+      const sibling = { sharedId: toDeleteId.toString(), attachments: [{ filename: 'attachment.txt', originalname: 'common name 1.not' }] };
       entities.saveMultiple([sibling])
       .then(() => routes.delete('/api/attachments/delete', req))
       .then(response => Promise.all([response, entities.getById(toDeleteId)]))
       .then(([response, dbEntity]) => {
         expect(response._id.toString()).toBe(toDeleteId.toString());
         expect(dbEntity.attachments.length).toBe(1);
-        expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
+        expect(fs.existsSync(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
         done();
       })
       .catch(done.fail);
     });
 
     it('should not fail if, for some reason, file doesnt exist', (done) => {
-      expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
-      fs.unlinkSync(`${paths.attachmentsPath}toDelete.txt`);
+      expect(fs.existsSync(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
+      fs.unlinkSync(`${paths.attachmentsPath}attachment.txt`);
       routes.delete('/api/attachments/delete', req, {}, () => {})
-      .then((response) => {
+      .then(() => {
         done();
       })
       .catch(done.fail);
