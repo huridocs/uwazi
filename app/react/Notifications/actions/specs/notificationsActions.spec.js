@@ -30,11 +30,22 @@ describe('notificationsActions', () => {
         const message = 'message';
         const type = 'type';
 
-        actions.notify(message, type, 1000)(dispatch);
-
+        const id = actions.notify(message, type, 1000)(dispatch);
+        expect(id).toBe('unique_id');
         expect(dispatch).toHaveBeenCalledWith({ type: types.NOTIFY, notification: { message: 'message', type: 'type', id: 'unique_id' } });
         jasmine.clock().tick(1500);
         expect(dispatch).toHaveBeenCalledWith({ type: types.REMOVE_NOTIFICATION, id: 'unique_id' });
+      });
+
+      describe('when delay is false', () => {
+        fit('should not remove the notification', () => {
+          const message = 'message';
+          const type = 'type';
+          actions.notify(message, type, false)(dispatch);
+          expect(dispatch).toHaveBeenCalledWith({ type: types.NOTIFY, notification: { message: 'message', type: 'type', id: 'unique_id' } });
+          jasmine.clock().tick(6001);
+          expect(dispatch).not.toHaveBeenCalledWith({ type: types.REMOVE_NOTIFICATION, id: 'unique_id' });
+        });
       });
     });
   });
