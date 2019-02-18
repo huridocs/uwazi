@@ -159,17 +159,8 @@ export default (app) => {
 
     async (req, res, next) => {
       try {
-        let [entity] = await entities.get({ 'attachments._id': req.query.attachmentId });
-        if (entity) {
-          const result = await attachments.removeAttachment(entity, req.query.attachmentId);
-          res.json(result);
-        }
-
-        entity = await entities.getById(req.query.attachmentId);
-        if (entity) {
-          const result = await attachments.removeMainFile(entity, req.query.attachmentId);
-          res.json(result);
-        }
+        const response = await attachments.delete(req.query.attachmentId);
+        res.json(response);
       } catch (e) {
         next(e);
       }

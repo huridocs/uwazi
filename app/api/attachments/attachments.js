@@ -1,7 +1,7 @@
-import { model } from 'api/entities';
 import fs from 'fs';
 import path from 'path';
 import relationships from 'api/relationships';
+import entities, { model } from 'api/entities';
 
 import { attachmentsPath } from '../config/paths';
 
@@ -17,6 +17,21 @@ const deleteTextReferences = async (id, language) =>
   relationships.deleteTextReferences(id, language);
 
 export default {
+  async delete(attachmentId) {
+    let [entity] = await entities.get({ 'attachments._id': attachmentId });
+    let result;
+    if (entity) {
+      result = this.removeAttachment(entity, attachmentId);
+    }
+
+    entity = await entities.getById(attachmentId);
+    if (entity) {
+      result = this.removeMainFile(entity, attachmentId);
+    }
+
+    return result;
+  },
+
   async removeMainFile(entity) {
     const textReferencesDeletions = [];
     const deleteThumbnails = [];
