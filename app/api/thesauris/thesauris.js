@@ -66,8 +66,7 @@ const updateTranslation = (current, thesauri) => {
   const context = thesauriToTranslatioNContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
-
-  return translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context);
+  return translations.updateContext(current._id, thesauri.name, updatedLabels, deletedPropertiesByLabel, context, 'Dictionary');
 };
 
 const removeDeletedOptionsFromEntities = (current, thesauri) => {
