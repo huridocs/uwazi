@@ -51,7 +51,7 @@ export class Attachment extends Component {
         this.props.deleteAttachment(this.props.parentId, attachment, this.props.storeKey);
       },
       title: 'Confirm delete',
-      message: 'Are you sure you want to delete this attachment?'
+      message: this.props.deleteMessage
     });
   }
 
@@ -136,7 +136,12 @@ export class Attachment extends Component {
   }
 }
 
+Attachment.defaultProps = {
+  deleteMessage: 'Are you sure you want to delete this attachment?'
+};
+
 Attachment.propTypes = {
+  deleteMessage: PropTypes.string,
   file: PropTypes.object,
   parentId: PropTypes.string,
   storeKey: PropTypes.string,
