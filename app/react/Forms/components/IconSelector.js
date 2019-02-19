@@ -22,7 +22,8 @@ export class ListItem extends Component {
       icon = (
         <span style={style}>
           <Icon icon={`${item._id}`} />
-        </span>);
+        </span>
+      );
     }
 
     if (item.type === 'Flags') {
@@ -36,7 +37,8 @@ export class ListItem extends Component {
             alt={`${item.label} flag`}
             basePath="/flag-images"
           />
-        </span>);
+        </span>
+      );
     }
 
     return (

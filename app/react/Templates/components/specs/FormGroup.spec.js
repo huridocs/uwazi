@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
+import { Field } from 'react-redux-form';
 import FormGroup from '../FormGroup';
-import {Field} from 'react-redux-form';
 
 describe('FormGroup', () => {
   let component;
@@ -12,15 +12,15 @@ describe('FormGroup', () => {
     props = {};
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<FormGroup {...props}><label>label</label><Field><input /></Field></FormGroup>);
   };
 
   it('should render the children', () => {
     render();
-    let label = component.find('label');
+    const label = component.find('label');
     expect(label.length).toBe(1);
-    let field = component.find(Field);
+    const field = component.find(Field);
     expect(field.length).toBe(1);
   });
 
@@ -28,7 +28,7 @@ describe('FormGroup', () => {
     props.touched = true;
     props.valid = false;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(true);
   });
 
@@ -37,14 +37,14 @@ describe('FormGroup', () => {
     props.submitFailed = true;
     props.valid = false;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(true);
   });
 
   it('should not render errors when submitFailed with no errors', () => {
     props.submitFailed = true;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(false);
   });
 });

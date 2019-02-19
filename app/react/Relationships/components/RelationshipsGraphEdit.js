@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Map, List } from 'immutable';
-import * as actions from '../actions/actions';
 import { Icon } from 'UI';
+import * as actions from '../actions/actions';
 
 import LeftRelationship from './LeftRelationship';
 import RightRelationship from './RightRelationship';

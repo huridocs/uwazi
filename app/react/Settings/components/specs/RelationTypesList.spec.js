@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {RelationTypesList} from '../RelationTypesList';
+import { RelationTypesList } from '../RelationTypesList';
 
 describe('RelationTypesList', () => {
   let component;
@@ -11,7 +11,7 @@ describe('RelationTypesList', () => {
 
   beforeEach(() => {
     props = {
-      relationTypes: Immutable.fromJS([{_id: 1, name: 'Against'}, {_id: 2, name: 'Supports'}]),
+      relationTypes: Immutable.fromJS([{ _id: 1, name: 'Against' }, { _id: 2, name: 'Supports' }]),
       notify: jasmine.createSpy('notify'),
       deleteRelationType: jasmine.createSpy('deleteRelationType').and.returnValue(Promise.resolve()),
       checkRelationTypeCanBeDeleted: jasmine.createSpy('checkRelationTypeCanBeDeleted').and.returnValue(Promise.resolve())
@@ -22,8 +22,8 @@ describe('RelationTypesList', () => {
     };
   });
 
-  let render = () => {
-    component = shallow(<RelationTypesList {...props} />, {context});
+  const render = () => {
+    component = shallow(<RelationTypesList {...props} />, { context });
   };
 
   describe('render', () => {
@@ -36,7 +36,7 @@ describe('RelationTypesList', () => {
   describe('when deleting a relation type', () => {
     it('should check if can be deleted', (done) => {
       render();
-      component.instance().deleteRelationType({_id: 1, name: 'Decision'})
+      component.instance().deleteRelationType({ _id: 1, name: 'Decision' })
       .then(() => {
         expect(props.checkRelationTypeCanBeDeleted).toHaveBeenCalled();
         done();
@@ -45,7 +45,7 @@ describe('RelationTypesList', () => {
 
     it('should confirm the action', (done) => {
       render();
-      component.instance().deleteRelationType({_id: 1, name: 'Decision'})
+      component.instance().deleteRelationType({ _id: 1, name: 'Decision' })
       .then(() => {
         expect(context.confirm).toHaveBeenCalled();
         done();

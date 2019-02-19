@@ -44,8 +44,7 @@ export default {
 
       const hubConnections = await db.collection('connections').find({ hub: hub._id }).toArray();
 
-      const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) =>
-        hubConnections.filter(c => c.language === currentLanguage.key).length < 2 && shouldDelete, true
+      const shouldDeleteHub = languages.reduce((shouldDelete, currentLanguage) => hubConnections.filter(c => c.language === currentLanguage.key).length < 2 && shouldDelete, true
       );
 
       if (shouldDeleteHub) {

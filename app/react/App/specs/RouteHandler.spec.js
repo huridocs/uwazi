@@ -12,9 +12,11 @@ class TestController extends RouteHandler {
   static requestState(params) {
     return Promise.resolve({ initialData: params.id });
   }
+
   setReduxState(params) {
     this.setReduxStateCalledWith = params;
   }
+
   render() {
     return <div />;
   }

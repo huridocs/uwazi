@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './scss/feedback.scss';
 import { Icon } from 'UI';
 
 class Feedback extends Component {
-
   render() {
-    let type = this.props.type || 'info';
+    const type = this.props.type || 'info';
     if (type === 'success') {
       return <span className="feedback feedback-success"><Icon icon="check" /> {this.props.children}</span>;
     }

@@ -1,24 +1,22 @@
 // TEST!!!
-import {fromJS} from 'immutable';
-import {actions as formActions} from 'react-redux-form';
+import { fromJS } from 'immutable';
+import { actions as formActions } from 'react-redux-form';
 
-import {actions} from 'app/BasicReducer';
-import {actions as connectionsListActions} from 'app/ConnectionsList';
+import { actions } from 'app/BasicReducer';
+import { actions as connectionsListActions } from 'app/ConnectionsList';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';
 
 function requestState(entityId, state) {
   return referencesAPI.getGroupedByConnection(entityId)
-  .then(connectionsGroups => {
-    const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
-      return templateIds.concat(group.templates.map(t => t._id.toString()));
-    }, []);
+  .then((connectionsGroups) => {
+    const filteredTemplates = connectionsGroups.reduce((templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())), []);
 
-    const sortOptions = prioritySortingCriteria.get({currentCriteria: {}, filteredTemplates, templates: state.templates});
-    let params = state.relationships ? state.relationships.list : {};
+    const sortOptions = prioritySortingCriteria.get({ currentCriteria: {}, filteredTemplates, templates: state.templates });
+    const params = state.relationships ? state.relationships.list : {};
     params.entityId = entityId;
     params.sort = params.sort || sortOptions;
-    params.filters = fromJS({limit: 10});
+    params.filters = fromJS({ limit: 10 });
 
     return Promise.all([connectionsGroups, connectionsListActions.search(params), params.sort, params.filters]);
   });

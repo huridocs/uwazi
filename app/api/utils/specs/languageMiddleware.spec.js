@@ -1,10 +1,10 @@
-import middleware from '../languageMiddleware';
 import db from 'api/utils/testing_db';
+import middleware from '../languageMiddleware';
 import fixtures from './languageFixtures.js';
 
 describe('languageMiddleware', () => {
   let req;
-  let res = {};
+  const res = {};
   let next;
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
@@ -50,7 +50,6 @@ describe('languageMiddleware', () => {
         expect(next).toHaveBeenCalled();
       });
     });
-
   });
 
   describe('when language do not exist on the config', () => {
@@ -61,7 +60,7 @@ describe('languageMiddleware', () => {
 
       await middleware(req, res, next);
       expect(req.language).toBe('es');
-        expect(next).toHaveBeenCalled();
+      expect(next).toHaveBeenCalled();
     });
   });
 });

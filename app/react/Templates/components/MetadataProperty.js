@@ -91,15 +91,15 @@ export class MetadataProperty extends Component {
           >
             <Icon icon="pencil-alt" /> Edit
           </button>
-          { !this.props.isCommonProperty &&
-            <button
-              type="button"
-              className="btn btn-danger btn-xs property-remove"
-              onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
-            >
-              <Icon icon="trash-alt" /> Delete
-            </button>
-          }
+          { !this.props.isCommonProperty && (
+          <button
+            type="button"
+            className="btn btn-danger btn-xs property-remove"
+            onClick={() => this.props.removeProperty('RemovePropertyModal', index)}
+          >
+            <Icon icon="trash-alt" /> Delete
+          </button>
+)}
         </div>
       </div>
     );

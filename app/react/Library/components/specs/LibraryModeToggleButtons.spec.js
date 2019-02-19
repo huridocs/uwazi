@@ -70,7 +70,7 @@ describe('LibraryModeToggleButtons', () => {
          filters: Immutable.fromJS({ properties: [] }),
          ui: Immutable.fromJS({ zoomLevel: 1 }),
          markers: Immutable.fromJS({ rows: [] })
-        },
+       },
        templates: Immutable.fromJS([{ properties: [{ type: 'geolocation' }] }])
       };
     });

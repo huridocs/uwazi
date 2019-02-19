@@ -3,14 +3,14 @@ import backend from 'fetch-mock';
 import { APIURL } from 'app/config.js';
 import { mockID } from 'shared/uniqueID';
 import thunk from 'redux-thunk';
-
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
 import { actions as formActions } from 'react-redux-form';
 
 import * as actions from 'app/Thesauris/actions/thesauriActions';
 import * as types from 'app/Thesauris/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
 
 describe('thesaurisActions', () => {
   let dispatch;

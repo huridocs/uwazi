@@ -1,4 +1,4 @@
-import {isClient} from 'app/utils';
+import { isClient } from 'app/utils';
 import NProgress from 'nprogress';
 
 const loadingProgressBar = {
@@ -6,7 +6,7 @@ const loadingProgressBar = {
 
   start: () => {
     if (isClient) {
-      NProgress.configure({showSpinner: false, easing: 'ease', speed: 800, minimum: 0.2});
+      NProgress.configure({ showSpinner: false, easing: 'ease', speed: 800, minimum: 0.2 });
       NProgress.start();
       loadingProgressBar.requests += 1;
     }

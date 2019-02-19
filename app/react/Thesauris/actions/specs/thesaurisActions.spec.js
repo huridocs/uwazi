@@ -1,15 +1,15 @@
 import backend from 'fetch-mock';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 
 import * as actions from 'app/Thesauris/actions/thesaurisActions';
-import {actions as formActions} from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import api from 'app/Thesauris/ThesaurisAPI';
 
 describe('thesaurisActions', () => {
   describe('editThesauri', () => {
     it('should set the thesauri in the form ', () => {
-      let thesauri = {name: 'Secret list of things', values: []};
-      let dispatch = jasmine.createSpy('dispatch');
+      const thesauri = { name: 'Secret list of things', values: [] };
+      const dispatch = jasmine.createSpy('dispatch');
       spyOn(formActions, 'load');
       actions.editThesauri(thesauri)(dispatch);
 
@@ -23,9 +23,9 @@ describe('thesaurisActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .delete(APIURL + 'thesauris?_id=thesauriId', {body: JSON.stringify({testBackendResult: 'ok'})})
-      .get(APIURL + 'templates/count_by_thesauri?_id=thesauriWithTemplates', {body: JSON.stringify(2)})
-      .get(APIURL + 'templates/count_by_thesauri?_id=thesauriWithoutTemplates', {body: JSON.stringify(0)});
+      .delete(`${APIURL}thesauris?_id=thesauriId`, { body: JSON.stringify({ testBackendResult: 'ok' }) })
+      .get(`${APIURL}templates/count_by_thesauri?_id=thesauriWithTemplates`, { body: JSON.stringify(2) })
+      .get(`${APIURL}templates/count_by_thesauri?_id=thesauriWithoutTemplates`, { body: JSON.stringify(0) });
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -33,10 +33,10 @@ describe('thesaurisActions', () => {
 
     describe('deleteThesauri', () => {
       it('should delete the thesauri and dispatch a thesauris/REMOVE action with the thesauri', (done) => {
-        let thesauri = {_id: 'thesauriId'};
+        const thesauri = { _id: 'thesauriId' };
         actions.deleteThesauri(thesauri)(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: 'dictionaries/REMOVE', value: thesauri});
+          expect(dispatch).toHaveBeenCalledWith({ type: 'dictionaries/REMOVE', value: thesauri });
           done();
         });
       });
@@ -44,7 +44,7 @@ describe('thesaurisActions', () => {
 
     describe('checkThesauriCanBeDeleted', () => {
       it('should return a promise if the thesauri is NOT been use', (done) => {
-        let thesauri = {_id: 'thesauriWithoutTemplates'};
+        const thesauri = { _id: 'thesauriWithoutTemplates' };
 
         actions.checkThesauriCanBeDeleted(thesauri)(dispatch)
         .then(() => {
@@ -57,7 +57,7 @@ describe('thesaurisActions', () => {
       });
 
       it('should reject a promise if the thesauri IS been use', (done) => {
-        let thesauri = {_id: 'thesauriWithTemplates'};
+        const thesauri = { _id: 'thesauriWithTemplates' };
 
         actions.checkThesauriCanBeDeleted(thesauri)(dispatch)
         .then(() => {
@@ -75,7 +75,7 @@ describe('thesaurisActions', () => {
         spyOn(api, 'get').and.returnValue(Promise.resolve('thesaurisResponse'));
         actions.reloadThesauris()(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesaurisResponse'});
+          expect(dispatch).toHaveBeenCalledWith({ type: 'thesauris/SET', value: 'thesaurisResponse' });
           done();
         });
       });

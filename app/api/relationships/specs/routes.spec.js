@@ -2,9 +2,9 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import relationships from 'api/relationships/relationships';
 
+import entities from 'api/entities';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import relationshipsRroutes from '../routes.js';
-import entities from 'api/entities';
 
 describe('relationships routes', () => {
   let routes;

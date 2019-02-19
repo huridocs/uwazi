@@ -1,7 +1,7 @@
 import api from 'app/RelationTypes/RelationTypesAPI';
-import {actions as formActions} from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import referencesAPI from 'app/Viewer/referencesAPI';
-import {actions} from 'app/BasicReducer';
+import { actions } from 'app/BasicReducer';
 
 export function editRelationType(relationType) {
   return function (dispatch) {

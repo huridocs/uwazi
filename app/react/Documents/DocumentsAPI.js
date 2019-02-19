@@ -7,56 +7,42 @@ export default {
   },
 
   countByTemplate(templateId) {
-    let url = `documents/count_by_template?templateId=${templateId}`;
+    const url = `documents/count_by_template?templateId=${templateId}`;
     return api.get(url)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   uploads() {
-    let url = 'documents/uploads';
+    const url = 'documents/uploads';
     return api.get(url)
-    .then((response) => {
-      return response.json.rows;
-    });
+    .then(response => response.json.rows);
   },
 
   search(filters) {
-    let url = 'documents/search';
+    const url = 'documents/search';
     return api.get(url, filters)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   getSuggestions(searchTerm) {
-    let url = 'documents/match_title?searchTerm=' + (searchTerm || '');
+    const url = `documents/match_title?searchTerm=${searchTerm || ''}`;
     return api.get(url)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   list(keys) {
-    let url = 'documents/list';
-    return api.get(url, {keys: keys})
-    .then((response) => {
-      return response.json.rows;
-    });
+    const url = 'documents/list';
+    return api.get(url, { keys })
+    .then(response => response.json.rows);
   },
 
   save(doc) {
     return api.post('documents', doc)
-    .then((response) => {
-      return response.json;
-    });
+    .then(response => response.json);
   },
 
   delete(doc) {
-    return api.delete('documents', {sharedId: doc.sharedId})
-    .then((response) => {
-      return response.json;
-    });
+    return api.delete('documents', { sharedId: doc.sharedId })
+    .then(response => response.json);
   }
 };

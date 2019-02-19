@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 export class FormGroup extends Component {
-
   render() {
     let className = 'form-group';
     if ((this.props.touched === true || this.props.submitFailed) && this.props.valid === false) {
@@ -15,10 +14,9 @@ export class FormGroup extends Component {
       </div>
     );
   }
-
 }
 
-let childrenType = PropTypes.oneOfType([
+const childrenType = PropTypes.oneOfType([
   PropTypes.object,
   PropTypes.array
 ]);

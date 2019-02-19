@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {FormConfigCommon} from 'app/Templates/components/FormConfigCommon';
-import {Field} from 'react-redux-form';
+import { FormConfigCommon } from 'app/Templates/components/FormConfigCommon';
+import { Field } from 'react-redux-form';
 
 describe('FormConfigCommon', () => {
   let component;
@@ -12,9 +12,9 @@ describe('FormConfigCommon', () => {
     props = {
       type: 'text',
       index: -1,
-      data: {commonProperties: [{label: ''}, {label: ''}]},
+      data: { commonProperties: [{ label: '' }, { label: '' }] },
       formState: {
-        'commonProperties.0.label': {valid: true, dirty: false, errors: {}},
+        'commonProperties.0.label': { valid: true, dirty: false, errors: {} },
         $form: {
           errors: {
             'properties.0.label.required': false,

@@ -8,7 +8,7 @@ export default class Numeric extends Component {
   }
 
   onChange(e) {
-    const value = e.target.value;
+    const { value } = e.target;
     this.setState({ value });
     if (!value) {
       return this.props.onChange(null);

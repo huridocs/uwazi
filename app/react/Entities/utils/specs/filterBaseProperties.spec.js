@@ -1,4 +1,4 @@
-import {filterBaseProperties} from '../filterBaseProperties';
+import { filterBaseProperties } from '../filterBaseProperties';
 
 describe('filterBaseProperties', () => {
   it('should only retrun entity base data (omitting attachments, toc, etc.)', () => {

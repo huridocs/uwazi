@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import DateRange from '../DateRange';
 import DatePicker from '../DatePicker';
@@ -12,11 +12,11 @@ describe('DateRange', () => {
     props = {
       model: 'model',
       onChange: jasmine.createSpy('onChange'),
-      value: {from: 0, to: 1}
+      value: { from: 0, to: 1 }
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<DateRange {...props}/>);
   };
 
@@ -24,9 +24,9 @@ describe('DateRange', () => {
     it('should triger onChange events', () => {
       render();
       component.find(DatePicker).first().simulate('change', 1469656800);
-      expect(props.onChange).toHaveBeenCalledWith({from: 1469656800, to: 1});
+      expect(props.onChange).toHaveBeenCalledWith({ from: 1469656800, to: 1 });
       component.find(DatePicker).last().simulate('change', 1469656800);
-      expect(props.onChange).toHaveBeenCalledWith({from: 1469656800, to: 1469656800});
+      expect(props.onChange).toHaveBeenCalledWith({ from: 1469656800, to: 1469656800 });
     });
   });
 });

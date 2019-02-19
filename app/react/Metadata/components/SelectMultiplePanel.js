@@ -17,8 +17,8 @@ import { advancedSort } from 'app/utils/advancedSort';
 import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
-import MetadataFormFields from './MetadataFormFields';
 import { Icon } from 'UI';
+import MetadataFormFields from './MetadataFormFields';
 
 const sortedTemplates = createSelector(
   s => s.templates,

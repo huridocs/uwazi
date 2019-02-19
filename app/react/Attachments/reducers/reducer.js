@@ -1,5 +1,5 @@
-import {combineReducers} from 'redux';
-import {modelReducer, formReducer} from 'react-redux-form';
+import { combineReducers } from 'redux';
+import { modelReducer, formReducer } from 'react-redux-form';
 import progress from './progressReducer';
 
 export default combineReducers({

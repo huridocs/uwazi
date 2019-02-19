@@ -2,10 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 
-import { ItemList } from '../ItemList';
 import { RowList } from 'app/Layout/Lists';
-import Slider from '../slider';
 import { I18NLink } from 'app/I18N';
+import { ItemList } from '../ItemList';
+import Slider from '../slider';
 
 describe('ItemList', () => {
   let component;

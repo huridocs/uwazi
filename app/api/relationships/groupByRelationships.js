@@ -1,13 +1,11 @@
 function getGroupData(reference, groupedReferences, templates, relationTypes) {
-  let key = reference.template ? reference.template.toString() : null;
+  const key = reference.template ? reference.template.toString() : null;
   let groupData = groupedReferences.find(ref => ref.key === key);
   if (!groupData) {
     groupData = {
-      key: key,
+      key,
       context: reference.template ? reference.template.toString() : null,
-      connectionLabel: reference.template ? relationTypes.find((r) => {
-        return r._id.toString() === reference.template.toString();
-      }).name : null,
+      connectionLabel: reference.template ? relationTypes.find(r => r._id.toString() === reference.template.toString()).name : null,
       templates: []
     };
     groupedReferences.push(groupData);
@@ -16,11 +14,7 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 }
 
 export default {
-  filterRelevantRelationships: (relationships, id, locale, user) => {
-    return relationships.filter(ref => {
-      return Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user));
-    });
-  },
+  filterRelevantRelationships: (relationships, id, locale, user) => relationships.filter(ref => Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user))),
 
   groupRelationships: (relationships, templates, relationTypes) => {
     const groupedReferences = [];

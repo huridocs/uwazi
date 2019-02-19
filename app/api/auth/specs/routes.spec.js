@@ -4,8 +4,8 @@ import request from 'supertest';
 
 import db from 'api/utils/testing_db';
 
-import authRoutes from '../routes';
 import users from 'api/users/users';
+import authRoutes from '../routes';
 import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import { comparePasswords } from '../encryptPassword';

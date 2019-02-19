@@ -58,7 +58,7 @@ describe('JSONRequest', () => {
       it('should send them (with some default headers)', (done) => {
         request.post('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const headers = backend.calls().matched[0][1].headers;
+          const { headers } = backend.calls().matched[0][1];
           expect(headers.Cookie).toBe('cookie');
           expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
           done();
@@ -108,7 +108,7 @@ describe('JSONRequest', () => {
       it('should send them', (done) => {
         request.put('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const headers = backend.calls().matched[0][1].headers;
+          const { headers } = backend.calls().matched[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -132,7 +132,7 @@ describe('JSONRequest', () => {
     describe('when passing data', () => {
       it('should transform it to url params and not send a body', (done) => {
         let undefinedVar;
-        request.get('http://localhost:3000/api/withParams', { param1: 'param1', param2: { value: 2 }, paramNull: null, paramUndefined: undefinedVar})
+        request.get('http://localhost:3000/api/withParams', { param1: 'param1', param2: { value: 2 }, paramNull: null, paramUndefined: undefinedVar })
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.json).toEqual({ response: 'get with params' });
@@ -171,7 +171,7 @@ describe('JSONRequest', () => {
       it('should send them', (done) => {
         request.get('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const headers = backend.calls().matched[0][1].headers;
+          const { headers } = backend.calls().matched[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -202,7 +202,7 @@ describe('JSONRequest', () => {
       it('should send them', (done) => {
         request.delete('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const headers = backend.calls().matched[0][1].headers;
+          const { headers } = backend.calls().matched[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();

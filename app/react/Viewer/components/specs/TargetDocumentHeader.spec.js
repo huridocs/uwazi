@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 
-import {TargetDocumentHeader} from 'app/Viewer/components/TargetDocumentHeader.js';
+import { TargetDocumentHeader } from 'app/Viewer/components/TargetDocumentHeader.js';
 
 describe('TargetDocumentHeader', () => {
   let component;
@@ -10,8 +10,8 @@ describe('TargetDocumentHeader', () => {
 
   beforeEach(() => {
     props = {
-      connection: Immutable({_id: 'connection'}),
-      reference: {targetRange: {text: 'text'}, targetDocument: 'abc2'},
+      connection: Immutable({ _id: 'connection' }),
+      reference: { targetRange: { text: 'text' }, targetDocument: 'abc2' },
       targetDocument: 'abc2',
       saveTargetRangedReference: jasmine.createSpy('saveTargetRangedReference'),
       cancelTargetDocument: jasmine.createSpy('cancelTargetDocument'),
@@ -19,7 +19,7 @@ describe('TargetDocumentHeader', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<TargetDocumentHeader {...props}/>);
   };
 
@@ -35,7 +35,7 @@ describe('TargetDocumentHeader', () => {
     it('should save the reference', () => {
       render();
       component.find('button').last().simulate('click');
-      expect(props.saveTargetRangedReference).toHaveBeenCalledWith({_id: 'connection'}, {text: 'text'}, jasmine.any(Function));
+      expect(props.saveTargetRangedReference).toHaveBeenCalledWith({ _id: 'connection' }, { text: 'text' }, jasmine.any(Function));
     });
   });
 });

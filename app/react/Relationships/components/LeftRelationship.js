@@ -33,16 +33,16 @@ export class LeftRelationship extends Component {
   }
 
   renderTrashButton(hub) {
-    return (this.props.editing &&
-      <div key="toggelRemoveLeftRelationship" className="removeHub">
-        <button
-          onClick={this.toggelRemoveLeftRelationship}
-          className="relationships-icon"
-        >
-          <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
-        </button>
-      </div>
-    );
+    return (this.props.editing && (
+    <div key="toggelRemoveLeftRelationship" className="removeHub">
+      <button
+        onClick={this.toggelRemoveLeftRelationship}
+        className="relationships-icon"
+      >
+        <Icon icon={!hub.get('deleted') ? 'trash-alt' : 'undo'} />
+      </button>
+    </div>
+    ));
   }
 
   renderRelationship() {
@@ -50,23 +50,27 @@ export class LeftRelationship extends Component {
     return (
       <div key="leftRelationshipType" className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
         {!editing && hub.getIn(['leftRelationship', 'template']) &&
-            (<div className="rw-dropdown-list rw-widget">
+            (
+            <div className="rw-dropdown-list rw-widget">
               <div className="rw-widget-input rw-widget-picker rw-widget-container no-edit">
                 <div className="rw-input rw-dropdown-list-input no-edit">
                   {relationTypes.find(r => r._id === hub.getIn(['leftRelationship', 'template'])).name}
                 </div>
               </div>
-            </div>)
+            </div>
+)
           }
         {editing &&
-            (<DropdownList
+            (
+            <DropdownList
               valueField="_id"
               textField="name"
               data={relationTypes}
               value={hub.getIn(['leftRelationship', 'template'])}
               filter="contains"
               onChange={this.props.updateLeftRelationshipType.bind(null, index)}
-            />)
+            />
+)
             }
         <div className={`leftDocument ${!hub.getIn(['leftRelationship', 'template']) && !editing ?
                               'docWithoutRelationshipType' : ''}`}

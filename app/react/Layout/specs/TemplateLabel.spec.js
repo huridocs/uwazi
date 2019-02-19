@@ -1,27 +1,27 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as immutable} from 'immutable';
-import TemplateLabel from '../TemplateLabel';
+import { shallow } from 'enzyme';
+import { fromJS as immutable } from 'immutable';
 import configureMockStore from 'redux-mock-store';
+import TemplateLabel from '../TemplateLabel';
 
 describe('TemplateLabel', () => {
   let component;
 
   let initialState;
-  let props = {template: 'templateId'};
+  const props = { template: 'templateId' };
 
   beforeEach(() => {
     initialState = {
       templates: immutable([
-        {_id: 'templateId', name: 'title'},
-        {_id: 'templateId2', name: 'title 2', isEntity: true}
+        { _id: 'templateId', name: 'title' },
+        { _id: 'templateId2', name: 'title 2', isEntity: true }
       ])
     };
   });
 
-  let render = () => {
-    let mockStore = configureMockStore();
-    let store = mockStore(initialState);
+  const render = () => {
+    const mockStore = configureMockStore();
+    const store = mockStore(initialState);
     component = shallow(<TemplateLabel store={store} {...props}/>);
   };
 

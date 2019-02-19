@@ -1,27 +1,27 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import {openMenu, closeMenu} from 'app/ContextMenu/actions/contextMenuActions';
+import { openMenu, closeMenu } from 'app/ContextMenu/actions/contextMenuActions';
 
 export class ContextMenu extends Component {
   render() {
-    let children = React.Children.map(this.props.children, child => child) || [];
-    let SubMenu = children.filter(child => {
+    const children = React.Children.map(this.props.children, child => child) || [];
+    let SubMenu = children.filter((child) => {
       const forceShow = this.props.overrideShow && this.props.show;
       const matchesType = child.type.name === this.props.type;
       const matchesWrap = child.type.WrappedComponent && child.type.WrappedComponent.name === this.props.type;
       return forceShow || matchesType || matchesWrap;
     });
 
-    const position = 'ContextMenu-' + (this.props.align || 'bottom');
+    const position = `ContextMenu-${this.props.align || 'bottom'}`;
 
-    SubMenu = React.Children.map(SubMenu, (child) => React.cloneElement(child, {active: this.props.open}));
+    SubMenu = React.Children.map(SubMenu, child => React.cloneElement(child, { active: this.props.open }));
 
     return (
       <div
-        className={'ContextMenu ' + position}
+        className={`ContextMenu ${position}`}
         onMouseEnter={this.props.openMenu}
         onMouseLeave={this.props.closeMenu}
         onClick={this.props.closeMenu}
@@ -32,7 +32,7 @@ export class ContextMenu extends Component {
   }
 }
 
-let childrenType = PropTypes.oneOfType([
+const childrenType = PropTypes.oneOfType([
   PropTypes.object,
   PropTypes.array
 ]);
@@ -48,12 +48,10 @@ ContextMenu.propTypes = {
   children: childrenType
 };
 
-const mapStateToProps = (state) => {
-  return state.contextMenu.toJS();
-};
+const mapStateToProps = state => state.contextMenu.toJS();
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openMenu, closeMenu}, dispatch);
+  return bindActionCreators({ openMenu, closeMenu }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu);
