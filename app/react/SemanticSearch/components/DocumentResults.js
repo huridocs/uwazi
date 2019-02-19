@@ -9,24 +9,17 @@ import { t } from 'app/I18N';
 import SnippetList from 'app/Documents/components/SnippetList';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
 
-const processItem = (doc, threshold) => {
-  const [aboveThreshold, totalThreshold] = doc.semanticSearch.results
-  .reduce(([aboveThresh, totalThresh], r) => (
-    [
-      aboveThresh + (r.score > threshold ? 1 : 0),
-      totalThresh + r.score
-    ]), [0, 0]);
-  const avgThreshold = totalThreshold / doc.semanticSearch.results.length;
-  return { aboveThreshold, avgThreshold };
+const findResultsAboveThreshold = (results, threshold) => {
+  const boundingIndex = results.findIndex(({ score }) => score < threshold);
+  return results.slice(0, boundingIndex);
 };
 
 export function DocumentResults({ doc, filters, selectSnippet }) {
-  console.log('RES', doc, filters);
   let snippets = {};
   let avgScore = 0;
   let aboveThreshold = 0;
   if (doc.semanticSearch) {
-    const filteredResults = doc.semanticSearch.results.filter(({ score }) => score >= filters.threshold);
+    const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, filters.threshold);
     avgScore = doc.semanticSearch.averageScore;
     aboveThreshold = filteredResults.length;
     snippets = Immutable.fromJS({
@@ -58,17 +51,14 @@ export function DocumentResults({ doc, filters, selectSnippet }) {
           <dt>Average sentence score</dt>
           <dd>{ avgScore }</dd>
         </dl>
-        <dl>
-          <dt>Evidence sentences</dt>
-        </dl>
-        { doc.semanticSearch && <SnippetList
-          doc={Immutable.fromJS(doc)}
-          documentViewUrl={documentViewUrl}
-          snippets={snippets}
-          searchTerm=""
-          selectSnippet={selectSnippet}
-        />}
       </div>
+      { doc.semanticSearch && <SnippetList
+        doc={Immutable.fromJS(doc)}
+        documentViewUrl={documentViewUrl}
+        snippets={snippets}
+        searchTerm=""
+        selectSnippet={selectSnippet}
+      />}
     </Form>
   );
 }
