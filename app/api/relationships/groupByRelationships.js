@@ -14,7 +14,9 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
 }
 
 export default {
-  filterRelevantRelationships: (relationships, id, locale, user) => relationships.filter(ref => Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user))),
+  filterRelevantRelationships: (relationships, id, locale, user) => relationships.filter(
+    ref => Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user))
+  ),
 
   groupRelationships: (relationships, templates, relationTypes) => {
     const groupedReferences = [];
