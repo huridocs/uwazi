@@ -13,7 +13,7 @@ import ResultsSidePanel from './ResultsSidePanel';
 
 
 const countSentencesAboveThreshold = (doc, threshold) =>
-  doc.semanticSearch.results.filter(({ score }) => score >= threshold).length;
+  doc.semanticSearch.results.findIndex(({ score }) => score < threshold); // use findIndex cause array is sorted by score
 
 const filterItems = (items, { threshold, minRelevantSentences }) => {
   const filteredItems = items.reduce((prev, item) => {
