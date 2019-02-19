@@ -11,4 +11,3 @@ export default {
     { password: newPassword, username: 'newUser', email: 'new@email.com' },
   ]
 };
-

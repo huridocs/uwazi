@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {t} from 'app/I18N';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { t } from 'app/I18N';
 
-import {showFilters, hideFilters} from 'app/Library/actions/libraryActions';
-import {wrapDispatch} from 'app/Multireducer';
-import {unselectAllDocuments} from '../actions/libraryActions';
+import { showFilters, hideFilters } from 'app/Library/actions/libraryActions';
+import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
+import { unselectAllDocuments } from '../actions/libraryActions';
 
 export class SearchButton extends Component {
   render() {
@@ -27,7 +27,7 @@ export class SearchButton extends Component {
     }
 
     return (
-      <a href='#' className={'search-button btn ' + activeClass} onClick={toggle}>
+      <a href="#" className={`search-button btn ${activeClass}`} onClick={toggle}>
         <div className="searchButton-open">
           <Icon icon="search" />
           <span>{t('System', 'Search')}...</span>

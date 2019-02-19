@@ -211,7 +211,7 @@ describe('libraryActions', () => {
           }
         };
 
-        const filters = store.library.filters;
+        const { filters } = store.library;
 
         const limit = 'limit';
         spyOn(browserHistory, 'push');

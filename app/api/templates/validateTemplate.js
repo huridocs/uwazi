@@ -1,35 +1,31 @@
 import validate from 'validate.js';
 
 validate.validators.duplicatedLabels = (properties) => {
-  let labels = {};
+  const labels = {};
   properties.forEach((property) => {
     labels[property.label.toLowerCase()] = (labels[property.label.toLowerCase()] || 0) + 1;
   });
 
-  let duplicatedLabels = Object.keys(labels).filter((label) => {
-    return labels[label] > 1;
-  });
+  const duplicatedLabels = Object.keys(labels).filter(label => labels[label] > 1);
 
   if (duplicatedLabels.length) {
-    return {message: 'duplicated_labels', value: duplicatedLabels};
+    return { message: 'duplicated_labels', value: duplicatedLabels };
   }
 };
 
-let validateTemplate = (template) => {
-  return new Promise((resolve, reject) => {
-    let errors = validate(template, {
+const validateTemplate = template => new Promise((resolve, reject) => {
+  const errors = validate(template, {
       properties: {
         duplicatedLabels: true
       }
-    });
-
-    if (errors) {
-      errors.properties = errors.properties[0];
-      reject(errors);
-    }
-
-    resolve();
   });
-};
+
+  if (errors) {
+    errors.properties = errors.properties[0];
+    reject(errors);
+  }
+
+  resolve();
+});
 
 export default validateTemplate;

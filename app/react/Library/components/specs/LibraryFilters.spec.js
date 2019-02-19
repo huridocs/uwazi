@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {LibraryFilters, mapStateToProps} from 'app/Library/components/LibraryFilters';
+import { LibraryFilters, mapStateToProps } from 'app/Library/components/LibraryFilters';
 import SidePanel from 'app/Layout/SidePanel';
 
 describe('LibraryFilters', () => {
@@ -10,10 +10,10 @@ describe('LibraryFilters', () => {
   let props;
 
   beforeEach(() => {
-    props = {open: true};
+    props = { open: true };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<LibraryFilters {...props} />);
   };
 
@@ -24,19 +24,19 @@ describe('LibraryFilters', () => {
 
   describe('maped state', () => {
     it('should contain the filters store and the filters form', () => {
-      let store = {
+      const store = {
         library: {
-          filters: Immutable.fromJS({properties: 'filters state', documentTypes: ['Decision']}),
-          ui: Immutable.fromJS({searchTerm: 'Zerg Rush', filtersPanel: true, selectedDocuments: []}),
-          aggregations: Immutable.fromJS({types: {buckets: []}}),
-          settings: Immutable.fromJS({collection: {filters: []}})
+          filters: Immutable.fromJS({ properties: 'filters state', documentTypes: ['Decision'] }),
+          ui: Immutable.fromJS({ searchTerm: 'Zerg Rush', filtersPanel: true, selectedDocuments: [] }),
+          aggregations: Immutable.fromJS({ types: { buckets: [] } }),
+          settings: Immutable.fromJS({ collection: { filters: [] } })
         },
         templates: Immutable.fromJS([])
       };
 
-      let state = mapStateToProps(store, {storeKey: 'library'});
+      const state = mapStateToProps(store, { storeKey: 'library' });
 
-      expect(state).toEqual({open: true});
+      expect(state).toEqual({ open: true });
     });
   });
 });

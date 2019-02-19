@@ -1,18 +1,15 @@
 import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
+import { actions } from 'app/BasicReducer';
 import PagesAPI from './PagesAPI';
-import {actions} from 'app/BasicReducer';
 
 import PagesList from './components/PagesList';
 
 export class Pages extends RouteHandler {
-
   static requestState() {
     return PagesAPI.list()
-    .then((pages) => {
-      return {pages};
-    });
+    .then(pages => ({ pages }));
   }
 
   setReduxState(state) {

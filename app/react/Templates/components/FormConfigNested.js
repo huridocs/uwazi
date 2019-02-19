@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { setNestedProperties } from 'app/Templates/actions/templateActions';
-import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties';
 import { Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
+import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties';
 import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigNested extends Component {

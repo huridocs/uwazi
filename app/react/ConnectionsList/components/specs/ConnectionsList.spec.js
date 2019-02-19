@@ -1,7 +1,7 @@
-import {fromJS as Immutable} from 'immutable';
-import {mapStateToProps} from '../ConnectionsList';
-
+import { fromJS as Immutable } from 'immutable';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
+import { mapStateToProps } from '../ConnectionsList';
+
 
 describe('ConnectionsList', () => {
   describe('mapStateToProps', () => {
@@ -13,11 +13,11 @@ describe('ConnectionsList', () => {
         relationships: {
           list: {
             entityId: 'id1',
-            searchResults: Immutable({rows: [
-              {sharedId: 'id2', connections: ['a', 'b']},
-              {sharedId: 'id1', connections: ['c']},
-              {sharedId: 'id2', connections: ['d']}
-            ]}),
+            searchResults: Immutable({ rows: [
+              { sharedId: 'id2', connections: ['a', 'b'] },
+              { sharedId: 'id1', connections: ['c'] },
+              { sharedId: 'id2', connections: ['d'] }
+            ] }),
             sort: 'sort'
           }
         }
@@ -32,7 +32,7 @@ describe('ConnectionsList', () => {
     });
 
     it('should define the filters and sortButtonsStateProperty props', () => {
-      expect(props.filters.toJS()).toEqual({documentTypes: []});
+      expect(props.filters.toJS()).toEqual({ documentTypes: [] });
       expect(props.sortButtonsStateProperty).toBe('relationships/list.sort');
     });
 

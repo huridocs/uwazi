@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector} from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Legend, Cell, Sector } from 'recharts';
 
 import Immutable from 'immutable';
 
@@ -12,19 +12,16 @@ function ellipsisString(string, maxLength) {
     return string;
   }
 
-  return string.substring(0, maxLength - 3) + '...';
+  return `${string.substring(0, maxLength - 3)}...`;
 }
 
 export class RechartsPie extends Component {
-
   mountData(props) {
     let fullData = Immutable.fromJS([]);
     if (props.data) {
-      fullData = Immutable.fromJS(props.data.map(item => {
-        return {name: item.label, value: item.results, enabled: true};
-      }));
+      fullData = Immutable.fromJS(props.data.map(item => ({ name: item.label, value: item.results, enabled: true })));
     }
-    this.setState({activeIndex: 0, fullData});
+    this.setState({ activeIndex: 0, fullData });
   }
 
   componentWillMount() {
@@ -39,7 +36,7 @@ export class RechartsPie extends Component {
 
   renderActiveShape(props) {
     const RADIAN = Math.PI / 180;
-    const {cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value} = props;
+    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
     const sin = Math.sin(-RADIAN * midAngle);
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;
@@ -83,7 +80,7 @@ export class RechartsPie extends Component {
   }
 
   getFilteredIndex(data, index) {
-    let filteredIndexMap = {};
+    const filteredIndexMap = {};
     let enabledIndices = -1;
     data.forEach((item, iterator) => {
       if (item.get('enabled')) {
@@ -98,7 +95,7 @@ export class RechartsPie extends Component {
   }
 
   onIndexEnter(data, index) {
-    this.setState({activeIndex: index});
+    this.setState({ activeIndex: index });
   }
 
   onFullIndexEnter(data, index) {
@@ -114,7 +111,7 @@ export class RechartsPie extends Component {
       activeIndex = this.getFilteredIndex(fullData, index);
     }
 
-    this.setState({activeIndex, fullData});
+    this.setState({ activeIndex, fullData });
   }
 
   render() {
@@ -134,34 +131,32 @@ export class RechartsPie extends Component {
       <ResponsiveContainer height={320}>
         <PieChart>
           <Pie
-              data={filteredData}
-              dataKey="value"
-              cx="50%"
-              cy="50%"
-              innerRadius={50}
-              outerRadius={80}
-              activeIndex={this.state.activeIndex}
-              activeShape={this.renderActiveShape}
-              animationBegin={200}
-              animationDuration={500}
-              onMouseEnter={this.onIndexEnter.bind(this)}
-              onClick={this.onIndexEnter.bind(this)}
-              fill="#8884d8">
-            {filteredData.map((entry, index) =>
-              <Cell key={index} fill={filteredColors[index]} opacity={0.8} />
+            data={filteredData}
+            dataKey="value"
+            cx="50%"
+            cy="50%"
+            innerRadius={50}
+            outerRadius={80}
+            activeIndex={this.state.activeIndex}
+            activeShape={this.renderActiveShape}
+            animationBegin={200}
+            animationDuration={500}
+            onMouseEnter={this.onIndexEnter.bind(this)}
+            onClick={this.onIndexEnter.bind(this)}
+            fill="#8884d8"
+          >
+            {filteredData.map((entry, index) => <Cell key={index} fill={filteredColors[index]} opacity={0.8} />
             )}
           </Pie>
           <Legend
-                  onMouseEnter={this.onFullIndexEnter.bind(this)}
-                  onClick={this.onIndexClick.bind(this)}
-                  payload={fullData.map((item, index) => {
-                    return {
+            onMouseEnter={this.onFullIndexEnter.bind(this)}
+            onClick={this.onIndexClick.bind(this)}
+            payload={fullData.map((item, index) => ({
                       value: item.name,
                       type: 'rect',
                       color: fullData[index].enabled ? colorScheme[index % colorScheme.length] : '#aaa',
-                      formatter: () => <span style={{color: fullData[index].enabled ? '#333' : '#999'}}>{item.name}</span>
-                    };
-                  })}
+                      formatter: () => <span style={{ color: fullData[index].enabled ? '#333' : '#999' }}>{item.name}</span>
+                    }))}
           />
         </PieChart>
       </ResponsiveContainer>

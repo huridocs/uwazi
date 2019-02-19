@@ -1,7 +1,7 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {RemovePropertyConfirm} from 'app/Templates/components/RemovePropertyConfirm';
+import { RemovePropertyConfirm } from 'app/Templates/components/RemovePropertyConfirm';
 import Modal from 'app/Layout/Modal.js';
 
 describe('RemovePropertyConfirm', () => {
@@ -16,7 +16,7 @@ describe('RemovePropertyConfirm', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<RemovePropertyConfirm {...props} />);
   };
 

@@ -40,12 +40,14 @@ export const FiltersFromProperties = ({ onChange, properties, translationContext
       }
 
       if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
-        filter = (<SelectFilter
-          {...commonProps}
-          options={translatedOptions(property)}
-          prefix={property.name}
-          showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
-        />);
+        filter = (
+          <SelectFilter
+            {...commonProps}
+            options={translatedOptions(property)}
+            prefix={property.name}
+            showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
+          />
+);
       }
 
       if (property.type === 'nested') {

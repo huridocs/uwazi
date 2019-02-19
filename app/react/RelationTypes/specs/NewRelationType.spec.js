@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import TemplateCreator from '../../Templates/components/TemplateCreator';

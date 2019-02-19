@@ -27,8 +27,8 @@ export class UsersList extends Component {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Users')}</div>
         <ul className="list-group users">
-          {users.map((user, index) =>
-            (<li key={index} className="list-group-item">
+          {users.map((user, index) => (
+            <li key={index} className="list-group-item">
               <span>{user.get('username')}</span>
               <div className="list-group-item-actions">
                 <I18NLink to={`/settings/users/edit/${user.get('_id')}`} className="btn btn-default btn-xs">
@@ -40,7 +40,8 @@ export class UsersList extends Component {
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
-             </li>)
+            </li>
+)
           )}
         </ul>
         <div className="settings-footer">

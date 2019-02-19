@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import { Form, Field } from 'react-redux-form';
 
 import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
-import { Form, Field } from 'react-redux-form';
-import { FormGroup, Select as SimpleSelect } from 'app/Forms';
-import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
+import { FormGroup, Select as SimpleSelect } from '../../../Forms';
+import entitiesUtils from '../../../Entities/utils/filterBaseProperties';
 
 
 describe('MetadataForm', () => {

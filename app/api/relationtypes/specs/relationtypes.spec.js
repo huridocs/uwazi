@@ -1,8 +1,8 @@
-import relationtypes from '../relationtypes.js';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
 import db from 'api/utils/testing_db';
+import relationtypes from '../relationtypes.js';
 import fixtures, { canNotBeDeleted, against } from './fixtures.js';
 
 describe('relationtypes', () => {

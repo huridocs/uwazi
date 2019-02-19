@@ -1,7 +1,7 @@
 import { store } from 'app/store';
 import React from 'react';
 import translate, { getLocaleTranslation, getContext } from '../../shared/translate';
-import { Translate } from './';
+import { Translate } from '.';
 
 const testingEnvironment = process.env.NODE_ENV === 'test';
 const t = (contextId, key, _text, returnComponent = true) => {

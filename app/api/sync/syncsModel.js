@@ -5,4 +5,3 @@ const syncSchema = new mongoose.Schema({
 });
 
 export default mongoose.model('syncs', syncSchema);
-

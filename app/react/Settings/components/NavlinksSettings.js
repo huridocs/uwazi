@@ -101,7 +101,7 @@ NavlinksSettings.propTypes = {
 export const mapStateToProps = (state) => {
   const { settings } = state;
   const { collection } = settings;
-  const links = settings.navlinksData.links;
+  const { links } = settings.navlinksData;
   return { links, collection, savingNavlinks: settings.uiState.get('savingNavlinks') };
 };
 

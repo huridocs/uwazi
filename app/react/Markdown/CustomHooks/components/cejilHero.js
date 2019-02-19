@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
-import {I18NLink} from 'app/I18N';
+import { I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 
 import api from 'app/Search/SearchAPI';
@@ -12,16 +12,15 @@ const provisionalMeasuresIds = ['58b2f3a35d59f31e1345b4a4'];
 const documentsIds = ['58b2f3a35d59f31e1345b4ac', '58b2f3a35d59f31e1345b471', '58b2f3a35d59f31e1345b482', '58b2f3a35d59f31e1345b479'];
 
 export class cejilChart001 extends Component {
-
   getData() {
-    api.search({limit: 0})
-    .then(results => {
-      this.setState({data: results.aggregations.all});
+    api.search({ limit: 0 })
+    .then((results) => {
+      this.setState({ data: results.aggregations.all });
     });
   }
 
   conformLibraryLink(types, link) {
-    const escapedValues = types.map(t => '%27' + t + '%27');
+    const escapedValues = types.map(t => `%27${t}%27`);
     if (link && link.indexOf('/library/') !== -1) {
       return link.substring(link.indexOf('/library/'), link.length);
     }
@@ -40,7 +39,7 @@ export class cejilChart001 extends Component {
   }
 
   render() {
-    const {title = '', buttons = [], links = []} = this.props;
+    const { title = '', buttons = [], links = [] } = this.props;
     const Loader = <Icon icon="spinner" pulse fixedWidth />;
 
     let processesCount = Loader;
@@ -82,8 +81,8 @@ cejilChart001.propTypes = {
   links: PropTypes.array
 };
 
-export function mapStateToProps({templates, thesauris}) {
-  return {templates, thesauris};
+export function mapStateToProps({ templates, thesauris }) {
+  return { templates, thesauris };
 }
 
 export default connect(mapStateToProps)(cejilChart001);

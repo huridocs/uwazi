@@ -48,7 +48,7 @@ describe('api', () => {
         api.cookie('cookie');
         api.get('test_get')
         .then(() => {
-          const headers = backend.calls().matched[0][1].headers;
+          const { headers } = backend.calls().matched[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();

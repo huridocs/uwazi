@@ -1,7 +1,7 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
-import {ResetSearch} from '../ResetSearch';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
+import { ResetSearch } from '../ResetSearch';
 
 describe('ResetSearch', () => {
   let component;
@@ -14,7 +14,7 @@ describe('ResetSearch', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ResetSearch {...props} />);
   };
 

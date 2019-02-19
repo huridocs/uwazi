@@ -8,10 +8,10 @@ describe('Navlinks Validator', () => {
     const links = [1, 2, 3, 4, 5, 6];
     form = {
       links: [
-        {title: ''},
-        {title: 'goodTitle'},
-        {title: '  '},
-        {title: '0'},
+        { title: '' },
+        { title: 'goodTitle' },
+        { title: '  ' },
+        { title: '0' },
         {}
       ]
     };

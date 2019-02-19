@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {SearchForm} from '../SearchForm';
 import SearchInput from 'app/Layout/SearchInput';
+import { SearchForm } from '../SearchForm';
 
 describe('SearchForm', () => {
   let component;
@@ -18,7 +18,7 @@ describe('SearchForm', () => {
 
   describe('onChange', () => {
     it('should search passing target.value', () => {
-      component.find(SearchInput).simulate('change', {target: {value: 'searchTerm'}});
+      component.find(SearchInput).simulate('change', { target: { value: 'searchTerm' } });
       expect(props.search).toHaveBeenCalledWith('searchTerm', 'basic');
     });
   });

@@ -31,30 +31,34 @@ export class RelationTypesList extends Component {
   }
 
   render() {
-    return (<div className="panel panel-default">
-      <div className="panel-heading">{t('System', 'Connections')}</div>
-      <ul className="list-group relation-types">
-        {this.props.relationTypes.toJS().map((relationType, index) => (<li key={index} className="list-group-item">
-          <I18NLink to={`/settings/connections/edit/${relationType._id}`}>{relationType.name}</I18NLink>
-          <div className="list-group-item-actions">
-            <I18NLink to={`/settings/connections/edit/${relationType._id}`} className="btn btn-default btn-xs">
-              <Icon icon="pencil-alt" />&nbsp;
-              <span>{t('System', 'Edit')}</span>
-            </I18NLink>
-            <a onClick={this.deleteRelationType.bind(this, relationType)} className="btn btn-danger btn-xs template-remove">
-              <Icon icon="trash-alt" />&nbsp;
-              <span>{t('System', 'Delete')}</span>
-            </a>
-          </div>
-        </li>))}
-      </ul>
-      <div className="settings-footer">
-        <I18NLink to="/settings/connections/new" className="btn btn-success">
-          <Icon icon="plus" />
-          <span className="btn-label">{t('System', 'Add connection')}</span>
-        </I18NLink>
+    return (
+      <div className="panel panel-default">
+        <div className="panel-heading">{t('System', 'Connections')}</div>
+        <ul className="list-group relation-types">
+          {this.props.relationTypes.toJS().map((relationType, index) => (
+            <li key={index} className="list-group-item">
+              <I18NLink to={`/settings/connections/edit/${relationType._id}`}>{relationType.name}</I18NLink>
+              <div className="list-group-item-actions">
+                <I18NLink to={`/settings/connections/edit/${relationType._id}`} className="btn btn-default btn-xs">
+                  <Icon icon="pencil-alt" />&nbsp;
+                  <span>{t('System', 'Edit')}</span>
+                </I18NLink>
+                <a onClick={this.deleteRelationType.bind(this, relationType)} className="btn btn-danger btn-xs template-remove">
+                  <Icon icon="trash-alt" />&nbsp;
+                  <span>{t('System', 'Delete')}</span>
+                </a>
+              </div>
+            </li>
+))}
+        </ul>
+        <div className="settings-footer">
+          <I18NLink to="/settings/connections/new" className="btn btn-success">
+            <Icon icon="plus" />
+            <span className="btn-label">{t('System', 'Add connection')}</span>
+          </I18NLink>
+        </div>
       </div>
-            </div>);
+    );
   }
 }
 
