@@ -21,6 +21,7 @@
         "ArrayExpression": "off", 
         "ObjectExpression": "off"}
       ],
+      "operator-linebreak": ["warn", "after"],
       "no-mixed-operators": "off",
       "no-underscore-dangle": "off",
       "comma-dangle": "off",
@@ -62,6 +63,14 @@
       "arrow-spacing": ["warn"],
       "no-empty": ["warn"],
       "no-cond-assign": ["warn"],
+      "no-multiple-empty-lines": ["warn"],
+      "implicit-arrow-linebreak": ["warn"],
+      "lines-between-class-members": ["warn"],
+      "max-lines": ["warn", 250],
+      "max-params": ["warn", 4],
+      "max-lines-per-function": ["warn", { "max": 25 }],
+      "max-statements": ["warn", { "max": 10 }, { "ignoreTopLevelFunctions": true }],
+
 
       //import
       "import/no-duplicates": ["warn"],
@@ -71,6 +80,9 @@
       "import/newline-after-import": ["warn"],
       "import/extensions": "never",
       "import/no-unresolved": "off",
+      "import/order": ["warn"],
+      "import/named": ["warn"],
+      "import/no-cycle": ["warn"],
 
       //react
       "react/self-closing-comp": ["warn"],
@@ -95,6 +107,11 @@
       "react/jsx-no-target-blank": ["warn"],
       "react/jsx-filename-extension": "off",
       "react/jsx-tag-spacing": "off",
+      "react/destructuring-assignment": ["warn"],
+      "react/jsx-one-expression-per-line": "off",
+      "import/no-useless-path-segments": ["warn"],
+      "react/button-has-type": ["warn"],
+      "react/no-access-state-in-setstate": ["warn"],
 
       //jsx-a11y
       "jsx-a11y/anchor-is-valid": ["warn"],
@@ -106,6 +123,15 @@
       "jsx-a11y/alt-text": ["warn"],
       "jsx-a11y/no-static-element-interactions": "off",
       "jsx-a11y/click-events-have-key-events": "off",
-      "jsx-a11y/mouse-events-have-key-events": "off"
+      "jsx-a11y/mouse-events-have-key-events": "off",
+      "jsx-a11y/label-has-associated-control": ["warn"]
+    },
+    "overrides": [
+    {
+      "files": ["app/**/*spec.js"],
+      "rules": {
+        "max-lines-per-function": "off"
+      }
     }
+  ]
 }
