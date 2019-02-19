@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types';
-import {Component, Children} from 'react';
+import { Component, Children } from 'react';
 
 class MockProvider extends Component {
-
   getChildContext() {
-    let props = this.props;
+    const { props } = this;
     return {
-      getInitialData: function () {
+      getInitialData() {
         return props.initialData;
       },
-      isRenderedFromServer: function () {
+      isRenderedFromServer() {
         return false;
       },
-      getUser: function () {
+      getUser() {
         return props.user;
       },
       router: props.router
@@ -20,7 +19,7 @@ class MockProvider extends Component {
   }
 
   render() {
-    let {children} = this.props;
+    const { children } = this.props;
     return Children.only(children);
   }
 }

@@ -1,12 +1,12 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 
-import {mapStateToProps} from '../Doc';
-import {Doc} from '../Doc';
-import {Item} from 'app/Layout';
+import { Item } from 'app/Layout';
+import { NeedAuthorization } from 'app/Auth';
+import { mapStateToProps } from '../Doc';
+import { Doc } from '../Doc';
 
-import {NeedAuthorization} from 'app/Auth';
 
 describe('Doc', () => {
   let component;
@@ -20,24 +20,24 @@ describe('Doc', () => {
       type: 'document',
       sharedId: 'id',
       processed: true,
-      connections: [{sourceType: 'metadata'}, {_id: 'c1', sourceType: 'other', nonRelevant: true}]
+      connections: [{ sourceType: 'metadata' }, { _id: 'c1', sourceType: 'other', nonRelevant: true }]
     };
 
     props = {
       doc: Immutable(doc),
-      user: Immutable({_id: 'batId'}),
+      user: Immutable({ _id: 'batId' }),
       active: false,
       selectDocument: jasmine.createSpy('selectDocument'),
       deleteConnection: jasmine.createSpy('deleteConnection'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       unselectAllDocuments: jasmine.createSpy('unselectAllDocuments'),
-      searchParams: {sort: 'sortProperty'},
+      searchParams: { sort: 'sortProperty' },
       storeKey: 'library',
       additionalText: 'passedAdditionalText'
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<Doc {...props}/>);
   };
 
@@ -63,13 +63,13 @@ describe('Doc', () => {
       });
 
       it('should alow deleting non-metadata connections', () => {
-        const eMock = {stopPropagation: jasmine.createSpy('stopPropagation')};
+        const eMock = { stopPropagation: jasmine.createSpy('stopPropagation') };
         expect(props.deleteConnection).not.toHaveBeenCalled();
 
         header.find('button').at(1).simulate('click', eMock);
 
         expect(eMock.stopPropagation).toHaveBeenCalled();
-        expect(props.deleteConnection).toHaveBeenCalledWith({_id: 'c1', sourceType: 'other'});
+        expect(props.deleteConnection).toHaveBeenCalledWith({ _id: 'c1', sourceType: 'other' });
       });
     });
 
@@ -111,7 +111,7 @@ describe('Doc', () => {
     it('should call onClick', () => {
       props.onClick = jasmine.createSpy('onClick');
       render();
-      component.find(Item).simulate('click', {metaKey: false});
+      component.find(Item).simulate('click', { metaKey: false });
       expect(props.onClick).toHaveBeenCalled();
     });
   });
@@ -122,22 +122,22 @@ describe('Doc', () => {
     beforeEach(() => {
       store = {
         library: {
-          ui: Immutable({selectedDocuments: [{_id: 'docId'}]})
+          ui: Immutable({ selectedDocuments: [{ _id: 'docId' }] })
         },
         uploads: {
           progress: Immutable({})
         },
-        user: Immutable({_id: 'batId'})
+        user: Immutable({ _id: 'batId' })
       };
     });
 
     it('should set active as true if ownProps match selected ID', () => {
-      const state = mapStateToProps(store, {doc: Immutable({_id: 'docId'}), storeKey: 'library'});
+      const state = mapStateToProps(store, { doc: Immutable({ _id: 'docId' }), storeKey: 'library' });
       expect(state.active).toBe(true);
     });
 
     it('should set active as false if ownProps holds unselected document', () => {
-      const state = mapStateToProps(store, {doc: Immutable({_id: 'anotherId'}), storeKey: 'library'});
+      const state = mapStateToProps(store, { doc: Immutable({ _id: 'anotherId' }), storeKey: 'library' });
       expect(state.active).toBe(false);
     });
   });

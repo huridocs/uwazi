@@ -23,9 +23,9 @@ const renderList = prop => (
 );
 
 const renderCompact = prop => (
-  prop.type === 'multidate' || prop.type === 'multidaterange'
-    ? interpose(prop.value.map(v => v.value), <br />)
-    : interpose(prop.value.map(v => withIcon(v)), ', ')
+  prop.type === 'multidate' || prop.type === 'multidaterange' ?
+    interpose(prop.value.map(v => v.value), <br />) :
+    interpose(prop.value.map(v => withIcon(v)), ', ')
 );
 
 const ValueList = ({ property, compact }) => (

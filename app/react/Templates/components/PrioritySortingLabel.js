@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
 export class PrioritySortingLabel extends Component {
-
   render() {
     return (
       <label className="property-label" htmlFor={this.props.htmlFor}>

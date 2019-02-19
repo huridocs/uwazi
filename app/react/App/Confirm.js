@@ -76,7 +76,7 @@ export class Confirm extends Component {
         </Modal.Body>
 
         {
-          !this.state.isLoading &&
+          !this.state.isLoading && (
           <Modal.Footer>
             {
               !this.props.noCancel &&
@@ -91,7 +91,7 @@ export class Confirm extends Component {
               {t('System', 'Accept')}
             </button>
           </Modal.Footer>
-        }
+)}
 
       </Modal>
     );

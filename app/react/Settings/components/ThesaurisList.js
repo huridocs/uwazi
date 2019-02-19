@@ -50,7 +50,8 @@ export class ThesaurisList extends Component {
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
-            </li>))}
+            </li>
+))}
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
@@ -58,7 +59,8 @@ export class ThesaurisList extends Component {
             <span className="btn-label">{t('System', 'Add thesaurus')}</span>
           </I18NLink>
         </div>
-      </div>);
+      </div>
+    );
   }
 }
 

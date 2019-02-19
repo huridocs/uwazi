@@ -1,21 +1,13 @@
 export default function mockRangeSelection(selectedText = '') {
-  let range = {};
+  const range = {};
 
   range.range = 'range';
-  range.getClientRects = () => {
-    return [{top: 100}];
-  };
+  range.getClientRects = () => [{ top: 100 }];
 
-  window.getSelection = () => {
-    return {
-      toString: () => {
-        return selectedText;
-      },
-      getRangeAt: () => {
-        return range;
-      }
-    };
-  };
+  window.getSelection = () => ({
+      toString: () => selectedText,
+      getRangeAt: () => range
+  });
 
   return range;
 }

@@ -8,9 +8,9 @@ export function showTab(tab) {
 }
 
 export function hideFilters() {
-  return {type: types.HIDE_FILTERS};
+  return { type: types.HIDE_FILTERS };
 }
 
 export function showFilters() {
-  return {type: types.SHOW_FILTERS};
+  return { type: types.SHOW_FILTERS };
 }

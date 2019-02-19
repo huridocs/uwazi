@@ -7,27 +7,24 @@ import path from 'path';
 
 import migrationsModel from './migrationsModel';
 
-const promiseInSequence = funcs =>
-  funcs.reduce((promise, func) =>
-    promise.then(result => func().then(Array.prototype.concat.bind(result))),
+const promiseInSequence = funcs => funcs.reduce((promise, func) => promise.then(result => func().then(Array.prototype.concat.bind(result))),
     Promise.resolve([]));
 
 const sortByDelta = migrations => migrations.sort((a, b) => a.delta - b.delta);
 
-const getMigrations = migrationsDir =>
-  new Promise((resolve) => {
-    migrationsModel.get({}, null, { limit: 1, sort: { delta: -1 } })
-    .then(([lastMigration]) => {
-      fs.readdir(migrationsDir, (err, files) => {
-        let migrations = files.map(migration => require(path.join(migrationsDir, migration)));
-        migrations = sortByDelta(migrations);
-        if (lastMigration) {
-          migrations = migrations.map(m => m.delta > lastMigration.delta ? m : null).filter(m => m);
-        }
-        resolve(migrations);
-      });
+const getMigrations = migrationsDir => new Promise((resolve) => {
+  migrationsModel.get({}, null, { limit: 1, sort: { delta: -1 } })
+  .then(([lastMigration]) => {
+    fs.readdir(migrationsDir, (err, files) => {
+      let migrations = files.map(migration => require(path.join(migrationsDir, migration)));
+      migrations = sortByDelta(migrations);
+      if (lastMigration) {
+        migrations = migrations.map(m => m.delta > lastMigration.delta ? m : null).filter(m => m);
+      }
+      resolve(migrations);
     });
   });
+});
 
 const saveMigration = migration => migrationsModel.save(migration);
 

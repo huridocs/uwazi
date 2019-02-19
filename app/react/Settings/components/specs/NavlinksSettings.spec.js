@@ -1,10 +1,10 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS } from 'immutable';
 
-import DragDropContext, {NavlinksSettings, mapStateToProps} from '../NavlinksSettings';
+import { Form } from 'react-redux-form';
+import DragDropContext, { NavlinksSettings, mapStateToProps } from '../NavlinksSettings';
 
-import {Form} from 'react-redux-form';
 import NavlinkForm from '../NavlinkForm';
 
 describe('NavlinksSettings', () => {
@@ -13,8 +13,8 @@ describe('NavlinksSettings', () => {
 
   beforeEach(() => {
     props = {
-      collection: fromJS({_id: 'abc', _rev: 'xyz', name: 'name', links: [{localID: 'existingLink'}]}),
-      links: [{localID: 'newLink1'}, {localID: 'newLink2'}],
+      collection: fromJS({ _id: 'abc', _rev: 'xyz', name: 'name', links: [{ localID: 'existingLink' }] }),
+      links: [{ localID: 'newLink1' }, { localID: 'newLink2' }],
       loadLinks: jasmine.createSpy('loadLinks'),
       addLink: jasmine.createSpy('addLink'),
       sortLink: jasmine.createSpy('sortLink'),
@@ -25,7 +25,7 @@ describe('NavlinksSettings', () => {
 
   describe('componentWillMount', () => {
     it('should call on loadLinks with collection links', () => {
-      expect(props.loadLinks).toHaveBeenCalledWith([{localID: 'existingLink'}]);
+      expect(props.loadLinks).toHaveBeenCalledWith([{ localID: 'existingLink' }]);
     });
   });
 
@@ -36,7 +36,7 @@ describe('NavlinksSettings', () => {
 
   it('should save links upon submit', () => {
     component.find(Form).props().onSubmit();
-    expect(props.saveLinks).toHaveBeenCalledWith({_id: 'abc', _rev: 'xyz', links: props.links});
+    expect(props.saveLinks).toHaveBeenCalledWith({ _id: 'abc', _rev: 'xyz', links: props.links });
   });
 
   it('should disable saving if savingNavlinks', () => {
@@ -59,15 +59,15 @@ describe('NavlinksSettings', () => {
 
   describe('mapStateToProps', () => {
     const settings = {
-      collection: fromJS({id: 'collection'}),
-      navlinksData: {links: [{localID: 'existingLink'}]},
-      uiState: fromJS({savingNavlinks: true})
+      collection: fromJS({ id: 'collection' }),
+      navlinksData: { links: [{ localID: 'existingLink' }] },
+      uiState: fromJS({ savingNavlinks: true })
     };
 
     it('should return the right props', () => {
-      expect(mapStateToProps({settings}).links).toBe(settings.navlinksData.links);
-      expect(mapStateToProps({settings}).collection).toBe(settings.collection);
-      expect(mapStateToProps({settings}).savingNavlinks).toBe(true);
+      expect(mapStateToProps({ settings }).links).toBe(settings.navlinksData.links);
+      expect(mapStateToProps({ settings }).collection).toBe(settings.collection);
+      expect(mapStateToProps({ settings }).savingNavlinks).toBe(true);
     });
   });
 
@@ -77,8 +77,8 @@ describe('NavlinksSettings', () => {
         subscribe: jasmine.createSpy('subscribe'),
         dispatch: jasmine.createSpy('dispatch'),
         getState: jasmine.createSpy('getState').and.returnValue({
-          settings: {collection: props.collection, navlinksData: {links: []}, uiState: {get: jasmine.createSpy('get')}}
-        })};
+          settings: { collection: props.collection, navlinksData: { links: [] }, uiState: { get: jasmine.createSpy('get') } }
+        }) };
     });
 
     it('should decorate the component as a Drag and Drop context', () => {

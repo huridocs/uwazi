@@ -14,4 +14,3 @@ const pagesSchema = new mongoose.Schema({
 });
 
 export default instanceModel('pages', pagesSchema);
-

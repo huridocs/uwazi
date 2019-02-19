@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import createReducer from 'app/BasicReducer';
 
 import connection from './connectionReducer';

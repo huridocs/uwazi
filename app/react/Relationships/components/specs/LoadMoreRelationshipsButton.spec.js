@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS } from 'immutable';
 
-import {LoadMoreRelationshipsButton, mapStateToProps} from '../LoadMoreRelationshipsButton';
+import { LoadMoreRelationshipsButton, mapStateToProps } from '../LoadMoreRelationshipsButton';
 
 describe('LoadMoreRelationshipsButton', () => {
   let component;
@@ -17,7 +17,7 @@ describe('LoadMoreRelationshipsButton', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<LoadMoreRelationshipsButton {...props} />);
   };
 
@@ -46,11 +46,11 @@ describe('LoadMoreRelationshipsButton', () => {
 
   describe('mapStateToProps', () => {
     it('should map the relationships list search results', () => {
-      const state = {relationships: {list: {
-        searchResults: fromJS({totalHubs: 'totalHubs', requestedHubs: 'requestedHubs'})
-      }}};
+      const state = { relationships: { list: {
+        searchResults: fromJS({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs' })
+      } } };
 
-      expect(mapStateToProps(state)).toEqual({totalHubs: 'totalHubs', requestedHubs: 'requestedHubs', loadMoreAmmount: 10});
+      expect(mapStateToProps(state)).toEqual({ totalHubs: 'totalHubs', requestedHubs: 'requestedHubs', loadMoreAmmount: 10 });
     });
   });
 });

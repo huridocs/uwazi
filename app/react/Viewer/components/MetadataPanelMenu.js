@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import {actions} from 'app/Metadata';
-import {MenuButtons} from 'app/ContextMenu';
-import {NeedAuthorization} from 'app/Auth';
+import { actions } from 'app/Metadata';
+import { MenuButtons } from 'app/ContextMenu';
+import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'UI';
 
 export class MetadataPanelMenu extends Component {
@@ -33,7 +33,8 @@ export class MetadataPanelMenu extends Component {
           return (
             <NeedAuthorization roles={['admin', 'editor']}>
               <MenuButtons.Main
-                onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}>
+                onClick={() => this.props.loadInReduxForm('documentViewer.docForm', this.props.doc.toJS(), this.props.templates.toJS())}
+              >
                 <Icon icon="pencil-alt" />
               </MenuButtons.Main>
             </NeedAuthorization>
@@ -53,18 +54,16 @@ MetadataPanelMenu.propTypes = {
   targetDoc: PropTypes.bool
 };
 
-const mapStateToProps = ({documentViewer, templates}) => {
-  return {
+const mapStateToProps = ({ documentViewer, templates }) => ({
     doc: documentViewer.doc,
-    templates: templates,
+    templates,
     docForm: documentViewer.docForm,
     formState: documentViewer.docFormState,
     targetDoc: !!documentViewer.targetDoc.get('_id')
-  };
-};
+});
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({loadInReduxForm: actions.loadInReduxForm}, dispatch);
+  return bindActionCreators({ loadInReduxForm: actions.loadInReduxForm }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MetadataPanelMenu);

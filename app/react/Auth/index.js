@@ -5,4 +5,4 @@ export default {
   actions
 };
 
-export {NeedAuthorization};
+export { NeedAuthorization };

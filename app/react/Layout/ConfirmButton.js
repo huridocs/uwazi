@@ -32,14 +32,14 @@ class ConfirmButton extends Component {
       <React.Fragment>
         <button onClick={this.openModal}>{this.props.children}</button>
         {
-          this.state.showModal &&
-            <ConfirmModal
-              message={this.props.message}
-              title={this.props.title}
-              onAccept={this.onAccept}
-              onCancel={this.closeModal}
-            />
-        }
+          this.state.showModal && (
+          <ConfirmModal
+            message={this.props.message}
+            title={this.props.title}
+            onAccept={this.onAccept}
+            onCancel={this.closeModal}
+          />
+)}
       </React.Fragment>
     );
   }

@@ -17,7 +17,7 @@ describe('Pages: pageItemLists util', () => {
   });
 
   it('should extract the search URLs from the lists', () => {
-    const params = pageLists.generate(content).params;
+    const { params } = pageLists.generate(content);
     expect(params.length).toBe(4);
     expect(params[0]).toBe('?parameters=values');
     expect(params[1]).toBe('');
@@ -26,12 +26,12 @@ describe('Pages: pageItemLists util', () => {
   });
 
   it('should extract optional additional parameters', () => {
-    const options = pageLists.generate(content).options;
+    const { options } = pageLists.generate(content);
     expect(options.length).toBe(4);
     expect(options[0]).toEqual({});
-    expect(options[1]).toEqual({limit: 6});
+    expect(options[1]).toEqual({ limit: 6 });
     expect(options[2]).toEqual({});
-    expect(options[3]).toEqual({limit: 12, other: 'option'});
+    expect(options[3]).toEqual({ limit: 12, other: 'option' });
   });
 
   it('should return the content with list placeholders', () => {

@@ -1,16 +1,16 @@
 import users from 'app/Users/UsersAPI';
 import api from 'app/utils/api';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 
 describe('UsersAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .post(APIURL + 'users', {body: JSON.stringify('ok')})
-    .post(APIURL + 'users/new', {body: JSON.stringify('ok new')})
-    .get(APIURL + 'user', {body: JSON.stringify({name: 'doe'})});
+    .post(`${APIURL}users`, { body: JSON.stringify('ok') })
+    .post(`${APIURL}users/new`, { body: JSON.stringify('ok new') })
+    .get(`${APIURL}user`, { body: JSON.stringify({ name: 'doe' }) });
   });
 
   afterEach(() => backend.restore());
@@ -59,7 +59,7 @@ describe('UsersAPI', () => {
     it('should request the logged in user', (done) => {
       users.currentUser()
       .then((response) => {
-        expect(response).toEqual({name: 'doe'});
+        expect(response).toEqual({ name: 'doe' });
         done();
       })
       .catch(catchErrors(done));
@@ -68,7 +68,7 @@ describe('UsersAPI', () => {
 
   describe('list()', () => {
     it('should get all the users', (done) => {
-      spyOn(api, 'get').and.returnValue(Promise.resolve({json: ['users']}));
+      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: ['users'] }));
       users.list()
       .then((response) => {
         expect(api.get).toHaveBeenCalledWith('users');
@@ -81,8 +81,8 @@ describe('UsersAPI', () => {
 
   describe('delete()', () => {
     it('should delete the user', (done) => {
-      const user = {_id: '1234'};
-      spyOn(api, 'delete').and.returnValue(Promise.resolve({json: 'ok'}));
+      const user = { _id: '1234' };
+      spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
       users.delete(user)
       .then((response) => {
         expect(api.delete).toHaveBeenCalledWith('users', user);

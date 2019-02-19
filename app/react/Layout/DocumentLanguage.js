@@ -1,21 +1,20 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import getLanguage from 'shared/languagesList';
 import t from '../I18N/t';
 
 export class DocumentLanguage extends Component {
-
   render() {
-    const {doc} = this.props;
+    const { doc } = this.props;
 
     if (!doc.get('file')) {
       return null;
     }
 
     if (doc.get('file')) {
-      let fileLanguage = doc.getIn(['file', 'language']);
+      const fileLanguage = doc.getIn(['file', 'language']);
       if (fileLanguage && fileLanguage !== 'other') {
         if (this.props.locale === getLanguage(fileLanguage, 'ISO639_1')) {
           return null;
@@ -38,8 +37,6 @@ DocumentLanguage.propTypes = {
   locale: PropTypes.string
 };
 
-export const mapStateToProps = ({locale}) => {
-  return {locale};
-};
+export const mapStateToProps = ({ locale }) => ({ locale });
 
 export default connect(mapStateToProps)(DocumentLanguage);

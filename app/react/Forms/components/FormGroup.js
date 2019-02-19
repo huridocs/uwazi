@@ -6,9 +6,9 @@ import { Control } from 'react-redux-form';
 const mapProps = {
   className: ({ fieldValue }) => {
     const _fieldValue = fieldValue.$form || fieldValue;
-    return _fieldValue.submitFailed && !_fieldValue.valid
-      ? 'has-error'
-      : '';
+    return _fieldValue.submitFailed && !_fieldValue.valid ?
+      'has-error' :
+      '';
   }
 };
 
