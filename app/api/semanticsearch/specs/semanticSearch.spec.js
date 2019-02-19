@@ -56,8 +56,8 @@ describe('semanticSearch', () => {
 
   describe('processDocument', () => {
     const expectedResults = [
-      { page: 1, sentence: 'page 1', score: 0.6 },
-      { page: 2, sentence: 'page 2', score: 0.2 }
+      { page: 1, text: 'page 1', score: 0.6 },
+      { page: 2, text: 'page 2', score: 0.2 }
     ];
     beforeEach(() => {
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
@@ -79,13 +79,14 @@ describe('semanticSearch', () => {
       const docInSearch = theSearch.documents.find(doc => doc.sharedId === doc1Id);
       expect(docInSearch.status).toBe('completed');
     });
-    it('should save the results of the document', async () => {
+    it('should save the results of the document and compute average score', async () => {
       await semanticSearch.processDocument(search1Id, 'legal', doc1Id, 'en');
       const [docResults] = await resultsModel.get({ searchId: search1Id, sharedId: doc1Id });
       expect(docResults.status).toBe('completed');
+      expect(docResults.averageScore).toBe((0.6 + 0.2) / 2);
       expect(
         docResults.results
-        .map(({ page, sentence, score }) => ({ page, sentence, score }))
+        .map(({ page, text, score }) => ({ page, text, score }))
       ).toEqual(expectedResults);
     });
     describe('if document has no fullText', () => {
@@ -103,8 +104,8 @@ describe('semanticSearch', () => {
 
   describe('processSearchLimit', () => {
     const expectedResults = [
-      { page: 1, sentence: 'page 1', score: 0.6 },
-      { page: 2, sentence: 'page 2', score: 0.2 }
+      { page: 1, text: 'page 1', score: 0.6 },
+      { page: 2, text: 'page 2', score: 0.2 }
     ];
     beforeEach(() => {
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);

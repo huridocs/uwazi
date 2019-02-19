@@ -35,12 +35,14 @@ const updateSearchDocumentStatus = async (searchId, sharedId, status) => {
 };
 
 const setSearchDocumentResults = async (searchId, sharedId, results) => {
+  const averageScore = results.reduce((total, curr) => total + curr.score, 0) / results.length;
   const docResults = await resultsModel.db.findOneAndUpdate({
     sharedId,
     searchId
   }, {
     sharedId,
     searchId,
+    averageScore,
     results,
     status: COMPLETED
   }, { upsert: true, new: true });

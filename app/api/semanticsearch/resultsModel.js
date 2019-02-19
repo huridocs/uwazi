@@ -5,8 +5,9 @@ const resultSchema = new mongoose.Schema({
   sharedId: String,
   searchId: mongoose.Schema.Types.ObjectId,
   status: String,
+  averageScore: Number,
   results: [{
-      sentence: String,
+      text: String,
       score: Number,
       page: Number
   }]
