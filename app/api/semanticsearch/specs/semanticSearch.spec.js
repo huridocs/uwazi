@@ -55,11 +55,12 @@ describe('semanticSearch', () => {
   });
 
   describe('processDocument', () => {
-    const expectedResults = [
-      { page: 1, text: 'page 1', score: 0.6 },
-      { page: 2, text: 'page 2', score: 0.2 }
-    ];
+    let expectedResults;
     beforeEach(() => {
+      expectedResults = [
+        { page: 1, text: 'page 1', score: 0.2 },
+        { page: 2, text: 'page 2', score: 0.6 }
+      ];
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
       api.processDocument.mockClear();
     });
@@ -79,15 +80,15 @@ describe('semanticSearch', () => {
       const docInSearch = theSearch.documents.find(doc => doc.sharedId === doc1Id);
       expect(docInSearch.status).toBe('completed');
     });
-    it('should save the results of the document and compute average score', async () => {
+    it('should save the results of the document sorted by score in descending order, and compute average score', async () => {
       await semanticSearch.processDocument(search1Id, 'legal', doc1Id, 'en');
       const [docResults] = await resultsModel.get({ searchId: search1Id, sharedId: doc1Id });
       expect(docResults.status).toBe('completed');
-      expect(docResults.averageScore).toBe((0.6 + 0.2) / 2);
+      expect(docResults.averageScore).toBe((0.2 + 0.6) / 2);
       expect(
         docResults.results
         .map(({ page, text, score }) => ({ page, text, score }))
-      ).toEqual(expectedResults);
+      ).toMatchSnapshot();
     });
     describe('if document has no fullText', () => {
       it('should mark as completed without processing', async () => {

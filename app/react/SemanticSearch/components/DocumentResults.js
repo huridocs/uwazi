@@ -22,22 +22,17 @@ const processItem = (doc, threshold) => {
 
 export function DocumentResults({ doc, filters, selectSnippet }) {
   console.log('RES', doc, filters);
-  const { aboveThreshold, avgThreshold } = doc.semanticSearch ? processItem(doc, filters.threshold) : { aboveThreshold: 0, avgThreshold: 0 };
-  let snippets = Immutable.fromJS({
-    count: 0,
-    metadata: [],
-    fullText: [
-      { page: 1, text: 'test' }
-    ]
-  });
+  let snippets = {};
+  let avgScore = 0;
+  let aboveThreshold = 0;
   if (doc.semanticSearch) {
+    const filteredResults = doc.semanticSearch.results.filter(({ score }) => score >= filters.threshold);
+    avgScore = doc.semanticSearch.averageScore;
+    aboveThreshold = filteredResults.length;
     snippets = Immutable.fromJS({
       count: aboveThreshold,
       metadata: [],
-      fullText: doc.semanticSearch.results.map(result => ({
-        page: result.page,
-        text: result.sentence
-      }))
+      fullText: filteredResults
     });
   }
   const documentViewUrl = doc.file ?
@@ -61,18 +56,18 @@ export function DocumentResults({ doc, filters, selectSnippet }) {
         </dl>
         <dl className="metadata-type-numeric">
           <dt>Average sentence score</dt>
-          <dd>{ avgThreshold }</dd>
+          <dd>{ avgScore }</dd>
         </dl>
         <dl>
           <dt>Evidence sentences</dt>
         </dl>
-        <SnippetList
+        { doc.semanticSearch && <SnippetList
           doc={Immutable.fromJS(doc)}
           documentViewUrl={documentViewUrl}
           snippets={snippets}
           searchTerm=""
           selectSnippet={selectSnippet}
-        />
+        />}
       </div>
     </Form>
   );

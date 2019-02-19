@@ -43,7 +43,7 @@ const setSearchDocumentResults = async (searchId, sharedId, results) => {
     sharedId,
     searchId,
     averageScore,
-    results,
+    results: results.sort((r1, r2) => r2.score - r1.score),
     status: COMPLETED
   }, { upsert: true, new: true });
   return docResults;
