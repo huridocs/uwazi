@@ -35,4 +35,3 @@ ratings:
 exclude_patterns:
   - "**/index.js"
   - "**/fixtures.js"
-  - "**/specs/*"
