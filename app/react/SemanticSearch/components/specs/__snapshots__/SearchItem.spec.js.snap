@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchItem should render search details and progress with link to results page  1`] = `
+<div
+  className="semantic-search-list-item"
+>
+  <div
+    className="item-header"
+  >
+    <Connect(I18NLink)
+      to="semanticsearch/id"
+    >
+      query
+    </Connect(I18NLink)>
+    <Component
+      className="text-primary"
+      icon="check-circle"
+    />
+  </div>
+  <ProgressBar
+    max={0}
+    value={0}
+  />
+  <div
+    className="item-footer"
+  >
+    <button
+      className="btn btn-danger"
+    >
+      <Component
+        icon="trash-alt"
+      />
+    </button>
+    <button
+      className="btn btn-success"
+    >
+      <Component
+        icon="paper-plane"
+      />
+    </button>
+  </div>
+</div>
+`;
+
+exports[`SearchItem when search status is inProgress should render in-progress icon and stop button 1`] = `
+<div
+  className="semantic-search-list-item"
+>
+  <div
+    className="item-header"
+  >
+    <Connect(I18NLink)
+      to="semanticsearch/id"
+    >
+      query
+    </Connect(I18NLink)>
+  </div>
+  <ProgressBar
+    max={0}
+    value={0}
+  />
+  <div
+    className="item-footer"
+  >
+    <button
+      className="btn btn-danger"
+    >
+      <Component
+        icon="trash-alt"
+      />
+    </button>
+    <button
+      className="btn btn-warning"
+    >
+      <Component
+        icon="stop"
+      />
+    </button>
+    <button
+      className="btn btn-success"
+    >
+      <Component
+        icon="paper-plane"
+      />
+    </button>
+  </div>
+</div>
+`;
