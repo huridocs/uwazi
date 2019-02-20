@@ -73,5 +73,9 @@ export default {
 
   delete(id) {
     return entities.delete(id);
+  },
+
+  getSearches(docId) {
+    
   }
 };

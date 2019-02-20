@@ -121,6 +121,17 @@ const getSearch = async (searchId) => {
   return theSearch;
 };
 
+const getSearchesByDocument = async (docId) => {
+  const results = await resultsModel.get({ sharedId: docId });
+  const searchPromises = results.map(({ searchId }) => model.getById(searchId));
+  const searches = await Promise.all(searchPromises);
+  searches.map((theSearch, index) => ({
+    ...theSearch,
+    results: results[index]
+  }));
+  return searches;
+};
+
 const getAllSearches = () => model.get();
 const getInProgress = async () => model.get({ status: IN_PROGRESS });
 const getPending = async () => model.get({ status: PENDING });
@@ -133,7 +144,8 @@ const semanticSearch = {
   getAllSearches,
   getPending,
   getInProgress,
-  getSearch
+  getSearch,
+  getSearchesByDocument
 };
 
 export default semanticSearch;

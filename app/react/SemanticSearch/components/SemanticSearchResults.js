@@ -43,6 +43,9 @@ export class SemanticSearchResults extends Component {
           <React.Fragment>
             <Helmet title={`${search.searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
+              <div>
+                { search.searchTerm }
+              </div>
               {/* <RowList>
                 {items.map(result => (
                   <ResultItem result={result} key={result.sharedId} />

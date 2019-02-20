@@ -13,6 +13,8 @@ import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
+import semanticSearch from '../semanticsearch';
+
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
   .then((docLanguages) => {
@@ -206,25 +208,37 @@ export default {
     .then(totalRows => index(0, totalRows));
   },
 
-  get(query, select, pagination) {
-    return model.get(query, select, pagination);
+  async get(query, select, pagination) {
+    const entities = await model.get(query, select, pagination);
+    if (query.sharedId) {
+      entities[0].semanticSearches = await semanticSearch.getSearchesByDocument(query.sharedId);
+    }
+    return entities;
   },
 
-  getWithRelationships(query, select, pagination) {
-    return model.get(query, select, pagination)
+  async getWithRelationships(query, select, pagination) {
+    const _entities = await model.get(query, select, pagination)
     .then(entities => Promise.all(entities.map(entity => relationships.getByDocument(entity.sharedId, entity.language)
     .then((relations) => {
       entity.relationships = relations;
       return entity;
     }))));
+    if (query.sharedId) {
+      _entities[0].semanticSearches = await semanticSearch.getSearchesByDocument(query.sharedId);
+    }
+    return _entities;
   },
 
-  getById(sharedId, language) {
+  async getById(sharedId, language) {
+    const searches = await semanticSearch.getSearchesByDocument(sharedId);
+    let doc;
     if (!language) {
-      return model.getById(sharedId);
+      doc = await model.getById(sharedId);
+    } else {
+      doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
-
-    return model.get({ sharedId, language }).then(result => result[0]);
+    doc.semanticSearches = searches;
+    return doc;
   },
 
   saveMultiple(docs) {

@@ -14,7 +14,8 @@ const findResultsAboveThreshold = (results, threshold) => {
   return results.slice(0, boundingIndex);
 };
 
-export function DocumentResults({ doc, filters, selectSnippet }) {
+export function DocumentResults(props) {
+  const { doc, filters } = props;
   let snippets = {};
   let avgScore = 0;
   let aboveThreshold = 0;
@@ -57,7 +58,10 @@ export function DocumentResults({ doc, filters, selectSnippet }) {
         documentViewUrl={documentViewUrl}
         snippets={snippets}
         searchTerm=""
-        selectSnippet={selectSnippet}
+        selectSnippet={(...args) => {
+          props.selectTab('library.sidepanel.tab', 'semantic-search-results');
+          props.selectSnippet(...args);
+        }}
       />}
     </Form>
   );
