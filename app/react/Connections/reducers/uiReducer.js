@@ -1,7 +1,7 @@
-import {fromJS as Immutable} from 'immutable';
+import { fromJS as Immutable } from 'immutable';
 import * as types from '../actions/actionTypes';
 
-const initialState = {open: false, connecting: false};
+const initialState = { open: false, connecting: false };
 
 export default function (state = initialState, action = {}) {
   switch (action.type) {

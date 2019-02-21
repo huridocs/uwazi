@@ -1,7 +1,7 @@
-import {actions as basicActions} from 'app/BasicReducer';
-import * as actions from '../actions';
+import { actions as basicActions } from 'app/BasicReducer';
 import * as Notifications from 'app/Notifications';
 import api from 'app/Users/UsersAPI';
+import * as actions from '../actions';
 
 describe('User actions', () => {
   let dispatch;
@@ -41,20 +41,20 @@ describe('User actions', () => {
     const username = 'Spidey';
     const email = 'peter@parker.com';
     it('should save a new user', () => {
-      actions.saveUser({username, email})(dispatch);
-      expect(api.save).toHaveBeenCalledWith({username, email});
+      actions.saveUser({ username, email })(dispatch);
+      expect(api.save).toHaveBeenCalledWith({ username, email });
     });
 
     describe('upon success', () => {
       beforeEach((done) => {
-        actions.saveUser({username, email})(dispatch)
+        actions.saveUser({ username, email })(dispatch)
         .then(() => {
           done();
         });
       });
 
       it('should remove user', () => {
-        expect(basicActions.push).toHaveBeenCalledWith('users', {username, email});
+        expect(basicActions.push).toHaveBeenCalledWith('users', { username, email });
         expect(dispatch).toHaveBeenCalledWith('USER PUSHED');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
       });

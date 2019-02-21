@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import {saveConnection, selectRangedTarget} from '../actions/actions';
 import validate from 'validate.js';
 import { Icon } from 'UI';
+import { saveConnection, selectRangedTarget } from '../actions/actions';
 
 export class ActionButton extends Component {
-
   onClick(enabled, connection) {
     if (enabled) {
       if (this.props.action === 'save') {
@@ -23,9 +22,9 @@ export class ActionButton extends Component {
   render() {
     const connection = this.props.connection.toJS();
     const validator = {
-      sourceDocument: {presence: true},
-      targetDocument: {presence: true},
-      template: {presence: true}
+      sourceDocument: { presence: true },
+      targetDocument: { presence: true },
+      template: { presence: true }
     };
 
     if (this.props.type === 'basic') {
@@ -33,7 +32,7 @@ export class ActionButton extends Component {
     }
 
     if (this.props.type !== 'basic') {
-      validator.sourceRange = {presence: true};
+      validator.sourceRange = { presence: true };
     }
 
     const connectionValid = !validate(connection, validator);
@@ -48,10 +47,12 @@ export class ActionButton extends Component {
     }
 
     return (
-      <button className={buttonClass}
-              disabled={!enabled}
-              onClick={this.onClick.bind(this, enabled, connection)}>
-              <Icon icon={buttonIcon} spin={this.props.busy ? true : false} />
+      <button
+        className={buttonClass}
+        disabled={!enabled}
+        onClick={this.onClick.bind(this, enabled, connection)}
+        >
+        <Icon icon={buttonIcon} spin={!!this.props.busy} />
       </button>
     );
   }
@@ -68,7 +69,7 @@ ActionButton.propTypes = {
   busy: PropTypes.bool
 };
 
-export function mapStateToProps({connections}) {
+export function mapStateToProps({ connections }) {
   return {
     type: connections.connection.get('type'),
     connection: connections.connection,
@@ -77,7 +78,7 @@ export function mapStateToProps({connections}) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({saveConnection, selectRangedTarget}, dispatch);
+  return bindActionCreators({ saveConnection, selectRangedTarget }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionButton);

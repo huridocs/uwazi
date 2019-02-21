@@ -26,8 +26,8 @@ export class PagesList extends Component {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Pages')}</div>
         <ul className="list-group pages">
-          {pages.map((page, index) =>
-            (<li key={index} className="list-group-item">
+          {pages.map((page, index) => (
+            <li key={index} className="list-group-item">
               <I18NLink to={`/settings/pages/edit/${page.get('sharedId')}`}>{page.get('title')}</I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink to={`/settings/pages/edit/${page.get('sharedId')}`} className="btn btn-default btn-xs">
@@ -37,7 +37,8 @@ export class PagesList extends Component {
                   <Icon icon="trash-alt" /> <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
-             </li>)
+            </li>
+)
           )}
         </ul>
         <div className="settings-footer">

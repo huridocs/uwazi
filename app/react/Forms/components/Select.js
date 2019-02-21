@@ -24,7 +24,8 @@ export default class Select extends Component {
                   const ky = opt._id || opt.id || indx;
                   return <option key={ky} value={opt[optionsValue]}>{opt[optionsLabel]}</option>;
                 })}
-              </optgroup>);
+              </optgroup>
+);
           }
           return <option key={key} value={option[optionsValue]}>{option[optionsLabel]}</option>;
         })}

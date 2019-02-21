@@ -106,21 +106,19 @@ export default {
 
   delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
 
-  uploadFile: (url, filename, file) => {
-    return new Promise((resolve, reject) => {
-      superagent.post(url)
-      .set('Accept', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .set('Cookie', cookie || '')
-      .attach('file', file, filename)
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
+  uploadFile: (url, filename, file) => new Promise((resolve, reject) => {
+    superagent.post(url)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .set('Cookie', cookie || '')
+    .attach('file', file, filename)
+    .then(() => {
+      resolve();
+    })
+    .catch((err) => {
+      reject(err);
     });
-  },
+  }),
 
   cookie: (c) => {
     cookie = c;

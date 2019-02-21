@@ -12,4 +12,3 @@ export default class NewPage extends RouteHandler {
 NewPage.contextTypes = {
   store: PropTypes.object.isRequired
 };
-

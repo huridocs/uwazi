@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { Icon } from 'UI';
 
-import {switchView as switchViewAction} from '../actions/actions';
+import { switchView as switchViewAction } from '../actions/actions';
 
 export class ToggleStyleButtons extends Component {
   constructor(props) {
@@ -19,7 +19,7 @@ export class ToggleStyleButtons extends Component {
   }
 
   render() {
-    const {view} = this.props;
+    const { view } = this.props;
     return (
       <div className="search-list-actions">
         <button onClick={this.switchView('list')} className={`btn ${view !== 'graph' ? 'btn-success' : 'btn-default'}`}>
@@ -38,7 +38,7 @@ ToggleStyleButtons.propTypes = {
   switchView: PropTypes.func
 };
 
-export function mapStateToProps({connectionsList}) {
+export function mapStateToProps({ connectionsList }) {
   return {
     view: connectionsList.view
   };

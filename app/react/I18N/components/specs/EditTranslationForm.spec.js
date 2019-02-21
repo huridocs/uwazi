@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Field, Form } from 'react-redux-form';
 
-import { EditTranslationForm } from '../EditTranslationForm';
 import Immutable from 'immutable';
+import { EditTranslationForm } from '../EditTranslationForm';
 
 describe('EditTranslationForm', () => {
   let component;

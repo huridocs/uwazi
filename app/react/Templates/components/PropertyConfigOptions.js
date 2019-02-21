@@ -45,7 +45,8 @@ class PropertyConfigOptions extends Component {
                     </Tip>
                   </PropertyConfigOption>
                 )}
-              </React.Fragment>)
+              </React.Fragment>
+)
             }
             <FilterSuggestions {...property} />
           </div>

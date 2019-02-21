@@ -1,0 +1,36 @@
+version: "2"         # required to adjust maintainability checks
+checks:
+  argument-count:
+    enabled: false
+  file-lines:
+    enabled: false
+  method-lines:
+    enabled: false
+  return-statements:
+    enabled: false
+  method-count:
+    enabled: false
+  complex-logic:
+    config:
+      threshold: 4
+  method-complexity:
+    config:
+      threshold: 5
+  nested-control-flow:
+    config:
+      threshold: 4
+  similar-code:
+    config:
+      threshold: 55
+plugins:
+  eslint:
+    enabled: true
+    channel: "eslint-5"
+    config:
+      config: .eslintrc
+ratings:
+  paths:
+  - app/**
+exclude_patterns:
+  - "**/index.js"
+  - "**/fixtures.js"

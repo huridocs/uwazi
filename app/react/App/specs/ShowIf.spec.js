@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import ShowIf from '../ShowIf';
 
@@ -8,10 +8,10 @@ describe('ShowIf', () => {
   let props;
 
   beforeEach(() => {
-    props = {if: true};
+    props = { if: true };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ShowIf {...props}><div/></ShowIf>);
   };
 

@@ -25,13 +25,13 @@ class CustomProvider extends Component {
   }
 
   isRenderedFromServer() {
-    const renderedFromServer = this.renderedFromServer;
+    const { renderedFromServer } = this;
     this.renderedFromServer = false;
     return renderedFromServer;
   }
 
   getInitialData() {
-    const data = this.data;
+    const { data } = this;
     delete this.data;
     return data;
   }

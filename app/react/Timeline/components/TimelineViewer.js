@@ -338,12 +338,13 @@ export class TimelineViewer extends Component {
         });
       });
 
-      tracks.axis = Object.keys(this.state.tracks.main.years).map(year =>
-        (<div key={year} className="timeline-year">
+      tracks.axis = Object.keys(this.state.tracks.main.years).map(year => (
+        <div key={year} className="timeline-year">
           <div className={`timeline-label ${year % 5 === 0 ? 'timeline-label-text' : ''}`}>
             <span>{year}</span>
           </div>
-         </div>)
+        </div>
+      )
       );
     }
 

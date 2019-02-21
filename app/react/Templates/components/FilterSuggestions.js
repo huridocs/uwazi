@@ -74,9 +74,9 @@ export class FilterSuggestions extends Component {
   }
 
   render() {
-    const label = this.props.label;
-    const type = this.props.type;
-    const content = this.props.content;
+    const { label } = this.props;
+    const { type } = this.props;
+    const { content } = this.props;
     const hasThesauri = typeof content !== 'undefined';
     const activeClass = this.props.filter ? 'property-atributes is-active' : 'property-atributes';
     const title = 'This is the current property and will be used togheter with equal properties.';
@@ -109,7 +109,8 @@ export class FilterSuggestions extends Component {
           </tr>
           {this.filterSuggestions(label, type, content, hasThesauri)}
         </tbody>
-      </table>);
+      </table>
+    );
   }
 }
 

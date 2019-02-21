@@ -4,45 +4,45 @@ export default {
   },
 
   isVisible(selector, parentSelector) {
-    let element = this.getElement(selector);
-    let parent = this.getElement(parentSelector);
+    const element = this.getElement(selector);
+    const parent = this.getElement(parentSelector);
 
     if (!parent || !element) {
       return false;
     }
 
-    let elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
+    const elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
 
     return parent.offsetHeight + parent.scrollTop >= elementOffsetToParent + element.scrollHeight &&
      parent.scrollTop <= elementOffsetToParent;
   },
 
   to(selector, parentSelector, opt = {}) {
-    let options = this.getOptions(opt);
+    const options = this.getOptions(opt);
     if (this.isVisible(selector, parentSelector)) {
       return;
     }
-    let element = this.getElement(selector);
-    let parent = this.getElement(parentSelector);
+    const element = this.getElement(selector);
+    const parent = this.getElement(parentSelector);
 
     if (!parent || !element) {
       return;
     }
-    let elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
+    const elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
 
-    let parentVisibleScroll = parent.scrollHeight - parent.offsetHeight;
-    let elementPositionInParent = parent.scrollHeight - elementOffsetToParent;
+    const parentVisibleScroll = parent.scrollHeight - parent.offsetHeight;
+    const elementPositionInParent = parent.scrollHeight - elementOffsetToParent;
 
-    let scrollTop = parentVisibleScroll -
+    const scrollTop = parentVisibleScroll -
     elementPositionInParent +
     options.offset +
     element.scrollHeight +
     (parent.offsetHeight - element.offsetHeight) / options.dividerOffset;
 
-    let start = Date.now();
-    let timeout = window.setInterval(() => {
-      let t = (Date.now() - start) / options.duration;
-      let multiplier = this[options.animation](t);
+    const start = Date.now();
+    const timeout = window.setInterval(() => {
+      const t = (Date.now() - start) / options.duration;
+      const multiplier = this[options.animation](t);
       parent.scrollTop += multiplier * (scrollTop - parent.scrollTop);
       if (multiplier >= 0.9) {
         parent.scrollTop = scrollTop;
@@ -54,7 +54,7 @@ export default {
   },
 
   getOptions(options) {
-    let defaultOptions = {duration: 400, offset: 0, animation: 'easeIn', dividerOffset: 2};
+    const defaultOptions = { duration: 400, offset: 0, animation: 'easeIn', dividerOffset: 2 };
     return Object.assign(defaultOptions, options);
   },
 

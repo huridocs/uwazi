@@ -82,15 +82,17 @@ export class Connection extends Component {
         noMetadata
         className={`${itemClass} item-${reference._id} ${disabled ? 'disabled' : ''} ${this.props.readOnly ? 'readOnly' : ''}`}
         data-id={reference._id}
-        additionalIcon={<ShowIf if={useSourceTargetIcons}>
-          <span><i className={`fa ${referenceIcon}`} />&nbsp;</span>
-        </ShowIf>}
+        additionalIcon={(
+          <ShowIf if={useSourceTargetIcons}>
+            <span><i className={`fa ${referenceIcon}`} />&nbsp;</span>
+          </ShowIf>
+)}
         additionalText={reference.associatedRelationship.range ? reference.associatedRelationship.range.text : null}
         additionalMetadata={[
           { label: 'Connection type', value: this.relationType(reference.template) }
         ]}
         evalPublished
-        buttons={
+        buttons={(
           <div className="item-shortcut-group">
             <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
               <NeedAuthorization roles={['admin', 'editor']}>
@@ -110,7 +112,7 @@ export class Connection extends Component {
               </I18NLink>
             </ShowIf>
           </div>
-        }
+)}
       />
     );
   }

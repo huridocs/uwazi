@@ -193,17 +193,17 @@ export default [
 { key: 'Customisation', label: 'Customisation' },
 { key: 'Custom CSS', label: 'Custom CSS' },
 { key: 'Search Tips: wildcard',
-  label: 'Use an * for wildcard search. Ie: "juris*" will match words  '
-  + 'such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.' },
+  label: 'Use an * for wildcard search. Ie: "juris*" will match words  ' +
+  'such as jurisdiction, jurisdictional, jurists, jurisprudence, etc.' },
 { key: 'Search Tips: one char wildcard',
   label: '? for one character wildcard. Ie: "198?" will match 1980 to 1989 and also 198a, 198b, etc.' },
 { key: 'Search Tips: exact term',
-  label: 'Exact term match by enclosing your search string with quotes. Ie. "Costa Rica"'
-  + ' will toss different results compared to Costa Rica without quotes.' },
+  label: 'Exact term match by enclosing your search string with quotes. Ie. "Costa Rica"' +
+  ' will toss different results compared to Costa Rica without quotes.' },
 { key: 'Search Tips: proximity',
-  label: '~ for proximity searches. Ie: "the status"~5 will find anything having "the" and'
-  + '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".' },
+  label: '~ for proximity searches. Ie: "the status"~5 will find anything having "the" and' +
+  '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".' },
 { key: 'Search Tips: boolean',
-  label: 'AND, OR and NOT for boolean searches. Ie. "status AND women NOT Nicaragua" will match anything '
-  + 'containing both the words status and women, and necessarily not containing the word Nicaragua.' }
+  label: 'AND, OR and NOT for boolean searches. Ie. "status AND women NOT Nicaragua" will match anything ' +
+  'containing both the words status and women, and necessarily not containing the word Nicaragua.' }
 ];

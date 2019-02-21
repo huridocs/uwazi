@@ -6,8 +6,8 @@ import { saveDocument } from 'app/Library/actions/libraryActions';
 import { actions, MetadataForm } from 'app/Metadata';
 
 function mapStateToProps(state, props) {
-  const templates = state.templates;
-  const thesauris = state.thesauris;
+  const { templates } = state;
+  const { thesauris } = state;
   return {
     model: `${props.storeKey}.sidepanel.metadata`,
     isEntity: !state[props.storeKey].sidepanel.file,

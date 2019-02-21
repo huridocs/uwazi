@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {DragDropContext} from 'react-dnd';
+import React, { Component } from 'react';
+import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import DragAndDropItem from './DragAndDropItem';
-import {DropTarget} from 'react-dnd';
+import { DropTarget } from 'react-dnd';
 import ID from 'shared/uniqueID';
+import DragAndDropItem from './DragAndDropItem';
 
 export class DragAndDropContainer extends Component {
-
   constructor(props) {
     super(props);
-    this.state = {id: props.id || ID()};
+    this.state = { id: props.id || ID() };
   }
 
   moveItem(_dragIndex, hoverIndex, item) {
-    let dragIndex = _dragIndex;
-    let items = this.props.items.concat();
-    if (!items.find((_item) => _item.id === item.id)) {
+    const dragIndex = _dragIndex;
+    const items = this.props.items.concat();
+    if (!items.find(_item => _item.id === item.id)) {
       return;
     }
 
@@ -27,7 +26,7 @@ export class DragAndDropContainer extends Component {
 
   removeItem(id) {
     let items = this.props.items.concat();
-    items = items.filter((item) => item.id !== id);
+    items = items.filter(item => item.id !== id);
     this.props.onChange(items);
   }
 
@@ -40,27 +39,30 @@ export class DragAndDropContainer extends Component {
   }
 
   render() {
-    return <div>
-            {this.props.connectDropTarget(<ul className="list-group">
-              {this.props.items.map((item, index) => {
-                return <DragAndDropItem
-                        moveItem={this.moveItem.bind(this)}
-                        removeItem={this.removeItem.bind(this)}
-                        index={index}
-                        iconHandle={item.items ? true : false}
-                        key={item.id}
-                        name={item.name}
-                        container={{id: this.state.id}}
-                        items={item.items}
-                        id={item.id}>
-                          {this.renderItem(item)}
-                        </DragAndDropItem>;
-              })}
-              <div className="no-properties">
-                <div className="no-properties-wrap">Drag items here</div>
-              </div>
-            </ul>)}
-          </div>;
+    return (
+      <div>
+        {this.props.connectDropTarget(<ul className="list-group">
+          {this.props.items.map((item, index) => (
+            <DragAndDropItem
+              moveItem={this.moveItem.bind(this)}
+              removeItem={this.removeItem.bind(this)}
+              index={index}
+              iconHandle={!!item.items}
+              key={item.id}
+              name={item.name}
+              container={{ id: this.state.id }}
+              items={item.items}
+              id={item.id}
+            >
+              {this.renderItem(item)}
+            </DragAndDropItem>
+))}
+          <div className="no-properties">
+            <div className="no-properties-wrap">Drag items here</div>
+          </div>
+                                      </ul>)}
+      </div>
+    );
   }
 }
 
@@ -75,22 +77,22 @@ DragAndDropContainer.propTypes = {
 
 export const containerTarget = {
   drop(props, monitor, component) {
-    let item = monitor.getItem();
+    const item = monitor.getItem();
     if (item.id === component.state.id) {
       return;
     }
     if (!monitor.getDropResult() || !monitor.getDropResult().id) {
-      let items = props.items.concat();
-      if (!items.find((_item) => _item.id === item.id)) {
+      const items = props.items.concat();
+      if (!items.find(_item => _item.id === item.id)) {
         items.push(item);
         props.onChange(items);
       }
-      return {id: component.state.id};
+      return { id: component.state.id };
     }
   }
 };
 
-let dragAndDropContainer = DropTarget('DRAG_AND_DROP_ITEM', containerTarget, (connect) => ({
+const dragAndDropContainer = DropTarget('DRAG_AND_DROP_ITEM', containerTarget, connect => ({
   connectDropTarget: connect.dropTarget()
 }))(DragAndDropContainer);
 

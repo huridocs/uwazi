@@ -9,22 +9,22 @@ describe('modalsReducer', () => {
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
-      let newState = modalsReducer();
+      const newState = modalsReducer();
       expect(newState).toEqual(initialState);
     });
   });
 
   describe('SHOW_MODAL', () => {
     it('should assign a key with modal name and data', () => {
-      let newState = modalsReducer(initialState, {type: types.SHOW_MODAL, modal: 'modalName', data: 'data'});
+      const newState = modalsReducer(initialState, { type: types.SHOW_MODAL, modal: 'modalName', data: 'data' });
       expect(newState.toJS().modalName).toEqual('data');
     });
   });
 
   describe('HIDE_MODAL', () => {
     it('should delete modal from the state', () => {
-      let state = initialState.set('modalName', 1);
-      let newState = modalsReducer(state, {type: types.HIDE_MODAL, modal: 'modalName'});
+      const state = initialState.set('modalName', 1);
+      const newState = modalsReducer(state, { type: types.HIDE_MODAL, modal: 'modalName' });
       expect(newState.toJS()).toEqual({});
     });
   });

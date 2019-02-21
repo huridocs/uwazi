@@ -212,7 +212,7 @@ export default {
           }
         ]
       }
-  ],
+    ],
   relationtypes: [
     {
       _id: relationType,
@@ -222,7 +222,7 @@ export default {
         { name: 'description', type: 'text', filter: true }
       ]
     }
-    ],
+  ],
   connections: [
     { entity: batmanFinishes, template: relationType, metadata: { status: 'open', description: 'red' }, language: 'en' },
     { entity: 'shared4', template: 'anotherone', metadata: { status: 'open', description: 'red' }, language: 'en' },

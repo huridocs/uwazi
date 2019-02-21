@@ -1,7 +1,7 @@
-import * as actions from '../actions';
 import * as Notifications from 'app/Notifications';
 import api from 'app/Entities/EntitiesAPI';
-import {actions as relationshipActions} from 'app/Relationships';
+import { actions as relationshipActions } from 'app/Relationships';
+import * as actions from '../actions';
 
 describe('Entities actions', () => {
   let dispatch;
@@ -9,7 +9,7 @@ describe('Entities actions', () => {
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
 
-    spyOn(api, 'save').and.returnValue(Promise.resolve({_id: 'newId', _rev: 'newRev', sharedId: 'sharedId'}));
+    spyOn(api, 'save').and.returnValue(Promise.resolve({ _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' }));
     spyOn(api, 'delete').and.returnValue(Promise.resolve());
     spyOn(api, 'deleteMultiple').and.returnValue(Promise.resolve());
     spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
@@ -17,14 +17,14 @@ describe('Entities actions', () => {
 
   describe('saveEntity', () => {
     it('should dispatch a saving entity and save the data', (done) => {
-      spyOn(relationshipActions, 'reloadRelationships').and.returnValue({type: 'reloadRelationships'});
+      spyOn(relationshipActions, 'reloadRelationships').and.returnValue({ type: 'reloadRelationships' });
       actions.saveEntity('data')(dispatch)
       .then(() => {
         expect(api.save).toHaveBeenCalledWith('data');
         expect(Notifications.notify).toHaveBeenCalledWith('Entity saved', 'success');
-        expect(dispatch).toHaveBeenCalledWith({type: 'entityView/entity/SET', value: {_id: 'newId', _rev: 'newRev', sharedId: 'sharedId'}});
-        expect(dispatch).toHaveBeenCalledWith({type: 'rrf/reset', model: 'entityView.entityForm'});
-        expect(dispatch).toHaveBeenCalledWith({type: 'reloadRelationships'});
+        expect(dispatch).toHaveBeenCalledWith({ type: 'entityView/entity/SET', value: { _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' } });
+        expect(dispatch).toHaveBeenCalledWith({ type: 'rrf/reset', model: 'entityView.entityForm' });
+        expect(dispatch).toHaveBeenCalledWith({ type: 'reloadRelationships' });
         expect(relationshipActions.reloadRelationships).toHaveBeenCalledWith('sharedId');
         done();
       });

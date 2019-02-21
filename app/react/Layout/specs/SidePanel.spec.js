@@ -1,13 +1,13 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import SidePanel from 'app/Layout/SidePanel';
 
 describe('SidePanel', () => {
   let component;
 
-  let render = (props = {}) => {
-    component = shallow(<SidePanel {...props}><div></div></SidePanel>);
+  const render = (props = {}) => {
+    component = shallow(<SidePanel {...props}><div /></SidePanel>);
   };
 
   it('should render children', () => {
@@ -21,7 +21,7 @@ describe('SidePanel', () => {
   });
 
   it('should be active if props.open', () => {
-    render({open: true});
+    render({ open: true });
     expect(component.find('aside').hasClass('is-hidden')).toBe(false);
     expect(component.find('aside').hasClass('is-active')).toBe(true);
   });

@@ -1,16 +1,15 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {actions as formActions} from 'react-redux-form';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actions as formActions } from 'react-redux-form';
 
-import {closePanel} from '../actions/uiActions';
-import {hideModal} from 'app/Modals/actions/modalActions';
+import { hideModal } from 'app/Modals/actions/modalActions';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
+import { closePanel } from '../actions/uiActions';
 
 export class ConfirmCloseForm extends Component {
-
   confirm() {
     this.props.hideModal('ConfirmCloseForm');
     this.props.closePanel();
@@ -22,7 +21,7 @@ export class ConfirmCloseForm extends Component {
       return false;
     }
 
-    let doc = this.props.doc;
+    const { doc } = this.props;
 
     return (
       <Modal isOpen={!!doc} type="danger">
@@ -53,12 +52,10 @@ ConfirmCloseForm.propTypes = {
   doc: PropTypes.object
 };
 
-const mapStateToProps = (state) => {
-  return {doc: state.modals.get('ConfirmCloseForm')};
-};
+const mapStateToProps = state => ({ doc: state.modals.get('ConfirmCloseForm') });
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({closePanel, hideModal, resetForm: formActions.reset}, dispatch);
+  return bindActionCreators({ closePanel, hideModal, resetForm: formActions.reset }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ConfirmCloseForm);

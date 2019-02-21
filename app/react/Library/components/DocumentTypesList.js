@@ -76,7 +76,7 @@ export class DocumentTypesList extends Component {
     if (!this.checked(item) && item.items.find(itm => this.checked(itm))) {
       return;
     }
-    const ui = this.state.ui;
+    const { ui } = this.state;
     ui[item.id] = !ui[item.id];
     this.setState({ ui });
   }
@@ -116,29 +116,31 @@ export class DocumentTypesList extends Component {
 
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
-    return (<li className="multiselectItem" key={index} title={item.name}>
-      <input
-        type="checkbox"
-        className="multiselectItem-input"
-        value={item.id}
-        id={item.id}
-        onChange={this.change.bind(this, item)}
-        checked={this.checked(item)}
-      />
-      <label
-        className="multiselectItem-label"
-        htmlFor={item.id}
-      >
-        <span className="multiselectItem-icon">
-          <Icon icon={['far', 'square']} className="checkbox-empty" />
-          <Icon icon="check" className="checkbox-checked" />
+    return (
+      <li className="multiselectItem" key={index} title={item.name}>
+        <input
+          type="checkbox"
+          className="multiselectItem-input"
+          value={item.id}
+          id={item.id}
+          onChange={this.change.bind(this, item)}
+          checked={this.checked(item)}
+        />
+        <label
+          className="multiselectItem-label"
+          htmlFor={item.id}
+        >
+          <span className="multiselectItem-icon">
+            <Icon icon={['far', 'square']} className="checkbox-empty" />
+            <Icon icon="check" className="checkbox-checked" />
+          </span>
+          <span className="multiselectItem-name"><Translate context={context}>{item.name}</Translate></span>
+        </label>
+        <span className="multiselectItem-results">
+          {this.aggregations(item)}
         </span>
-        <span className="multiselectItem-name"><Translate context={context}>{item.name}</Translate></span>
-      </label>
-      <span className="multiselectItem-results">
-        {this.aggregations(item)}
-      </span>
-            </li>);
+      </li>
+    );
   }
 
   renderGroupType(item, index) {
@@ -171,7 +173,8 @@ export class DocumentTypesList extends Component {
             {item.items.map((_item, i) => this.renderSingleType(_item, i))}
           </ul>
         </ShowIf>
-      </li>);
+      </li>
+    );
   }
 
   render() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import NewThesauri from 'app/Thesauris/NewThesauri';
 import ThesauriForm from 'app/Thesauris/components/ThesauriForm';
@@ -9,12 +9,12 @@ describe('NewThesauri', () => {
   let component;
   let instance;
   let context;
-  let thesauris = [{name: 'Countries', values: [{id: '1', label: 'label1'}, {id: '2', label: 'label2'}]}];
+  const thesauris = [{ name: 'Countries', values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }] }];
 
   beforeEach(() => {
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
     spyOn(api, 'get').and.returnValue(Promise.resolve(thesauris));
-    component = shallow(<NewThesauri />, {context});
+    component = shallow(<NewThesauri />, { context });
     instance = component.instance();
   });
 
@@ -27,7 +27,7 @@ describe('NewThesauri', () => {
     it('should request the thesauris', (done) => {
       NewThesauri.requestState()
       .then((state) => {
-        expect(state).toEqual({thesauris});
+        expect(state).toEqual({ thesauris });
         done();
       })
       .catch(done.fail);
@@ -36,8 +36,8 @@ describe('NewThesauri', () => {
 
   describe('setReduxState()', () => {
     it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({thesauris});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: thesauris});
+      instance.setReduxState({ thesauris });
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'thesauris/SET', value: thesauris });
     });
   });
 });

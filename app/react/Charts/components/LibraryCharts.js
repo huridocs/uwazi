@@ -80,11 +80,13 @@ export class LibraryCharts extends Component {
       <div className="documents-list">
         <div className="main-wrapper">
           <div className="item-group item-group-charts">
-            {fields.map((field, index) => (<LibraryChart
-              key={index}
-              options={field.options}
-              label={t(this.props.translationContext, field.label)}
-            />))}
+            {fields.map((field, index) => (
+              <LibraryChart
+                key={index}
+                options={field.options}
+                label={t(this.props.translationContext, field.label)}
+              />
+))}
           </div>
         </div>
       </div>

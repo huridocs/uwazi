@@ -1,6 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {DragAndDropContainer, containerTarget} from '../DragAndDropContainer';
+import { shallow } from 'enzyme';
+import { DragAndDropContainer, containerTarget } from '../DragAndDropContainer';
 import DragAndDropItem from '../DragAndDropItem';
 
 describe('DragAndDropContainer', () => {
@@ -10,17 +10,17 @@ describe('DragAndDropContainer', () => {
     let items;
     beforeEach(() => {
       items = [
-        {content: 'A rude awakening', id: 1},
-        {content: 'A nice awakening', id: 2}
+        { content: 'A rude awakening', id: 1 },
+        { content: 'A nice awakening', id: 2 }
       ];
       props = {
-        connectDropTarget: jasmine.createSpy('connectDropTarget').and.callFake((value) => value),
-        items: items,
+        connectDropTarget: jasmine.createSpy('connectDropTarget').and.callFake(value => value),
+        items,
         onChange: jasmine.createSpy('onChange')
       };
     });
 
-    let render = () => {
+    const render = () => {
       component = shallow(<DragAndDropContainer {...props} />);
     };
 
@@ -32,9 +32,7 @@ describe('DragAndDropContainer', () => {
 
     describe('accepts a custom render function', () => {
       it('to render items', () => {
-        props.renderItem = () => {
-          return <span>Avocado</span>;
-        };
+        props.renderItem = () => <span>Avocado</span>;
         render();
         expect(component.find(DragAndDropItem).first().find('span').text()).toBe('Avocado');
       });
@@ -44,13 +42,13 @@ describe('DragAndDropContainer', () => {
       it('should reorder the items and call onChange', () => {
         render();
         component.instance().moveItem(1, 0, items[1]);
-        expect(props.onChange).toHaveBeenCalledWith([{content: 'A nice awakening', id: 2}, {content: 'A rude awakening', id: 1}]);
+        expect(props.onChange).toHaveBeenCalledWith([{ content: 'A nice awakening', id: 2 }, { content: 'A rude awakening', id: 1 }]);
       });
 
       describe('when the item does not belong to the container', () => {
         it('should do nothing', () => {
           render();
-          component.instance().moveItem(1, 0, {id: 27});
+          component.instance().moveItem(1, 0, { id: 27 });
           expect(props.onChange).not.toHaveBeenCalled();
         });
       });
@@ -60,7 +58,7 @@ describe('DragAndDropContainer', () => {
       it('should remove the item and call onChange', () => {
         render();
         component.instance().removeItem(1);
-        expect(props.onChange).toHaveBeenCalledWith([{content: 'A nice awakening', id: 2}]);
+        expect(props.onChange).toHaveBeenCalledWith([{ content: 'A nice awakening', id: 2 }]);
       });
     });
   });
@@ -68,50 +66,42 @@ describe('DragAndDropContainer', () => {
   describe('containerTarget', () => {
     describe('drop', () => {
       it('should return the container id', () => {
-        let monitor = {
-          getItem: () => {
-            return {id: 1};
-          },
+        const monitor = {
+          getItem: () => ({ id: 1 }),
           getDropResult: () => {}
         };
 
-        let component = {state: {id: 'container_id'}};
-        let props = {
-          items: [{id: 1}],
+        const component = { state: { id: 'container_id' } };
+        const props = {
+          items: [{ id: 1 }],
           onChange: jasmine.createSpy('onChange')
         };
-        let dropResult = containerTarget.drop(props, monitor, component);
-        expect(dropResult).toEqual({id: 'container_id'});
+        const dropResult = containerTarget.drop(props, monitor, component);
+        expect(dropResult).toEqual({ id: 'container_id' });
         expect(props.onChange).not.toHaveBeenCalled();
       });
 
       it('should add the item if missing', () => {
-        let monitor = {
-          getItem: () => {
-            return {id: 1};
-          },
+        const monitor = {
+          getItem: () => ({ id: 1 }),
           getDropResult: () => {}
         };
-        let component = {state: {id: 'container_id'}};
-        let props = {
+        const component = { state: { id: 'container_id' } };
+        const props = {
           items: [],
           onChange: jasmine.createSpy('onChange')
         };
         containerTarget.drop(props, monitor, component);
-        expect(props.onChange).toHaveBeenCalledWith([{id: 1}]);
+        expect(props.onChange).toHaveBeenCalledWith([{ id: 1 }]);
       });
 
       it('should NOT add the item if other container handles the drop', () => {
-        let monitor = {
-          getItem: () => {
-            return {id: 1};
-          },
-          getDropResult: () => {
-            return {id: 'I_handle_this'};
-          }
+        const monitor = {
+          getItem: () => ({ id: 1 }),
+          getDropResult: () => ({ id: 'I_handle_this' })
         };
-        let component = {state: {id: 'container_id'}};
-        let props = {
+        const component = { state: { id: 'container_id' } };
+        const props = {
           items: [],
           onChange: jasmine.createSpy('onChange')
         };

@@ -1,7 +1,7 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {SearchButton} from 'app/Library/components/SearchButton';
+import { SearchButton } from 'app/Library/components/SearchButton';
 
 describe('SearchButton', () => {
   let component;
@@ -12,7 +12,7 @@ describe('SearchButton', () => {
     props.open = true;
   });
 
-  let render = function () {
+  const render = function () {
     component = shallow(<SearchButton {...props}/>);
   };
 
