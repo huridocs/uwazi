@@ -111,7 +111,7 @@ describe('Relationships actions', () => {
         { type: 'NOTIFY',
 notification: {
           id: 'unique_id', message: 'a short title added to hub.  Save your work to make change permanent.', type: 'success'
-          } },
+} },
         { type: types.ADD_RELATIONSHIPS_ENTITY, index: 3, rightIndex: 7, entity }
       ]);
     });

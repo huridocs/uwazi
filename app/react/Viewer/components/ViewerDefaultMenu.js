@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 
-import {openPanel} from 'app/Viewer/actions/uiActions';
+import { openPanel } from 'app/Viewer/actions/uiActions';
 
 export class ViewerDefaultMenu extends Component {
   render() {
@@ -21,13 +21,11 @@ export class ViewerDefaultMenu extends Component {
   }
 }
 
-const mapStateToProps = ({documentViewer}) => {
-  return {
+const mapStateToProps = ({ documentViewer }) => ({
     panelIsOpen: !!documentViewer.uiState.get('panel'),
     doc: documentViewer.doc,
     targetDoc: !!documentViewer.targetDoc.get('_id')
-  };
-};
+});
 
 ViewerDefaultMenu.propTypes = {
   active: PropTypes.bool,
@@ -42,7 +40,7 @@ ViewerDefaultMenu.contextTypes = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({openPanel}, dispatch);
+  return bindActionCreators({ openPanel }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewerDefaultMenu);

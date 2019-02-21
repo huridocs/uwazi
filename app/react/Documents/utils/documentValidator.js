@@ -4,13 +4,13 @@ export function required(val) {
 
 export default {
   generate(template) {
-    let validationObject = {
-      title: {required}
+    const validationObject = {
+      title: { required }
     };
 
     template.properties.forEach((property) => {
       if (property.required) {
-        validationObject[`metadata.${property.name}`] = {required};
+        validationObject[`metadata.${property.name}`] = { required };
       }
     });
 

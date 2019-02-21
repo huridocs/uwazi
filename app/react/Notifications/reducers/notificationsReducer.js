@@ -10,7 +10,7 @@ export default function notificationsReducer(state = initialState, action = {}) 
   }
 
   if (action.type === actions.REMOVE_NOTIFICATION) {
-    return state.filter((notification) => notification.get('id') !== action.id);
+    return state.filter(notification => notification.get('id') !== action.id);
   }
 
   return Immutable.fromJS(state);

@@ -4,7 +4,7 @@ describe('objectWithoutKeys', () => {
   let source;
 
   beforeEach(() => {
-    source = {a: 'a', b: 'b', c: 'c', z: 'z'};
+    source = { a: 'a', b: 'b', c: 'c', z: 'z' };
   });
 
   it('should return a copy of the object', () => {
@@ -13,6 +13,6 @@ describe('objectWithoutKeys', () => {
   });
 
   it('should exclude the selected keys, without failing if key not in original object', () => {
-    expect(objectWithoutKeys(source, ['b', 'c', 'y'])).toEqual({a: 'a', z: 'z'});
+    expect(objectWithoutKeys(source, ['b', 'c', 'y'])).toEqual({ a: 'a', z: 'z' });
   });
 });

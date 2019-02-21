@@ -1,7 +1,7 @@
-import createReducer, {actions} from 'app/BasicReducer';
+import createReducer, { actions } from 'app/BasicReducer';
 import * as types from 'app/Library/actions/actionTypes';
 
-let reducer = createReducer('aggregations', {});
+const reducer = createReducer('aggregations', {});
 
 export default function aggregations(state, _action = {}) {
   let action = _action;

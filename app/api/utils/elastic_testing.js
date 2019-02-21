@@ -1,7 +1,7 @@
 import entities from 'api/entities/entities';
-import elasticMapping from '../../../database/elastic_mapping';
 import elasticConfig from 'api/config/elasticIndexes';
 import elastic from 'api/search/elastic';
+import elasticMapping from '../../../database/elastic_mapping';
 
 export default (elasticIndex) => {
   elasticConfig.index = elasticIndex;

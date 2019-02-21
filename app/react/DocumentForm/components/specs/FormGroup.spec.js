@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 
@@ -11,7 +11,7 @@ describe('FormGroup', () => {
     props = {};
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<FormGroup {...props}/>);
   };
 
@@ -19,7 +19,7 @@ describe('FormGroup', () => {
     props.pristine = false;
     props.valid = false;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(true);
   });
 
@@ -28,7 +28,7 @@ describe('FormGroup', () => {
     props.submitFailed = true;
     props.valid = false;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(true);
   });
 
@@ -36,14 +36,14 @@ describe('FormGroup', () => {
     props.pristine = true;
     props.valid = false;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(false);
   });
 
   it('should not render errors when submitFailed with no errors', () => {
     props.submitFailed = true;
     render();
-    let group = component.find('.form-group');
+    const group = component.find('.form-group');
     expect(group.hasClass('has-error')).toBe(false);
   });
 });

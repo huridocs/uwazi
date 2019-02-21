@@ -1,5 +1,5 @@
-import * as types from '../actions/actionTypes';
 import { fromJS } from 'immutable';
+import * as types from '../actions/actionTypes';
 
 const initialState = [];
 

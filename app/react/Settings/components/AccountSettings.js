@@ -102,11 +102,13 @@ export class AccountSettings extends Component {
               </div>
               {(() => {
                 if (this.state.passwordError) {
-                  return (<div className="validation-error validation-error-centered">
-                    <Icon icon="exclamation-triangle" />
+                  return (
+                    <div className="validation-error validation-error-centered">
+                      <Icon icon="exclamation-triangle" />
                             &nbsp;
-                    {t('System', 'bothFieldsRequired', 'Both fields are required and should match.')}
-                          </div>);
+                      {t('System', 'bothFieldsRequired', 'Both fields are required and should match.')}
+                    </div>
+);
                 }
               })()}
               <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>

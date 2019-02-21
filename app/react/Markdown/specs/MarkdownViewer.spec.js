@@ -118,8 +118,8 @@ describe('MarkdownViewer', () => {
     });
 
     it('should render Link', () => {
-      props.markdown = '{link}(url:this_is_the_url,label:\'this is a label\')'
-        + '\n<MarkdownLink url="the_url">label</MarkDownLink>';
+      props.markdown = '{link}(url:this_is_the_url,label:\'this is a label\')' +
+        '\n<MarkdownLink url="the_url">label</MarkDownLink>';
       props.html = true;
 
       render();

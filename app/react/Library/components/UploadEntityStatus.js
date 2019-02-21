@@ -20,12 +20,14 @@ export class UploadEntityStatus extends Component {
 
     const ProgressBar = this.renderProgressBar();
 
-    return (<div>
-      {ProgressBar}
-      <ItemFooter.Label status={this.props.status}>
-        {this.props.message}
-      </ItemFooter.Label>
-            </div>);
+    return (
+      <div>
+        {ProgressBar}
+        <ItemFooter.Label status={this.props.status}>
+          {this.props.message}
+        </ItemFooter.Label>
+      </div>
+    );
   }
 }
 

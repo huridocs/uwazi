@@ -212,7 +212,7 @@ describe('MetadataProperty', () => {
             data: templateData,
             uiState: Immutable.fromJS({ templates: [] }),
             formState: { fields: [], errors: {} }
-        },
+          },
           templates: Immutable.fromJS([]),
           modals: Immutable.fromJS({})
       }));

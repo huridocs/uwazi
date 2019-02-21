@@ -1,14 +1,14 @@
 import SettingsAPI from 'app/Settings/SettingsAPI';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-import {catchErrors} from 'api/utils/jasmineHelpers';
+import { catchErrors } from 'api/utils/jasmineHelpers';
 
 describe('SettingsAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .post(APIURL + 'settings', {body: JSON.stringify('ok')})
-    .get(APIURL + 'settings', {body: JSON.stringify({site_name: 'Uwazi'})});
+    .post(`${APIURL}settings`, { body: JSON.stringify('ok') })
+    .get(`${APIURL}settings`, { body: JSON.stringify({ site_name: 'Uwazi' }) });
   });
 
   afterEach(() => backend.restore());
@@ -37,7 +37,7 @@ describe('SettingsAPI', () => {
     it('should request the logged in user', (done) => {
       SettingsAPI.get()
       .then((response) => {
-        expect(response).toEqual({site_name: 'Uwazi'});
+        expect(response).toEqual({ site_name: 'Uwazi' });
         done();
       })
       .catch(catchErrors(done));

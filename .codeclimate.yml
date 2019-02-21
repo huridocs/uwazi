@@ -1,37 +1,31 @@
 version: "2"         # required to adjust maintainability checks
 checks:
   argument-count:
-    config:
-      threshold: 4
+    enabled: false
+  file-lines:
+    enabled: false
+  method-lines:
+    enabled: false
+  return-statements:
+    enabled: false
+  method-count:
+    enabled: false
   complex-logic:
     config:
       threshold: 4
-  file-lines:
-    config:
-      threshold: 250
   method-complexity:
     config:
       threshold: 5
-  method-count:
-    config:
-      threshold: 20
-  method-lines:
-    config:
-      threshold: 25
   nested-control-flow:
     config:
       threshold: 4
-  return-statements:
-    config:
-      threshold: 4
   similar-code:
-    enabled: false
-  identical-code:
-    enabled: false
+    config:
+      threshold: 55
 plugins:
   eslint:
     enabled: true
-    channel: "eslint-4"
+    channel: "eslint-5"
     config:
       config: .eslintrc
 ratings:
@@ -40,4 +34,3 @@ ratings:
 exclude_patterns:
   - "**/index.js"
   - "**/fixtures.js"
-  - "**/specs/*"

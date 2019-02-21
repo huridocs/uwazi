@@ -7,16 +7,16 @@ import 'jasmine-immutablejs-matchers';
 describe('templateReducer', () => {
   describe('when state is undefined', () => {
     it('return initial state []', () => {
-      let newState = notificationsReducer();
+      const newState = notificationsReducer();
       expect(newState).toEqual(Immutable.fromJS([]));
     });
   });
 
   describe('NOTIFY', () => {
     it('should add a notification', () => {
-      let currentState = Immutable.fromJS([{message: 'message'}]);
-      let newState = notificationsReducer(currentState, {type: types.NOTIFY, notification: {message: 'another message'}});
-      let expected = Immutable.fromJS([{message: 'message'}, {message: 'another message'}]);
+      const currentState = Immutable.fromJS([{ message: 'message' }]);
+      const newState = notificationsReducer(currentState, { type: types.NOTIFY, notification: { message: 'another message' } });
+      const expected = Immutable.fromJS([{ message: 'message' }, { message: 'another message' }]);
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);
@@ -25,9 +25,9 @@ describe('templateReducer', () => {
 
   describe('REMOVE_NOTIFICATION', () => {
     it('should add a notification', () => {
-      let currentState = Immutable.fromJS([{id: 1}, {id: 2}]);
-      let newState = notificationsReducer(currentState, {type: types.REMOVE_NOTIFICATION, id: 2});
-      let expected = Immutable.fromJS([{id: 1}]);
+      const currentState = Immutable.fromJS([{ id: 1 }, { id: 2 }]);
+      const newState = notificationsReducer(currentState, { type: types.REMOVE_NOTIFICATION, id: 2 });
+      const expected = Immutable.fromJS([{ id: 1 }]);
 
       expect(newState).toBeImmutable();
       expect(newState).toEqualImmutable(expected);

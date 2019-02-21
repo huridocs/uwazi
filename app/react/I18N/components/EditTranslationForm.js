@@ -83,9 +83,10 @@ export class EditTranslationForm extends Component {
             <ul className="list-group">
               {(() => {
                   if (translations.length) {
-                    return contextKeys.sort().map(value => (<li key={value} className="list-group-item">
-                      <h5>{value}</h5>
-                      {translations.map((translation, i) => {
+                    return contextKeys.sort().map(value => (
+                      <li key={value} className="list-group-item">
+                        <h5>{value}</h5>
+                        {translations.map((translation, i) => {
                           const context = translation.contexts.find(ctx => ctx.id === contextId);
                           const index = translation.contexts.indexOf(context);
                           return (
@@ -96,9 +97,11 @@ export class EditTranslationForm extends Component {
                                   <input className="form-control" type="text" />
                                 </Field>
                               </div>
-                            </FormGroup>);
+                            </FormGroup>
+);
                         })}
-                    </li>));
+                      </li>
+));
                   }
                 })()}
             </ul>

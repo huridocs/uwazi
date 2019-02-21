@@ -12,11 +12,11 @@ import { notify } from 'app/Notifications';
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 
+import Immutable from 'immutable';
 import IconField from './IconField';
 import MetadataFormFields from './MetadataFormFields';
 import validator from '../helpers/validator';
 import defaultTemplate from '../helpers/defaultTemplate';
-import Immutable from 'immutable';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import {I18NLink} from 'app/I18N';
+import { I18NLink } from 'app/I18N';
 
 export class SiteName extends Component {
   render() {
@@ -11,8 +11,8 @@ export class SiteName extends Component {
         <Helmet
           titleTemplate={`%s • ${this.props.siteName}`}
           meta={[
-            {'char-set': 'utf-8'},
-            {name: 'description', content: 'Uwazi docs'}
+            { 'char-set': 'utf-8' },
+            { name: 'description', content: 'Uwazi docs' }
           ]}
         />
         <I18NLink to="/">{this.props.siteName}</I18NLink>
@@ -26,7 +26,7 @@ SiteName.propTypes = {
 };
 
 export function mapStateToProps(state) {
-  return {siteName: state.settings.collection.get('site_name')};
+  return { siteName: state.settings.collection.get('site_name') };
 }
 
 export default connect(mapStateToProps)(SiteName);

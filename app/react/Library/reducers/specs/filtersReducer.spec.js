@@ -5,31 +5,31 @@ import filtersReducer from 'app/Library/reducers/filtersReducer';
 import 'jasmine-immutablejs-matchers';
 
 describe('filtersReducer', () => {
-  const initialState = Immutable.fromJS({properties: [], documentTypes: []});
+  const initialState = Immutable.fromJS({ properties: [], documentTypes: [] });
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
-      let newState = filtersReducer();
+      const newState = filtersReducer();
       expect(newState).toEqual(initialState);
     });
   });
 
-  let libraryFilters = [{name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values']}];
+  const libraryFilters = [{ name: 'country', filter: true, type: 'select', content: 'abc1', options: ['thesauri values'] }];
 
   describe('SET_LIBRARY_FILTERS', () => {
     it('should set the properties', () => {
-      const state = Immutable.fromJS({properties: []});
+      const state = Immutable.fromJS({ properties: [] });
 
-      let newState = filtersReducer(state, {type: types.SET_LIBRARY_FILTERS, libraryFilters});
+      const newState = filtersReducer(state, { type: types.SET_LIBRARY_FILTERS, libraryFilters });
       expect(newState.get('properties').toJS()).toEqual(libraryFilters);
     });
   });
 
   describe('INITIALIZE_FILTERS_FORM', () => {
     it('should set the properties', () => {
-      const state = Immutable.fromJS({properties: []});
+      const state = Immutable.fromJS({ properties: [] });
 
-      let newState = filtersReducer(state, {type: types.INITIALIZE_FILTERS_FORM, libraryFilters});
+      const newState = filtersReducer(state, { type: types.INITIALIZE_FILTERS_FORM, libraryFilters });
       expect(newState.get('properties').toJS()).toEqual(libraryFilters);
     });
   });

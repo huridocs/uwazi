@@ -17,6 +17,7 @@ export class SearchBar extends Component {
     this.resetSearch = this.resetSearch.bind(this);
     this.submitSearch = this.submitSearch.bind(this);
   }
+
   resetSearch() {
     this.props.change(`${this.props.storeKey}.search.searchTerm`, '');
     const search = Object.assign({}, this.props.search);

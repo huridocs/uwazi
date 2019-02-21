@@ -1,9 +1,9 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import {I18NLink} from 'app/I18N';
+import { I18NLink } from 'app/I18N';
 
-import {TranslationsList} from '../TranslationsList';
+import { TranslationsList } from '../TranslationsList';
 
 describe('TranslationsList', () => {
   let component;
@@ -15,12 +15,12 @@ describe('TranslationsList', () => {
       translations: Immutable.fromJS([{
         locale: 'es',
         contexts: [
-          {id: '1', label: 'X-Men'},
-          {id: '2', label: 'Avengers'},
-          {id: '3', label: 'Batman'}
+          { id: '1', label: 'X-Men' },
+          { id: '2', label: 'Avengers' },
+          { id: '3', label: 'Batman' }
         ]
       }]),
-      settings: Immutable.fromJS({languages: [{key: 'es', default: true}]})
+      settings: Immutable.fromJS({ languages: [{ key: 'es', default: true }] })
     };
 
     context = {
@@ -28,14 +28,14 @@ describe('TranslationsList', () => {
     };
   });
 
-  let render = () => {
-    component = shallow(<TranslationsList {...props} />, {context});
+  const render = () => {
+    component = shallow(<TranslationsList {...props} />, { context });
   };
 
   describe('render', () => {
     it('should a list of the different translations contexts', () => {
       render();
-      let renderedContexts = component.find('ul.relation-types').find(I18NLink);
+      const renderedContexts = component.find('ul.relation-types').find(I18NLink);
       expect(renderedContexts.at(0).props().children).toBe('Avengers');
       expect(renderedContexts.at(2).props().children).toBe('Batman');
       expect(renderedContexts.at(4).props().children).toBe('X-Men');
