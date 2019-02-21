@@ -13,8 +13,6 @@ import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
-import semanticSearch from '../semanticsearch';
-
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
   .then((docLanguages) => {
@@ -224,14 +222,12 @@ export default {
   },
 
   async getById(sharedId, language) {
-    const searches = await semanticSearch.getSearchesByDocument(sharedId);
     let doc;
     if (!language) {
       doc = await model.getById(sharedId);
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
-    doc.semanticSearches = searches;
     return doc;
   },
 

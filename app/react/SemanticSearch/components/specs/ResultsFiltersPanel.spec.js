@@ -1,19 +1,19 @@
 import React from 'react';
-import { DocumentResults } from '../DocumentResults';
+import { ResultsFiltersPanel } from '../ResultsFiltersPanel';
 import { shallow } from 'enzyme';
 
-describe('DocumentResults', () => {
+describe('ResultsFiltersPanel', () => {
   let props;
   let component;
   beforeEach(() => {
     props = {
-      doc: { semanticSearch: { results: [{ score: 9 }, { score: 11 }] }, avgScore: 10 },
+      open: true,
       filters: { threshold: 10 },
       selectTab: jasmine.createSpy('selectTab'),
       selectSnippet: jasmine.createSpy('selectSnippet')
     };
 
-    component = shallow(<DocumentResults {...props}/>);
+    component = shallow(<ResultsFiltersPanel {...props}/>);
   });
 
   describe('render', () => {

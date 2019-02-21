@@ -2,7 +2,7 @@
 
 exports[`DocumentResults render should render a result 1`] = `
 <Connect(Form)
-  model="library.semanticSearch.resultsFilters"
+  model="semanticSearch.resultsFilters"
 >
   <div
     className="view"
@@ -45,10 +45,35 @@ exports[`DocumentResults render should render a result 1`] = `
       <dt>
         Average sentence score
       </dt>
-      <dd>
-        0
-      </dd>
+      <dd />
     </dl>
   </div>
+  <Connect(Component)
+    doc={
+      Immutable.Map {
+        "semanticSearch": Immutable.Map {
+          "results": Immutable.List [
+            Immutable.Map {
+              "score": 9,
+            },
+            Immutable.Map {
+              "score": 11,
+            },
+          ],
+        },
+        "avgScore": 10,
+      }
+    }
+    documentViewUrl="/entity/undefined"
+    searchTerm=""
+    selectSnippet={[Function]}
+    snippets={
+      Immutable.Map {
+        "count": 0,
+        "metadata": Immutable.List [],
+        "fullText": Immutable.List [],
+      }
+    }
+  />
 </Connect(Form)>
 `;
