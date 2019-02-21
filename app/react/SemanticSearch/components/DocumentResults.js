@@ -29,8 +29,7 @@ export function DocumentResults(props) {
       fullText: filteredResults
     });
   }
-  const documentViewUrl = doc.file ?
-    `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
+  const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
   return (
     <Form model="library.semanticSearch.resultsFilters">
       <div className="view">
@@ -70,6 +69,7 @@ export function DocumentResults(props) {
 DocumentResults.propTypes = {
   doc: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
+  selectTab: PropTypes.func.isRequired,
   selectSnippet: PropTypes.func.isRequired
 };
 

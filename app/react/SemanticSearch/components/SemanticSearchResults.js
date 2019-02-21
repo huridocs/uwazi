@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Map } from 'immutable';
 
 import Helmet from 'react-helmet';
-import SidePanel from 'app/Layout/SidePanel';
-import { RowList } from 'app/Layout/Lists';
 import ItemList from '../../Markdown/components/ItemList';
-
-import ResultItem from './ResultItem';
 import ResultsSidePanel from './ResultsSidePanel';
 
 
@@ -46,11 +41,6 @@ export class SemanticSearchResults extends Component {
               <div>
                 { search.searchTerm }
               </div>
-              {/* <RowList>
-                {items.map(result => (
-                  <ResultItem result={result} key={result.sharedId} />
-                ))}
-              </RowList> */}
               <ItemList items={items} link="" storeKey="library"/>
             </main>
             <ResultsSidePanel />
