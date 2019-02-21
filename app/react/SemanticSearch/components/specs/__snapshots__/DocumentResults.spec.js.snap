@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DocumentResults render should render a result 1`] = `
+<Connect(Form)
+  model="library.semanticSearch.resultsFilters"
+>
+  <div
+    className="view"
+  >
+    <dl
+      className="metadata-type-text"
+    >
+      <dt
+        className="item-header"
+      >
+        Threshold
+      </dt>
+      <dd>
+        <Modeled(Connect(Field))
+          dynamic={false}
+          model=".threshold"
+        >
+          <input
+            max="1"
+            min="0"
+            step="0.01"
+            type="range"
+          />
+        </Modeled(Connect(Field))>
+      </dd>
+    </dl>
+    <dl
+      className="metadata-type-numeric"
+    >
+      <dt>
+        Sentences above threshold
+      </dt>
+      <dd>
+        0
+      </dd>
+    </dl>
+    <dl
+      className="metadata-type-numeric"
+    >
+      <dt>
+        Average sentence score
+      </dt>
+      <dd>
+        0
+      </dd>
+    </dl>
+  </div>
+</Connect(Form)>
+`;
