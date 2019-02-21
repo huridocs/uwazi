@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SemanticSearchResults should only display items that match filters 1`] = `
+<div
+  className="row panels-layout"
+>
+  <React.Fragment>
+    <HelmetWrapper
+      defer={true}
+      encodeSpecialCharacters={true}
+      title="query - Semantic search results"
+    />
+    <main
+      className="semantic-search-results-viewer document-viewer with-panel"
+    >
+      <div>
+        query
+      </div>
+      <ItemList
+        items={
+          Array [
+            Object {
+              "semanticSearch": Object {
+                "averageScore": 0.4,
+                "results": Array [
+                  Object {
+                    "score": 0.6,
+                  },
+                  Object {
+                    "score": 0.5,
+                  },
+                  Object {
+                    "score": 0.2,
+                  },
+                ],
+              },
+            },
+          ]
+        }
+        link=""
+        options={Object {}}
+        storeKey="library"
+      />
+    </main>
+    <Connect(ResultsSidePanel) />
+  </React.Fragment>
+</div>
+`;
+
+exports[`SemanticSearchResults should render results in ItemList 1`] = `
+<div
+  className="row panels-layout"
+>
+  <React.Fragment>
+    <HelmetWrapper
+      defer={true}
+      encodeSpecialCharacters={true}
+      title="query - Semantic search results"
+    />
+    <main
+      className="semantic-search-results-viewer document-viewer with-panel"
+    >
+      <div>
+        query
+      </div>
+      <ItemList
+        items={
+          Array [
+            Object {
+              "semanticSearch": Object {
+                "averageScore": 0.4,
+                "results": Array [
+                  Object {
+                    "score": 0.6,
+                  },
+                  Object {
+                    "score": 0.5,
+                  },
+                  Object {
+                    "score": 0.2,
+                  },
+                ],
+              },
+            },
+            Object {
+              "semanticSearch": Object {
+                "averageScore": 0.6,
+                "results": Array [
+                  Object {
+                    "score": 0.7,
+                  },
+                  Object {
+                    "score": 0.2,
+                  },
+                  Object {
+                    "score": 0.1,
+                  },
+                ],
+              },
+            },
+          ]
+        }
+        link=""
+        options={Object {}}
+        storeKey="library"
+      />
+    </main>
+    <Connect(ResultsSidePanel) />
+  </React.Fragment>
+</div>
+`;
+
+exports[`SemanticSearchResults when the search is empty should render not found page 1`] = `
+<div
+  className="row panels-layout"
+>
+  <React.Fragment>
+    <p>
+      Search not found
+    </p>
+    <HelmetWrapper
+      defer={true}
+      encodeSpecialCharacters={true}
+      title="Semantic search not found"
+    />
+  </React.Fragment>
+</div>
+`;

@@ -67,7 +67,7 @@ export class SemanticSearchSidePanel extends Component {
         <ShowIf if={page === 'new'}>
           <div className="sidepanel-footer">
             <span
-              className="btn btn-danger"
+              className="btn btn-danger cancel-search"
               onClick={this.showMainPage}
             >
               <Icon icon="times" />
@@ -93,7 +93,7 @@ export class SemanticSearchSidePanel extends Component {
               marginBottom: 30 }}
             >
               <button
-                className="btn btn-default"
+                className="btn btn-default new-search"
                 onClick={this.showNewSearchPage}
               >
                 {t('System', 'Start new search')}
