@@ -51,7 +51,7 @@ describe('search routes', () => {
   });
 
   describe('GET /api/semantic-search/:searchId', () => {
-    it('should return all searches', (done) => {
+    it('should return specified search', (done) => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'getSearch').mockResolvedValue(result);
       const req = { params: { searchId: 's1' } };
@@ -60,6 +60,22 @@ describe('search routes', () => {
       .then((response) => {
         expect(response).toEqual(result);
         expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('DELETE /api/semantic-search/:searchId', () => {
+    it('should delete specified', (done) => {
+      const result = { _id: 's1' };
+      jest.spyOn(semanticSearch, 'deleteSearch').mockResolvedValue(result);
+      const req = { params: { searchId: 's1' } };
+
+      routes.delete('/api/semantic-search/:searchId', req)
+      .then((response) => {
+        expect(response).toEqual(result);
+        expect(semanticSearch.deleteSearch).toHaveBeenCalledWith('s1');
         done();
       })
       .catch(catchErrors(done));

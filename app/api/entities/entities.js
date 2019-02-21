@@ -210,9 +210,6 @@ export default {
 
   async get(query, select, pagination) {
     const entities = await model.get(query, select, pagination);
-    if (query.sharedId) {
-      entities[0].semanticSearches = await semanticSearch.getSearchesByDocument(query.sharedId);
-    }
     return entities;
   },
 
@@ -223,9 +220,6 @@ export default {
       entity.relationships = relations;
       return entity;
     }))));
-    if (query.sharedId) {
-      _entities[0].semanticSearches = await semanticSearch.getSearchesByDocument(query.sharedId);
-    }
     return _entities;
   },
 

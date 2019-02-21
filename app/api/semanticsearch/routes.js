@@ -29,4 +29,10 @@ export default (app) => {
       .catch(next);
     }
   );
+  app.delete('/api/semantic-search/:searchId',
+    (req, res, next) => {
+      semanticSearch.deleteSearch(req.params.searchId)
+      .then(search => res.json(search))
+      .catch(next);
+    });
 };

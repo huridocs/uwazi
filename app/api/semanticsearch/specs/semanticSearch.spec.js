@@ -200,5 +200,23 @@ describe('semanticSearch', () => {
       }
     });
   });
+
+  describe('deleteSearch', () => {
+    it('should delete specified search and its results', async () => {
+      await semanticSearch.deleteSearch(search3Id);
+      const searchInDb = await model.getById(search3Id);
+      expect(searchInDb).toBeNull();
+      const searchResults = await resultsModel.get({ searchId: search3Id });
+      expect(searchResults.length).toBe(0);
+    });
+    it('should return 404 error if search does not exist', async () => {
+      try {
+        await semanticSearch.deleteSearch(db.id());
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('Search not found', 404));
+      }
+    });
+  });
 });
 

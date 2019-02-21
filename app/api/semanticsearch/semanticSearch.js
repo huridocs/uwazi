@@ -132,6 +132,14 @@ const getSearchesByDocument = async (docId) => {
   return searches;
 };
 
+const deleteSearch = async (searchId) => {
+  const res = await model.delete(searchId);
+  if (res.n !== 1) {
+    throw createError('Search not found', 404);
+  }
+  await resultsModel.delete({ searchId });
+};
+
 const getAllSearches = () => model.get();
 const getInProgress = async () => model.get({ status: IN_PROGRESS });
 const getPending = async () => model.get({ status: PENDING });
@@ -145,7 +153,8 @@ const semanticSearch = {
   getPending,
   getInProgress,
   getSearch,
-  getSearchesByDocument
+  getSearchesByDocument,
+  deleteSearch
 };
 
 export default semanticSearch;
