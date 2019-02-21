@@ -3,29 +3,30 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Helmet from 'react-helmet';
-import ItemList from '../../Markdown/components/ItemList';
+import { RowList } from 'app/Layout/Lists';
+import Doc from 'app/Library/components/Doc';
 import ResultsSidePanel from './ResultsSidePanel';
 
 
-const countSentencesAboveThreshold = (doc, threshold) =>
-  doc.semanticSearch.results.findIndex(({ score }) => score < threshold); // use findIndex cause array is sorted by score
+const countSentencesAboveThreshold = (item, threshold) =>
+  item.getIn(['semanticSearch', 'results']).toJS()
+  .findIndex(({ score }) => score < threshold); // use findIndex cause array is sorted by score
 
-const filterItems = (items, { threshold, minRelevantSentences }) => {
-  const filteredItems = items.reduce((prev, item) => {
-    const aboveThreshold = countSentencesAboveThreshold(item, threshold);
-    if (item.semanticSearch.averageScore >= threshold && aboveThreshold >= minRelevantSentences) {
-      return prev.concat([item]);
-    }
-    return prev;
-  }, []);
-  return filteredItems;
-};
+const filterItems = (items, { threshold, minRelevantSentences }) => items.filter((item) => {
+  const aboveThreshold = countSentencesAboveThreshold(item, threshold);
+  return item.getIn(['semanticSearch', 'averageScore']) >= threshold && aboveThreshold >= minRelevantSentences;
+});
 
 export class SemanticSearchResults extends Component {
+  shouldComponentUpdate(nextProps) {
+    return nextProps.items.length !== this.props.items.length ||
+    nextProps.isEmpty !== this.props.isEmpty ||
+    nextProps.searchTerm !== this.props.searchTerm;
+  }
+
   render() {
-    const { search, filters } = this.props;
-    const items = search.results ? filterItems(search.results, filters) : [];
-    const isEmpty = Object.keys(search).length === 0;
+    const { items, isEmpty, searchTerm } = this.props;
+
     return (
       <div className="row panels-layout">
         { isEmpty &&
@@ -36,12 +37,20 @@ export class SemanticSearchResults extends Component {
         }
         { !isEmpty &&
           <React.Fragment>
-            <Helmet title={`${search.searchTerm} - Semantic search results`} />
+            <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <div>
-                { search.searchTerm }
+                { searchTerm }
               </div>
-              <ItemList items={items} link="" storeKey="library"/>
+              <RowList>
+                {items.map((doc, index) => (
+                  <Doc
+                    doc={doc}
+                    key={index}
+                    onClick={this.clickOnDocument}
+                  />
+                ))}
+              </RowList>
             </main>
             <ResultsSidePanel />
           </React.Fragment>
@@ -51,14 +60,25 @@ export class SemanticSearchResults extends Component {
   }
 }
 
+
 SemanticSearchResults.propTypes = {
-  search: PropTypes.object.isRequired,
-  filters: PropTypes.object.isRequired
+  items: PropTypes.array.isRequired,
+  isEmpty: PropTypes.bool.isRequired,
+  searchTerm: PropTypes.string.isRequired
 };
 
-export const mapStateToProps = state => ({
-  search: state.semanticSearch.search.toJS(),
-  filters: state.library.semanticSearch.resultsFilters
-});
+export const mapStateToProps = (state) => {
+  const search = state.semanticSearch.search;
+  const searchTerm = search.get('searchTerm');
+  const results = search.get('results');
+  const filters = state.semanticSearch.resultsFilters;
+  const items = results ? filterItems(results, filters) : [];
+  const isEmpty = Object.keys(search).length === 0;
+  return {
+    searchTerm,
+    items,
+    isEmpty
+  };
+};
 
 export default connect(mapStateToProps)(SemanticSearchResults);

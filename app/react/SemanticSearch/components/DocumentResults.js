@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Form, Field } from 'react-redux-form';
 import Immutable from 'immutable';
 
 import { t } from 'app/I18N';
@@ -14,33 +13,41 @@ const findResultsAboveThreshold = (results, threshold) => {
   return results.slice(0, boundingIndex);
 };
 
-export function DocumentResults(props) {
-  const { doc, filters } = props;
-  let snippets = {};
-  let avgScore = 0;
-  let aboveThreshold = 0;
-  if (doc.semanticSearch) {
-    const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, filters.threshold);
-    avgScore = doc.semanticSearch.averageScore;
-    aboveThreshold = filteredResults.length;
-    snippets = Immutable.fromJS({
-      count: aboveThreshold,
-      metadata: [],
-      fullText: filteredResults
-    });
+export class DocumentResults extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { threshold: 0.2 };
+    this.onChangeTreshHold = this.onChangeTreshHold.bind(this);
   }
-  const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
-  return (
-    <Form model="library.semanticSearch.resultsFilters">
+
+  onChangeTreshHold(e) {
+    this.setState({ threshold: e.target.value });
+  }
+
+  render() {
+    const { doc } = this.props;
+    let snippets = {};
+    let avgScore = 0;
+    let aboveThreshold = 0;
+    if (doc.semanticSearch) {
+      const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, this.state.threshold);
+      avgScore = doc.semanticSearch.averageScore;
+      aboveThreshold = filteredResults.length;
+      snippets = Immutable.fromJS({
+        count: aboveThreshold,
+        metadata: [],
+        fullText: filteredResults
+      });
+    }
+    const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
+    return (
       <div className="view">
         <dl className="metadata-type-text">
           <dt className="item-header">
             {t('System', 'Threshold')}
           </dt>
           <dd>
-            <Field model=".threshold" dynamic={false}>
-              <input type="range" min="0" max="1" step="0.01"/>
-            </Field>
+            <input type="range" min="0" max="1" step="0.01" value={this.state.threshold} onChange={this.onChangeTreshHold}/>
           </dd>
         </dl>
         <dl className="metadata-type-numeric">
@@ -51,36 +58,29 @@ export function DocumentResults(props) {
           <dt>Average sentence score</dt>
           <dd>{ avgScore }</dd>
         </dl>
+        { doc.semanticSearch && <SnippetList
+          doc={Immutable.fromJS(doc)}
+          documentViewUrl={documentViewUrl}
+          snippets={snippets}
+          searchTerm=""
+          selectSnippet={(...args) => {
+            this.props.selectSnippet(...args);
+          }}
+        />}
       </div>
-      { doc.semanticSearch && <SnippetList
-        doc={Immutable.fromJS(doc)}
-        documentViewUrl={documentViewUrl}
-        snippets={snippets}
-        searchTerm=""
-        selectSnippet={(...args) => {
-          props.selectTab('library.sidepanel.tab', 'semantic-search-results');
-          props.selectSnippet(...args);
-        }}
-      />}
-    </Form>
-  );
+    );
+  }
 }
 
 DocumentResults.propTypes = {
   doc: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
-  selectTab: PropTypes.func.isRequired,
   selectSnippet: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state) {
-  return {
-    filters: state.library.semanticSearch.resultsFilters
-  };
-}
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ selectSnippet }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentResults);
+export default connect(null, mapDispatchToProps)(DocumentResults);

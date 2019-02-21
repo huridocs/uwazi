@@ -39,13 +39,5 @@ export default storeKey => combineReducers({
       references: createReducer(`${storeKey}.sidepanel.references`, []),
       snippets: createReducer(`${storeKey}.sidepanel.snippets`, { count: 0, metadata: [], fullText: [] }),
       tab: createReducer(`${storeKey}.sidepanel.tab`, '')
-    }),
-
-    semanticSearch: combineReducers({
-      resultsFiltersForm: formReducer(`${storeKey}.semanticSearch.resultsFilters`),
-      resultsFilters: modelReducer(`${storeKey}.semanticSearch.resultsFilters`),
-      resultsThreshold: modelReducer(`${storeKey}.semanticSearch.resultsThreshold`),
-      minRelevantSentences: modelReducer(`${storeKey}.semanticSearch.minRelevantSentences`),
-      minRelevantScore: modelReducer(`${storeKey}.semanticSearch.minRelevantScore`)
     })
 });

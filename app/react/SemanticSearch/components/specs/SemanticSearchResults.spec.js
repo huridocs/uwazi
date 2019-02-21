@@ -11,6 +11,10 @@ describe('SemanticSearchResults', () => {
   beforeEach(() => {
     state = {
       semanticSearch: {
+        resultsFilters: {
+          threshold: 0.3,
+          minRelevantSentences: 1
+        },
         search: {
           _id: 'id',
           searchTerm: 'query',
@@ -30,14 +34,6 @@ describe('SemanticSearchResults', () => {
               }
             }
           ]
-        }
-      },
-      library: {
-        semanticSearch: {
-          resultsFilters: {
-            threshold: 0.3,
-            minRelevantSentences: 1
-          }
         }
       }
     };
@@ -60,7 +56,7 @@ describe('SemanticSearchResults', () => {
     expect(component).toMatchSnapshot();
   });
   it('should only display items that match filters', () => {
-    state.library.semanticSearch.resultsFilters = {
+    state.semanticSearch.resultsFilters = {
       threshold: 0.4,
       minRelevantSentences: 2
     };

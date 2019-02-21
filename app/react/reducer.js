@@ -34,6 +34,7 @@ export default combineReducers({
   progress,
   locale,
   inlineEdit,
+  semanticSearch,
   inlineEditForm: formReducer('inlineEditModel', {}),
   inlineEditModel: modelReducer('inlineEditModel', {}),
   template,

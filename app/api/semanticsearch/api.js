@@ -1,7 +1,5 @@
 import fetch from 'isomorphic-fetch';
-
-
-const SEMANTIC_SEARCH_URL = 'http://localhost:5000';
+import SEMANTIC_SEARCH_URL from 'api/config/semanticsearch';
 
 const semanticSearchAPI = {
   async processDocument(args) {
@@ -18,4 +16,3 @@ const semanticSearchAPI = {
 };
 
 export default semanticSearchAPI;
-
