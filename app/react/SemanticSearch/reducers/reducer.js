@@ -4,6 +4,7 @@ import createReducer from 'app/BasicReducer';
 
 export default combineReducers({
   search: createReducer('semanticSearch/search', {}),
+  searches: createReducer('semanticSearch/searches', []),
   resultsFiltersForm: formReducer('semanticSearch.resultsFilters'),
   resultsFilters: modelReducer('semanticSearch.resultsFilters'),
   resultsThreshold: modelReducer('semanticSearch.resultsThreshold'),

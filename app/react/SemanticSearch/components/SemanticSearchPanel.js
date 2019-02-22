@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions } from 'react-redux-form';
 
 import { t } from 'app/I18N';
 import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 
-import api from '../SemanticSearchAPI';
+import { fetchSearches, submitNewSearch } from '../actions/actions';
 
 import SidePanel from 'app/Layout/SidePanel';
 import SearchList from './SearchList';
@@ -16,8 +17,7 @@ export class SemanticSearchSidePanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 'main',
-      searches: null
+      page: 'main'
     };
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -27,20 +27,23 @@ export class SemanticSearchSidePanel extends Component {
   }
 
   componentDidMount() {
-    if (!this.searches) {
-      api.getAllSearches().then(res => this.setState({ searches: res }));
+    if (!this.props.searches.size) {
+      this.props.fetchSearches();
     }
   }
 
-  onSubmit(model) {
+  async onSubmit(model) {
     const { currentSearch, selectedDocuments } = this.props;
     const { searchTerm } = model;
     const documents = selectedDocuments ?
       selectedDocuments.toJS().map(doc => doc.sharedId) : [];
-    api.search({
+    this.props.submitNewSearch({
       searchTerm,
       documents,
       query: currentSearch
+    });
+    this.setState({
+      page: 'main'
     });
   }
 
@@ -61,7 +64,8 @@ export class SemanticSearchSidePanel extends Component {
   }
 
   render() {
-    const { page, searches } = this.state;
+    const { page } = this.state;
+    const searches = this.props.searches.toJS();
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel semantic-search">
         <ShowIf if={page === 'new'}>
@@ -137,6 +141,9 @@ export class SemanticSearchSidePanel extends Component {
 SemanticSearchSidePanel.propTypes = {
   currentSearch: PropTypes.object.isRequired,
   selectedDocuments: PropTypes.object.isRequired,
+  searches: PropTypes.object.isRequired,
+  fetchSearches: PropTypes.func.isRequired,
+  submitNewSearch: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired
 };
 
@@ -144,8 +151,16 @@ export function mapStateToProps(state, props) {
   return {
     currentSearch: state[props.storeKey].search,
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
+    searches: state.semanticSearch.searches,
     open: state[props.storeKey].ui.get('showSemanticSearchPanel')
   };
 }
 
-export default connect(mapStateToProps)(SemanticSearchSidePanel);
+export function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    fetchSearches,
+    submitNewSearch
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchSidePanel);

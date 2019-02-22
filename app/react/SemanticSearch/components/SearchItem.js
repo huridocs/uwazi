@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { I18NLink } from 'app/I18N';
 import { Icon, ProgressBar } from 'UI';
 
-export function SearchItem({ search }) {
+import { deleteSearch } from '../actions/actions';
+
+export function SearchItem({ search, onDeleteClicked }) {
   const { status, documents } = search;
   const completed = documents.filter(doc => doc.status === 'completed').length;
   const max = documents.length;
@@ -24,7 +27,10 @@ export function SearchItem({ search }) {
       </div>
       <ProgressBar value={completed} max={max} />
       <div className="item-footer">
-        <button className="btn btn-danger">
+        <button
+          className="btn btn-danger"
+          onClick={() => onDeleteClicked(search._id)}
+        >
           <Icon icon="trash-alt" />
         </button>
         { status === 'inProgress' &&
@@ -46,7 +52,14 @@ SearchItem.propTypes = {
     searchTerm: PropTypes.string,
     documents: PropTypes.array,
     status: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  onDeleteClicked: PropTypes.func.isRequired
 };
 
-export default connect()(SearchItem);
+export function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    onDeleteClicked: deleteSearch
+  }, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(SearchItem);

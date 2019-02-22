@@ -138,6 +138,7 @@ const deleteSearch = async (searchId) => {
     throw createError('Search not found', 404);
   }
   await resultsModel.delete({ searchId });
+  return { deleted: true };
 };
 
 const getAllSearches = () => model.get();
