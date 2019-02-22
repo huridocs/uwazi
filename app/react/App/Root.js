@@ -21,31 +21,28 @@ class Root extends Component {
   render() {
     const isHotReload = process.env.HOT;
     const { head } = this.props;
-    let pdfWorkerPathScript = 'window.pdfWorkerPath = \'/static/pdf.worker.js\';';
     let JS = [
-      'http://localhost:8080/manifest.js',
-      'http://localhost:8080/nprogress.js',
-      'http://localhost:8080/vendor.js',
-      'http://localhost:8080/main.js'
+      'http://localhost:8080/vendor~main~pdf.worker.js',
+      'http://localhost:8080/vendor~main~nprogress.js',
+      'http://localhost:8080/main.js',
+      'http://localhost:8080/vendor~main.js',
     ];
 
     let CSS = [
-      'http://localhost:8080/vendor.styles.css',
-      'http://localhost:8080/styles.css'
+      'http://localhost:8080/vendor~main.css',
+      'http://localhost:8080/main.css',
     ];
 
 
     if (!isHotReload) {
-      pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;
       JS = [
-        this.props.assets.manifest.js,
-        this.props.assets.nprogress.js,
-        this.props.assets.vendor.js,
-        this.props.assets.main.js
+        this.props.assets['vendor~main~nprogress'].js,
+        this.props.assets['vendor~main'].js,
+        this.props.assets.main.js,
       ];
       CSS = [
-        this.props.assets.main.css[0],
-        this.props.assets.main.css[1]
+        this.props.assets['vendor~main'].css,
+        this.props.assets.main.css,
       ];
     }
 
@@ -68,7 +65,6 @@ class Root extends Component {
           <div id="root" dangerouslySetInnerHTML={{ __html: this.props.content }} />
           {this.renderInitialData()}
           {head.script.toComponent()}
-          <script dangerouslySetInnerHTML={{ __html: pdfWorkerPathScript }} />
           {JS.map((file, index) => <script key={index} src={file} />)}
         </body>
       </html>
