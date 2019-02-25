@@ -42,3 +42,23 @@ Array [
   ],
 ]
 `;
+
+exports[`worker start should stop processing when search status is stopped and emit stopped event 1`] = `
+Array [
+  Array [
+    "update",
+    Object {
+      "status": "inProgress",
+    },
+  ],
+  Array [
+    "update",
+    Object {
+      "status": "stopped",
+    },
+  ],
+  Array [
+    "stopped",
+  ],
+]
+`;

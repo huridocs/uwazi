@@ -8,6 +8,8 @@ import documentsModel from '../documents';
 import workers from './workerManager';
 import { createError } from '../utils';
 
+import date from 'api/utils/date.js';
+
 export const PENDING = 'pending';
 export const COMPLETED = 'completed';
 export const PROCESSING = 'processing';
@@ -84,8 +86,10 @@ const processSearchLimit = async (searchId, docLimit) => {
     processDocument(searchId, searchTerm, doc.sharedId, language));
   const updatedSearch = await model.getById(searchId);
   const isNotDone = updatedSearch.documents.some(doc => doc.status !== COMPLETED);
-  const newStatus = isNotDone ? IN_PROGRESS : COMPLETED;
-  return updateSearchStatus(searchId, newStatus);
+  if (isNotDone) {
+    return updatedSearch;
+  }
+  return updateSearchStatus(searchId, COMPLETED);
 };
 
 const create = async (args, language, user) => {
@@ -97,7 +101,8 @@ const create = async (args, language, user) => {
     })),
     status: PENDING,
     searchTerm: args.searchTerm,
-    language
+    language,
+    creationDate: date.currentUTC()
   };
   const savedSearch = await model.save(newSearch);
   workers.notifyNewSearch(savedSearch._id);
@@ -169,9 +174,9 @@ const resumeSearch = async (searchId) => {
   return model.getById(searchId);
 };
 
-const getAllSearches = () => model.get();
-const getInProgress = async () => model.get({ status: IN_PROGRESS });
-const getPending = async () => model.get({ status: PENDING });
+const getAllSearches = () => model.get().sort('-creationDate');
+const getInProgress = async () => model.get({ status: IN_PROGRESS }).sort('-creationDate');
+const getPending = async () => model.get({ status: PENDING }).sort('-creationDate');
 
 const semanticSearch = {
   create,

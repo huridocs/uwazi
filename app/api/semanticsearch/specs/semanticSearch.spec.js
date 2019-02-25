@@ -5,6 +5,7 @@ import { search } from '../../search';
 import model from '../model';
 import resultsModel from '../resultsModel';
 import api from '../api';
+import date from 'api/utils/date.js';
 
 import fixtures from './fixtures';
 import { search1Id, search2Id, search3Id, doc1Id, docWithoutTextId } from './fixtures';
@@ -26,6 +27,7 @@ describe('semanticSearch', () => {
       workers.notifyNewSearch.mockClear();
     });
     it('should create and save new search', async () => {
+      jest.spyOn(date, 'currentUTC').mockReturnValue(1000);
       const args = { searchTerm: 'Test term', documents: ['doc1', 'doc2'] };
       const created = await semanticSearch.create(args, 'en', 'user');
       const savedSearch = await model.getById(created._id);
