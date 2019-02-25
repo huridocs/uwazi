@@ -29,6 +29,7 @@ describe('migration sync-starting-point', () => {
   } });
 
   beforeEach((done) => {
+    spyOn(process.stdout, 'write');
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
