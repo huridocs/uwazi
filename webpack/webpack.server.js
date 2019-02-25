@@ -1,13 +1,16 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 const webpack = require('webpack');
 
 const express = require('express');
+
+const app = express();
+const http = require('http').Server(app);
 
 const webpackConfig = require('./webpack.config.hot');
 
 const compiler = webpack(webpackConfig);
 
-const app = express();
-const http = require('http').Server(app);
 
 app.use(require('webpack-dev-middleware')(compiler, {
   logLevel: 'error',

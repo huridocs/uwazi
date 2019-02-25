@@ -3,7 +3,6 @@
 
 var path = require("path");
 var webpack = require("webpack");
-// var CleanPlugin = require('./CleanPlugin');
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -26,7 +25,6 @@ module.exports = function(production) {
 
   return {
     context: rootPath,
-    // root: rootPath,
     devtool: "#eval-source-map",
     mode: "development",
     entry: {

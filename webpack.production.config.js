@@ -4,7 +4,6 @@ process.env.NODE_ENV = 'production';
 var path = require('path');
 var webpack = require('webpack');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-var CompressionPlugin = require('compression-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 

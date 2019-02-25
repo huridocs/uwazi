@@ -1,7 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { PDFJS } from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
+// import { PDFJS } from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
+import PDFJS from '../../PDFJS';
 
 import PDF from '../PDF';
 import PDFPage from '../PDFPage.js';
