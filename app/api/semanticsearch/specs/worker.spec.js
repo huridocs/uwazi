@@ -1,5 +1,6 @@
 import Worker from '../worker';
 import semanticSearch from '../semanticSearch';
+import db from 'api/utils/testing_db';
 
 describe('worker', () => {
   beforeEach(() => {
@@ -40,6 +41,25 @@ describe('worker', () => {
         done();
       });
 
+      worker.start();
+    });
+    it('should stop processing when search status is stopped and emit stopped event', (done) => {
+      jest.spyOn(semanticSearch, 'processSearchLimit')
+      .mockResolvedValueOnce({ status: 'inProgress' })
+      .mockResolvedValueOnce({ status: 'stopped' });
+
+      const worker = new Worker('searchStop', 5);
+      jest.spyOn(worker, 'emit');
+
+      worker.on('stopped', () => {
+        expect(semanticSearch.processSearchLimit).toHaveBeenCalledTimes(2);
+        expect(worker.emit.mock.calls).toMatchSnapshot();
+        done();
+      });
+      worker.on('done', () => {
+        fail('should emit stopped event instead');
+        done();
+      });
       worker.start();
     });
     it('should stop processing when error occurs and emit error event', (done) => {

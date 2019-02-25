@@ -9,7 +9,8 @@ const searchSchema = new mongoose.Schema({
     _id: false,
     sharedId: String,
     status: String
-  }]
+  }],
+  creationDate: Number
 });
 
 export default instanceModel('semanticsearches', searchSchema);

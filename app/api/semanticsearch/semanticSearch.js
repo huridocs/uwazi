@@ -8,10 +8,13 @@ import documentsModel from '../documents';
 import workers from './workerManager';
 import { createError } from '../utils';
 
+import date from 'api/utils/date.js';
+
 export const PENDING = 'pending';
 export const COMPLETED = 'completed';
 export const PROCESSING = 'processing';
 export const IN_PROGRESS = 'inProgress';
+export const STOPPED = 'stopped';
 
 const SEARCH_BATCH_SIZE = 5;
 
@@ -83,8 +86,10 @@ const processSearchLimit = async (searchId, docLimit) => {
     processDocument(searchId, searchTerm, doc.sharedId, language));
   const updatedSearch = await model.getById(searchId);
   const isNotDone = updatedSearch.documents.some(doc => doc.status !== COMPLETED);
-  const newStatus = isNotDone ? IN_PROGRESS : COMPLETED;
-  return updateSearchStatus(searchId, newStatus);
+  if (isNotDone) {
+    return updatedSearch;
+  }
+  return updateSearchStatus(searchId, COMPLETED);
 };
 
 const create = async (args, language, user) => {
@@ -96,7 +101,8 @@ const create = async (args, language, user) => {
     })),
     status: PENDING,
     searchTerm: args.searchTerm,
-    language
+    language,
+    creationDate: date.currentUTC()
   };
   const savedSearch = await model.save(newSearch);
   workers.notifyNewSearch(savedSearch._id);
@@ -141,9 +147,36 @@ const deleteSearch = async (searchId) => {
   return { deleted: true };
 };
 
-const getAllSearches = () => model.get();
-const getInProgress = async () => model.get({ status: IN_PROGRESS });
-const getPending = async () => model.get({ status: PENDING });
+const stopSearch = async (searchId) => {
+  const res = await model.db.updateOne({
+    _id: searchId,
+    status: { $in: [IN_PROGRESS, PENDING] }
+  }, {
+    $set: { status: STOPPED }
+  });
+  if (!res.n) {
+    throw createError('No matching pending search found', 404);
+  }
+  return model.getById(searchId);
+};
+
+const resumeSearch = async (searchId) => {
+  const res = await model.db.updateOne({
+    _id: searchId,
+    status: { $in: [STOPPED] }
+  }, {
+    $set: { status: PENDING }
+  });
+  if (!res.n) {
+    throw createError('No matching stopped search found', 404);
+  }
+  workers.notifyNewSearch(searchId);
+  return model.getById(searchId);
+};
+
+const getAllSearches = () => model.get().sort('-creationDate');
+const getInProgress = async () => model.get({ status: IN_PROGRESS }).sort('-creationDate');
+const getPending = async () => model.get({ status: PENDING }).sort('-creationDate');
 
 const semanticSearch = {
   create,
@@ -155,7 +188,9 @@ const semanticSearch = {
   getInProgress,
   getSearch,
   getSearchesByDocument,
-  deleteSearch
+  deleteSearch,
+  stopSearch,
+  resumeSearch
 };
 
 export default semanticSearch;

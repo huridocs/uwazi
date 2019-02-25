@@ -3,6 +3,7 @@
 exports[`semanticSearch create should create and save new search 1`] = `
 Object {
   "__v": 0,
+  "creationDate": 1000,
   "documents": Array [
     Object {
       "sharedId": "doc1",

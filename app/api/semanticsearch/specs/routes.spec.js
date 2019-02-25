@@ -81,4 +81,36 @@ describe('search routes', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('POST /api/semantic-search/:searchId/stop', () => {
+    it('should stop the search', (done) => {
+      const result = { _id: 's1' };
+      jest.spyOn(semanticSearch, 'stopSearch').mockResolvedValue(result);
+      const req = { params: { searchId: 's1' } };
+
+      routes.post('/api/semantic-search/:searchId/stop', req)
+      .then((response) => {
+        expect(response).toEqual(result);
+        expect(semanticSearch.stopSearch).toHaveBeenCalledWith('s1');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('POST /api/semantic-search/:searchId/resume', () => {
+    it('should resume the search', (done) => {
+      const result = { _id: 's1' };
+      jest.spyOn(semanticSearch, 'resumeSearch').mockResolvedValue(result);
+      const req = { params: { searchId: 's1' } };
+
+      routes.post('/api/semantic-search/:searchId/resume', req)
+      .then((response) => {
+        expect(response).toEqual(result);
+        expect(semanticSearch.resumeSearch).toHaveBeenCalledWith('s1');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
 });
