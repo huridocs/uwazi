@@ -46,9 +46,9 @@
     "eslint": "./node_modules/.bin/eslint app --quiet"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.0",
-    "@fortawesome/free-regular-svg-icons": "^5.1.0",
-    "@fortawesome/free-solid-svg-icons": "^5.1.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
+    "@fortawesome/free-regular-svg-icons": "^5.7.2",
+    "@fortawesome/free-solid-svg-icons": "^5.7.2",
     "@fortawesome/react-fontawesome": "^0.1.0",
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
     "async": "^2.6.1",

@@ -465,6 +465,7 @@ export const fontawesomeIcons = [
   'scissors',
   'scribd',
   'search',
+  'searchengine',
   'search-minus',
   'search-plus',
   'sellsy',
