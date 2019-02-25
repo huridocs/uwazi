@@ -218,5 +218,77 @@ describe('semanticSearch', () => {
       }
     });
   });
+
+  describe('stopSearch', () => {
+    const testErrorIfWrongStatus = async (searchId, status) => {
+      try {
+        await semanticSearch.stopSearch(searchId);
+        fail('should throw error');
+      } catch (e) {
+        const theSearch = await model.getById(searchId);
+        expect(theSearch.status).toBe(status);
+        expect(e.code).toBe(404);
+      }
+    };
+    it('should set status to stopped if search is pending', async () => {
+      await semanticSearch.stopSearch(search2Id);
+      const updatedSearch = await model.getById(search2Id);
+      expect(updatedSearch.status).toBe('stopped');
+    });
+    it('should set status to stopped if search is in progress', async () => {
+      await semanticSearch.stopSearch(search1Id);
+      const updatedSearch = await model.getById(search1Id);
+      expect(updatedSearch.status).toBe('stopped');
+    });
+    it('should return the updated search', async () => {
+      const stoppedSearch = await semanticSearch.stopSearch(search1Id);
+      expect(stoppedSearch.status).toBe('stopped');
+    });
+    it('should throw error if search is completed', async () => {
+      await testErrorIfWrongStatus(search3Id, 'completed');
+    });
+    it('should throw error if search is stopped', async () => {
+      await model.db.findOneAndUpdate({ _id: search3Id }, { $set: { status: 'stopped' } });
+      await testErrorIfWrongStatus(search3Id, 'stopped');
+    });
+    it('should throw error if search does not exist', async () => {
+      try {
+        await semanticSearch.stopSearch(db.id());
+        fail('should throw error');
+      } catch (e) {
+        expect(e.code).toBe(404);
+      }
+    });
+  });
+
+  describe('resumeSearch', () => {
+    const testErrorIfWrongStatus = async (searchId, status) => {
+      await model.db.updateOne({ _id: searchId }, { $set: { status } });
+      try {
+        await semanticSearch.resumeSearch(searchId);
+        fail('should throw error');
+      } catch (e) {
+        const theSearch = await model.getById(searchId);
+        expect(theSearch.status).toBe(status);
+        expect(e.code).toBe(404);
+      }
+    };
+    it('should set status to pending if search is stopped', async () => {
+      await model.db.updateOne({ _id: search1Id }, { $set: { status: 'stopped' } });
+      await semanticSearch.resumeSearch(search1Id);
+      const resumedSearch = await model.getById(search1Id);
+      expect(resumedSearch.status).toBe('pending');
+    });
+    it('should return the updated search', async () => {
+      await model.db.updateOne({ _id: search1Id }, { $set: { status: 'stopped' } });
+      const resumed = await semanticSearch.resumeSearch(search1Id);
+      expect(resumed.status).toBe('pending');
+    });
+    it('should throw error if search is not stopped', async () => {
+      const statuses = ['completed', 'pending', 'inProgress'];
+      const searchIds = [search1Id, search2Id, search3Id];
+      await Promise.all(statuses.map((status, index) => testErrorIfWrongStatus(searchIds[index], status)));
+    });
+  });
 });
 

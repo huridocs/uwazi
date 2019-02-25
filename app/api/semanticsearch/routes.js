@@ -35,4 +35,16 @@ export default (app) => {
       .then(search => res.json(search))
       .catch(next);
     });
+  app.post('/api/semantic-search/:searchId/stop',
+    (req, res, next) => {
+      semanticSearch.stopSearch(req.params.searchId)
+      .then(search => res.json(search))
+      .catch(next);
+    });
+  app.post('/api/semantic-search/:searchId/resume',
+    (req, res, next) => {
+      semanticSearch.resumeSearch(req.params.searchId)
+      .then(search => res.json(search))
+      .catch(next);
+    });
 };

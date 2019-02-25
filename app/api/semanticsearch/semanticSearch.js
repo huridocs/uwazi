@@ -12,6 +12,7 @@ export const PENDING = 'pending';
 export const COMPLETED = 'completed';
 export const PROCESSING = 'processing';
 export const IN_PROGRESS = 'inProgress';
+export const STOPPED = 'stopped';
 
 const SEARCH_BATCH_SIZE = 5;
 
@@ -141,6 +142,32 @@ const deleteSearch = async (searchId) => {
   return { deleted: true };
 };
 
+const stopSearch = async (searchId) => {
+  const res = await model.db.updateOne({
+    _id: searchId,
+    status: { $in: [IN_PROGRESS, PENDING] }
+  }, {
+    $set: { status: STOPPED }
+  });
+  if (!res.n) {
+    throw createError('No matching pending search found', 404);
+  }
+  return model.getById(searchId);
+};
+
+const resumeSearch = async (searchId) => {
+  const res = await model.db.updateOne({
+    _id: searchId,
+    status: { $in: [STOPPED] }
+  }, {
+    $set: { status: PENDING }
+  });
+  if (!res.n) {
+    throw createError('No matching stopped search found', 404);
+  }
+  return model.getById(searchId);
+};
+
 const getAllSearches = () => model.get();
 const getInProgress = async () => model.get({ status: IN_PROGRESS });
 const getPending = async () => model.get({ status: PENDING });
@@ -155,7 +182,9 @@ const semanticSearch = {
   getInProgress,
   getSearch,
   getSearchesByDocument,
-  deleteSearch
+  deleteSearch,
+  stopSearch,
+  resumeSearch
 };
 
 export default semanticSearch;
