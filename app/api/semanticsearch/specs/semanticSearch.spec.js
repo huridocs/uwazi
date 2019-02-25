@@ -22,6 +22,9 @@ describe('semanticSearch', () => {
     beforeEach(() => {
       jest.spyOn(workers, 'notifyNewSearch').mockImplementation(() => {});
     });
+    afterEach(() => {
+      workers.notifyNewSearch.mockClear();
+    });
     it('should create and save new search', async () => {
       const args = { searchTerm: 'Test term', documents: ['doc1', 'doc2'] };
       const created = await semanticSearch.create(args, 'en', 'user');
@@ -262,6 +265,9 @@ describe('semanticSearch', () => {
   });
 
   describe('resumeSearch', () => {
+    beforeEach(() => {
+      jest.spyOn(workers, 'notifyNewSearch').mockImplementation(() => {});
+    });
     const testErrorIfWrongStatus = async (searchId, status) => {
       await model.db.updateOne({ _id: searchId }, { $set: { status } });
       try {
@@ -278,6 +284,11 @@ describe('semanticSearch', () => {
       await semanticSearch.resumeSearch(search1Id);
       const resumedSearch = await model.getById(search1Id);
       expect(resumedSearch.status).toBe('pending');
+    });
+    it('should notify workerManager', async () => {
+      await model.db.updateOne({ _id: search1Id }, { $set: { status: 'stopped' } });
+      await semanticSearch.resumeSearch(search1Id);
+      expect(workers.notifyNewSearch).toHaveBeenCalledWith(search1Id);
     });
     it('should return the updated search', async () => {
       await model.db.updateOne({ _id: search1Id }, { $set: { status: 'stopped' } });

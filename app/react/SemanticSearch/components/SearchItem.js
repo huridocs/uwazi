@@ -6,9 +6,9 @@ import { bindActionCreators } from 'redux';
 import { I18NLink } from 'app/I18N';
 import { Icon, ProgressBar } from 'UI';
 
-import { deleteSearch } from '../actions/actions';
+import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';
 
-export function SearchItem({ search, onDeleteClicked }) {
+export function SearchItem({ search, onDeleteClicked, onStopClicked, onResumeClicked }) {
   const { status, documents } = search;
   const completed = documents.filter(doc => doc.status === 'completed').length;
   const max = documents.length;
@@ -33,9 +33,20 @@ export function SearchItem({ search, onDeleteClicked }) {
         >
           <Icon icon="trash-alt" />
         </button>
-        { status === 'inProgress' &&
-          <button className="btn btn-warning">
+        { ['inProgress', 'pending'].includes(status) &&
+          <button
+            className="btn btn-warning"
+            onClick={() => onStopClicked(search._id)}
+          >
             <Icon icon="stop" />
+          </button>
+        }
+        { status === 'stopped' &&
+          <button
+            className="btn btn-success"
+            onClick={() => onResumeClicked(search._id)}
+          >
+            <Icon icon="play" />
           </button>
         }
         <button className="btn btn-success">
@@ -53,12 +64,16 @@ SearchItem.propTypes = {
     documents: PropTypes.array,
     status: PropTypes.string
   }).isRequired,
-  onDeleteClicked: PropTypes.func.isRequired
+  onDeleteClicked: PropTypes.func.isRequired,
+  onStopClicked: PropTypes.func.isRequired,
+  onResumeClicked: PropTypes.func.isRequired
 };
 
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    onDeleteClicked: deleteSearch
+    onDeleteClicked: deleteSearch,
+    onStopClicked: stopSearch,
+    onResumeClicked: resumeSearch
   }, dispatch);
 }
 

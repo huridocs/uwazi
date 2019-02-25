@@ -22,3 +22,17 @@ export function deleteSearch(searchId) {
     dispatch(fetchSearches());
   });
 }
+
+export function stopSearch(searchId) {
+  return dispatch => api.stopSearch(searchId)
+  .then(() => {
+    dispatch(fetchSearches());
+  });
+}
+
+export function resumeSearch(searchId) {
+  return dispatch => api.resumeSearch(searchId)
+  .then(() => {
+    dispatch(fetchSearches());
+  });
+}

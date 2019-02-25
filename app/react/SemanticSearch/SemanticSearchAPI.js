@@ -18,6 +18,14 @@ export default {
   deleteSearch(searchId) {
     const url = `semantic-search/${searchId}`;
     return api.delete(url).then(response => response.json);
+  },
+  stopSearch(searchId) {
+    const url = `semantic-search/${searchId}/stop`;
+    return api.post(url).then(response => response.json);
+  },
+  resumeSearch(searchId) {
+    const url = `semantic-search/${searchId}/resume`;
+    return api.post(url).then(response => response.json);
   }
 };
 

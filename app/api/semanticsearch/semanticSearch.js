@@ -165,6 +165,7 @@ const resumeSearch = async (searchId) => {
   if (!res.n) {
     throw createError('No matching stopped search found', 404);
   }
+  workers.notifyNewSearch(searchId);
   return model.getById(searchId);
 };
 
