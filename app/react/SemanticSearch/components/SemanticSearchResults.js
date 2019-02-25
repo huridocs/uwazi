@@ -7,7 +7,7 @@ import Helmet from 'react-helmet';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import ResultsSidePanel from './ResultsSidePanel';
-import { selectSingleDocument } from 'app/Library/actions/libraryActions';
+import { selectSemanticSearchDocument } from 'app/SemanticSearch/actions/actions';
 
 
 const countSentencesAboveThreshold = (item, threshold) =>
@@ -32,7 +32,7 @@ export class SemanticSearchResults extends Component {
   }
 
   onClick(e, doc) {
-    this.props.selectSingleDocument(doc);
+    this.props.selectSemanticSearchDocument(doc);
   }
 
   renderAditionalText(doc) {
@@ -89,12 +89,16 @@ export class SemanticSearchResults extends Component {
   }
 }
 
+SemanticSearchResults.defaultProps = {
+  searchTerm: ''
+};
+
 
 SemanticSearchResults.propTypes = {
   items: PropTypes.array.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
-  selectSingleDocument: PropTypes.func.isRequired,
+  selectSemanticSearchDocument: PropTypes.func.isRequired,
   threshold: PropTypes.number,
 };
 
@@ -115,7 +119,7 @@ export const mapStateToProps = (state) => {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    selectSingleDocument
+    selectSemanticSearchDocument
   }, dispatch);
 }
 

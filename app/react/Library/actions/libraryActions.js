@@ -44,14 +44,7 @@ export function unselectDocument(docId) {
 }
 
 export function selectSingleDocument(doc) {
-  return (dispatch) => {
-    // TODO this is HACK, DELETE AFTER EXPERIMENT
-    if (doc.semanticSearch || doc.get && doc.get('semanticSearch')) {
-      dispatch(actions.set('library.sidepanel.tab', 'semantic-search-results'));
-    }
-    dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
-  };
-  // return { type: types.SELECT_SINGLE_DOCUMENT, doc };
+  return { type: types.SELECT_SINGLE_DOCUMENT, doc };
 }
 
 export function unselectAllDocuments() {

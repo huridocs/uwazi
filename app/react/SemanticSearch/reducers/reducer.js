@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import createReducer from 'app/BasicReducer';
+import Immutable from 'immutable';
 
 export default combineReducers({
   search: createReducer('semanticSearch/search', {}),
@@ -9,5 +10,6 @@ export default combineReducers({
   resultsFilters: modelReducer('semanticSearch.resultsFilters'),
   resultsThreshold: modelReducer('semanticSearch.resultsThreshold'),
   minRelevantSentences: modelReducer('semanticSearch.minRelevantSentences'),
-  minRelevantScore: modelReducer('semanticSearch.minRelevantScore')
+  minRelevantScore: modelReducer('semanticSearch.minRelevantScore'),
+  selectedDocument: createReducer('semanticSearch/selectedDocument', Immutable.fromJS({})),
 });

@@ -47,7 +47,7 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
                       {(() => {
                         const options = [];
                         for (let i = filter.min * 2; i < filter.max; i += filter.step) {
-                          options.push(<option value={i}/>);
+                          options.push(<option key={i} value={i}/>);
                         }
                         return options;
                       })()}

@@ -9,6 +9,10 @@ export function fetchSearches() {
   });
 }
 
+export function selectSemanticSearchDocument(doc) {
+  return dispatch => dispatch(actions.set('semanticSearch/selectedDocument', doc));
+}
+
 export function submitNewSearch(args) {
   return dispatch => api.search(args)
   .then(() => {

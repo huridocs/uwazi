@@ -74,7 +74,6 @@ export class DocumentResults extends Component {
 
 DocumentResults.propTypes = {
   doc: PropTypes.object.isRequired,
-  filters: PropTypes.object.isRequired,
   selectSnippet: PropTypes.func.isRequired
 };
 
