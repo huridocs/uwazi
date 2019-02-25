@@ -27,6 +27,7 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
 import { faFile } from '@fortawesome/free-solid-svg-icons/faFile';
+import { faFlask } from '@fortawesome/free-solid-svg-icons/faFlask';
 import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf';
 import { faFont } from '@fortawesome/free-solid-svg-icons/faFont';
@@ -53,6 +54,7 @@ import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons/faQuoteLeft';
 import { faQuoteRight } from '@fortawesome/free-solid-svg-icons/faQuoteRight';
 import { faSave } from '@fortawesome/free-solid-svg-icons/faSave';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faServer } from '@fortawesome/free-solid-svg-icons/faServer';
 import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus';
 import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus';
 import { faSitemap } from '@fortawesome/free-solid-svg-icons/faSitemap';
@@ -107,6 +109,7 @@ const icons = {
   faEnvelope,
   faExchangeAlt,
   faExclamationTriangle,
+  faFlask,
   faFile,
   faFilter,
   faFilePdf,
@@ -134,6 +137,7 @@ const icons = {
   faQuoteRight,
   faSave,
   faSearch,
+  faServer,
   faSearchMinus,
   faSearchPlus,
   faSitemap,

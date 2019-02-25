@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Helmet from 'react-helmet';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import ResultsSidePanel from './ResultsSidePanel';
+import { selectSingleDocument } from 'app/Library/actions/libraryActions';
 
 
 const countSentencesAboveThreshold = (item, threshold) =>
@@ -18,15 +20,41 @@ const filterItems = (items, { threshold, minRelevantSentences }) => items.filter
 });
 
 export class SemanticSearchResults extends Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
   shouldComponentUpdate(nextProps) {
     return nextProps.items.length !== this.props.items.length ||
     nextProps.isEmpty !== this.props.isEmpty ||
     nextProps.searchTerm !== this.props.searchTerm;
   }
 
+  onClick(e, doc) {
+    this.props.selectSingleDocument(doc);
+  }
+
+  renderAditionalText(doc) {
+    const results = doc.toJS().semanticSearch.results || [];
+    const { threshold } = this.props;
+    return (
+      <div className="item-metadata">
+        <dl className="metadata-type-text">
+          <dt>Sentences above threshold</dt>
+          <dd>{countSentencesAboveThreshold(doc, threshold)}</dd>
+        </dl>
+        <dl className="metadata-type-text">
+          <dt>Average sentence threshold</dt>
+          <dd>{results.reduce((total, r) => total + r.score, 0) / results.length}
+          </dd>
+        </dl>
+      </div>
+    );
+  }
+
   render() {
     const { items, isEmpty, searchTerm } = this.props;
-
     return (
       <div className="row panels-layout">
         { isEmpty &&
@@ -47,7 +75,8 @@ export class SemanticSearchResults extends Component {
                   <Doc
                     doc={doc}
                     key={index}
-                    onClick={this.clickOnDocument}
+                    onClick={this.onClick}
+                    additionalText={this.renderAditionalText(doc)}
                   />
                 ))}
               </RowList>
@@ -64,7 +93,9 @@ export class SemanticSearchResults extends Component {
 SemanticSearchResults.propTypes = {
   items: PropTypes.array.isRequired,
   isEmpty: PropTypes.bool.isRequired,
-  searchTerm: PropTypes.string.isRequired
+  searchTerm: PropTypes.string,
+  selectSingleDocument: PropTypes.func.isRequired,
+  threshold: PropTypes.number,
 };
 
 export const mapStateToProps = (state) => {
@@ -76,9 +107,16 @@ export const mapStateToProps = (state) => {
   const isEmpty = Object.keys(search).length === 0;
   return {
     searchTerm,
+    threshold: filters.threshold,
     items,
     isEmpty
   };
 };
 
-export default connect(mapStateToProps)(SemanticSearchResults);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    selectSingleDocument
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchResults);

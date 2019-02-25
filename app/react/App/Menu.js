@@ -49,12 +49,14 @@ export class Menu extends Component {
         </li>
         <li className="menuActions">
           <ul className="menuNav-list">
-            <li className="menuNav-item">
-              <I18NLink onClick={this.props.toggleSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
-                <Icon icon="th" />
-                <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
-              </I18NLink>
-            </li>
+            <NeedAuthorization roles={['admin']}>
+              <li className="menuNav-item">
+                <I18NLink onClick={this.props.toggleSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+                  <Icon icon="flask" />
+                  <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+                </I18NLink>
+              </li>
+            </NeedAuthorization>
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                 <Icon icon="th" />
