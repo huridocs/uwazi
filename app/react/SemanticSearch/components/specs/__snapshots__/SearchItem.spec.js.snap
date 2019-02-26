@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SearchItem should render search details and progress with link to results page  1`] = `
+exports[`SearchItem should render search details with link to results page  1`] = `
 <div
   className="semantic-search-list-item"
 >
@@ -17,15 +17,12 @@ exports[`SearchItem should render search details and progress with link to resul
       icon="check-circle"
     />
   </div>
-  <ProgressBar
-    max={0}
-    value={0}
-  />
   <div
     className="item-footer"
   >
     <button
-      className="btn btn-danger"
+      className="btn btn-danger delete-search"
+      onClick={[Function]}
     >
       <Component
         icon="trash-alt"
@@ -42,7 +39,7 @@ exports[`SearchItem should render search details and progress with link to resul
 </div>
 `;
 
-exports[`SearchItem when search status is inProgress should render in-progress icon and stop button 1`] = `
+exports[`SearchItem when search status is inProgress should render in-progress icon, progress bar and stop button 1`] = `
 <div
   className="semantic-search-list-item"
 >
@@ -63,17 +60,66 @@ exports[`SearchItem when search status is inProgress should render in-progress i
     className="item-footer"
   >
     <button
-      className="btn btn-danger"
+      className="btn btn-danger delete-search"
+      onClick={[Function]}
     >
       <Component
         icon="trash-alt"
       />
     </button>
     <button
-      className="btn btn-warning"
+      className="btn btn-warning stop-search"
+      onClick={[Function]}
     >
       <Component
         icon="stop"
+      />
+    </button>
+    <button
+      className="btn btn-success"
+    >
+      <Component
+        icon="paper-plane"
+      />
+    </button>
+  </div>
+</div>
+`;
+
+exports[`SearchItem when search status is stopped should render progress bar and resume button 1`] = `
+<div
+  className="semantic-search-list-item"
+>
+  <div
+    className="item-header"
+  >
+    <Connect(I18NLink)
+      to="semanticsearch/id"
+    >
+      query
+    </Connect(I18NLink)>
+  </div>
+  <ProgressBar
+    max={0}
+    value={0}
+  />
+  <div
+    className="item-footer"
+  >
+    <button
+      className="btn btn-danger delete-search"
+      onClick={[Function]}
+    >
+      <Component
+        icon="trash-alt"
+      />
+    </button>
+    <button
+      className="btn btn-success resume-search"
+      onClick={[Function]}
+    >
+      <Component
+        icon="play"
       />
     </button>
     <button

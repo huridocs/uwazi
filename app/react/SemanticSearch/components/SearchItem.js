@@ -30,14 +30,14 @@ export function SearchItem({ search, onDeleteClicked, onStopClicked, onResumeCli
       }
       <div className="item-footer">
         <button
-          className="btn btn-danger"
+          className="btn btn-danger delete-search"
           onClick={() => onDeleteClicked(search._id)}
         >
           <Icon icon="trash-alt" />
         </button>
         { ['inProgress', 'pending'].includes(status) &&
           <button
-            className="btn btn-warning"
+            className="btn btn-warning stop-search"
             onClick={() => onStopClicked(search._id)}
           >
             <Icon icon="stop" />
@@ -45,7 +45,7 @@ export function SearchItem({ search, onDeleteClicked, onStopClicked, onResumeCli
         }
         { status === 'stopped' &&
           <button
-            className="btn btn-success"
+            className="btn btn-success resume-search"
             onClick={() => onResumeClicked(search._id)}
           >
             <Icon icon="play" />
