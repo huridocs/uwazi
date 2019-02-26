@@ -25,7 +25,9 @@ export function SearchItem({ search, onDeleteClicked, onStopClicked, onResumeCli
           <Icon className="text-primary" icon="check-circle" />
         }
       </div>
-      <ProgressBar value={completed} max={max} />
+      { status !== 'completed' &&
+        <ProgressBar value={completed} max={max} />
+      }
       <div className="item-footer">
         <button
           className="btn btn-danger"
