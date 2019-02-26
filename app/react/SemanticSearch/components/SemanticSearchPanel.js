@@ -78,7 +78,7 @@ export class SemanticSearchSidePanel extends Component {
               <span className="btn-label">{t('System', 'Cancel')}</span>
             </span>
             <button
-              className="btn btn-success"
+              className="btn btn-success start-search"
               onClick={this.submitForm}
             >
               <Icon icon="search" />

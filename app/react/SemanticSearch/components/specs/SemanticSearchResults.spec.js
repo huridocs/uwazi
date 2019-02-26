@@ -4,10 +4,13 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 
-import { SemanticSearchResults, mapStateToProps } from '../SemanticSearchResults';
+import { SemanticSearchResults, mapStateToProps, mapDispatchToProps } from '../SemanticSearchResults';
+import Doc from 'app/Library/components/Doc';
+import * as actions from 'app/SemanticSearch/actions/actions';
 
 describe('SemanticSearchResults', () => {
   let state;
+  let dispatch;
   beforeEach(() => {
     state = {
       semanticSearch: {
@@ -15,7 +18,7 @@ describe('SemanticSearchResults', () => {
           threshold: 0.3,
           minRelevantSentences: 1
         },
-        search: {
+        search: Immutable.fromJS({
           _id: 'id',
           searchTerm: 'query',
           documents: [],
@@ -34,20 +37,16 @@ describe('SemanticSearchResults', () => {
               }
             }
           ]
-        }
+        })
       }
     };
+    dispatch = jest.fn();
   });
 
-  const getProps = () => {
-    const _state = {
-      ...state,
-      semanticSearch: {
-        search: Immutable.fromJS(state.semanticSearch.search)
-      }
-    };
-    return mapStateToProps(_state);
-  };
+  const getProps = () => ({
+    ...mapStateToProps(state),
+    ...mapDispatchToProps(dispatch)
+  });
 
   const render = () => shallow(<SemanticSearchResults {...getProps()} />);
 
@@ -65,9 +64,15 @@ describe('SemanticSearchResults', () => {
   });
   describe('when the search is empty', () => {
     it('should render not found page', () => {
-      state.semanticSearch.search = {};
+      state.semanticSearch.search = Immutable.fromJS({});
       const component = render();
       expect(component).toMatchSnapshot();
     });
+  });
+  it('should select document when item is clicked', () => {
+    jest.spyOn(actions, 'selectSemanticSearchDocument').mockImplementation(() => {});
+    const component = render();
+    component.find(Doc).first().simulate('click');
+    expect(actions.selectSemanticSearchDocument).toHaveBeenCalled();
   });
 });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SemanticSearchPanel should render SearchList with fetched searches 1`] = `
+exports[`SemanticSearchPanel should render SearchList with searches from the state 1`] = `
 <SidePanel
   className="metadata-sidepanel semantic-search"
   open={true}
@@ -25,7 +25,7 @@ exports[`SemanticSearchPanel should render SearchList with fetched searches 1`] 
         </span>
       </span>
       <button
-        className="btn btn-success"
+        className="btn btn-success start-search"
         onClick={[Function]}
       >
         <Component
@@ -152,7 +152,7 @@ exports[`SemanticSearchPanel should render new search form when search button is
         </span>
       </span>
       <button
-        className="btn btn-success"
+        className="btn btn-success start-search"
         onClick={[Function]}
       >
         <Component
@@ -200,7 +200,7 @@ exports[`SemanticSearchPanel should render new search form when search button is
       if={false}
     >
       <Connect(SearchList)
-        searches={null}
+        searches={Array []}
       />
     </ShowIf>
     <ShowIf
@@ -270,7 +270,7 @@ exports[`SemanticSearchPanel when on new search form should go back to search li
         </span>
       </span>
       <button
-        className="btn btn-success"
+        className="btn btn-success start-search"
         onClick={[Function]}
       >
         <Component

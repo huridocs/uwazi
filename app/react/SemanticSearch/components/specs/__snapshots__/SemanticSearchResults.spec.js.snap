@@ -16,31 +16,58 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
       <div>
         query
       </div>
-      <ItemList
-        items={
-          Array [
-            Object {
-              "semanticSearch": Object {
+      <RowList
+        zoomLevel={0}
+      >
+        <Connect(Doc)
+          additionalText={
+            <div
+              className="item-metadata"
+            >
+              <dl
+                className="metadata-type-text"
+              >
+                <dt>
+                  Sentences above threshold
+                </dt>
+                <dd>
+                  2
+                </dd>
+              </dl>
+              <dl
+                className="metadata-type-text"
+              >
+                <dt>
+                  Average sentence threshold
+                </dt>
+                <dd>
+                  0.43333333333333335
+                </dd>
+              </dl>
+            </div>
+          }
+          doc={
+            Immutable.Map {
+              "semanticSearch": Immutable.Map {
                 "averageScore": 0.4,
-                "results": Array [
-                  Object {
+                "results": Immutable.List [
+                  Immutable.Map {
                     "score": 0.6,
                   },
-                  Object {
+                  Immutable.Map {
                     "score": 0.5,
                   },
-                  Object {
+                  Immutable.Map {
                     "score": 0.2,
                   },
                 ],
               },
-            },
-          ]
-        }
-        link=""
-        options={Object {}}
-        storeKey="library"
-      />
+            }
+          }
+          key="0"
+          onClick={[Function]}
+        />
+      </RowList>
     </main>
     <Connect(ResultsSidePanel) />
   </React.Fragment>
@@ -63,47 +90,106 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
       <div>
         query
       </div>
-      <ItemList
-        items={
-          Array [
-            Object {
-              "semanticSearch": Object {
+      <RowList
+        zoomLevel={0}
+      >
+        <Connect(Doc)
+          additionalText={
+            <div
+              className="item-metadata"
+            >
+              <dl
+                className="metadata-type-text"
+              >
+                <dt>
+                  Sentences above threshold
+                </dt>
+                <dd>
+                  2
+                </dd>
+              </dl>
+              <dl
+                className="metadata-type-text"
+              >
+                <dt>
+                  Average sentence threshold
+                </dt>
+                <dd>
+                  0.43333333333333335
+                </dd>
+              </dl>
+            </div>
+          }
+          doc={
+            Immutable.Map {
+              "semanticSearch": Immutable.Map {
                 "averageScore": 0.4,
-                "results": Array [
-                  Object {
+                "results": Immutable.List [
+                  Immutable.Map {
                     "score": 0.6,
                   },
-                  Object {
+                  Immutable.Map {
                     "score": 0.5,
                   },
-                  Object {
+                  Immutable.Map {
                     "score": 0.2,
                   },
                 ],
               },
-            },
-            Object {
-              "semanticSearch": Object {
+            }
+          }
+          key="0"
+          onClick={[Function]}
+        />
+        <Connect(Doc)
+          additionalText={
+            <div
+              className="item-metadata"
+            >
+              <dl
+                className="metadata-type-text"
+              >
+                <dt>
+                  Sentences above threshold
+                </dt>
+                <dd>
+                  1
+                </dd>
+              </dl>
+              <dl
+                className="metadata-type-text"
+              >
+                <dt>
+                  Average sentence threshold
+                </dt>
+                <dd>
+                  0.3333333333333333
+                </dd>
+              </dl>
+            </div>
+          }
+          doc={
+            Immutable.Map {
+              "semanticSearch": Immutable.Map {
                 "averageScore": 0.6,
-                "results": Array [
-                  Object {
+                "results": Immutable.List [
+                  Immutable.Map {
                     "score": 0.7,
                   },
-                  Object {
+                  Immutable.Map {
                     "score": 0.2,
                   },
-                  Object {
+                  Immutable.Map {
                     "score": 0.1,
                   },
                 ],
               },
-            },
-          ]
-        }
-        link=""
-        options={Object {}}
-        storeKey="library"
-      />
+            }
+          }
+          key="1"
+          onClick={[Function]}
+        />
+      </RowList>
     </main>
     <Connect(ResultsSidePanel) />
   </React.Fragment>
@@ -115,14 +201,20 @@ exports[`SemanticSearchResults when the search is empty should render not found 
   className="row panels-layout"
 >
   <React.Fragment>
-    <p>
-      Search not found
-    </p>
     <HelmetWrapper
       defer={true}
       encodeSpecialCharacters={true}
-      title="Semantic search not found"
+      title=" - Semantic search results"
     />
+    <main
+      className="semantic-search-results-viewer document-viewer with-panel"
+    >
+      <div />
+      <RowList
+        zoomLevel={0}
+      />
+    </main>
+    <Connect(ResultsSidePanel) />
   </React.Fragment>
 </div>
 `;

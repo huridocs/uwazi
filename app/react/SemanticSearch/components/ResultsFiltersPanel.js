@@ -70,9 +70,9 @@ ResultsFiltersPanel.propTypes = {
   storeKey: PropTypes.string.isRequired
 };
 
-function mapStateToProps({ library, semanticSearch }) {
+function mapStateToProps({ semanticSearch }) {
   return {
-    open: library.ui.get('selectedDocuments').size !== 1,
+    open: semanticSearch.selectedDocument.isEmpty(),
     filtersValues: semanticSearch.resultsFilters
   };
 }

@@ -6,8 +6,8 @@ import { bindActionCreators } from 'redux';
 import Helmet from 'react-helmet';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import ResultsSidePanel from './ResultsSidePanel';
 import { selectSemanticSearchDocument } from 'app/SemanticSearch/actions/actions';
+import ResultsSidePanel from './ResultsSidePanel';
 
 
 const countSentencesAboveThreshold = (item, threshold) =>
@@ -95,7 +95,7 @@ SemanticSearchResults.defaultProps = {
 
 
 SemanticSearchResults.propTypes = {
-  items: PropTypes.array.isRequired,
+  items: PropTypes.object.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
@@ -117,7 +117,7 @@ export const mapStateToProps = (state) => {
   };
 };
 
-function mapDispatchToProps(dispatch) {
+export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     selectSemanticSearchDocument
   }, dispatch);

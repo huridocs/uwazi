@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DocumentResults render should render a result 1`] = `
-<Connect(Form)
-  model="semanticSearch.resultsFilters"
->
+<React.Fragment>
   <div
     className="view"
   >
@@ -16,17 +14,14 @@ exports[`DocumentResults render should render a result 1`] = `
         Threshold
       </dt>
       <dd>
-        <Modeled(Connect(Field))
-          dynamic={false}
-          model=".threshold"
-        >
-          <input
-            max="1"
-            min="0"
-            step="0.01"
-            type="range"
-          />
-        </Modeled(Connect(Field))>
+        <input
+          max="1"
+          min="0"
+          onChange={[Function]}
+          step="0.01"
+          type="range"
+          value={0.2}
+        />
       </dd>
     </dl>
     <dl
@@ -36,7 +31,7 @@ exports[`DocumentResults render should render a result 1`] = `
         Sentences above threshold
       </dt>
       <dd>
-        0
+        1
       </dd>
     </dl>
     <dl
@@ -69,11 +64,15 @@ exports[`DocumentResults render should render a result 1`] = `
     selectSnippet={[Function]}
     snippets={
       Immutable.Map {
-        "count": 0,
+        "count": 1,
         "metadata": Immutable.List [],
-        "fullText": Immutable.List [],
+        "fullText": Immutable.List [
+          Immutable.Map {
+            "score": 9,
+          },
+        ],
       }
     }
   />
-</Connect(Form)>
+</React.Fragment>
 `;
