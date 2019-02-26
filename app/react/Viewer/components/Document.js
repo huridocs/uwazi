@@ -12,9 +12,15 @@ import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
 
 import francLanguages from 'shared/languagesList';
-import languagesList from '../../Settings/utils/languagesList'
+import languagesList from '../../Settings/utils/languagesList';
 
 import { APIURL } from '../../config.js';
+
+const determineDirection = ({ language }) => {
+  const languageKey = francLanguages(language, 'ISO639_1');
+  const laguageData = languagesList.find(l => l.key === languageKey) || {};
+  return laguageData.rtl ? 'rtl' : 'ltr';
+};
 
 export class Document extends Component {
   constructor(props) {
@@ -104,7 +110,7 @@ export class Document extends Component {
 
     return (
       <div>
-        <div className={`_${doc._id} document ${this.props.className}`} >
+        <div className={`_${doc._id} document ${this.props.className} ${determineDirection(doc.file || {})}`} >
           <Header/>
           <div
             className="pages"

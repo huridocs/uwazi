@@ -42,6 +42,16 @@ describe('Document', () => {
     expect(component.find('div').children().first().hasClass('aClass')).toBe(true);
   });
 
+  it('should add the correct LTR or RTL direction according to file franc language', () => {
+    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'eng' }));
+    render();
+    expect(component.find('.document').hasClass('ltr')).toBe(true);
+
+    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'ara' }));
+    render();
+    expect(component.find('.document').hasClass('rtl')).toBe(true);
+  });
+
   describe('onClick', () => {
     describe('when executeOnClickHandler = true', () => {
       it('should execute onClick', () => {
