@@ -147,15 +147,16 @@ export class FiltersForm extends Component {
                 <div className="col-sm-9">
                   <div className="alert alert-info">
                     <Icon icon="info-circle" size="2x" />
-                    <div>
-                      <p>By default, users can filter the documents
-                           or entities in the library based on the types of documents/entities you have defined.
-                           However, you can configure how these document/entity types will be displayed:
-                </p>
+                    <div className="force-ltr">
+                      <p>
+                        By default, users can filter the documents
+                        or entities in the library based on the types of documents/entities you have defined.
+                        However, you can configure how these document/entity types will be displayed:
+                      </p>
                       <ul>
-                  <li>drag and drop each document/entity type into the window in order to configure their order</li>
-                  <li>select "Create group" below to group filters under a label (e.g. "Documents" or "People")</li>
-                </ul>
+                        <li>drag and drop each document/entity type into the window in order to configure their order</li>
+                        <li>select "Create group" below to group filters under a label (e.g. "Documents" or "People")</li>
+                      </ul>
                     </div>
                   </div>
                   <DragAndDropContainer

@@ -16,7 +16,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="0"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Español (es)
       </span>
       <span>
@@ -35,7 +37,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="1"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         English (en)
       </span>
       <div
@@ -84,7 +88,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="0"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Abkhazian (ab) 
         <Warning
           inline={false}
@@ -115,7 +121,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="1"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Afar (aa) 
         <Warning
           inline={false}
@@ -146,7 +154,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="2"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Afrikaans (af) 
         <Warning
           inline={false}
@@ -177,7 +187,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="3"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Akan (ak) 
         <Warning
           inline={false}
@@ -208,7 +220,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="4"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Albanian (sq) 
         <Warning
           inline={false}
@@ -239,7 +253,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="5"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Amharic (am) 
         <Warning
           inline={false}
@@ -270,7 +286,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="6"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Arabic (ar) 
       </span>
       <div
@@ -296,7 +314,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="7"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Aragonese (an) 
         <Warning
           inline={false}
@@ -327,7 +347,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="8"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Armenian (hy) 
       </span>
       <div
@@ -353,7 +375,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="9"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Assamese (as) 
         <Warning
           inline={false}
@@ -384,7 +408,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="10"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Avaric (av) 
         <Warning
           inline={false}
@@ -415,7 +441,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="11"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Avestan (ae) 
         <Warning
           inline={false}
@@ -446,7 +474,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="12"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Aymara (ay) 
         <Warning
           inline={false}
@@ -477,7 +507,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="13"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Azerbaijani (az) 
         <Warning
           inline={false}
@@ -508,7 +540,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="14"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bambara (bm) 
         <Warning
           inline={false}
@@ -539,7 +573,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="15"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bashkir (ba) 
         <Warning
           inline={false}
@@ -570,7 +606,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="16"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Basque (eu) 
       </span>
       <div
@@ -596,7 +634,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="17"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Belarusian (be) 
         <Warning
           inline={false}
@@ -627,7 +667,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="18"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bengali (Bangla) (bn) 
         <Warning
           inline={false}
@@ -658,7 +700,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="19"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bihari (bh) 
         <Warning
           inline={false}
@@ -689,7 +733,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="20"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bislama (bi) 
         <Warning
           inline={false}
@@ -720,7 +766,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="21"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bosnian (bs) 
         <Warning
           inline={false}
@@ -751,7 +799,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="22"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Breton (br) 
         <Warning
           inline={false}
@@ -782,7 +832,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="23"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Bulgarian (bg) 
       </span>
       <div
@@ -808,7 +860,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="24"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Burmese (my) 
         <Warning
           inline={false}
@@ -839,7 +893,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="25"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Catalan (ca) 
       </span>
       <div
@@ -865,7 +921,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="26"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chamorro (ch) 
         <Warning
           inline={false}
@@ -896,7 +954,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="27"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chechen (ce) 
         <Warning
           inline={false}
@@ -927,7 +987,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="28"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chichewa, Chewa, Nyanja (ny) 
         <Warning
           inline={false}
@@ -958,7 +1020,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="29"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chinese (zh) 
         <Warning
           inline={false}
@@ -989,7 +1053,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="30"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chinese (Simplified) (zh-Hans) 
         <Warning
           inline={false}
@@ -1020,7 +1086,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="31"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chinese (Traditional) (zh-Hant) 
         <Warning
           inline={false}
@@ -1051,7 +1119,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="32"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Chuvash (cv) 
         <Warning
           inline={false}
@@ -1082,7 +1152,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="33"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Cornish (kw) 
         <Warning
           inline={false}
@@ -1113,7 +1185,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="34"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Corsican (co) 
         <Warning
           inline={false}
@@ -1144,7 +1218,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="35"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Cree (cr) 
         <Warning
           inline={false}
@@ -1175,7 +1251,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="36"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Croatian (hr) 
         <Warning
           inline={false}
@@ -1206,7 +1284,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="37"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Czech (cs) 
       </span>
       <div
@@ -1232,7 +1312,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="38"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Danish (da) 
       </span>
       <div
@@ -1258,7 +1340,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="39"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Divehi, Dhivehi, Maldivian (dv) 
         <Warning
           inline={false}
@@ -1289,7 +1373,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="40"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Dutch (nl) 
       </span>
       <div
@@ -1315,7 +1401,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="41"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Dzongkha (dz) 
         <Warning
           inline={false}
@@ -1346,7 +1434,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="42"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Esperanto (eo) 
         <Warning
           inline={false}
@@ -1377,7 +1467,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="43"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Estonian (et) 
         <Warning
           inline={false}
@@ -1408,7 +1500,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="44"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Ewe (ee) 
         <Warning
           inline={false}
@@ -1439,7 +1533,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="45"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Faroese (fo) 
         <Warning
           inline={false}
@@ -1470,7 +1566,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="46"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Fijian (fj) 
         <Warning
           inline={false}
@@ -1501,7 +1599,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="47"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Finnish (fi) 
       </span>
       <div
@@ -1527,7 +1627,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="48"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         French (fr) 
       </span>
       <div
@@ -1553,7 +1655,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="49"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Fula, Fulah, Pulaar, Pular (ff) 
         <Warning
           inline={false}
@@ -1584,7 +1688,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="50"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Galician (gl) 
       </span>
       <div
@@ -1610,7 +1716,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="51"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Gaelic Scottish (gd) 
         <Warning
           inline={false}
@@ -1641,7 +1749,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="52"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Gaelic (Manx) (gv) 
         <Warning
           inline={false}
@@ -1672,7 +1782,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="53"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Georgian (ka) 
         <Warning
           inline={false}
@@ -1703,7 +1815,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="54"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         German (de) 
       </span>
       <div
@@ -1729,7 +1843,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="55"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Greek (el) 
       </span>
       <div
@@ -1755,7 +1871,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="56"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Guarani (gn) 
         <Warning
           inline={false}
@@ -1786,7 +1904,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="57"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Gujarati (gu) 
         <Warning
           inline={false}
@@ -1817,7 +1937,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="58"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Haitian Creole (ht) 
         <Warning
           inline={false}
@@ -1848,7 +1970,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="59"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Hausa (ha) 
         <Warning
           inline={false}
@@ -1879,7 +2003,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="60"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Hebrew (he) 
         <Warning
           inline={false}
@@ -1910,7 +2036,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="61"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Herero (hz) 
         <Warning
           inline={false}
@@ -1941,7 +2069,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="62"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Hindi (hi) 
       </span>
       <div
@@ -1967,7 +2097,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="63"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Hiri Motu (ho) 
         <Warning
           inline={false}
@@ -1998,7 +2130,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="64"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Hungarian (hu) 
       </span>
       <div
@@ -2024,7 +2158,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="65"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Icelandic (is) 
         <Warning
           inline={false}
@@ -2055,7 +2191,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="66"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Ido (io) 
         <Warning
           inline={false}
@@ -2086,7 +2224,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="67"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Igbo (ig) 
         <Warning
           inline={false}
@@ -2117,7 +2257,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="68"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Indonesian (in) 
         <Warning
           inline={false}
@@ -2148,7 +2290,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="69"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Interlingua (ia) 
         <Warning
           inline={false}
@@ -2179,7 +2323,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="70"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Interlingue (ie) 
         <Warning
           inline={false}
@@ -2210,7 +2356,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="71"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Inuktitut (iu) 
         <Warning
           inline={false}
@@ -2241,7 +2389,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="72"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Inupiak (ik) 
         <Warning
           inline={false}
@@ -2272,7 +2422,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="73"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Irish (ga) 
       </span>
       <div
@@ -2298,7 +2450,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="74"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Italian (it) 
       </span>
       <div
@@ -2324,7 +2478,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="75"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Japanese (ja) 
         <Warning
           inline={false}
@@ -2355,7 +2511,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="76"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Javanese (jv) 
         <Warning
           inline={false}
@@ -2386,7 +2544,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="77"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kalaallisut, Greenlandic (kl) 
         <Warning
           inline={false}
@@ -2417,7 +2577,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="78"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kannada (kn) 
         <Warning
           inline={false}
@@ -2448,7 +2610,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="79"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kanuri (kr) 
         <Warning
           inline={false}
@@ -2479,7 +2643,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="80"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kashmiri (ks) 
         <Warning
           inline={false}
@@ -2510,7 +2676,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="81"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kazakh (kk) 
         <Warning
           inline={false}
@@ -2541,7 +2709,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="82"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Khmer (km) 
         <Warning
           inline={false}
@@ -2572,7 +2742,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="83"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kikuyu (ki) 
         <Warning
           inline={false}
@@ -2603,7 +2775,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="84"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kinyarwanda (Rwanda) (rw) 
         <Warning
           inline={false}
@@ -2634,7 +2808,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="85"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kirundi (rn) 
         <Warning
           inline={false}
@@ -2665,7 +2841,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="86"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kyrgyz (ky) 
         <Warning
           inline={false}
@@ -2696,7 +2874,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="87"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Komi (kv) 
         <Warning
           inline={false}
@@ -2727,7 +2907,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="88"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kongo (kg) 
         <Warning
           inline={false}
@@ -2758,7 +2940,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="89"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Korean (ko) 
         <Warning
           inline={false}
@@ -2789,7 +2973,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="90"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kurdish (ku) 
         <Warning
           inline={false}
@@ -2820,7 +3006,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="91"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Kwanyama (kj) 
         <Warning
           inline={false}
@@ -2851,7 +3039,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="92"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Lao (lo) 
         <Warning
           inline={false}
@@ -2882,7 +3072,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="93"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Latin (la) 
         <Warning
           inline={false}
@@ -2913,7 +3105,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="94"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Latvian (Lettish) (lv) 
       </span>
       <div
@@ -2939,7 +3133,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="95"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Limburgish (Limburger) (li) 
         <Warning
           inline={false}
@@ -2970,7 +3166,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="96"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Lingala (ln) 
         <Warning
           inline={false}
@@ -3001,7 +3199,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="97"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Lithuanian (lt) 
       </span>
       <div
@@ -3027,7 +3227,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="98"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Luga-Katanga (lu) 
         <Warning
           inline={false}
@@ -3058,7 +3260,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="99"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Luganda, Ganda (lg) 
         <Warning
           inline={false}
@@ -3089,7 +3293,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="100"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Luxembourgish (lb) 
         <Warning
           inline={false}
@@ -3120,7 +3326,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="101"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Macedonian (mk) 
         <Warning
           inline={false}
@@ -3151,7 +3359,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="102"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Malagasy (mg) 
         <Warning
           inline={false}
@@ -3182,7 +3392,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="103"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Malay (ms) 
         <Warning
           inline={false}
@@ -3213,7 +3425,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="104"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Malayalam (ml) 
         <Warning
           inline={false}
@@ -3244,7 +3458,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="105"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Maltese (mt) 
         <Warning
           inline={false}
@@ -3275,7 +3491,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="106"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Maori (mi) 
         <Warning
           inline={false}
@@ -3306,7 +3524,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="107"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Marathi (mr) 
         <Warning
           inline={false}
@@ -3337,7 +3557,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="108"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Marshallese (mh) 
         <Warning
           inline={false}
@@ -3368,7 +3590,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="109"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Moldavian (mo) 
         <Warning
           inline={false}
@@ -3399,7 +3623,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="110"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Mongolian (mn) 
         <Warning
           inline={false}
@@ -3430,7 +3656,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="111"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Nauru (na) 
         <Warning
           inline={false}
@@ -3461,7 +3689,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="112"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Navajo (nv) 
         <Warning
           inline={false}
@@ -3492,7 +3722,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="113"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Ndonga (ng) 
         <Warning
           inline={false}
@@ -3523,7 +3755,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="114"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Northern Ndebele (nd) 
         <Warning
           inline={false}
@@ -3554,7 +3788,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="115"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Nepali (ne) 
         <Warning
           inline={false}
@@ -3585,7 +3821,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="116"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Norwegian (no) 
         <Warning
           inline={false}
@@ -3616,7 +3854,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="117"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Norwegian bokmål (nb) 
       </span>
       <div
@@ -3642,7 +3882,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="118"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Norwegian nynorsk (nn) 
       </span>
       <div
@@ -3668,7 +3910,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="119"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Occitan (oc) 
         <Warning
           inline={false}
@@ -3699,7 +3943,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="120"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Ojibwe (oj) 
         <Warning
           inline={false}
@@ -3730,7 +3976,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="121"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Old Church Slavonic, Old Bulgarian (cu) 
         <Warning
           inline={false}
@@ -3761,7 +4009,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="122"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Oriya (or) 
         <Warning
           inline={false}
@@ -3792,7 +4042,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="123"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Oromo (Afaan Oromo) (om) 
         <Warning
           inline={false}
@@ -3823,7 +4075,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="124"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Ossetian (os) 
         <Warning
           inline={false}
@@ -3854,7 +4108,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="125"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Pāli (pi) 
         <Warning
           inline={false}
@@ -3885,7 +4141,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="126"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Pashto, Pushto (ps) 
         <Warning
           inline={false}
@@ -3916,7 +4174,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="127"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Persian (Farsi) (fa) 
       </span>
       <div
@@ -3942,7 +4202,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="128"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Polish (pl) 
         <Warning
           inline={false}
@@ -3973,7 +4235,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="129"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Portuguese (pt) 
       </span>
       <div
@@ -3999,7 +4263,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="130"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Punjabi (Eastern) (pa) 
         <Warning
           inline={false}
@@ -4030,7 +4296,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="131"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Quechua (qu) 
         <Warning
           inline={false}
@@ -4061,7 +4329,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="132"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Romansh (rm) 
         <Warning
           inline={false}
@@ -4092,7 +4362,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="133"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Romanian (ro) 
       </span>
       <div
@@ -4118,7 +4390,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="134"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Russian (ru) 
       </span>
       <div
@@ -4144,7 +4418,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="135"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sami (se) 
         <Warning
           inline={false}
@@ -4175,7 +4451,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="136"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Samoan (sm) 
         <Warning
           inline={false}
@@ -4206,7 +4484,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="137"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sango (sg) 
         <Warning
           inline={false}
@@ -4237,7 +4517,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="138"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sanskrit (sa) 
         <Warning
           inline={false}
@@ -4268,7 +4550,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="139"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Serbian (sr) 
         <Warning
           inline={false}
@@ -4299,7 +4583,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="140"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Serbo-Croatian (sh) 
         <Warning
           inline={false}
@@ -4330,7 +4616,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="141"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sesotho (st) 
         <Warning
           inline={false}
@@ -4361,7 +4649,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="142"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Setswana (tn) 
         <Warning
           inline={false}
@@ -4392,7 +4682,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="143"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Shona (sn) 
         <Warning
           inline={false}
@@ -4423,7 +4715,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="144"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sichuan Yi, Nuosu (ii) 
         <Warning
           inline={false}
@@ -4454,7 +4748,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="145"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sindhi (sd) 
         <Warning
           inline={false}
@@ -4485,7 +4781,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="146"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sinhalese (si) 
         <Warning
           inline={false}
@@ -4516,7 +4814,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="147"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Siswati, Swati (ss) 
         <Warning
           inline={false}
@@ -4547,7 +4847,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="148"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Slovak (sk) 
         <Warning
           inline={false}
@@ -4578,7 +4880,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="149"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Slovenian (sl) 
         <Warning
           inline={false}
@@ -4609,7 +4913,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="150"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Somali (so) 
         <Warning
           inline={false}
@@ -4640,7 +4946,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="151"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Southern Ndebele (nr) 
         <Warning
           inline={false}
@@ -4671,7 +4979,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="152"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Sundanese (su) 
         <Warning
           inline={false}
@@ -4702,7 +5012,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="153"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Swahili (Kiswahili) (sw) 
         <Warning
           inline={false}
@@ -4733,7 +5045,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="154"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Swedish (sv) 
       </span>
       <div
@@ -4759,7 +5073,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="155"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tagalog (tl) 
         <Warning
           inline={false}
@@ -4790,7 +5106,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="156"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tahitian (ty) 
         <Warning
           inline={false}
@@ -4821,7 +5139,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="157"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tajik (tg) 
         <Warning
           inline={false}
@@ -4852,7 +5172,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="158"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tamil (ta) 
         <Warning
           inline={false}
@@ -4883,7 +5205,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="159"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tatar (tt) 
         <Warning
           inline={false}
@@ -4914,7 +5238,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="160"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Telugu (te) 
         <Warning
           inline={false}
@@ -4945,7 +5271,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="161"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Thai (th) 
       </span>
       <div
@@ -4971,7 +5299,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="162"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tibetan (bo) 
         <Warning
           inline={false}
@@ -5002,7 +5332,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="163"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tigrinya (ti) 
         <Warning
           inline={false}
@@ -5033,7 +5365,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="164"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tonga (to) 
         <Warning
           inline={false}
@@ -5064,7 +5398,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="165"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Tsonga (ts) 
         <Warning
           inline={false}
@@ -5095,7 +5431,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="166"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Turkish (tr) 
       </span>
       <div
@@ -5121,7 +5459,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="167"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Turkmen (tk) 
         <Warning
           inline={false}
@@ -5152,7 +5492,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="168"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Twi (tw) 
         <Warning
           inline={false}
@@ -5183,7 +5525,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="169"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Uyghur (ug) 
         <Warning
           inline={false}
@@ -5214,7 +5558,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="170"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Ukrainian (uk) 
         <Warning
           inline={false}
@@ -5245,7 +5591,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="171"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Urdu (ur) 
         <Warning
           inline={false}
@@ -5276,7 +5624,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="172"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Uzbek (uz) 
         <Warning
           inline={false}
@@ -5307,7 +5657,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="173"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Venda (ve) 
         <Warning
           inline={false}
@@ -5338,7 +5690,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="174"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Vietnamese (vi) 
         <Warning
           inline={false}
@@ -5369,7 +5723,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="175"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Volapük (vo) 
         <Warning
           inline={false}
@@ -5400,7 +5756,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="176"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Wallon (wa) 
         <Warning
           inline={false}
@@ -5431,7 +5789,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="177"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Welsh (cy) 
         <Warning
           inline={false}
@@ -5462,7 +5822,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="178"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Wolof (wo) 
         <Warning
           inline={false}
@@ -5493,7 +5855,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="179"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Western Frisian (fy) 
         <Warning
           inline={false}
@@ -5524,7 +5888,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="180"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Xhosa (xh) 
         <Warning
           inline={false}
@@ -5555,7 +5921,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="181"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Yiddish (yi) 
         <Warning
           inline={false}
@@ -5586,7 +5954,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="182"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Yoruba (yo) 
         <Warning
           inline={false}
@@ -5617,7 +5987,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="183"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Zhuang, Chuang (za) 
         <Warning
           inline={false}
@@ -5648,7 +6020,9 @@ exports[`Languages should render Languages component 1`] = `
       className="list-group-item"
       key="184"
     >
-      <span>
+      <span
+        className="force-ltr"
+      >
         Zulu (zu) 
         <Warning
           inline={false}

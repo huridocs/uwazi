@@ -52,7 +52,7 @@ export class PageCreator extends Component {
               <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
               <div className="alert alert-info">
                 <Icon icon="info-circle" size="2x" />
-                <div>
+                <div className="force-ltr">
                   Use <a target="_blank" href="https://guides.github.com/features/mastering-markdown/">Markdown</a> syntax
                   to create page content<br/>
                   You can also embed advanced components like maps, charts
