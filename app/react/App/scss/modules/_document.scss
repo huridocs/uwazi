@@ -21,6 +21,18 @@
   div.c>* { pointer-events: auto; padding-right: 100px; }
 }
 
+.document-viewer .main-wrapper {
+  .ltr {
+    /*rtl:ignore*/
+    direction: ltr;
+  }
+
+  .rtl {
+    /*rtl:ignore*/
+    direction: rtl;
+  }
+}
+
 .page-viewer, .library-viewer {
   position: relative;
   height: 100%;
