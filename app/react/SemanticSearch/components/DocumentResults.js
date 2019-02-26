@@ -41,23 +41,25 @@ export class DocumentResults extends Component {
     }
     const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
     return (
-      <div className="view">
-        <dl className="metadata-type-text">
-          <dt className="item-header">
-            {t('System', 'Threshold')}
-          </dt>
-          <dd>
-            <input type="range" min="0" max="1" step="0.01" value={this.state.threshold} onChange={this.onChangeTreshHold}/>
-          </dd>
-        </dl>
-        <dl className="metadata-type-numeric">
-          <dt>Sentences above threshold</dt>
-          <dd>{ aboveThreshold }</dd>
-        </dl>
-        <dl className="metadata-type-numeric">
-          <dt>Average sentence score</dt>
-          <dd>{ avgScore }</dd>
-        </dl>
+      <React.Fragment>
+        <div className="view">
+          <dl className="metadata-type-text">
+            <dt className="item-header">
+              {t('System', 'Threshold')}
+            </dt>
+            <dd>
+              <input type="range" min="0" max="1" step="0.01" value={this.state.threshold} onChange={this.onChangeTreshHold}/>
+            </dd>
+          </dl>
+          <dl className="metadata-type-numeric">
+            <dt>Sentences above threshold</dt>
+            <dd>{ aboveThreshold }</dd>
+          </dl>
+          <dl className="metadata-type-numeric">
+            <dt>Average sentence score</dt>
+            <dd>{ avgScore }</dd>
+          </dl>
+        </div>
         { doc.semanticSearch && <SnippetList
           doc={Immutable.fromJS(doc)}
           documentViewUrl={documentViewUrl}
@@ -67,7 +69,7 @@ export class DocumentResults extends Component {
             this.props.selectSnippet(...args);
           }}
         />}
-      </div>
+      </React.Fragment>
     );
   }
 }
