@@ -2,6 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
 
+// TEMP
+import laguagesList from '../Settings/utils/languagesList';
+// -----
+
 class Root extends Component {
   renderInitialData() {
     let innerHtml = '';
@@ -29,11 +33,24 @@ class Root extends Component {
       'http://localhost:8080/main.js'
     ];
 
-    let CSS = [
-      'http://localhost:8080/vendor.styles.css',
-      'http://localhost:8080/styles.css'
-    ];
+    // TEMP
+    console.log('Current Lang:', this.props.language);
+    const languageData = laguagesList.find(l => l.key === this.props.language);
+    let query = '';
+    if (languageData.rtl) {
+      query = '?rtl=true';
+    }
 
+    let CSS = [
+      `http://localhost:8080/CSS/vendor.styles.css${query}`,
+      `http://localhost:8080/CSS/styles.css${query}`,
+    ];
+    // ----
+
+    // let CSS = [
+    //   `http://localhost:8080/vendor.styles.css${query}`,
+    //   `http://localhost:8080/styles.css${query}`,
+    // ];
 
     if (!isHotReload) {
       pdfWorkerPathScript = `window.pdfWorkerPath = '${this.props.assets['pdf.worker'].js}';`;

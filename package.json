@@ -137,6 +137,7 @@
     "redux-thunk": "^2.0.1",
     "reselect": "3.0.1",
     "rison": "Nanonid/rison#e64af6c",
+    "rtlcss": "^2.4.0",
     "sanitize-filename": "^1.6.0",
     "serialize-javascript": "^1.5.0",
     "socket.io": "2.0.4",
