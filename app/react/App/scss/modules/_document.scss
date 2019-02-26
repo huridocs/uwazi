@@ -22,12 +22,7 @@
 }
 
 .document-viewer .main-wrapper {
-  .ltr {
-    /*rtl:ignore*/
-    direction: ltr;
-  }
-
-  .rtl {
+  .force-rtl {
     /*rtl:ignore*/
     direction: ltr;
   }

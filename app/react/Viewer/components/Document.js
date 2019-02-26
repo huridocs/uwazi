@@ -19,7 +19,7 @@ import { APIURL } from '../../config.js';
 const determineDirection = ({ language }) => {
   const languageKey = francLanguages(language, 'ISO639_1');
   const laguageData = languagesList.find(l => l.key === languageKey) || {};
-  return laguageData.rtl ? 'rtl' : 'ltr';
+  return `force-${laguageData.rtl ? 'rtl' : 'ltr'}`;
 };
 
 export class Document extends Component {

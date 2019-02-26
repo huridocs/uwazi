@@ -35,3 +35,13 @@ body {
 .app-content > div {
   height: 100%;
 }
+
+.force-ltr {
+  /*rtl:ignore*/
+  direction: ltr;
+}
+
+.force-rtl {
+  /*rtl:ignore*/
+  direction: rtl;
+}
