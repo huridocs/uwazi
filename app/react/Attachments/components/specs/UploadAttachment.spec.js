@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 
-import {UploadAttachment} from '../UploadAttachment';
+import { UploadAttachment } from '../UploadAttachment';
 
 describe('UploadAttachment', () => {
   let component;
@@ -10,7 +10,7 @@ describe('UploadAttachment', () => {
   let e;
 
   beforeEach(() => {
-    e = {target: {files: [{id: 'f1'}]}};
+    e = { target: { files: [{ id: 'f1' }] } };
     props = {
       uploadAttachment: jasmine.createSpy('uploadAttachment'),
       entityId: 'idE1',
@@ -20,7 +20,7 @@ describe('UploadAttachment', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<UploadAttachment {...props}/>);
   };
 
@@ -32,7 +32,7 @@ describe('UploadAttachment', () => {
 
     expect(props.uploadAttachment).not.toHaveBeenCalled();
     component.find('label > input').props().onChange(e);
-    expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', {id: 'f1'}, 'library');
+    expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', { id: 'f1' }, 'library');
   });
 
   describe('when there are multiple languages', () => {
@@ -49,20 +49,20 @@ describe('UploadAttachment', () => {
 
       expect(props.uploadAttachment).not.toHaveBeenCalled();
       component.find('label > input').at(0).props().onChange(e);
-      expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', {id: 'f1'}, 'library');
+      expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', { id: 'f1' }, 'library');
 
       props.uploadAttachment.calls.reset();
 
       expect(props.uploadAttachment).not.toHaveBeenCalled();
       component.find('label > input').at(1).props().onChange(e);
-      expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', {id: 'f1'}, 'library', {allLanguages: true});
+      expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', { id: 'f1' }, 'library', { allLanguages: true });
     });
   });
 
   describe('when uploading', () => {
     it('should show a progress bar only', () => {
       props.languages = Immutable(['es', 'en']);
-      props.progress = Immutable({idE1: 77});
+      props.progress = Immutable({ idE1: 77 });
 
       render();
 

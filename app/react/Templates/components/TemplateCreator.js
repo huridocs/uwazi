@@ -39,46 +39,46 @@ export class TemplateCreator extends Component {
               <main className="col-xs-12 col-sm-9">
                 <MetadataTemplate saveTemplate={save} backUrl={backUrl} relationType={this.props.relationType}/>
               </main>
-              { environment !== 'relationship' &&
-                <aside className="col-xs-12 col-sm-3">
-                  <div className="metadataTemplate-constructor">
-                    <div><i>Properties</i></div>
-                    <ul className="list-group property-options-list">
-                      <PropertyOption label="Text" type="text"/>
-                      <PropertyOption label="Numeric" type="numeric"/>
-                      <PropertyOption label="Select" type="select" disabled={this.props.noDictionaries} />
-                      <PropertyOption label="Multi Select" type="multiselect" disabled={this.props.noDictionaries} />
-                      { environment !== 'relationship' &&
-                        <PropertyOption label="Relationship" type="relationship" disabled={this.props.noRelationtypes} />
+              { environment !== 'relationship' && (
+              <aside className="col-xs-12 col-sm-3">
+                <div className="metadataTemplate-constructor">
+                  <div><i>Properties</i></div>
+                  <ul className="list-group property-options-list">
+                    <PropertyOption label="Text" type="text"/>
+                    <PropertyOption label="Numeric" type="numeric"/>
+                    <PropertyOption label="Select" type="select" disabled={this.props.noDictionaries} />
+                    <PropertyOption label="Multi Select" type="multiselect" disabled={this.props.noDictionaries} />
+                    { environment !== 'relationship' &&
+                    <PropertyOption label="Relationship" type="relationship" disabled={this.props.noRelationtypes} />
                       }
-                      {
+                    {
                         // Disabled, to be used via API untill we develop all the UI functionality to work with relation metadata
                         // { environment !== 'relationship' &&
                         //   <PropertyOption label="Relationship filter" type="relationshipfilter" disabled={this.props.noRelationtypes} />
                         // }
                       }
-                      <PropertyOption label="Date" type="date"/>
-                      <PropertyOption label="Date Range" type="daterange"/>
-                      <PropertyOption label="Multi Date" type="multidate"/>
-                      <PropertyOption label="Multi Date Range" type="multidaterange"/>
-                      <PropertyOption label="Rich Text" type="markdown"/>
-                      <PropertyOption label="Link" type="link"/>
-                      <PropertyOption label="Image" type="image"/>
-                      { environment === 'document' && <PropertyOption label="Preview" type="preview"/> }
-                      <PropertyOption label="Media" type="media"/>
-                      <PropertyOption label="Geolocation" type="geolocation"/>
-                      { this.props.project === 'cejil' &&
-                        <PropertyOption label="Violated articles" type="nested"/>
+                    <PropertyOption label="Date" type="date"/>
+                    <PropertyOption label="Date Range" type="daterange"/>
+                    <PropertyOption label="Multi Date" type="multidate"/>
+                    <PropertyOption label="Multi Date Range" type="multidaterange"/>
+                    <PropertyOption label="Rich Text" type="markdown"/>
+                    <PropertyOption label="Link" type="link"/>
+                    <PropertyOption label="Image" type="image"/>
+                    { environment === 'document' && <PropertyOption label="Preview" type="preview"/> }
+                    <PropertyOption label="Media" type="media"/>
+                    <PropertyOption label="Geolocation" type="geolocation"/>
+                    { this.props.project === 'cejil' &&
+                    <PropertyOption label="Violated articles" type="nested"/>
                       }
-                    </ul>
-                    { this.props.noRelationtypes &&
-                      <div className="alert alert-warning">
+                  </ul>
+                  { this.props.noRelationtypes && (
+                  <div className="alert alert-warning">
                         Relationship fields can not be added untill you have at least one relationship type to select.
-                      </div>
-                    }
                   </div>
-                </aside>
-              }
+)}
+                </div>
+              </aside>
+)}
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {ToggleStyleButtons, mapStateToProps} from '../ToggleStyleButtons';
+import { ToggleStyleButtons, mapStateToProps } from '../ToggleStyleButtons';
 
 describe('ToggleStyleButtons', () => {
   let component;
@@ -14,7 +14,7 @@ describe('ToggleStyleButtons', () => {
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ToggleStyleButtons {...props} />);
   };
 
@@ -32,7 +32,7 @@ describe('ToggleStyleButtons', () => {
 
   describe('mapStateToProps', () => {
     it('should pass current view', () => {
-      const state = {connectionsList: {view: 'currentView'}};
+      const state = { connectionsList: { view: 'currentView' } };
       expect(mapStateToProps(state).view).toBe('currentView');
     });
   });

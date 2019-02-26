@@ -5,7 +5,7 @@ import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 import * as UploadActions from 'app/Uploads/actions/actionTypes';
 import * as LibraryActions from 'app/Library/actions/actionTypes';
 
-const initialState = {open: false, menu: null};
+const initialState = { open: false, menu: null };
 
 const panels = {
   referencePanel: 'ViewerSaveReferenceMenu',

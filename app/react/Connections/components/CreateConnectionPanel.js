@@ -39,10 +39,12 @@ export class CreateConnectionPanel extends Component {
           </button>
 
           <ul className="connections-list">
-            {this.props.relationTypes.map(template => (<li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
-              {this.renderCheckType(template)}
-              {template.get('name')}
-                                                       </li>))}
+            {this.props.relationTypes.map(template => (
+              <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
+                {this.renderCheckType(template)}
+                {template.get('name')}
+              </li>
+))}
           </ul>
 
           <div className="search-form">

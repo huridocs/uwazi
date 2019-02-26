@@ -8,29 +8,29 @@ describe('uiReducer', () => {
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
-      let newState = uiReducer();
+      const newState = uiReducer();
       expect(newState).toEqual(initialState);
     });
   });
 
   describe('when showTab', () => {
     it('should set tab passed and showFilters to false', () => {
-      let newState = uiReducer(initialState, actions.showTab('tab'));
-      expect(newState.toJS()).toEqual({tab: 'tab', showFilters: false});
+      const newState = uiReducer(initialState, actions.showTab('tab'));
+      expect(newState.toJS()).toEqual({ tab: 'tab', showFilters: false });
     });
   });
 
   describe('when showFilters', () => {
     it('should set tab to connections and filters true', () => {
-      let newState = uiReducer(initialState, actions.showFilters());
-      expect(newState.toJS()).toEqual({tab: 'connections', showFilters: true});
+      const newState = uiReducer(initialState, actions.showFilters());
+      expect(newState.toJS()).toEqual({ tab: 'connections', showFilters: true });
     });
   });
 
   describe('when hideFilters', () => {
     it('should set tab to connections and filters true', () => {
-      let newState = uiReducer(initialState, actions.hideFilters());
-      expect(newState.toJS()).toEqual({showFilters: false});
+      const newState = uiReducer(initialState, actions.hideFilters());
+      expect(newState.toJS()).toEqual({ showFilters: false });
     });
   });
 });

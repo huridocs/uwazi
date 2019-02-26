@@ -44,8 +44,8 @@ describe('metadata formater', () => {
     beforeAll(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown,
-       select, image, preview, media, relationship1, relationship2, geolocation, nested]
-        = data.metadata;
+       select, image, preview, media, relationship1, relationship2, geolocation, nested] =
+        data.metadata;
     });
 
     const formatValue = (value, type = 'entity') => ({ icon: undefined, url: `/${type}/${value.toLowerCase().replace(/ /g, '')}`, value });

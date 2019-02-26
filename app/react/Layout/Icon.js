@@ -56,14 +56,16 @@ export class Icon extends Component {
       }
 
       if (_data.type === 'Flags') {
-        icon = (<Flag
-          name={_data._id}
-          format="png"
-          pngSize={getPngSize(size)}
-          shiny
-          alt={`${_data.label} flag`}
-          basePath="/flag-images"
-        />);
+        icon = (
+          <Flag
+            name={_data._id}
+            format="png"
+            pngSize={getPngSize(size)}
+            shiny
+            alt={`${_data.label} flag`}
+            basePath="/flag-images"
+          />
+        );
       }
 
       html = <span className={className}>{icon}</span>;
@@ -80,4 +82,3 @@ Icon.propTypes = {
 };
 
 export default connect()(Icon);
-

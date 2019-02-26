@@ -1,11 +1,7 @@
 function validateName(templates, id) {
   return {
-    required: (val) => val && val.trim() !== '',
-    duplicated: (val) => {
-      return !templates.find((template) => {
-        return template._id !== id && template.name.trim().toLowerCase() === val.trim().toLowerCase();
-      });
-    }
+    required: val => val && val.trim() !== '',
+    duplicated: val => !templates.find(template => template._id !== id && template.name.trim().toLowerCase() === val.trim().toLowerCase())
   };
 }
 
@@ -19,7 +15,7 @@ export function validateDuplicatedLabel(property, properties) {
 }
 
 export default function (properties, templates, id) {
-  let validator = {
+  const validator = {
     '': {},
     name: validateName(templates, id)
   };
@@ -29,7 +25,7 @@ export default function (properties, templates, id) {
       if (!template.properties[index]) {
         return true;
       }
-      let label = template.properties[index].label;
+      const { label } = template.properties[index];
       return label && label.trim() !== '';
     };
 
@@ -37,7 +33,7 @@ export default function (properties, templates, id) {
       if (!template.properties[index]) {
         return true;
       }
-      let prop = template.properties[index];
+      const prop = template.properties[index];
       return validateDuplicatedLabel(prop, template.properties);
     };
 
@@ -45,7 +41,7 @@ export default function (properties, templates, id) {
       if (!template.properties[index] || template.properties[index].type !== 'select' || template.properties[index].type !== 'multiselect') {
         return true;
       }
-      let content = template.properties[index].content;
+      const { content } = template.properties[index];
       return content && content.trim() !== '';
     };
 
@@ -53,7 +49,7 @@ export default function (properties, templates, id) {
       if (!template.properties[index] || template.properties[index].type !== 'relationship') {
         return true;
       }
-      let relationType = template.properties[index].relationType;
+      const { relationType } = template.properties[index];
       return relationType && relationType.trim() !== '';
     };
   });

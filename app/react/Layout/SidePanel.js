@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 export class SidePanel extends Component {
   render() {
-    let propsClass = this.props.className || '';
+    const propsClass = this.props.className || '';
     return (
-      <aside className={'side-panel ' + propsClass + ' ' + (this.props.open ? 'is-active' : 'is-hidden')}>
+      <aside className={`side-panel ${propsClass} ${this.props.open ? 'is-active' : 'is-hidden'}`}>
         {this.props.children}
       </aside>
     );

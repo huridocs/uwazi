@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {browserHistory} from 'react-router';
+import { shallow } from 'enzyme';
+import { browserHistory } from 'react-router';
 
-import {ResetPassword} from '../ResetPassword';
+import { ResetPassword } from '../ResetPassword';
 
 describe('ResetPassword', () => {
   let component;
@@ -12,13 +12,13 @@ describe('ResetPassword', () => {
   beforeEach(() => {
     spyOn(browserHistory, 'push');
     props = {
-      resetPassword: jasmine.createSpy('resetPassword').and.returnValue({then: (cb) => cb()}),
-      params: {key: 'asd'}
+      resetPassword: jasmine.createSpy('resetPassword').and.returnValue({ then: cb => cb() }),
+      params: { key: 'asd' }
     };
 
-    context = {router: {location: ''}};
+    context = { router: { location: '' } };
 
-    component = shallow(<ResetPassword {...props} />, {context});
+    component = shallow(<ResetPassword {...props} />, { context });
   });
 
   describe('When not creating an account', () => {
@@ -29,42 +29,42 @@ describe('ResetPassword', () => {
 
   describe('When creating an account', () => {
     it('should render an additional information box', () => {
-      context = {router: {location: {search: '?createAccount=true'}}};
-      component = shallow(<ResetPassword {...props} />, {context});
+      context = { router: { location: { search: '?createAccount=true' } } };
+      component = shallow(<ResetPassword {...props} />, { context });
       expect(component.find('.alert.alert-info').length).toBe(1);
     });
   });
 
   describe('submit', () => {
     it('should call resetPassword with password and key', () => {
-      component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
-      component.find('form').simulate('submit', {preventDefault: () => {}});
+      component.setState({ password: 'ultraSecret', repeatPassword: 'ultraSecret' });
+      component.find('form').simulate('submit', { preventDefault: () => {} });
       expect(props.resetPassword).toHaveBeenCalledWith('ultraSecret', 'asd');
     });
 
     it('should redirect to login upon success', () => {
-      component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
-      component.find('form').simulate('submit', {preventDefault: () => {}});
+      component.setState({ password: 'ultraSecret', repeatPassword: 'ultraSecret' });
+      component.find('form').simulate('submit', { preventDefault: () => {} });
       expect(browserHistory.push).toHaveBeenCalledWith('/login');
     });
 
     it('should empty the passwords values', () => {
-      component.setState({password: 'ultraSecret', repeatPassword: 'ultraSecret'});
-      component.find('form').simulate('submit', {preventDefault: () => {}});
+      component.setState({ password: 'ultraSecret', repeatPassword: 'ultraSecret' });
+      component.find('form').simulate('submit', { preventDefault: () => {} });
       expect(component.instance().state.password).toBe('');
       expect(component.instance().state.repeatPassword).toBe('');
     });
 
     describe('when passwords do not match', () => {
       it('should not update it', () => {
-        component.setState({password: 'ultraSecret', repeatPassword: 'IDontKnowWhatIAmDoing'});
-        component.find('form').simulate('submit', {preventDefault: () => {}});
+        component.setState({ password: 'ultraSecret', repeatPassword: 'IDontKnowWhatIAmDoing' });
+        component.find('form').simulate('submit', { preventDefault: () => {} });
         expect(props.resetPassword).not.toHaveBeenCalled();
       });
 
       it('should display an error', () => {
-        component.setState({password: 'ultraSecret', repeatPassword: 'IDontKnowWhatIAmDoing'});
-        component.find('form').simulate('submit', {preventDefault: () => {}});
+        component.setState({ password: 'ultraSecret', repeatPassword: 'IDontKnowWhatIAmDoing' });
+        component.find('form').simulate('submit', { preventDefault: () => {} });
         expect(component.find('form').childAt(0).hasClass('has-error')).toBe(true);
         expect(component.find('form').childAt(1).hasClass('has-error')).toBe(true);
       });

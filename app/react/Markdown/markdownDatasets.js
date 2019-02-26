@@ -34,10 +34,10 @@ const parseDatasets = (markdown) => {
   const result = {};
   const parser = new HtmlParser({
       onopentag(name, attribs) {
-      if (name === 'dataset') {
-        result[attribs.name || 'default'] = conformValues(attribs);
+        if (name === 'dataset') {
+          result[attribs.name || 'default'] = conformValues(attribs);
+        }
       }
-    }
   }, { decodeEntities: true });
 
   parser.parseComplete(markdown);

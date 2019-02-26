@@ -1,20 +1,20 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {Pages} from '../Pages';
+import { shallow } from 'enzyme';
 import PagesAPI from 'app/Pages/PagesAPI';
 import PagesList from 'app/Pages/components/PagesList';
+import { Pages } from '../Pages';
 
 describe('Pages', () => {
   let component;
   let instance;
   let context;
-  let pages = [{_id: 1, name: 'Page 1'}];
+  const pages = [{ _id: 1, name: 'Page 1' }];
 
   beforeEach(() => {
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
 
     spyOn(PagesAPI, 'list').and.returnValue(Promise.resolve(pages));
-    component = shallow(<Pages />, {context});
+    component = shallow(<Pages />, { context });
 
     instance = component.instance();
   });
@@ -31,8 +31,8 @@ describe('Pages', () => {
 
   describe('setReduxState', () => {
     it('should set pages in state', () => {
-      instance.setReduxState({pages: 'pages'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'pages/SET', value: 'pages'});
+      instance.setReduxState({ pages: 'pages' });
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'pages/SET', value: 'pages' });
     });
   });
 

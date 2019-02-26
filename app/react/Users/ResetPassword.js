@@ -56,12 +56,12 @@ export class ResetPassword extends RouteHandler {
         <div className="row">
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
             {
-              queryString.parse(this.context.router.location.search).createAccount === 'true' &&
+              queryString.parse(this.context.router.location.search).createAccount === 'true' && (
               <div className="alert alert-info">
                 <Icon icon="info-circle" />
                 <div>To complete the account creation process, please create a password for your account</div>
               </div>
-            }
+)}
             <form onSubmit={this.submit}>
               <div className={`form-group login-email ${this.state.error ? 'has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="password">Password</label>

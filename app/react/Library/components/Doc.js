@@ -27,8 +27,8 @@ export class Doc extends Component {
   getConnections(connections) {
     return (
       <div>
-        {connections.map((connection, index) =>
-          (<div key={index} className="item-connection">
+        {connections.map((connection, index) => (
+          <div key={index} className="item-connection">
             <div>
               <Icon icon="exchange-alt" />
               <span>
@@ -43,7 +43,8 @@ export class Doc extends Component {
                 </button>
               </ShowIf>
             </NeedAuthorization>
-           </div>)
+          </div>
+)
         )}
       </div>
     );
@@ -67,19 +68,21 @@ export class Doc extends Component {
 
     const buttons = (<div><ViewDocButton file={file} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/></div>);
 
-    return (<Item
-      onClick={this.onClick.bind(this)}
-      onSnippetClick={this.props.onSnippetClick}
-      active={this.props.active}
-      doc={this.props.doc}
-      additionalText={additionalText}
-      searchParams={this.props.searchParams}
-      deleteConnection={this.props.deleteConnection}
-      itemHeader={itemConnections}
-      buttons={buttons}
-      labels={<UploadEntityStatus doc={this.props.doc}/>}
-      className={className}
-    />);
+    return (
+      <Item
+        onClick={this.onClick.bind(this)}
+        onSnippetClick={this.props.onSnippetClick}
+        active={this.props.active}
+        doc={this.props.doc}
+        additionalText={additionalText}
+        searchParams={this.props.searchParams}
+        deleteConnection={this.props.deleteConnection}
+        itemHeader={itemConnections}
+        buttons={buttons}
+        labels={<UploadEntityStatus doc={this.props.doc}/>}
+        className={className}
+      />
+    );
   }
 }
 

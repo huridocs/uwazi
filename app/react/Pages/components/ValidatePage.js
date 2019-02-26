@@ -1,11 +1,11 @@
 function validateTitle() {
   return {
-    required: (val) => val && val.trim() !== ''
+    required: val => val && val.trim() !== ''
   };
 }
 
 export default function () {
-  let validator = {
+  const validator = {
     '': {},
     title: validateTitle()
   };

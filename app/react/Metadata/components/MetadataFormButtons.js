@@ -18,11 +18,13 @@ export class MetadataFormButtons extends Component {
     const { entityBeingEdited, exclusivelyViewButton, formName } = this.props;
     const data = this.props.data.toJS();
 
-    const ViewButton = (<I18NLink to={`${data.file ? 'document' : 'entity'}/${data.sharedId}`}>
-      <button className="edit-metadata btn btn-primary">
-        <Icon icon="file" /><span className="btn-label">{t('System', 'View')}</span>
-      </button>
-    </I18NLink>);
+    const ViewButton = (
+      <I18NLink to={`${data.file ? 'document' : 'entity'}/${data.sharedId}`}>
+        <button className="edit-metadata btn btn-primary">
+          <Icon icon="file" /><span className="btn-label">{t('System', 'View')}</span>
+        </button>
+      </I18NLink>
+    );
 
     if (exclusivelyViewButton) {
       return <span>{ViewButton}</span>;

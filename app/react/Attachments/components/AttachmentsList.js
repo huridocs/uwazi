@@ -85,11 +85,13 @@ export class AttachmentsList extends Component {
 
     let uploadAttachmentButton = null;
     if (!this.props.isTargetDoc) {
-      uploadAttachmentButton = (<NeedAuthorization roles={['admin', 'editor']}>
-        <div className="attachment-add">
-          <UploadAttachment entityId={this.props.parentSharedId} storeKey={storeKey}/>
-        </div>
-      </NeedAuthorization>);
+      uploadAttachmentButton = (
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <div className="attachment-add">
+            <UploadAttachment entityId={this.props.parentSharedId} storeKey={storeKey}/>
+          </div>
+        </NeedAuthorization>
+      );
     }
 
     const mainFile = isDocumentAttachments ? sortedFiles[0] : null;

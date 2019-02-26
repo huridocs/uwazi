@@ -143,8 +143,8 @@ export class ThesauriForm extends Component {
                   <Icon icon="arrow-left" size="xs"/>
                 </button>
               </li>
-              {values.map((value, index) =>
-                (<ThesauriFormField
+              {values.map((value, index) => (
+                <ThesauriFormField
                   key={index}
                   ref={f => this.groups.push(f)}
                   value={value}
@@ -153,7 +153,8 @@ export class ThesauriForm extends Component {
                   toggleToMove={this.toggleToMove}
                   removeValue={this.props.removeValue}
                   moving={this.beenMove(value)}
-                />)
+                />
+)
               )}
             </ul>
             <div className="settings-footer">

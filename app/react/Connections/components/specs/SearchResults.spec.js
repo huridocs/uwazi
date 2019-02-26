@@ -1,9 +1,9 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 import Loader from 'app/components/Elements/Loader';
 
-import {SearchResults} from '../SearchResults';
+import { SearchResults } from '../SearchResults';
 
 describe('SearchResults', () => {
   let component;
@@ -11,7 +11,7 @@ describe('SearchResults', () => {
 
   beforeEach(() => {
     props = {
-      results: Immutable([{sharedId: 'r1'}, {sharedId: 'r2'}]),
+      results: Immutable([{ sharedId: 'r1' }, { sharedId: 'r2' }]),
       onClick: jasmine.createSpy('onClick'),
       selected: 'r2',
       searching: false
@@ -28,10 +28,10 @@ describe('SearchResults', () => {
     expect(component.find(Loader).length).toBe(0);
 
     component.find('.item').at(0).simulate('click');
-    expect(props.onClick).toHaveBeenCalledWith('r1', {sharedId: 'r1'});
+    expect(props.onClick).toHaveBeenCalledWith('r1', { sharedId: 'r1' });
 
     component.find('.item').at(1).simulate('click');
-    expect(props.onClick).toHaveBeenCalledWith('r2', {sharedId: 'r2'});
+    expect(props.onClick).toHaveBeenCalledWith('r2', { sharedId: 'r2' });
   });
 
   it('should mark the selected item', () => {

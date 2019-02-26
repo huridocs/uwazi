@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 
-import {ActionButton, mapStateToProps} from '../ActionButton';
+import { ActionButton, mapStateToProps } from '../ActionButton';
 
 describe('ActionButton', () => {
   let component;
@@ -119,10 +119,10 @@ describe('ActionButton', () => {
     let state;
 
     beforeEach(() => {
-      state = {connections: {
+      state = { connections: {
         connection: props.connection,
-        uiState: Immutable({creating: false, connecting: false})
-      }};
+        uiState: Immutable({ creating: false, connecting: false })
+      } };
     });
 
     it('should map type and connection and busy', () => {

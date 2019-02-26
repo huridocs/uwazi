@@ -503,9 +503,10 @@ Object {
         },
         "timestamp": Object {
           "invalids": Array [
-            "",
+            Infinity,
+            -Infinity,
           ],
-          "type": "string",
+          "type": "number",
         },
       },
       "type": "object",

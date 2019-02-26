@@ -1,18 +1,18 @@
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('RelationTypesAPI', () => {
-  let arrayResponse = [{name: 'test'}, {name: 'test2'}];
-  let singleResponse = {name: 'test'};
+  const arrayResponse = [{ name: 'test' }, { name: 'test2' }];
+  const singleResponse = { name: 'test' };
 
   beforeEach(() => {
     backend.restore();
     backend
-    .get(APIURL + 'relationtypes', {body: JSON.stringify({rows: arrayResponse})})
-    .get(APIURL + 'relationtypes?_id=relationId', {body: JSON.stringify({rows: [singleResponse]})})
-    .delete(APIURL + 'relationtypes?_id=id', {body: JSON.stringify({backednResponse: 'testdelete'})})
-    .post(APIURL + 'relationtypes', {body: JSON.stringify({backednResponse: 'test'})});
+    .get(`${APIURL}relationtypes`, { body: JSON.stringify({ rows: arrayResponse }) })
+    .get(`${APIURL}relationtypes?_id=relationId`, { body: JSON.stringify({ rows: [singleResponse] }) })
+    .delete(`${APIURL}relationtypes?_id=id`, { body: JSON.stringify({ backednResponse: 'testdelete' }) })
+    .post(`${APIURL}relationtypes`, { body: JSON.stringify({ backednResponse: 'test' }) });
   });
 
   afterEach(() => backend.restore());
@@ -41,11 +41,11 @@ describe('RelationTypesAPI', () => {
 
   describe('save()', () => {
     it('should post the thesauri data to /relationTypes', (done) => {
-      let data = {name: 'thesauri name', properties: []};
+      const data = { name: 'thesauri name', properties: [] };
       relationTypesAPI.save(data)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(APIURL + 'relationtypes').body)).toEqual(data);
-        expect(response).toEqual({backednResponse: 'test'});
+        expect(JSON.parse(backend.lastOptions(`${APIURL}relationtypes`).body)).toEqual(data);
+        expect(response).toEqual({ backednResponse: 'test' });
         done();
       })
       .catch(done.fail);
@@ -54,10 +54,10 @@ describe('RelationTypesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the thesauri', (done) => {
-      let thesauri = {_id: 'id'};
+      const thesauri = { _id: 'id' };
       relationTypesAPI.delete(thesauri)
       .then((response) => {
-        expect(response).toEqual({backednResponse: 'testdelete'});
+        expect(response).toEqual({ backednResponse: 'testdelete' });
         done();
       })
       .catch(done.fail);

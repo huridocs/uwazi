@@ -16,7 +16,8 @@ export class ViewDocButton extends Component {
     return (
       <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={e => e.stopPropagation()}>
         <Icon icon="angle-right" /> { t('System', 'View') }
-      </I18NLink>);
+      </I18NLink>
+    );
   }
 }
 

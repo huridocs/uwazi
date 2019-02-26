@@ -58,22 +58,22 @@ export default class VictimSlider extends Component {
 
     return (
       <div className="slider">
-        {children.length > visibleCount &&
-          <div className="slider-buttons">
-            <button
-              className="slider-btn"
-              onClick={() => this.slide(-1)}
-            >
-              <Icon icon="angle-left" />
-            </button>
-            <button
-              className="slider-btn"
-              onClick={() => this.slide(1)}
-            >
-              <Icon icon="angle-right" />
-            </button>
-          </div>
-        }
+        {children.length > visibleCount && (
+        <div className="slider-buttons">
+          <button
+            className="slider-btn"
+            onClick={() => this.slide(-1)}
+          >
+            <Icon icon="angle-left" />
+          </button>
+          <button
+            className="slider-btn"
+            onClick={() => this.slide(1)}
+          >
+            <Icon icon="angle-right" />
+          </button>
+        </div>
+)}
         <div className="slider-items">
           { items }
         </div>

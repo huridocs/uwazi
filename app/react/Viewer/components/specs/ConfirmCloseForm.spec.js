@@ -1,10 +1,10 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import Modal from 'app/Layout/Modal';
 
-import {ConfirmCloseForm} from '../ConfirmCloseForm';
+import { ConfirmCloseForm } from '../ConfirmCloseForm';
 
 describe('ConfirmCloseForm', () => {
   let component;
@@ -15,11 +15,11 @@ describe('ConfirmCloseForm', () => {
       hideModal: jasmine.createSpy('hideModal'),
       resetForm: jasmine.createSpy('resetForm'),
       closePanel: jasmine.createSpy('closePanel'),
-      doc: Immutable.fromJS({_id: 'docId', title: 'test'})
+      doc: Immutable.fromJS({ _id: 'docId', title: 'test' })
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ConfirmCloseForm {...props} />);
   };
 

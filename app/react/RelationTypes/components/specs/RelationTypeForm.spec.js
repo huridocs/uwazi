@@ -1,20 +1,20 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {mapStateToProps, RelationTypeForm} from 'app/RelationTypes/components/RelationTypeForm.js';
+import { mapStateToProps, RelationTypeForm } from 'app/RelationTypes/components/RelationTypeForm.js';
 
 describe('RelationTypeForm', () => {
   let props;
   let component;
   beforeEach(() => {
     props = {
-      relationType: {name: 'test'},
+      relationType: { name: 'test' },
       relationTypes: Immutable.fromJS([]),
       resetForm: jasmine.createSpy('resetForm'),
       setInitial: jasmine.createSpy('setInitial'),
       handleSubmit: jasmine.createSpy('handleSubmit'),
-      state: {fields: []}
+      state: { fields: [] }
     };
 
     component = shallow(<RelationTypeForm {...props}/>);
@@ -32,12 +32,12 @@ describe('RelationTypeForm', () => {
     let state;
     beforeEach(() => {
       state = {
-        relationType: Immutable.fromJS({name: 'relationType name'})
+        relationType: Immutable.fromJS({ name: 'relationType name' })
       };
     });
 
     it('should map the relationType', () => {
-      expect(mapStateToProps(state).relationType.toJS()).toEqual({name: 'relationType name'});
+      expect(mapStateToProps(state).relationType.toJS()).toEqual({ name: 'relationType name' });
     });
   });
 });

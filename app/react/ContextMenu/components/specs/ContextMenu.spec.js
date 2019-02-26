@@ -1,12 +1,10 @@
-import React, {Component} from 'react';
-import {shallow} from 'enzyme';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { shallow } from 'enzyme';
+import { connect } from 'react-redux';
 
-import {ContextMenu} from 'app/ContextMenu/components/ContextMenu';
+import { ContextMenu } from 'app/ContextMenu/components/ContextMenu';
 
-let SubMenu = () => {
-  return <div/>;
-};
+const SubMenu = () => <div/>;
 
 class SubMenu2 extends Component {
   render() {
@@ -14,18 +12,18 @@ class SubMenu2 extends Component {
   }
 }
 
-let SubMenu2Container = connect()(SubMenu2);
+const SubMenu2Container = connect()(SubMenu2);
 
 describe('ContextMenu', () => {
   let component;
 
-  let render = (withProps = {}) => {
+  const render = (withProps = {}) => {
     component = shallow(<ContextMenu {...withProps}><SubMenu/><SubMenu2Container/></ContextMenu>);
   };
 
   describe('on mouseEnter', () => {
     it('should openMenu()', () => {
-      let props = {openMenu: jasmine.createSpy('openMenu')};
+      const props = { openMenu: jasmine.createSpy('openMenu') };
       render(props);
 
       component.find('div').simulate('mouseenter');
@@ -35,7 +33,7 @@ describe('ContextMenu', () => {
 
   describe('on mouseleave', () => {
     it('should closeMenu()', () => {
-      let props = {closeMenu: jasmine.createSpy('closeMenu')};
+      const props = { closeMenu: jasmine.createSpy('closeMenu') };
       render(props);
 
       component.find('div').simulate('mouseleave');
@@ -45,7 +43,7 @@ describe('ContextMenu', () => {
 
   describe('on click', () => {
     it('should closeMenu()', () => {
-      let props = {closeMenu: jasmine.createSpy('closeMenu')};
+      const props = { closeMenu: jasmine.createSpy('closeMenu') };
       render(props);
 
       component.find('div').simulate('click');
@@ -56,7 +54,7 @@ describe('ContextMenu', () => {
   describe('Menu rendered', () => {
     describe('when type is null', () => {
       it('should not render any menu', () => {
-        let props = {type: null};
+        const props = { type: null };
         render(props);
 
         expect(component.find('div').children().length).toBe(0);
@@ -65,7 +63,7 @@ describe('ContextMenu', () => {
 
     describe('when type is SubMenu and is open', () => {
       it('should render this menu with active true', () => {
-        let props = {type: 'SubMenu', open: true};
+        const props = { type: 'SubMenu', open: true };
         render(props);
 
         expect(component.find(SubMenu).length).toBe(1);
@@ -75,7 +73,7 @@ describe('ContextMenu', () => {
 
     describe('when type is SubMenu2', () => {
       it('should render SubMenu2Container', () => {
-        let props = {type: 'SubMenu2', open: false};
+        const props = { type: 'SubMenu2', open: false };
         render(props);
 
         expect(component.find(SubMenu2Container).length).toBe(1);

@@ -399,11 +399,9 @@ describe('syncWorker', () => {
     });
 
     it('should update lastSync on each operation', async () => {
-      request.post.and.callFake((url, body) =>
-        body.data._id.equals(relationship1) ? Promise.reject(new Error('post failed')) : Promise.resolve()
+      request.post.and.callFake((url, body) => body.data._id.equals(relationship1) ? Promise.reject(new Error('post failed')) : Promise.resolve()
       );
-      request.delete.and.callFake((url, body) =>
-        body.data._id.equals(newDoc4) ? Promise.reject(new Error('delete failed')) : Promise.resolve()
+      request.delete.and.callFake((url, body) => body.data._id.equals(newDoc4) ? Promise.reject(new Error('delete failed')) : Promise.resolve()
       );
 
       try {
