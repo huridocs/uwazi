@@ -12,6 +12,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import modals from 'app/Modals';
 
 import { getDocumentReferences, unselectAllDocuments, saveDocument } from 'app/Library/actions/libraryActions';
+import { unselectSemanticSearchDocument } from '../actions/actions';
 import DocumentForm from 'app/Library/containers/DocumentForm';
 import EntityForm from 'app/Library/containers/EntityForm';
 
@@ -39,7 +40,7 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     getDocumentReferences,
-    closePanel: unselectAllDocuments,
+    closePanel: unselectSemanticSearchDocument,
     resetForm: () => (_dispatch) => {
       _dispatch(formActions.setInitial(`${props.storeKey}.sidepanel.metadata`));
       _dispatch(formActions.reset(`${props.storeKey}.sidepanel.metadata`));

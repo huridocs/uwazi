@@ -16,6 +16,12 @@ export function selectSemanticSearchDocument(doc) {
   };
 }
 
+export function unselectSemanticSearchDocument() {
+  return (dispatch) => {
+    dispatch(actions.set('semanticSearch/selectedDocument', {}));
+  };
+}
+
 export function submitNewSearch(args) {
   return dispatch => api.search(args)
   .then(() => {
