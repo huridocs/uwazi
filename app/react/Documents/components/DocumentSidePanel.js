@@ -109,18 +109,12 @@ export class DocumentSidePanel extends Component {
                   return (
                     <li>
                       <TabLink to="semantic-search">
-                        <Icon icon="th"></Icon>
+                        <Icon icon="flask" />
                         <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
                       </TabLink>
                     </li>
                   );
                 }
-              })()}
-              {(() => {
-                if (!this.props.raw) {
-                  return <li className="tab-separator"/>;
-                }
-                return <span />;
               })()}
               {(() => {
                 if (!this.props.raw) {
