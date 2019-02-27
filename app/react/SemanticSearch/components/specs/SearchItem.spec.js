@@ -8,6 +8,7 @@ import * as actions from '../../actions/actions';
 describe('SearchItem', () => {
   let search;
   let dispatch;
+  let context;
   beforeEach(() => {
     search = {
       _id: 'id',
@@ -16,6 +17,7 @@ describe('SearchItem', () => {
       status: 'completed'
     };
     dispatch = jest.fn();
+    context = { confirm: jasmine.createSpy('confirm') };
   });
 
   const getProps = () => ({
@@ -23,7 +25,7 @@ describe('SearchItem', () => {
     ...mapDispatchToProps(dispatch)
   });
 
-  const render = () => shallow(<SearchItem {...getProps()} />);
+  const render = () => shallow(<SearchItem {...getProps()} />, { context });
 
   it('should render search details with link to results page ', () => {
     const component = render();
@@ -33,7 +35,9 @@ describe('SearchItem', () => {
   it('should delete search if delete button is clicked', () => {
     jest.spyOn(actions, 'deleteSearch').mockImplementation(() => {});
     const component = render();
-    component.find('.delete-search').simulate('click');
+    component.find('.delete-search').simulate('click', { preventDefault: () => {} });
+    const confirmFunction = context.confirm.calls.mostRecent().args[0].accept;
+    confirmFunction();
     expect(actions.deleteSearch).toHaveBeenCalledWith(search._id);
   });
 
