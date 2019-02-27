@@ -95,7 +95,7 @@ SemanticSearchResults.defaultProps = {
 
 
 SemanticSearchResults.propTypes = {
-  items: PropTypes.object.isRequired,
+  items: PropTypes.array.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,

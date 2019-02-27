@@ -8,9 +8,7 @@ describe('ResultsFiltersPanel', () => {
   beforeEach(() => {
     props = {
       open: true,
-      filters: { threshold: 10 },
-      selectTab: jasmine.createSpy('selectTab'),
-      selectSnippet: jasmine.createSpy('selectSnippet')
+      filtersValues: { threshold: 10 }
     };
 
     component = shallow(<ResultsFiltersPanel {...props}/>);

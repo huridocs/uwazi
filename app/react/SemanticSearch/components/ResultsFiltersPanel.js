@@ -67,7 +67,6 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
 ResultsFiltersPanel.propTypes = {
   open: PropTypes.bool.isRequired,
   filtersValues: PropTypes.object.isRequired,
-  storeKey: PropTypes.string.isRequired
 };
 
 function mapStateToProps({ semanticSearch }) {
