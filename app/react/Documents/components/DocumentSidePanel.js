@@ -105,12 +105,12 @@ export class DocumentSidePanel extends Component {
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
               {(() => {
-                if (!this.props.raw) {
+                if (!this.props.raw && doc.get('semanticSearch')) {
                   return (
                     <li>
-                      <TabLink to="semantic-search">
+                      <TabLink to="semantic-search-results">
                         <Icon icon="flask" />
-                        <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+                        <span className="tab-link-tooltip">{t('System', 'Semantic search results')}</span>
                       </TabLink>
                     </li>
                   );

@@ -17,17 +17,17 @@ import EntityForm from 'app/Library/containers/EntityForm';
 
 const getTemplates = state => state.templates;
 
-const mapStateToProps = ({ semanticSearch }) => {
+const mapStateToProps = ({ semanticSearch, library, templates }) => {
   return {
     open: !semanticSearch.selectedDocument.isEmpty(),
     doc: semanticSearch.selectedDocument,
-    // references: library.sidepanel.references,
-    tab: 'semantic-search-results',
-    // docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
-    // searchTerm: library.search.searchTerm,
-    // formDirty: !library.sidepanel.metadataForm.$form.pristine,
-    // templates: getTemplates(state),
-    // formPath: `${props.storeKey}.sidepanel.metadata`,
+    references: library.sidepanel.references,
+    tab: library.sidepanel.tab,
+    docBeingEdited: !!Object.keys(library.sidepanel.metadata).length,
+    searchTerm: library.search.searchTerm,
+    formDirty: !library.sidepanel.metadataForm.$form.pristine,
+    templates,
+    formPath: 'library.sidepanel.metadata',
     readOnly: true,
     DocumentForm,
     EntityForm,
@@ -49,7 +49,7 @@ function mapDispatchToProps(dispatch, props) {
     searchSnippets,
     deleteEntity,
     showModal: modals.actions.showModal,
-    showTab: tab => actionCreators.set(`${props.storeKey}.sidepanel.tab`, tab)
+    showTab: tab => actionCreators.set('library.sidepanel.tab', tab)
   }, wrapDispatch(dispatch, props.storeKey));
 }
 

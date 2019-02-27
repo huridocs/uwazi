@@ -54,4 +54,11 @@ export default (app) => {
       .then(search => res.json(search))
       .catch(next);
     });
+  app.get('/api/semantic-search/by-document/:sharedId',
+    needsAuthorization(),
+    (req, res, next) => {
+      semanticSearch.getSearchesByDocument(req.params.sharedId)
+      .then(searches => res.json(searches))
+      .catch(next);
+    });
 };

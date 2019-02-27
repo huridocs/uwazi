@@ -10,7 +10,10 @@ export function fetchSearches() {
 }
 
 export function selectSemanticSearchDocument(doc) {
-  return dispatch => dispatch(actions.set('semanticSearch/selectedDocument', doc));
+  return (dispatch) => {
+    dispatch(actions.set('semanticSearch/selectedDocument', doc));
+    dispatch(actions.set('library.sidepanel.tab', 'semantic-search-results'));
+  };
 }
 
 export function submitNewSearch(args) {
