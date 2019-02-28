@@ -69,7 +69,8 @@ export default (app) => {
   app.get('/api/attachments/download',
 
   validateRequest(Joi.object({
-    _id: Joi.objectId().required()
+    _id: Joi.objectId().required(),
+    file: Joi.string().required()
   }).required(), 'query'),
 
   (req, res, next) => {
