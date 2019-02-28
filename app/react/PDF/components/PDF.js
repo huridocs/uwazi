@@ -13,7 +13,7 @@ class PDF extends Component {
     this.state = { pdf: { numPages: 0 } };
     this.pagesLoaded = {};
     if (isClient) {
-      PDFJS.getDocument(props.file).then((pdf) => {
+      PDFJS.getDocument(props.file).promise.then((pdf) => {
         this.setState({ pdf });
       });
     }
@@ -30,7 +30,7 @@ class PDF extends Component {
 
   componentDidMount() {
     if (this.pdfContainer) {
-      this.pdfContainer.addEventListener('textlayerrendered', (e) => {
+      document.addEventListener('textlayerrendered', (e) => {
         this.pageLoaded(e.detail.pageNumber);
       });
     }
@@ -40,7 +40,7 @@ class PDF extends Component {
     if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
       this.pagesLoaded = {};
       this.setState({ pdf: { numPages: 0 } }, () => {
-        PDFJS.getDocument(nextProps.file).then((pdf) => {
+        PDFJS.getDocument(nextProps.file).promise.then((pdf) => {
           this.setState({ pdf });
         });
       });

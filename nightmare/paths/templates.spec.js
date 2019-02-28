@@ -100,7 +100,7 @@ describe('templates path', () => {
       .waitToClick(localSelectors.saveTemplate)
       .waitToClick('.alert.alert-danger')
       .waitToClick(deletePropertySelector(textPropertyIndex))
-      .waitToClick('body > div:nth-child(10) > div > div > div > div.modal-footer > button.btn.btn-danger.confirm-button')
+      .waitToClick('body > div:nth-child(9) > div > div > div > div.modal-footer > button.btn.btn-danger.confirm-button')
       .waitToClick(localSelectors.saveTemplate)
       .waitToClick('.alert.alert-success')
       .waitToClick(localSelectors.backbutton)

@@ -41,8 +41,8 @@ describe('references path', () => {
       .catch(catchErrors(done));
     });
 
-    it('select a word from the document, fill the form and click the next button', (done) => {
-      nightmare
+    it('select a word from the document, fill the form and click the next button', async () => {
+      await nightmare
       .selectText(selectors.documentView.documentPageFirstParagraph)
       .waitToClick(selectors.documentView.createParagraphLinkButton)
       .wait(selectors.documentView.createReferenceSidePanelIsActive)
@@ -55,25 +55,21 @@ describe('references path', () => {
       .isVisible(selectors.documentView.targetDocument)
       .then((result) => {
         expect(result).toBe(true);
-        done();
-      })
-      .catch(catchErrors(done));
+      });
     });
 
-    it('should select a word from the second document then click the save button', (done) => {
-      nightmare
-      .wait('#pageContainer1 > div.textLayer > div:nth-child(1)')
+    it('should select a word from the second document then click the save button', async () => {
+      await nightmare
+      .wait('#page-1 > div > div.textLayer > span:nth-child(1)')
       .scrollElement(selectors.documentView.viewer, 500)
-      .selectText('#pageContainer1 > div.textLayer > div:nth-child(1)')
+      .selectText('#page-1 > div > div.textLayer > span:nth-child(1)')
       .waitToClick(selectors.documentView.saveConnectionButton)
       .waitToClick('.alert.alert-success')
       .wait(selectors.documentView.activeConnection)
       .isVisible(selectors.documentView.activeConnection)
       .then((result) => {
         expect(result).toBe(true);
-        done();
-      })
-      .catch(catchErrors(done));
+      });
     });
 
     it('should delete the created connection', (done) => {

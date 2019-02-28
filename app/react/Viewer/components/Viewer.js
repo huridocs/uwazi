@@ -97,20 +97,20 @@ export class Viewer extends Component {
           <div className="content-header content-header-document">
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
-              <React.Fragment>
-                <PaginatorWithPage
-                  totalPages={doc.get('totalPages')}
-                  onPageChange={this.props.changePage}
-                />
-                <CurrentLocationLink
-                  onClick={!raw ? this.handlePlainTextClick : () => {}}
-                  className="btn btn-default"
-                  queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}
-                >
-                  { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
-                </CurrentLocationLink>
-              </React.Fragment>
-)}
+                <React.Fragment>
+                  <PaginatorWithPage
+                    totalPages={doc.get('totalPages')}
+                    onPageChange={this.props.changePage}
+                  />
+                  <CurrentLocationLink
+                    onClick={!raw ? this.handlePlainTextClick : () => {}}
+                    className="btn btn-default"
+                    queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}
+                  >
+                    { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
+                  </CurrentLocationLink>
+                </React.Fragment>
+              )}
             </div>
           </div>
         </ShowIf>
@@ -138,27 +138,27 @@ export class Viewer extends Component {
           onRangedConnect={this.props.loadTargetDocument}
         />
 
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <RelationshipMetadata />
-        </ShowIf>
+      <ShowIf if={sidepanelTab === 'connections'}>
+        <RelationshipMetadata />
+      </ShowIf>
 
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <AddEntitiesPanel />
-        </ShowIf>
+      <ShowIf if={sidepanelTab === 'connections'}>
+        <AddEntitiesPanel />
+      </ShowIf>
 
-        <ShowIf if={sidepanelTab === 'connections'}>
-          <div className="sidepanel-footer">
-            <RelationshipsFormButtons />
-          </div>
-        </ShowIf>
+      <ShowIf if={sidepanelTab === 'connections'}>
+        <div className="sidepanel-footer">
+          <RelationshipsFormButtons />
+        </div>
+      </ShowIf>
 
-        <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
-          <ViewerDefaultMenu/>
-        </ContextMenu>
-        <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
-          <ViewerTextSelectedMenu/>
-        </ContextMenu>
-      </div>
+      <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
+        <ViewerDefaultMenu/>
+      </ContextMenu>
+      <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
+        <ViewerTextSelectedMenu/>
+      </ContextMenu>
+    </div>
     );
   }
 }

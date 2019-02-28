@@ -90,7 +90,7 @@ class PDFPage extends Component {
           container: this.pageContainer,
           id: this.props.page,
           scale,
-          defaultViewport: page.getViewport(scale),
+          defaultViewport: page.getViewport({ scale }),
           enhanceTextSelection: true,
           textLayerFactory: new PDFJS.DefaultTextLayerFactory()
         });
