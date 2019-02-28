@@ -134,26 +134,48 @@ describe('Attachments Routes', () => {
       const dbEntityPt = dbEntities.find(e => e._id.toString() === entityIdPt.toString());
 
       expect(dbEntity.attachments.length).toBe(3);
-      expect(dbEntity.attachments[2].filename).toBe(file.filename);
-      expect(dbEntity.attachments[2].originalname).toBe(file.originalname);
-      expect(dbEntity.attachments[2]._id.toString()).toBe(addedFile._id.toString());
-      expect(dbEntity.attachments[2].timestamp).toBe(1000);
-      expect(addedFile.filename).toBe('mockfile.doc');
+
+      expect(dbEntity.attachments[2]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          _id: addedFile._id,
+          timestamp: 1000
+        })
+      );
+
+      expect(dbEntity.attachments[2]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          _id: addedFile._id,
+          timestamp: 1000
+        })
+      );
 
       expect(dbEntityEn.attachments.length).toBe(2);
       expect(dbEntityEn.attachments[0].filename).toBe('otherEn.doc');
       expect(dbEntityEn.file.filename).toBe('filenameEn');
-      expect(dbEntityEn.attachments[1].filename).toBe(file.filename);
-      expect(dbEntityEn.attachments[1].originalname).toBe(file.originalname);
+
       expect(dbEntityEn.attachments[1]._id.toString()).not.toBe(addedFile._id.toString());
-      expect(dbEntityEn.attachments[1].timestamp).toBe(1000);
+      expect(dbEntityEn.attachments[1]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          timestamp: 1000
+        })
+      );
 
       expect(dbEntityPt.attachments.length).toBe(1);
       expect(dbEntityPt.file.filename).toBe('filenamePt');
-      expect(dbEntityPt.attachments[0].filename).toBe(file.filename);
-      expect(dbEntityPt.attachments[0].originalname).toBe(file.originalname);
       expect(dbEntityPt.attachments[0]._id.toString()).not.toBe(addedFile._id.toString());
-      expect(dbEntityPt.attachments[0].timestamp).toBe(1000);
+      expect(dbEntityPt.attachments[0]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          timestamp: 1000
+        })
+      );
     });
   });
 
