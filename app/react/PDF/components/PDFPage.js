@@ -92,7 +92,7 @@ class PDFPage extends Component {
           scale,
           defaultViewport: page.getViewport({ scale }),
           enhanceTextSelection: true,
-          textLayerFactory: textLayerFactory
+          textLayerFactory,
         });
 
         this.pdfPageView.setPdfPage(page);

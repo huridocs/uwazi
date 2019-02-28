@@ -12,12 +12,7 @@ class PDF extends Component {
     super(props);
     this.state = { pdf: { numPages: 0 } };
     this.pagesLoaded = {};
-    if (isClient) {
-      PDFJS.getDocument(props.file).promise.then((pdf) => {
-        this.setState({ pdf });
-      });
-    }
-
+    this.loadDocument(props.file);
     this.currentPage = '1';
     this.pages = {};
     this.pdfReady = false;
@@ -40,9 +35,7 @@ class PDF extends Component {
     if (this.props.filename !== null && this.props.filename !== nextProps.filename) {
       this.pagesLoaded = {};
       this.setState({ pdf: { numPages: 0 } }, () => {
-        PDFJS.getDocument(nextProps.file).promise.then((pdf) => {
-          this.setState({ pdf });
-        });
+        this.loadDocument(nextProps.file);
       });
     }
   }
@@ -80,6 +73,14 @@ class PDF extends Component {
 
   onPageHidden(page) {
     delete this.pages[page];
+  }
+
+  loadDocument(file) {
+    if (isClient) {
+      PDFJS.getDocument(file).promise.then((pdf) => {
+        this.setState({ pdf });
+      });
+    }
   }
 
   pageUnloaded(numPage) {

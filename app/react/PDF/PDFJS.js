@@ -3,6 +3,7 @@ import { isClient } from 'app/utils';
 
 let PDFJS = {};
 let pdfjsLib = {};
+let textLayerFactory = {};
 if (isClient) {
   require('../../../node_modules/pdfjs-dist/web/pdf_viewer.css');
 
@@ -13,11 +14,10 @@ if (isClient) {
   } else {
     pdfjsLib = require('pdfjs-dist/webpack');
   }
+  textLayerFactory = new PDFJS.DefaultTextLayerFactory();
 }
 
 export default { ...PDFJS, ...pdfjsLib };
-
-const textLayerFactory = new PDFJS.DefaultTextLayerFactory();
 
 export {
   textLayerFactory
