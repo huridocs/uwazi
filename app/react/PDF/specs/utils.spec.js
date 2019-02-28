@@ -3,22 +3,16 @@ import PDFJS from '../PDFJS';
 
 const mockDefaultTextLayerFactory = () => {
   let div;
-  const DefaultTextLayerFactory = {
-    createTextLayerBuilder: (_div) => {
-      div = _div;
-      div.innerText = 'test !';
-      return {
-        render: () => {
-          document.dispatchEvent(new Event('textlayerrendered'));
-        },
-        setTextContent: jest.fn(),
-        cancel: jest.fn()
-      };
-    }
+
+  const renderTextLayer = ({ container }) => {
+    div = container;
+    div.innerText = 'test !';
+    return {
+      promise: Promise.resolve()
+    };
   };
 
-  PDFJS.DefaultTextLayerFactory = function defaultTextLayer() {};
-  PDFJS.DefaultTextLayerFactory.prototype = DefaultTextLayerFactory;
+  PDFJS.renderTextLayer = renderTextLayer;
 };
 
 describe('PDF utils', () => {

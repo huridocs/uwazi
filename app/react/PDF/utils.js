@@ -28,17 +28,20 @@ const PDFUtils = {
   extractPageInfo: page => new Promise((resolve) => {
     const textLayerDiv = document.createElement('div');
     textLayerDiv.className = 'textLayer';
-    const textLayer = new PDFJS.DefaultTextLayerFactory().createTextLayerBuilder(textLayerDiv, null, page.getViewport({ scale: 1 }), true);
-
-    document.addEventListener('textlayerrendered', () => {
-      resolve(textLayerDiv.innerText.length);
-      textLayer.cancel();
-    });
 
     page.getTextContent({ normalizeWhitespace: true })
     .then((textContent) => {
-      textLayer.setTextContent(textContent);
-      textLayer.render();
+      const textLayer = PDFJS.renderTextLayer({
+        textContent,
+        container: textLayerDiv,
+        viewport: page.getViewport({
+          scale: 1
+        })
+      });
+
+      textLayer.promise.then(() => {
+        resolve(textLayerDiv.innerText.length);
+      });
     });
   })
 };

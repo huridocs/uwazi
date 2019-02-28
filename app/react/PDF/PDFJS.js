@@ -16,3 +16,9 @@ if (isClient) {
 }
 
 export default { ...PDFJS, ...pdfjsLib };
+
+const textLayerFactory = new PDFJS.DefaultTextLayerFactory();
+
+export {
+  textLayerFactory
+};
