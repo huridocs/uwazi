@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t } from 'app/I18N';
-import { processFilters, encodeSearch, toggleSemanticSearch } from 'app/Library/actions/libraryActions';
+import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { Icon } from 'UI';
 
 export class Menu extends Component {
@@ -51,7 +52,7 @@ export class Menu extends Component {
           <ul className="menuNav-list">
             <NeedAuthorization roles={['admin']}>
               <li className="menuNav-item">
-                <I18NLink onClick={this.props.toggleSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+                <I18NLink onClick={this.props.showSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                   <Icon icon="flask" />
                   <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
                 </I18NLink>
@@ -111,6 +112,7 @@ Menu.propTypes = {
   className: PropTypes.string,
   language: PropTypes.string,
   onClick: PropTypes.func,
+  showSemanticSearch: PropTypes.func,
   links: PropTypes.object
 };
 
@@ -128,7 +130,7 @@ export function mapStateToProps({ user, settings, library, uploads }) {
 
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    toggleSemanticSearch
+    showSemanticSearch
   }, wrapDispatch(dispatch, 'library'));
 }
 

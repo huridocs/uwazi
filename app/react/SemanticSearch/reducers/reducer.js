@@ -12,4 +12,5 @@ export default combineReducers({
   minRelevantSentences: modelReducer('semanticSearch.minRelevantSentences'),
   minRelevantScore: modelReducer('semanticSearch.minRelevantScore'),
   selectedDocument: createReducer('semanticSearch/selectedDocument', Immutable.fromJS({})),
+  showSemanticSearchPanel: createReducer('semanticSearch/showSemanticSearchPanel', false),
 });

@@ -8,7 +8,6 @@ const initialState = Immutable.fromJS({
   suggestions: [],
   selectedDocuments: [],
   filtersPanel: false,
-  showSemanticSearchPanel: false,
   zoomLevel: 0,
 });
 
@@ -63,19 +62,6 @@ export default function ui(state = initialState, action = {}) {
 
   if (action.type === types.SHOW_FILTERS) {
     return state.set('filtersPanel', true);
-  }
-
-  if (action.type === types.SHOW_SEMANTIC_SEARCH) {
-    return state.set('showSemanticSearchPanel', true);
-  }
-
-  if (action.type === types.HIDE_SEMANTIC_SEARCH) {
-    return state.set('showSemanticSearchPanel', false);
-  }
-
-  if (action.type === types.TOGGLE_SEMANTIC_SEARCH) {
-    return state.set('showSemanticSearchPanel',
-      !state.get('showSemanticSearchPanel'));
   }
 
   if (action.type === types.SET_PREVIEW_DOC) {

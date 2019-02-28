@@ -29,6 +29,18 @@ export function submitNewSearch(args) {
   });
 }
 
+export function showSemanticSearch() {
+  return (dispatch) => {
+    dispatch(actions.set('semanticSearch/showSemanticSearchPanel', true));
+  };
+}
+
+export function hideSemanticSearch() {
+  return (dispatch) => {
+    dispatch(actions.set('semanticSearch/showSemanticSearchPanel', false));
+  };
+}
+
 export function deleteSearch(searchId) {
   return dispatch => api.deleteSearch(searchId)
   .then(() => {
