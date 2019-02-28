@@ -9,9 +9,10 @@ const mockDefaultTextLayerFactory = () => {
       div.innerText = 'test !';
       return {
         render: () => {
-          div.dispatchEvent(new Event('textlayerrendered'));
+          document.dispatchEvent(new Event('textlayerrendered'));
         },
-        setTextContent: jest.fn()
+        setTextContent: jest.fn(),
+        cancel: jest.fn()
       };
     }
   };
@@ -29,7 +30,7 @@ describe('PDF utils', () => {
         numPages: 2,
         getPage: jest.fn().mockReturnValue(Promise.resolve())
       };
-      spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdf));
+      spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdf) });
       spyOn(PDFUtils, 'extractPageInfo').and.returnValue(Promise.resolve(55));
     });
 

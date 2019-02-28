@@ -15,7 +15,7 @@ describe('PDF', () => {
   let props;
 
   beforeEach(() => {
-    spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdfObject));
+    spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdfObject) });
     props = {
       file: 'file_url',
       filename: 'original.pdf',
