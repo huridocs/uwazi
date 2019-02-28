@@ -3,18 +3,16 @@ import path from 'path';
 import relationships from 'api/relationships';
 import entities, { model } from 'api/entities';
 
-import { attachmentsPath } from '../config/paths';
+import configPaths from '../config/paths';
 
-const deleteFile = fileName =>
-  new Promise((resolve) => {
-    const filePath = path.join(attachmentsPath, fileName);
-    fs.unlink(filePath, () => {
-      resolve(filePath);
-    });
+const deleteFile = fileName => new Promise((resolve) => {
+  const filePath = path.join(configPaths.attachmentsPath, fileName);
+  fs.unlink(filePath, () => {
+    resolve(filePath);
   });
+});
 
-const deleteTextReferences = async (id, language) =>
-  relationships.deleteTextReferences(id, language);
+const deleteTextReferences = async (id, language) => relationships.deleteTextReferences(id, language);
 
 export default {
   async delete(attachmentId) {
@@ -50,13 +48,12 @@ export default {
         deleteTextReferences(e.sharedId, e.language),
       );
       deleteThumbnails.push(deleteFile(`${e._id}.jpg`));
-      // e.attachments = (e.attachments || []).filter(a => a.filename !== attachmentToDelete.filename);
       return { ...e, file: null, toc: null };
     });
 
-    const [savedEntity] = await Promise.all([
-      model.save({ ...entity, file: null, toc: null }),
-      model.save(siblings),
+    const [[savedEntity]] = await Promise.all([
+      entities.saveMultiple([{ ...entity, file: null, toc: null }]),
+      entities.saveMultiple(siblings),
       textReferencesDeletions,
       deleteThumbnails,
       deleteFile(entity.file.filename)
@@ -80,10 +77,10 @@ export default {
       return memo;
     }, true);
 
-    const savedEntity = await model.save({
+    const [savedEntity] = await entities.saveMultiple([{
       ...entity,
       attachments: (entity.attachments || []).filter(a => !a._id.equals(attachmentId))
-    });
+    }]);
 
     if (!shouldUnlink) {
       return savedEntity;

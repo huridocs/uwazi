@@ -34,7 +34,7 @@ describe('attachments', () => {
       spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
     });
 
-    it('should remove main file and thumbnail if id matches entity', async () => {
+    fit('should remove main file and thumbnail if id matches entity', async () => {
       expect(await fs.exists(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
 
       const response = await attachments.delete(toDeleteId);
