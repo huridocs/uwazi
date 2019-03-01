@@ -1,18 +1,24 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 const webpack = require('webpack');
-const webpackConfig = require('./webpack.config.hot');
-const compiler = webpack(webpackConfig);
+
 const express = require('express');
+
 const app = express();
 const http = require('http').Server(app);
 
-// TEMP
 const httpRequest = require('http');
+// TEMP
 const rtlcss = require('rtlcss');
+const webpackConfig = require('./webpack.config.hot');
+
+const compiler = webpack(webpackConfig);
+
 
 app.use(require('webpack-dev-middleware')(compiler, {
   logLevel: 'error',
   publicPath: webpackConfig.output.publicPath,
-  headers: {'Access-Control-Allow-Origin': '*'}
+  headers: { 'Access-Control-Allow-Origin': '*' }
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));

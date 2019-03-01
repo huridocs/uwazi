@@ -8,9 +8,9 @@ import ID from 'shared/uniqueID';
 import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
-import relationships from 'api/relationships';
 
 import { attachmentsPath } from '../config/paths';
+import attachments from './attachments';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
@@ -21,16 +21,6 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
-});
-
-const deleteFile = filePath => new Promise((resolve, reject) => {
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      reject(err);
-      return;
-    }
-    resolve(filePath);
-  });
 });
 
 const assignAttachment = (entity, addedFile) => {
@@ -79,7 +69,8 @@ export default (app) => {
   app.get('/api/attachments/download',
 
   validateRequest(Joi.object({
-    _id: Joi.objectId().required()
+    _id: Joi.objectId().required(),
+    file: Joi.string().required()
   }).required(), 'query'),
 
   (req, res, next) => {
@@ -136,16 +127,17 @@ export default (app) => {
           entityWithRenamedAttachment = { ...entity, file: { ...entity.file, originalname: req.body.originalname, language: req.body.language } };
           renamedAttachment = Object.assign({ _id: entity._id.toString() }, entityWithRenamedAttachment.file);
         } else {
-          const attachments = (entity.attachments || []).map((attachment) => {
-            if (attachment._id.toString() === req.body._id) {
-              renamedAttachment = { ...attachment, originalname: req.body.originalname };
-              return renamedAttachment;
-            }
+          entityWithRenamedAttachment = {
+            ...entity,
+            attachments: (entity.attachments || []).map((attachment) => {
+              if (attachment._id.toString() === req.body._id) {
+                renamedAttachment = { ...attachment, originalname: req.body.originalname };
+                return renamedAttachment;
+              }
 
-            return attachment;
-          });
-
-          entityWithRenamedAttachment = { ...entity, attachments };
+              return attachment;
+            })
+          };
         }
 
 
@@ -163,48 +155,16 @@ export default (app) => {
     needsAuthorization(['admin', 'editor']),
 
     validateRequest(Joi.object({
-      entityId: Joi.string().required(),
-      filename: Joi.string().required(),
+      attachmentId: Joi.string().required(),
     }).required(), 'query'),
 
-    (req, res) => entities.getById(req.query.entityId)
-    .then(entity => Promise.all([entity, entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } })]))
-    .then(([entity, siblings]) => {
-      entity.attachments = (entity.attachments || []).filter(a => a.filename !== req.query.filename);
-      const deleteTextReferences = [];
-      const deleteThumbnails = [];
-      if (entity.file && entity.file.filename === req.query.filename) {
-        entity.file = null;
-        entity.toc = null;
-        deleteTextReferences.push(relationships.deleteTextReferences(entity.sharedId, entity.language));
-        deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${entity._id}.jpg`)));
-        siblings = siblings.map((e) => {
-          deleteTextReferences.push(relationships.deleteTextReferences(e.sharedId, e.language));
-          deleteThumbnails.push(deleteFile(path.join(attachmentsPath, `${e._id}.jpg`)));
-          e.attachments = (e.attachments || []).filter(a => a.filename !== req.query.filename);
-          e.file = null;
-          e.toc = null;
-          return e;
-        });
+    async (req, res, next) => {
+      try {
+        const response = await attachments.delete(req.query.attachmentId);
+        res.json(response);
+      } catch (e) {
+        next(e);
       }
-      return Promise.all([
-        entities.saveMultiple([entity]),
-        entities.saveMultiple(siblings),
-        deleteTextReferences,
-        deleteThumbnails
-      ]);
-    })
-    .then(([[entity], siblings]) => {
-      const shouldUnlink = siblings.reduce((memo, sibling) => {
-        if (sibling.attachments && sibling.attachments.find(a => a.filename === req.query.filename)) {
-          return false;
-        }
-        return memo;
-      }, true);
-
-      return !shouldUnlink ? res.json(entity) : deleteFile(path.join(attachmentsPath, req.query.filename)).then(() => res.json(entity));
-    })
-    .catch((error) => {
-      res.json({ error });
-    }));
+    }
+  );
 };

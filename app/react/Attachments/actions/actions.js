@@ -46,7 +46,9 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
 }
 
 export function deleteAttachment(entityId, attachment, __reducerKey) {
-  return dispatch => api.delete('attachments/delete', { entityId, filename: attachment.filename })
+  return dispatch => api.delete('attachments/delete', {
+    attachmentId: attachment._id
+  })
   .then((response) => {
     dispatch({ type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment, __reducerKey });
     dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json, __reducerKey });
