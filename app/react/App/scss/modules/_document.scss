@@ -22,6 +22,11 @@
 }
 
 .document-viewer .main-wrapper {
+  pre.force-rtl {
+    /*!rtl:ignore*/
+    direction: rtl;
+  }
+
   .force-rtl {
     /*!rtl:ignore*/
     direction: ltr;

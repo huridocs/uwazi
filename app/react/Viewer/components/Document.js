@@ -11,16 +11,9 @@ import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
 
-import francLanguages from 'shared/languagesList';
-import languagesList from '../../Settings/utils/languagesList';
+import determineDirection from '../utils/determineDirection';
 
 import { APIURL } from '../../config.js';
-
-const determineDirection = ({ language }) => {
-  const languageKey = francLanguages(language, 'ISO639_1');
-  const laguageData = languagesList.find(l => l.key === languageKey) || {};
-  return `force-${laguageData.rtl ? 'rtl' : 'ltr'}`;
-};
 
 export class Document extends Component {
   constructor(props) {
