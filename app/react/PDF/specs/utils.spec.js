@@ -3,21 +3,16 @@ import PDFJS from '../PDFJS';
 
 const mockDefaultTextLayerFactory = () => {
   let div;
-  const DefaultTextLayerFactory = {
-    createTextLayerBuilder: (_div) => {
-      div = _div;
-      div.innerText = 'test !';
-      return {
-        render: () => {
-          div.dispatchEvent(new Event('textlayerrendered'));
-        },
-        setTextContent: jest.fn()
-      };
-    }
+
+  const renderTextLayer = ({ container }) => {
+    div = container;
+    div.innerText = 'test !';
+    return {
+      promise: Promise.resolve()
+    };
   };
 
-  PDFJS.DefaultTextLayerFactory = function defaultTextLayer() {};
-  PDFJS.DefaultTextLayerFactory.prototype = DefaultTextLayerFactory;
+  PDFJS.renderTextLayer = renderTextLayer;
 };
 
 describe('PDF utils', () => {
@@ -29,7 +24,7 @@ describe('PDF utils', () => {
         numPages: 2,
         getPage: jest.fn().mockReturnValue(Promise.resolve())
       };
-      spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdf));
+      spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdf) });
       spyOn(PDFUtils, 'extractPageInfo').and.returnValue(Promise.resolve(55));
     });
 
