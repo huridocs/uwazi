@@ -32,7 +32,6 @@ app.get('/CSS/:file', (req, res) => {
       data += chunk;
     });
     response.on('end', () => {
-      console.log('CSS Loaded');
       if (req.query.rtl === 'true') {
         console.log('Processing RTL...');
         data = rtlcss.process(data);

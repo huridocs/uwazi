@@ -5,6 +5,7 @@ var path = require("path");
 var webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const RtlCssPlugin = require("rtlcss-webpack-plugin");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var rootPath = __dirname + "/../";
@@ -16,10 +17,12 @@ var assetsPluginInstance = new AssetsPlugin({
 
 module.exports = function(production) {
   var stylesName = "[name].css";
+  var rtlStylesName = "rtl-[name].css";
   var jsChunkHashName = "";
 
   if (production) {
-    stylesName = "[name].[contenthash].css";
+    stylesName = "[name].[chunkhash].css";
+    rtlStylesName = "rtl-[name].[hash].css";
     jsChunkHashName = ".[chunkhash]";
   }
 
@@ -70,9 +73,11 @@ module.exports = function(production) {
       new CleanWebpackPlugin([path.join(rootPath, "/dist/*")], {
         root: rootPath
       }),
-
       new MiniCssExtractPlugin({
         filename: stylesName
+      }),
+      new RtlCssPlugin({
+        filename: rtlStylesName
       }),
       assetsPluginInstance
     ]

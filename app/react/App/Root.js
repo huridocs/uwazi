@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
 
-// TEMP
 import laguagesList from '../Settings/utils/languagesList';
-// -----
 
 class Root extends Component {
   renderInitialData() {
@@ -32,8 +30,6 @@ class Root extends Component {
       'http://localhost:8080/vendor~main.js',
     ];
 
-    // TEMP
-    console.log('Current Lang:', this.props.language);
     const languageData = laguagesList.find(l => l.key === this.props.language);
     let query = '';
     if (languageData.rtl) {
@@ -42,14 +38,8 @@ class Root extends Component {
 
     let CSS = [
       `http://localhost:8080/CSS/vendor~main.css${query}`,
-      `http://localhost:8080CSS/main.css${query}`,
+      `http://localhost:8080/CSS/main.css${query}`,
     ];
-    // ----
-
-    // let CSS = [
-    //   `http://localhost:8080/vendor.styles.css${query}`,
-    //   `http://localhost:8080/styles.css${query}`,
-    // ];
 
     if (!isHotReload) {
       JS = [
@@ -58,8 +48,8 @@ class Root extends Component {
         this.props.assets.main.js,
       ];
       CSS = [
-        this.props.assets['vendor~main'].css,
-        this.props.assets.main.css,
+        this.props.assets['vendor~main'].css[languageData.rtl ? 1 : 0],
+        this.props.assets.main.css[languageData.rtl ? 1 : 0],
       ];
     }
 
