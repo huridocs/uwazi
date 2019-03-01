@@ -24,7 +24,6 @@ class Root extends Component {
     const isHotReload = process.env.HOT;
     const { head } = this.props;
     let JS = [
-      // 'http://localhost:8080/pdf.worker.js',
       'http://localhost:8080/pdfjs-dist.js',
       'http://localhost:8080/nprogress.js',
       'http://localhost:8080/main.js',
@@ -45,13 +44,15 @@ class Root extends Component {
 
     if (!isHotReload) {
       JS = [
-        this.props.assets['vendor~main~nprogress'].js,
-        this.props.assets['vendor~main'].js,
+        this.props.assets['pdfjs-dist'].js,
+        this.props.assets.nprogress.js,
+        this.props.assets.vendor.js,
         this.props.assets.main.js,
       ];
       CSS = [
-        this.props.assets['vendor~main'].css[languageData.rtl ? 1 : 0],
+        this.props.assets.vendor.css[languageData.rtl ? 1 : 0],
         this.props.assets.main.css[languageData.rtl ? 1 : 0],
+        this.props.assets['pdfjs-dist'].css[0],
       ];
     }
 
