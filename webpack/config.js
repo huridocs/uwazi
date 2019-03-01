@@ -46,8 +46,16 @@ module.exports = function(production) {
           vendors: false,
           vendor: {
             chunks: "all",
-            test: /node_modules/
-          }
+            test: /node_modules/,
+            name(module) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+              if (packageName.match(/pdfjs-dist/)) {
+                return packageName;
+              }
+              return 'vendor';
+            },
+          },
         }
       }
     },

@@ -24,10 +24,11 @@ class Root extends Component {
     const isHotReload = process.env.HOT;
     const { head } = this.props;
     let JS = [
-      'http://localhost:8080/vendor~main~pdf.worker.js',
-      'http://localhost:8080/vendor~main~nprogress.js',
+      // 'http://localhost:8080/pdf.worker.js',
+      'http://localhost:8080/pdfjs-dist.js',
+      'http://localhost:8080/nprogress.js',
       'http://localhost:8080/main.js',
-      'http://localhost:8080/vendor~main.js',
+      'http://localhost:8080/vendor.js',
     ];
 
     const languageData = laguagesList.find(l => l.key === this.props.language);
@@ -37,8 +38,9 @@ class Root extends Component {
     }
 
     let CSS = [
-      `http://localhost:8080/CSS/vendor~main.css${query}`,
+      `http://localhost:8080/CSS/vendor.css${query}`,
       `http://localhost:8080/CSS/main.css${query}`,
+      'http://localhost:8080/pdfjs-dist.css',
     ];
 
     if (!isHotReload) {

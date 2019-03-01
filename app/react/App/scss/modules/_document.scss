@@ -25,6 +25,11 @@
   .force-rtl {
     /*rtl:ignore*/
     direction: ltr;
+
+    .textLayer {
+      /*rtl:ignore*/
+      direction: rtl;
+    }
   }
 }
 
