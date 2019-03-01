@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { promisify } from 'util';
 
+import errorLog from 'api/log/errorLog';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import paths from 'api/config/paths';
 import testingDB from 'api/utils/testing_db';
@@ -12,6 +13,7 @@ const exists = promisify(fs.stat);
 describe('migration pdf_thumbnails', () => {
   beforeEach((done) => {
     spyOn(process.stdout, 'write');
+    spyOn(errorLog, 'error');
     paths.uploadDocumentsPath = __dirname;
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });

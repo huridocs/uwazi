@@ -1,11 +1,10 @@
 /* eslint-disable */
-'use strict';
+const path = require('path');
+const webpack = require('webpack');
 
-var path = require('path');
-var webpack = require('webpack');
-var config = require('./config')();
+const config = require('./config')();
 
-var rootPath = __dirname + '/../';
+const rootPath = `${__dirname}/../`;
 
 config.plugins = config.plugins.concat([
   new webpack.HotModuleReplacementPlugin(),
@@ -17,13 +16,19 @@ config.plugins = config.plugins.concat([
   new webpack.NoEmitOnErrorsPlugin(),
   // do not emit compiled assets that include errors
   new webpack.DefinePlugin({ 'process.env': { HOT: true } })
-])
+]);
 
 config.output = {
   publicPath: 'http://localhost:8080/',
   filename: '[name].js'
-}
+};
 
-config.entry.main = ['react-hot-loader/patch', 'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr', path.join(rootPath, 'app/react/index.js')];
+config.entry['pdf.worker'] = 'pdfjs-dist/build/pdf.worker.entry';
+  
+config.entry.main = [
+  'react-hot-loader/patch',
+  'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
+  path.join(rootPath, 'app/react/index.js')
+];
 
 module.exports = config;
