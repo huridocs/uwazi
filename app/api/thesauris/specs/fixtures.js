@@ -11,11 +11,11 @@ export default {
     { _id: db.id(), name: 'dictionary' },
     { _id: db.id(dictionaryId), name: 'dictionary 2', values: [{ label: 'value 1' }, { label: 'value 2' }] },
     { _id: db.id(dictionaryIdToTranslate),
-name: 'Top 2 scify books',
-values: [
-      { id: dictionaryValueId, label: 'Enders game' },
-      { id: '2', label: 'Fundation' }
-] }
+      name: 'Top 2 scify books',
+      values: [
+        { id: dictionaryValueId, label: 'Enders game' },
+        { id: '2', label: 'Fundation' }
+      ] }
   ],
   templates: [
     { _id: db.id(entityTemplateId), name: 'entityTemplate', properties: [{}] },
