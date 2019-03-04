@@ -72,8 +72,14 @@ const updateTranslation = (current, thesauri) => {
 const removeDeletedOptionsFromEntities = (current, thesauri) => {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
-  const deletedPropertiesById = getDeletedProperties(currentProperties, newProperties, 'id');
-  return Promise.all(deletedPropertiesById.map(deletedId => entities.deleteEntityFromMetadata(deletedId, thesauri._id)));
+  const deletedPropertiesById = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    'id'
+  );
+  return Promise.all(
+    deletedPropertiesById.map(deletedId => entities.deleteEntityFromMetadata(deletedId, thesauri._id))
+  );
 };
 
 function _update(thesauri) {
@@ -128,8 +134,10 @@ export default {
       templates.get(query)
     ])
     .then(([dictionaries, allTemplates]) => {
-      const processTemplates = Promise.all(allTemplates.map(result => this.templateToThesauri(result, language, user)
-      .then(templateTransformedInThesauri => templateTransformedInThesauri)));
+      const processTemplates = Promise.all(allTemplates.map(
+        result => this.templateToThesauri(result, language, user)
+        .then(templateTransformedInThesauri => templateTransformedInThesauri))
+      );
 
       return processTemplates.then(processedTemplates => dictionaries.concat(processedTemplates));
     });

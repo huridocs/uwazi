@@ -34,7 +34,6 @@ export class MetadataForm extends Component {
   }
 
   onSubmit(metadata) {
-    console.log(metadata);
     this.props.onSubmit(filterBaseProperties(metadata), this.props.model);
   }
 
