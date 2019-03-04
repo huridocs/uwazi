@@ -838,9 +838,10 @@ describe('entities', () => {
     it('should duplicate all the entities from the default language to the new one', (done) => {
       spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
       entities.addLanguage('ab')
-      .then(() => entities.get({ language: 'ab' }))
+      .then(() => entities.get({ language: 'ab' }, '+fullText'))
       .then((newEntities) => {
         expect(entities.createThumbnail).toHaveBeenCalled();
+        expect(newEntities[0].fullText).toEqual({'1': 'text'});
         expect(newEntities.length).toBe(7);
         done();
       })

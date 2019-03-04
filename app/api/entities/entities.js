@@ -479,7 +479,7 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get({ language: defaultLanguage }, null, { skip: offset, limit })
+      return this.get({ language: defaultLanguage }, '+fullText', { skip: offset, limit })
       .then((entities) => {
         const newLanguageEntities = entities.map((_entity) => {
           const entity = Object.assign({}, _entity);
