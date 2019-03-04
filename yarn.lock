@@ -4673,9 +4673,9 @@ frameguard@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/frameguard/-/frameguard-3.0.0.tgz#7bcad469ee7b96e91d12ceb3959c78235a9272e9"
 
-franc@^3.1.0:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/franc/-/franc-3.1.1.tgz#3585fcc3e00960ee93c51b4957163991ec152bf0"
+franc@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/franc/-/franc-4.0.0.tgz#365951bc787b92ffbb1c63c1c492d6b76cbd3a56"
   dependencies:
     trigram-utils "^1.0.0"
 
