@@ -464,6 +464,16 @@ export default {
     if (entity.file) { return deleteFiles(filesToDelete); }
   },
 
+  generateNewEntitiesForLanguage(entities, language) {
+    return entities.map((_entity) => {
+      const entity = Object.assign({}, _entity);
+      delete entity._id;
+      delete entity.__v;
+      entity.language = language;
+      return entity;
+    });
+  },
+
   async addLanguage(language) {
     const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
     if (lanuageTranslationAlreadyExists) {
@@ -481,13 +491,7 @@ export default {
 
       return this.get({ language: defaultLanguage }, '+fullText', { skip: offset, limit })
       .then((entities) => {
-        const newLanguageEntities = entities.map((_entity) => {
-          const entity = Object.assign({}, _entity);
-          delete entity._id;
-          delete entity.__v;
-          entity.language = language;
-          return entity;
-        });
+        const newLanguageEntities = this.generateNewEntitiesForLanguage(entities, language);
         return this.saveMultiple(newLanguageEntities);
       })
       .then((newEntities) => {
