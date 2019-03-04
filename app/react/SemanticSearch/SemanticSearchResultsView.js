@@ -14,7 +14,7 @@ export default class SemanticSearchResultsView extends RouteHandler {
   }
 
   setReduxState(state) {
-    this.context.store.dispatch(actions.set('semanticSearch/search', state.search));
+    this.context.store.dispatch(actions.set('semanticSearch/search', state.semanticSearch.search));
   }
 
   static renderTools() {

@@ -7,6 +7,7 @@ import Immutable from 'immutable';
 import { t } from 'app/I18N';
 import SnippetList from 'app/Documents/components/SnippetList';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
+import { NumericRangeSlide } from 'app/Forms';
 
 const findResultsAboveThreshold = (results, threshold) => {
   const boundingIndex = results.findIndex(({ score }) => score < threshold);
@@ -20,8 +21,8 @@ export class DocumentResults extends Component {
     this.onChangeTreshHold = this.onChangeTreshHold.bind(this);
   }
 
-  onChangeTreshHold(e) {
-    this.setState({ threshold: e.target.value });
+  onChangeTreshHold(threshold) {
+    this.setState({ threshold });
   }
 
   render() {
@@ -45,10 +46,10 @@ export class DocumentResults extends Component {
         <div className="view">
           <dl className="metadata-type-text">
             <dt className="item-header">
-              {t('System', 'Threshold')}
+              {t('System', 'Threshold')} {this.state.threshold}
             </dt>
             <dd>
-              <input type="range" min="0" max="1" step="0.01" value={this.state.threshold} onChange={this.onChangeTreshHold}/>
+              <NumericRangeSlide min={0} max={1} step={0.01} value={this.state.threshold} onChange={this.onChangeTreshHold}/>
             </dd>
           </dl>
           <dl className="metadata-type-numeric">

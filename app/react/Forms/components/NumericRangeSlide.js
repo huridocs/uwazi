@@ -38,7 +38,7 @@ export default class NumericRangeSlide extends Component {
           {(() => {
           const options = [];
           for (let i = min * 2; i < max; i += step) {
-            options.push(<option key={i} value={i}/>);
+            options.push(<option key={i} value={i.toFixed(2)}/>);
           }
           return options;
         })()}
