@@ -19,8 +19,6 @@ export class SemanticSearchSidePanel extends Component {
 
     this.onSubmit = this.onSubmit.bind(this);
     this.submitForm = this.submitForm.bind(this);
-    this.showMainPage = this.showMainPage.bind(this);
-    this.showNewSearchPage = this.showNewSearchPage.bind(this);
   }
 
   componentDidMount() {
@@ -45,14 +43,6 @@ export class SemanticSearchSidePanel extends Component {
     this.formDispatch = dispatch;
   }
 
-  showMainPage() {
-    this.setState({ page: 'main' });
-  }
-
-  showNewSearchPage() {
-    this.setState({ page: 'new' });
-  }
-
   submitForm() {
     this.formDispatch(actions.submit('searchText'));
   }
@@ -71,6 +61,7 @@ export class SemanticSearchSidePanel extends Component {
             autoComplete="off"
             onSubmit={this.onSubmit}
             getDispatch={dispatch => this.attachDispatch(dispatch)}
+            className="form-inline semantic-search-form"
           >
             <div className="input-group">
               <Field model=".searchTerm">
@@ -81,8 +72,8 @@ export class SemanticSearchSidePanel extends Component {
                   autoComplete="off"
                 />
               </Field>
-              <button className="btn btn-default new-search" type="submit">{t('System', 'Start new search')}</button>
             </div>
+            <button className="btn btn-default new-search" type="submit">{t('System', 'Start new search')}</button>
           </LocalForm>
         </div>
         <div className="sidepanel-body">

@@ -10,7 +10,7 @@ import semanticSearchAPI from './SemanticSearchAPI';
 export default class SemanticSearchResultsView extends RouteHandler {
   static requestState({ searchId }) {
     return semanticSearchAPI.getSearch(searchId)
-    .then(search => ({ search }));
+    .then(search => ({ semanticSearch: { search } }));
   }
 
   setReduxState(state) {

@@ -12,6 +12,7 @@ import DropdownList from './components/DropdownList';
 import IconSelector from './components/IconSelector';
 import Numeric from './components/Numeric';
 import NumericRange from './components/NumericRange';
+import NumericRangeSlide from './components/NumericRangeSlide';
 import RadioButtons from './components/RadioButtons';
 import Switcher from './components/Switcher';
 import Geolocation from './components/Geolocation';
@@ -29,6 +30,7 @@ export {
   NestedMultiselect,
   Numeric,
   NumericRange,
+  NumericRangeSlide,
   MultiDate,
   MultiDateRange,
   DropdownList,
