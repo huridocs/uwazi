@@ -8,7 +8,6 @@ import { t } from 'app/I18N';
 import socket from 'app/socket';
 import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
-import { wrapDispatch } from 'app/Multireducer';
 
 import { hideSemanticSearch } from 'app/Library/actions/libraryActions';
 import { fetchSearches, submitNewSearch, registerForUpdates, updateSearch } from '../actions/actions';

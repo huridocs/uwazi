@@ -23,9 +23,9 @@ export class SemanticSearchResults extends Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    // this.onSearchUpdated = this.onSearchUpdated.bind(this);
+    this.onSearchUpdated = this.onSearchUpdated.bind(this);
 
-    // socket.on('semanticSearchUpdated', this.onSearchUpdated);
+    socket.on('semanticSearchUpdated', this.onSearchUpdated);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -34,9 +34,9 @@ export class SemanticSearchResults extends Component {
     Boolean(nextProps.searchTerm !== this.props.searchTerm);
   }
 
-  // componentWillUnmount() {
-  //   socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
-  // }
+  componentWillUnmount() {
+    socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
+  }
 
   onSearchUpdated({ updatedSearch, docs }) {
     if (updatedSearch._id === this.props.searchId) {
