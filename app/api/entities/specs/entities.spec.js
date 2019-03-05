@@ -841,7 +841,7 @@ describe('entities', () => {
       .then(() => entities.get({ language: 'ab' }, '+fullText'))
       .then((newEntities) => {
         expect(entities.createThumbnail).toHaveBeenCalled();
-        expect(newEntities[0].fullText).toEqual({'1': 'text'});
+        expect(newEntities[0].fullText).toEqual({ 1: 'text' });
         expect(newEntities.length).toBe(7);
         done();
       })
