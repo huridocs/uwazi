@@ -10,15 +10,12 @@ import { deleteEntity } from 'app/Entities/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import modals from 'app/Modals';
 
-import { getDocumentReferences, unselectAllDocuments, saveDocument } from 'app/Library/actions/libraryActions';
+import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
 import { unselectSemanticSearchDocument } from '../actions/actions';
 import DocumentForm from 'app/Library/containers/DocumentForm';
 import EntityForm from 'app/Library/containers/EntityForm';
 
-const getTemplates = state => state.templates;
-
-const mapStateToProps = ({ semanticSearch, library, templates }) => {
-  return {
+const mapStateToProps = ({ semanticSearch, library, templates }) => ({
     open: !semanticSearch.selectedDocument.isEmpty(),
     doc: semanticSearch.selectedDocument,
     references: library.sidepanel.references,
@@ -32,8 +29,7 @@ const mapStateToProps = ({ semanticSearch, library, templates }) => {
     DocumentForm,
     EntityForm,
     storeKey: 'library'
-  };
-};
+});
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({

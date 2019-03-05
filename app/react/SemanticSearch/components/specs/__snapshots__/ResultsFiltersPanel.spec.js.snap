@@ -32,7 +32,6 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
               model=".threshold"
             >
               <input
-                defaultValue={0.2}
                 list="Thresholdtickmarks"
                 max={1}
                 min={0.05}
@@ -137,7 +136,6 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
               model=".minRelevantSentences"
             >
               <input
-                defaultValue={1}
                 list="Minimum relevant sentencestickmarks"
                 max={50}
                 min={1}
@@ -362,7 +360,6 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
               model=".minRelevantScores"
             >
               <input
-                defaultValue={20}
                 list="Minimum relevant scoretickmarks"
                 max={100}
                 min={5}

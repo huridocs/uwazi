@@ -19,9 +19,6 @@ import SearchList from './SearchList';
 export class SemanticSearchSidePanel extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      page: 'main'
-    };
 
     this.onSubmit = this.onSubmit.bind(this);
     this.submitForm = this.submitForm.bind(this);
@@ -57,21 +54,10 @@ export class SemanticSearchSidePanel extends Component {
       documents,
       query: currentSearch
     });
-    this.setState({
-      page: 'main'
-    });
   }
 
   attachDispatch(dispatch) {
     this.formDispatch = dispatch;
-  }
-
-  showMainPage() {
-    this.setState({ page: 'main' });
-  }
-
-  showNewSearchPage() {
-    this.setState({ page: 'new' });
   }
 
   submitForm() {
@@ -83,76 +69,37 @@ export class SemanticSearchSidePanel extends Component {
   }
 
   render() {
-    const { page } = this.state;
     const searches = this.props.searches.toJS();
     return (
       <SidePanel open={this.props.open} className="metadata-sidepanel semantic-search">
-        <ShowIf if={page === 'new'}>
-          <div className="sidepanel-footer">
-            <span
-              className="btn btn-danger cancel-search"
-              onClick={this.showMainPage}
-            >
-              <Icon icon="times" />
-              <span className="btn-label">{t('System', 'Cancel')}</span>
-            </span>
-            <button
-              className="btn btn-success start-search"
-              onClick={this.submitForm}
-            >
-              <Icon icon="search" />
-              <span className="btn-label">{t('System', 'Start search')}</span>
-            </button>
-          </div>
-        </ShowIf>
+        <button className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
+          <Icon icon="times" />
+        </button>
+        <div className="sidepanel-header">
+          <span className="sidepanel-title">{t('System', 'Semantic search')}</span>
+          <LocalForm
+            model="searchText"
+            autoComplete="off"
+            onSubmit={this.onSubmit}
+            getDispatch={dispatch => this.attachDispatch(dispatch)}
+            className="form-inline semantic-search-form"
+          >
+            <div className="input-group">
+              <Field model=".searchTerm">
+                <input
+                  type="text"
+                  placeholder={t('System', 'Search', null, false)}
+                  className="form-control"
+                  autoComplete="off"
+                />
+              </Field>
+            </div>
+            <button className="btn btn-default new-search" type="submit">{t('System', 'Start new search')}</button>
+          </LocalForm>
+        </div>
         <div className="sidepanel-body">
-          <p className="sidepanel-title">{t('System', 'Semantic search')}</p>
-          <button className="closeSidepanel close-modal" onClick={this.close.bind(this)}>
-            <Icon icon="times" />
-          </button>
-          <ShowIf if={page === 'main'}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: 30,
-              marginBottom: 30 }}
-            >
-              <button
-                className="btn btn-default new-search"
-                onClick={this.showNewSearchPage}
-              >
-                {t('System', 'Start new search')}
-              </button>
-            </div>
-          </ShowIf>
-          <ShowIf if={page === 'main' && !!searches}>
+          <ShowIf if={!!searches}>
             <SearchList searches={searches} />
-          </ShowIf>
-          <ShowIf if={page === 'new'}>
-            <div>
-              <LocalForm
-                model="searchText"
-                autoComplete="off"
-                onSubmit={this.onSubmit}
-                getDispatch={dispatch => this.attachDispatch(dispatch)}
-              >
-                <div className="search-box">
-                  <div className="input-group">
-                    <Field model=".searchTerm">
-                      <Icon icon="search" />
-                      <input
-                        type="text"
-                        placeholder={t('System', 'Search', null, false)}
-                        className="form-control"
-                        autoComplete="off"
-                      />
-                      <Icon icon="times"/>
-                    </Field>
-                  </div>
-                </div>
-              </LocalForm>
-            </div>
           </ShowIf>
         </div>
       </SidePanel>
@@ -164,6 +111,7 @@ SemanticSearchSidePanel.propTypes = {
   currentSearch: PropTypes.object.isRequired,
   selectedDocuments: PropTypes.object.isRequired,
   searches: PropTypes.object.isRequired,
+  hideSemanticSearch: PropTypes.func.isRequired,
   fetchSearches: PropTypes.func.isRequired,
   submitNewSearch: PropTypes.func.isRequired,
   registerForUpdates: PropTypes.func.isRequired,
@@ -178,7 +126,7 @@ export function mapStateToProps(state, props) {
     selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     searches: state.semanticSearch.searches,
     search: state.semanticSearch.search,
-    open: state[props.storeKey].ui.get('showSemanticSearchPanel')
+    open: state.semanticSearch.showSemanticSearchPanel
   };
 }
 
@@ -189,7 +137,7 @@ export function mapDispatchToProps(dispatch) {
     registerForUpdates,
     updateSearch,
     hideSemanticSearch
-  }, wrapDispatch(dispatch, 'library'));
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchSidePanel);

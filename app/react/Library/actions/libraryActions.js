@@ -71,10 +71,6 @@ export function hideSemanticSearch() {
   return { type: types.HIDE_SEMANTIC_SEARCH };
 }
 
-export function toggleSemanticSearch() {
-  return { type: types.TOGGLE_SEMANTIC_SEARCH };
-}
-
 export function setDocuments(docs) {
   return { type: types.SET_DOCUMENTS, documents: docs };
 }

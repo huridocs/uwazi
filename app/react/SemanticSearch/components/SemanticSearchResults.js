@@ -8,15 +8,14 @@ import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import { selectSemanticSearchDocument, addSearchResults } from 'app/SemanticSearch/actions/actions';
+import Immutable from 'immutable';
 import ResultsSidePanel from './ResultsSidePanel';
+import { Translate } from 'app/I18N';
 
 
-const countSentencesAboveThreshold = (item, threshold) => console.log('ITEM', item) ||
-  item.getIn(['semanticSearch', 'results']).toJS()
-  .findIndex(({ score }) => score < threshold); // use findIndex cause array is sorted by score
-
+const sentencesAboveThreshold = (item, threshold) => item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
 const filterItems = (items, { threshold, minRelevantSentences }) => items.filter((item) => {
-  const aboveThreshold = countSentencesAboveThreshold(item, threshold);
+  const aboveThreshold = sentencesAboveThreshold(item, threshold);
   return item.getIn(['semanticSearch', 'averageScore']) >= threshold && aboveThreshold >= minRelevantSentences;
 });
 
@@ -30,9 +29,9 @@ export class SemanticSearchResults extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return nextProps.items.length !== this.props.items.length ||
-    nextProps.isEmpty !== this.props.isEmpty ||
-    nextProps.searchTerm !== this.props.searchTerm;
+    return Boolean(nextProps.items.size !== this.props.items.size) ||
+    Boolean(nextProps.isEmpty !== this.props.isEmpty) ||
+    Boolean(nextProps.searchTerm !== this.props.searchTerm);
   }
 
   // componentWillUnmount() {
@@ -56,7 +55,7 @@ export class SemanticSearchResults extends Component {
       <div className="item-metadata">
         <dl className="metadata-type-text">
           <dt>Sentences above threshold</dt>
-          <dd>{countSentencesAboveThreshold(doc, threshold)}</dd>
+          <dd>{sentencesAboveThreshold(doc, threshold)}</dd>
         </dl>
         <dl className="metadata-type-text">
           <dt>Average sentence threshold</dt>
@@ -81,8 +80,13 @@ export class SemanticSearchResults extends Component {
           <React.Fragment>
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
-              <div>
-                { searchTerm }
+              <h3>
+                <Translate>Semantic search</Translate>: { searchTerm }
+              </h3>
+              <div className="documents-counter">
+                <span className="documents-counter-label">
+                  <b>{ items.size }</b> <Translate>documents</Translate>
+                </span>
               </div>
               <RowList>
                 {items.map((doc, index) => (
@@ -110,7 +114,7 @@ SemanticSearchResults.defaultProps = {
 
 SemanticSearchResults.propTypes = {
   searchId: PropTypes.string,
-  items: PropTypes.array.isRequired,
+  items: PropTypes.object.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
@@ -119,11 +123,11 @@ SemanticSearchResults.propTypes = {
 };
 
 export const mapStateToProps = (state) => {
-  const search = state.semanticSearch.search;
+  const { search } = state.semanticSearch;
   const searchTerm = search.get('searchTerm');
   const results = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
-  const items = results ? filterItems(results, filters) : [];
+  const items = results ? filterItems(results, filters) : Immutable.fromJS([]);
   const isEmpty = Object.keys(search).length === 0;
   return {
     searchId: search.get('_id'),

@@ -51,7 +51,6 @@ export default combineReducers({
   translations: createReducer('translations', []),
   translationsForm: modelReducer('translationsForm', []),
   translationsFormState: formReducer('translationsForm'),
-  semanticSearch,
   pages: createReducer('pages', []),
   users: createReducer('users', []),
   documentViewer,
