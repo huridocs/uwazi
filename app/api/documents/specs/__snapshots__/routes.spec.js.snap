@@ -251,6 +251,7 @@ Object {
                 "type": "number",
                 "valids": Array [
                   "",
+                  null,
                 ],
               },
               Object {
@@ -342,6 +343,9 @@ Object {
                           -Infinity,
                         ],
                         "type": "number",
+                        "valids": Array [
+                          null,
+                        ],
                       },
                       Object {
                         "invalids": Array [

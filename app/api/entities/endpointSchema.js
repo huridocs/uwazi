@@ -6,7 +6,7 @@ const dateRangeSchema = Joi.object().keys({
 }).allow('');
 
 const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.alternatives().try(
-  Joi.number().allow(''),
+  Joi.number().allow('').allow(null),
   Joi.string().allow(''),
   dateRangeSchema,
   Joi.object().keys({
@@ -18,7 +18,7 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
     url: Joi.string(),
   }).allow(''),
   Joi.array().items(Joi.alternatives().try(
-    Joi.number(),
+    Joi.number().allow(null),
     Joi.string(),
     dateRangeSchema
   )).allow(''),
