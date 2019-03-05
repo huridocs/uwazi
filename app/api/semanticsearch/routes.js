@@ -66,9 +66,7 @@ export default (app) => {
     needsAuthorization(),
     (req, res) => {
       workers.on('searchUpdated', async (searchId, updates) => {
-        console.log('sending new update', searchId);
         const sockets = req.io.getCurrentSessionSockets();
-        console.log('sockets', sockets);
         const { updatedSearch, processedDocuments } = updates;
         const docs = await semanticSearch.getDocumentResultsByIds(searchId, processedDocuments);
         sockets.emit('semanticSearchUpdated', { updatedSearch, docs });

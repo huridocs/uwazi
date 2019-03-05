@@ -57,13 +57,15 @@ const removePageAnnotations = text => text.replace(/\[\[\d+\]\]/g, '');
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
   const { fullText } = doc;
-  // Object.keys(fullText).forEach((page) => {
-  //   fullText[page] = removePageAnnotations(fullText[page]);
-  // });
+  
+  
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   if (!fullText) {
     return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
   }
+  Object.keys(fullText).forEach((page) => {
+    fullText[page] = removePageAnnotations(fullText[page]);
+  });
   const results = await api.processDocument({
     searchTerm,
     contents: fullText
