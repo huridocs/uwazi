@@ -3,7 +3,7 @@ import SEMANTIC_SEARCH_URL from 'api/config/semanticsearch';
 
 const semanticSearchAPI = {
   async processDocument(args) {
-    const res = await fetch(`${SEMANTIC_SEARCH_URL}/semanticSearch/searchOneDoc`, {
+    const res = await fetch(SEMANTIC_SEARCH_URL, {
       method: 'POST',
       body: JSON.stringify(args),
       headers: {
