@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {PageCreator} from '../PageCreator';
-import {Form, Field} from 'react-redux-form';
+import { Form, Field } from 'react-redux-form';
+import { PageCreator } from '../PageCreator';
 
 describe('PageCreator', () => {
   let component;
@@ -10,14 +10,14 @@ describe('PageCreator', () => {
 
   beforeEach(() => {
     props = {
-      page: {data: {title: 'Page title', metadata: {}}},
-      formState: {title: {}, $form: {errors: {}}},
+      page: { data: { title: 'Page title', metadata: {} } },
+      formState: { title: {}, $form: { errors: {} } },
       savePage: jasmine.createSpy('savePage'),
       resetPage: jasmine.createSpy('deletePage')
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<PageCreator {...props} />);
   };
 

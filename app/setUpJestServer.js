@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 mongoose.Promise = Promise;
 
 jasmine.createSpyObj = (name, methodNames) => {
@@ -7,7 +8,7 @@ jasmine.createSpyObj = (name, methodNames) => {
     names = name;
   }
 
-  let obj = {};
+  const obj = {};
 
   for (let i = 0; i < names.length; i += 1) {
     obj[names[i]] = jasmine.createSpy(names[i]);

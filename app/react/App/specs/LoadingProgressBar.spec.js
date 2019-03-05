@@ -1,5 +1,5 @@
-import LoadingProgressBar from '../LoadingProgressBar';
 import NProgress from 'nprogress';
+import LoadingProgressBar from '../LoadingProgressBar';
 
 describe('Load ingProgressBar', () => {
   beforeEach(() => {

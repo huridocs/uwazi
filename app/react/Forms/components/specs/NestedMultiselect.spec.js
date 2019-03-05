@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import NestedMultiselect from '../NestedMultiselect';
 import { Control } from 'react-redux-form';
+import NestedMultiselect from '../NestedMultiselect';
 
 describe('NestedMultiselect', () => {
   let component;

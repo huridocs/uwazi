@@ -34,7 +34,8 @@ export class TranslationsList extends Component {
                   <Icon icon="language" /> {t('System', 'Translate')}
                 </I18NLink>
               </div>
-            </li>))}
+            </li>
+))}
         </ul>
       </div>
     );

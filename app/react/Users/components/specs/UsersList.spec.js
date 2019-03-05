@@ -1,9 +1,9 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS, Map} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS, Map } from 'immutable';
 
-import {UsersList} from '../UsersList';
-import {I18NLink} from 'app/I18N';
+import { I18NLink } from 'app/I18N';
+import { UsersList } from '../UsersList';
 
 describe('UsersList', () => {
   let component;
@@ -13,9 +13,9 @@ describe('UsersList', () => {
   beforeEach(() => {
     props = {
       users: fromJS([
-        {_id: 1, username: 'User 1', sharedId: 'a1'},
-        {_id: 2, username: 'User 2', sharedId: 'a2'},
-        {_id: 3, username: 'User 3', sharedId: 'a3'}
+        { _id: 1, username: 'User 1', sharedId: 'a1' },
+        { _id: 2, username: 'User 2', sharedId: 'a2' },
+        { _id: 3, username: 'User 3', sharedId: 'a3' }
       ]),
       deleteUser: jasmine.createSpy('deleteUser').and.returnValue(Promise.resolve())
     };
@@ -25,15 +25,15 @@ describe('UsersList', () => {
     };
   });
 
-  let render = () => {
-    component = shallow(<UsersList {...props} />, {context});
+  const render = () => {
+    component = shallow(<UsersList {...props} />, { context });
   };
 
   describe('render', () => {
     it('should render a list with all users names', () => {
       render();
       expect(component.find('ul.users').find('li').length).toBe(3);
-      let span = component.find('ul.users').find('li').last().find('span').first();
+      const span = component.find('ul.users').find('li').last().find('span').first();
       expect(span.props().children).toBe('User 3');
     });
 
@@ -46,7 +46,7 @@ describe('UsersList', () => {
   describe('deleteUser', () => {
     beforeEach(() => {
       render();
-      component.instance().deleteUser(Map({_id: 3, title: 'Judge', sharedId: 'a3'}));
+      component.instance().deleteUser(Map({ _id: 3, title: 'Judge', sharedId: 'a3' }));
     });
 
     it('should confirm the action', () => {
@@ -55,7 +55,7 @@ describe('UsersList', () => {
 
     it('should call on props.deleteUser if confirmed', () => {
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deleteUser).toHaveBeenCalledWith({_id: 3, sharedId: 'a3'});
+      expect(props.deleteUser).toHaveBeenCalledWith({ _id: 3, sharedId: 'a3' });
     });
   });
 });

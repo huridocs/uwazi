@@ -34,7 +34,12 @@ export function filterDocumentTypes(documentTypes, storeKey) {
 export function resetFilters(storeKey) {
   return (dispatch, getState) => {
     dispatch({ type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: [] });
-    dispatch(formActions.load(`${storeKey}.search`, { searchTerm: '' }));
+    dispatch(formActions.load(`${storeKey}.search`, {
+      searchTerm: '',
+      filters: {},
+      order: 'desc',
+      sort: 'creationDate',
+    }));
     libraryActions.searchDocuments({ search: getState()[storeKey].search }, storeKey)(dispatch, getState);
   };
 }

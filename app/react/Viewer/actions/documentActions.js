@@ -4,16 +4,16 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 
 import { APIURL } from 'app/config.js';
-import { PDFUtils } from '../../PDF/';
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
 import documents from 'app/Documents';
 import { notify } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
-import * as selectionActions from './selectionActions';
-import * as uiActions from './uiActions';
 import { isClient } from 'app/utils';
 import { actions as relationshipActions } from 'app/Relationships';
+import * as selectionActions from './selectionActions';
+import * as uiActions from './uiActions';
+import { PDFUtils } from '../../PDF';
 
 export function setDocument(document, html) {
   return {

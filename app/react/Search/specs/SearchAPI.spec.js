@@ -1,22 +1,22 @@
-import searchAPI from '../SearchAPI';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import searchAPI from '../SearchAPI';
 
 describe('SearchAPI', () => {
-  let searchResponse = [{documents: 'search'}];
-  let filteredSearchResult = [{documents: 'Alfred'}];
-  let listResponse = [{documents: 'list'}];
+  const searchResponse = [{ documents: 'search' }];
+  const filteredSearchResult = [{ documents: 'Alfred' }];
+  const listResponse = [{ documents: 'list' }];
 
   beforeEach(() => {
     backend.restore();
     backend
-    .get(APIURL + 'search', {body: JSON.stringify(searchResponse)})
-    .get(APIURL + 'search_snippets?searchTerm=term&id=id', {body: JSON.stringify(searchResponse)})
-    .get(APIURL + 'search/list?keys=%5B%221%22%2C%222%22%5D', {body: JSON.stringify({rows: listResponse})})
-    .get(APIURL + 'search/unpublished', {body: JSON.stringify({rows: 'uploads'})})
-    .get(APIURL + 'search/count_by_template?templateId=templateId', {body: JSON.stringify(1)})
-    .get(APIURL + 'search/match_title?searchTerm=term', {body: JSON.stringify(searchResponse)})
-    .get(APIURL + 'search?searchTerm=Batman&joker=true', {body: JSON.stringify(filteredSearchResult)});
+    .get(`${APIURL}search`, { body: JSON.stringify(searchResponse) })
+    .get(`${APIURL}search_snippets?searchTerm=term&id=id`, { body: JSON.stringify(searchResponse) })
+    .get(`${APIURL}search/list?keys=%5B%221%22%2C%222%22%5D`, { body: JSON.stringify({ rows: listResponse }) })
+    .get(`${APIURL}search/unpublished`, { body: JSON.stringify({ rows: 'uploads' }) })
+    .get(`${APIURL}search/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
+    .get(`${APIURL}search/match_title?searchTerm=term`, { body: JSON.stringify(searchResponse) })
+    .get(`${APIURL}search?searchTerm=Batman&joker=true`, { body: JSON.stringify(filteredSearchResult) });
   });
 
   afterEach(() => backend.restore());
@@ -88,7 +88,7 @@ describe('SearchAPI', () => {
 
     describe('when passing filters', () => {
       it('should search for it', (done) => {
-        searchAPI.search({searchTerm: 'Batman', joker: true})
+        searchAPI.search({ searchTerm: 'Batman', joker: true })
         .then((response) => {
           expect(response).toEqual(filteredSearchResult);
           done();

@@ -98,11 +98,14 @@ export class RightRelationship extends Component {
               <div className="removeRightRelationshipGroup">
                 {(() => {
                   if (rightRelationshipGroup.has('template')) {
-                    return (<button
-                              onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
-                              className="relationships-icon">
-                              <Icon icon={!rightRelationshipGroup.get('deleted') ? 'trash-alt' : 'undo'} />
-                            </button>);
+                    return (
+                      <button
+                        onClick={this.toggleRemoveRightRelationshipGroup(index, rightRelationshipIndex)}
+                        className="relationships-icon"
+                      >
+                        <Icon icon={!rightRelationshipGroup.get('deleted') ? 'trash-alt' : 'undo'} />
+                      </button>
+);
                   }
 
                   return <span>&nbsp;</span>;
@@ -134,7 +137,8 @@ export class RightRelationship extends Component {
                     <div className="removeEntity">
                       <button
                         onClick={this.toggleRemoveEntity(index, rightRelationshipIndex, relationshipIndex)}
-                        className="relationships-icon">
+                        className="relationships-icon"
+                      >
                         <Icon icon={!deleted ? 'trash-alt' : 'undo'} />
                       </button>
                     </div>
@@ -143,7 +147,8 @@ export class RightRelationship extends Component {
                     <div className="moveEntity">
                       <button
                         onClick={this.props.toggleMoveEntity.bind(this, index, rightRelationshipIndex, relationshipIndex)}
-                        className={`relationships-icon ${!move ? '' : 'moving'}`}>
+                        className={`relationships-icon ${!move ? '' : 'moving'}`}
+                      >
                         <Icon icon="check" />
                       </button>
                     </div>
@@ -167,7 +172,8 @@ export class RightRelationship extends Component {
                     <div className="insertEntities">
                       <button
                         onClick={this.props.moveEntities.bind(this, index, rightRelationshipIndex)}
-                        className="relationships-icon">
+                        className="relationships-icon"
+                      >
                         <Icon icon="arrow-left" />
                       </button>
                     </div>
@@ -177,7 +183,8 @@ export class RightRelationship extends Component {
 
               return null;
             })()}
-          </div>)
+          </div>
+)
         )}
       </div>
     );

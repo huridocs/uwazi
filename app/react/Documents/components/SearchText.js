@@ -18,6 +18,7 @@ export class SearchText extends Component {
     this.submit = this.submit.bind(this);
     this.resetSearch = this.resetSearch.bind(this);
   }
+
   componentDidMount() {
     if (this.props.storeKey === 'documentViewer') {
       this.searchSnippets(this.props.searchTerm, this.props.doc.get('sharedId'));
@@ -47,7 +48,7 @@ export class SearchText extends Component {
 
   submit(value) {
     const path = browserHistory.getCurrentLocation().pathname;
-    const query = browserHistory.getCurrentLocation().query;
+    const { query } = browserHistory.getCurrentLocation();
     query.searchTerm = value.searchTerm;
 
     browserHistory.push(path + toUrlParams(query));
@@ -67,40 +68,42 @@ export class SearchText extends Component {
           getDispatch={dispatch => this.attachDispatch(dispatch)}
           autoComplete="off"
         >
-          {this.props.storeKey === 'documentViewer' &&
-            <div className="search-box">
-              <div className="input-group">
-                <Field model=".searchTerm">
-                  <Icon icon="search" />
-                  <input
-                    type="text"
-                    placeholder={t('System', 'Search', null, false)}
-                    className="form-control"
-                    autoComplete="off"
-                  />
-                  <Icon icon="times" onClick={this.resetSearch}/>
-                </Field>
-              </div>
-              <SearchTips />
+          {this.props.storeKey === 'documentViewer' && (
+          <div className="search-box">
+            <div className="input-group">
+              <Field model=".searchTerm">
+                <Icon icon="search" />
+                <input
+                  type="text"
+                  placeholder={t('System', 'Search', null, false)}
+                  className="form-control"
+                  autoComplete="off"
+                />
+                <Icon icon="times" onClick={this.resetSearch}/>
+              </Field>
             </div>
-          }
+            <SearchTips />
+          </div>
+)}
         </LocalForm>
 
-        {!snippets.get('count') &&
-          <div className="blank-state">
-            <Icon icon="search" />
-            <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
-            <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
-          </div>
-        }
+        {!snippets.get('count') && (
+        <div className="blank-state">
+          <Icon icon="search" />
+          <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
+          <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
+        </div>
+)}
         {doc.size ?
-          (<SnippetList
-            doc={this.props.doc}
-            snippets={snippets}
-            selectSnippet={this.props.selectSnippet}
-            searchTerm={this.props.searchTerm}
-            documentViewUrl={documentViewUrl}
-          />) : ''
+          (
+            <SnippetList
+              doc={this.props.doc}
+              snippets={snippets}
+              selectSnippet={this.props.selectSnippet}
+              searchTerm={this.props.searchTerm}
+              documentViewUrl={documentViewUrl}
+            />
+) : ''
         }
       </div>
     );

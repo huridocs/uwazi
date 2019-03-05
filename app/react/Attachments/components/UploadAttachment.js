@@ -22,12 +22,14 @@ export class UploadAttachment extends Component {
     let uploadToAll = null;
 
     if (this.props.languages.size > 1) {
-      uploadToAll = (<label htmlFor="upload-attachment-all-input" className="btn btn-success btn-xs add">
-        <span className="btn-label">
-          <Icon icon="link" /> {t('System', 'Add to all languages')}
-        </span>
-        <input onChange={this.onChangeAll.bind(this)} type="file" id="upload-attachment-all-input" style={{ display: 'none' }} />
-                     </label>);
+      uploadToAll = (
+        <label htmlFor="upload-attachment-all-input" className="btn btn-success btn-xs add">
+          <span className="btn-label">
+            <Icon icon="link" /> {t('System', 'Add to all languages')}
+          </span>
+          <input onChange={this.onChangeAll.bind(this)} type="file" id="upload-attachment-all-input" style={{ display: 'none' }} />
+        </label>
+      );
     }
 
     return (

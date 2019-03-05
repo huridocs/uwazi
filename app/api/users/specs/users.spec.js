@@ -5,10 +5,10 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 
+import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
-import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import usersModel from '../usersModel.js';
 
 describe('Users', () => {
@@ -69,7 +69,7 @@ describe('Users', () => {
         spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
       });
 
-      it('should do the recover password process (as a new user)', done =>
+      it('should do the recover password process (as a new user)', (done) => {
         users.newUser({ username: 'spidey', email: 'peter@parker.com', role: 'editor' }, domain)
         .then(() => users.get({ username: 'spidey' }))
         .then(([user]) => {
@@ -77,9 +77,10 @@ describe('Users', () => {
           expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, { newUser: true });
           done();
         })
-        .catch(catchErrors(done)));
+        .catch(catchErrors(done));
+      });
 
-      it('should not allow repeat username', done =>
+      it('should not allow repeat username', (done) => {
         users.newUser({ username: 'username', email: 'peter@parker.com', role: 'editor' }, currentUser, domain)
         .then(() => {
           done.fail('should throw an error');
@@ -87,18 +88,19 @@ describe('Users', () => {
         .catch((error) => {
           expect(error).toEqual(createError('Username already exists', 409));
           done();
-        })
-        .catch(catchErrors(done)));
+        });
+      });
 
-      it('should not allow repeat email', done => users.newUser({ username: 'spidey', email: 'test@email.com', role: 'editor' }, currentUser, domain)
-      .then(() => {
-        done.fail('should throw an error');
-      })
-      .catch((error) => {
-        expect(error).toEqual(createError('Email already exists', 409));
-        done();
-      })
-      .catch(catchErrors(done)));
+      it('should not allow repeat email', (done) => {
+        users.newUser({ username: 'spidey', email: 'test@email.com', role: 'editor' }, currentUser, domain)
+        .then(() => {
+          done.fail('should throw an error');
+        })
+        .catch((error) => {
+          expect(error).toEqual(createError('Email already exists', 409));
+          done();
+        });
+      });
     });
   });
 

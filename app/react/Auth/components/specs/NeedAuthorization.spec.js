@@ -1,18 +1,18 @@
 import React from 'react';
 import Immutable from 'immutable';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
-import {NeedAuthorization, mapStateToProps} from '../NeedAuthorization';
+import { NeedAuthorization, mapStateToProps } from '../NeedAuthorization';
 
 describe('NeedAuthorization', () => {
   let component;
   let props;
 
   beforeEach(() => {
-    props = {authorized: true};
+    props = { authorized: true };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<NeedAuthorization {...props}><div/></NeedAuthorization>);
   };
 
@@ -33,19 +33,19 @@ describe('NeedAuthorization', () => {
 
   describe('maped state', () => {
     it('should map authorized true if user in the store', () => {
-      let store = {
-        user: Immutable.fromJS({_id: 1, role: 'admin'})
+      const store = {
+        user: Immutable.fromJS({ _id: 1, role: 'admin' })
       };
-      let state = mapStateToProps(store, {roles: ['admin']});
-      expect(state).toEqual({authorized: true});
+      const state = mapStateToProps(store, { roles: ['admin'] });
+      expect(state).toEqual({ authorized: true });
     });
 
     it('should map authorized false if user not in the store', () => {
-      let store = {
+      const store = {
         user: Immutable.fromJS({})
       };
-      let state = mapStateToProps(store, {roles: ['admin']});
-      expect(state).toEqual({authorized: false});
+      const state = mapStateToProps(store, { roles: ['admin'] });
+      expect(state).toEqual({ authorized: false });
     });
   });
 });

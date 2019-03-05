@@ -256,8 +256,7 @@ export default {
         hub = [{ entity: entity.sharedId, hub: generateID() }];
       }
 
-      const referencesOfThisType = references.filter(reference =>
-        reference.template &&
+      const referencesOfThisType = references.filter(reference => reference.template &&
         reference.template.toString() === propertyRelationType.toString()
       );
 
@@ -292,8 +291,7 @@ export default {
       relationships.sort((a, b) => (a.entity + a.hub.toString()).localeCompare(b.entity + b.hub.toString()));
 
       const filter = Object.keys(query.filter).reduce((result, filterGroupKey) => result.concat(query.filter[filterGroupKey]), []);
-      const filteredRelationships = relationships.filter(relationship =>
-        !filter.length ||
+      const filteredRelationships = relationships.filter(relationship => !filter.length ||
         filter.includes(relationship.template + relationship.entityData.template)
       );
 
@@ -319,8 +317,7 @@ export default {
         if (results.rows.length) {
           let filteredRelationshipsHubs = results.rows.map(item => item.connections.map(relationship => relationship.hub.toString()));
           filteredRelationshipsHubs = Array.prototype.concat(...filteredRelationshipsHubs);
-          entity.connections = relationships.filter(relationship =>
-            relationship.entity === entitySharedId &&
+          entity.connections = relationships.filter(relationship => relationship.entity === entitySharedId &&
             filteredRelationshipsHubs.includes(relationship.hub.toString())
           );
           results.rows.push(entity);

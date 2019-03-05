@@ -3,16 +3,7 @@
 exports[`Attachments Routes /delete should have a validation schema 1`] = `
 Object {
   "children": Object {
-    "entityId": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "filename": Object {
+    "attachmentId": Object {
       "flags": Object {
         "presence": "required",
       },
@@ -46,6 +37,15 @@ Object {
           },
           "name": "regex",
         },
+      ],
+      "type": "string",
+    },
+    "file": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
       ],
       "type": "string",
     },

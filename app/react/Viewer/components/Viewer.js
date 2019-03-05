@@ -96,22 +96,21 @@ export class Viewer extends Component {
         <ShowIf if={!this.props.targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
-              {sidepanelTab !== 'connections'
-                  &&
-                  <React.Fragment>
-                    <PaginatorWithPage
-                      totalPages={doc.get('totalPages')}
-                      onPageChange={this.props.changePage}
-                    />
-                    <CurrentLocationLink
-                      onClick={!raw ? this.handlePlainTextClick : () => {}}
-                      className="btn btn-default"
-                      queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}
-                    >
-                      { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
-                    </CurrentLocationLink>
-                  </React.Fragment>
-              }
+              {sidepanelTab !== 'connections' && (
+                <React.Fragment>
+                  <PaginatorWithPage
+                    totalPages={doc.get('totalPages')}
+                    onPageChange={this.props.changePage}
+                  />
+                  <CurrentLocationLink
+                    onClick={!raw ? this.handlePlainTextClick : () => {}}
+                    className="btn btn-default"
+                    queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}
+                  >
+                    { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
+                  </CurrentLocationLink>
+                </React.Fragment>
+              )}
             </div>
           </div>
         </ShowIf>

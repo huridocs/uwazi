@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {connect} from 'react-redux';
-import {t} from 'app/I18N';
+import { connect } from 'react-redux';
+import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
-const SnippetsTab = ({snippets}) => {
-  return <div>
+const SnippetsTab = ({ snippets }) => (
+  <div>
     <Icon icon="search" />
     <span className="connectionsNumber">{snippets.get('count') ? snippets.get('count') : ''}</span>
     <span className="tab-link-tooltip">{t('System', 'Search text')}</span>
-  </div>;
-};
+  </div>
+);
 
 SnippetsTab.propTypes = {
   snippets: PropTypes.object

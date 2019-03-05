@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 export default class RadioButtons extends Component {
-
   change(value) {
     this.props.onChange(value);
   }
@@ -21,34 +20,31 @@ export default class RadioButtons extends Component {
   }
 
   render() {
-    let {optionsValue, prefix, options} = this.props;
+    let { optionsValue, prefix, options } = this.props;
     optionsValue = optionsValue || 'value';
     prefix = prefix || '';
 
     return (
-        <div>
-        {options.map((option) => {
-          return (
-            <div className='radio' key={option[optionsValue]}>
-              <label htmlFor={prefix + option[optionsValue]}>
-                <input
-                  type='radio'
-                  value={option[optionsValue]}
-                  id={prefix + option[optionsValue]}
-                  onChange={this.change.bind(this, option[optionsValue])}
-                  checked={this.checked(option[optionsValue])}
-                />
-                <span className="multiselectItem-name">
-                  {this.renderLabel(option)}
-                </span>
-              </label>
-            </div>
-          );
-        })}
+      <div>
+        {options.map(option => (
+          <div className="radio" key={option[optionsValue]}>
+            <label htmlFor={prefix + option[optionsValue]}>
+              <input
+                type="radio"
+                value={option[optionsValue]}
+                id={prefix + option[optionsValue]}
+                onChange={this.change.bind(this, option[optionsValue])}
+                checked={this.checked(option[optionsValue])}
+              />
+              <span className="multiselectItem-name">
+                {this.renderLabel(option)}
+              </span>
+            </label>
+          </div>
+          ))}
       </div>
     );
   }
-
 }
 
 RadioButtons.propTypes = {

@@ -1,8 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {fromJS as Immutable} from 'immutable';
+import { shallow } from 'enzyme';
+import { fromJS as Immutable } from 'immutable';
 
-import {ConnectionsGroups} from '../ConnectionsGroups';
+import { ConnectionsGroups } from '../ConnectionsGroups';
 import ConnectionsGroup from '../ConnectionsGroup';
 
 describe('ConnectionsGroups', () => {
@@ -12,13 +12,13 @@ describe('ConnectionsGroups', () => {
   beforeEach(() => {
     props = {
       connectionsGroups: Immutable([
-        {key: 'g1', templates: [{_id: 't1', count: 1}]},
-        {key: 'g2', templates: [{_id: 't2', count: 2}, {_id: 't3', count: 3}]}
+        { key: 'g1', templates: [{ _id: 't1', count: 1 }] },
+        { key: 'g2', templates: [{ _id: 't2', count: 2 }, { _id: 't3', count: 3 }] }
       ])
     };
   });
 
-  let render = () => {
+  const render = () => {
     component = shallow(<ConnectionsGroups {...props} />);
   };
 

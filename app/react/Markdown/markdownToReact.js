@@ -74,16 +74,16 @@ export default (_markdown, callback, withHtml = false) => {
 
       let type;
       let config = node.attribs;
-      const isCustomComponentPlaceholder = node.name === 'placeholder'
-        && node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
+      const isCustomComponentPlaceholder = node.name === 'placeholder' &&
+        node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
 
       if (isCustomComponentPlaceholder) {
         [, type] = node.children[0].data.match(customComponentTypeMatcher);
         config = getConfig(node.children[0].data);
       }
 
-      const isCustomComponent = node && (!node.parent || node.parent && node.parent.name !== 'placeholder')
-        && node.data && node.data.match(customComponentMatcher);
+      const isCustomComponent = node && (!node.parent || node.parent && node.parent.name !== 'placeholder') &&
+        node.data && node.data.match(customComponentMatcher);
 
       if (isCustomComponent) {
         [, type] = node.data.match(customComponentTypeMatcher);

@@ -6,8 +6,8 @@ import { t } from 'app/I18N';
 import advancedSortUtil from 'app/utils/advancedSort';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import { store } from 'app/store';
-import MultiSelect from './MultiSelect';
 import { Icon } from 'UI';
+import MultiSelect from './MultiSelect';
 
 export default class NestedMultiselect extends Component {
   constructor(props) {
@@ -70,8 +70,8 @@ export default class NestedMultiselect extends Component {
   }
 
   render() {
-    const property = this.props.property;
-    const locale = store.getState().locale;
+    const { property } = this.props;
+    const { locale } = store.getState();
     const aggregations = this.props.aggregations ? this.props.aggregations.toJS() : {};
     return (
       <ul className="multiselect is-active">
@@ -133,7 +133,8 @@ export default class NestedMultiselect extends Component {
           </li>
       );
       }))()}
-      </ul>);
+      </ul>
+    );
   }
 }
 

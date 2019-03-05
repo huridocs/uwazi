@@ -2,30 +2,30 @@
 import configureMockStore from 'redux-mock-store';
 import Immutable from 'immutable';
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 
 import TargetDocument from 'app/Viewer/components/TargetDocument';
 import * as viewerSelectors from '../../selectors';
 
-describe('TargetDocument', function () {
+describe('TargetDocument', () => {
   let component;
   let store;
   const mockStore = configureMockStore([]);
 
-  let state = {
+  const state = {
     documentViewer: {
       uiState: Immutable.fromJS({
-        reference: {targetRange: {selection: 'selection'}}
+        reference: { targetRange: { selection: 'selection' } }
       }),
-      targetDoc: Immutable.fromJS({name: 'document'}),
-      targetDocHTML: Immutable.fromJS({pages: 'pages', css: 'css'}),
-      selectedTargetReferences: Immutable.fromJS({keysOf: 'selectTargetReferences'})
+      targetDoc: Immutable.fromJS({ name: 'document' }),
+      targetDocHTML: Immutable.fromJS({ pages: 'pages', css: 'css' }),
+      selectedTargetReferences: Immutable.fromJS({ keysOf: 'selectTargetReferences' })
     }
   };
 
-  let render = () => {
+  const render = () => {
     store = mockStore(state);
-    component = shallow(<TargetDocument />, {context: {store}});
+    component = shallow(<TargetDocument />, { context: { store } });
   };
 
   it('should map props', () => {
@@ -33,10 +33,10 @@ describe('TargetDocument', function () {
     .callFake(fnSstate => fnSstate.documentViewer.selectedTargetReferences);
     render();
 
-    let props = component.props();
-    expect(props.selection).toEqual({selection: 'selection'});
+    const props = component.props();
+    expect(props.selection).toEqual({ selection: 'selection' });
     expect(props.doc.toJS().name).toBe('document');
-    expect(props.docHTML.toJS()).toEqual({pages: 'pages', css: 'css'});
+    expect(props.docHTML.toJS()).toEqual({ pages: 'pages', css: 'css' });
     expect(props.references.toJS().keysOf).toBe('selectTargetReferences');
     expect(props.className).toBe('targetDocument');
   });

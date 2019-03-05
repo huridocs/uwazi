@@ -49,6 +49,7 @@ export class AttachmentsList extends Component {
               storeKey={storeKey}
               parentSharedId={parentSharedId}
               isSourceDocument
+              deleteMessage="Warning, Deleting the main file will also delete table of content and main files for the other languages of this entity"
             />
           </div>
           {this.props.entityView && mainFile &&
@@ -84,11 +85,13 @@ export class AttachmentsList extends Component {
 
     let uploadAttachmentButton = null;
     if (!this.props.isTargetDoc) {
-      uploadAttachmentButton = (<NeedAuthorization roles={['admin', 'editor']}>
-        <div className="attachment-add">
-          <UploadAttachment entityId={this.props.parentSharedId} storeKey={storeKey}/>
-        </div>
-      </NeedAuthorization>);
+      uploadAttachmentButton = (
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <div className="attachment-add">
+            <UploadAttachment entityId={this.props.parentSharedId} storeKey={storeKey}/>
+          </div>
+        </NeedAuthorization>
+      );
     }
 
     const mainFile = isDocumentAttachments ? sortedFiles[0] : null;

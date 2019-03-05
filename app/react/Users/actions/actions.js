@@ -1,6 +1,6 @@
+import { actions as basicActions } from 'app/BasicReducer';
+import { notify } from 'app/Notifications';
 import UsersAPI from '../UsersAPI';
-import {actions as basicActions} from 'app/BasicReducer';
-import {notify} from 'app/Notifications';
 
 export function deleteUser(user) {
   return function (dispatch) {

@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import backend from 'fetch-mock';
-import {APIURL} from 'app/config.js';
-import {actions as formActions} from 'react-redux-form';
+import { APIURL } from 'app/config.js';
+import { actions as formActions } from 'react-redux-form';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
 import * as modalActions from 'app/Modals/actions/modalActions';
@@ -10,9 +10,9 @@ import * as actions from 'app/RelationTypes/actions/relationTypesActions';
 describe('relationTypesActions', () => {
   describe('editRelationType', () => {
     it('should load the relationType in the form model', () => {
-      let relationType = {name: 'Secret list of things', values: []};
+      const relationType = { name: 'Secret list of things', values: [] };
       spyOn(formActions, 'load').and.returnValue('RELATION_TYPE_LOADED');
-      let dispatch = jasmine.createSpy('dispatch');
+      const dispatch = jasmine.createSpy('dispatch');
       actions.editRelationType(relationType)(dispatch);
 
       expect(formActions.load).toHaveBeenCalledWith('template.data', relationType);
@@ -26,7 +26,7 @@ describe('relationTypesActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .delete(APIURL + 'relationtypes?_id=relationTypeId', {body: JSON.stringify({testBackendResult: 'ok'})});
+      .delete(`${APIURL}relationtypes?_id=relationTypeId`, { body: JSON.stringify({ testBackendResult: 'ok' }) });
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -34,10 +34,10 @@ describe('relationTypesActions', () => {
 
     describe('deleteRelationType', () => {
       it('should delete the relationType and dispatch a relationTypes/REMOVE action with the relation type', (done) => {
-        let relationType = {_id: 'relationTypeId'};
+        const relationType = { _id: 'relationTypeId' };
         actions.deleteRelationType(relationType)(dispatch)
         .then(() => {
-          expect(dispatch).toHaveBeenCalledWith({type: 'relationTypes/REMOVE', value: relationType});
+          expect(dispatch).toHaveBeenCalledWith({ type: 'relationTypes/REMOVE', value: relationType });
           done();
         });
       });
@@ -47,7 +47,7 @@ describe('relationTypesActions', () => {
       let relationType;
       beforeEach(() => {
         spyOn(modalActions, 'showModal');
-        relationType = {_id: 'abc1'};
+        relationType = { _id: 'abc1' };
       });
 
       describe('when there is references using the relation type', () => {
