@@ -3,7 +3,7 @@ import async from 'async';
 import search, { COMPLETED, STOPPED } from './semanticSearch';
 
 class Worker extends EventEmitter {
-  constructor(searchId, batchSize = 10) {
+  constructor(searchId, batchSize = 1) {
     super();
     this.searchId = searchId;
     this.batchSize = batchSize;
@@ -13,8 +13,9 @@ class Worker extends EventEmitter {
 
   async processBatch() {
     const res = await search.processSearchLimit(this.searchId, this.batchSize);
-    this.done = res.status === COMPLETED;
-    this.stopped = res.status === STOPPED;
+    const { updatedSearch } = res;
+    this.done = updatedSearch.status === COMPLETED;
+    this.stopped = updatedSearch.status === STOPPED;
     this.emit('update', res);
   }
 

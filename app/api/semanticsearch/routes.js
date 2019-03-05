@@ -2,6 +2,7 @@ import Joi from 'joi';
 import semanticSearch from './semanticSearch';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import workers from './workerManager';
 
 export default (app) => {
   app.post('/api/semantic-search',
@@ -60,5 +61,18 @@ export default (app) => {
       semanticSearch.getSearchesByDocument(req.params.sharedId)
       .then(searches => res.json(searches))
       .catch(next);
+    });
+  app.post('/api/semantic-search/notify-updates',
+    needsAuthorization(),
+    (req, res) => {
+      workers.on('searchUpdated', async (searchId, updates) => {
+        console.log('sending new update', searchId);
+        const sockets = req.io.getCurrentSessionSockets();
+        console.log('sockets', sockets);
+        const { updatedSearch, processedDocuments } = updates;
+        const docs = await semanticSearch.getDocumentResultsByIds(searchId, processedDocuments);
+        sockets.emit('semanticSearchUpdated', { updatedSearch, docs });
+      });
+      res.json({ ok: true });
     });
 };

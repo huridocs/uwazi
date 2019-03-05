@@ -52,9 +52,14 @@ const setSearchDocumentResults = async (searchId, sharedId, results) => {
   return docResults;
 };
 
+const removePageAnnotations = text => text.replace(/\[\[\d+\]\]/g, '');
+
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
   const { fullText } = doc;
+  // Object.keys(fullText).forEach((page) => {
+  //   fullText[page] = removePageAnnotations(fullText[page]);
+  // });
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   if (!fullText) {
     return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
@@ -87,9 +92,9 @@ const processSearchLimit = async (searchId, docLimit) => {
   const updatedSearch = await model.getById(searchId);
   const isNotDone = updatedSearch.documents.some(doc => doc.status !== COMPLETED);
   if (isNotDone) {
-    return updatedSearch;
+    return { updatedSearch, processedDocuments: docsToSearch.map(d => d.sharedId) };
   }
-  return updateSearchStatus(searchId, COMPLETED);
+  return { updatedSearch: await updateSearchStatus(searchId, COMPLETED), processedDocuments: docsToSearch.map(d => d.sharedId) };
 };
 
 const create = async (args, language, user) => {
@@ -125,6 +130,19 @@ const getSearch = async (searchId) => {
   ));
   theSearch.results = docsWithResults;
   return theSearch;
+};
+
+const getDocumentResultsByIds = async (searchId, docIds) => {
+  const theSearch = searchId._id ? searchId : await model.getById(searchId);
+  const results = await resultsModel.get({ searchId, sharedId: { $in: docIds } });
+  const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
+  const docsWithResults = docs.map(doc => (
+    {
+      ...doc,
+      semanticSearch: results.find(res => res.sharedId === doc.sharedId)
+    }
+  ));
+  return docsWithResults;
 };
 
 const getSearchesByDocument = async (docId) => {
@@ -183,6 +201,7 @@ const semanticSearch = {
   processDocument,
   processSearchLimit,
   getAllDocumentResults,
+  getDocumentResultsByIds,
   getAllSearches,
   getPending,
   getInProgress,

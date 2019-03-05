@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import Helmet from 'react-helmet';
+import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import { selectSemanticSearchDocument } from 'app/SemanticSearch/actions/actions';
+import { selectSemanticSearchDocument, addSearchResults } from 'app/SemanticSearch/actions/actions';
 import ResultsSidePanel from './ResultsSidePanel';
 
 
-const countSentencesAboveThreshold = (item, threshold) =>
+const countSentencesAboveThreshold = (item, threshold) => console.log('ITEM', item) ||
   item.getIn(['semanticSearch', 'results']).toJS()
   .findIndex(({ score }) => score < threshold); // use findIndex cause array is sorted by score
 
@@ -23,12 +24,25 @@ export class SemanticSearchResults extends Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
+    // this.onSearchUpdated = this.onSearchUpdated.bind(this);
+
+    // socket.on('semanticSearchUpdated', this.onSearchUpdated);
   }
 
   shouldComponentUpdate(nextProps) {
     return nextProps.items.length !== this.props.items.length ||
     nextProps.isEmpty !== this.props.isEmpty ||
     nextProps.searchTerm !== this.props.searchTerm;
+  }
+
+  // componentWillUnmount() {
+  //   socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
+  // }
+
+  onSearchUpdated({ updatedSearch, docs }) {
+    if (updatedSearch._id === this.props.searchId) {
+      this.props.addSearchResults(docs);
+    }
   }
 
   onClick(e, doc) {
@@ -95,10 +109,12 @@ SemanticSearchResults.defaultProps = {
 
 
 SemanticSearchResults.propTypes = {
+  searchId: PropTypes.string,
   items: PropTypes.array.isRequired,
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
+  addSearchResults: PropTypes.func.isRequired,
   threshold: PropTypes.number,
 };
 
@@ -110,6 +126,7 @@ export const mapStateToProps = (state) => {
   const items = results ? filterItems(results, filters) : [];
   const isEmpty = Object.keys(search).length === 0;
   return {
+    searchId: search.get('_id'),
     searchTerm,
     threshold: filters.threshold,
     items,
@@ -119,7 +136,8 @@ export const mapStateToProps = (state) => {
 
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    selectSemanticSearchDocument
+    selectSemanticSearchDocument,
+    addSearchResults
   }, dispatch);
 }
 
