@@ -17,9 +17,9 @@ import { saveToc, editToc, removeFromToc, indentTocElement } from '../actions/do
 import DocumentForm from '../containers/DocumentForm';
 
 export const mapStateToProps = (state) => {
-  const documentViewer = state.documentViewer;
-  const templates = state.templates;
-  let doc = documentViewer.doc;
+  const { documentViewer } = state;
+  const { templates } = state;
+  let { doc } = documentViewer;
 
   if (documentViewer.targetDoc.get('_id')) {
     doc = documentViewer.targetDoc;

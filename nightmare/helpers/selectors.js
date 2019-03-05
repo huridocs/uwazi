@@ -93,7 +93,7 @@ export default {
     viewer: '#app > div.content > div > div > main',
     sidePanelTitle: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',
     documentPage: '.page',
-    documentPageFirstParagraph: '#pageContainer1 > div.textLayer > div:nth-child(1)',
+    documentPageFirstParagraph: '#page-1 > div > div.textLayer > span:nth-child(1)',
     createParagraphLinkButton: '#app > div.content > div > div > div.ContextMenu.ContextMenu-center > div > div:nth-child(1)',
     createReferenceSidePanelIsActive: '#app > div.content > div > div > aside.side-panel.create-reference.is-active',
     createReferenceSidePanelSelect: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > select',

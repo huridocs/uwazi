@@ -204,7 +204,7 @@ describe('Text', () => {
       expect(wrapper.wrap).toHaveBeenCalledWith(elementWrapper('3'), 'restoredRange');
     });
 
-    fit('should unwrap references that are passed by propertyRange in multiple calls', () => {
+    it('should unwrap references that are passed by propertyRange in multiple calls', () => {
       const firstReferneces = [
         { _id: '1', range: { start: 1, end: 2 } },
         { _id: '2', range: { start: 3, end: 4 } }

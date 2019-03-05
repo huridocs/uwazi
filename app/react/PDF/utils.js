@@ -2,7 +2,7 @@ import PDFJS from './PDFJS';
 
 const PDFUtils = {
   extractPDFInfo: pdfFile => new Promise((resolve) => {
-    PDFJS.getDocument(pdfFile)
+    PDFJS.getDocument(pdfFile).promise
     .then((pdf) => {
       const pages = [];
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
@@ -27,17 +27,21 @@ const PDFUtils = {
 
   extractPageInfo: page => new Promise((resolve) => {
     const textLayerDiv = document.createElement('div');
-
-    textLayerDiv.addEventListener('textlayerrendered', () => {
-      resolve(textLayerDiv.innerText.length);
-    });
-
     textLayerDiv.className = 'textLayer';
-    const textLayer = new PDFJS.DefaultTextLayerFactory().createTextLayerBuilder(textLayerDiv, null, page.getViewport(1), true);
+
     page.getTextContent({ normalizeWhitespace: true })
     .then((textContent) => {
-      textLayer.setTextContent(textContent);
-      textLayer.render();
+      const textLayer = PDFJS.renderTextLayer({
+        textContent,
+        container: textLayerDiv,
+        viewport: page.getViewport({
+          scale: 1
+        })
+      });
+
+      textLayer.promise.then(() => {
+        resolve(textLayerDiv.innerText.length);
+      });
     });
   })
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
-import {DragAndDropItem} from '../DragAndDropItem';
+import { shallow } from 'enzyme';
+import { DragAndDropItem } from '../DragAndDropItem';
 
 describe('DragAndDropItem', () => {
   describe('react component', () => {
@@ -8,8 +8,8 @@ describe('DragAndDropItem', () => {
     let props;
     beforeEach(() => {
       props = {
-        connectDragSource: jasmine.createSpy('connectDragSource').and.callFake((value) => value),
-        connectDropTarget: jasmine.createSpy('connectDropTarget').and.callFake((value) => value),
+        connectDragSource: jasmine.createSpy('connectDragSource').and.callFake(value => value),
+        connectDropTarget: jasmine.createSpy('connectDropTarget').and.callFake(value => value),
         index: 1,
         isDragging: false,
         id: 1,
@@ -17,7 +17,7 @@ describe('DragAndDropItem', () => {
       };
     });
 
-    let render = () => {
+    const render = () => {
       component = shallow(<DragAndDropItem {...props} />);
     };
 

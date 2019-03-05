@@ -1,101 +1,91 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
+import 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
-import fs from 'fs';
+import relationships from 'api/relationships';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
-import fixtures, { entityId, entityIdEn, entityIdPt, toDeleteId, attachmentToEdit } from './fixtures';
+import fixtures, { entityId, entityIdEn, entityIdPt, attachmentToDelete, attachmentToEdit } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import paths from '../../config/paths';
+import attachments from '../attachments';
 
 describe('Attachments Routes', () => {
   let routes;
   let originalAttachmentsPath;
 
-  function testRouteResponse(URL, req, expected, done) {
-    routes.get(URL, req)
-    .then((response) => {
-      expect(response).toBe(expected);
-      done();
-    })
-    .catch(catchErrors(done));
-  }
+  const testRouteResponse = async (URL, req, expected) => {
+    const response = await routes.get(URL, req);
+    expect(response).toBe(expected);
+  };
 
-  beforeEach((done) => {
+  beforeEach(async () => {
     spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachmentsPath;
     routes = instrumentRoutes(attachmentsRoutes);
 
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await db.clearAllAndLoad(fixtures);
   });
 
   afterEach(() => {
     paths.attachmentsPath = originalAttachmentsPath;
   });
 
-  afterAll((done) => {
-    db.disconnect().then(done);
-  });
+  afterAll(async () => db.disconnect());
 
   describe('/attachment/file', () => {
-    it('should send the requested existing file', (done) => {
+    it('should send the requested existing file', async () => {
       paths.attachmentsPath = `${__dirname}/uploads/`;
       const expected = `sendFile:${paths.attachmentsPath}mockfile.doc`;
-      testRouteResponse('/api/attachment/:file', { params: { file: 'mockfile.doc' } }, expected, done);
+      await testRouteResponse('/api/attachment/:file', { params: { file: 'mockfile.doc' } }, expected);
     });
 
-    it('should redirect to no_preview if file doesnt exist', (done) => {
-      testRouteResponse('/api/attachment/:file', { params: { file: 'missing.jpg' } }, 'redirect:/public/no-preview.png', done);
+    it('should redirect to no_preview if file doesnt exist', async () => {
+      await testRouteResponse('/api/attachment/:file', { params: { file: 'missing.jpg' } }, 'redirect:/public/no-preview.png');
     });
   });
 
   describe('/download', () => {
-    function expect404Error(req, res, done) {
-      routes.get('/api/attachments/download', req, res)
-      .then(() => {
-        done.fail('should fail');
-      })
-      .catch((error) => {
-        expect(error.code).toBe(404);
-        done();
-      });
-    }
+    const expect404Error = async (req, res) => {
+      let error;
+      try {
+        await routes.get('/api/attachments/download', req, res);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.code).toBe(404);
+    };
+
     it('should have a validation schema', () => {
       expect(routes.get.validation('/api/attachments/download')).toMatchSnapshot();
     });
-    it('should download the document with the title as file name (replacing extension with file ext)', (done) => {
+
+    it('should download the document with the title as file name (replacing extension with file ext)', async () => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
 
-      routes.get('/api/attachments/download', req, res)
-      .then(() => {
-        expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
-        paths.attachmentsPath = `${__dirname}/uploads/`;
-        return routes.get('/api/attachments/download', req, res);
-      })
-      .then(() => {
-        expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
-        done();
-      })
-      .catch(catchErrors(done));
+      await routes.get('/api/attachments/download', req, res);
+      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
+      paths.attachmentsPath = `${__dirname}/uploads/`;
+      await routes.get('/api/attachments/download', req, res);
+      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
     });
 
-    it('should fail when entity does not exists', (done) => {
+    it('should fail when entity does not exists', async () => {
       const nonExistentId = db.id();
       const req = { query: { _id: nonExistentId, file: 'match.doc' } };
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
 
-      expect404Error(req, res, done);
+      await expect404Error(req, res);
     });
 
-    it('should fail when attachment does not exist', (done) => {
+    it('should fail when attachment does not exist', async () => {
       const req = { query: { _id: entityId, file: 'nonExisting.doc' } };
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
 
-      expect404Error(req, res, done);
+      await expect404Error(req, res);
     });
   });
 
@@ -119,58 +109,73 @@ describe('Attachments Routes', () => {
       expect(routes.post.validation('/api/attachments/upload')).toMatchSnapshot();
     });
 
-    it('should add the uploaded file to attachments, add current timestamp and return the attachment, including its new ID', (done) => {
+    it('should add the uploaded file to attachments, add current timestamp and return the attachment, including its new ID', async () => {
       spyOn(Date, 'now').and.returnValue(1000);
-      routes.post('/api/attachments/upload', req)
-      .then(addedFile => Promise.all([addedFile, entities.getById(req.body.entityId)]))
-      .then(([addedFile, dbEntity]) => {
-        expect(dbEntity.attachments[2].filename).toEqual(file.filename);
-        expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
-        expect(dbEntity.attachments[2].timestamp).toBe(1000);
-        expect(addedFile.filename).toBe('mockfile.doc');
-        expect(addedFile._id).toBeDefined();
-        expect(addedFile._id.toString()).toBe(dbEntity.attachments[2]._id.toString());
-        done();
-      })
-      .catch(catchErrors(done));
+      const addedFile = await routes.post('/api/attachments/upload', req);
+      const dbEntity = await entities.getById(req.body.entityId);
+
+      expect(dbEntity.attachments[2].filename).toEqual(file.filename);
+      expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
+      expect(dbEntity.attachments[2].timestamp).toBe(1000);
+      expect(addedFile.filename).toBe('mockfile.doc');
+      expect(addedFile._id).toBeDefined();
+      expect(addedFile._id.toString()).toBe(dbEntity.attachments[2]._id.toString());
     });
 
-    it('should add the uploaded file to all shared entities and return the file, including its new ID', (done) => {
+    it('should add the uploaded file to all shared entities and return the file, including its new ID', async () => {
       req.body.allLanguages = 'true';
       spyOn(Date, 'now').and.returnValue(1000);
 
-      routes.post('/api/attachments/upload', req)
-      .then(addedFile => Promise.all([addedFile, entities.get({ sharedId: 'sharedId' })]))
-      .then(([addedFile, dbEntities]) => {
-        const dbEntity = dbEntities.find(e => e._id.toString() === entityId.toString());
-        const dbEntityEn = dbEntities.find(e => e._id.toString() === entityIdEn.toString());
-        const dbEntityPt = dbEntities.find(e => e._id.toString() === entityIdPt.toString());
+      const addedFile = await routes.post('/api/attachments/upload', req);
+      const dbEntities = await entities.get({ sharedId: 'sharedId' });
 
-        expect(dbEntity.attachments.length).toBe(3);
-        expect(dbEntity.attachments[2].filename).toBe(file.filename);
-        expect(dbEntity.attachments[2].originalname).toBe(file.originalname);
-        expect(dbEntity.attachments[2]._id.toString()).toBe(addedFile._id.toString());
-        expect(dbEntity.attachments[2].timestamp).toBe(1000);
-        expect(addedFile.filename).toBe('mockfile.doc');
+      const dbEntity = dbEntities.find(e => e._id.toString() === entityId.toString());
+      const dbEntityEn = dbEntities.find(e => e._id.toString() === entityIdEn.toString());
+      const dbEntityPt = dbEntities.find(e => e._id.toString() === entityIdPt.toString());
 
-        expect(dbEntityEn.attachments.length).toBe(2);
-        expect(dbEntityEn.attachments[0].filename).toBe('otherEn.doc');
-        expect(dbEntityEn.file.filename).toBe('filenameEn');
-        expect(dbEntityEn.attachments[1].filename).toBe(file.filename);
-        expect(dbEntityEn.attachments[1].originalname).toBe(file.originalname);
-        expect(dbEntityEn.attachments[1]._id.toString()).not.toBe(addedFile._id.toString());
-        expect(dbEntityEn.attachments[1].timestamp).toBe(1000);
+      expect(dbEntity.attachments.length).toBe(3);
 
-        expect(dbEntityPt.attachments.length).toBe(1);
-        expect(dbEntityPt.file.filename).toBe('filenamePt');
-        expect(dbEntityPt.attachments[0].filename).toBe(file.filename);
-        expect(dbEntityPt.attachments[0].originalname).toBe(file.originalname);
-        expect(dbEntityPt.attachments[0]._id.toString()).not.toBe(addedFile._id.toString());
-        expect(dbEntityPt.attachments[0].timestamp).toBe(1000);
+      expect(dbEntity.attachments[2]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          _id: addedFile._id,
+          timestamp: 1000
+        })
+      );
 
-        done();
-      })
-      .catch(catchErrors(done));
+      expect(dbEntity.attachments[2]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          _id: addedFile._id,
+          timestamp: 1000
+        })
+      );
+
+      expect(dbEntityEn.attachments.length).toBe(2);
+      expect(dbEntityEn.attachments[0].filename).toBe('otherEn.doc');
+      expect(dbEntityEn.file.filename).toBe('filenameEn');
+
+      expect(dbEntityEn.attachments[1]._id.toString()).not.toBe(addedFile._id.toString());
+      expect(dbEntityEn.attachments[1]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          timestamp: 1000
+        })
+      );
+
+      expect(dbEntityPt.attachments.length).toBe(1);
+      expect(dbEntityPt.file.filename).toBe('filenamePt');
+      expect(dbEntityPt.attachments[0]._id.toString()).not.toBe(addedFile._id.toString());
+      expect(dbEntityPt.attachments[0]).toEqual(
+        expect.objectContaining({
+          filename: file.filename,
+          originalname: file.originalname,
+          timestamp: 1000
+        })
+      );
     });
   });
 
@@ -189,55 +194,38 @@ describe('Attachments Routes', () => {
       expect(routes.post.validation('/api/attachments/rename')).toMatchSnapshot();
     });
 
-    it('should rename a specific attachment', (done) => {
-      routes.post('/api/attachments/rename', req)
-      .then((response) => {
-        expect(response._id.toString()).toBe(attachmentToEdit.toString());
-        expect(response.filename).toBe('match.doc');
-        expect(response.originalname).toBe('edited name');
+    it('should rename a specific attachment', async () => {
+      const response = await routes.post('/api/attachments/rename', req);
+      expect(response._id.toString()).toBe(attachmentToEdit.toString());
+      expect(response.filename).toBe('match.doc');
+      expect(response.originalname).toBe('edited name');
 
-        return entities.getById(req.body.entityId);
-      })
-      .then((entity) => {
-        expect(entity.file.originalname).toBe('source doc');
-        expect(entity.attachments[0].originalname).toBe('o1');
-        expect(entity.attachments[1].originalname).toBe('edited name');
-        done();
-      });
+      const entity = await entities.getById(req.body.entityId);
+      expect(entity.file.originalname).toBe('source doc');
+      expect(entity.attachments[0].originalname).toBe('o1');
+      expect(entity.attachments[1].originalname).toBe('edited name');
     });
 
-    it('should rename the base file if id matches entity', (done) => {
+    it('should rename the base file if id matches entity', async () => {
       req.body._id = entityId.toString();
       req.body.originalname = 'edited source name';
 
-      routes.post('/api/attachments/rename', req)
-      .then((response) => {
-        expect(response._id.toString()).toBe(entityId.toString());
-        expect(response.filename).toBe('filename');
-        expect(response.originalname).toBe('edited source name');
+      const response = await routes.post('/api/attachments/rename', req);
+      expect(response._id.toString()).toBe(entityId.toString());
+      expect(response.filename).toBe('filename');
+      expect(response.originalname).toBe('edited source name');
 
-        return entities.getById(req.body.entityId);
-      })
-      .then((entity) => {
-        expect(entity.file.originalname).toBe('edited source name');
-        expect(entity.attachments[0].originalname).toBe('o1');
-        expect(entity.attachments[1].originalname).toBe('common name 2.not');
-        done();
-      });
+      const entity = await entities.getById(req.body.entityId);
+      expect(entity.file.originalname).toBe('edited source name');
+      expect(entity.attachments[0].originalname).toBe('o1');
+      expect(entity.attachments[1].originalname).toBe('common name 2.not');
     });
   });
 
   describe('/delete', () => {
-    let req;
-
-    beforeEach((done) => {
-      req = { user: 'admin', headers: {}, query: { entityId: toDeleteId, filename: 'toDelete.txt' } };
-      fs.writeFile(`${paths.attachmentsPath}toDelete.txt`, 'dummy file', (err) => {
-        if (err) {
-          done.fail(err);
-        }
-        done();
-      });
+    beforeEach(async () => {
+      spyOn(relationships, 'deleteTextReferences').and.returnValue(Promise.resolve());
+      spyOn(attachments, 'delete').and.returnValue(Promise.resolve('response'));
     });
 
     it('should have a validation schema', () => {
@@ -245,48 +233,17 @@ describe('Attachments Routes', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes.delete('/api/attachments/delete', { query: { entityId: 'a' } })).toNeedAuthorization();
+      expect(routes._delete('/api/attachments/delete', { query: { attachmentId: attachmentToDelete } })).toNeedAuthorization();
     });
 
-    it('should remove the passed file from attachments and delte the local file', (done) => {
-      expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
-      routes.delete('/api/attachments/delete', req)
-      .then(response => Promise.all([response, entities.getById(req.query.entityId)]))
-      .then(([response, dbEntity]) => {
-        expect(response._id.toString()).toBe(toDeleteId.toString());
-        expect(response.attachments.length).toBe(1);
-        expect(dbEntity.attachments.length).toBe(1);
-        expect(dbEntity.attachments[0].filename).toBe('other.doc');
-        expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(false);
-        done();
-      })
-      .catch(done.fail);
-    });
+    it('should call attachments delete and respond the result', async () => {
+      const response = await routes.delete('/api/attachments/delete', {
+        user: 'admin',
+        headers: {},
+        query: { attachmentId: entityId },
+      });
 
-    it('should not delte the local file if other siblings are using it', (done) => {
-      expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
-      const sibling = { sharedId: toDeleteId.toString(), attachments: [{ filename: 'toDelete.txt', originalname: 'common name 1.not' }] };
-      entities.saveMultiple([sibling])
-      .then(() => routes.delete('/api/attachments/delete', req))
-      .then(response => Promise.all([response, entities.getById(req.query.entityId)]))
-      .then(([response, dbEntity]) => {
-        expect(response._id.toString()).toBe(toDeleteId.toString());
-        expect(dbEntity.attachments.length).toBe(1);
-        expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
-        done();
-      })
-      .catch(done.fail);
-    });
-
-    it('should not fail if, for some reason, file doesnt exist', (done) => {
-      expect(fs.existsSync(`${paths.attachmentsPath}toDelete.txt`)).toBe(true);
-      fs.unlinkSync(`${paths.attachmentsPath}toDelete.txt`);
-      routes.delete('/api/attachments/delete', req)
-      .then((response) => {
-        expect(response.error).toBeDefined();
-        done();
-      })
-      .catch(done.fail);
+      expect(response).toBe('response');
     });
   });
 });

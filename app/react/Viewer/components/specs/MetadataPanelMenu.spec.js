@@ -1,23 +1,23 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
-import {MetadataPanelMenu} from '../MetadataPanelMenu';
-import {MenuButtons} from 'app/ContextMenu';
+import { MenuButtons } from 'app/ContextMenu';
+import { MetadataPanelMenu } from '../MetadataPanelMenu';
 
 describe('MetadataPanelMenu', () => {
   let component;
   let props;
 
-  let render = () => {
+  const render = () => {
     component = shallow(<MetadataPanelMenu {...props}/>);
   };
 
   describe('when document is not being edited', () => {
     it('should open viewReferencesPanel on click references button', () => {
       props = {
-        doc: Immutable.fromJS({_id: 1}),
-        templates: Immutable.fromJS({templates: 'tempaltes'}),
+        doc: Immutable.fromJS({ _id: 1 }),
+        templates: Immutable.fromJS({ templates: 'tempaltes' }),
         loadInReduxForm: jasmine.createSpy('loadInReduxForm')
       };
       render();
@@ -30,29 +30,29 @@ describe('MetadataPanelMenu', () => {
   describe('when document is being edited', () => {
     it('should submit documentForm form', () => {
       props = {
-        docForm: {_id: 1},
-        doc: Immutable.fromJS({_id: 1}),
-        templates: {templates: 'tempaltes'},
+        docForm: { _id: 1 },
+        doc: Immutable.fromJS({ _id: 1 }),
+        templates: { templates: 'tempaltes' },
         saveDocument: jasmine.createSpy('saveDocument'),
-        formState: {dirty: false}
+        formState: { dirty: false }
       };
       render();
 
-      let button = component.find(MenuButtons.Main).find('button');
+      const button = component.find(MenuButtons.Main).find('button');
       expect(button.props().form).toBe('metadataForm');
     });
 
     describe('when form is pristine', () => {
       it('should disable the buttons', () => {
         props = {
-          docForm: {_id: 1},
-          formState: {dirty: false}
+          docForm: { _id: 1 },
+          formState: { dirty: false }
         };
         render();
 
-        let mainButton = component.find(MenuButtons.Main);
+        const mainButton = component.find(MenuButtons.Main);
         expect(mainButton.props().disabled).toBe(true);
-        let submitButton = component.find(MenuButtons.Main).find('button');
+        const submitButton = component.find(MenuButtons.Main).find('button');
         expect(submitButton.props().disabled).toBe(true);
       });
     });
@@ -60,14 +60,14 @@ describe('MetadataPanelMenu', () => {
     describe('when form is dirty', () => {
       it('should not disable the buttons', () => {
         props = {
-          docForm: {_id: 1},
-          formState: {dirty: true}
+          docForm: { _id: 1 },
+          formState: { dirty: true }
         };
         render();
 
-        let mainButton = component.find(MenuButtons.Main);
+        const mainButton = component.find(MenuButtons.Main);
         expect(mainButton.props().disabled).toBe(false);
-        let submitButton = mainButton.find('button');
+        const submitButton = mainButton.find('button');
         expect(submitButton.props().disabled).toBe(false);
       });
     });

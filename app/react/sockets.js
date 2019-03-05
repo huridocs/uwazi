@@ -1,7 +1,7 @@
-import { store } from './store';
 import { actions } from 'app/BasicReducer';
-import socket from './socket';
 import { t, Translate } from 'app/I18N';
+import { store } from './store';
+import socket from './socket';
 
 socket.on('templateChange', (template) => {
   store.dispatch(actions.update('templates', template));

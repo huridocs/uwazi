@@ -91,7 +91,7 @@ export default function () {
               query: term,
               fields,
               boost: 2
-          }
+            }
         });
 
         baseQuery.highlight = {

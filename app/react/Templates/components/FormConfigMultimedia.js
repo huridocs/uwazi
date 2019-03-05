@@ -53,12 +53,12 @@ class FormConfigMultimedia extends Component {
           </Field>
         </div>
 
-        {helpText &&
-          <div className="protip">
-            <i className="fa fa-lightbulb-o"/>
-            <span>{helpText}</span>
-          </div>
-        }
+        {helpText && (
+        <div className="protip">
+          <i className="fa fa-lightbulb-o"/>
+          <span>{helpText}</span>
+        </div>
+)}
 
         <PropertyConfigOption label="Hide label" model={`template.data.properties[${index}].noLabel`}>
           <Tip>This property will be shown without the label.</Tip>
@@ -66,16 +66,16 @@ class FormConfigMultimedia extends Component {
         <PropertyConfigOption label="Full width" model={`template.data.properties[${index}].fullWidth`}>
           <Tip>This property will be shown using all the width available.</Tip>
         </PropertyConfigOption>
-        {canBeRequired &&
-          <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
-            <Tip>You won&#39;t be able to save a document if this property is empty.</Tip>
-          </PropertyConfigOption>
-        }
-        {canShowInCard &&
-          <PropertyConfigOption label="Show in cards" model={`template.data.properties[${index}].showInCard`}>
-            <Tip>This property will appear in the library cards as part of the basic info.</Tip>
-          </PropertyConfigOption>
-        }
+        {canBeRequired && (
+        <PropertyConfigOption label="Required property" model={`template.data.properties[${index}].required`}>
+          <Tip>You won&#39;t be able to save a document if this property is empty.</Tip>
+        </PropertyConfigOption>
+)}
+        {canShowInCard && (
+        <PropertyConfigOption label="Show in cards" model={`template.data.properties[${index}].showInCard`}>
+          <Tip>This property will appear in the library cards as part of the basic info.</Tip>
+        </PropertyConfigOption>
+)}
 
         {canSetStyle && style(index)}
       </div>

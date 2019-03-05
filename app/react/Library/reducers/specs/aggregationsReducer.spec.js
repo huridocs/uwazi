@@ -9,7 +9,7 @@ describe('aggregationsReducer', () => {
 
   describe('when state is undefined', () => {
     it('returns initial', () => {
-      let newState = aggregationsReducer();
+      const newState = aggregationsReducer();
       expect(newState).toEqual(initialState);
     });
   });
@@ -18,7 +18,7 @@ describe('aggregationsReducer', () => {
     it('should set the properties', () => {
       const state = Immutable.fromJS({});
 
-      let newState = aggregationsReducer(state, actions.initializeFiltersForm({aggregations: 'aggregations'}));
+      const newState = aggregationsReducer(state, actions.initializeFiltersForm({ aggregations: 'aggregations' }));
       expect(newState).toBe('aggregations');
     });
   });

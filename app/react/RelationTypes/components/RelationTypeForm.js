@@ -45,7 +45,8 @@ export class RelationTypeForm extends Component {
                           return (
                             <div className="validation-error">
                               <Icon icon="exclamation-triangle" /> Duplicated name
-                            </div>);
+                            </div>
+);
                         }
                       })()}
                 </Field>

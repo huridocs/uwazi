@@ -1,10 +1,11 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { PDFJS } from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
+import Immutable from 'immutable';
+// import { PDFJS } from '../../../../../node_modules/pdfjs-dist/web/pdf_viewer.js';
+import PDFJS from '../../PDFJS';
 
 import PDF from '../PDF';
 import PDFPage from '../PDFPage.js';
-import Immutable from 'immutable';
 
 describe('PDF', () => {
   let component;
@@ -14,7 +15,7 @@ describe('PDF', () => {
   let props;
 
   beforeEach(() => {
-    spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdfObject));
+    spyOn(PDFJS, 'getDocument').and.returnValue({ promise: Promise.resolve(pdfObject) });
     props = {
       file: 'file_url',
       filename: 'original.pdf',

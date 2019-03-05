@@ -43,8 +43,8 @@ describe('scroller', () => {
       //firstLi.style.height	= '120px';
 
       //jsdom mock
-      ul.getBoundingClientRect = () => ({top: 8});
-      secondLi.getBoundingClientRect = () => ({top: 128});
+      ul.getBoundingClientRect = () => ({ top: 8 });
+      secondLi.getBoundingClientRect = () => ({ top: 128 });
 
       expect(scroller.isVisible('li:nth-child(2)', 'ul')).toBe(false);
       cleanDom();
@@ -57,8 +57,8 @@ describe('scroller', () => {
       //ul.scrollTop = 50;
 
       //jsdom mock
-      ul.getBoundingClientRect = () => ({top: 8});
-      firstLi.getBoundingClientRect = () => ({top: -28});
+      ul.getBoundingClientRect = () => ({ top: 8 });
+      firstLi.getBoundingClientRect = () => ({ top: -28 });
 
       expect(scroller.isVisible('li:nth-child(1)', 'ul')).toBe(false);
       cleanDom();
@@ -82,7 +82,7 @@ describe('scroller', () => {
   describe('to()', () => {
     it('should scroll the parent to make the element visible', (done) => {
       firstLi.style.height	= '120px';
-      scroller.to('li:nth-child(2)', 'ul', {duration: 0});
+      scroller.to('li:nth-child(2)', 'ul', { duration: 0 });
       window.setTimeout(() => {
         expect(scroller.isVisible('li:nth-child(2)', 'ul')).toBe(true);
         cleanDom();

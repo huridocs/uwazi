@@ -3,9 +3,9 @@ import { shallow } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 import { Form } from 'react-redux-form';
 
+import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
 import FiltersFromProperties from '../FiltersFromProperties';
 
-import { FiltersForm, mapStateToProps } from 'app/Library/components/FiltersForm';
 
 describe('FiltersForm', () => {
   let component;

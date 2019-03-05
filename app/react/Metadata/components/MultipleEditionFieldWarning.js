@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {getField} from 'react-redux-form';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { getField } from 'react-redux-form';
 import { Icon } from 'UI';
 
 export class MultipleEditionFieldWarning extends Component {
@@ -19,12 +19,12 @@ MultipleEditionFieldWarning.propTypes = {
 };
 
 export const mapStateToProps = (state, props) => {
-  const fieldState = getField(state, props.model + '.' + props.field) || {pristine: true};
+  const fieldState = getField(state, `${props.model}.${props.field}`) || { pristine: true };
   let touched = !fieldState.pristine;
   if (fieldState.$form) {
     touched = !fieldState.$form.pristine;
   }
-  return {touched};
+  return { touched };
 };
 
 export default connect(mapStateToProps)(MultipleEditionFieldWarning);

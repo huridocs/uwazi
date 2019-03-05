@@ -5,11 +5,25 @@ import React, { Component } from 'react';
 
 import { Select } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
+import { Warning } from 'app/Layout';
+import { Translate } from 'app/I18N';
 import PropertyConfigOptions from './PropertyConfigOptions';
 
 export class FormConfigSelect extends Component {
   static contentValidation() {
     return { required: val => val.trim() !== '' };
+  }
+
+  componentDidMount() {
+    this.initialContent = this.props.data.properties[this.props.index].content;
+  }
+
+  componentWillReceiveProps(newProps) {
+    const newContent = newProps.data.properties[newProps.index].content;
+    this.warning = false;
+    if (this.initialContent !== newContent) {
+      this.warning = true;
+    }
   }
 
   render() {
@@ -39,6 +53,13 @@ export class FormConfigSelect extends Component {
 
         <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
           <label>{t('System', 'Select list')}<span className="required">*</span></label>
+          {this.warning && (
+          <Warning inline>
+            <Translate>
+                All entities and documents that have already this property assigned will loose its current value
+            </Translate>
+          </Warning>
+)}
           <Select
             model={`template.data.properties[${index}].content`}
             options={options}

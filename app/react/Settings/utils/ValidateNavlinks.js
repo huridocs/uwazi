@@ -1,5 +1,5 @@
 export default function (links) {
-  let validator = {
+  const validator = {
     '': {}
   };
 
@@ -8,7 +8,7 @@ export default function (links) {
       if (!form.links[index]) {
         return true;
       }
-      let title = form.links[index].title;
+      const { title } = form.links[index];
       return Boolean(title && String(title).trim().length);
     };
   });

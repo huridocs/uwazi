@@ -19,7 +19,7 @@ const extractAdditionalOptions = (content, match) => {
     }
   }
 
-  return {options, matchString};
+  return { options, matchString };
 };
 
 export default {
@@ -28,7 +28,7 @@ export default {
     const options = [];
     let content = originalText || '';
 
-    const params = values.map(match => {
+    const params = values.map((match) => {
       const additionalOptions = extractAdditionalOptions(content, match);
       options.push(additionalOptions.options);
       content = content.replace(`${listEscape}(${match})${additionalOptions.matchString}`, listPlaceholder);
@@ -36,6 +36,6 @@ export default {
       return urlParams ? urlParams[0] : '';
     });
 
-    return {params, content, options};
+    return { params, content, options };
   }
 };

@@ -39,14 +39,18 @@ class Footer extends Component {
           </NeedAuthorization>
           {(() => {
               if (!this.props.user._id) {
-                return (<li className="footer-nav_item">
-                  <I18NLink to="/login">{t('System', 'Login')}</I18NLink>
-                        </li>);
+                return (
+                  <li className="footer-nav_item">
+                    <I18NLink to="/login">{t('System', 'Login')}</I18NLink>
+                  </li>
+);
               }
 
-              return (<li className="footer-nav_item">
-                <I18NLink to="/settings">{t('System', 'Settings')}</I18NLink>
-                      </li>);
+              return (
+                <li className="footer-nav_item">
+                  <I18NLink to="/settings">{t('System', 'Settings')}</I18NLink>
+                </li>
+);
             })()}
 
         </ul>

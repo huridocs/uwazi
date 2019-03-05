@@ -147,11 +147,11 @@ export default class MultiSelect extends Component {
         </span>
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
-          {option.options &&
-            <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
-              <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
-            </span>
-          }
+          {option.options && (
+          <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
+            <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
+          </span>
+)}
         </span>
       </label>
     );

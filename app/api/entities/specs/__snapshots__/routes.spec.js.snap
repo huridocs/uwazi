@@ -124,6 +124,9 @@ Object {
                 "",
               ],
               "type": "string",
+              "valids": Array [
+                null,
+              ],
             },
             "label": Object {
               "invalids": Array [
@@ -503,9 +506,10 @@ Object {
         },
         "timestamp": Object {
           "invalids": Array [
-            "",
+            Infinity,
+            -Infinity,
           ],
-          "type": "string",
+          "type": "number",
         },
       },
       "type": "object",
@@ -520,6 +524,9 @@ Object {
             "",
           ],
           "type": "string",
+          "valids": Array [
+            null,
+          ],
         },
         "label": Object {
           "invalids": Array [

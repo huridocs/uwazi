@@ -20,7 +20,7 @@ export default (function () {
 
     const opener = p[1];
     const closer = p[2];
-    const iterator = new RegExp(format.length === 5 ? '[' + escape(opener + closer) + ']' : escape(opener) + '|' + escape(closer), 'g');
+    const iterator = new RegExp(format.length === 5 ? `[${escape(opener + closer)}]` : `${escape(opener)}|${escape(closer)}`, 'g');
     const results = [];
     let openTokens;
     let matchStartIndex;

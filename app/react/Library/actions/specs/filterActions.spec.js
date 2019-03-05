@@ -87,7 +87,12 @@ describe('filterActions', () => {
         libraryFilters: [],
         documentTypes: []
       });
-      expect(dispatch).toHaveBeenCalledWith(formActions.load('library.search', { searchTerm: '' }));
+      expect(dispatch).toHaveBeenCalledWith(formActions.load('library.search', {
+        searchTerm: '',
+        filters: {},
+        order: 'desc',
+        sort: 'creationDate',
+      }));
     });
 
     it('should perform a search with the filters reset', () => {

@@ -1,23 +1,23 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import t from '../I18N/t';
-import {createSelector} from 'reselect';
 
 const getTemplateInfo = createSelector(
-  (s) => s.templates,
+  s => s.templates,
   (s, p) => p.template,
   (templates, currentTemplate) => {
     let typeIndex;
-    let name = templates.reduce((result, template, index) => {
+    const name = templates.reduce((result, template, index) => {
       if (template.get('_id') === currentTemplate) {
-        typeIndex = 'btn-color btn-color-' + index;
+        typeIndex = `btn-color btn-color-${index}`;
         return template.get('name');
       }
       return result;
     }, '');
 
-    return {name, typeIndex};
+    return { name, typeIndex };
   }
 );
 

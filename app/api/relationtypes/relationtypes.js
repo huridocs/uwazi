@@ -44,7 +44,7 @@ const updateTranslation = (currentTemplate, template) => {
 
   context[template.name] = template.name;
 
-  return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context);
+  return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, 'Connection');
 };
 
 function _update(newTemplate) {

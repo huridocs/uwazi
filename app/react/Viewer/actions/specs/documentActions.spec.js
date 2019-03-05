@@ -5,15 +5,15 @@ import backend from 'fetch-mock';
 import Immutable from 'immutable';
 import api from 'app/utils/api';
 
-import { PDFUtils } from '../../../PDF/';
 import { mockID } from 'shared/uniqueID.js';
 import documents from 'app/Documents';
 import { APIURL } from 'app/config.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import * as actions from '../documentActions';
-import * as types from '../actionTypes';
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from 'app/Relationships';
+import * as actions from '../documentActions';
+import * as types from '../actionTypes';
+import { PDFUtils } from '../../../PDF';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);

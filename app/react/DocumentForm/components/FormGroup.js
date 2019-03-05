@@ -14,7 +14,7 @@ const FormGroup = (props) => {
   );
 };
 
-let childrenType = PropTypes.oneOfType([
+const childrenType = PropTypes.oneOfType([
   PropTypes.object,
   PropTypes.array
 ]);

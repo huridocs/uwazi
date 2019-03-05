@@ -1,6 +1,6 @@
 import api from 'app/Thesauris/ThesaurisAPI';
-import {actions as formActions} from 'react-redux-form';
-import {actions} from 'app/BasicReducer';
+import { actions as formActions } from 'react-redux-form';
+import { actions } from 'app/BasicReducer';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 
 export function editThesauri(thesauri) {
@@ -33,7 +33,7 @@ export function checkThesauriCanBeDeleted(thesauri) {
 export function reloadThesauris() {
   return function (dispatch) {
     return api.get()
-    .then(response => {
+    .then((response) => {
       dispatch(actions.set('thesauris', response));
     });
   };

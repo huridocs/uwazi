@@ -103,7 +103,8 @@ export class Languages extends Component {
                 {!language.default ? this.setAsDeafultButton(language) : ''}
                 {!language.default ? this.deleteButton(language) : ''}
               </div>
-            </li>))}
+            </li>
+))}
         </ul>
         <div className="panel-heading">{t('System', 'Available Languages')}</div>
         <ul className="list-group document-types">

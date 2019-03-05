@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { Icon } from 'UI';
 import { addReference, saveTargetRangedReference } from '../actions/referencesActions';
 import { cancelTargetDocument } from '../actions/documentActions';
-import { Icon } from 'UI';
 
 export class TargetDocumentHeader extends Component {
   save(connection, targetRange) {

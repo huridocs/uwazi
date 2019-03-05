@@ -1,6 +1,6 @@
 import React from 'react';
-import {actions as formActions} from 'react-redux-form';
-import {shallow} from 'enzyme';
+import { actions as formActions } from 'react-redux-form';
+import { shallow } from 'enzyme';
 
 import NewTemplate from 'app/Templates/NewTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
@@ -13,16 +13,16 @@ describe('NewTemplate', () => {
   let component;
   let instance;
   let context;
-  let thesauris = [{label: '1'}, {label: '2'}];
-  let templates = [{name: 'Comic'}, {name: 'Newspaper'}];
-  let relationTypes = [{name: 'Friend'}, {name: 'Family'}];
+  const thesauris = [{ label: '1' }, { label: '2' }];
+  const templates = [{ name: 'Comic' }, { name: 'Newspaper' }];
+  const relationTypes = [{ name: 'Friend' }, { name: 'Family' }];
 
   beforeEach(() => {
-    context = {store: {dispatch: jasmine.createSpy('dispatch')}};
+    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
     spyOn(templatesAPI, 'get').and.returnValue(templates);
     spyOn(thesaurisAPI, 'get').and.returnValue(thesauris);
     spyOn(relationTypesAPI, 'get').and.returnValue(relationTypes);
-    component = shallow(<NewTemplate />, {context});
+    component = shallow(<NewTemplate />, { context });
     instance = component.instance();
   });
 
@@ -46,11 +46,11 @@ describe('NewTemplate', () => {
   describe('setReduxState()', () => {
     it('should call setThesauri with thesauri passed', () => {
       spyOn(formActions, 'reset').and.returnValue('reset');
-      instance.setReduxState({thesauris: 'thesauris', templates: 'templates', relationTypes: 'relationTypes'});
+      instance.setReduxState({ thesauris: 'thesauris', templates: 'templates', relationTypes: 'relationTypes' });
       expect(context.store.dispatch).toHaveBeenCalledWith('reset');
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'thesauris/SET', value: 'thesauris'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'templates/SET', value: 'templates'});
-      expect(context.store.dispatch).toHaveBeenCalledWith({type: 'relationTypes/SET', value: 'relationTypes'});
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'thesauris/SET', value: 'thesauris' });
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'templates/SET', value: 'templates' });
+      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'relationTypes/SET', value: 'relationTypes' });
     });
   });
 });

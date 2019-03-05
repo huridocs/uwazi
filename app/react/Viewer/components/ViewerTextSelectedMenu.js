@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {addToToc} from '../actions/documentActions';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import {actions as connectionsActions} from 'app/Connections';
-import {openPanel} from 'app/Viewer/actions/uiActions';
+import { actions as connectionsActions } from 'app/Connections';
+import { openPanel } from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
+import { addToToc } from '../actions/documentActions';
 
 export class ViewerTextSelectedMenu extends Component {
   showPanel(type) {
@@ -19,21 +19,27 @@ export class ViewerTextSelectedMenu extends Component {
     return (
       <div className={this.props.active ? 'active' : ''}>
         <ShowIf if={this.props.hasRelationTypes}>
-          <div className="btn btn-primary"
-               onClick={this.showPanel.bind(this, 'targetRanged')}>
+          <div
+            className="btn btn-primary"
+            onClick={this.showPanel.bind(this, 'targetRanged')}
+          >
             <span className="ContextMenu-tooltip">Connect to a paragraph</span>
             <Icon icon="paragraph" />
           </div>
         </ShowIf>
         <ShowIf if={this.props.hasRelationTypes}>
-          <div className="btn btn-primary"
-               onClick={this.showPanel.bind(this, 'ranged')} >
+          <div
+            className="btn btn-primary"
+            onClick={this.showPanel.bind(this, 'ranged')}
+          >
             <span className="ContextMenu-tooltip">Connect to a document</span>
             <Icon icon="file" />
           </div>
         </ShowIf>
-        <div className="btn btn-primary"
-             onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}>
+        <div
+          className="btn btn-primary"
+          onClick={this.props.addToToc.bind(null, this.props.reference.toJS())}
+        >
           <span className="ContextMenu-tooltip">Add to table of contents</span>
           <Icon icon="font" />
         </div>
@@ -52,7 +58,7 @@ ViewerTextSelectedMenu.propTypes = {
   hasRelationTypes: PropTypes.bool
 };
 
-function mapStateToProps({documentViewer, relationTypes}) {
+function mapStateToProps({ documentViewer, relationTypes }) {
   return {
     doc: documentViewer.doc,
     reference: documentViewer.uiState.get('reference'),

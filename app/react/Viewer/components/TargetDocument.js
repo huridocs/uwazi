@@ -1,12 +1,12 @@
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { setTargetSelection, unsetTargetSelection } from 'app/Viewer/actions/selectionActions';
+import { highlightReference, selectReference } from 'app/Viewer/actions/uiActions';
 import { selectTargetDoc, selectTargetReferences } from '../selectors';
 
 import Document from './Document';
 import TargetDocumentHeader from './TargetDocumentHeader';
-import { setTargetSelection, unsetTargetSelection } from 'app/Viewer/actions/selectionActions';
-import { highlightReference, selectReference } from 'app/Viewer/actions/uiActions';
 
 const mapStateToProps = (state) => {
   const { documentViewer } = state;

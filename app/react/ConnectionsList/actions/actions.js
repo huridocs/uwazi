@@ -1,21 +1,21 @@
-import {actions} from 'app/BasicReducer';
-import {actions as formActions} from 'react-redux-form';
-import {notify} from 'app/Notifications';
+import { actions } from 'app/BasicReducer';
+import { actions as formActions } from 'react-redux-form';
+import { notify } from 'app/Notifications';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
-import {fromJS as Immutable} from 'immutable';
-import {get as prioritySortingCriteria} from 'app/utils/prioritySortingCriteria';
+import { fromJS as Immutable } from 'immutable';
+import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
 
 import * as uiActions from 'app/Entities/actions/uiActions';
 
 export function search(params) {
-  const {entityId, sort, filters} = params;
+  const { entityId, sort, filters } = params;
 
   const searchTerm = params.search && params.search.searchTerm ? params.search.searchTerm.value : '';
 
   let options = Immutable(sort);
   if (filters) {
-    options = filters.merge(sort).merge({searchTerm});
+    options = filters.merge(sort).merge({ searchTerm });
   }
 
   return referencesAPI.search(entityId, options.toJS());
@@ -25,7 +25,7 @@ export function searchReferences() {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     return search(relationshipsList)
-    .then(results => {
+    .then((results) => {
       dispatch(actions.set('relationships/list/searchResults', results));
       dispatch(uiActions.showTab('connections'));
     });
@@ -35,15 +35,13 @@ export function searchReferences() {
 export function connectionsChanged() {
   return function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
-    const {entityId} = relationshipsList;
+    const { entityId } = relationshipsList;
 
     return referencesAPI.getGroupedByConnection(entityId)
-    .then(connectionsGroups => {
-      const filteredTemplates = connectionsGroups.reduce((templateIds, group) => {
-        return templateIds.concat(group.templates.map(t => t._id.toString()));
-      }, []);
+    .then((connectionsGroups) => {
+      const filteredTemplates = connectionsGroups.reduce((templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())), []);
 
-      const sortOptions = prioritySortingCriteria({currentCriteria: relationshipsList.sort, filteredTemplates, templates: getState().templates});
+      const sortOptions = prioritySortingCriteria({ currentCriteria: relationshipsList.sort, filteredTemplates, templates: getState().templates });
       return Promise.all([connectionsGroups, sortOptions]);
     })
     .then(([connectionsGroups, sort]) => {

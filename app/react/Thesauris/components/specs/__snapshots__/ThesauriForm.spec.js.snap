@@ -70,6 +70,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
         </li>
         <ThesauriFormField
           index={0}
+          key="0"
           moveToGroup={[Function]}
           moving={false}
           removeValue={[Function]}
@@ -90,6 +91,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
         />
         <ThesauriFormField
           index={1}
+          key="1"
           moveToGroup={[Function]}
           moving={false}
           removeValue={[Function]}

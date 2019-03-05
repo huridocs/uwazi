@@ -16,11 +16,11 @@ import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { Icon } from 'UI';
 
+import * as viewerModule from 'app/Viewer';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 
-import * as viewerModule from 'app/Viewer';
 
 export class DocumentSidePanel extends Component {
   constructor(props) {
@@ -117,33 +117,39 @@ export class DocumentSidePanel extends Component {
               })()}
               {(() => {
                 if (!this.props.raw) {
-                  return (<li>
-                    <TabLink to="text-search">
-                      <SnippetsTab storeKey={this.props.storeKey} />
-                    </TabLink>
-                          </li>);
+                  return (
+                    <li>
+                      <TabLink to="text-search">
+                        <SnippetsTab storeKey={this.props.storeKey} />
+                      </TabLink>
+                    </li>
+);
                 }
               })()}
               {(() => {
                 if (!isEntity && !this.props.raw) {
-                  return (<li>
-                    <TabLink to="toc">
-                      <Icon icon="font" />
-                      <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
-                    </TabLink>
-                          </li>);
+                  return (
+                    <li>
+                      <TabLink to="toc">
+                        <Icon icon="font" />
+                        <span className="tab-link-tooltip">{t('System', 'Table of Content')}</span>
+                      </TabLink>
+                    </li>
+);
                 }
                 return <span/>;
               })()}
               {(() => {
                 if (!isEntity && !this.props.raw) {
-                  return (<li>
-                    <TabLink to="references">
-                      <Icon icon="sitemap" />
-                      <span className="connectionsNumber">{references.size}</span>
-                      <span className="tab-link-tooltip">{t('System', 'References')}</span>
-                    </TabLink>
-                          </li>);
+                  return (
+                    <li>
+                      <TabLink to="references">
+                        <Icon icon="sitemap" />
+                        <span className="connectionsNumber">{references.size}</span>
+                        <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                      </TabLink>
+                    </li>
+);
                 }
                 return <span/>;
               })()}
@@ -161,13 +167,15 @@ export class DocumentSidePanel extends Component {
               </li>
               {(() => {
                 if (!isTargetDoc && !excludeConnectionsTab) {
-                  return (<li>
-                    <TabLink to="connections">
-                      <Icon icon="exchange-alt" />
-                      <span className="connectionsNumber">{summary.totalConnections}</span>
-                      <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                    </TabLink>
-                  </li>);
+                  return (
+                    <li>
+                      <TabLink to="connections">
+                        <Icon icon="exchange-alt" />
+                        <span className="connectionsNumber">{summary.totalConnections}</span>
+                        <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                      </TabLink>
+                    </li>
+);
                 }
               })()}
             </ul>
