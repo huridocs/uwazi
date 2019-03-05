@@ -22,8 +22,6 @@ export class SemanticSearchSidePanel extends Component {
 
     this.onSubmit = this.onSubmit.bind(this);
     this.submitForm = this.submitForm.bind(this);
-    this.showMainPage = this.showMainPage.bind(this);
-    this.showNewSearchPage = this.showNewSearchPage.bind(this);
     this.onSearchUpdated = this.onSearchUpdated.bind(this);
 
     socket.on('semanticSearchUpdated', this.onSearchUpdated);
