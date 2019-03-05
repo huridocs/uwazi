@@ -1,7 +1,6 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import Immutable from 'immutable';
 
 import { DocumentSidePanel } from 'app/Documents';
 import { actions as actionCreators } from 'app/BasicReducer';

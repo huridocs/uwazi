@@ -24,6 +24,10 @@ export const mapStateToProps = (state) => {
   if (documentViewer.targetDoc.get('_id')) {
     doc = documentViewer.targetDoc;
   }
+  const semanticDoc = state.semanticSearch.selectedDocument;
+  if (!semanticDoc.isEmpty() && semanticDoc.get('sharedId') === doc.get('sharedId')) {
+    doc = doc.set('semanticSearch', semanticDoc.get('semanticSearch'));
+  }
 
   const tocForm = documentViewer.tocForm || [];
 
