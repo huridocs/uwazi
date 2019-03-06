@@ -92,3 +92,40 @@ Array [
   },
 ]
 `;
+
+exports[`semanticSearch processSearchLimit should return the updated search and processed documents 1`] = `
+Object {
+  "processedDocuments": Array [
+    "doc2",
+    "doc3",
+  ],
+  "updatedSearch": Object {
+    "_id": "5c7fd5c95384d63cb752766f",
+    "documents": Array [
+      Object {
+        "sharedId": "doc1",
+        "status": "completed",
+      },
+      Object {
+        "sharedId": "doc2",
+        "status": "completed",
+      },
+      Object {
+        "sharedId": "doc3",
+        "status": "completed",
+      },
+      Object {
+        "sharedId": "doc4",
+        "status": "completed",
+      },
+      Object {
+        "sharedId": "doc5",
+        "status": "pending",
+      },
+    ],
+    "language": "en",
+    "searchTerm": "injustice",
+    "status": "inProgress",
+  },
+}
+`;

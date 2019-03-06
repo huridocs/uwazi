@@ -5,19 +5,25 @@ Array [
   Array [
     "update",
     Object {
-      "status": "inProgress",
+      "updatedSearch": Object {
+        "status": "inProgress",
+      },
     },
   ],
   Array [
     "update",
     Object {
-      "status": "inProgress",
+      "updatedSearch": Object {
+        "status": "inProgress",
+      },
     },
   ],
   Array [
     "update",
     Object {
-      "status": "completed",
+      "updatedSearch": Object {
+        "status": "completed",
+      },
     },
   ],
   Array [
@@ -48,13 +54,17 @@ Array [
   Array [
     "update",
     Object {
-      "status": "inProgress",
+      "updatedSearch": Object {
+        "status": "inProgress",
+      },
     },
   ],
   Array [
     "update",
     Object {
-      "status": "stopped",
+      "updatedSearch": Object {
+        "status": "stopped",
+      },
     },
   ],
   Array [
