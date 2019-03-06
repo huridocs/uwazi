@@ -211,6 +211,8 @@ const allowedRoute = (user = {}, url) => {
 };
 
 function routeMatch(req, res, location, languages) {
+  createStore({ user: req.user });
+
   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
     if (redirectLocation) {
       return handleRedirect(res, redirectLocation);
