@@ -19,6 +19,7 @@ export class SemanticSearchSidePanel extends Component {
   constructor(props) {
     super(props);
 
+    this.registeredForUpdates = false;
     this.onSubmit = this.onSubmit.bind(this);
     this.submitForm = this.submitForm.bind(this);
     this.onSearchUpdated = this.onSearchUpdated.bind(this);
@@ -27,10 +28,11 @@ export class SemanticSearchSidePanel extends Component {
   }
 
   componentDidMount() {
-    if (!this.props.searches.size) {
-      this.props.fetchSearches();
+    if (!this.registeredForUpdates) {
       this.props.registerForUpdates();
+      this.registeredForUpdates = true;
     }
+    this.props.fetchSearches();
   }
 
   componentWillUnmount() {
