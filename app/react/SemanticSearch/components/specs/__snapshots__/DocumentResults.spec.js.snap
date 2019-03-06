@@ -5,22 +5,57 @@ exports[`DocumentResults render should render a result 1`] = `
   <div
     className="view"
   >
+    <div
+      className="item-info"
+    >
+      <div>
+        <Icon
+          className="item-icon item-icon-center"
+        />
+        <h1
+          className="item-name"
+        >
+          <Connect(DocumentLanguage)
+            doc={
+              Immutable.Map {
+                "semanticSearch": Immutable.Map {
+                  "results": Immutable.List [
+                    Immutable.Map {
+                      "score": 9,
+                    },
+                    Immutable.Map {
+                      "score": 11,
+                    },
+                  ],
+                },
+                "avgScore": 10,
+              }
+            }
+          />
+        </h1>
+      </div>
+      <Connect(TemplateLabel) />
+    </div>
     <dl
       className="metadata-type-text"
     >
       <dt
         className="item-header"
       >
-        Threshold
+        <Connect(Translate)>
+          Threshold
+        </Connect(Translate)>
+         
+        0.3
       </dt>
       <dd>
-        <input
-          max="1"
-          min="0"
+        <NumericRangeSlide
+          max={1}
+          min={0}
           onChange={[Function]}
-          step="0.01"
-          type="range"
-          value={0.2}
+          prefix=""
+          step={0.01}
+          value={0.3}
         />
       </dd>
     </dl>
@@ -28,7 +63,9 @@ exports[`DocumentResults render should render a result 1`] = `
       className="metadata-type-numeric"
     >
       <dt>
-        Sentences above threshold
+        <Connect(Translate)>
+          Sentences above threshold
+        </Connect(Translate)>
       </dt>
       <dd>
         1
@@ -38,7 +75,9 @@ exports[`DocumentResults render should render a result 1`] = `
       className="metadata-type-numeric"
     >
       <dt>
-        Average sentence score
+        <Connect(Translate)>
+          Average sentence score
+        </Connect(Translate)>
       </dt>
       <dd />
     </dl>
@@ -74,5 +113,16 @@ exports[`DocumentResults render should render a result 1`] = `
       }
     }
   />
+  <div
+    className="view"
+  >
+    <dl>
+      <Connect(I18NLink)
+        to="/entity/undefined"
+      >
+        More sentences in the document
+      </Connect(I18NLink)>
+    </dl>
+  </div>
 </React.Fragment>
 `;

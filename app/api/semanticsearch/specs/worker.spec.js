@@ -1,6 +1,5 @@
 import Worker from '../worker';
 import semanticSearch from '../semanticSearch';
-import db from 'api/utils/testing_db';
 
 describe('worker', () => {
   beforeEach(() => {
@@ -11,9 +10,9 @@ describe('worker', () => {
   describe('start', () => {
     it('should process documents in the search in batches and emit event when done', (done) => {
       jest.spyOn(semanticSearch, 'processSearchLimit')
-      .mockResolvedValueOnce({ status: 'inProgress' })
-      .mockResolvedValueOnce({ status: 'inProgress' })
-      .mockResolvedValueOnce({ status: 'completed' });
+      .mockResolvedValueOnce({ updatedSearch: { status: 'inProgress' } })
+      .mockResolvedValueOnce({ updatedSearch: { status: 'inProgress' } })
+      .mockResolvedValueOnce({ updatedSearch: { status: 'completed' } });
 
       const searchId = 'search';
       const batchSize = 5;
@@ -29,9 +28,9 @@ describe('worker', () => {
     });
     it('should emit update event after each batch is processed', (done) => {
       jest.spyOn(semanticSearch, 'processSearchLimit')
-      .mockResolvedValueOnce({ status: 'inProgress' })
-      .mockResolvedValueOnce({ status: 'inProgress' })
-      .mockResolvedValueOnce({ status: 'completed' });
+      .mockResolvedValueOnce({ updatedSearch: { status: 'inProgress' } })
+      .mockResolvedValueOnce({ updatedSearch: { status: 'inProgress' } })
+      .mockResolvedValueOnce({ updatedSearch: { status: 'completed' } });
 
       const worker = new Worker('search', 5);
       jest.spyOn(worker, 'emit');
@@ -45,8 +44,8 @@ describe('worker', () => {
     });
     it('should stop processing when search status is stopped and emit stopped event', (done) => {
       jest.spyOn(semanticSearch, 'processSearchLimit')
-      .mockResolvedValueOnce({ status: 'inProgress' })
-      .mockResolvedValueOnce({ status: 'stopped' });
+      .mockResolvedValueOnce({ updatedSearch: { status: 'inProgress' } })
+      .mockResolvedValueOnce({ updatedSearch: { status: 'stopped' } });
 
       const worker = new Worker('searchStop', 5);
       jest.spyOn(worker, 'emit');
@@ -65,9 +64,9 @@ describe('worker', () => {
     it('should stop processing when error occurs and emit error event', (done) => {
       const error = new Error('error');
       jest.spyOn(semanticSearch, 'processSearchLimit')
-      .mockResolvedValueOnce({ status: 'inProgress' })
+      .mockResolvedValueOnce({ updatedSearch: { status: 'inProgress' } })
       .mockRejectedValueOnce(error)
-      .mockResolvedValueOnce({ status: 'completed' });
+      .mockResolvedValueOnce({ updatedSearch: { status: 'completed' } });
 
       const worker = new Worker('search', 5);
       worker.start();

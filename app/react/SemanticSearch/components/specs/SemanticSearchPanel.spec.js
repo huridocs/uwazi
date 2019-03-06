@@ -43,7 +43,8 @@ describe('SemanticSearchPanel', () => {
     };
     return {
       ...mapStateToProps(state, initialProps),
-      ...mapDispatchToProps(dispatch)
+      ...mapDispatchToProps(dispatch),
+      open: true
     };
   };
   const render = () => shallow(<SemanticSearchSidePanel {...getProps()} />);
@@ -66,13 +67,5 @@ describe('SemanticSearchPanel', () => {
     const component = render();
     component.find('.new-search').simulate('click');
     expect(component.update()).toMatchSnapshot();
-  });
-  describe('when on new search form', () => {
-    it('should go back to search list page when the cancel button is clicked', () => {
-      const component = render();
-      component.setState({ page: 'new' });
-      component.find('.cancel-search').simulate('click');
-      expect(component.update()).toMatchSnapshot();
-    });
   });
 });
