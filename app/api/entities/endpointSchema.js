@@ -27,7 +27,7 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
 ));
 
 const iconSchema = Joi.object().keys({
-  _id: Joi.string(),
+  _id: Joi.string().allow(null),
   label: Joi.string(),
   type: Joi.string()
 });
