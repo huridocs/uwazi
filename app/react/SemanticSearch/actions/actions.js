@@ -74,7 +74,6 @@ export function updateSearch(updatedSearch) {
 export function addSearchResults(newDocs) {
   return (dispatch, getState) => {
     const currentSearch = getState().semanticSearch.search;
-    console.log('current results', currentSearch.toJS().results);
     const newResults = currentSearch.update('results', existingDocs =>
       newDocs.reduce((updatedDocs, newDoc) => {
         if (!updatedDocs.find(d => newDoc._id === d.get('_id'))) {
@@ -83,7 +82,6 @@ export function addSearchResults(newDocs) {
         return updatedDocs;
       }, existingDocs)
     );
-    console.log('new results', newResults);
     dispatch(actions.set('semanticSearch/search', newResults));
   };
 }

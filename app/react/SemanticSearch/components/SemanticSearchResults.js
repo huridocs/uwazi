@@ -31,9 +31,9 @@ export class SemanticSearchResults extends Component {
     Boolean(nextProps.searchTerm !== this.props.searchTerm);
   }
 
-  // componentWillUnmount() {
-  //   socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
-  // }
+  componentWillUnmount() {
+    socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
+  }
 
   onSearchUpdated({ updatedSearch, docs }) {
     if (updatedSearch._id === this.props.searchId) {
