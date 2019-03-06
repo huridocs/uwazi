@@ -18,6 +18,10 @@ const filtersSchema = new mongoose.Schema({
   items: mongoose.Schema.Types.Mixed
 });
 
+const featuresSchema = new mongoose.Schema({
+  semanticSearch: Boolean
+});
+
 const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
@@ -31,6 +35,7 @@ const settingsSchema = new mongoose.Schema({
   analyticsTrackingId: String,
   matomoConfig: String,
   dateFormat: String,
+  features: featuresSchema,
   custom: mongoose.Schema.Types.Mixed,
   sync: mongoose.Schema.Types.Mixed,
   customCSS: String
