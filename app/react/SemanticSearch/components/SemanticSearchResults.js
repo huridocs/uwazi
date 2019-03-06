@@ -9,8 +9,8 @@ import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import { selectSemanticSearchDocument, addSearchResults } from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
-import ResultsSidePanel from './ResultsSidePanel';
 import { Translate } from 'app/I18N';
+import ResultsSidePanel from './ResultsSidePanel';
 
 
 const sentencesAboveThreshold = (item, threshold) => item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
@@ -23,9 +23,6 @@ export class SemanticSearchResults extends Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    // this.onSearchUpdated = this.onSearchUpdated.bind(this);
-
-    // socket.on('semanticSearchUpdated', this.onSearchUpdated);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -70,38 +67,38 @@ export class SemanticSearchResults extends Component {
     const { items, isEmpty, searchTerm } = this.props;
     return (
       <div className="row panels-layout">
-        { isEmpty &&
-          <React.Fragment>
-            <p>Search not found</p>
-            <Helmet title="Semantic search not found" />
-          </React.Fragment>
-        }
-        { !isEmpty &&
-          <React.Fragment>
-            <Helmet title={`${searchTerm} - Semantic search results`} />
-            <main className="semantic-search-results-viewer document-viewer with-panel">
-              <h3>
-                <Translate>Semantic search</Translate>: { searchTerm }
-              </h3>
-              <div className="documents-counter">
-                <span className="documents-counter-label">
-                  <b>{ items.size }</b> <Translate>documents</Translate>
-                </span>
-              </div>
-              <RowList>
-                {items.map((doc, index) => (
-                  <Doc
-                    doc={doc}
-                    key={index}
-                    onClick={this.onClick}
-                    additionalText={this.renderAditionalText(doc)}
-                  />
+        { isEmpty && (
+        <React.Fragment>
+          <p>Search not found</p>
+          <Helmet title="Semantic search not found" />
+        </React.Fragment>
+)}
+        { !isEmpty && (
+        <React.Fragment>
+          <Helmet title={`${searchTerm} - Semantic search results`} />
+          <main className="semantic-search-results-viewer document-viewer with-panel">
+            <h3>
+              <Translate>Semantic search</Translate>: { searchTerm }
+            </h3>
+            <div className="documents-counter">
+              <span className="documents-counter-label">
+                <b>{ items.size }</b> <Translate>documents</Translate>
+              </span>
+            </div>
+            <RowList>
+              {items.map((doc, index) => (
+                <Doc
+                  doc={doc}
+                  key={index}
+                  onClick={this.onClick}
+                  additionalText={this.renderAditionalText(doc)}
+                />
                 ))}
-              </RowList>
-            </main>
-            <ResultsSidePanel />
-          </React.Fragment>
-        }
+            </RowList>
+          </main>
+          <ResultsSidePanel />
+        </React.Fragment>
+)}
       </div>
     );
   }

@@ -14,7 +14,7 @@ export class Menu extends Component {
     const { searchTerm } = this.props.location.query;
     const params = processFilters(this.props.librarySearch, this.props.libraryFilters.toJS());
     params.searchTerm = searchTerm;
-    return `/library/${encodeSearch(params)}&semantic-search=true`;
+    return `/library/${encodeSearch(params)}`;
   }
 
   uploadsUrl() {
