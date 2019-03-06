@@ -13,8 +13,27 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
     <main
       className="semantic-search-results-viewer document-viewer with-panel"
     >
-      <div>
+      <h3>
+        <Connect(Translate)>
+          Semantic search
+        </Connect(Translate)>
+        : 
         query
+      </h3>
+      <div
+        className="documents-counter"
+      >
+        <span
+          className="documents-counter-label"
+        >
+          <b>
+            1
+          </b>
+           
+          <Connect(Translate)>
+            documents
+          </Connect(Translate)>
+        </span>
       </div>
       <RowList
         zoomLevel={0}
@@ -87,8 +106,27 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
     <main
       className="semantic-search-results-viewer document-viewer with-panel"
     >
-      <div>
+      <h3>
+        <Connect(Translate)>
+          Semantic search
+        </Connect(Translate)>
+        : 
         query
+      </h3>
+      <div
+        className="documents-counter"
+      >
+        <span
+          className="documents-counter-label"
+        >
+          <b>
+            2
+          </b>
+           
+          <Connect(Translate)>
+            documents
+          </Connect(Translate)>
+        </span>
       </div>
       <RowList
         zoomLevel={0}
@@ -209,7 +247,27 @@ exports[`SemanticSearchResults when the search is empty should render not found 
     <main
       className="semantic-search-results-viewer document-viewer with-panel"
     >
-      <div />
+      <h3>
+        <Connect(Translate)>
+          Semantic search
+        </Connect(Translate)>
+        : 
+      </h3>
+      <div
+        className="documents-counter"
+      >
+        <span
+          className="documents-counter-label"
+        >
+          <b>
+            0
+          </b>
+           
+          <Connect(Translate)>
+            documents
+          </Connect(Translate)>
+        </span>
+      </div>
       <RowList
         zoomLevel={0}
       />

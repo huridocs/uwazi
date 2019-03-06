@@ -3,6 +3,7 @@
 exports[`SemanticSearchPanel should render SearchList with searches from the state 1`] = `
 <SidePanel
   className="metadata-sidepanel semantic-search"
+  open={true}
 >
   <button
     className="closeSidepanel close-modal"
@@ -76,6 +77,7 @@ exports[`SemanticSearchPanel should render SearchList with searches from the sta
 exports[`SemanticSearchPanel should render new search form when search button is clicked 1`] = `
 <SidePanel
   className="metadata-sidepanel semantic-search"
+  open={true}
 >
   <button
     className="closeSidepanel close-modal"
@@ -132,124 +134,6 @@ exports[`SemanticSearchPanel should render new search form when search button is
       <Connect(SearchList)
         searches={Array []}
       />
-    </ShowIf>
-  </div>
-</SidePanel>
-`;
-
-exports[`SemanticSearchPanel when on new search form should go back to search list page when the cancel button is clicked 1`] = `
-<SidePanel
-  className="metadata-sidepanel semantic-search"
-  open={true}
->
-  <ShowIf
-    if={false}
-  >
-    <div
-      className="sidepanel-footer"
-    >
-      <span
-        className="btn btn-danger cancel-search"
-        onClick={[Function]}
-      >
-        <Component
-          icon="times"
-        />
-        <span
-          className="btn-label"
-        >
-          Cancel
-        </span>
-      </span>
-      <button
-        className="btn btn-success start-search"
-        onClick={[Function]}
-      >
-        <Component
-          icon="search"
-        />
-        <span
-          className="btn-label"
-        >
-          Start search
-        </span>
-      </button>
-    </div>
-  </ShowIf>
-  <div
-    className="sidepanel-body"
-  >
-    <p
-      className="sidepanel-title"
-    >
-      Semantic search
-    </p>
-    <ShowIf
-      if={true}
-    >
-      <div
-        style={
-          Object {
-            "alignItems": "center",
-            "display": "flex",
-            "justifyContent": "center",
-            "marginBottom": 30,
-            "marginTop": 30,
-          }
-        }
-      >
-        <button
-          className="btn btn-default new-search"
-          onClick={[Function]}
-        >
-          Start new search
-        </button>
-      </div>
-    </ShowIf>
-    <ShowIf
-      if={true}
-    >
-      <Connect(SearchList)
-        searches={Array []}
-      />
-    </ShowIf>
-    <ShowIf
-      if={false}
-    >
-      <div>
-        <LocalForm
-          autoComplete="off"
-          getDispatch={[Function]}
-          initialState={Object {}}
-          model="searchText"
-          onSubmit={[Function]}
-        >
-          <div
-            className="search-box"
-          >
-            <div
-              className="input-group"
-            >
-              <Modeled(Connect(Field))
-                model=".searchTerm"
-              >
-                <Component
-                  icon="search"
-                />
-                <input
-                  autoComplete="off"
-                  className="form-control"
-                  placeholder="Search"
-                  type="text"
-                />
-                <Component
-                  icon="times"
-                />
-              </Modeled(Connect(Field))>
-            </div>
-          </div>
-        </LocalForm>
-      </div>
     </ShowIf>
   </div>
 </SidePanel>

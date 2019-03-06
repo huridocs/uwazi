@@ -1,6 +1,6 @@
 import React from 'react';
-import { DocumentResults } from '../DocumentResults';
 import { shallow } from 'enzyme';
+import { DocumentResults } from '../DocumentResults';
 
 describe('DocumentResults', () => {
   let props;
@@ -9,6 +9,8 @@ describe('DocumentResults', () => {
     props = {
       doc: { semanticSearch: { results: [{ score: 9 }, { score: 11 }] }, avgScore: 10 },
       filters: { threshold: 10 },
+      threshold: 0.3,
+      changeTreshhold: jasmine.createSpy('changeTreshhold'),
       selectTab: jasmine.createSpy('selectTab'),
       selectSnippet: jasmine.createSpy('selectSnippet')
     };

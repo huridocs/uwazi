@@ -12,7 +12,6 @@ describe('uiReducer', () => {
     suggestions: [],
     selectedDocuments: [],
     filtersPanel: false,
-    showSemanticSearchPanel: false,
     zoomLevel: 0
   });
 

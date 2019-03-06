@@ -9,6 +9,8 @@ import SnippetList from 'app/Documents/components/SnippetList';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { NumericRangeSlide } from 'app/Forms';
 import { actions } from 'app/BasicReducer';
+import { Icon } from 'app/Layout/Icon';
+import { TemplateLabel, DocumentLanguage } from 'app/Layout';
 
 const findResultsAboveThreshold = (results, threshold) => {
   const boundingIndex = results.findIndex(({ score }) => score < threshold);
@@ -70,6 +72,16 @@ export class DocumentResults extends Component {
     return (
       <React.Fragment>
         <div className="view">
+          <div className="item-info">
+            <div>
+              <Icon className="item-icon item-icon-center" data={doc.icon} />
+              <h1 className="item-name">
+                {doc.title}
+                <DocumentLanguage doc={Immutable.fromJS(doc)} />
+              </h1>
+            </div>
+            <TemplateLabel template={doc.template}/>
+          </div>
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
             <dt><Translate>Sentences above threshold</Translate></dt>
