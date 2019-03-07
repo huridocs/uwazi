@@ -10,6 +10,7 @@ describe('SemanticSearchAPI', () => {
   let deletedResponse = { _id: 'deleted' };
   let singleResponse = { _id: 'searchId' };
   let searchListResponse = [{ _id: 'search1' }, { _id: 'search2' }];
+  let okResponse = { ok: true };
   beforeEach(() => {
     searchId = 'searchId';
     backend.restore();
@@ -19,7 +20,9 @@ describe('SemanticSearchAPI', () => {
     .delete(APIURL + `semantic-search/${searchId}`, { body: JSON.stringify(deletedResponse) })
     .post(APIURL + `semantic-search/${searchId}/stop`, { body: JSON.stringify(stoppedResponse) })
     .post(APIURL + `semantic-search/${searchId}/resume`, { body: JSON.stringify(resumedResponse) })
-    .post(APIURL + 'semantic-search', { body: JSON.stringify(createdResponse) });
+    .post(APIURL + 'semantic-search', { body: JSON.stringify(createdResponse) })
+    .post(APIURL + 'semantic-search/notify-updates', { body: JSON.stringify(okResponse) })
+    ;
   });
 
   afterEach(() => {
@@ -88,6 +91,17 @@ describe('SemanticSearchAPI', () => {
       semanticSearchAPI.getAllSearches(searchId)
       .then((response) => {
         expect(response).toEqual(searchListResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('registerForUpdates', () => {
+    it('should request update notifications', (done) => {
+      semanticSearchAPI.registerForUpdates()
+      .then((response) => {
+        expect(response).toEqual(okResponse);
         done();
       })
       .catch(done.fail);

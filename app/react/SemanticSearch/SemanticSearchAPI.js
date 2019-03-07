@@ -27,10 +27,6 @@ export default {
     const url = `semantic-search/${searchId}/resume`;
     return api.post(url).then(response => response.json);
   },
-  getByDocument(sharedId) {
-    const url = `semantic-search/by-document/${sharedId}`;
-    return api.get(url).then(response => response.json);
-  },
   registerForUpdates() {
     const url = 'semantic-search/notify-updates';
     return api.post(url).then(response => response.json);
