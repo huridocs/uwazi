@@ -23,8 +23,6 @@ app.use(require('webpack-dev-middleware')(compiler, {
 
 app.use(require('webpack-hot-middleware')(compiler));
 
-// TEMP RTL
-
 app.get('/CSS/:file', (req, res) => {
   const request = httpRequest.request({ host: 'localhost', port: 8080, path: `/${req.params.file}` }, (response) => {
     let data = '';
@@ -33,23 +31,21 @@ app.get('/CSS/:file', (req, res) => {
     });
     response.on('end', () => {
       if (req.query.rtl === 'true') {
-        console.log('Processing RTL...');
+        process.stdout.write('Processing RTL...\r\n');
         data = rtlcss.process(data);
-        console.log('Done!');
+        process.stdout.write('Done!\r\n');
       } else {
-        console.log('Using standard CSS.');
+        process.stdout.write('Using standard CSS.\r\n');
       }
       res.end(data);
     });
   });
 
   request.on('error', (e) => {
-    console.log(e.message);
+    process.stdout.write(`${e.message}\r\n`);
   });
 
   request.end();
 });
-
-// -----------
 
 http.listen(8080);
