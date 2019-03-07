@@ -877,18 +877,15 @@ describe('entities', () => {
   });
 
   describe('removeLanguage()', () => {
-    it('should delete all entities from the language', (done) => {
+    it('should delete all entities from the language', async () => {
       spyOn(search, 'deleteLanguage');
       spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
-      entities.addLanguage('ab')
-      .then(() => entities.removeLanguage('ab'))
-      .then(() => entities.get({ language: 'ab' }))
-      .then((newEntities) => {
-        expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
-        expect(newEntities.length).toBe(0);
-        done();
-      })
-      .catch(catchErrors(done));
+      await entities.addLanguage('ab');
+      await entities.removeLanguage('ab');
+      const newEntities = await entities.get({ language: 'ab' });
+
+      expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
+      expect(newEntities.length).toBe(0);
     });
   });
 });
