@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { I18NLink, t, actions } from 'app/I18N';
-import { Icon } from 'UI';
+import { Icon, DirectionAwareIcon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 
@@ -108,7 +108,7 @@ export class EditTranslationForm extends Component {
           </div>
           <div className="settings-footer">
             <I18NLink to="/settings/translations" className="btn btn-default">
-              <Icon icon="arrow-left" />
+              <DirectionAwareIcon icon="arrow-left" />
               <span className="btn-label">Back</span>
             </I18NLink>
             <button type="submit" className="btn btn-success save-template">

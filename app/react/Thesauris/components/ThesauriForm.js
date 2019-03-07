@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { I18NLink } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import { notEmpty } from 'app/Metadata/helpers/validator';
-import { Icon } from 'UI';
+import { Icon, DirectionAwareIcon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
@@ -140,7 +140,7 @@ export class ThesauriForm extends Component {
                   alt="move"
                   onClick={this.moveToGroup.bind(this, null)}
                 >
-                  <Icon icon="arrow-left" size="xs"/>
+                  <DirectionAwareIcon icon="arrow-left" size="xs"/>
                 </button>
               </li>
               {values.map((value, index) => (
@@ -159,7 +159,7 @@ export class ThesauriForm extends Component {
             </ul>
             <div className="settings-footer">
               <I18NLink to="/settings/dictionaries" className="btn btn-default">
-                <Icon icon="arrow-left" />
+                <DirectionAwareIcon icon="arrow-left" />
                 <span className="btn-label">Back</span>
               </I18NLink>
               <a className="btn btn-primary" onClick={this.props.addGroup}>
