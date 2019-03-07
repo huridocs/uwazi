@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { t, I18NLink } from 'app/I18N';
-import { Icon } from 'UI';
+import { DirectionAwareIcon as Icon } from 'UI';
 
 export class ViewDocButton extends Component {
   render() {
