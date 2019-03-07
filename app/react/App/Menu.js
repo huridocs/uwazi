@@ -22,6 +22,22 @@ export class Menu extends Component {
     return `/uploads/${encodeSearch(params)}`;
   }
 
+  renderSemanticSearchButton() {
+    if (!this.props.semanticSearch) {
+      return false;
+    }
+    return (
+      <NeedAuthorization roles={['admin']}>
+        <li className="menuNav-item">
+          <I18NLink onClick={this.props.showSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+            <Icon icon="flask" />
+            <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+          </I18NLink>
+        </li>
+      </NeedAuthorization>
+    );
+  }
+
   render() {
     const { links } = this.props;
     const user = this.props.user.toJS();
@@ -50,14 +66,7 @@ export class Menu extends Component {
         </li>
         <li className="menuActions">
           <ul className="menuNav-list">
-            <NeedAuthorization roles={['admin']}>
-              <li className="menuNav-item">
-                <I18NLink onClick={this.props.showSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
-                  <Icon icon="flask" />
-                  <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
-                </I18NLink>
-              </li>
-            </NeedAuthorization>
+            {this.renderSemanticSearchButton()}
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                 <Icon icon="th" />
@@ -102,6 +111,10 @@ export class Menu extends Component {
   }
 }
 
+Menu.defaultProps = {
+  semanticSearch: false,
+};
+
 Menu.propTypes = {
   user: PropTypes.object,
   location: PropTypes.object,
@@ -113,10 +126,12 @@ Menu.propTypes = {
   language: PropTypes.string,
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
+  semanticSearch: PropTypes.bool,
   links: PropTypes.object
 };
 
 export function mapStateToProps({ user, settings, library, uploads }) {
+  const features = settings.collection.toJS().features || {};
   return {
     user,
     librarySearch: library.search,
@@ -124,7 +139,8 @@ export function mapStateToProps({ user, settings, library, uploads }) {
     uploadsSearch: uploads.search,
     uploadsFilters: uploads.filters,
     uploadsSelectedSorting: uploads.selectedSorting,
-    links: settings.collection.get('links')
+    links: settings.collection.get('links'),
+    semanticSearch: features.semanticSearch
   };
 }
 
