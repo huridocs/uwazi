@@ -7,7 +7,7 @@ describe('determineDirection (LTR or RTL)', () => {
   });
 
   it('should return RTL for specific languages', () => {
-    expect(determineDirection({ language: 'ara' })).toBe('force-rtl');
+    expect(determineDirection({ language: 'arb' })).toBe('force-rtl');
     expect(determineDirection({ language: 'fas' })).toBe('force-rtl');
   });
 });

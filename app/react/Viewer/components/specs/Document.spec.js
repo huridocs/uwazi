@@ -47,7 +47,7 @@ describe('Document', () => {
     render();
     expect(component.find('.document').hasClass('force-ltr')).toBe(true);
 
-    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'ara' }));
+    props.doc = props.doc.set('file', Immutable.fromJS({ language: 'arb' }));
     render();
     expect(component.find('.document').hasClass('force-rtl')).toBe(true);
   });

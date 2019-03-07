@@ -96,11 +96,11 @@ describe('Viewer', () => {
     expect(component.find('pre').length).toBe(1);
   });
 
-  fit('should add the plain text direction', () => {
+  it('should add the plain text direction', () => {
     render();
     expect(component.find('pre').props().className).toBe('force-ltr');
 
-    props.doc = props.doc.set('file', Immutable({ language: 'ara' }));
+    props.doc = props.doc.set('file', Immutable({ language: 'arb' }));
     render();
     expect(component.find('pre').props().className).toBe('force-rtl');
 
