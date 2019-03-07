@@ -55,24 +55,6 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
             />
           </dd>
         </dl>
-        <dl
-          className="metadata-type-text"
-          key="Minimum relevant score"
-        >
-          <dt>
-            Minimum relevant score
-             
-          </dt>
-          <dd>
-            <NumericRangeSlide
-              max={100}
-              min={5}
-              model=".minRelevantScores"
-              prefix="minRelevantScores"
-              step={5}
-            />
-          </dd>
-        </dl>
       </div>
     </Connect(Form)>
   </div>

@@ -21,8 +21,7 @@ describe('SemanticSearchAPI', () => {
     .post(APIURL + `semantic-search/${searchId}/stop`, { body: JSON.stringify(stoppedResponse) })
     .post(APIURL + `semantic-search/${searchId}/resume`, { body: JSON.stringify(resumedResponse) })
     .post(APIURL + 'semantic-search', { body: JSON.stringify(createdResponse) })
-    .post(APIURL + 'semantic-search/notify-updates', { body: JSON.stringify(okResponse) })
-    ;
+    .post(APIURL + 'semantic-search/notify-updates', { body: JSON.stringify(okResponse) });
   });
 
   afterEach(() => {
