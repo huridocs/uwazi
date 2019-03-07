@@ -15,6 +15,7 @@ export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
     return Boolean(!is(this.props.doc, nextProps.doc)) ||
            Boolean(this.props.active !== nextProps.active) ||
+           Boolean(this.props.additionalText !== nextProps.additionalText) ||
            Boolean(this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort);
   }
 

@@ -26,7 +26,14 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
               <dl className="metadata-type-text" key={filter.label}>
                 <dt>{t('System', filter.label)} {filtersValues[filter.model]}</dt>
                 <dd>
-                  <NumericRangeSlide model={`.${filter.model}`} prefix={filter.model} min={filter.min} max={filter.max} step={filter.step} />
+                  <NumericRangeSlide
+                    delay={200}
+                    model={`.${filter.model}`}
+                    prefix={filter.model}
+                    min={filter.min}
+                    max={filter.max}
+                    step={filter.step}
+                  />
                 </dd>
               </dl>
             ))}

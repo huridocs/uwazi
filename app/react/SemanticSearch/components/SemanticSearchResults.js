@@ -30,6 +30,8 @@ export class SemanticSearchResults extends Component {
 
   shouldComponentUpdate(nextProps) {
     return Boolean(nextProps.items.size !== this.props.items.size) ||
+    Boolean(nextProps.filters.threshold !== this.props.filters.threshold) ||
+    Boolean(nextProps.filters.minRelevantSentences !== this.props.filters.minRelevantSentences) ||
     Boolean(nextProps.isEmpty !== this.props.isEmpty) ||
     Boolean(nextProps.searchTerm !== this.props.searchTerm);
   }
@@ -50,7 +52,7 @@ export class SemanticSearchResults extends Component {
 
   renderAditionalText(doc) {
     const results = doc.toJS().semanticSearch.results || [];
-    const { threshold } = this.props;
+    const { threshold } = this.props.filters;
     return (
       <div className="item-metadata">
         <dl className="metadata-type-text">
@@ -119,7 +121,7 @@ SemanticSearchResults.propTypes = {
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
   addSearchResults: PropTypes.func.isRequired,
-  threshold: PropTypes.number,
+  filters: PropTypes.object,
 };
 
 export const mapStateToProps = (state) => {
@@ -129,10 +131,11 @@ export const mapStateToProps = (state) => {
   const filters = state.semanticSearch.resultsFilters;
   const items = results ? filterItems(results, filters) : Immutable.fromJS([]);
   const isEmpty = Object.keys(search).length === 0;
+
   return {
     searchId: search.get('_id'),
     searchTerm,
-    threshold: filters.threshold,
+    filters,
     items,
     isEmpty
   };

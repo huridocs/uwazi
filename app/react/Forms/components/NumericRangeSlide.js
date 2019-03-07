@@ -17,6 +17,16 @@ export default class NumericRangeSlide extends Component {
   onChange(e) {
     const { value } = e.target;
     this.setState({ value });
+    const { delay } = this.props;
+    if (delay) {
+      clearTimeout(this.timeOut);
+      this.timeOut = setTimeout(() => {
+        this.props.onChange(value ? parseFloat(value) : null);
+      }, delay);
+
+      return;
+    }
+
     this.props.onChange(value ? parseFloat(value) : null);
   }
 
@@ -55,7 +65,8 @@ NumericRangeSlide.defaultProps = {
   step: 5,
   min: 0,
   max: 100,
-  prefix: ''
+  prefix: '',
+  delay: 0
 };
 
 NumericRangeSlide.propTypes = {
@@ -63,6 +74,7 @@ NumericRangeSlide.propTypes = {
   value: PropTypes.number,
   step: PropTypes.number,
   min: PropTypes.number,
+  delay: PropTypes.number,
   max: PropTypes.number,
   prefix: PropTypes.string,
 };

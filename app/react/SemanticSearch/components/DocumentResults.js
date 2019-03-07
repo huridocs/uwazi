@@ -7,8 +7,8 @@ import Immutable from 'immutable';
 import { Translate, I18NLink } from 'app/I18N';
 import SnippetList from 'app/Documents/components/SnippetList';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
-import { NumericRangeSlide } from 'app/Forms';
-import { actions } from 'app/BasicReducer';
+import { Form } from 'react-redux-form';
+import { NumericRangeSlide } from 'app/ReactReduxForms';
 import { Icon } from 'app/Layout/Icon';
 import { TemplateLabel, DocumentLanguage } from 'app/Layout';
 
@@ -18,23 +18,6 @@ const findResultsAboveThreshold = (results, threshold) => {
 };
 
 export class DocumentResults extends Component {
-  constructor(props) {
-    super(props);
-    this.onChangeTreshHold = this.onChangeTreshHold.bind(this);
-    this.state = { threshold: props.threshold };
-  }
-
-  onChangeTreshHold(threshold) {
-    this.setState({ threshold });
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-
-    this.timeout = setTimeout(() => {
-      this.props.changeTreshHold(threshold);
-    }, 500);
-  }
-
   renderSnippetsList(doc, snippets, documentViewUrl) {
     return (
       <SnippetList
@@ -51,10 +34,12 @@ export class DocumentResults extends Component {
     return (
       <dl className="metadata-type-text">
         <dt className="item-header">
-          <Translate>Threshold</Translate> {this.state.threshold}
+          <Translate>Threshold</Translate> {this.props.threshold}
         </dt>
         <dd>
-          <NumericRangeSlide min={0} max={1} step={0.01} value={this.state.threshold} onChange={this.onChangeTreshHold}/>
+          <Form model="semanticSearch.resultsFilters">
+            <NumericRangeSlide model=".threshold" min={0} max={1} step={0.01} delay={200} />
+          </Form>
         </dd>
       </dl>
     );
@@ -105,16 +90,15 @@ DocumentResults.propTypes = {
   doc: PropTypes.object.isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
-  changeTreshHold: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ semanticSearch }) => ({
-    threshold: semanticSearch.documentSentencesTreshold
+    threshold: semanticSearch.resultsFilters.threshold
 });
 
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ selectSnippet, changeTreshHold: actions.set.bind(null, 'semanticSearch/documentSentencesTreshold') }, dispatch);
+  return bindActionCreators({ selectSnippet }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentResults);

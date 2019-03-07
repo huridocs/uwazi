@@ -29,6 +29,7 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
           </dt>
           <dd>
             <NumericRangeSlide
+              delay={200}
               max={1}
               min={0.05}
               model=".threshold"
@@ -47,6 +48,7 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
           </dt>
           <dd>
             <NumericRangeSlide
+              delay={200}
               max={50}
               min={1}
               model=".minRelevantSentences"
