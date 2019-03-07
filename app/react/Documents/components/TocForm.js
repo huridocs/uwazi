@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Form, Field } from 'react-redux-form';
-import { Icon } from 'UI';
+import { Icon, DirectionAwareIcon } from 'UI';
 
 export class TocForm extends Component {
   render() {
@@ -11,10 +11,10 @@ export class TocForm extends Component {
           <div className={`toc-indent-${tocElement.indentation}`} key={index}>
             <div className="toc-edit">
               <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation - 1)} className="toc-indent-less btn btn-default">
-                <Icon icon="arrow-left" />
+                <DirectionAwareIcon icon="arrow-left" />
               </a>
               <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation + 1)} className="toc-indent-more btn btn-default">
-                <Icon icon="arrow-right" />
+                <DirectionAwareIcon icon="arrow-right" />
               </a>
               <Field model={`${this.props.model}[${index}].label`} >
                 <input className="form-control"/>
