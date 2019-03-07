@@ -9,9 +9,11 @@ import SidePanel from 'app/Layout/SidePanel';
 import { t } from 'app/I18N';
 
 const filters = [
-  { label: 'Threshold', model: 'threshold', min: 0.05, max: 1, step: 0.05 },
+  { label: 'Threshold', model: 'threshold', min: 0.3, max: 1, step: 0.05 },
   { label: 'Minimum relevant sentences', model: 'minRelevantSentences', min: 1, max: 50, step: 1 }
 ];
+
+const filterValue = (filter, filtersValues) => filter.model === 'threshold' ? `${filtersValues[filter.model] * 100}%` : filtersValues[filter.model];
 
 export function ResultsFiltersPanel({ open, filtersValues }) {
   return (
@@ -24,7 +26,7 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
           <div className="view">
             { filters.map(filter => (
               <dl className="metadata-type-text" key={filter.label}>
-                <dt>{t('System', filter.label)} {filtersValues[filter.model]}</dt>
+                <dt>{t('System', filter.label)} {filterValue(filter, filtersValues)}</dt>
                 <dd>
                   <NumericRangeSlide
                     delay={200}

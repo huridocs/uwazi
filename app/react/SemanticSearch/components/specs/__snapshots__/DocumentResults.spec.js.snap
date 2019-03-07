@@ -46,7 +46,8 @@ exports[`DocumentResults render should render a result 1`] = `
           Threshold
         </Connect(Translate)>
          
-        0.3
+        30
+         %
       </dt>
       <dd>
         <Connect(Form)
@@ -55,9 +56,9 @@ exports[`DocumentResults render should render a result 1`] = `
           <NumericRangeSlide
             delay={200}
             max={1}
-            min={0}
+            min={0.3}
             model=".threshold"
-            step={0.01}
+            step={0.05}
           />
         </Connect(Form)>
       </dd>
@@ -82,7 +83,10 @@ exports[`DocumentResults render should render a result 1`] = `
           Average sentence score
         </Connect(Translate)>
       </dt>
-      <dd />
+      <dd>
+        NaN
+        %
+      </dd>
     </dl>
   </div>
   <Connect(Component)
@@ -111,21 +115,11 @@ exports[`DocumentResults render should render a result 1`] = `
         "fullText": Immutable.List [
           Immutable.Map {
             "score": 9,
+            "text": "undefined (900.0%)",
           },
         ],
       }
     }
   />
-  <div
-    className="view"
-  >
-    <dl>
-      <Connect(I18NLink)
-        to="/entity/undefined"
-      >
-        More sentences in the document
-      </Connect(I18NLink)>
-    </dl>
-  </div>
 </React.Fragment>
 `;

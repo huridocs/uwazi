@@ -60,7 +60,8 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
                   Average sentence threshold
                 </dt>
                 <dd>
-                  0.43333333333333335
+                  43.3
+                  %
                 </dd>
               </dl>
             </div>
@@ -153,7 +154,8 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                   Average sentence threshold
                 </dt>
                 <dd>
-                  0.43333333333333335
+                  43.3
+                  %
                 </dd>
               </dl>
             </div>
@@ -201,7 +203,8 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                   Average sentence threshold
                 </dt>
                 <dd>
-                  0.3333333333333333
+                  33.3
+                  %
                 </dd>
               </dl>
             </div>

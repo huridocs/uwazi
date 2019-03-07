@@ -34,11 +34,11 @@ export class DocumentResults extends Component {
     return (
       <dl className="metadata-type-text">
         <dt className="item-header">
-          <Translate>Threshold</Translate> {this.props.threshold}
+          <Translate>Threshold</Translate> {this.props.threshold * 100} %
         </dt>
         <dd>
           <Form model="semanticSearch.resultsFilters">
-            <NumericRangeSlide model=".threshold" min={0} max={1} step={0.01} delay={200} />
+            <NumericRangeSlide model=".threshold" min={0.3} max={1} step={0.05} delay={200} />
           </Form>
         </dd>
       </dl>
@@ -51,7 +51,10 @@ export class DocumentResults extends Component {
       return false;
     }
     const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, this.props.threshold).sort((a, b) => a.score > b.score);
-    const snippetsToRender = filteredResults.slice(0, 50);
+    const snippetsToRender = filteredResults.slice(0, 50).map((s) => {
+      console.log(s.score);
+      return Object.assign({}, s, { text: `${s.text} (${(s.score * 100).toFixed(1)}%)` });
+    });
     const snippets = Immutable.fromJS({ count: snippetsToRender.length, metadata: [], fullText: snippetsToRender });
     const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
     return (
@@ -74,13 +77,10 @@ export class DocumentResults extends Component {
           </dl>
           <dl className="metadata-type-numeric">
             <dt><Translate>Average sentence score</Translate></dt>
-            <dd>{ doc.semanticSearch.averageScore }</dd>
+            <dd>{ (doc.semanticSearch.averageScore * 100).toFixed(1) }%</dd>
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}
-        <div className="view">
-          <dl><I18NLink to={documentViewUrl}>More sentences in the document</I18NLink></dl>
-        </div>
       </React.Fragment>
     );
   }

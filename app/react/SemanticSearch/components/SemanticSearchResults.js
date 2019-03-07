@@ -53,6 +53,7 @@ export class SemanticSearchResults extends Component {
   renderAditionalText(doc) {
     const results = doc.toJS().semanticSearch.results || [];
     const { threshold } = this.props.filters;
+    const averageScore = (results.reduce((total, r) => total + r.score, 0) / results.length * 100).toFixed(1);
     return (
       <div className="item-metadata">
         <dl className="metadata-type-text">
@@ -61,8 +62,7 @@ export class SemanticSearchResults extends Component {
         </dl>
         <dl className="metadata-type-text">
           <dt>Average sentence threshold</dt>
-          <dd>{results.reduce((total, r) => total + r.score, 0) / results.length}
-          </dd>
+          <dd>{averageScore}%</dd>
         </dl>
       </div>
     );
