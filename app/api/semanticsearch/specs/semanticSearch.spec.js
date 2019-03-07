@@ -141,6 +141,10 @@ describe('semanticSearch', () => {
 
       expect(theSearch.status).toBe('inProgress');
     });
+    it('should return the updated search and processed documents', async () => {
+      const res = await semanticSearch.processSearchLimit(search2Id, 2);
+      expect(res).toMatchSnapshot();
+    });
     it('should mark search as complete if all documents are processed', async () => {
       await semanticSearch.processSearchLimit(search2Id, 5);
       const theSearch = await model.getById(search2Id);

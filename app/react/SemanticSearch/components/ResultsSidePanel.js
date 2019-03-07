@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import ResultsFiltersPanel from './ResultsFiltersPanel';
 import DocumentResultsPanel from './DocumentResultsPanel';
 
-import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
-
 export function ResultsSidePanel() {
   return (
     <React.Fragment>

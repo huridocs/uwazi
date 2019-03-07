@@ -57,8 +57,7 @@ const removePageAnnotations = text => text.replace(/\[\[\d+\]\]/g, '');
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
   const { fullText } = doc;
-  
-  
+
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   if (!fullText) {
     return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
@@ -199,6 +198,7 @@ const getInProgress = async () => model.get({ status: IN_PROGRESS }).sort('-crea
 const getPending = async () => model.get({ status: PENDING }).sort('-creationDate');
 
 const semanticSearch = {
+  _id: Math.random(),
   create,
   processDocument,
   processSearchLimit,
