@@ -13,10 +13,13 @@ import { Translate } from 'app/I18N';
 import ResultsSidePanel from './ResultsSidePanel';
 
 
-const sentencesAboveThreshold = (item, threshold) => item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
+const sentencesAboveThreshold = (item, threshold) => {
+  const count = item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
+  return count >= 0 ? count : item.getIn(['semanticSearch', 'results']).size;
+};
 const filterItems = (items, { threshold, minRelevantSentences }) => items.filter((item) => {
   const aboveThreshold = sentencesAboveThreshold(item, threshold);
-  return item.getIn(['semanticSearch', 'averageScore']) >= threshold && aboveThreshold >= minRelevantSentences;
+  return aboveThreshold >= minRelevantSentences;
 });
 
 export class SemanticSearchResults extends Component {
