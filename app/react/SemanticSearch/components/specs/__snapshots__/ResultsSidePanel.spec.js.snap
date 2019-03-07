@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DocumentResults render should render a result 1`] = `
+<React.Fragment>
+  <Connect(ResultsFiltersPanel)
+    storeKey="library"
+  />
+  <Connect(Connect(DocumentSidePanel)) />
+</React.Fragment>
+`;

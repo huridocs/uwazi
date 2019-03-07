@@ -10,7 +10,7 @@ describe('DocumentResults', () => {
       doc: { semanticSearch: { results: [{ score: 9 }, { score: 11 }] }, avgScore: 10 },
       filters: { threshold: 10 },
       threshold: 0.3,
-      changeTreshhold: jasmine.createSpy('changeTreshhold'),
+      changeTreshHold: jasmine.createSpy('changeTreshhold'),
       selectTab: jasmine.createSpy('selectTab'),
       selectSnippet: jasmine.createSpy('selectSnippet')
     };
