@@ -8,14 +8,12 @@ import { NumericRangeSlide } from 'app/ReactReduxForms';
 import SidePanel from 'app/Layout/SidePanel';
 import { t } from 'app/I18N';
 
+const filters = [
+  { label: 'Threshold', model: 'threshold', min: 0.05, max: 1, step: 0.05 },
+  { label: 'Minimum relevant sentences', model: 'minRelevantSentences', min: 1, max: 50, step: 1 }
+];
 
 export function ResultsFiltersPanel({ open, filtersValues }) {
-  const filters = [
-    { label: 'Threshold', model: 'threshold', min: 0.05, max: 1, step: 0.05 },
-    { label: 'Minimum relevant sentences', model: 'minRelevantSentences', min: 1, max: 50, step: 1 },
-    { label: 'Minimum relevant score', model: 'minRelevantScores', min: 5, max: 100, step: 5 }
-  ];
-
   return (
     <SidePanel open={open}>
       <div className="sidepanel-body">

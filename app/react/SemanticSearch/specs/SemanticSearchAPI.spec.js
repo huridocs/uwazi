@@ -1,5 +1,5 @@
 import semanticSearchAPI from '../SemanticSearchAPI';
-import {APIURL} from 'app/config.js';
+import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 
 describe('SemanticSearchAPI', () => {
