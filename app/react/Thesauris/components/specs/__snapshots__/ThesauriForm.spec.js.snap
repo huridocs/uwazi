@@ -62,7 +62,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
             tabIndex={500}
             type="button"
           >
-            <Component
+            <Connect(DirectionAwareIcon)
               icon="arrow-left"
               size="xs"
             />
@@ -118,7 +118,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
           className="btn btn-default"
           to="/settings/dictionaries"
         >
-          <Component
+          <Connect(DirectionAwareIcon)
             icon="arrow-left"
           />
           <span
