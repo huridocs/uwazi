@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Semantic Search actions fetchSearches should fetch searches from api and dispatch response in store 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/searches/SET",
+      "value": Array [
+        Object {
+          "_id": "search1",
+        },
+        Object {
+          "_id": "search2",
+        },
+      ],
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions hideSemanticSearch should hide semantic search panel 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/showSemanticSearchPanel/SET",
+      "value": false,
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions selectSemanticSearchDocument should set selected semantic search document and select semantic search tab in sidepanel 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/selectedDocument/SET",
+      "value": Object {
+        "sharedId": "document",
+      },
+    },
+  ],
+  Array [
+    Object {
+      "type": "library.sidepanel.tab/SET",
+      "value": "semantic-search-results",
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions showSemanticSearch should show semantic search panel 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/showSemanticSearchPanel/SET",
+      "value": true,
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions unselectSemanticSearchDocument should set the empty object as the selected semantic search document 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/selectedDocument/SET",
+      "value": Object {},
+    },
+  ],
+]
+`;
