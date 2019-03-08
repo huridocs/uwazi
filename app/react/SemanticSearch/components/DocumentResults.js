@@ -38,7 +38,7 @@ export class DocumentResults extends Component {
         </dt>
         <dd>
           <Form model="semanticSearch.resultsFilters">
-            <NumericRangeSlide model=".threshold" min={0.3} max={1} step={0.05} delay={200} />
+            <NumericRangeSlide model=".threshold" min={0.3} max={1} step={0.01} delay={200} />
           </Form>
         </dd>
       </dl>
@@ -50,7 +50,7 @@ export class DocumentResults extends Component {
     if (!doc.semanticSearch) {
       return false;
     }
-    const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, this.props.threshold).sort((a, b) => a.score > b.score);
+    const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, this.props.threshold).sort((a, b) => a.score < b.score);
     const snippetsToRender = filteredResults.slice(0, 50).map((s) => {
       console.log(s.score);
       return Object.assign({}, s, { text: `${s.text} (${(s.score * 100).toFixed(1)}%)` });

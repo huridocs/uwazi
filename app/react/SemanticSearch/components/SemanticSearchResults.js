@@ -56,14 +56,14 @@ export class SemanticSearchResults extends Component {
     const averageScore = (results.reduce((total, r) => total + r.score, 0) / results.length * 100).toFixed(1);
     return (
       <div className="item-metadata">
-        <dl className="metadata-type-text">
-          <dt><Translate>Sentences above threshold</Translate></dt>
-          <dd>{sentencesAboveThreshold(doc, threshold)}</dd>
-        </dl>
-        <dl className="metadata-type-text">
-          <dt><Translate>Average sentence score</Translate></dt>
-          <dd>{averageScore}%</dd>
-        </dl>
+        <div className="metadata-type-text">
+          <div><Translate>Sentences above threshold</Translate></div>
+          <div>{sentencesAboveThreshold(doc, threshold)}</div>
+        </div>
+        <div className="metadata-type-text">
+          <div><Translate>Average sentence score</Translate></div>
+          <div>{averageScore}%</div>
+        </div>
       </div>
     );
   }

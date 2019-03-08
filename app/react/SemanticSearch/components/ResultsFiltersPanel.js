@@ -9,7 +9,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import { t } from 'app/I18N';
 
 const filters = [
-  { label: 'Threshold', model: 'threshold', min: 0.3, max: 1, step: 0.05 },
+  { label: 'Threshold', model: 'threshold', min: 0.3, max: 1, step: 0.01 },
   { label: 'Minimum relevant sentences', model: 'minRelevantSentences', min: 1, max: 50, step: 1 }
 ];
 
