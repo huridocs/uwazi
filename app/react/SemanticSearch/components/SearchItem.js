@@ -23,38 +23,47 @@ export class SearchItem extends Component {
     });
   }
 
+  renderButtons() {
+    const { search, onStopClicked, onResumeClicked } = this.props;
+    const { status } = search;
+    return (
+      <div className="buttons">
+        <button
+          className="btn btn-danger delete-search btn-xs"
+          onClick={this.delete}
+        >
+        <Icon icon="trash-alt" size="sm" />
+        </button>
+        { ['inProgress', 'pending'].includes(status) &&
+          <button
+            className="btn btn-warning stop-search btn-xs"
+            onClick={() => onStopClicked(search._id)}
+          >
+            <Icon icon="stop" size="sm" />
+          </button>
+        }
+        { status === 'stopped' &&
+          <button
+            className="btn btn-success resume-search btn-xs"
+            onClick={() => onResumeClicked(search._id)}
+          >
+            <Icon icon="play" size="sm"/>
+          </button>
+        }
+      </div>
+    );
+  }
 
   render() {
-    const { search, onStopClicked, onResumeClicked } = this.props;
+    const { search } = this.props;
     const { status, documents } = search;
     const completed = documents.filter(doc => doc.status === 'completed').length;
     const max = documents.length;
     return (
       <I18NLink className="semantic-search-list-item" to={`semanticsearch/${search._id}`}>
         <div className="item-header">
-          {search.searchTerm}
-          <button
-            className="btn btn-danger delete-search"
-            onClick={this.delete}
-          >
-            <Icon icon="trash-alt" />
-          </button>
-          { ['inProgress', 'pending'].includes(status) &&
-            <button
-              className="btn btn-warning stop-search"
-              onClick={() => onStopClicked(search._id)}
-            >
-              <Icon icon="stop" />
-            </button>
-          }
-          { status === 'stopped' &&
-            <button
-              className="btn btn-success resume-search"
-              onClick={() => onResumeClicked(search._id)}
-            >
-              <Icon icon="play" />
-            </button>
-          }
+          <div className="title">{search.searchTerm}</div>
+          { this.renderButtons() }
         </div>
         <div>
           { status !== 'completed' &&

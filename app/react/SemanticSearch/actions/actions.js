@@ -74,14 +74,13 @@ export function updateSearch(updatedSearch) {
 export function addSearchResults(newDocs) {
   return (dispatch, getState) => {
     const currentSearch = getState().semanticSearch.search;
-    const newResults = currentSearch.update('results', existingDocs =>
-      newDocs.reduce((updatedDocs, newDoc) => {
-        if (!updatedDocs.find(d => newDoc._id === d.get('_id'))) {
-          return updatedDocs.push(Immutable.fromJS(newDoc));
-        }
-        return updatedDocs;
-      }, existingDocs)
-    );
+    const newResults = currentSearch.update('results', existingDocs => newDocs
+    .reduce((updatedDocs, newDoc) => {
+      if (!updatedDocs.find(d => newDoc._id === d.get('_id'))) {
+        return updatedDocs.push(Immutable.fromJS(newDoc));
+      }
+      return updatedDocs;
+    }, existingDocs));
     dispatch(actions.set('semanticSearch/search', newResults));
   };
 }
