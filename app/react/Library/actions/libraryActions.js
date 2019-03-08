@@ -63,14 +63,6 @@ export function hideFilters() {
   return { type: types.HIDE_FILTERS };
 }
 
-export function showSemanticSearch() {
-  return { type: types.SHOW_SEMANTIC_SEARCH };
-}
-
-export function hideSemanticSearch() {
-  return { type: types.HIDE_SEMANTIC_SEARCH };
-}
-
 export function setDocuments(docs) {
   return { type: types.SET_DOCUMENTS, documents: docs };
 }
