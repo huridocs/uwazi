@@ -69,7 +69,7 @@ export function highlightSnippet(snippet) {
   .replace(/\s+/g, '\\s*')
   .replace(/\n/g, '\\s*');
 
-  const rawMatches = text.match(/<b>(.|\n)*?<\/b>/g)
+  const rawMatches = text.match(/<b>(.|\n)*?<\/b>/g);
   const matches = rawMatches ? rawMatches.map(m => m.replace(/<.*?>/g, '')) : [];
   const highlight = textToMatcherRegExp(text);
 
