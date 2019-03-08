@@ -100,7 +100,6 @@ Object {
     "doc3",
   ],
   "updatedSearch": Object {
-    "_id": "5c8235b6a8bab27c76b5250e",
     "documents": Array [
       Object {
         "sharedId": "doc1",

@@ -143,6 +143,8 @@ describe('semanticSearch', () => {
     });
     it('should return the updated search and processed documents', async () => {
       const res = await semanticSearch.processSearchLimit(search2Id, 2);
+      expect(res.updatedSearch._id).toEqual(search2Id);
+      delete res.updatedSearch._id;
       expect(res).toMatchSnapshot();
     });
     it('should mark search as complete if all documents are processed', async () => {
