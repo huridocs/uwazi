@@ -62,7 +62,7 @@ export default class CSVLoader extends EventEmitter {
         this.emit('entityLoaded', entity);
       } catch (e) {
         this._errors[index] = e;
-        this.emit('loadError', e, toSafeName(rawEntity));
+        this.emit('loadError', e, toSafeName(rawEntity), index);
       }
     });
 

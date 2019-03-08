@@ -117,15 +117,15 @@ describe('csvLoader', () => {
     });
 
     it('should emit an error', async () => {
-      const loader = new CSVLoader();
+      const testingLoader = new CSVLoader();
 
       const eventErrors = {};
-      loader.on('errorLoading', (error, entity) => {
+      testingLoader.on('loadError', (error, entity) => {
         eventErrors[entity.title] = error;
       });
 
       try {
-        await loader.load(csvFile, template1Id);
+        await testingLoader.load(csvFile, template1Id);
       } catch (e) {
         expect(eventErrors).toEqual({
           title1: new Error('error-title1'),
@@ -135,13 +135,13 @@ describe('csvLoader', () => {
     });
 
     it('should save errors and index them by csv line, should throw an error on finish', async () => {
-      const loader = new CSVLoader();
+      const testingLoader = new CSVLoader();
 
       try {
-        await loader.load(csvFile, template1Id);
+        await testingLoader.load(csvFile, template1Id);
         fail('should fail');
       } catch (e) {
-        expect(loader.errors()).toEqual({
+        expect(testingLoader.errors()).toEqual({
           0: new Error('error-title1'),
           2: new Error('error-title3'),
         });
@@ -157,13 +157,13 @@ describe('csvLoader', () => {
         return Promise.resolve();
       });
 
-      const loader = new CSVLoader();
+      const testingLoader = new CSVLoader();
 
       try {
-        await loader.load(csvFile, template1Id);
+        await testingLoader.load(csvFile, template1Id);
         fail('should fail');
       } catch (e) {
-        expect(loader.errors()).toEqual({
+        expect(testingLoader.errors()).toEqual({
           1: new Error('error-title2'),
         });
       }

@@ -33,6 +33,7 @@
     "postinstall": "node -e \"process.env.NODE_ENV != 'production' && process.exit(1)\" || npm run download-mongo-prebuilt",
     "reindex": "node run.js ./database/reindex_elastic.js",
     "health-check": "node run.js ./database/health_check.js",
+    "import-csv": "node run.js ./database/import_csv.js",
     "blank-state": "./database/blank_state.sh; yarn migrate; yarn reindex",
     "admin-user": "./database/admin_user.sh",
     "fixtures": "cd uwazi-fixtures; ./restore.sh; yarn reindex",
@@ -201,6 +202,7 @@
     "webpack-bundle-analyzer": "^2.11.1",
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "3.6.0",
-    "webpack-hot-middleware": "^2.21.0"
+    "webpack-hot-middleware": "^2.21.0",
+    "yargs": "^13.2.2"
   }
 }
