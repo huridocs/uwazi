@@ -9,10 +9,10 @@ import socket from 'app/socket';
 import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 
-import { hideSemanticSearch } from 'app/Library/actions/libraryActions';
+import { hideSemanticSearch } from 'app/SemanticSearch/actions/actions';
+import SidePanel from 'app/Layout/SidePanel';
 import { fetchSearches, submitNewSearch, registerForUpdates, updateSearch } from '../actions/actions';
 
-import SidePanel from 'app/Layout/SidePanel';
 import SearchList from './SearchList';
 
 export class SemanticSearchSidePanel extends Component {
@@ -115,7 +115,6 @@ SemanticSearchSidePanel.propTypes = {
   submitNewSearch: PropTypes.func.isRequired,
   registerForUpdates: PropTypes.func.isRequired,
   updateSearch: PropTypes.func.isRequired,
-  hideSemanticSearch: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired
 };
 
