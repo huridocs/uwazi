@@ -8,15 +8,24 @@ exports[`SearchItem should render search details with link to results page  1`] 
   <div
     className="item-header"
   >
-    query
-    <button
-      className="btn btn-danger delete-search"
-      onClick={[Function]}
+    <div
+      className="title"
     >
-      <Component
-        icon="trash-alt"
-      />
-    </button>
+      query
+    </div>
+    <div
+      className="buttons"
+    >
+      <button
+        className="btn btn-danger delete-search btn-xs"
+        onClick={[Function]}
+      >
+        <Component
+          icon="trash-alt"
+          size="sm"
+        />
+      </button>
+    </div>
   </div>
   <div />
 </Connect(I18NLink)>
@@ -30,23 +39,33 @@ exports[`SearchItem when search status is inProgress should render in-progress i
   <div
     className="item-header"
   >
-    query
-    <button
-      className="btn btn-danger delete-search"
-      onClick={[Function]}
+    <div
+      className="title"
     >
-      <Component
-        icon="trash-alt"
-      />
-    </button>
-    <button
-      className="btn btn-warning stop-search"
-      onClick={[Function]}
+      query
+    </div>
+    <div
+      className="buttons"
     >
-      <Component
-        icon="stop"
-      />
-    </button>
+      <button
+        className="btn btn-danger delete-search btn-xs"
+        onClick={[Function]}
+      >
+        <Component
+          icon="trash-alt"
+          size="sm"
+        />
+      </button>
+      <button
+        className="btn btn-warning stop-search btn-xs"
+        onClick={[Function]}
+      >
+        <Component
+          icon="stop"
+          size="sm"
+        />
+      </button>
+    </div>
   </div>
   <div>
     <ProgressBar
@@ -65,23 +84,33 @@ exports[`SearchItem when search status is stopped should render progress bar and
   <div
     className="item-header"
   >
-    query
-    <button
-      className="btn btn-danger delete-search"
-      onClick={[Function]}
+    <div
+      className="title"
     >
-      <Component
-        icon="trash-alt"
-      />
-    </button>
-    <button
-      className="btn btn-success resume-search"
-      onClick={[Function]}
+      query
+    </div>
+    <div
+      className="buttons"
     >
-      <Component
-        icon="play"
-      />
-    </button>
+      <button
+        className="btn btn-danger delete-search btn-xs"
+        onClick={[Function]}
+      >
+        <Component
+          icon="trash-alt"
+          size="sm"
+        />
+      </button>
+      <button
+        className="btn btn-success resume-search btn-xs"
+        onClick={[Function]}
+      >
+        <Component
+          icon="play"
+          size="sm"
+        />
+      </button>
+    </div>
   </div>
   <div>
     <ProgressBar
