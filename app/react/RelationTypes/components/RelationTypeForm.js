@@ -4,7 +4,7 @@ import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { I18NLink } from 'app/I18N';
-import { Icon, DirectionAwareIcon } from 'UI';
+import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveRelationType, resetRelationType } from 'app/RelationTypes/actions/relationTypeActions';
@@ -55,7 +55,7 @@ export class RelationTypeForm extends Component {
             <div className="panel-body">Currently connections only need a title.</div>
             <div className="settings-footer">
               <I18NLink to="/settings/connections" className="btn btn-default">
-                <DirectionAwareIcon icon="arrow-left" />
+                <Icon icon="arrow-left" directionAware />
                 <span className="btn-label">Back</span>
               </I18NLink>
               <button type="submit" className="btn btn-success save-template">

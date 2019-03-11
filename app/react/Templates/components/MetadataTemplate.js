@@ -7,7 +7,7 @@ import { I18NLink, t } from 'app/I18N';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { FormGroup } from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
-import { Icon, DirectionAwareIcon } from 'UI';
+import { Icon } from 'UI';
 import { notify } from 'app/Notifications';
 
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
@@ -77,7 +77,7 @@ export class MetadataTemplate extends Component {
           </ShowIf>
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
-              <DirectionAwareIcon icon="arrow-left" />
+              <Icon icon="arrow-left" directionAware />
               <span className="btn-label">Back</span>
             </I18NLink>
             <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>

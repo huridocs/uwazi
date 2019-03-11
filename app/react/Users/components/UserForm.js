@@ -6,7 +6,7 @@ import { notEmpty } from 'app/Metadata/helpers/validator';
 import { FormGroup } from 'app/Forms';
 import t from 'app/I18N/t';
 import Immutable from 'immutable';
-import { Icon, DirectionAwareIcon } from 'UI';
+import { Icon } from 'UI';
 
 class UserForm extends Component {
   static formGroup(key, label, type = 'text') {
@@ -27,7 +27,7 @@ class UserForm extends Component {
     return (
       <div className="settings-footer">
         <I18NLink to={backUrl} className="btn btn-default">
-          <DirectionAwareIcon icon="arrow-left" />
+          <Icon icon="arrow-left" directionAware />
           <span className="btn-label">Back</span>
         </I18NLink>
         <button type="submit" className="btn btn-success save-template">

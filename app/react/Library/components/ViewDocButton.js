@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { t, I18NLink } from 'app/I18N';
-import { DirectionAwareIcon as Icon } from 'UI';
+import { Icon } from 'UI';
 
 export class ViewDocButton extends Component {
   render() {
@@ -15,7 +15,7 @@ export class ViewDocButton extends Component {
     }
     return (
       <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={e => e.stopPropagation()}>
-        <Icon icon="angle-right" /> { t('System', 'View') }
+        <Icon icon="angle-right" directionAware /> { t('System', 'View') }
       </I18NLink>
     );
   }
