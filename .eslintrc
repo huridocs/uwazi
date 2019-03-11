@@ -68,7 +68,7 @@
       "lines-between-class-members": ["warn"],
       "max-lines": ["warn", 250],
       "max-params": ["warn", 4],
-      "max-lines-per-function": ["warn", { "max": 25 }],
+      "max-lines-per-function": "off",
       "max-statements": ["warn", { "max": 10 }, { "ignoreTopLevelFunctions": true }],
 
 
