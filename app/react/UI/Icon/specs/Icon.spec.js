@@ -32,7 +32,7 @@ describe('Icon', () => {
     it('should map the locale', () => {
       const state = { locale: 'en' };
 
-      const mappedProps = mapStateToProps(state,);
+      const mappedProps = mapStateToProps(state);
       expect(mappedProps.locale).toBe(state.locale);
     });
   });
