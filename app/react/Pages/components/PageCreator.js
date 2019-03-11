@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { I18NLink } from 'app/I18N';
 import { MarkDown } from 'app/ReactReduxForms';
 import { resetPage, savePage } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
