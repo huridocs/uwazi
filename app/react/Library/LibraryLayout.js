@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { NeedAuthorization } from 'app/Auth';
 import Welcome from 'app/Library/components/Welcome';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
 import Helmet from 'react-helmet';
@@ -25,7 +26,9 @@ export default class LibraryLayout extends Component {
         <LibraryFilters storeKey="library"/>
         <ViewMetadataPanel storeKey="library"/>
         <SelectMultiplePanelContainer storeKey="library"/>
-        <SemanticSearchPanel storeKey="library" />
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <SemanticSearchPanel storeKey="library" />
+        </NeedAuthorization>
       </div>
     );
   }

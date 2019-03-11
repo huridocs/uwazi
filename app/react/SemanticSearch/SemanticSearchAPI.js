@@ -32,4 +32,3 @@ export default {
     return api.post(url).then(response => response.json);
   }
 };
-
