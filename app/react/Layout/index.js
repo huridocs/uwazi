@@ -8,3 +8,4 @@ export { default as Thumbnail } from './Thumbnail';
 export { default as ConfirmButton } from './ConfirmButton';
 export { default as CurrentLocationLink } from './CurrentLocationLink';
 export { default as Warning } from './Warning';
+export { default as BackButton } from './BackButton';
