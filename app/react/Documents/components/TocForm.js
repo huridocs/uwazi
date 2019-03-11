@@ -4,24 +4,31 @@ import { Form, Field } from 'react-redux-form';
 import { Icon } from 'UI';
 
 export class TocForm extends Component {
-  render() {
+  indentButton(direction, tocElement) {
+    const { indent } = this.props;
+    const onClick = indent.bind(null, tocElement, tocElement.indentation + (direction === 'more' ? 1 : -1));
     return (
-      <Form className="toc" id="tocForm" model={this.props.model} onSubmit={this.props.onSubmit} >
-        {this.props.toc.map((tocElement, index) => (
+      <button type="button" onClick={onClick} className={`toc-indent-${direction} btn btn-default`}>
+        <Icon icon={direction === 'more' ? 'arrow-right' : 'arrow-left'} directionAware />
+      </button>
+    );
+  }
+
+  render() {
+    const { toc, model, removeEntry, onSubmit } = this.props;
+    return (
+      <Form className="toc" id="tocForm" model={model} onSubmit={onSubmit} >
+        {toc.map((tocElement, index) => (
           <div className={`toc-indent-${tocElement.indentation}`} key={index}>
             <div className="toc-edit">
-              <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation - 1)} className="toc-indent-less btn btn-default">
-                <Icon icon="arrow-left" directionAware />
-              </a>
-              <a onClick={this.props.indent.bind(null, tocElement, tocElement.indentation + 1)} className="toc-indent-more btn btn-default">
-                <Icon icon="arrow-right" directionAware />
-              </a>
-              <Field model={`${this.props.model}[${index}].label`} >
+              {this.indentButton('less', tocElement)}
+              {this.indentButton('more', tocElement)}
+              <Field model={`${model}[${index}].label`} >
                 <input className="form-control"/>
               </Field>
-              <a onClick={this.props.removeEntry.bind(this, tocElement)} className="btn btn-danger">
+              <button type="button" onClick={removeEntry.bind(this, tocElement)} className="btn btn-danger">
                 <Icon icon="trash-alt" />
-              </a>
+              </button>
             </div>
           </div>
             ))}
@@ -30,10 +37,16 @@ export class TocForm extends Component {
   }
 }
 
+TocForm.defaultProps = {
+  toc: [],
+  removeEntry: () => {},
+  indent: () => {},
+  onSubmit: () => {},
+};
+
 TocForm.propTypes = {
   toc: PropTypes.array,
   model: PropTypes.string.isRequired,
-  state: PropTypes.object,
   removeEntry: PropTypes.func,
   indent: PropTypes.func,
   onSubmit: PropTypes.func
