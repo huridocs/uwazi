@@ -238,7 +238,7 @@ describe('semanticSearch', () => {
       } catch (e) {
         const theSearch = await model.getById(searchId);
         expect(theSearch.status).toBe(status);
-        expect(e.code).toBe(404);
+        expect(e.code).toBe(400);
       }
     };
     it('should set status to stopped if search is pending', async () => {
@@ -267,7 +267,7 @@ describe('semanticSearch', () => {
         await semanticSearch.stopSearch(db.id());
         fail('should throw error');
       } catch (e) {
-        expect(e.code).toBe(404);
+        expect(e.code).toBe(400);
       }
     });
   });
@@ -284,7 +284,7 @@ describe('semanticSearch', () => {
       } catch (e) {
         const theSearch = await model.getById(searchId);
         expect(theSearch.status).toBe(status);
-        expect(e.code).toBe(404);
+        expect(e.code).toBe(400);
       }
     };
     it('should set status to pending if search is stopped', async () => {
@@ -310,4 +310,3 @@ describe('semanticSearch', () => {
     });
   });
 });
-

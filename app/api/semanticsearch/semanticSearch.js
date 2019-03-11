@@ -174,7 +174,7 @@ const stopSearch = async (searchId) => {
     $set: { status: STOPPED }
   });
   if (!res.n) {
-    throw createError('No matching pending search found', 404);
+    throw createError('Only running searches can be stopped', 400);
   }
   return model.getById(searchId);
 };
@@ -187,7 +187,7 @@ const resumeSearch = async (searchId) => {
     $set: { status: PENDING }
   });
   if (!res.n) {
-    throw createError('No matching stopped search found', 404);
+    throw createError('Only stopped searches can be resumed', 400);
   }
   workers.notifyNewSearch(searchId);
   return model.getById(searchId);
