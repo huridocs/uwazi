@@ -4,6 +4,7 @@ import { validateRequest } from '../utils';
 import handleError from '../utils/handleError';
 import needsAuthorization from '../auth/authMiddleware';
 import workers from './workerManager';
+import updateNotifier from './updateNotifier';
 
 
 workers.on('searchError', (searchId, error) => {
@@ -71,12 +72,10 @@ export default (app) => {
   app.post('/api/semantic-search/notify-updates',
     needsAuthorization(),
     (req, res) => {
-      workers.on('searchUpdated', async (searchId, updates) => {
-        const sockets = req.io.getCurrentSessionSockets();
-        const { updatedSearch, processedDocuments } = updates;
-        const docs = await semanticSearch.getDocumentResultsByIds(searchId, processedDocuments);
-        sockets.emit('semanticSearchUpdated', { updatedSearch, docs });
-      });
+      updateNotifier.addRequest(req);
       res.json({ ok: true });
     });
 };
+
+workers.on('searchUpdated',
+  async (searchId, updates) => updateNotifier.notifySearchUpdate(searchId, updates));
