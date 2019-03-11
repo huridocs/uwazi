@@ -8,6 +8,7 @@ import { I18NLink } from 'app/I18N';
 import { MarkDown } from 'app/ReactReduxForms';
 import { resetPage, savePage } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
+import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import validator from './ValidatePage';
@@ -64,10 +65,7 @@ export class PageCreator extends Component {
             </div>
           </div>
           <div className="settings-footer">
-            <I18NLink to={backUrl} className="btn btn-default">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">Back</span>
-            </I18NLink>
+            <BackButton to={backUrl} />
             <button
               type="submit"
               className="btn btn-success save-template"

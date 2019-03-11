@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Field, Form } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { I18NLink, t, actions } from 'app/I18N';
+import { t, actions } from 'app/I18N';
+import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -107,10 +108,7 @@ export class EditTranslationForm extends Component {
             </ul>
           </div>
           <div className="settings-footer">
-            <I18NLink to="/settings/translations" className="btn btn-default">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">Back</span>
-            </I18NLink>
+            <BackButton to="/settings/translations" />
             <button type="submit" className="btn btn-success save-template">
               <Icon icon="save" />
               <span className="btn-label">{t('System', 'Save')}</span>
