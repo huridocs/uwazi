@@ -29,11 +29,12 @@ export class SemanticSearchResults extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return Boolean(nextProps.items.size !== this.props.items.size) ||
-    Boolean(nextProps.filters.threshold !== this.props.filters.threshold) ||
-    Boolean(nextProps.filters.minRelevantSentences !== this.props.filters.minRelevantSentences) ||
-    Boolean(nextProps.isEmpty !== this.props.isEmpty) ||
-    Boolean(nextProps.searchTerm !== this.props.searchTerm);
+    const { items, filters, isEmpty, searchTerm } = this.props;
+    return Boolean(nextProps.items.size !== items.size) ||
+    Boolean(nextProps.filters.threshold !== filters.threshold) ||
+    Boolean(nextProps.filters.minRelevantSentences !== filters.minRelevantSentences) ||
+    Boolean(nextProps.isEmpty !== isEmpty) ||
+    Boolean(nextProps.searchTerm !== searchTerm);
   }
 
   componentWillUnmount() {
@@ -41,7 +42,8 @@ export class SemanticSearchResults extends Component {
   }
 
   onSearchUpdated({ updatedSearch, docs }) {
-    if (updatedSearch._id === this.props.searchId) {
+    const { searchId } = this.props;
+    if (updatedSearch._id === searchId) {
       this.props.addSearchResults(docs);
     }
   }
@@ -52,7 +54,7 @@ export class SemanticSearchResults extends Component {
 
   renderAditionalText(doc) {
     const results = doc.toJS().semanticSearch.results || [];
-    const { threshold } = this.props.filters;
+    const { filters: { threshold } } = this.props;
     const averageScore = (results.reduce((total, r) => total + r.score, 0) / results.length * 100).toFixed(1);
     return (
       <div className="item-metadata">
@@ -73,37 +75,37 @@ export class SemanticSearchResults extends Component {
     return (
       <div className="row panels-layout">
         { isEmpty && (
-        <React.Fragment>
-          <p>Search not found</p>
-          <Helmet title="Semantic search not found" />
-        </React.Fragment>
-)}
+          <React.Fragment>
+            <p>Search not found</p>
+            <Helmet title="Semantic search not found" />
+          </React.Fragment>
+        )}
         { !isEmpty && (
-        <React.Fragment>
-          <Helmet title={`${searchTerm} - Semantic search results`} />
-          <main className="semantic-search-results-viewer document-viewer with-panel">
-            <h3>
-              <Translate>Semantic search</Translate>: { searchTerm }
-            </h3>
-            <div className="documents-counter">
-              <span className="documents-counter-label">
-                <b>{ items.size }</b> <Translate>documents</Translate>
-              </span>
-            </div>
-            <RowList>
-              {items.map((doc, index) => (
-                <Doc
-                  doc={doc}
-                  key={index}
-                  onClick={this.onClick}
-                  additionalText={this.renderAditionalText(doc)}
-                />
-                ))}
-            </RowList>
-          </main>
-          <ResultsSidePanel />
-        </React.Fragment>
-)}
+          <React.Fragment>
+            <Helmet title={`${searchTerm} - Semantic search results`} />
+            <main className="semantic-search-results-viewer document-viewer with-panel">
+              <h3>
+                <Translate>Semantic search</Translate>: { searchTerm }
+              </h3>
+              <div className="documents-counter">
+                <span className="documents-counter-label">
+                  <b>{ items.size }</b> <Translate>documents</Translate>
+                </span>
+              </div>
+              <RowList>
+                {items.map((doc, index) => (
+                  <Doc
+                    doc={doc}
+                    key={index}
+                    onClick={this.onClick}
+                    additionalText={this.renderAditionalText(doc)}
+                  />
+                  ))}
+              </RowList>
+            </main>
+            <ResultsSidePanel />
+          </React.Fragment>
+        )}
       </div>
     );
   }

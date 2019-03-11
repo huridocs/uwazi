@@ -4,9 +4,10 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 
-import { SemanticSearchResults, mapStateToProps, mapDispatchToProps } from '../SemanticSearchResults';
 import Doc from 'app/Library/components/Doc';
 import * as actions from 'app/SemanticSearch/actions/actions';
+
+import { SemanticSearchResults, mapStateToProps, mapDispatchToProps } from '../SemanticSearchResults';
 
 describe('SemanticSearchResults', () => {
   let state;

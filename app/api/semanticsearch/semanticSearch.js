@@ -28,14 +28,12 @@ const getSearchDocuments = async ({ documents, query }, language, user) => {
   return res.rows.map(document => document.sharedId);
 };
 
-const updateSearchDocumentStatus = async (searchId, sharedId, status) => {
-  return model.db.findOneAndUpdate({
-    _id: searchId,
-    'documents.sharedId': sharedId
-  }, {
-    $set: { 'documents.$.status': status }
-  }, { new: true, lean: true });
-};
+const updateSearchDocumentStatus = async (searchId, sharedId, status) => model.db.findOneAndUpdate({
+  _id: searchId,
+  'documents.sharedId': sharedId
+}, {
+  $set: { 'documents.$.status': status }
+}, { new: true, lean: true });
 
 const setSearchDocumentResults = async (searchId, sharedId, results) => {
   const averageScore = results.reduce((total, curr) => total + curr.score, 0) / results.length;
@@ -88,8 +86,8 @@ const processSearchLimit = async (searchId, docLimit) => {
   .filter(doc => doc.status !== COMPLETED);
   const docsToSearch = docs.length > docLimit ?
     docs.slice(0, docLimit) : docs;
-  await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc =>
-    processDocument(searchId, searchTerm, doc.sharedId, language));
+  await eachLimitAsync(docsToSearch, SEARCH_BATCH_SIZE, async doc => processDocument(
+    searchId, searchTerm, doc.sharedId, language));
   const updatedSearch = await model.getById(searchId);
   const isNotDone = updatedSearch.documents.some(doc => doc.status !== COMPLETED);
   if (isNotDone) {

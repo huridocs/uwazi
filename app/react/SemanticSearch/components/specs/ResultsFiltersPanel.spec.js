@@ -1,6 +1,7 @@
 import React from 'react';
-import { ResultsFiltersPanel } from '../ResultsFiltersPanel';
 import { shallow } from 'enzyme';
+
+import { ResultsFiltersPanel } from '../ResultsFiltersPanel';
 
 describe('ResultsFiltersPanel', () => {
   let props;

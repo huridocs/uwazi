@@ -69,8 +69,9 @@ export class SemanticSearchSidePanel extends Component {
 
   render() {
     const searches = this.props.searches.toJS();
+    const { open } = this.props;
     return (
-      <SidePanel open={this.props.open} className="metadata-sidepanel semantic-search">
+      <SidePanel open={open} className="metadata-sidepanel semantic-search">
         <button className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
           <Icon icon="times" />
         </button>

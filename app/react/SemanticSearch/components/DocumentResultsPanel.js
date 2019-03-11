@@ -10,10 +10,11 @@ import { deleteEntity } from 'app/Entities/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import modals from 'app/Modals';
 
-import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
-import { unselectSemanticSearchDocument } from '../actions/actions';
 import DocumentForm from 'app/Library/containers/DocumentForm';
 import EntityForm from 'app/Library/containers/EntityForm';
+
+import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
+import { unselectSemanticSearchDocument } from '../actions/actions';
 
 const mapStateToProps = ({ semanticSearch, library, templates }) => ({
     open: !semanticSearch.selectedDocument.isEmpty(),

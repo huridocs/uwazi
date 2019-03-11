@@ -1,14 +1,13 @@
 import db from 'api/utils/testing_db';
+import date from 'api/utils/date.js';
 import workers from '../workerManager';
 import semanticSearch from '../semanticSearch';
 import { search } from '../../search';
 import model from '../model';
 import resultsModel from '../resultsModel';
 import api from '../api';
-import date from 'api/utils/date.js';
 
-import fixtures from './fixtures';
-import { search1Id, search2Id, search3Id, doc1Id, docWithoutTextId } from './fixtures';
+import fixtures, { search1Id, search2Id, search3Id, doc1Id, docWithoutTextId } from './fixtures';
 import { createError } from '../../utils';
 
 describe('semanticSearch', () => {

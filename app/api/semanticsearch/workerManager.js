@@ -10,12 +10,15 @@ export class WorkerManager extends EventEmitter {
     super();
     this.workers = {};
   }
+
   get currentWorkersCount() {
     return Object.keys(this.workers).length;
   }
+
   get canAddWorker() {
     return this.currentWorkersCount < NUM_WORKERS;
   }
+
   async start() {
     let searchesToStart = await searchModel.get(
       { status: IN_PROGRESS }, '', { limit: NUM_WORKERS });
@@ -27,6 +30,7 @@ export class WorkerManager extends EventEmitter {
     }
     searchesToStart.forEach(newSearch => this.notifyNewSearch(newSearch._id));
   }
+
   notifyNewSearch(searchId) {
     if (this.canAddWorker) {
       const worker = new Worker(searchId);
@@ -37,21 +41,26 @@ export class WorkerManager extends EventEmitter {
       worker.start();
     }
   }
+
   async onWorkerDone(searchId) {
     this.emit('searchDone', searchId);
     this.deleteAndReplaceWorker(searchId);
   }
+
   async onWorkerError(searchId, error) {
     this.emit('searchError', searchId, error);
     this.deleteAndReplaceWorker(searchId);
   }
+
   onWorkerUpdate(searchId, update) {
     this.emit('searchUpdated', searchId, update);
   }
+
   deleteAndReplaceWorker(searchId) {
     delete this.workers[searchId];
     this.startNewSearchIfFree();
   }
+
   async startNewSearchIfFree() {
     if (this.canAddWorker) {
       const currentSearches = Object.keys(this.workers);
@@ -69,4 +78,3 @@ export class WorkerManager extends EventEmitter {
 const workerManager = new WorkerManager();
 
 export default workerManager;
-

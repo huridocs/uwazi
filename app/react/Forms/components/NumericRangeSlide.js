@@ -17,43 +17,51 @@ export default class NumericRangeSlide extends Component {
   onChange(e) {
     const { value } = e.target;
     this.setState({ value });
-    const { delay } = this.props;
+    const { delay, onChange } = this.props;
     if (delay) {
       clearTimeout(this.timeOut);
       this.timeOut = setTimeout(() => {
-        this.props.onChange(value ? parseFloat(value) : null);
+        onChange(value ? parseFloat(value) : null);
       }, delay);
 
       return;
     }
 
-    this.props.onChange(value ? parseFloat(value) : null);
+    onChange(value ? parseFloat(value) : null);
   }
 
-  render() {
-    const { min, max, step } = this.props;
+  renderTickMarksDatalist() {
+    const { min, max, step, prefix } = this.props;
     return (
-      <React.Fragment>
-        <input
-          type="range"
-          list={`${this.props.prefix}-tickmarks`}
-          min={min}
-          max={max}
-          step={step}
-          onChange={this.onChange}
-          value={this.state.value}
-        />
-        <datalist id={`${this.props.prefix}-tickmarks`}>
-          <option value={min}/>
-          {(() => {
+      <datalist id={`${prefix}-tickmarks`}>
+        <option value={min}/>
+        {(() => {
           const options = [];
           for (let i = min; i < max; i += step) {
             options.push(<option key={i} value={i.toFixed(2)}/>);
           }
           return options;
         })()}
-          <option value={max}/>
-        </datalist>
+        <option value={max}/>
+      </datalist>
+    );
+  }
+
+  render() {
+    const { min, max, step, prefix } = this.props;
+    const { value } = this.state;
+    return (
+      <React.Fragment>
+        <input
+          type="range"
+          list={`${prefix}-tickmarks`}
+          min={min}
+          max={max}
+          step={step}
+          onChange={this.onChange}
+          value={value}
+        />
+        { this.renderTickMarksDatalist() }
       </React.Fragment>
     );
   }

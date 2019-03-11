@@ -15,9 +15,11 @@ export class SearchItem extends Component {
   }
 
   delete(e) {
+    const { confirm } = this.context;
+    const { onDeleteClicked, search } = this.props;
     e.preventDefault();
-    this.context.confirm({
-      accept: this.props.onDeleteClicked.bind(this, this.props.search._id),
+    confirm({
+      accept: onDeleteClicked.bind(this, search._id),
       title: 'Confirm delete',
       message: 'Are you sure you want to delete this search?'
     });
@@ -32,24 +34,24 @@ export class SearchItem extends Component {
           className="btn btn-danger delete-search btn-xs"
           onClick={this.delete}
         >
-        <Icon icon="trash-alt" size="sm" />
+          <Icon icon="trash-alt" size="sm" />
         </button>
-        { ['inProgress', 'pending'].includes(status) &&
+        { ['inProgress', 'pending'].includes(status) && (
           <button
             className="btn btn-warning stop-search btn-xs"
             onClick={() => onStopClicked(search._id)}
           >
             <Icon icon="stop" size="sm" />
           </button>
-        }
-        { status === 'stopped' &&
+        )}
+        { status === 'stopped' && (
           <button
             className="btn btn-success resume-search btn-xs"
             onClick={() => onResumeClicked(search._id)}
           >
             <Icon icon="play" size="sm"/>
           </button>
-        }
+        )}
       </div>
     );
   }

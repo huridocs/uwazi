@@ -6,22 +6,22 @@ import LibraryFilters from 'app/Library/components/LibraryFilters';
 import Helmet from 'react-helmet';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
+import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
 import { t } from 'app/I18N';
 import blankState from './helpers/blankState';
-
-import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
 
 export default class LibraryLayout extends Component {
   render() {
     if (blankState()) {
       return <Welcome/>;
     }
+    const { className, children } = this.props;
 
     return (
       <div className="row panels-layout">
         <Helmet title={t('System', 'Library', null, false)} />
-        <main className={`library-viewer document-viewer with-panel ${this.props.className}`}>
-          {this.props.children}
+        <main className={`library-viewer document-viewer with-panel ${className}`}>
+          {children}
         </main>
         <LibraryFilters storeKey="library"/>
         <ViewMetadataPanel storeKey="library"/>

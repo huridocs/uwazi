@@ -1,27 +1,28 @@
-import semanticSearchAPI from '../SemanticSearchAPI';
-import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import { APIURL } from 'app/config.js';
+
+import semanticSearchAPI from '../SemanticSearchAPI';
 
 describe('SemanticSearchAPI', () => {
   let searchId;
-  let createdResponse = { _id: 'searchCreated' };
-  let stoppedResponse = { _id: 'searchId', status: 'stopped' };
-  let resumedResponse = { _id: 'searchId', status: 'resumed' };
-  let deletedResponse = { _id: 'deleted' };
-  let singleResponse = { _id: 'searchId' };
-  let searchListResponse = [{ _id: 'search1' }, { _id: 'search2' }];
-  let okResponse = { ok: true };
+  const createdResponse = { _id: 'searchCreated' };
+  const stoppedResponse = { _id: 'searchId', status: 'stopped' };
+  const resumedResponse = { _id: 'searchId', status: 'resumed' };
+  const deletedResponse = { _id: 'deleted' };
+  const singleResponse = { _id: 'searchId' };
+  const searchListResponse = [{ _id: 'search1' }, { _id: 'search2' }];
+  const okResponse = { ok: true };
   beforeEach(() => {
     searchId = 'searchId';
     backend.restore();
     backend
-    .get(APIURL + `semantic-search/${searchId}`, { body: JSON.stringify(singleResponse) })
-    .get(APIURL + 'semantic-search', { body: JSON.stringify(searchListResponse) })
-    .delete(APIURL + `semantic-search/${searchId}`, { body: JSON.stringify(deletedResponse) })
-    .post(APIURL + `semantic-search/${searchId}/stop`, { body: JSON.stringify(stoppedResponse) })
-    .post(APIURL + `semantic-search/${searchId}/resume`, { body: JSON.stringify(resumedResponse) })
-    .post(APIURL + 'semantic-search', { body: JSON.stringify(createdResponse) })
-    .post(APIURL + 'semantic-search/notify-updates', { body: JSON.stringify(okResponse) });
+    .get(`${APIURL}semantic-search/${searchId}`, { body: JSON.stringify(singleResponse) })
+    .get(`${APIURL}semantic-search`, { body: JSON.stringify(searchListResponse) })
+    .delete(`${APIURL}semantic-search/${searchId}`, { body: JSON.stringify(deletedResponse) })
+    .post(`${APIURL}semantic-search/${searchId}/stop`, { body: JSON.stringify(stoppedResponse) })
+    .post(`${APIURL}semantic-search/${searchId}/resume`, { body: JSON.stringify(resumedResponse) })
+    .post(`${APIURL}semantic-search`, { body: JSON.stringify(createdResponse) })
+    .post(`${APIURL}semantic-search/notify-updates`, { body: JSON.stringify(okResponse) });
   });
 
   afterEach(() => {
