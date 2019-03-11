@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MarkdownMedia render should render an iframe with the correct video id 1`] = `
+<div
+  className="video-container"
+>
+  <div>
+    <ReactPlayer
+      config={
+        Object {
+          "dailymotion": Object {
+            "params": Object {
+              "api": 1,
+              "endscreen-enable": false,
+            },
+            "preload": false,
+          },
+          "facebook": Object {
+            "appId": "1309697205772819",
+          },
+          "file": Object {
+            "attributes": Object {},
+            "forceAudio": false,
+            "forceDASH": false,
+            "forceHLS": false,
+            "forceVideo": false,
+            "hlsOptions": Object {},
+            "tracks": Array [],
+          },
+          "mixcloud": Object {
+            "options": Object {
+              "hide_cover": 1,
+            },
+          },
+          "soundcloud": Object {
+            "options": Object {
+              "buying": false,
+              "download": false,
+              "liking": false,
+              "sharing": false,
+              "show_comments": false,
+              "show_playcount": false,
+              "visual": true,
+            },
+          },
+          "twitch": Object {
+            "options": Object {},
+          },
+          "vimeo": Object {
+            "playerOptions": Object {
+              "autopause": false,
+              "byline": false,
+              "portrait": false,
+              "title": false,
+            },
+            "preload": false,
+          },
+          "wistia": Object {
+            "options": Object {},
+          },
+          "youtube": Object {
+            "playerVars": Object {
+              "iv_load_policy": 3,
+              "modestbranding": 1,
+              "playsinline": 1,
+              "rel": 0,
+              "showinfo": 0,
+            },
+            "preload": false,
+          },
+        }
+      }
+      controls={true}
+      height="100%"
+      loop={false}
+      muted={false}
+      onBuffer={[Function]}
+      onDuration={[Function]}
+      onEnded={[Function]}
+      onError={[Function]}
+      onPause={[Function]}
+      onPlay={[Function]}
+      onProgress={[Function]}
+      onReady={[Function]}
+      onSeek={[Function]}
+      onStart={[Function]}
+      playbackRate={1}
+      playing={false}
+      playsinline={false}
+      progressInterval={1000}
+      style={Object {}}
+      url="https://www.vimeo.com/253530307"
+      volume={null}
+      width="100%"
+      wrapper="div"
+    />
+  </div>
+  <div>
+    <div
+      className="timelink"
+      key="0"
+      onClick={[Function]}
+    >
+      <b>
+        <Connect(Icon)
+          icon="play"
+        />
+         
+        02:10
+      </b>
+      <span>
+        A rude awakening
+      </span>
+    </div>
+    <div
+      className="timelink"
+      key="1"
+      onClick={[Function]}
+    >
+      <b>
+        <Connect(Icon)
+          icon="play"
+        />
+         
+        05:30
+      </b>
+      <span>
+        Finally, you are up!
+      </span>
+    </div>
+  </div>
+</div>
+`;

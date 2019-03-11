@@ -3,16 +3,12 @@ import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
 
 const propsToConfig = (props) => {
-  const config = {
-    url: '',
-    options: {}
-  };
+  const config = { url: '', options: {} };
 
   let parsedProps = props.config.replace(/\(|\)/g, '').split(',');
   config.url = parsedProps.shift();
 
-  parsedProps = parsedProps.join(',') || '{}';
-  parsedProps = parsedProps.replace(/&quot;/g, '"');
+  parsedProps = (parsedProps.join(',') || '{}').replace(/&quot;/g, '"');
 
   try {
     parsedProps = JSON.parse(parsedProps);
