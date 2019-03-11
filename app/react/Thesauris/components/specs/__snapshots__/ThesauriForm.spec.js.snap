@@ -36,7 +36,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
               <div
                 className="validation-error"
               >
-                <Component
+                <Connect(Icon)
                   icon="exclamation-triangle"
                   size="xs"
                 />
@@ -62,7 +62,8 @@ exports[`ThesauriForm render should render groups and values 1`] = `
             tabIndex={500}
             type="button"
           >
-            <Connect(DirectionAwareIcon)
+            <Connect(Icon)
+              directionAware={true}
               icon="arrow-left"
               size="xs"
             />
@@ -118,7 +119,8 @@ exports[`ThesauriForm render should render groups and values 1`] = `
           className="btn btn-default"
           to="/settings/dictionaries"
         >
-          <Connect(DirectionAwareIcon)
+          <Connect(Icon)
+            directionAware={true}
             icon="arrow-left"
           />
           <span
@@ -131,7 +133,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
           className="btn btn-primary"
           onClick={[Function]}
         >
-          <Component
+          <Connect(Icon)
             icon="plus"
           />
           <span
@@ -144,7 +146,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
           className="btn btn-primary"
           onClick={[Function]}
         >
-          <Component
+          <Connect(Icon)
             icon="sort-alpha-down"
           />
           <span
@@ -156,7 +158,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
         <button
           className="btn btn-success save-template"
         >
-          <Component
+          <Connect(Icon)
             icon="save"
           />
           <span
