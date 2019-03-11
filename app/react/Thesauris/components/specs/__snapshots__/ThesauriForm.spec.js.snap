@@ -115,20 +115,9 @@ exports[`ThesauriForm render should render groups and values 1`] = `
       <div
         className="settings-footer"
       >
-        <Connect(I18NLink)
-          className="btn btn-default"
+        <BackButton
           to="/settings/dictionaries"
-        >
-          <Connect(Icon)
-            directionAware={true}
-            icon="arrow-left"
-          />
-          <span
-            className="btn-label"
-          >
-            Back
-          </span>
-        </Connect(I18NLink)>
+        />
         <a
           className="btn btn-primary"
           onClick={[Function]}
