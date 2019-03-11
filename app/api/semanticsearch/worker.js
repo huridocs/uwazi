@@ -27,6 +27,8 @@ class Worker extends EventEmitter {
       },
       (err) => {
         if (err) {
+          // eslint-disable-next-line
+          err.message = `Semantic search ${this.searchId} error: ${err.message}`;
           this.emit('error', err);
         } else {
           if (this.done) {

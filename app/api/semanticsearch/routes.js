@@ -1,8 +1,14 @@
 import Joi from 'joi';
 import semanticSearch from './semanticSearch';
 import { validateRequest } from '../utils';
+import handleError from '../utils/handleError';
 import needsAuthorization from '../auth/authMiddleware';
 import workers from './workerManager';
+
+
+workers.on('searchError', (searchId, error) => {
+  handleError(error);
+});
 
 export default (app) => {
   app.post('/api/semantic-search',
