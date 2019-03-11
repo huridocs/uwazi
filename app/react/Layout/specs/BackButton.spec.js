@@ -13,7 +13,7 @@ describe('Icon', () => {
   };
 
   it('should render the back button to the provided url', () => {
-    props = { url: '/some/url' };
+    props = { to: '/some/url' };
     render();
     expect(component).toMatchSnapshot();
   });
