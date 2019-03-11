@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Icon, { mapStateToProps } from '../Icon';
 
