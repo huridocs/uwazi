@@ -23,32 +23,30 @@ describe('DirectionAwareIcon (LTR and RTL support)', () => {
     render();
     expect(component.find(FontAwesomeIcon).props().flip).toBe(null);
 
-    props = { locale: 'es', omitted: true, ownProps: { icon: 'angle-right', size: 'xs', arbitrary: true } };
+    props = { locale: 'es', icon: 'angle-right', size: 'xs', arbitrary: true };
+    const { locale, ...expectedPassedProps } = props;
     render();
 
     const IconComponentProps = component.find(FontAwesomeIcon).props();
 
     expect(IconComponentProps.flip).toBe(null);
     expect(IconComponentProps.locale).not.toBeDefined();
-    expect(IconComponentProps.omitted).not.toBeDefined();
-    checkValues(IconComponentProps, props.ownProps);
+    checkValues(IconComponentProps, expectedPassedProps);
   });
 
   it('should flip the icon if language RTL', () => {
-    props = { locale: 'ar', ownProps: { icon: 'angle-right' } };
+    props = { locale: 'ar', icon: 'angle-right' };
     render();
     expect(component.find(FontAwesomeIcon).props().flip).toBe('horizontal');
     expect(component.find(FontAwesomeIcon).props().icon).toBe('angle-right');
   });
 
   describe('MapStateToProps', () => {
-    it('should map the locale and pass its own props to ownProps', () => {
+    it('should map the locale', () => {
       const state = { locale: 'en' };
-      const ownProps = { own: true };
 
-      const mappedProps = mapStateToProps(state, ownProps);
+      const mappedProps = mapStateToProps(state,);
       expect(mappedProps.locale).toBe(state.locale);
-      expect(mappedProps.ownProps).toBe(ownProps);
     });
   });
 });
