@@ -215,7 +215,7 @@ function routeMatch(req, res, location, languages) {
   .then((settings) => {
     createStore({
       user: req.user,
-      settings: { collection: settings.json },
+      settings: { collection: settings },
     });
 
     match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
