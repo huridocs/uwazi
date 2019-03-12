@@ -9,6 +9,7 @@ import { I18NUtils, t, Translate } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
+import settingsModel from 'api/settings';
 import fs from 'fs';
 
 import { getPropsFromRoute } from './utils';
@@ -19,7 +20,6 @@ import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
 import handleError from '../api/utils/handleError';
-
 
 let assets = {};
 
@@ -211,7 +211,7 @@ const allowedRoute = (user = {}, url) => {
 };
 
 function routeMatch(req, res, location, languages) {
-  api.get('settings')
+  settingsModel.get()
   .then((settings) => {
     createStore({
       user: req.user,
