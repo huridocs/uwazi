@@ -811,7 +811,6 @@ describe('entities', () => {
         it('should only delete multiselects and not throw an error', (done) => {
           entities.delete('multiselect')
           .then(() => {
-            // console.log('ARGS 0', search.bulkIndex.calls.argsFor(0)[0][0]);
             const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
             expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
             done();
