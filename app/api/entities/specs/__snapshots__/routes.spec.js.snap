@@ -162,6 +162,7 @@ Object {
                     "type": "string",
                     "valids": Array [
                       "",
+                      null,
                     ],
                   },
                   Object {
@@ -568,6 +569,7 @@ Object {
                 "type": "string",
                 "valids": Array [
                   "",
+                  null,
                 ],
               },
               Object {
