@@ -66,4 +66,26 @@ describe('Geolocation', () => {
       });
     });
   });
+
+  it('should render button to clear fields', () => {
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should hide clear fields button when lat and lon are empty', () => {
+    props.value = { lat: '', lon: '' };
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  describe('when clear fields button is clicked', () => {
+    it('should call onChange without a value', () => {
+      render();
+      const event = { preventDefault: jasmine.createSpy('preventDefault') };
+      const button = component.find('.clear-field-button button').first();
+      button.simulate('click', event);
+      expect(props.onChange.calls.argsFor(0)).toEqual([]);
+      expect(event.preventDefault).toHaveBeenCalled();
+    });
+  });
 });
