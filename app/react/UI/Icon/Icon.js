@@ -22,4 +22,4 @@ Icon.propTypes = {
 
 export const mapStateToProps = ({ locale }) => ({ locale });
 
-export default connect(() => ({}), () => ({}))(Icon);
+export default connect(mapStateToProps, () => ({}))(Icon);
