@@ -211,23 +211,29 @@ const allowedRoute = (user = {}, url) => {
 };
 
 function routeMatch(req, res, location, languages) {
-  createStore({ user: req.user });
+  api.get('settings')
+  .then((settings) => {
+    createStore({
+      user: req.user,
+      settings: { collection: settings.json },
+    });
 
-  match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
-    if (redirectLocation) {
-      return handleRedirect(res, redirectLocation);
-    }
-    if (renderProps && renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
+    match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
+      if (redirectLocation) {
+        return handleRedirect(res, redirectLocation);
+      }
+      if (renderProps && renderProps.params.lang && !languages.includes(renderProps.params.lang)) {
+        return handle404(res);
+      }
+      if (error) {
+        return respondError(res, error);
+      }
+      if (renderProps) {
+        return handleRoute(res, renderProps, req);
+      }
+
       return handle404(res);
-    }
-    if (error) {
-      return respondError(res, error);
-    }
-    if (renderProps) {
-      return handleRoute(res, renderProps, req);
-    }
-
-    return handle404(res);
+    });
   });
 }
 
