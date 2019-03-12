@@ -1,13 +1,11 @@
-export const rtlLanguagesList = [
-  'ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'
-];
-
 export default {
   delta: 12,
 
   name: 'add-RTL-to-settings-languages',
 
   description: 'Adds the missing RTL value for existing instances with RTL languages',
+
+  rtlLanguagesList: ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'],
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
@@ -18,7 +16,7 @@ export default {
 
     languages = languages.map((l) => {
       const migratedLanguage = l;
-      if (rtlLanguagesList.includes(l.key)) {
+      if (this.rtlLanguagesList.includes(l.key)) {
         migratedLanguage.rtl = true;
       }
 

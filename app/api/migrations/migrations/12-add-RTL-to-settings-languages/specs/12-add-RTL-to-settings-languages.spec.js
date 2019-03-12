@@ -1,6 +1,6 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
-import migration, { rtlLanguagesList } from '../index.js';
+import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration add-RTL-to-settings-languages', () => {
@@ -27,7 +27,7 @@ describe('migration add-RTL-to-settings-languages', () => {
     expect(rtlLanguages.length).toBe(10);
 
     rtlLanguages.forEach((language) => {
-      expect(rtlLanguagesList).toContain(language.key);
+      expect(migration.rtlLanguagesList).toContain(language.key);
     });
   });
 
