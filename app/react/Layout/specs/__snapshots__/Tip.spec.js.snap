@@ -4,7 +4,7 @@ exports[`Tip should render children inside tooltip classed containers 1`] = `
 <span
   className="property-help"
 >
-  <Component
+  <Connect(Icon)
     icon="question-circle"
   />
   <div

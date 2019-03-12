@@ -1,3 +1,9 @@
+.recharts-responsive-container,
+.recharts-wrapper {
+  /*!rtl:ignore*/
+  direction: ltr;
+}
+
 .recharts-tooltip-cursor {
   fill: #f80 !important;
   opacity: 0.1 !important;

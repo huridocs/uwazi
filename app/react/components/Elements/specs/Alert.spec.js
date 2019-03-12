@@ -1,42 +1,61 @@
-import React, { Component } from 'react';
-import TestUtils from 'react-dom/test-utils';
+import React from 'react';
+import { shallow } from 'enzyme';
 
 import Alert from '../Alert.js';
 
 describe('Alert', () => {
   let component;
+  let instance;
+  let props;
 
-  class TestComponent extends Component {
-    constructor(props) {
-      super(props);
-      this.state = { message: 'Finaly, you are up!', type: 'success' };
-    }
+  const render = () => {
+    component = shallow(<Alert {...props} />);
+    instance = component.instance();
+  };
 
-    render() {
-      return <Alert ref={ref => this.alert = ref} message={this.state.message} type={this.state.type}/>;
-    }
-  }
+  it('should display the message', () => {
+    props = { message: 'Finaly, you are up!', type: 'success' };
+    render();
+    expect(component).toMatchSnapshot();
+
+
+    props = { message: 'Warning!', type: 'warning' };
+    render();
+    expect(component).toMatchSnapshot();
+
+
+    props = { message: 'Danger!', type: 'danger' };
+    render();
+    expect(component).toMatchSnapshot();
+  });
 
   describe('show', () => {
-    it('should be true when the component has a message', () => {
-      component = TestUtils.renderIntoDocument(<TestComponent/>);
-      expect(component.alert.state.show).toBe(true);
+    it('should not render if component hasnt a message', () => {
+      props = { message: '' };
+      render();
+      expect(component).toMatchSnapshot();
     });
   });
 
   describe('hide()', () => {
-    it('should set show to false', () => {
-      expect(component.alert.state.show).toBe(true);
-      component.alert.hide();
-      expect(component.alert.state.show).toBe(false);
+    it('should hide the Alert', () => {
+      props = { message: 'Finaly, you are up!', type: 'success' };
+      render();
+
+      instance.hide();
+      component.update();
+      expect(component).toMatchSnapshot();
     });
   });
 
-  describe('hide()', () => {
-    it('should set show to false', () => {
-      component.alert.setState({ show: false });
-      component.alert.show();
-      expect(component.alert.state.show).toBe(true);
+  describe('show()', () => {
+    it('should show the Alert', () => {
+      props = { message: '' };
+      render();
+
+      instance.show();
+      component.update();
+      expect(component).toMatchSnapshot();
     });
   });
 });

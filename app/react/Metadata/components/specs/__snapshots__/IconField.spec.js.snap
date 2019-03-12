@@ -10,7 +10,7 @@ exports[`IconField should be open when has value 1`] = `
         <Connect(Translate)>
           remove icon
         </Connect(Translate)>
-        <Unknown
+        <Connect(Icon)
           icon="eye-slash"
         />
       </span>
@@ -22,7 +22,7 @@ exports[`IconField should be open when has value 1`] = `
         <Connect(Translate)>
           add icon
         </Connect(Translate)>
-        <Unknown
+        <Connect(Icon)
           icon="eye"
         />
       </span>
@@ -64,7 +64,7 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
         <Connect(Translate)>
           remove icon
         </Connect(Translate)>
-        <Unknown
+        <Connect(Icon)
           icon="eye-slash"
         />
       </span>
@@ -76,7 +76,7 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
         <Connect(Translate)>
           add icon
         </Connect(Translate)>
-        <Unknown
+        <Connect(Icon)
           icon="eye"
         />
       </span>

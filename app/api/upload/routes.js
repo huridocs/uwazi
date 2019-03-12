@@ -89,8 +89,14 @@ export default (app) => {
         fullText: conversion.fullText,
         totalPages: conversion.totalPages,
         formattedPlainTextPages: conversion.formatted,
-        file: { ...doc.file, language: languages.detect(Object.values(conversion.fullText).join(''), 'franc') },
-        toc: [],
+        file: {
+          ...doc.file,
+          language: languages.detect(
+            Object.values(conversion.fullTextWithoutPages).join(''),
+            'franc'
+          )
+        },
+        toc: []
       };
     });
 

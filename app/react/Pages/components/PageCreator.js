@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { I18NLink } from 'app/I18N';
 import { MarkDown } from 'app/ReactReduxForms';
 import { resetPage, savePage } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
+import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import validator from './ValidatePage';
@@ -52,7 +52,7 @@ export class PageCreator extends Component {
               <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
               <div className="alert alert-info">
                 <Icon icon="info-circle" size="2x" />
-                <div>
+                <div className="force-ltr">
                   Use <a target="_blank" href="https://guides.github.com/features/mastering-markdown/">Markdown</a> syntax
                   to create page content<br/>
                   You can also embed advanced components like maps, charts
@@ -64,10 +64,7 @@ export class PageCreator extends Component {
             </div>
           </div>
           <div className="settings-footer">
-            <I18NLink to={backUrl} className="btn btn-default">
-              <Icon icon="arrow-left" />
-              <span className="btn-label">Back</span>
-            </I18NLink>
+            <BackButton to={backUrl} />
             <button
               type="submit"
               className="btn btn-success save-template"
