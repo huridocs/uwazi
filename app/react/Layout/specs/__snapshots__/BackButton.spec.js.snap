@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Icon should render the back button to the provided url 1`] = `
+<Connect(I18NLink)
+  className="btn btn-default"
+  to="/some/url"
+>
+  <Connect(Icon)
+    directionAware={true}
+    icon="arrow-left"
+  />
+  <span
+    className="btn-label"
+  >
+    Back
+  </span>
+</Connect(I18NLink)>
+`;

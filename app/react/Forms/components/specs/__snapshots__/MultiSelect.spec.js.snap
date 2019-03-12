@@ -8,7 +8,7 @@ exports[`MultiSelect should not render aggregations on the groups when not defin
     className="multiselectItem-action"
     onClick={[Function]}
   >
-    <Component
+    <Connect(Icon)
       icon="caret-down"
     />
   </span>

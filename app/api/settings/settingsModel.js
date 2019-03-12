@@ -4,6 +4,7 @@ import instanceModel from 'api/odm';
 const languagesSchema = new mongoose.Schema({
   key: String,
   label: String,
+  rtl: Boolean,
   default: Boolean
 });
 

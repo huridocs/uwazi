@@ -219,7 +219,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="alert alert-info">
               <Icon icon="home" size="2x" />
-              <div>
+              <div className="force-ltr">
                 The landing page is the first thing users will see when visiting your Uwazi instance.<br />
                 You can use any URL from your Uwazi instance as a landing page, examples:
                 <ul>
@@ -254,7 +254,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="alert alert-info">
               <Icon icon="question-circle" size="2x" />
-              <div>
+              <div className="force-ltr">
                 {'This is a JSON configuration object like {"url": "matomo.server.url", "id": "site_id"}.'}
               </div>
             </div>
@@ -281,7 +281,7 @@ export class CollectionSettings extends Component {
             </div>
             <div className="alert alert-info">
               <Icon icon="envelope" size="2x" />
-              <div>
+              <div className="force-ltr">
                 This is a JSON configuration object that should match the options values required by Nodemailer,
                 as explained in <a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a><br />
                 This setting takes precedence over all other mailer configuration.<br />

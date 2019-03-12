@@ -77,7 +77,7 @@ export class MetadataTemplate extends Component {
           </ShowIf>
           <div className="settings-footer">
             <I18NLink to={this.props.backUrl} className="btn btn-default">
-              <Icon icon="arrow-left" />
+              <Icon icon="arrow-left" directionAware />
               <span className="btn-label">Back</span>
             </I18NLink>
             <button type="submit" className="btn btn-success save-template" disabled={!!this.props.savingTemplate}>

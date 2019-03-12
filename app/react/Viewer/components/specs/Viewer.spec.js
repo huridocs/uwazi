@@ -96,6 +96,20 @@ describe('Viewer', () => {
     expect(component.find('pre').length).toBe(1);
   });
 
+  it('should add the plain text direction', () => {
+    render();
+    expect(component.find('pre').props().className).toBe('force-ltr');
+
+    props.doc = props.doc.set('file', Immutable({ language: 'arb' }));
+    render();
+    expect(component.find('pre').props().className).toBe('force-rtl');
+
+    props.doc = props.doc.set('file', null);
+    props.doc = props.doc.set('_id', null);
+    render();
+    expect(component.find('pre').props().className).toBe('force-ltr');
+  });
+
   describe('createConnectionPanel', () => {
     it('should include the create connections panel with correct props', () => {
       render();

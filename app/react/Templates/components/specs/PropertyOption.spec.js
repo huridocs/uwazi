@@ -20,7 +20,7 @@ describe('PropertyOption', () => {
 
   function renderComponent(ComponentToRender, props) {
     let result;
-    store = createStore(() => {});
+    store = createStore(() => ({}));
     TestUtils.renderIntoDocument(<Provider store={store}><ComponentToRender ref={ref => result = ref} {...props}/></Provider>);
     return result;
   }

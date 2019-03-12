@@ -26,7 +26,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
       <div
         className="upload-box_wrapper"
       >
-        <Component
+        <Connect(Icon)
           icon="upload"
         />
         <button
@@ -123,7 +123,7 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
       <div
         className="upload-box_wrapper"
       >
-        <Component
+        <Connect(Icon)
           icon="upload"
         />
         <button
@@ -138,7 +138,7 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
       <div
         className="uploading"
       >
-        <Component
+        <Connect(Icon)
           icon="spinner"
           spin={true}
         />

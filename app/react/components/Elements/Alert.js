@@ -6,7 +6,8 @@ import { Icon } from 'UI';
 class Alert extends Component {
   constructor(props) {
     super(props);
-    this.state = { show: !!this.props.message };
+    const { message } = this.props;
+    this.state = { show: !!message };
   }
 
   hide() {
@@ -18,32 +19,37 @@ class Alert extends Component {
   }
 
   render() {
-    const type = this.props.type || 'info';
+    const { show } = this.state;
+    const { type, message } = this.props;
     const cssClass = `alert alert-${type}`;
     let icon = 'info-circle';
+
     if (type === 'warning' || type === 'danger') {
       icon = 'exclamation-triangle';
     }
 
     return (
       <div className="alert-wrapper">
-        {(() => {
-          if (this.state.show) {
-            return (
-              <div className={cssClass}><span className="alert-icon">
-                <Icon icon={icon} />
-                                        </span><span className="alert-message">{this.props.message}</span>
-                <a onClick={this.hide} className="alert-close">
-                  <Icon icon="times" />
-                </a>
-              </div>
-            );
-          }
-        })()}
+        {show && (
+          <div className={cssClass}>
+            <span className="alert-icon">
+              <Icon icon={icon} />
+            </span>
+            <span className="alert-message">{message}</span>
+            <a onClick={this.hide} className="alert-close">
+              <Icon icon="times" />
+            </a>
+          </div>
+        )}
       </div>
     );
   }
 }
+
+Alert.defaultProps = {
+  message: '',
+  type: 'info',
+};
 
 Alert.propTypes = {
   message: PropTypes.string,

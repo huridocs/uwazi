@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { I18NLink } from 'app/I18N';
+import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -54,10 +54,7 @@ export class RelationTypeForm extends Component {
             </div>
             <div className="panel-body">Currently connections only need a title.</div>
             <div className="settings-footer">
-              <I18NLink to="/settings/connections" className="btn btn-default">
-                <Icon icon="arrow-left" />
-                <span className="btn-label">Back</span>
-              </I18NLink>
+              <BackButton to="/settings/connections" />
               <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save"/>
                 <span className="btn-label">Save</span>
