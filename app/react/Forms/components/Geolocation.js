@@ -4,6 +4,7 @@ import Map from 'app/Map/Map';
 import { Translate } from 'app/I18N';
 
 function isCoordValid(coord) {
+  // eslint-disable-next-line no-restricted-globals
   return typeof coord === 'number' && !isNaN(coord);
 }
 
@@ -72,9 +73,9 @@ export default class Geolocation extends Component {
         </div>
         { (isCoordValid(lat) || isCoordValid(lon)) && (
           <div className="clear-field-button">
-              <button onClick={this.clearCoordinates}>
-                <Translate>Clear coordinates</Translate>
-              </button>
+            <button onClick={this.clearCoordinates}>
+              <Translate>Clear coordinates</Translate>
+            </button>
           </div>
         )}
       </div>
