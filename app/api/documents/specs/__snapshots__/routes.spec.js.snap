@@ -257,6 +257,7 @@ Object {
                 "type": "string",
                 "valids": Array [
                   "",
+                  null,
                 ],
               },
               Object {
