@@ -2,6 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
 
+function isCoordValid(coord) {
+  return typeof coord === 'number' && !isNaN(coord);
+}
+
 export default class Geolocation extends Component {
   constructor(props) {
     super(props);
@@ -11,7 +15,11 @@ export default class Geolocation extends Component {
   }
 
   onChange(value) {
-    this.props.onChange(value);
+    if (!isCoordValid(value.lat) && !isCoordValid(value.lon)) {
+      this.props.onChange();
+    } else {
+      this.props.onChange(value);
+    }
   }
 
   latChange(e) {

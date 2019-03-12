@@ -35,6 +35,16 @@ describe('Geolocation', () => {
       latInput.simulate('change', { target: { value: '19' } });
       expect(props.onChange).toHaveBeenCalledWith({ lat: 19, lon: -17.2 });
     });
+    describe('if lon is empty and lat is set to empty', () => {
+      it('should call onChange without a value', () => {
+        props.value.lon = '';
+        render();
+        const inputs = component.find('input');
+        const latInput = inputs.first();
+        latInput.simulate('change', { target: { value: '' } });
+        expect(props.onChange.calls.argsFor(0)).toEqual([]);
+      });
+    });
   });
 
   describe('when lon changes', () => {
@@ -44,6 +54,16 @@ describe('Geolocation', () => {
       const lonInput = inputs.last();
       lonInput.simulate('change', { target: { value: '28' } });
       expect(props.onChange).toHaveBeenCalledWith({ lat: 32.18, lon: 28 });
+    });
+    describe('if lat is empty and lon is set to empty', () => {
+      it('should call onChange without a value', () => {
+        props.value.lat = '';
+        render();
+        const inputs = component.find('input');
+        const lonInput = inputs.last();
+        lonInput.simulate('change', { target: { value: '' } });
+        expect(props.onChange.calls.argsFor(0)).toEqual([]);
+      });
     });
   });
 });
