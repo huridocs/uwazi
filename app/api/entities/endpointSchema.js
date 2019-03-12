@@ -7,7 +7,7 @@ const dateRangeSchema = Joi.object().keys({
 
 const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.alternatives().try(
   Joi.number().allow('').allow(null),
-  Joi.string().allow(''),
+  Joi.string().allow('').allow(null),
   dateRangeSchema,
   Joi.object().keys({
     lat: Joi.number(),
