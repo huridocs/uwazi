@@ -19,6 +19,7 @@ export default [
 { key: 'Apply properties to documents/entities', label: 'Apply properties to documents/entities' },
 { key: 'Attachments', label: 'Attachments' },
 { key: 'Attachments', label: 'Attachments' },
+{ key: 'Back', label: 'Back' },
 { key: 'Cancel', label: 'Cancel' },
 { key: 'Cancel', label: 'Cancel' },
 { key: 'Change password', label: 'Change password' },

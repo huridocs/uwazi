@@ -148,7 +148,7 @@ class DocumentsList extends Component {
               return null;
             })()}
             <NeedAuthorization>
-              <div className="col-sm-12 text-center protip">
+              <div className="col-sm-12 force-ltr text-center protip">
                 <Icon icon="lightbulb" /> <b>ProTip!</b>
                 <span>Use <span className="protip-key">cmd</span> or <span className="protip-key">shift</span>&nbsp;
                 + click to select multiple files.

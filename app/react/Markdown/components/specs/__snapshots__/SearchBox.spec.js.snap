@@ -15,7 +15,7 @@ exports[`SearchBox should render a basic input that binds to the correct model 1
         className="btn btn-primary"
         type="submit"
       >
-        <Component
+        <Connect(Icon)
           icon="search"
         />
       </button>

@@ -6,7 +6,8 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
   onClick={[Function]}
   to="/entity/123"
 >
-  <Component
+  <Connect(Icon)
+    directionAware={true}
     icon="angle-right"
   />
    
@@ -20,7 +21,8 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
   onClick={[Function]}
   to="/entity/123?searchTerm=something"
 >
-  <Component
+  <Connect(Icon)
+    directionAware={true}
     icon="angle-right"
   />
    
