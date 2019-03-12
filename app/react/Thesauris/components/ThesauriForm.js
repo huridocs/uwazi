@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { I18NLink } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 import { notEmpty } from 'app/Metadata/helpers/validator';
+import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -140,7 +140,7 @@ export class ThesauriForm extends Component {
                   alt="move"
                   onClick={this.moveToGroup.bind(this, null)}
                 >
-                  <Icon icon="arrow-left" size="xs"/>
+                  <Icon icon="arrow-left" size="xs" directionAware />
                 </button>
               </li>
               {values.map((value, index) => (
@@ -158,10 +158,7 @@ export class ThesauriForm extends Component {
               )}
             </ul>
             <div className="settings-footer">
-              <I18NLink to="/settings/dictionaries" className="btn btn-default">
-                <Icon icon="arrow-left" />
-                <span className="btn-label">Back</span>
-              </I18NLink>
+              <BackButton to="/settings/dictionaries" />
               <a className="btn btn-primary" onClick={this.props.addGroup}>
                 <Icon icon="plus" />
                 <span className="btn-label">Add group</span>

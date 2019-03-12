@@ -28,14 +28,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={true}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={true}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -53,14 +53,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -83,14 +83,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -108,14 +108,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -151,14 +151,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -176,14 +176,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -206,14 +206,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -231,14 +231,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -261,14 +261,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -286,14 +286,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -316,14 +316,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>
@@ -341,14 +341,14 @@ exports[`SortButtons Sort options should use templates sortable properties as op
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-down"
             />
           </ShowIf>
           <ShowIf
             if={false}
           >
-            <Component
+            <Connect(Icon)
               icon="caret-up"
             />
           </ShowIf>

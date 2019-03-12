@@ -1,6 +1,6 @@
 
 const languages = {
-  ara: { franc: 'ara', elastic: 'arabic', ISO639_1: 'ar' },
+  arb: { franc: 'arb', elastic: 'arabic', ISO639_1: 'ar' },
   bul: { franc: 'bul', elastic: 'bulgarian', ISO639_1: 'bg' },
   cat: { franc: 'cat', elastic: 'catalan', ISO639_1: 'ca' },
   cjk: { franc: 'cjk', elastic: 'cjk', ISO639_1: null },

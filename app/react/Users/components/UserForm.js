@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { I18NLink } from 'app/I18N';
+import Immutable from 'immutable';
+
+import { t } from 'app/I18N';
 import { LocalForm, Field } from 'react-redux-form';
 import { notEmpty } from 'app/Metadata/helpers/validator';
 import { FormGroup } from 'app/Forms';
-import t from 'app/I18N/t';
-import Immutable from 'immutable';
+import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 class UserForm extends Component {
@@ -26,10 +27,7 @@ class UserForm extends Component {
     const backUrl = '/settings/users';
     return (
       <div className="settings-footer">
-        <I18NLink to={backUrl} className="btn btn-default">
-          <Icon icon="arrow-left" />
-          <span className="btn-label">Back</span>
-        </I18NLink>
+        <BackButton to={backUrl} />
         <button type="submit" className="btn btn-success save-template">
           <Icon icon="save" />
           <span className="btn-label">{t('System', 'Save')}</span>

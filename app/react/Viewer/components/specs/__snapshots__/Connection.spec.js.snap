@@ -42,7 +42,7 @@ exports[`Connection should render the reference 1`] = `
             className="item-shortcut btn btn-default btn-hover-danger"
             onClick={[Function]}
           >
-            <Unknown
+            <Connect(Icon)
               icon="trash-alt"
             />
           </a>
@@ -56,7 +56,7 @@ exports[`Connection should render the reference 1`] = `
           onClick={[Function]}
           to="/entity/undefined"
         >
-          <Unknown
+          <Connect(Icon)
             icon="file"
           />
         </Connect(I18NLink)>

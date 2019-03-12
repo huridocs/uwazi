@@ -11,14 +11,14 @@
     "plugins": [ "react", "jasmine" ],
 
     "rules": {
-      "indent": ["warn", 2, { 
-        "MemberExpression": 0, 
-        "CallExpression": {"arguments": "off"}, 
-        "FunctionDeclaration": {"parameters": "off"}, 
-        "FunctionExpression": {"parameters": "off"}, 
-        "ignoreComments": true, 
+      "indent": ["warn", 2, {
+        "MemberExpression": 0,
+        "CallExpression": {"arguments": "off"},
+        "FunctionDeclaration": {"parameters": "off"},
+        "FunctionExpression": {"parameters": "off"},
+        "ignoreComments": true,
         "ignoredNodes": ["JSXElement *"],
-        "ArrayExpression": "off", 
+        "ArrayExpression": "off",
         "ObjectExpression": "off"}
       ],
       "operator-linebreak": ["warn", "after"],
@@ -68,7 +68,7 @@
       "lines-between-class-members": ["warn"],
       "max-lines": ["warn", 250],
       "max-params": ["warn", 4],
-      "max-lines-per-function": ["warn", { "max": 25 }],
+      "max-lines-per-function": "off",
       "max-statements": ["warn", { "max": 10 }, { "ignoreTopLevelFunctions": true }],
 
 

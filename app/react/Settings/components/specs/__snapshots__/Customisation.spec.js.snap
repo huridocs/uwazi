@@ -37,7 +37,7 @@ exports[`Customisation should render Customisation component 1`] = `
           className="btn btn-success"
           type="submit"
         >
-          <Component
+          <Connect(Icon)
             icon="save"
           />
           <span
