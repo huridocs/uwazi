@@ -19,9 +19,10 @@ export default class Geolocation extends Component {
 
   onChange(value) {
     if (!isCoordValid(value.lat) && !isCoordValid(value.lon)) {
-      return this.props.onChange();
+      this.props.onChange();
+      return;
     }
-    return this.props.onChange(value);
+    this.props.onChange(value);
   }
 
   latChange(e) {
