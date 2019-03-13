@@ -81,11 +81,9 @@ describe('Geolocation', () => {
   describe('when clear fields button is clicked', () => {
     it('should call onChange without a value', () => {
       render();
-      const event = { preventDefault: jasmine.createSpy('preventDefault') };
       const button = component.find('.clear-field-button button').first();
-      button.simulate('click', event);
+      button.simulate('click');
       expect(props.onChange.calls.argsFor(0)).toEqual([]);
-      expect(event.preventDefault).toHaveBeenCalled();
     });
   });
 });

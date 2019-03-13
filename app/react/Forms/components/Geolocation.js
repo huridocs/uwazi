@@ -19,10 +19,9 @@ export default class Geolocation extends Component {
 
   onChange(value) {
     if (!isCoordValid(value.lat) && !isCoordValid(value.lon)) {
-      this.props.onChange();
-    } else {
-      this.props.onChange(value);
+      return this.props.onChange();
     }
+    return this.props.onChange(value);
   }
 
   latChange(e) {
@@ -39,8 +38,7 @@ export default class Geolocation extends Component {
     this.onChange({ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]) });
   }
 
-  clearCoordinates(e) {
-    e.preventDefault();
+  clearCoordinates() {
     this.props.onChange();
   }
 
@@ -73,7 +71,7 @@ export default class Geolocation extends Component {
         </div>
         { (isCoordValid(lat) || isCoordValid(lon)) && (
           <div className="clear-field-button">
-            <button onClick={this.clearCoordinates}>
+            <button type="button" onClick={this.clearCoordinates}>
               <Translate>Clear coordinates</Translate>
             </button>
           </div>
