@@ -29,6 +29,8 @@ import ViewMetadataPanel from './ViewMetadataPanel';
 import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 
+import determineDirection from '../utils/determineDirection';
+
 export class Viewer extends Component {
   constructor(props) {
     super(props);
@@ -90,6 +92,8 @@ export class Viewer extends Component {
 
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
+    const documentFile = doc.get('file') ? doc.get('file').toJS() : {};
+
     return (
       <div className="row">
         <Helmet title={`${documentTitle} • Page ${page}`} />
@@ -118,7 +122,7 @@ export class Viewer extends Component {
           <div className="main-wrapper">
             <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
               {raw || this.state.firstRender ?
-                <pre>{pageText}</pre> :
+                <pre className={determineDirection(documentFile)}>{pageText}</pre> :
                 <SourceDocument searchTerm={searchTerm} onPageChange={this.props.onPageChange} onDocumentReady={this.props.onDocumentReady}/>
               }
             </ShowIf>

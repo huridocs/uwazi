@@ -95,7 +95,7 @@ export class Languages extends Component {
         <ul className="list-group document-types">
           {currentLanguages.map((language, index) => (
             <li key={index} className="list-group-item">
-              <span>
+              <span className="force-ltr">
                 {`${language.label} (${language.key})`}
               </span>
               {language.default ? Languages.defaultLanguage() : ''}
@@ -112,7 +112,7 @@ export class Languages extends Component {
             const notSupported = !elasticSupportedIsos.includes(language.key);
             return (
               <li key={index} className="list-group-item">
-                <span>
+                <span className="force-ltr">
                   {`${language.label} (${language.key}) `}
                   {notSupported ? Languages.notSupportedLanguage() : ''}
                 </span>

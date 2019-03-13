@@ -11,6 +11,8 @@ import Text from 'app/Viewer/utils/Text';
 import Immutable from 'immutable';
 import { highlightSnippet } from 'app/Viewer/actions/uiActions';
 
+import determineDirection from '../utils/determineDirection';
+
 import { APIURL } from '../../config.js';
 
 export class Document extends Component {
@@ -21,17 +23,33 @@ export class Document extends Component {
     this.pdfLoaded = this.pdfLoaded.bind(this);
   }
 
-  handleMouseUp() {
-    if (this.props.disableTextSelection) {
-      return;
-    }
-
-    if (!this.text.selected()) {
-      this.props.unsetSelection();
-      return;
-    }
-    this.onTextSelected();
+  componentWillMount() {
+    this.props.unsetSelection();
   }
+
+  componentDidMount() {
+    this.text = Text(this.pagesContainer);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
+      this.props.unsetSelection();
+    }
+  }
+
+  componentDidUpdate() {
+    this.text.renderReferences(this.props.references.toJS());
+    this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
+    this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
+    this.text.activate(this.props.activeReference);
+    highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
+  }
+
+  onTextSelected() {
+    this.props.setSelection(this.text.getSelection());
+  }
+
+  handleOver() {}
 
   handleClick(e) {
     if (e.target.className && e.target.className.indexOf('reference') !== -1 && !this.text.selected()) {
@@ -47,33 +65,16 @@ export class Document extends Component {
     }
   }
 
-  handleOver() {
-  }
-
-  componentDidMount() {
-    this.text = Text(this.pagesContainer);
-  }
-
-  onTextSelected() {
-    this.props.setSelection(this.text.getSelection());
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.doc.get('_id') !== nextProps.doc.get('_id')) {
-      this.props.unsetSelection();
+  handleMouseUp() {
+    if (this.props.disableTextSelection) {
+      return;
     }
-  }
 
-  componentWillMount() {
-    this.props.unsetSelection();
-  }
-
-  componentDidUpdate() {
-    this.text.renderReferences(this.props.references.toJS());
-    this.text.renderReferences(this.props.doc.toJS().toc || [], 'toc-ref', 'span');
-    this.text.simulateSelection(this.props.selection, this.props.forceSimulateSelection);
-    this.text.activate(this.props.activeReference);
-    highlightSnippet(this.props.selectedSnippet, this.props.searchTerm);
+    if (!this.text.selected()) {
+      this.props.unsetSelection();
+      return;
+    }
+    this.onTextSelected();
   }
 
   pdfLoaded(range) {
@@ -102,7 +103,7 @@ export class Document extends Component {
 
     return (
       <div>
-        <div className={`_${doc._id} document ${this.props.className}`} >
+        <div className={`_${doc._id} document ${this.props.className} ${determineDirection(doc.file || {})}`} >
           <Header/>
           <div
             className="pages"
@@ -112,9 +113,7 @@ export class Document extends Component {
             onClick={this.handleClick.bind(this)}
             onMouseOver={this.handleOver.bind(this)}
           >
-            <ShowIf if={!doc._id || !doc.pdfInfo}>
-              <Loader />
-            </ShowIf>
+            <ShowIf if={!doc._id || !doc.pdfInfo}><Loader /></ShowIf>
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
                 onPageChange={this.props.onPageChange}

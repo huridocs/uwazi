@@ -70,6 +70,7 @@ export default (app) => {
     validateRequest(Joi.object().keys({
       key: Joi.string(),
       label: Joi.string(),
+      rtl: Joi.boolean(),
     }).required()),
 
     (req, res, next) => {
