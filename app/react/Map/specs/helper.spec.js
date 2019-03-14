@@ -57,7 +57,7 @@ describe('map helper', () => {
 
       entities = Immutable.fromJS([
         { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 }, secondGeoProperty: { lat: 5, lon: 13 } } },
-        { template: 't1', metadata: { geoProperty: { lat: 5, lon: 22 } } },
+        { template: 't1', metadata: { geoProperty: { lat: 5, lon: 22 }, secondGeoProperty: null } },
         { template: 't3', metadata: { notGeo: { lat: 1977, lon: 7 } } },
         { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
       ]);
