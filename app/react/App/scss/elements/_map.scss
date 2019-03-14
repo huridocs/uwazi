@@ -233,13 +233,22 @@ a.mapboxgl-ctrl-logo {
 }
 
 .mapboxgl-popup {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: -webkit-flex;
-    display: flex;
-    will-change: transform;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: -webkit-flex;
+  display: flex;
+  will-change: transform;
+  pointer-events: none;
+
+  .popup-name {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  .popup-separator {
+    margin-right: 0.5em;
+  }
 }
 .mapboxgl-popup-anchor-top,
 .mapboxgl-popup-anchor-top-left,

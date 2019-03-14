@@ -15,8 +15,9 @@ export class MapView extends Component {
     return (
       <div>
         <TemplateLabel template={marker.properties.entity.template} />
-        &nbsp;
-        {marker.properties.entity.title}
+        <span className="popup-name">{marker.properties.entity.title}</span>
+        <span className="popup-separator">:</span>
+        {t(marker.properties.entity.template, marker.label)}
       </div>
     );
   }
@@ -37,17 +38,18 @@ export class MapView extends Component {
   }
 
   render() {
+    const { storeKey, markers } = this.props;
     return (
       <div className="library-map main-wrapper" style={{ width: '100%', height: '100%' }}>
-        <div className="search-list"><SearchBar storeKey={this.props.storeKey}/></div>
+        <div className="search-list"><SearchBar storeKey={storeKey}/></div>
         <div className="documents-counter">
-          <span><b>{this.props.markers.get('totalRows')}</b> {t('System', 'documents')}</span>
+          <span><b>{markers.get('totalRows')}</b> {t('System', 'documents')}</span>
         </div>
-        <Markers entities={this.props.markers.get('rows')}>
-          {markers => (
+        <Markers entities={markers.get('rows')}>
+          {processedMarkers => (
             <Map
               ref={(ref) => { this.map = ref; }}
-              markers={markers}
+              markers={processedMarkers}
               zoom={1}
               clickOnMarker={this.clickOnMarker}
               clickOnCluster={this.clickOnCluster}
