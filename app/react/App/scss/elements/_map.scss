@@ -241,6 +241,10 @@ a.mapboxgl-ctrl-logo {
   will-change: transform;
   pointer-events: none;
 
+  .template-label {
+    white-space: nowrap;
+  }
+
   .popup-name {
     margin-left: 0.5em;
     margin-right: 0.5em;
@@ -248,6 +252,11 @@ a.mapboxgl-ctrl-logo {
 
   .popup-separator {
     margin-right: 0.5em;
+    color: #999;
+  }
+
+  .popup-metadata-property {
+    color: #666;
   }
 }
 .mapboxgl-popup-anchor-top,

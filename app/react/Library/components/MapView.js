@@ -14,10 +14,12 @@ export class MapView extends Component {
   static renderInfo(marker) {
     return (
       <div>
-        <TemplateLabel template={marker.properties.entity.template} />
+        <span className="template-label">
+          <TemplateLabel template={marker.properties.entity.template} />
+        </span>
         <span className="popup-name">{marker.properties.entity.title}</span>
         <span className="popup-separator">:</span>
-        {t(marker.properties.entity.template, marker.label)}
+        <span className="popup-metadata-property">{t(marker.properties.entity.template, marker.label)}</span>
       </div>
     );
   }
