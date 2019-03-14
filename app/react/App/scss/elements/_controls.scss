@@ -228,7 +228,7 @@ input[type="checkbox"][disabled] ~ label {
     cursor: not-allowed;
 }
 
-.icon-selector {
+.icon-selector, .clear-field-button {
   button {
     background: none;
     border: none;

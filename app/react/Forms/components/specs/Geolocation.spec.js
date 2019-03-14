@@ -46,4 +46,47 @@ describe('Geolocation', () => {
       expect(props.onChange).toHaveBeenCalledWith({ lat: 32.18, lon: 28 });
     });
   });
+
+  describe('empty lat/lon values', () => {
+    function testInputWillTriggerOnChangeWithoutValue(getInput) {
+      render();
+      const inputs = component.find('input');
+      const input = getInput(inputs);
+      input.simulate('change', { target: { value: '' } });
+      expect(props.onChange.calls.argsFor(0)).toEqual([]);
+    }
+    describe('if lon is empty and lat is set to empty', () => {
+      it('should call onChange without a value', () => {
+        props.value.lon = '';
+        testInputWillTriggerOnChangeWithoutValue(inputs => inputs.first());
+      });
+    });
+
+    describe('if lat is empty and lon is set to empty', () => {
+      it('should call onChange without a value', () => {
+        props.value.lat = '';
+        testInputWillTriggerOnChangeWithoutValue(inputs => inputs.last());
+      });
+    });
+  });
+
+  it('should render button to clear fields', () => {
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should hide clear fields button when lat and lon are empty', () => {
+    props.value = { lat: '', lon: '' };
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  describe('when clear fields button is clicked', () => {
+    it('should call onChange without a value', () => {
+      render();
+      const button = component.find('.clear-field-button button').first();
+      button.simulate('click');
+      expect(props.onChange.calls.argsFor(0)).toEqual([]);
+    });
+  });
 });
