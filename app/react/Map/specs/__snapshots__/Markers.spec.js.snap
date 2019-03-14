@@ -13,6 +13,30 @@ Array [
             "lat": 7,
             "lon": 13,
           },
+          "secondGeoProperty": Object {
+            "lat": 5,
+            "lon": 13,
+          },
+        },
+        "template": "t1",
+      },
+    },
+  },
+  Object {
+    "latitude": 5,
+    "longitude": 13,
+    "properties": Object {
+      "color": 0,
+      "entity": Object {
+        "metadata": Object {
+          "geoProperty": Object {
+            "lat": 7,
+            "lon": 13,
+          },
+          "secondGeoProperty": Object {
+            "lat": 5,
+            "lon": 13,
+          },
         },
         "template": "t1",
       },

@@ -2,21 +2,34 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-function getMarker(entity, templates) {
+function getEntityMarkers(entity, templates) {
   const template = templates.find(_t => _t.get('_id') === entity.get('template'));
   const color = templates.indexOf(template);
-  const geolocationProp = template.toJS().properties.find(p => p.type === 'geolocation');
-  if (geolocationProp) {
-    const _entity = entity.toJS();
-    const marker = _entity.metadata[geolocationProp.name];
-    return marker ? { properties: { entity: _entity, color }, latitude: marker.lat, longitude: marker.lon } : null;
+  const geolocationProps = template.toJS().properties.filter(p => p.type === 'geolocation').map(p => p.name);
+
+  if (geolocationProps) {
+    const entityData = entity.toJS();
+    const markers = Object.keys(entityData.metadata).reduce((validMarkers, property) => {
+      if (geolocationProps.includes(property)) {
+        const { lat, lon } = entityData.metadata[property];
+        validMarkers.push({ properties: { entity: entityData, color }, latitude: lat, longitude: lon });
+      }
+      return validMarkers;
+    }, []);
+    return markers;
   }
 
-  return null;
+  return [];
 }
 
 function getMarkers(entities, templates) {
-  return entities.map(entity => getMarker(entity, templates)).toJS().filter(m => m);
+  let markers = [];
+  entities.forEach((entity) => {
+    const entityMarkers = getEntityMarkers(entity, templates); //).toJS().filter(m => m);
+    markers = markers.concat(entityMarkers);
+  });
+
+  return markers;
 }
 
 export const MarkersComponent = ({ children, entities, templates }) => children(getMarkers(entities, templates));

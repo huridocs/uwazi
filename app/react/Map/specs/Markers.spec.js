@@ -11,6 +11,7 @@ describe('Markers component', () => {
       _id: 't1',
       properties: [
         { type: 'geolocation', name: 'geoProperty' },
+        { type: 'geolocation', name: 'secondGeoProperty' },
       ]
     }, {
       _id: 't2',
@@ -27,7 +28,7 @@ describe('Markers component', () => {
 
   it('should return parsed markers from entities array', () => {
     const entities = Immutable.fromJS([
-      { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
+      { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 }, secondGeoProperty: { lat: 5, lon: 13 } } },
       { template: 't1', metadata: { geoProperty: { lat: 5, lon: 22 } } },
       { template: 't3', metadata: { notGeo: { lat: 1977, lon: 7 } } },
       { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
@@ -42,6 +43,7 @@ describe('Markers component', () => {
       </MarkersComponent>
     );
 
+    expect(resultMarkers.length).toBe(4);
     expect(resultMarkers).toMatchSnapshot();
   });
 
