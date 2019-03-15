@@ -134,4 +134,33 @@ describe('ThesauriForm', () => {
       expect(mapStateToProps(state).thesauris).toEqual(Immutable.fromJS([{ name: 'Countries' }]));
     });
   });
+
+  describe('validation', () => {
+    describe('name duplicated', () => {
+      let thesauris;
+      let id;
+      beforeEach(() => {
+        thesauris = [
+          { _id: 'id1', name: 'Countries' },
+          { _id: 'id2', name: 'Cities' },
+          { _id: 'id3', name: 'People', type: 'template' }
+        ];
+        id = 'id1';
+      });
+      function testValidationResult(inputValue, expectedResult) {
+        const { name: { duplicated } } = ThesauriForm.validation(thesauris, id);
+        const res = duplicated(inputValue);
+        expect(res).toBe(expectedResult);
+      }
+      it('should return false if another thesaurus exists with the same name', () => {
+        testValidationResult('Cities', false);
+      });
+      it('should return true if thesaurus with similar name is itself', () => {
+        testValidationResult('Countries', true);
+      });
+      it('should return true if template has same name', () => {
+        testValidationResult('People', true);
+      });
+    });
+  });
 });
