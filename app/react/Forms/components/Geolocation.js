@@ -11,62 +11,75 @@ function isCoordValid(coord) {
 export default class Geolocation extends Component {
   constructor(props) {
     super(props);
+
     this.latChange = this.latChange.bind(this);
     this.lonChange = this.lonChange.bind(this);
     this.mapClick = this.mapClick.bind(this);
     this.clearCoordinates = this.clearCoordinates.bind(this);
   }
 
-  onChange(value) {
+  onChange(values) {
+    const { onChange } = this.props;
+    const [value] = values;
     if (!isCoordValid(value.lat) && !isCoordValid(value.lon)) {
-      this.props.onChange();
+      onChange();
       return;
     }
-    this.props.onChange(value);
+
+    onChange(values);
+  }
+
+  getInputValues() {
+    const { value } = this.props;
+    const { lat, lon, label } = value[0];
+    return { lat, lon, label };
   }
 
   latChange(e) {
-    const lat = parseFloat(e.target.value);
-    this.onChange({ lat, lon: this.props.value.lon });
+    const { lon, label } = this.getInputValues();
+    this.onChange([{ lat: parseFloat(e.target.value), lon, label }]);
   }
 
   lonChange(e) {
-    const lon = parseFloat(e.target.value);
-    this.onChange({ lat: this.props.value.lat, lon });
+    const { lat, label } = this.getInputValues();
+    this.onChange([{ lat, lon: parseFloat(e.target.value), label }]);
   }
 
   mapClick(event) {
-    this.onChange({ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]) });
+    const { label } = this.getInputValues();
+    this.onChange([{ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]), label }]);
   }
 
   clearCoordinates() {
-    this.props.onChange();
+    const { onChange } = this.props;
+    onChange();
   }
 
   render() {
     const markers = [];
-    const { value } = this.props;
+    const { value: [value] } = this.props;
+
     let lat;
     let lon;
 
     if (value) {
-      lat = value.lat;
-      lon = value.lon;
+      ({ lat, lon } = value);
     }
 
     if (isCoordValid(lat) && isCoordValid(lon)) {
       markers.push({ latitude: parseFloat(value.lat), longitude: parseFloat(value.lon) });
     }
+
     return (
       <div className="geolocation form-inline">
         <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false}/>
         <div className="form-row">
-          <div className="form-group">
-            <label>Latitude&nbsp;</label>
+          <div className="form-group half-width">
+            <label>Latitude</label>
             <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat} step="any"/>
           </div>
-          <div className="form-group">
-            <label>Longitude&nbsp;</label>
+          <div className="form-group half-width">
+            <label>Longitude</label>
             <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="any"/>
           </div>
         </div>
@@ -83,10 +96,10 @@ export default class Geolocation extends Component {
 }
 
 Geolocation.defaultProps = {
-  value: { lat: '', lon: '' }
+  value: [{ lat: '', lon: '', label: '' }],
 };
 
 Geolocation.propTypes = {
-  value: PropTypes.instanceOf(Object),
+  value: PropTypes.arrayOf(PropTypes.object),
   onChange: PropTypes.func.isRequired
 };

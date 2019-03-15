@@ -153,8 +153,14 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: link };
   },
 
-  geolocation(property, value, thesauris, { onlyForCards }) {
+  geolocation(property, values, thesauris, { onlyForCards }) {
     const markers = [];
+    // TEST!!!!
+    let value = values;
+    if (Array.isArray(values)) {
+      ([value] = values);
+    }
+    // --------
     let _value;
     if (value.lat && value.lon) {
       _value = `Lat / Lon: ${value.lat} / ${value.lon}`;

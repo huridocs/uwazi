@@ -8,20 +8,21 @@ import ValueList from './ValueList';
 
 const showByType = (prop, compact) => {
   let result = prop.value;
-  if (prop.type === null) {
+  switch (prop.type) {
+  case null:
     result = t('System', 'No property');
-  }
-
-  if (prop.type === 'markdown') {
+    break;
+  case 'markdown':
     result = <MarkdownViewer markdown={prop.value} />;
-  }
-
-  if (prop.type === 'image') {
+    break;
+  case 'image':
     result = <img className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
-  }
-
-  if (prop.type === 'media') {
+    break;
+  case 'media':
     result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
+    break;
+  default:
+    break;
   }
 
   if (prop.url) {
