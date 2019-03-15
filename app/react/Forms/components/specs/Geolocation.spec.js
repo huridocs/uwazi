@@ -8,19 +8,22 @@ describe('Geolocation', () => {
   let instance;
   let props;
 
+  const render = () => {
+    component = shallow(<Geolocation {...props}/>);
+    instance = component.instance();
+  };
+
   beforeEach(() => {
     props = {
-      value: [{ lat: 32.18, lon: -17.2, label: 'home' }],
+      value: [
+        { lat: 32.18, lon: -17.2, label: 'home' },
+        { lat: 13.07, lon: 5.10, label: 'Created through migration?' },
+      ],
       onChange: jasmine.createSpy('onChange')
     };
 
     render();
   });
-
-  const render = () => {
-    component = shallow(<Geolocation {...props}/>);
-    instance = component.instance();
-  };
 
   it('should render 2 inputs with the lat and lon values, and optional label', () => {
     const inputs = component.find('input');
@@ -35,7 +38,7 @@ describe('Geolocation', () => {
     it('should call onChange with the new value', () => {
       const latInput = component.find('input').at(0);
       latInput.simulate('change', { target: { value: '19' } });
-      expect(props.onChange).toHaveBeenCalledWith([{ lat: 19, lon: -17.2, label: 'home' }]);
+      expect(props.onChange).toHaveBeenCalledWith([{ lat: 19, lon: -17.2, label: 'home' }, props.value[1]]);
     });
   });
 
@@ -43,7 +46,7 @@ describe('Geolocation', () => {
     it('should call onChange with the new value', () => {
       const lonInput = component.find('input').at(1);
       lonInput.simulate('change', { target: { value: '28' } });
-      expect(props.onChange).toHaveBeenCalledWith([{ lat: 32.18, lon: 28, label: 'home' }]);
+      expect(props.onChange).toHaveBeenCalledWith([{ lat: 32.18, lon: 28, label: 'home' }, props.value[1]]);
     });
   });
 
@@ -51,7 +54,7 @@ describe('Geolocation', () => {
     it('should call onChange with the map value', () => {
       const event = { lngLat: [5, 13] };
       instance.mapClick(event);
-      expect(props.onChange).toHaveBeenCalledWith([{ lat: 13, lon: 5, label: 'home' }]);
+      expect(props.onChange).toHaveBeenCalledWith([{ lat: 13, lon: 5, label: 'home' }, props.value[1]]);
     });
   });
 

@@ -18,15 +18,16 @@ export default class Geolocation extends Component {
     this.clearCoordinates = this.clearCoordinates.bind(this);
   }
 
-  onChange(values) {
-    const { onChange } = this.props;
-    const [value] = values;
-    if (!isCoordValid(value.lat) && !isCoordValid(value.lon)) {
+  onChange(newValue) {
+    const { onChange, value } = this.props;
+    if (!isCoordValid(newValue.lat) && !isCoordValid(newValue.lon)) {
       onChange();
       return;
     }
+    const valueToSend = value.slice(1);
+    valueToSend.unshift(newValue);
 
-    onChange(values);
+    onChange(valueToSend);
   }
 
   getInputValues() {
@@ -37,17 +38,17 @@ export default class Geolocation extends Component {
 
   latChange(e) {
     const { lon, label } = this.getInputValues();
-    this.onChange([{ lat: parseFloat(e.target.value), lon, label }]);
+    this.onChange({ lat: parseFloat(e.target.value), lon, label });
   }
 
   lonChange(e) {
     const { lat, label } = this.getInputValues();
-    this.onChange([{ lat, lon: parseFloat(e.target.value), label }]);
+    this.onChange({ lat, lon: parseFloat(e.target.value), label });
   }
 
   mapClick(event) {
     const { label } = this.getInputValues();
-    this.onChange([{ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]), label }]);
+    this.onChange({ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]), label });
   }
 
   clearCoordinates() {
