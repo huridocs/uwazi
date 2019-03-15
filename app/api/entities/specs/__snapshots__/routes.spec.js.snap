@@ -432,6 +432,12 @@ Object {
       "items": Array [
         Object {
           "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
             "filename": Object {
               "invalids": Array [
                 "",
@@ -459,9 +465,10 @@ Object {
             },
             "timestamp": Object {
               "invalids": Array [
-                "",
+                Infinity,
+                -Infinity,
               ],
-              "type": "string",
+              "type": "number",
             },
           },
           "type": "object",
