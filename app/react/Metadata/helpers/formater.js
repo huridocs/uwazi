@@ -156,18 +156,21 @@ export default {
   geolocation(property, values, thesauris, { onlyForCards }) {
     const markers = [];
     // TEST!!!!
-    let value = values;
-    if (Array.isArray(values)) {
-      ([value] = values);
+    let arrayValues = values;
+    if (!Array.isArray(values)) {
+      arrayValues = [values];
     }
     // --------
     let _value;
-    if (value.lat && value.lon) {
-      _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
-      markers.push({ latitude: value.lat, longitude: value.lon });
+    if (arrayValues[0].lat && arrayValues[0].lon) {
+      _value = `Lat / Lon: ${arrayValues[0].lat} / ${arrayValues[0].lon}`;
+
+      arrayValues.forEach(({ lat, lon }) => {
+        markers.push({ latitude: lat, longitude: lon });
+      });
     }
     if (!onlyForCards) {
-      _value = <Map latitude={value.lat} height={370} longitude={value.lon} markers={markers}/>;
+      _value = <Map latitude={arrayValues[0].lat} height={370} longitude={arrayValues[0].lon} markers={markers}/>;
     }
 
     return { label: property.get('label'), name: property.get('name'), value: _value };
