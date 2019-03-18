@@ -9,17 +9,22 @@ import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app
 import SearchBar from 'app/Library/components/SearchBar';
 import { TemplateLabel } from 'app/Layout';
 import { t } from 'app/I18N';
+import { Icon } from 'app/UI';
 
 export class MapView extends Component {
   static renderInfo(marker) {
     return (
-      <div>
-        <span className="template-label">
+      <div className="popup-container">
+        <div className="template-label">
           <TemplateLabel template={marker.properties.entity.template} />
-        </span>
-        <span className="popup-name">{marker.properties.entity.title}</span>
-        <span className="popup-separator">:</span>
-        <span className="popup-metadata-property">{t(marker.properties.entity.template, marker.label)}</span>
+        </div>
+        <div className="entity-data">
+          <div>
+            <span className="popup-name">{marker.properties.entity.title}</span>
+            <span className="popup-metadata-property">({t(marker.properties.entity.template, marker.label)})</span>
+          </div>
+          {marker.properties.info && <div className="marker-info"><Icon className="tag-icon" icon="tag" />{marker.properties.info}</div>}
+        </div>
       </div>
     );
   }

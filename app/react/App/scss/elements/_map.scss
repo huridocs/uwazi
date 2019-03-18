@@ -241,22 +241,23 @@ a.mapboxgl-ctrl-logo {
   will-change: transform;
   pointer-events: none;
 
-  .template-label {
-    white-space: nowrap;
-  }
+  .popup-container {
+    display: flex;
 
-  .popup-name {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-  }
+    .template-label {
+      white-space: nowrap;
+      margin-right: 0.5em;
+    }
 
-  .popup-separator {
-    margin-right: 0.5em;
-    color: #999;
-  }
+    .popup-metadata-property {
+      margin-left: 0.5em;
+      color: #666;
+    }
 
-  .popup-metadata-property {
-    color: #666;
+    .tag-icon {
+      color: #ccc;
+      margin-right: 0.5em;
+    }
   }
 }
 .mapboxgl-popup-anchor-top,
@@ -355,7 +356,7 @@ a.mapboxgl-ctrl-logo {
     background: #fff;
     border-radius: 3px;
     box-shadow: 0px 2px 2px rgba(0,0,0,0.20);
-    padding: 10px 10px 15px;
+    padding: 10px 10px 10px;
     pointer-events: auto;
     border: 1px solid #ccc;
 }
