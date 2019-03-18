@@ -4,6 +4,7 @@ import React from 'react';
 import { t, I18NLink } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 
+import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
 const showByType = (prop, compact) => {
@@ -21,16 +22,18 @@ const showByType = (prop, compact) => {
   case 'media':
     result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
     break;
-  default:
+  case 'geolocation':
+    result = <GeolocationViewer points={prop.value} onlyForCards={prop.onlyForCards} />;
     break;
-  }
+  default:
+    if (prop.url) {
+      result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
+    }
 
-  if (prop.url) {
-    result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
-  }
-
-  if (prop.value && prop.value.map) {
-    result = <ValueList compact={compact} property={prop} />;
+    if (prop.value && prop.value.map) {
+      result = <ValueList compact={compact} property={prop} />;
+    }
+    break;
   }
 
   return result;

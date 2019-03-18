@@ -4,7 +4,6 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import t from 'app/I18N/t';
-import Map from 'app/Map/Map';
 
 const getOption = (thesauri, id) => {
   let option;
@@ -149,31 +148,12 @@ export default {
   },
 
   link(property, value) {
-    const link = <a href={value.url} target="_blank">{value.label}</a>;
+    const link = <a href={value.url} target="_blank" rel="noopener noreferrer">{value.label}</a>;
     return { label: property.get('label'), name: property.get('name'), value: link };
   },
 
-  geolocation(property, values, thesauris, { onlyForCards }) {
-    const markers = [];
-    // TEST!!!!
-    let arrayValues = values;
-    if (!Array.isArray(values)) {
-      arrayValues = [values];
-    }
-    // --------
-    let _value;
-    if (arrayValues[0].lat && arrayValues[0].lon) {
-      _value = `Lat / Lon: ${arrayValues[0].lat} / ${arrayValues[0].lon}`;
-
-      arrayValues.forEach(({ lat, lon }) => {
-        markers.push({ latitude: lat, longitude: lon });
-      });
-    }
-    if (!onlyForCards) {
-      _value = <Map latitude={arrayValues[0].lat} height={370} longitude={arrayValues[0].lon} markers={markers}/>;
-    }
-
-    return { label: property.get('label'), name: property.get('name'), value: _value };
+  geolocation(property, value, thesauris, { onlyForCards }) {
+    return { label: property.get('label'), name: property.get('name'), value, onlyForCards: Boolean(onlyForCards), type: 'geolocation' };
   },
 
   select(property, thesauriValue, thesauris) {

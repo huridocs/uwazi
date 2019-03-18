@@ -21,7 +21,7 @@ export const doc = {
     media: 'mediaURL',
     relationship1: ['value1', 'value2'],
     relationship2: ['value1', 'value2', 'value4'],
-    geolocation: { lat: 2, lon: 3 },
+    geolocation: [{ lat: 2, lon: 3 }, { lat: 13, lon: 7, label: 'home' }],
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
   }
