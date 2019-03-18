@@ -41,9 +41,11 @@ function getEntityMarkers(entity, templates) {
     const entityData = entity.toJS();
     const markers = Object.keys(entityData.metadata).reduce((validMarkers, property) => {
       if (geolocationPropNames.includes(property) && entityData.metadata[property]) {
-        const { lat, lon } = entityData.metadata[property];
         const { label } = geolocationProps.find(p => p.name === property);
-        validMarkers.push({ properties: { entity: entityData, color }, latitude: lat, longitude: lon, label });
+        entityData.metadata[property].forEach((point) => {
+          const { lat, lon } = point;
+          validMarkers.push({ properties: { entity: entityData, color, info: point.label }, latitude: lat, longitude: lon, label });
+        });
       }
       return validMarkers;
     }, []);

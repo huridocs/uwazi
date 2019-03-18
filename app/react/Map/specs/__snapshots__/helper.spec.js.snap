@@ -10,17 +10,58 @@ Array [
       "color": 0,
       "entity": Object {
         "metadata": Object {
-          "geoProperty": Object {
-            "lat": 7,
-            "lon": 13,
-          },
-          "secondGeoProperty": Object {
-            "lat": 5,
-            "lon": 13,
-          },
+          "geoProperty": Array [
+            Object {
+              "lat": 7,
+              "lon": 13,
+            },
+            Object {
+              "label": "home",
+              "lat": 13,
+              "lon": 7,
+            },
+          ],
+          "secondGeoProperty": Array [
+            Object {
+              "lat": 5,
+              "lon": 13,
+            },
+          ],
         },
         "template": "t1",
       },
+      "info": undefined,
+    },
+  },
+  Object {
+    "label": "geoPropertyLabel",
+    "latitude": 13,
+    "longitude": 7,
+    "properties": Object {
+      "color": 0,
+      "entity": Object {
+        "metadata": Object {
+          "geoProperty": Array [
+            Object {
+              "lat": 7,
+              "lon": 13,
+            },
+            Object {
+              "label": "home",
+              "lat": 13,
+              "lon": 7,
+            },
+          ],
+          "secondGeoProperty": Array [
+            Object {
+              "lat": 5,
+              "lon": 13,
+            },
+          ],
+        },
+        "template": "t1",
+      },
+      "info": "home",
     },
   },
   Object {
@@ -31,17 +72,27 @@ Array [
       "color": 0,
       "entity": Object {
         "metadata": Object {
-          "geoProperty": Object {
-            "lat": 7,
-            "lon": 13,
-          },
-          "secondGeoProperty": Object {
-            "lat": 5,
-            "lon": 13,
-          },
+          "geoProperty": Array [
+            Object {
+              "lat": 7,
+              "lon": 13,
+            },
+            Object {
+              "label": "home",
+              "lat": 13,
+              "lon": 7,
+            },
+          ],
+          "secondGeoProperty": Array [
+            Object {
+              "lat": 5,
+              "lon": 13,
+            },
+          ],
         },
         "template": "t1",
       },
+      "info": undefined,
     },
   },
   Object {
@@ -52,14 +103,17 @@ Array [
       "color": 0,
       "entity": Object {
         "metadata": Object {
-          "geoProperty": Object {
-            "lat": 5,
-            "lon": 22,
-          },
+          "geoProperty": Array [
+            Object {
+              "lat": 5,
+              "lon": 22,
+            },
+          ],
           "secondGeoProperty": null,
         },
         "template": "t1",
       },
+      "info": undefined,
     },
   },
   Object {
@@ -70,13 +124,16 @@ Array [
       "color": 1,
       "entity": Object {
         "metadata": Object {
-          "anotherGeoProperty": Object {
-            "lat": 2018,
-            "lon": 6,
-          },
+          "anotherGeoProperty": Array [
+            Object {
+              "lat": 2018,
+              "lon": 6,
+            },
+          ],
         },
         "template": "t2",
       },
+      "info": undefined,
     },
   },
 ]
