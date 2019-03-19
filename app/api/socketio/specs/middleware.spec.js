@@ -52,18 +52,18 @@ describe('socketio middleware', () => {
     });
 
     it('should find and return an array of sockets belonging to the current cookie', () => {
-      let result = req.io.getCurrentSessionSockets();
+      let result = req.getCurrentSessionSockets();
       expect(result.sockets[0]).toBe(socket1);
       expect(result.sockets[1]).toBe(socket3);
 
       req.session.id = 'sessionId2';
       executeMiddleware(req, res, next);
-      result = req.io.getCurrentSessionSockets();
+      result = req.getCurrentSessionSockets();
       expect(result.sockets[0]).toBe(socket2);
     });
 
     it('should include in the result an "emit" function that emits to all the found sockets the sent message', () => {
-      const result = req.io.getCurrentSessionSockets();
+      const result = req.getCurrentSessionSockets();
       const data = { data: 'data' };
 
       result.emit('Message', data);
