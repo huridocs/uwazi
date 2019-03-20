@@ -62,11 +62,12 @@ const saveSchema = Joi.object().keys({
     })
   })),
   attachments: Joi.array().items(Joi.object().keys({
+    _id: Joi.string(),
     originalname: Joi.string(),
     filename: Joi.string(),
     mimetype: Joi.string(),
     size: Joi.number(),
-    timestamp: Joi.string(),
+    timestamp: Joi.number()
   })),
   creationDate: Joi.number(),
   processed: Joi.boolean(),

@@ -65,7 +65,7 @@ export default (app) => {
 
     const file = req.files[0].destination + req.files[0].filename;
 
-    const sessionSockets = req.io.getCurrentSessionSockets();
+    const sessionSockets = req.getCurrentSessionSockets();
     sessionSockets.emit('conversionStart', req.body.document);
     debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
     return Promise.all([
@@ -106,7 +106,7 @@ export default (app) => {
     .then(() => {
       debugLog.debug('Saving documents');
       return entities.saveMultiple(docs.map(doc => ({ ...doc, file: { ...doc.file, timestamp: Date.now() } }))).then(() => {
-        const sessionSockets = req.io.getCurrentSessionSockets();
+        const sessionSockets = req.getCurrentSessionSockets();
         sessionSockets.emit('documentProcessed', req.body.document);
       });
     });
@@ -120,7 +120,7 @@ export default (app) => {
       entities.saveMultiple(docs.map(doc => ({ ...doc, processed: false })));
     });
 
-    const sessionSockets = req.io.getCurrentSessionSockets();
+    const sessionSockets = req.getCurrentSessionSockets();
     sessionSockets.emit('conversionFailed', req.body.document);
   });
 

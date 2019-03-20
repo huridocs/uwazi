@@ -1,6 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Map from 'app/Map/Map';
+import { Translate } from 'app/I18N';
+
+function isCoordValid(coord) {
+  // eslint-disable-next-line no-restricted-globals
+  return typeof coord === 'number' && !isNaN(coord);
+}
 
 export default class Geolocation extends Component {
   constructor(props) {
@@ -8,9 +14,14 @@ export default class Geolocation extends Component {
     this.latChange = this.latChange.bind(this);
     this.lonChange = this.lonChange.bind(this);
     this.mapClick = this.mapClick.bind(this);
+    this.clearCoordinates = this.clearCoordinates.bind(this);
   }
 
   onChange(value) {
+    if (!isCoordValid(value.lat) && !isCoordValid(value.lon)) {
+      this.props.onChange();
+      return;
+    }
     this.props.onChange(value);
   }
 
@@ -28,6 +39,10 @@ export default class Geolocation extends Component {
     this.onChange({ lat: parseFloat(event.lngLat[1]), lon: parseFloat(event.lngLat[0]) });
   }
 
+  clearCoordinates() {
+    this.props.onChange();
+  }
+
   render() {
     const markers = [];
     const { value } = this.props;
@@ -39,7 +54,7 @@ export default class Geolocation extends Component {
       lon = value.lon;
     }
 
-    if (lat && lon) {
+    if (isCoordValid(lat) && isCoordValid(lon)) {
       markers.push({ latitude: parseFloat(value.lat), longitude: parseFloat(value.lon) });
     }
     return (
@@ -55,6 +70,13 @@ export default class Geolocation extends Component {
             <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="any"/>
           </div>
         </div>
+        { (isCoordValid(lat) || isCoordValid(lon)) && (
+          <div className="clear-field-button">
+            <button type="button" onClick={this.clearCoordinates}>
+              <Translate>Clear coordinates</Translate>
+            </button>
+          </div>
+        )}
       </div>
     );
   }
