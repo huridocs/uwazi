@@ -70,7 +70,6 @@ describe('upload routes', () => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       iosocket = jasmine.createSpyObj('socket', ['emit']);
-      const io = { getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }) };
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',
@@ -82,7 +81,15 @@ describe('upload routes', () => {
         path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
         size: 171411271
       };
-      req = { language: 'es', user: 'admin', headers: {}, body: { document: 'sharedId1' }, files: [file], io };
+      req = {
+        language: 'es',
+        user: 'admin',
+        headers: {},
+        body: { document: 'sharedId1' },
+        files: [file],
+        io: {},
+        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+      };
 
       db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
       spyOn(errorLog, 'error'); //just to avoid annoying console output
