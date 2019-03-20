@@ -16,7 +16,7 @@ export class ThesauriFormField extends Component {
       JSON.stringify(nextProps.childrenToMove) !== JSON.stringify(this.props.childrenToMove);
   }
 
-  isValuedToBeMoved(value) {
+  isValueToBeMoved(value) {
     const { childrenToMove } = this.props;
     return childrenToMove.some(v => v.id === value.id);
   }
@@ -59,10 +59,7 @@ export class ThesauriFormField extends Component {
     if (value.values) {
       return this.renderGroup(value, index);
     }
-    let moving = this.props.moving ? 'moving' : '';
-    if (typeof groupIndex === 'number') {
-      moving = this.isValuedToBeMoved(value) ? 'moving' : '';
-    }
+    let moving = this.props.moving || this.isValueToBeMoved(value) ? 'moving' : '';
 
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {
@@ -108,7 +105,7 @@ ThesauriFormField.propTypes = {
   index: PropTypes.number.isRequired,
   moving: PropTypes.bool.isRequired,
   moveToGroup: PropTypes.func.isRequired,
-  childrenToMove: PropTypes.array.isRequired
+  childrenToMove: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export default ThesauriFormField;

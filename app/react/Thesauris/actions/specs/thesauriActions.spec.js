@@ -128,8 +128,7 @@ describe('thesaurisActions', () => {
     });
 
     describe('moving to a group', () => {
-      it('should move the values to the given group', () => {
-        actions.moveValues([{ label: 'B', id: 1 }], 1)(dispatch, getState);
+      const expectSuccess = () => {
         expect(formActions.change)
         .toHaveBeenCalledWith('thesauri.data.values', [
           {
@@ -143,6 +142,10 @@ describe('thesaurisActions', () => {
           },
           { label: '' }
         ]);
+      };
+      it('should move the values to the given group', () => {
+        actions.moveValues([{ label: 'B', id: 1 }], 1)(dispatch, getState);
+        expectSuccess();
       });
       it('should remove values from root level even when destination group has index 0', () => {
         getState.and.returnValue({
@@ -153,19 +156,7 @@ describe('thesaurisActions', () => {
           ] } }
         });
         actions.moveValues([{ label: 'B', id: 1 }], 0)(dispatch, getState);
-        expect(formActions.change)
-        .toHaveBeenCalledWith('thesauri.data.values', [
-          {
-            label: 'A',
-            id: 2,
-            values: [
-              { label: 'D', id: 3 },
-              { label: 'C', id: 4 },
-              { label: 'B', id: 1 }
-            ]
-          },
-          { label: '' }
-        ]);
+        expectSuccess();
       });
     });
 
