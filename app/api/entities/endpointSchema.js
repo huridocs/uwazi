@@ -17,6 +17,14 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
     label: Joi.string(),
     url: Joi.string(),
   }).allow(''),
+  Joi.array().items(
+    Joi.object().keys({
+      entity: Joi.string(),
+    }).unknown().allow('')
+  ).allow(''),
+  Joi.object().keys({
+    entity: Joi.string(),
+  }).allow(''),
   Joi.array().items(Joi.alternatives().try(
     Joi.number().allow(null),
     Joi.string(),

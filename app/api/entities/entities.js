@@ -162,25 +162,26 @@ export default {
 
       return this.createEntity(this.sanitize(doc, template), languages, sharedId);
     })
-    .then(() => this.getById(sharedId, language))
-    .then((entity) => {
+    .then(() => this.getWithRelationships({ sharedId, language }))
+    .then(([entity]) => {
       if (updateRelationships) {
-        return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
+        return Promise.all([relationships.saveEntityBasedReferences(entity, language), this.getEntityTemplate(entity, language)])
+        .then(promises => Promise.all([entity, this.updateMetdataFromRelationships(entity.relationships.map(relationship => relationship.entity), language, promises[1])]));
       }
-
       return [entity];
     })
     .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
   },
 
-  bulkProcessMetadataFromRelationships(query, language, limit = 200) {
+  bulkProcessMetadataFromRelationships(query, language, template) {
+    const limit = 200;
     const process = (offset, totalRows) => {
       if (offset >= totalRows) {
         return Promise.resolve();
       }
 
       return this.get(query, 'sharedId', { skip: offset, limit })
-      .then(entities => this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language))
+      .then(entities => this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language, template))
       .then(() => process(offset + limit, totalRows));
     };
     return this.count(query)
@@ -274,15 +275,15 @@ export default {
         relationshipProperties.forEach((property) => {
           const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
               (!property.content || r.entityData.template.toString() === property.content));
-          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity); //eslint-disable-line
+          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({entity: r.entity, [property.inheritProperty]: r.entityData.metadata[property.inheritProperty]})); //eslint-disable-line
         });
         if (relationshipProperties.length) {
           entitiesToReindex.push(entity.sharedId);
           return this.updateEntity(this.sanitize(entity, template), template);
         }
         return Promise.resolve(entity);
-      }))))
-    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
+      })))
+    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } })));
   },
 
   updateMetadataProperties(template, currentTemplate, language) {
@@ -323,7 +324,7 @@ export default {
         return this.indexEntities({ template: template._id }, null, 1000);
       }
 
-      return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
+      return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language, template);
     });
   },
 

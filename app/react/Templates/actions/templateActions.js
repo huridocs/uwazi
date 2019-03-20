@@ -22,6 +22,10 @@ export function addProperty(property = {}, _index) {
       property.content = getState().thesauris.get(0).get('_id');
     }
 
+    if (property.type === 'relationship') {
+      property.inherit = false;
+    }
+
     if (property.type === 'nested') {
       property.nestedProperties = [{ key: '', label: '' }];
     }

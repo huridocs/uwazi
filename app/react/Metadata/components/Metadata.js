@@ -29,6 +29,7 @@ const showByType = (prop, compact) => {
   }
 
   if (prop.value && prop.value.map) {
+    prop.value = prop.value.map(value => ({ value: showByType({ value: value.value ? value.value : value, type: prop.type }, compact) }));
     result = <ValueList compact={compact} property={prop} />;
   }
 
@@ -45,17 +46,17 @@ const removeEmptyValues = (p) => {
 const Metadata = ({ metadata, compact, renderLabel }) => (
   <React.Fragment>
     {metadata.filter(removeEmptyValues).map((prop) => {
-      let type = prop.type ? prop.type : 'default';
-      type = type === 'image' || type === 'media' ? 'multimedia' : type;
-      return (
-        <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={prop.label}>
-          {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
-          <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-            {showByType(prop, compact)}
-          </dd>
-        </dl>
-      );
-    })}
+        let type = prop.type ? prop.type : 'default';
+        type = type === 'image' || type === 'media' ? 'multimedia' : type;
+        return (
+          <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={prop.label}>
+            {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
+            <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+              {showByType(prop, compact)}
+            </dd>
+          </dl>
+        );
+      })}
   </React.Fragment>
 );
 

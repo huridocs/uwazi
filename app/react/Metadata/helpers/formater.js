@@ -179,12 +179,31 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
+  inherit(property, thesauriValues, thesauris, options, templates) {
+    const template = templates.find(templ => templ.get('_id') === property.get('content'));
+    const inheritedProperty = template.get('properties').find(p => p.get('name') === property.get('inheritProperty'));
+    const name = inheritedProperty.get('name');
+    const type = inheritedProperty.get('type');
+    const values = thesauriValues.map((v) => {
+      if (this[type] && (v[name] || type === 'preview')) {
+        return this[type](property, v[name], thesauris, options, templates);
+      }
+
+      return { value: v[name] };
+    });
+    const initialValue = Object.assign({}, values[0], { translateContext: template.get('_id'), ...inheritedProperty.toJS() }, { value: [] });
+    return values.reduce((r, value) => {
+      r.value = r.value.concat(value.value);
+      return r;
+    }, initialValue);
+  },
+
   relationship(property, thesauriValues, thesauris) {
     const allEntitiesThesauriValues = thesauris
     .filter(_thesauri => _thesauri.get('type') === 'template')
     .reduce((result, _thesauri) => {
       if (result) {
-        return result.concat(this.getThesauriValues(thesauriValues, _thesauri));
+        return result.concat(this.getThesauriValues(thesauriValues.map(v => v.entity), _thesauri));
       }
 
       return this.getThesauriValues(thesauriValues, _thesauri);
@@ -238,18 +257,21 @@ export default {
     }
 
     let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
-    .map(property => this.applyTransformation(property, { doc, thesauris, options, template }));
+    .map(property => this.applyTransformation(property, { doc, thesauris, options, template, templates }));
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
   },
 
-  applyTransformation(property, { doc, thesauris, options, template }) {
+  applyTransformation(property, { doc, thesauris, options, template, templates }) {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
 
     const type = property.get('type');
+    if (property.get('inherit')) {
+      return this.inherit(property, value, thesauris, { ...options, doc }, templates);
+    }
 
     if (this[type] && (value || type === 'preview')) {
       return Object.assign(
