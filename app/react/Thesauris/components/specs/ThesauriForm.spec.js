@@ -37,7 +37,7 @@ describe('ThesauriForm', () => {
   };
 
   describe('when unmount', () => {
-    it('shoould reset the form', () => {
+    it('should reset the form', () => {
       render();
       component.unmount();
       expect(props.resetForm).toHaveBeenCalled();

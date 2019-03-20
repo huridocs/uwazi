@@ -7,6 +7,7 @@ import ShowIf from 'app/App/ShowIf';
 import { notEmpty } from 'app/Metadata/helpers/validator';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
+import Immutable from 'immutable';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
@@ -96,12 +97,19 @@ export class ThesauriForm extends Component {
       movingValues.push(value);
     }
     this.setState({ movingValues });
-    console.log(movingValues);
   }
 
   moveToGroup(groupIndex) {
     this.props.moveValues(this.state.movingValues, groupIndex);
     this.setState({ movingValues: [] });
+  }
+
+  childrenToMove(group) {
+    if (!group.values) {
+      return [];
+    }
+    const { movingValues } = this.state;
+    return movingValues.filter(v => group.values.some(gv => v.id === gv.id));
   }
 
   render() {
@@ -155,6 +163,7 @@ export class ThesauriForm extends Component {
                   toggleToMove={this.toggleToMove}
                   removeValue={this.props.removeValue}
                   moving={this.beenMove(value)}
+                  childrenToMove={this.childrenToMove(value)}
                 />
 )
               )}
