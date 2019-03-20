@@ -87,6 +87,22 @@ describe('thesaurisActions', () => {
       { label: 'A', id: 2, values: [{ label: 'C', id: 4 }, { label: '' }] },
       { label: '' }]);
     });
+    it('should remove value from group even when group has index 0', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'A', id: 2, values: [{ label: 'D', id: 3 }, { label: 'C', id: 4 }, { label: '' }] },
+          { label: 'B', id: 1 },
+          { label: '' }
+        ] } }
+      });
+      spyOn(formActions, 'change');
+      actions.removeValue(1, 0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', [
+        { label: 'A', id: 2, values: [{ label: 'D', id: 3 }, { label: '' }] },
+        { label: 'B', id: 1 },
+        { label: '' }
+      ]);
+    });
   });
 
   describe('sortValues()', () => {
@@ -114,6 +130,29 @@ describe('thesaurisActions', () => {
     describe('moving to a group', () => {
       it('should move the values to the given group', () => {
         actions.moveValues([{ label: 'B', id: 1 }], 1)(dispatch, getState);
+        expect(formActions.change)
+        .toHaveBeenCalledWith('thesauri.data.values', [
+          {
+            label: 'A',
+            id: 2,
+            values: [
+              { label: 'D', id: 3 },
+              { label: 'C', id: 4 },
+              { label: 'B', id: 1 }
+            ]
+          },
+          { label: '' }
+        ]);
+      });
+      it('should remove values from root level even when destination group has index 0', () => {
+        getState.and.returnValue({
+          thesauri: { data: { values: [
+            { label: 'A', id: 2, values: [{ label: 'D', id: 3 }, { label: 'C', id: 4 }, { label: '' }] },
+            { label: 'B', id: 1 },
+            { label: '' }
+          ] } }
+        });
+        actions.moveValues([{ label: 'B', id: 1 }], 0)(dispatch, getState);
         expect(formActions.change)
         .toHaveBeenCalledWith('thesauri.data.values', [
           {

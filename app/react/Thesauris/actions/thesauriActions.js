@@ -47,7 +47,7 @@ export function moveValues(valuesToMove, groupIndex) {
       return value;
     }).filter(v => !valuesToMove.find(_v => v.id === _v.id));
 
-    if (!groupIndex) {
+    if (typeof groupIndex !== 'number') {
       values.splice(-1, 1);
       values = values.concat(valuesToMove);
     }
@@ -87,7 +87,7 @@ export function addGroup() {
 export function removeValue(index, groupIndex) {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
-    if (groupIndex) {
+    if (typeof groupIndex === 'number') {
       values[groupIndex] = Object.assign({}, values[groupIndex]);
       values[groupIndex].values = values[groupIndex].values.slice(0);
       values[groupIndex].values.splice(index, 1);
