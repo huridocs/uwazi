@@ -59,7 +59,7 @@ export class ThesauriFormField extends Component {
     if (value.values) {
       return this.renderGroup(value, index);
     }
-    let moving = this.props.moving || this.isValueToBeMoved(value) ? 'moving' : '';
+    const moving = this.props.moving || this.isValueToBeMoved(value) ? 'moving' : '';
 
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {
