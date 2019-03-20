@@ -7,7 +7,6 @@ import ShowIf from 'app/App/ShowIf';
 import { notEmpty } from 'app/Metadata/helpers/validator';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
-import Immutable from 'immutable';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
