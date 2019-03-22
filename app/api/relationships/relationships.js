@@ -244,7 +244,8 @@ export default {
     .then(getPropertiesToBeConnections)
     .then(properties => Promise.all([properties, this.getByDocument(entity.sharedId, language)]))
     .then(([properties, references]) => Promise.all(properties.map((property) => {
-      let propertyValues = entity.metadata[property.name] || [];
+      const propertyValue = entity.metadata[property.name] || [];
+      let propertyValues = (propertyValue).map(v => v.entity);
       if (typeof propertyValues === 'string') {
         propertyValues = [propertyValues];
       }
@@ -275,7 +276,6 @@ export default {
       if (hub.length > 1) {
         save = this.save(hub, language, false);
       }
-
       return save.then(() => Promise.all(referencesToBeDeleted.map(reference => this.delete({ _id: reference._id }, language, false))));
     })));
   },

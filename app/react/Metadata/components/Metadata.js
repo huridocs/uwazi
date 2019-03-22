@@ -29,7 +29,7 @@ const showByType = (prop, compact) => {
   }
 
   if (prop.value && prop.value.map) {
-    prop.value = prop.value.map(value => ({ value: showByType({ value: value.value ? value.value : value, type: prop.type }, compact) }));
+    prop.value = prop.value.map(value => ({ value: showByType({ value: (value && value.value) ? value.value : value, type: prop.type }, compact) }));
     result = <ValueList compact={compact} property={prop} />;
   }
 

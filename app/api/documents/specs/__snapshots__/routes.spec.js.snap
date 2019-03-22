@@ -337,6 +337,48 @@ Object {
                 },
                 "items": Array [
                   Object {
+                    "children": Object {
+                      "entity": Object {
+                        "invalids": Array [
+                          "",
+                        ],
+                        "type": "string",
+                      },
+                    },
+                    "flags": Object {
+                      "allowUnknown": true,
+                    },
+                    "type": "object",
+                    "valids": Array [
+                      "",
+                    ],
+                  },
+                ],
+                "type": "array",
+                "valids": Array [
+                  "",
+                ],
+              },
+              Object {
+                "children": Object {
+                  "entity": Object {
+                    "invalids": Array [
+                      "",
+                    ],
+                    "type": "string",
+                  },
+                },
+                "type": "object",
+                "valids": Array [
+                  "",
+                ],
+              },
+              Object {
+                "flags": Object {
+                  "sparse": false,
+                },
+                "items": Array [
+                  Object {
                     "alternatives": Array [
                       Object {
                         "invalids": Array [

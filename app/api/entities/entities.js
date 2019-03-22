@@ -13,6 +13,63 @@ import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
+function getEntityTemplate(doc, language) {
+  return new Promise((resolve) => {
+    if (!doc.sharedId && !doc.template) {
+      return resolve(null);
+    }
+
+    if (doc.template) {
+      return templates.getById(doc.template).then(resolve);
+    }
+
+    return entitiesModel.getById(doc.sharedId, language)
+    .then((storedDoc) => {
+      if (!storedDoc) {
+        return null;
+      }
+      return templates.getById(storedDoc.template).then(resolve);
+    });
+  });
+}
+
+const inheritMetadata = async (entity) => {
+  console.log(entity);
+  console.log('==1==');
+  const { language } = entity;
+  if (!entity.metdata) {
+    return entity;
+  }
+  console.log('==2==');
+  const template = await getEntityTemplate(entity, entity.language);
+  template.properties.forEach(async (prop) => {
+    if (!prop.inherit) {
+      return;
+    }
+    const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
+    const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language });
+    entity.metadata[prop.name] = relatedEntities
+    .map(relatedEntity => ({ entity: relatedEntity.sharedId, [prop.inheritProperty]: relatedEntity.metadata[prop.inheritProperty] }));
+  });
+
+  return entity;
+};
+
+const updateOthersInheritedMetadata = async (entity) => {
+  const { sharedId, language } = entity;
+  const relatedEntities = await relationships.getByDocument(sharedId, language);
+  const templ = await templates.get();
+  const templatesWithInheritedRelationshipsToThisEntity = templ
+  .filter(template => template.properties.find(property => property.inherit && property.content === entity.template.toString()))
+  .map(t => t._id.toString());
+  const relatedEntitiesThatNeedUpdate = relatedEntities
+  .filter(_entity => templatesWithInheritedRelationshipsToThisEntity.includes(_entity.entityData.template.toString()));
+  return Promise.all(relatedEntitiesThatNeedUpdate.map(async (relationship) => {
+    const entitiesToBeUpdated = await model.get({ sharedId: relationship.entity });
+    return Promise.all(entitiesToBeUpdated.map(async _entity => inheritMetadata(_entity)));
+  }));
+};
+
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
   .then((docLanguages) => {
@@ -56,10 +113,11 @@ function updateEntity(entity, _template) {
       if (typeof entity.template !== 'undefined') {
         d.template = entity.template;
       }
+
       return d;
     });
-
-    return Promise.all(docs.map(d => model.save(d)));
+    return Promise.all(docs.map(async _entity => inheritMetadata(_entity)))
+    .then(_docs => Promise.all(_docs.map(model.save)));
   });
 }
 
@@ -68,30 +126,11 @@ function createEntity(doc, languages, sharedId) {
     const langDoc = Object.assign({}, doc);
     langDoc.language = lang.key;
     langDoc.sharedId = sharedId;
+
     return langDoc;
   });
-
-  return model.save(docs);
-}
-
-function getEntityTemplate(doc, language) {
-  return new Promise((resolve) => {
-    if (!doc.sharedId && !doc.template) {
-      return resolve(null);
-    }
-
-    if (doc.template) {
-      return templates.getById(doc.template).then(resolve);
-    }
-
-    return this.getById(doc.sharedId, language)
-    .then((storedDoc) => {
-      if (!storedDoc) {
-        return null;
-      }
-      return templates.getById(storedDoc.template).then(resolve);
-    });
-  });
+  return Promise.all(docs.map(async entity => inheritMetadata(entity)))
+  .then(entities => model.save(entities));
 }
 
 const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
@@ -138,7 +177,7 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-export default {
+const entitiesModel = {
   sanitize,
   updateEntity,
   createEntity,
@@ -165,11 +204,14 @@ export default {
     .then(() => this.getWithRelationships({ sharedId, language }))
     .then(([entity]) => {
       if (updateRelationships) {
-        return Promise.all([relationships.saveEntityBasedReferences(entity, language), this.getEntityTemplate(entity, language)])
-        .then(promises => Promise.all([entity, this.updateMetdataFromRelationships(entity.relationships.map(relationship => relationship.entity), language, promises[1])]));
+        return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language), this.getEntityTemplate(entity, language)]);
       }
       return [entity];
     })
+    .then(([entity]) => updateOthersInheritedMetadata(entity).then((updatedEntities) => {
+      this.saveMultiple(Array.prototype.concat(...updatedEntities));
+      return [entity];
+    }))
     .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
   },
 
@@ -275,7 +317,7 @@ export default {
         relationshipProperties.forEach((property) => {
           const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
               (!property.content || r.entityData.template.toString() === property.content));
-          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({entity: r.entity, [property.inheritProperty]: r.entityData.metadata[property.inheritProperty]})); //eslint-disable-line
+          entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => ({ entity: r.entity })); //eslint-disable-line
         });
         if (relationshipProperties.length) {
           entitiesToReindex.push(entity.sharedId);
@@ -529,3 +571,5 @@ export default {
 
   count: model.count
 };
+
+export default entitiesModel;

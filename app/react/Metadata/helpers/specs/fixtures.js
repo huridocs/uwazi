@@ -19,8 +19,8 @@ export const doc = {
     select: 'value3',
     image: 'imageURL',
     media: 'mediaURL',
-    relationship1: ['value1', 'value2'],
-    relationship2: ['value1', 'value2', 'value4'],
+    relationship1: [{ entity: 'value1' }, { entity: 'value2' }],
+    relationship2: [{ entity: 'value1' }, { entity: 'value2' }, { entity: 'value4' }],
     geolocation: { lat: 2, lon: 3 },
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''

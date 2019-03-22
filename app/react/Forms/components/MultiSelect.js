@@ -67,16 +67,14 @@ export default class MultiSelect extends Component {
   change(_value) {
     const value = this.props.valueProp ? { [this.props.valueProp]: _value } : _value;
     let newValues = this.props.value ? this.props.value.slice(0) : [];
-    if (this.valueSelected(value)) {
+    if (this.valueSelected(_value)) {
       newValues = newValues.filter((_val) => {
-        const val = this.props.value ? _val[this.props.valueProp] : _val;
+        const val = this.props.valueProp ? _val[this.props.valueProp] : _val;
         return val !== _value;
       });
-      this.props.onChange(newValues);
-      return;
+    } else {
+      newValues.push(value);
     }
-
-    newValues.push(value);
     this.props.onChange(newValues);
   }
 

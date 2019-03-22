@@ -321,7 +321,7 @@ describe('relationships', () => {
         template: template.toString(),
         sharedId: 'bruceWayne',
         metadata: {
-          friend: ['robin']
+          friend: [{ entity: 'robin' }]
         }
       };
 
@@ -337,8 +337,8 @@ describe('relationships', () => {
         template: template.toString(),
         sharedId: 'bruceWayne',
         metadata: {
-          family: ['thomasWayne'],
-          friend: ['robin', 'alfred']
+          family: [{ entity: 'thomasWayne' }],
+          friend: [{ entity: 'robin' }, { entity: 'alfred' }]
         }
       };
 
@@ -362,16 +362,16 @@ describe('relationships', () => {
         template: template.toString(),
         sharedId: 'bruceWayne',
         metadata: {
-          family: ['thomasWayne'],
-          friend: ['robin', 'alfred']
+          family: [{ entity: 'thomasWayne' }],
+          friend: [{ entity: 'robin' }, { entity: 'alfred' }]
         }
       };
 
       await relationships.saveEntityBasedReferences(entity, 'en');
 
       entity.metadata = {
-        family: ['thomasWayne'],
-        friend: ['alfred']
+        family: [{ entity: 'thomasWayne' }],
+        friend: [{ entity: 'alfred' }]
       };
       await relationships.saveEntityBasedReferences(entity, 'en');
       let connections = await relationships.getByDocument('bruceWayne', 'en');
@@ -379,8 +379,8 @@ describe('relationships', () => {
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
       entity.metadata = {
-        family: ['alfred'],
-        friend: ['robin']
+        family: [{ entity: 'alfred' }],
+        friend: [{ entity: 'robin' }]
       };
       await relationships.saveEntityBasedReferences(entity, 'en');
       connections = await relationships.getByDocument('bruceWayne', 'en');

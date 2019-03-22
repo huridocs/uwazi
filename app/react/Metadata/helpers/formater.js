@@ -201,13 +201,7 @@ export default {
   relationship(property, thesauriValues, thesauris) {
     const allEntitiesThesauriValues = thesauris
     .filter(_thesauri => _thesauri.get('type') === 'template')
-    .reduce((result, _thesauri) => {
-      if (result) {
-        return result.concat(this.getThesauriValues(thesauriValues.map(v => v.entity), _thesauri));
-      }
-
-      return this.getThesauriValues(thesauriValues, _thesauri);
-    }, null);
+    .reduce((result, _thesauri) => result.concat(this.getThesauriValues(thesauriValues.map(v => v.entity), _thesauri)), []);
 
     const sortedValues = advancedSort(allEntitiesThesauriValues, { property: 'value' });
 

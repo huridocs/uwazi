@@ -112,7 +112,7 @@ describe('metadata formater', () => {
       assessMultiValues(relationship1, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document')]);
     });
 
-    it('should process free relationsip types', () => {
+    it('should process free relationship types', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
       assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);

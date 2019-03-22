@@ -138,11 +138,9 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
             "label": "label array",
             "value": Array [
               Object {
-                "url": "url1",
                 "value": "first_value",
               },
               Object {
-                "url": "url2",
                 "value": "second_value",
               },
             ],
@@ -249,11 +247,9 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
             "label": "label array",
             "value": Array [
               Object {
-                "url": "url1",
                 "value": "first_value",
               },
               Object {
-                "url": "url2",
                 "value": "second_value",
               },
             ],

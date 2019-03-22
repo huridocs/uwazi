@@ -302,7 +302,7 @@ describe('entities', () => {
       entities.updateMetdataFromRelationships(['shared'], 'en')
       .then(() => entities.getById('shared', 'en'))
       .then((updatedEntity) => {
-        expect(updatedEntity.metadata.friends).toEqual(['shared2']);
+        expect(updatedEntity.metadata.friends).toEqual([{ entity: 'shared1' }]);
         done();
       });
     });
