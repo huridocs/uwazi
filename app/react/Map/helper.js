@@ -37,9 +37,9 @@ function getEntityMarkers(entity, templates) {
   const geolocationProps = template.toJS().properties.filter(p => p.type === 'geolocation');
   const geolocationPropNames = geolocationProps.map(p => p.name);
 
-  if (geolocationProps) {
+  if (geolocationProps.length && entity.get('metadata')) {
     const entityData = entity.toJS();
-    const markers = (entityData.metadata ? Object.keys(entityData.metadata) : []).reduce((validMarkers, property) => {
+    const markers = Object.keys(entityData.metadata).reduce((validMarkers, property) => {
       if (geolocationPropNames.includes(property) && entityData.metadata[property]) {
         const { label } = geolocationProps.find(p => p.name === property);
         entityData.metadata[property].forEach((point) => {
