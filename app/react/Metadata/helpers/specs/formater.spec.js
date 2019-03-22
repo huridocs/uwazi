@@ -35,6 +35,7 @@ describe('metadata formater', () => {
     let select;
     let relationship1;
     let relationship2;
+    let relationship3;
     let image;
     let preview;
     let media;
@@ -44,7 +45,7 @@ describe('metadata formater', () => {
     beforeAll(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown,
-       select, image, preview, media, relationship1, relationship2, geolocation, nested] =
+       select, image, preview, media, relationship1, relationship2, relationship3, geolocation, nested] =
         data.metadata;
     });
 
@@ -56,7 +57,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(15);
+      expect(data.metadata.length).toBe(16);
     });
 
     it('should process text type', () => {
@@ -116,6 +117,12 @@ describe('metadata formater', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
       assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);
+    });
+
+    it('should process inherit relationship types', () => {
+      assessBasicProperties(relationship3, ['Relationship 3', 'text', 'template2']);
+      expect(relationship2.value.length).toBe(3);
+      assessMultiValues(relationship3, ['how', 'are', 'you?']);
     });
 
     it('should process multimedia types', () => {

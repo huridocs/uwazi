@@ -191,7 +191,7 @@ export default {
 
       return { value: v[name] };
     });
-    const initialValue = Object.assign({}, values[0], { translateContext: template.get('_id'), ...inheritedProperty.toJS() }, { value: [] });
+    const initialValue = Object.assign({}, values[0], { translateContext: template.get('_id'), ...inheritedProperty.toJS(), value: [], label: property.get('label') });
     return values.reduce((r, value) => {
       r.value = r.value.concat(value.value);
       return r;

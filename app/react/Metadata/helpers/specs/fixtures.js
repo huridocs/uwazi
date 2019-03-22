@@ -21,6 +21,7 @@ export const doc = {
     media: 'mediaURL',
     relationship1: [{ entity: 'value1' }, { entity: 'value2' }],
     relationship2: [{ entity: 'value1' }, { entity: 'value2' }, { entity: 'value4' }],
+    relationship3: [{ entity: 'value1', text: 'how' }, { entity: 'value2', text: 'are' }, { entity: 'value4', text: 'you?' }],
     geolocation: { lat: 2, lon: 3 },
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
@@ -29,7 +30,12 @@ export const doc = {
 
 export const templates = Immutable.fromJS([
   { _id: 'template' },
-  { _id: 'template2' },
+  {
+    _id: 'template2',
+    properties: [
+      { name: 'text', type: 'text' }
+    ]
+  },
   {
     _id: 'templateID',
     name: 'Mecanismo',
@@ -47,6 +53,7 @@ export const templates = Immutable.fromJS([
       { name: 'media', type: 'media', label: 'Media', showInCard: true, noLabel: false },
       { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
       { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
+      { name: 'relationship3', inherit: true, inheritProperty: 'text', type: 'relationship', label: 'Relationship 3', content: 'template2', relationType: 'relationType1' },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
       { name: 'nested', type: 'nested', label: 'Nested' }
     ]
