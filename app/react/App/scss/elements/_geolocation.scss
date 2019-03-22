@@ -6,7 +6,11 @@
       padding-right: 5px;
       display: inline-block;
       float: left;
-      max-width: 50%;
+      width: 100%;
+
+      &.half-width {
+        max-width: 50%;
+      }
 
       label {
         display: inline-block;
