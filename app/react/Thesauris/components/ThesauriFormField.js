@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
+import { DragSource, DropTarget } from 'react-dnd';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
@@ -12,61 +13,17 @@ export class ThesauriFormField extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value) || nextProps.moving !== this.props.moving ||
-      JSON.stringify(nextProps.childrenToMove) !== JSON.stringify(this.props.childrenToMove);
-  }
-
-  isValueToBeMoved(value) {
-    const { childrenToMove } = this.props;
-    return childrenToMove.some(v => v.id === value.id);
-  }
-
-  renderGroup(value, groupIndex) {
-    return (
-      <li key={`group-${groupIndex}`} className="list-group-item sub-group">
-        <FormGroup>
-          <Field model={`thesauri.data.values[${groupIndex}].label`}>
-            <input ref={i => this.groupInput = i} className="form-control" type="text" placeholder="Group name" />
-            <button
-              tabIndex={groupIndex + 500}
-              type="button"
-              className="btn btn-xs btn-danger"
-              onClick={this.props.removeValue.bind(null, groupIndex, null)}
-            >
-              <Icon icon="trash-alt" /> Delete Group
-            </button>
-            <button
-              tabIndex={groupIndex + 500}
-              type="button"
-              className="rounded-icon-small"
-              alt="move"
-              onClick={this.props.moveToGroup.bind(null, groupIndex, null)}
-            >
-              <Icon icon="arrow-left" size="xs" />
-            </button>
-          </Field>
-        </FormGroup>
-        <ul className="">
-          {value.values.map((_value, index) => (
-              this.renderValue(_value, index, groupIndex)
-            ))}
-        </ul>
-      </li>
-    );
+    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value);
   }
 
   renderValue(value, index, groupIndex) {
-    if (value.values) {
-      return this.renderGroup(value, index);
-    }
-    const moving = this.props.moving || this.isValueToBeMoved(value) ? 'moving' : '';
 
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {
       model = `thesauri.data.values[${groupIndex}].values[${index}].label`;
     }
     return (
-      <li key={`item-${groupIndex || ''}${index}`} className={`list-group-item ${moving}`}>
+      <li key={`item-${groupIndex || ''}${index}`} className="list-group-item">
         <FormGroup>
           <Field model={model}>
             <input className="form-control" type="text" placeholder="Item name" />
@@ -78,15 +35,6 @@ export class ThesauriFormField extends Component {
             >
               <Icon icon="trash-alt" /> Delete
             </button>
-            <button
-              tabIndex={index + 500}
-              type="button"
-              className="rounded-icon-small"
-              alt="move"
-              onClick={this.props.toggleToMove.bind(null, value)}
-            >
-              <Icon icon="check" size="xs" />
-            </button>
           </Field>
         </FormGroup>
       </li>
@@ -94,18 +42,54 @@ export class ThesauriFormField extends Component {
   }
 
   render() {
-    return this.renderValue(this.props.value, this.props.index);
+    const { connectDropTarget, connectDragSource, value, index, groupIndex } = this.props;
+    return connectDropTarget(connectDragSource(this.renderValue(value, index, groupIndex)));
   }
 }
 
-ThesauriFormField.propTypes = {
-  removeValue: PropTypes.func.isRequired,
-  toggleToMove: PropTypes.func.isRequired,
-  value: PropTypes.object.isRequired,
-  index: PropTypes.number.isRequired,
-  moving: PropTypes.bool.isRequired,
-  moveToGroup: PropTypes.func.isRequired,
-  childrenToMove: PropTypes.arrayOf(PropTypes.object).isRequired
+ThesauriFormField.defaultProps = {
+  groupIndex: undefined
 };
 
-export default ThesauriFormField;
+ThesauriFormField.propTypes = {
+  removeValue: PropTypes.func.isRequired,
+  value: PropTypes.object.isRequired,
+  index: PropTypes.number.isRequired,
+  groupIndex: PropTypes.number,
+  moveToGroup: PropTypes.func.isRequired,
+  connectDragSource: PropTypes.func.isRequired,
+  connectDropTarget: PropTypes.func.isRequired
+};
+
+const fieldSource = {
+  canDrag({ value }) {
+    return !!value.label;
+  },
+  beginDrag({ value, index, groupIndex }) {
+    return {
+      value,
+      index,
+      groupIndex
+    };
+  }
+};
+
+const dragSource = DragSource('THESAURI_FORM_ITEM', fieldSource, connector => ({
+  connectDragSource: connector.dragSource()
+}))(ThesauriFormField);
+
+const fieldTarget = {
+  canDrop() {
+    return true;
+  },
+  drop({ index, groupIndex, moveValueToIndex }, monitor) {
+    const item = monitor.getItem();
+    moveValueToIndex(item.index, item.groupIndex, index, groupIndex);
+  }
+};
+
+const dropTarget = DropTarget('THESAURI_FORM_ITEM', fieldTarget, connector => ({
+  connectDropTarget: connector.dropTarget()
+}))(dragSource);
+
+export default dropTarget;

@@ -55,6 +55,29 @@ export function moveValues(valuesToMove, groupIndex) {
   };
 }
 
+export function moveValueToIndex(sourceIndex, sourceGroupIndex, targetIndex, targetGroupIndex) {
+  return (dispatch, getState) => {
+    const origValues = getState().thesauri.data.values.slice(0);
+    const values = origValues.map((v) => {
+      const value = { ...v };
+      if (value.values) {
+        value.values = value.values.slice(0);
+      }
+      return value;
+    });
+
+    const sourceGroup = typeof sourceGroupIndex !== 'number' ? values : values[sourceGroupIndex].values;
+    const targetGroup = typeof targetGroupIndex !== 'number' ? values : values[targetGroupIndex].values;
+
+    const value = sourceGroup[sourceIndex];
+
+    targetGroup.splice(targetIndex, 0, value);
+    const indexToDelete = (sourceGroupIndex === targetGroupIndex && targetIndex <= sourceIndex) ? sourceIndex + 1 : sourceIndex;
+    sourceGroup.splice(indexToDelete, 1);
+    dispatch(formActions.change('thesauri.data.values', values));
+  };
+}
+
 export function addValue(group) {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
