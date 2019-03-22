@@ -1,54 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Markers component should return parsed markers from entities array 1`] = `
+exports[`Markers component should return processed markers from entities and templates 1`] = `
 Array [
-  Object {
-    "latitude": 7,
-    "longitude": 13,
-    "properties": Object {
-      "color": 0,
-      "entity": Object {
-        "metadata": Object {
-          "geoProperty": Object {
-            "lat": 7,
-            "lon": 13,
-          },
-        },
-        "template": "t1",
-      },
-    },
-  },
-  Object {
-    "latitude": 5,
-    "longitude": 22,
-    "properties": Object {
-      "color": 0,
-      "entity": Object {
-        "metadata": Object {
-          "geoProperty": Object {
-            "lat": 5,
-            "lon": 22,
-          },
-        },
-        "template": "t1",
-      },
-    },
-  },
-  Object {
-    "latitude": 2018,
-    "longitude": 6,
-    "properties": Object {
-      "color": 1,
-      "entity": Object {
-        "metadata": Object {
-          "anotherGeoProperty": Object {
-            "lat": 2018,
-            "lon": 6,
-          },
-        },
-        "template": "t2",
-      },
-    },
-  },
+  "entities",
+  "templates",
 ]
 `;

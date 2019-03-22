@@ -4,36 +4,20 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import { mapStateToProps, MarkersComponent } from '../Markers.js';
+import * as helper from '../helper';
 
 describe('Markers component', () => {
-  const state = {
-    templates: Immutable.fromJS([{
-      _id: 't1',
-      properties: [
-        { type: 'geolocation', name: 'geoProperty' },
-      ]
-    }, {
-      _id: 't2',
-      properties: [
-        { type: 'geolocation', name: 'anotherGeoProperty' },
-      ]
-    }, {
-      _id: 't3',
-      properties: [
-        { type: 'notGeolocation', name: 'notGeo' },
-      ]
-    }]),
-  };
+  const state = { templates: Immutable.fromJS(['templates']) };
+  const entities = Immutable.fromJS(['entities']);
 
-  it('should return parsed markers from entities array', () => {
-    const entities = Immutable.fromJS([
-      { template: 't1', metadata: { geoProperty: { lat: 7, lon: 13 } } },
-      { template: 't1', metadata: { geoProperty: { lat: 5, lon: 22 } } },
-      { template: 't3', metadata: { notGeo: { lat: 1977, lon: 7 } } },
-      { template: 't2', metadata: { anotherGeoProperty: { lat: 2018, lon: 6 } } },
-    ]);
+  let props;
 
-    const props = mapStateToProps(state);
+  beforeEach(() => {
+    spyOn(helper, 'getMarkers').and.callFake((_entities, templates) => _entities.toJS().concat(templates.toJS()));
+    props = mapStateToProps(state);
+  });
+
+  it('should return processed markers from entities and templates', () => {
     const resultMarkers = [];
 
     shallow(
@@ -43,18 +27,5 @@ describe('Markers component', () => {
     );
 
     expect(resultMarkers).toMatchSnapshot();
-  });
-
-  it('should return an empty array if no data', () => {
-    const props = mapStateToProps(state);
-    const resultMarkers = [];
-
-    shallow(
-      <MarkersComponent {...props}>
-        {markers => markers.map(m => resultMarkers.push(m))}
-      </MarkersComponent>
-    );
-
-    expect(resultMarkers).toEqual([]);
   });
 });

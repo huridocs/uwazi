@@ -31,6 +31,40 @@ const markersToStyleFormat = markers => markers.map((marker, index) => {
 
 const noop = () => {};
 
+function getEntityMarkers(entity, templates) {
+  const template = templates.find(_t => _t.get('_id') === entity.get('template'));
+  const color = templates.indexOf(template);
+  const geolocationProps = template.toJS().properties.filter(p => p.type === 'geolocation');
+  const geolocationPropNames = geolocationProps.map(p => p.name);
+
+  if (geolocationProps.length && entity.get('metadata')) {
+    const entityData = entity.toJS();
+    const markers = Object.keys(entityData.metadata).reduce((validMarkers, property) => {
+      if (geolocationPropNames.includes(property) && entityData.metadata[property]) {
+        const { label } = geolocationProps.find(p => p.name === property);
+        entityData.metadata[property].forEach((point) => {
+          const { lat, lon } = point;
+          validMarkers.push({ properties: { entity: entityData, color, info: point.label }, latitude: lat, longitude: lon, label });
+        });
+      }
+      return validMarkers;
+    }, []);
+    return markers;
+  }
+
+  return [];
+}
+
+const getMarkers = (entities, templates) => {
+  let markers = [];
+  entities.forEach((entity) => {
+    const entityMarkers = getEntityMarkers(entity, templates); //).toJS().filter(m => m);
+    markers = markers.concat(entityMarkers);
+  });
+
+  return markers;
+};
+
 const TRANSITION_PROPS = {
   transitionDuration: 0,
   transitionEasing: t => t,
@@ -42,4 +76,9 @@ const TRANSITION_PROPS = {
   onStateChange: noop
 };
 
-export { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS };
+export {
+  getMarkersBoudingBox,
+  markersToStyleFormat,
+  getMarkers,
+  TRANSITION_PROPS,
+};

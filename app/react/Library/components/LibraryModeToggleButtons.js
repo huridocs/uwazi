@@ -4,32 +4,35 @@ import { connect } from 'react-redux';
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { helper as mapHelper } from 'app/Map';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
-    const numberOfMarkersText = this.props.numberOfMarkers.toString().length > 3 ? '99+' : this.props.numberOfMarkers;
+    const { numberOfMarkers, zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl } = this.props;
+    const numberOfMarkersText = numberOfMarkers.toString().length > 3 ? '99+' : numberOfMarkers;
+
     return (
       <div className="list-view-mode">
-        <div className={`list-view-mode-zoom list-view-buttons-zoom-${this.props.zoomLevel} buttons-group`}>
-          <button className="btn btn-default zoom-out" onClick={this.props.zoomOut}>
+        <div className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group`}>
+          <button className="btn btn-default zoom-out" onClick={zoomOut} type="button">
             <Icon icon="search-minus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom out')}</span>
           </button>
-          <button className="btn btn-default zoom-in" onClick={this.props.zoomIn}>
+          <button className="btn btn-default zoom-in" onClick={zoomIn} type="button">
             <Icon icon="search-plus" />
             <span className="tab-link-tooltip">{t('System', 'Zoom in')}</span>
           </button>
         </div>
 
-        { this.props.showGeolocation && (
+        { showGeolocation && (
           <div className="list-view-mode-map buttons-group">
-            <I18NLink to={`library${this.props.searchUrl}`} className="btn btn-default" activeClassName="is-active">
+            <I18NLink to={`library${searchUrl}`} className="btn btn-default" activeClassName="is-active">
               <Icon icon="th" />
               <span className="tab-link-tooltip">{t('System', 'List view')}</span>
             </I18NLink>
             <I18NLink
-              disabled={!this.props.numberOfMarkers}
-              to={`library/map${this.props.searchUrl}`}
+              disabled={!numberOfMarkers}
+              to={`library/map${searchUrl}`}
               className="btn btn-default"
               activeClassName="is-active"
             >
@@ -58,7 +61,7 @@ export function mapStateToProps(state, props) {
   const params = processFilters(state[props.storeKey].search, filters);
   const { templates } = state;
   const showGeolocation = Boolean(templates.find(_t => _t.get('properties').find(p => p.get('type') === 'geolocation')));
-  const numberOfMarkers = state[props.storeKey].markers.get('rows').size;
+  const numberOfMarkers = mapHelper.getMarkers(state[props.storeKey].markers.get('rows'), state.templates).length;
   return {
     searchUrl: encodeSearch(params),
     showGeolocation,

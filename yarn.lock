@@ -4655,6 +4655,11 @@ format-util@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/format-util/-/format-util-1.0.3.tgz#032dca4a116262a12c43f4c3ec8566416c5b2d95"
 
+formatcoords@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/formatcoords/-/formatcoords-1.1.3.tgz#752f056ab2fe34c1d4ae8a19048ce0c38e16ed03"
+  integrity sha1-dS8FarL+NMHUrooZBIzgw44W7QM=
+
 formidable@^1.1.1, formidable@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.2.1.tgz#70fb7ca0290ee6ff961090415f4b3df3d2082659"
