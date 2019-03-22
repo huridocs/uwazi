@@ -34,23 +34,18 @@ function getEntityTemplate(doc, language) {
 }
 
 const inheritMetadata = async (entity) => {
-  console.log(entity);
-  console.log('==1==');
-  const { language } = entity;
   if (!entity.metdata) {
-    return entity;
+    const template = await getEntityTemplate(entity, entity.language);
+    template.properties.forEach(async (prop) => {
+      if (!prop.inherit) {
+        return;
+      }
+      const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
+      const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language: entity.language });
+      entity.metadata[prop.name] = relatedEntities
+      .map(relatedEntity => ({ entity: relatedEntity.sharedId, [prop.inheritProperty]: relatedEntity.metadata[prop.inheritProperty] }));
+    });
   }
-  console.log('==2==');
-  const template = await getEntityTemplate(entity, entity.language);
-  template.properties.forEach(async (prop) => {
-    if (!prop.inherit) {
-      return;
-    }
-    const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
-    const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language });
-    entity.metadata[prop.name] = relatedEntities
-    .map(relatedEntity => ({ entity: relatedEntity.sharedId, [prop.inheritProperty]: relatedEntity.metadata[prop.inheritProperty] }));
-  });
 
   return entity;
 };
