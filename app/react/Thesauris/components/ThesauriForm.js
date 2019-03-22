@@ -16,7 +16,9 @@ export class ThesauriForm extends Component {
   static validation(thesauris, id) {
     return {
       name: {
-        duplicated: val => !thesauris.find(thesauri => thesauri._id !== id && thesauri.name.trim().toLowerCase() === val.trim().toLowerCase()),
+        duplicated: val => !thesauris.find(thesauri => thesauri.type !== 'template' &&
+          thesauri._id !== id &&
+          thesauri.name.trim().toLowerCase() === val.trim().toLowerCase()),
         required: notEmpty
       }
     };

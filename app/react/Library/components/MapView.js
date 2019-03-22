@@ -9,14 +9,22 @@ import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app
 import SearchBar from 'app/Library/components/SearchBar';
 import { TemplateLabel } from 'app/Layout';
 import { t } from 'app/I18N';
+import { Icon } from 'app/UI';
 
 export class MapView extends Component {
   static renderInfo(marker) {
     return (
-      <div>
-        <TemplateLabel template={marker.properties.entity.template} />
-        &nbsp;
-        {marker.properties.entity.title}
+      <div className="popup-container">
+        <div className="template-label">
+          <TemplateLabel template={marker.properties.entity.template} />
+        </div>
+        <div className="entity-data">
+          <div>
+            <span className="popup-name">{marker.properties.entity.title}</span>
+            <span className="popup-metadata-property">({t(marker.properties.entity.template, marker.label)})</span>
+          </div>
+          {marker.properties.info && <div className="marker-info"><Icon className="tag-icon" icon="tag" />{marker.properties.info}</div>}
+        </div>
       </div>
     );
   }
@@ -37,17 +45,18 @@ export class MapView extends Component {
   }
 
   render() {
+    const { storeKey, markers } = this.props;
     return (
       <div className="library-map main-wrapper" style={{ width: '100%', height: '100%' }}>
-        <div className="search-list"><SearchBar storeKey={this.props.storeKey}/></div>
+        <div className="search-list"><SearchBar storeKey={storeKey}/></div>
         <div className="documents-counter">
-          <span><b>{this.props.markers.get('totalRows')}</b> {t('System', 'documents')}</span>
+          <span><b>{markers.get('totalRows')}</b> {t('System', 'documents')}</span>
         </div>
-        <Markers entities={this.props.markers.get('rows')}>
-          {markers => (
+        <Markers entities={markers.get('rows')}>
+          {processedMarkers => (
             <Map
               ref={(ref) => { this.map = ref; }}
-              markers={markers}
+              markers={processedMarkers}
               zoom={1}
               clickOnMarker={this.clickOnMarker}
               clickOnCluster={this.clickOnCluster}

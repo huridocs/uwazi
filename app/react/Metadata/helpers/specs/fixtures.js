@@ -22,7 +22,7 @@ export const doc = {
     relationship1: [{ entity: 'value1' }, { entity: 'value2' }],
     relationship2: [{ entity: 'value1' }, { entity: 'value2' }, { entity: 'value4' }],
     relationship3: [{ entity: 'value1', text: 'how' }, { entity: 'value2', text: 'are' }, { entity: 'value4', text: 'you?' }],
-    geolocation: { lat: 2, lon: 3 },
+    geolocation: [{ lat: 2, lon: 3 }, { lat: 13, lon: 7, label: 'home' }],
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
   }

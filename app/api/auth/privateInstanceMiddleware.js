@@ -1,9 +1,9 @@
 import settings from '../settings';
 
-const allowedRoutes = ['login', 'setpassword/'];
+const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/'];
 const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));
 
-const allowedApiCalls = ['/api/recoverpassword', '/api/resetpassword'];
+const allowedApiCalls = ['/api/recoverpassword', '/api/resetpassword', '/api/unlockaccount'];
 const allowedApiMatch = new RegExp(allowedApiCalls.join('|'));
 
 const forbiddenRoutes = ['/api/', '/uploaded_documents/'];
@@ -16,18 +16,13 @@ export default function (req, res, next) {
 
   return settings.get()
   .then((result) => {
-    if (result.private && req.url.match(forbiddenRoutesMatch)) {
-      if (req.url.match(allowedApiMatch)) {
-        next();
+    if (result.private && !req.url.match(allowedApiMatch)) {
+      if (req.url.match(forbiddenRoutesMatch)) {
+        res.status(401);
+        res.json({ error: 'Unauthorized' });
         return;
       }
 
-      res.status(401);
-      res.json({ error: 'Unauthorized' });
-      return;
-    }
-
-    if (result.private) {
       res.redirect('/login');
       return;
     }

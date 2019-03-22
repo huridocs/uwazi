@@ -835,17 +835,21 @@ describe('entities', () => {
   });
 
   describe('addLanguage()', () => {
-    it('should duplicate all the entities from the default language to the new one', (done) => {
-      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
-      entities.addLanguage('ab')
-      .then(() => entities.get({ language: 'ab' }, '+fullText'))
-      .then((newEntities) => {
-        expect(entities.createThumbnail).toHaveBeenCalled();
-        expect(newEntities[0].fullText).toEqual({ 1: 'text' });
-        expect(newEntities.length).toBe(7);
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should duplicate all the entities from the default language to the new one', async () => {
+      spyOn(entities, 'createThumbnail').and.callFake((entity) => {
+        if (!entity.file) {
+          return Promise.reject(new Error('entities without file should not try to create thumbnail'));
+        }
+        return Promise.resolve();
+      });
+
+      await entities.saveMultiple([{ _id: docId1, file: {} }]);
+      await entities.addLanguage('ab', 2);
+      const newEntities = await entities.get({ language: 'ab' }, '+fullText');
+
+      expect(entities.createThumbnail.calls.count()).toBe(6);
+      expect(newEntities[0].fullText).toEqual({ 1: 'text' });
+      expect(newEntities.length).toBe(7);
     });
   });
 

@@ -20,6 +20,34 @@ exports[`Metadata should not render metadata without value 1`] = `
 </React.Fragment>
 `;
 
+exports[`Metadata should render a Geolocation viewer when the metadata is type geolocation 1`] = `
+<React.Fragment>
+  <dl
+    className="metadata-type-geolocation "
+    key="Geolocation Label"
+  >
+    <dt>
+      Geolocation Label
+    </dt>
+    <dd
+      className=""
+    >
+      <GeolocationViewer
+        onlyForCards={true}
+        points={
+          Array [
+            Object {
+              "lat": 13,
+              "lon": 7,
+            },
+          ]
+        }
+      />
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
 <React.Fragment>
   <dl

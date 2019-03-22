@@ -4,7 +4,6 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import t from 'app/I18N/t';
-import Map from 'app/Map/Map';
 
 const getOption = (thesauri, id) => {
   let option;
@@ -149,22 +148,12 @@ export default {
   },
 
   link(property, value) {
-    const link = <a href={value.url} target="_blank">{value.label}</a>;
+    const link = <a href={value.url} target="_blank" rel="noopener noreferrer">{value.label}</a>;
     return { label: property.get('label'), name: property.get('name'), value: link };
   },
 
   geolocation(property, value, thesauris, { onlyForCards }) {
-    const markers = [];
-    let _value;
-    if (value.lat && value.lon) {
-      _value = `Lat / Lon: ${value.lat} / ${value.lon}`;
-      markers.push({ latitude: value.lat, longitude: value.lon });
-    }
-    if (!onlyForCards) {
-      _value = <Map latitude={value.lat} height={370} longitude={value.lon} markers={markers}/>;
-    }
-
-    return { label: property.get('label'), name: property.get('name'), value: _value };
+    return { label: property.get('label'), name: property.get('name'), value, onlyForCards: Boolean(onlyForCards), type: 'geolocation' };
   },
 
   select(property, thesauriValue, thesauris) {
