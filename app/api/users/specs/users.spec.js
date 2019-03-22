@@ -32,6 +32,16 @@ describe('Users', () => {
     })
     .catch(catchErrors(done)));
 
+    it('should not save a null password on update', async () => {
+      const user = { _id: recoveryUserId, role: 'admin' };
+
+      const [userInDb] = await users.get(recoveryUserId, '+password');
+      await users.save(user, { _id: userId, role: 'admin' });
+      const [updatedUser] = await users.get(recoveryUserId, '+password');
+
+      expect(updatedUser.password.toString()).toBe(userInDb.password.toString());
+    });
+
     describe('when you try to change role', () => {
       it('should be an admin', (done) => {
         currentUser = { _id: userId, role: 'editor' };

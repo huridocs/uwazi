@@ -474,7 +474,7 @@ export default {
     });
   },
 
-  async addLanguage(language) {
+  async addLanguage(language, limit = 100) {
     const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
     if (lanuageTranslationAlreadyExists) {
       return Promise.resolve();
@@ -484,7 +484,6 @@ export default {
 
     const defaultLanguage = languages.find(l => l.default).key;
     const duplicate = (offset, totalRows) => {
-      const limit = 200;
       if (offset >= totalRows) {
         return Promise.resolve();
       }
@@ -494,12 +493,14 @@ export default {
         const newLanguageEntities = this.generateNewEntitiesForLanguage(entities, language);
         return this.saveMultiple(newLanguageEntities);
       })
-      .then((newEntities) => {
-        newEntities.map((entity) => {
+      .then(async (newEntities) => {
+        await newEntities.reduce(async (previous, entity) => {
+          await previous;
           if (entity.file) {
-            this.createThumbnail(entity);
+            return this.createThumbnail(entity);
           }
-        });
+          return Promise.resolve();
+        }, Promise.resolve());
         return duplicate(offset + limit, totalRows);
       });
     };

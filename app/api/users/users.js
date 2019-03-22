@@ -69,21 +69,20 @@ const sendAccountLockedEmail = (user, domain) => {
 };
 
 export default {
-  save(user, currentUser) {
-    return model.get({ _id: user._id })
-    .then(async ([userInTheDatabase]) => {
-      if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
-        return Promise.reject(createError('Can not change your own role', 403));
-      }
+  async save(user, currentUser) {
+    const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
 
-      if (user.hasOwnProperty('role') && user.role !== userInTheDatabase.role && currentUser.role !== 'admin') {
-        return Promise.reject(createError('Unauthorized', 403));
-      }
+    if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
+      return Promise.reject(createError('Can not change your own role', 403));
+    }
 
-      return model.save({
-        ...user,
-        password: user.password ? await encryptPassword(user.password) : undefined,
-      });
+    if (user.hasOwnProperty('role') && user.role !== userInTheDatabase.role && currentUser.role !== 'admin') {
+      return Promise.reject(createError('Unauthorized', 403));
+    }
+
+    return model.save({
+      ...user,
+      password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
     });
   },
 

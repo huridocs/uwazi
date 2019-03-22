@@ -9,7 +9,7 @@ export default (server, app) => {
   });
 
   app.use((req, res, next) => {
-    req.io.getCurrentSessionSockets = () => {
+    req.getCurrentSessionSockets = () => {
       const sessionSockets = {
         sockets: [],
         emit(...args) {
