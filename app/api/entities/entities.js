@@ -32,23 +32,24 @@ function getEntityTemplate(doc, language) {
 }
 
 const inheritMetadata = async (entity) => {
-  if (entity.metadata && entity.template) {
-    const template = await getEntityTemplate(entity, entity.language);
-    template.properties.forEach(async (prop) => {
-      if (!prop.inherit) {
-        return;
-      }
-      const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
-      const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language: entity.language });
-      entity.metadata[prop.name] = relatedEntities
-      .map((relatedEntity) => {
-        const inheritValue = relatedEntity.metadata[prop.inheritProperty];
-        return { entity: relatedEntity.sharedId, [`inherit_${typeof inheritValue}`]: inheritValue };
-      });
-    });
+  if (!entity.metadata || !entity.template) {
+    return entity;
   }
-
-  return entity;
+  const template = await getEntityTemplate(entity, entity.language);
+  return template.properties.reduce(async (entitymemo, prop) => {
+    entity = await entitymemo;
+    if (!prop.inherit) {
+      return entity;
+    }
+    const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
+    const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language: entity.language });
+    entity.metadata[prop.name] = relatedEntities
+    .map((relatedEntity) => {
+      const inheritValue = relatedEntity.metadata[prop.inheritProperty];
+      return { entity: relatedEntity.sharedId, [`inherit_${typeof inheritValue}`]: inheritValue };
+    });
+    return entity;
+  }, Promise.resolve(entity));
 };
 
 const updateOthersInheritedMetadata = async (entity) => {
@@ -122,13 +123,13 @@ function updateEntity(entity, _template) {
 
 function createEntity(doc, languages, sharedId) {
   const docs = languages.map((lang) => {
-    const langDoc = Object.assign({}, doc);
+    const langDoc = { ...doc, metadata: { ...doc.metadata } };
     langDoc.language = lang.key;
     langDoc.sharedId = sharedId;
 
     return langDoc;
   });
-  return Promise.all(docs.map(async entity => inheritMetadata(entity)))
+  return Promise.all(docs.map(inheritMetadata))
   .then(entities => model.save(entities));
 }
 

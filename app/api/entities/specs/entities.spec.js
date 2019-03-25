@@ -104,7 +104,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    fit('should inherit metadata', (done) => {
+    it('should inherit metadata', (done) => {
       const entity = {
         title: 'Inherit some data',
         template: templateInheritMetadata,
