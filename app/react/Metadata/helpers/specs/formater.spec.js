@@ -122,7 +122,7 @@ describe('metadata formater', () => {
     it('should process inherit relationship types', () => {
       assessBasicProperties(relationship3, ['Relationship 3', 'text', 'template2']);
       expect(relationship3.value.length).toBe(3);
-      assessMultiValues(relationship3, ['how', 'are', 'you?']);
+      assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
     });
 
     it('should process geolocation type', () => {

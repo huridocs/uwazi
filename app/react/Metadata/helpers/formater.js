@@ -171,20 +171,39 @@ export default {
   inherit(property, thesauriValues, thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template.get('properties').find(p => p.get('name') === property.get('inheritProperty'));
-    const name = inheritedProperty.get('name');
     const type = inheritedProperty.get('type');
-    const values = thesauriValues.map((v) => {
+    const relationshipValues = thesauriValues.map((v) => {
+      const name = Object.keys(v).find(key => key.includes('inherit'));
       if (this[type] && (v[name] || type === 'preview')) {
         return this[type](property, v[name], thesauris, options, templates);
       }
 
       return { value: v[name] };
     });
-    const initialValue = Object.assign({}, values[0], { translateContext: template.get('_id'), ...inheritedProperty.toJS(), value: [], label: property.get('label') });
-    return values.reduce((r, value) => {
-      r.value = r.value.concat(value.value);
-      return r;
-    }, initialValue);
+
+    let propType = 'inherit';
+    let value = this.flattenInheritedValues(relationshipValues);
+    if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
+      propType = type;
+      value = this.flattenInheritedMultiValue(relationshipValues);
+    }
+    return Object.assign(
+      {},
+      { translateContext: template.get('_id'), ...inheritedProperty.toJS(), value, label: property.get('label'), type: propType }
+    );
+  },
+
+  flattenInheritedValues(relationshipValues) {
+    return relationshipValues.reduce((result, relationshipValue) => result.concat(relationshipValue), []);
+  },
+
+  flattenInheritedMultiValue(relationshipValues) {
+    return relationshipValues.reduce((result, relationshipValue) => {
+      if (relationshipValue.value) {
+        return result.concat(relationshipValue.value);
+      }
+      return result;
+    }, []);
   },
 
   relationship(property, thesauriValues, thesauris) {

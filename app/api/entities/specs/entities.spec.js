@@ -10,7 +10,7 @@ import { uploadDocumentsPath } from 'api/config/paths';
 import path from 'path';
 import entities from '../entities.js';
 import fixtures, { batmanFinishesId, templateId, templateChangingNames,
-  syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';
+  syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2, templateInheritMetadata } from './fixtures.js';
 
 describe('entities', () => {
   beforeEach((done) => {
@@ -99,6 +99,23 @@ describe('entities', () => {
       .then(createdDocument => entities.save({ ...createdDocument, title: 'updated title' }, { user, language: 'en' }))
       .then((updatedDocument) => {
         expect(updatedDocument.title).toBe('updated title');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    fit('should inherit metadata', (done) => {
+      const entity = {
+        title: 'Inherit some data',
+        template: templateInheritMetadata,
+        fullText: 'the full text!',
+        metadata: { relationship: [{ entity: 'shared3' }] }
+      };
+      const user = { _id: db.id() };
+
+      entities.save(entity, { user, language: 'en' })
+      .then((createdEntity) => {
+        expect(createdEntity.metadata.relationship).toEqual([{ entity: 'shared3', inherit_string: 'text en' }]);
         done();
       })
       .catch(catchErrors(done));
@@ -297,9 +314,9 @@ describe('entities', () => {
     });
   });
 
-  describe('updateMetdataFromRelationships', () => {
-    it('should update the metdata based on the entity relationships', (done) => {
-      entities.updateMetdataFromRelationships(['shared'], 'en')
+  describe('updateMetadataFromRelationships', () => {
+    it('should update the metadata based on the entity relationships', (done) => {
+      entities.updateMetadataFromRelationships(['shared'], 'en')
       .then(() => entities.getById('shared', 'en'))
       .then((updatedEntity) => {
         expect(updatedEntity.metadata.friends).toEqual([{ entity: 'shared1' }]);
@@ -847,9 +864,9 @@ describe('entities', () => {
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
-      expect(entities.createThumbnail.calls.count()).toBe(6);
+      expect(entities.createThumbnail.calls.count()).toBe(7);
       expect(newEntities[0].fullText).toEqual({ 1: 'text' });
-      expect(newEntities.length).toBe(7);
+      expect(newEntities.length).toBe(8);
     });
   });
 

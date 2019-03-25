@@ -23,7 +23,7 @@ const showByType = (prop, compact) => {
     result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
     break;
   case 'geolocation':
-    result = <GeolocationViewer points={prop.value} onlyForCards={prop.onlyForCards} />;
+    result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
     break;
   default:
     if (prop.url) {
@@ -31,7 +31,10 @@ const showByType = (prop, compact) => {
     }
 
     if (prop.value && prop.value.map) {
-      prop.value = prop.value.map(value => ({ value: showByType({ value: (value && value.value) ? value.value : value, type: prop.type }, compact) }));
+      prop.value = prop.value.map((_value) => {
+        const value = showByType(_value, compact);
+        return value.value ? value : { value };
+      });
       result = <ValueList compact={compact} property={prop} />;
     }
     break;

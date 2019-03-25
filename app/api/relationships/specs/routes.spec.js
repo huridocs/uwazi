@@ -51,7 +51,7 @@ describe('relationships routes', () => {
         language: 'es',
       };
 
-      spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
+      spyOn(entities, 'updateMetadataFromRelationships').and.returnValue(Promise.resolve());
 
       routes.post('/api/relationships/bulk', req)
       .then(() => {

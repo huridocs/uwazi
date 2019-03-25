@@ -10,6 +10,7 @@ const templateWithEntityAsThesauri = db.id();
 const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
+const templateInheritMetadata = db.id();
 
 const hub1 = db.id();
 const hub2 = db.id();
@@ -44,7 +45,8 @@ export default {
     },
     { _id: docId1, sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }], fullText: { 1: 'text' } },
     { _id: docId2, sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
-    { _id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: { property1: 'value1' } },
+    { _id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false },
+    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'en', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text en' }, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }], fullText: { 1: 'text' } },
     //select/multiselect/date sync
     { _id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' } },
     { _id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' }, fullText: { 1: 'text' } },
@@ -105,7 +107,12 @@ export default {
         { id: '1', type: 'text', name: 'property1' },
         { id: '2', type: 'text', name: 'property2' },
         { id: '3', type: 'text', name: 'property3' }
-      ] }
+      ] },
+      { _id: templateInheritMetadata,
+        name: 'template_changing_names',
+        properties: [
+          { id: '1', type: 'relationship', name: 'relationship', inherit: true, inheritProperty: 'text' },
+        ] }
   ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1 },
@@ -129,4 +136,5 @@ export {
   templateWithEntityAsThesauri,
   docId1,
   docId2,
+  templateInheritMetadata,
 };

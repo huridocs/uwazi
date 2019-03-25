@@ -32,7 +32,7 @@ import search from '../../search/search';
 
 describe('relationships', () => {
   beforeEach((done) => {
-    spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
+    spyOn(entities, 'updateMetadataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -227,7 +227,7 @@ describe('relationships', () => {
 
       it('should call entities to update the metadata', async () => {
         await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
-        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
+        expect(entities.updateMetadataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
       });
     });
 
@@ -517,8 +517,8 @@ describe('relationships', () => {
     it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
-      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
+      expect(entities.updateMetadataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
+      expect(entities.updateMetadataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
     });
 
     describe('when there is no condition', () => {

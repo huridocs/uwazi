@@ -225,11 +225,11 @@ export default {
 
   updateEntitiesMetadataByHub(hubId, language) {
     return this.getHub(hubId)
-    .then(hub => entities.updateMetdataFromRelationships(hub.map(r => r.entity), language));
+    .then(hub => entities.updateMetadataFromRelationships(hub.map(r => r.entity), language));
   },
 
   updateEntitiesMetadata(entitiesIds, language) {
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
+    return entities.updateMetadataFromRelationships(entitiesIds, language);
   },
 
   saveEntityBasedReferences(entity, language) {
@@ -329,7 +329,7 @@ export default {
     });
   },
 
-  async delete(relationQuery, language, updateMetdata = true) {
+  async delete(relationQuery, language, updateMetadata = true) {
     if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
@@ -354,7 +354,7 @@ export default {
 
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
-    if (updateMetdata) {
+    if (updateMetadata) {
       await Promise.all(languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key)));
     }
 

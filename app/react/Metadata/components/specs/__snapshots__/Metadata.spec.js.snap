@@ -166,10 +166,18 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
             "label": "label array",
             "value": Array [
               Object {
-                "value": "first_value",
+                "value": <Connect(I18NLink)
+                  to="url1"
+                >
+                  first_value
+                </Connect(I18NLink)>,
               },
               Object {
-                "value": "second_value",
+                "value": <Connect(I18NLink)
+                  to="url2"
+                >
+                  second_value
+                </Connect(I18NLink)>,
               },
             ],
           }
@@ -275,10 +283,18 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
             "label": "label array",
             "value": Array [
               Object {
-                "value": "first_value",
+                "value": <Connect(I18NLink)
+                  to="url1"
+                >
+                  first_value
+                </Connect(I18NLink)>,
               },
               Object {
-                "value": "second_value",
+                "value": <Connect(I18NLink)
+                  to="url2"
+                >
+                  second_value
+                </Connect(I18NLink)>,
               },
             ],
           }

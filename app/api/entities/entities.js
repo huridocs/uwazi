@@ -18,11 +18,9 @@ function getEntityTemplate(doc, language) {
     if (!doc.sharedId && !doc.template) {
       return resolve(null);
     }
-
     if (doc.template) {
       return templates.getById(doc.template).then(resolve);
     }
-
     return entitiesModel.getById(doc.sharedId, language)
     .then((storedDoc) => {
       if (!storedDoc) {
@@ -34,7 +32,7 @@ function getEntityTemplate(doc, language) {
 }
 
 const inheritMetadata = async (entity) => {
-  if (!entity.metdata) {
+  if (entity.metadata && entity.template) {
     const template = await getEntityTemplate(entity, entity.language);
     template.properties.forEach(async (prop) => {
       if (!prop.inherit) {
@@ -43,7 +41,10 @@ const inheritMetadata = async (entity) => {
       const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
       const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language: entity.language });
       entity.metadata[prop.name] = relatedEntities
-      .map(relatedEntity => ({ entity: relatedEntity.sharedId, [prop.inheritProperty]: relatedEntity.metadata[prop.inheritProperty] }));
+      .map((relatedEntity) => {
+        const inheritValue = relatedEntity.metadata[prop.inheritProperty];
+        return { entity: relatedEntity.sharedId, [`inherit_${typeof inheritValue}`]: inheritValue };
+      });
     });
   }
 
@@ -51,6 +52,9 @@ const inheritMetadata = async (entity) => {
 };
 
 const updateOthersInheritedMetadata = async (entity) => {
+  if (!entity.template) {
+    return Promise.resolve(entity);
+  }
   const { sharedId, language } = entity;
   const relatedEntities = await relationships.getByDocument(sharedId, language);
   const templ = await templates.get();
@@ -193,7 +197,6 @@ const entitiesModel = {
       if (doc.sharedId) {
         return this.updateEntity(this.sanitize(doc, template), template);
       }
-
       return this.createEntity(this.sanitize(doc, template), languages, sharedId);
     })
     .then(() => this.getWithRelationships({ sharedId, language }))
@@ -203,10 +206,14 @@ const entitiesModel = {
       }
       return [entity];
     })
-    .then(([entity]) => updateOthersInheritedMetadata(entity).then((updatedEntities) => {
-      this.saveMultiple(Array.prototype.concat(...updatedEntities));
+    .then(([entity]) => {
+      if (entity.metadata && entity.template) {
+        return updateOthersInheritedMetadata(entity).then(updatedEntities => this.saveMultiple(Array.prototype.concat(...updatedEntities))
+        .then(() => [entity]));
+      }
+
       return [entity];
-    }))
+    })
     .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
   },
 
@@ -218,7 +225,7 @@ const entitiesModel = {
       }
 
       return this.get(query, 'sharedId', { skip: offset, limit })
-      .then(entities => this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language, template))
+      .then(entities => this.updateMetadataFromRelationships(entities.map(entity => entity.sharedId), language, template))
       .then(() => process(offset + limit, totalRows));
     };
     return this.count(query)
@@ -301,7 +308,7 @@ const entitiesModel = {
     return model.get(query, ['title', 'icon', 'file', 'sharedId']);
   },
 
-  updateMetdataFromRelationships(entities, language) {
+  updateMetadataFromRelationships(entities, language) {
     const entitiesToReindex = [];
     return templates.get()
     .then(_templates => Promise.all(
