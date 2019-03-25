@@ -195,23 +195,38 @@ Object {
                     ],
                   },
                   Object {
-                    "children": Object {
-                      "lat": Object {
-                        "invalids": Array [
-                          Infinity,
-                          -Infinity,
-                        ],
-                        "type": "number",
-                      },
-                      "lon": Object {
-                        "invalids": Array [
-                          Infinity,
-                          -Infinity,
-                        ],
-                        "type": "number",
-                      },
+                    "flags": Object {
+                      "sparse": false,
                     },
-                    "type": "object",
+                    "items": Array [
+                      Object {
+                        "children": Object {
+                          "label": Object {
+                            "type": "string",
+                            "valids": Array [
+                              null,
+                              "",
+                            ],
+                          },
+                          "lat": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                          "lon": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                        },
+                        "type": "object",
+                      },
+                    ],
+                    "type": "array",
                     "valids": Array [
                       "",
                     ],
@@ -613,23 +628,38 @@ Object {
                 ],
               },
               Object {
-                "children": Object {
-                  "lat": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                  },
-                  "lon": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                  },
+                "flags": Object {
+                  "sparse": false,
                 },
-                "type": "object",
+                "items": Array [
+                  Object {
+                    "children": Object {
+                      "label": Object {
+                        "type": "string",
+                        "valids": Array [
+                          null,
+                          "",
+                        ],
+                      },
+                      "lat": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                      "lon": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                    },
+                    "type": "object",
+                  },
+                ],
+                "type": "array",
                 "valids": Array [
                   "",
                 ],

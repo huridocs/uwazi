@@ -4,32 +4,36 @@ import React from 'react';
 import { t, I18NLink } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 
+import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
 const showByType = (prop, compact) => {
   let result = prop.value;
-  if (prop.type === null) {
+  switch (prop.type) {
+  case null:
     result = t('System', 'No property');
-  }
-
-  if (prop.type === 'markdown') {
+    break;
+  case 'markdown':
     result = <MarkdownViewer markdown={prop.value} />;
-  }
-
-  if (prop.type === 'image') {
+    break;
+  case 'image':
     result = <img className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
-  }
-
-  if (prop.type === 'media') {
+    break;
+  case 'media':
     result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
-  }
+    break;
+  case 'geolocation':
+    result = <GeolocationViewer points={prop.value} onlyForCards={prop.onlyForCards} />;
+    break;
+  default:
+    if (prop.url) {
+      result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
+    }
 
-  if (prop.url) {
-    result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
-  }
-
-  if (prop.value && prop.value.map) {
-    result = <ValueList compact={compact} property={prop} />;
+    if (prop.value && prop.value.map) {
+      result = <ValueList compact={compact} property={prop} />;
+    }
+    break;
   }
 
   return result;

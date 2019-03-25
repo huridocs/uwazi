@@ -1,4 +1,10 @@
-import { getMarkersBoudingBox, markersToStyleFormat } from '../helper';
+import Immutable from 'immutable';
+
+import {
+  getMarkersBoudingBox,
+  markersToStyleFormat,
+  getMarkers,
+} from '../helper';
 
 describe('map helper', () => {
   const markers = [
@@ -14,7 +20,7 @@ describe('map helper', () => {
     });
   });
 
-  describe('getMarkersBoudingBox()', () => {
+  describe('markersToStyleFormat()', () => {
     it('should parse all the markers and return the bounding box for them', () => {
       const expectedFormat = [
         { geometry: { coordinates: [32, 2], type: 'Point' }, properties: { index: 0 }, type: 'Feature' },
@@ -23,6 +29,56 @@ describe('map helper', () => {
         { geometry: { coordinates: [-21, 22], type: 'Point' }, properties: { index: 3 }, type: 'Feature' }
       ];
       expect(markersToStyleFormat(markers)).toEqual(expectedFormat);
+    });
+  });
+
+  describe('getMarkers()', () => {
+    let templates;
+    let entities;
+
+    beforeEach(() => {
+      templates = Immutable.fromJS([{
+        _id: 't1',
+        properties: [
+          { type: 'geolocation', name: 'geoProperty', label: 'geoPropertyLabel' },
+          { type: 'geolocation', name: 'secondGeoProperty', label: 'secondGeoPropertyLabel' },
+        ]
+      }, {
+        _id: 't2',
+        properties: [
+          { type: 'geolocation', name: 'anotherGeoProperty', label: 'anotherGeoPropertyLabel' },
+        ]
+      }, {
+        _id: 't3',
+        properties: [
+          { type: 'notGeolocation', name: 'notGeo' },
+        ]
+      }]);
+
+      entities = Immutable.fromJS([
+        { template: 't1',
+          metadata: {
+            geoProperty: [{ lat: 7, lon: 13 }, { lat: 13, lon: 7, label: 'home' }],
+            secondGeoProperty: [{ lat: 5, lon: 13 }]
+          }
+        },
+        { template: 't1', metadata: { geoProperty: [{ lat: 5, lon: 22 }], secondGeoProperty: null } },
+        { template: 't3', metadata: { notGeo: [{ lat: 1977, lon: 7 }] } },
+        { template: 't2', metadata: { anotherGeoProperty: [{ lat: 2018, lon: 6 }] } },
+        { template: 't3' },
+        { template: 't2' },
+      ]);
+    });
+
+    it('should calculate the entity markers based on template data', () => {
+      const processedMarkers = getMarkers(entities, templates);
+      expect(processedMarkers.length).toBe(5);
+      expect(processedMarkers).toMatchSnapshot();
+    });
+
+    it('should return an empty array if no data', () => {
+      const processedMarkers = getMarkers(Immutable.fromJS([]), templates);
+      expect(processedMarkers).toEqual([]);
     });
   });
 });
