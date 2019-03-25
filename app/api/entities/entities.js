@@ -21,7 +21,7 @@ function getEntityTemplate(doc, language) {
     if (doc.template) {
       return templates.getById(doc.template).then(resolve);
     }
-    return entitiesModel.getById(doc.sharedId, language)
+    return entitiesModel.getById(doc.sharedId, language) //eslint-disable-line
     .then((storedDoc) => {
       if (!storedDoc) {
         return null;

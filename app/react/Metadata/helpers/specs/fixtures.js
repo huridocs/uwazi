@@ -57,7 +57,15 @@ export const templates = Immutable.fromJS([
       { name: 'media', type: 'media', label: 'Media', showInCard: true, noLabel: false },
       { name: 'relationship1', type: 'relationship', label: 'Relationship', content: 'thesauriId', relationType: 'relationType1' },
       { name: 'relationship2', type: 'relationship', label: 'Relationship 2', content: null, relationType: 'relationType1' },
-      { name: 'relationship3', inherit: true, inheritProperty: 'text', type: 'relationship', label: 'Relationship 3', content: 'template2', relationType: 'relationType1' },
+      {
+        name: 'relationship3',
+        inherit: true,
+        inheritProperty: 'text',
+        type: 'relationship',
+        label: 'Relationship 3',
+        content: 'template2',
+        relationType: 'relationType1'
+      },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
       { name: 'nested', type: 'nested', label: 'Nested' }
     ]
