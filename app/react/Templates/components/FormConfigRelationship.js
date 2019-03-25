@@ -56,9 +56,11 @@ export class FormConfigRelationship extends Component {
             optionsValue="_id"
           />
         </div>
-        <PropertyConfigOption label="Inherit property" model={`template.data.properties[${index}].inherit`}>
-          <Tip>This property will be inherited from the related entities and shown as metadata of this type of entities.</Tip>
-        </PropertyConfigOption>
+        {formState.properties[index].content && (
+          <PropertyConfigOption label="Inherit property" model={`template.data.properties[${index}].inherit`}>
+            <Tip>This property will be inherited from the related entities and shown as metadata of this type of entities.</Tip>
+          </PropertyConfigOption>
+        )}
         { formState.properties[index].inherit && formState.properties[index].inherit.value && templateProperties.length && (
           <div className="form-group">
             <Select

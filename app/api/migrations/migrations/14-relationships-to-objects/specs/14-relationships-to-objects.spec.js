@@ -14,7 +14,7 @@ describe('migration relationships-to-objects', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(13);
+    expect(migration.delta).toBe(14);
   });
 
   it('should transform relationship properties to objects', async () => {

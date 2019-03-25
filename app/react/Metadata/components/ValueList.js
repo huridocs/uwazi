@@ -3,7 +3,7 @@ import React from 'react';
 import { Icon } from '../../Layout';
 
 const withIcon = v => (
-  v.icon ? <React.Fragment key={v.value}><Icon className="item-icon item-icon-center" data={v.icon} />{v.value}</React.Fragment> : v.value
+  v.icon ? <React.Fragment><Icon className="item-icon item-icon-center" data={v.icon} />{v.value}</React.Fragment> : v.value
 );
 
 const interpose = (array, separator) => [].concat(...array.map(e => [separator, e])).slice(1);
@@ -11,7 +11,7 @@ const interpose = (array, separator) => [].concat(...array.map(e => [separator, 
 const renderList = prop => (
   <ul className="multiline">
     {prop.value.map((v, index) => {
-        const key = prop.label + index;
+        const key = prop.name + index;
         return <li key={key}>{withIcon(v)}</li>;
       })}
   </ul>

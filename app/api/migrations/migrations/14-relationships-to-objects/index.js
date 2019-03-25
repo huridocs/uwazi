@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 export default {
-  delta: 13,
+  delta: 14,
 
   name: 'relationships-to-objects',
 
@@ -13,11 +13,12 @@ export default {
     const cursor = db.collection('entities').find();
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
-      const template = templates.find(t => t._id.toString() === entity.template);
+      const entityTemplate = entity.template ? entity.template.toString() : '';
+      const template = templates.find(t => t._id.toString() === entityTemplate);
       if (template) {
         template.properties.forEach((property) => {
-          if (property.type === 'relationship' && entity.metadata[property.name]) {
-            entity.metadata[property.name] = entity.metadata[property.name].map(value => ({ entity: value }));
+          if (property.type === 'relationship') {
+            entity.metadata[property.name] = entity.metadata[property.name] ? entity.metadata[property.name].map(value => ({ entity: value })) : [];
           }
         });
         await db.collection('entities').save(entity);
