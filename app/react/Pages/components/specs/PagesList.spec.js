@@ -46,9 +46,10 @@ describe('PagesList', () => {
   });
 
   describe('deletePage', () => {
+    const page = Map({ _id: 3, title: 'Judge', sharedId: 'a3' });
     beforeEach(() => {
       render();
-      component.instance().deletePage(Map({ _id: 3, title: 'Judge', sharedId: 'a3' }));
+      component.instance().deletePage(page);
     });
 
     it('should confirm the action', () => {
@@ -57,7 +58,7 @@ describe('PagesList', () => {
 
     it('should call on props.deletePage if confirmed', () => {
       context.confirm.calls.argsFor(0)[0].accept();
-      expect(props.deletePage).toHaveBeenCalledWith({ sharedId: 'a3' });
+      expect(props.deletePage).toHaveBeenCalledWith(page.toJS());
     });
   });
 });

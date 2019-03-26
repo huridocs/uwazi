@@ -32,15 +32,17 @@ export default {
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
 
-      const newMetadata = Object.keys(entity.metadata).reduce((metadata, property) => {
-        const propertyData = templatesByKey[entity.template.toString()].properties.find(p => p.name === property);
-        if (propertyData && propertyData.type === 'geolocation' && !Array.isArray(entity.metadata[property])) {
-          return Object.assign({}, metadata, { [property]: [entity.metadata[property]] });
-        }
-        return Object.assign({}, metadata, { [property]: entity.metadata[property] });
-      }, {});
+      if (entity.metadata) {
+        const newMetadata = Object.keys(entity.metadata).reduce((metadata, property) => {
+          const propertyData = templatesByKey[entity.template.toString()].properties.find(p => p.name === property);
+          if (propertyData && propertyData.type === 'geolocation' && !Array.isArray(entity.metadata[property])) {
+            return Object.assign({}, metadata, { [property]: [entity.metadata[property]] });
+          }
+          return Object.assign({}, metadata, { [property]: entity.metadata[property] });
+        }, {});
 
-      await db.collection('entities').update({ _id: entity._id }, { $set: { metadata: newMetadata } });
+        await db.collection('entities').update({ _id: entity._id }, { $set: { metadata: newMetadata } });
+      }
 
       process.stdout.write(`processed -> ${index}\r`);
       index += 1;

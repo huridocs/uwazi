@@ -76,21 +76,22 @@ describe('Page actions', () => {
   });
 
   describe('deletePage', () => {
+    const data = { sharedId: 'page1', _id: 'id' };
     it('should delete the page', () => {
-      actions.deletePage('data')(dispatch);
-      expect(api.delete).toHaveBeenCalledWith('data');
+      actions.deletePage(data)(dispatch);
+      expect(api.delete).toHaveBeenCalledWith({ sharedId: 'page1' });
     });
 
     describe('upon success', () => {
       beforeEach((done) => {
-        actions.deletePage('data')(dispatch)
+        actions.deletePage(data)(dispatch)
         .then(() => {
           done();
         });
       });
 
       it('should remove page', () => {
-        expect(basicActions.remove).toHaveBeenCalledWith('pages', 'data');
+        expect(basicActions.remove).toHaveBeenCalledWith('pages', data);
         expect(dispatch).toHaveBeenCalledWith('PAGE REMOVED');
       });
     });
