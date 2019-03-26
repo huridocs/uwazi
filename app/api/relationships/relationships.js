@@ -153,9 +153,9 @@ export default {
         }, {});
         return new RelationshipCollection(..._relationships)
         .removeOtherLanguageTextReferences(connectedDocuments)
+        .withConnectedData(connectedDocuments)
         .removeSingleHubs()
-        .removeOrphanHubsOf(sharedId)
-        .withConnectedData(connectedDocuments);
+        .removeOrphanHubsOf(sharedId);
       });
     });
   },

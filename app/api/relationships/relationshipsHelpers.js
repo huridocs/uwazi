@@ -1,3 +1,4 @@
+import errorLog from 'api/log/errorLog';
 
 function groupByHubs(references) {
   const hubs = references.reduce((_hubs, reference) => {
@@ -40,7 +41,13 @@ class RelationshipCollection extends Array {
       template: null,
       entityData: connectedDocuments[relationship.entity],
       ...relationship,
-    }));
+    })).filter((relationship) => {
+      if (!relationship.entityData) {
+        errorLog.error(`There's a connection to entity: ${relationship.entity} on hub: ${relationship.hub}, but no entity data.`);
+        return false;
+      }
+      return true;
+    });
   }
 }
 
