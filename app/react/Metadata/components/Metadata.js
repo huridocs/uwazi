@@ -33,7 +33,7 @@ const showByType = (prop, compact) => {
     if (prop.value && prop.value.map) {
       prop.value = prop.value.map((_value) => {
         const value = showByType(_value, compact);
-        return value.value ? value : { value };
+        return value && value.value ? value : { value };
       });
       result = <ValueList compact={compact} property={prop} />;
     }
