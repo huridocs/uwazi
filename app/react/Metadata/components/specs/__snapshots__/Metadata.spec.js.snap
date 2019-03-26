@@ -6,7 +6,7 @@ exports[`Metadata should not render metadata without value 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="Label"
+    key="0"
   >
     <dt>
       Label
@@ -24,7 +24,7 @@ exports[`Metadata should render a Geolocation viewer when the metadata is type g
 <React.Fragment>
   <dl
     className="metadata-type-geolocation "
-    key="Geolocation Label"
+    key="0"
   >
     <dt>
       Geolocation Label
@@ -52,7 +52,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
 <React.Fragment>
   <dl
     className="metadata-type-markdown "
-    key="label array"
+    key="0"
   >
     <dt>
       label array
@@ -74,7 +74,7 @@ exports[`Metadata should render a media field 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-multimedia "
-    key="Media Label"
+    key="0"
   >
     <dt>
       Media Label
@@ -96,7 +96,7 @@ exports[`Metadata should render an image field 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-multimedia "
-    key="Image Label"
+    key="0"
   >
     <dt>
       Image Label
@@ -107,6 +107,7 @@ exports[`Metadata should render an image field 1`] = `
       <img
         alt="Image Label"
         className="multimedia-img cover"
+        key="http://some.url.com/image.jpg"
         src="http://some.url.com/image.jpg"
       />
     </dd>
@@ -118,7 +119,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="label array"
+    key="0"
   >
     <dt>
       label array
@@ -151,7 +152,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="label array"
+    key="0"
   >
     <dt>
       label array
@@ -192,7 +193,7 @@ exports[`Metadata should render links when the property has url 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="withUrl"
+    key="0"
   >
     <dt>
       withUrl
@@ -201,6 +202,7 @@ exports[`Metadata should render links when the property has url 1`] = `
       className=""
     >
       <Connect(I18NLink)
+        key="url"
         to="url"
       >
         string value
@@ -214,7 +216,7 @@ exports[`Metadata should render property not have this item when type is null 1`
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="metadata without property"
+    key="0"
   >
     <dt>
       metadata without property
@@ -232,7 +234,7 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="sortedBy"
+    key="0"
   >
     <dt>
       sortedBy
@@ -250,7 +252,7 @@ exports[`Metadata should render string values 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="Label"
+    key="0"
   >
     <dt>
       Label
@@ -268,7 +270,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="label array"
+    key="0"
   >
     <dt>
       label array
