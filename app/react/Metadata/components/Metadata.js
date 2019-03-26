@@ -56,7 +56,7 @@ const Metadata = ({ metadata, compact, renderLabel }) => (
           let type = prop.type ? prop.type : 'default';
           type = type === 'image' || type === 'media' ? 'multimedia' : type;
           return (
-            <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={index}>
+            <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={`${prop.name}_${index}`}>
               {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
               <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
                 {showByType(prop, compact)}

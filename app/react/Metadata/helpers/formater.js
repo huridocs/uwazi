@@ -171,8 +171,9 @@ export default {
   inherit(property, thesauriValues, thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template.get('properties').find(p => p.get('name') === property.get('inheritProperty'));
+    const entitiesThesauri = thesauris.find(t => t.get('_id') === inheritedProperty.get('content'));
     const type = inheritedProperty.get('type');
-    const relationshipValues = thesauriValues.map((v) => {
+    let value = thesauriValues.map((v) => {
       const name = Object.keys(v).find(key => key.includes('inherit'));
       if (this[type] && (v[name] || type === 'preview')) {
         return this[type](property, v[name], thesauris, options, templates);
@@ -182,19 +183,14 @@ export default {
     });
 
     let propType = 'inherit';
-    let value = this.flattenInheritedValues(relationshipValues);
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
       propType = type;
-      value = this.flattenInheritedMultiValue(relationshipValues);
+      value = this.flattenInheritedMultiValue(value);
     }
     return Object.assign(
       {},
       { translateContext: template.get('_id'), ...inheritedProperty.toJS(), value, label: property.get('label'), type: propType }
     );
-  },
-
-  flattenInheritedValues(relationshipValues) {
-    return relationshipValues.reduce((result, relationshipValue) => result.concat(relationshipValue), []);
   },
 
   flattenInheritedMultiValue(relationshipValues) {

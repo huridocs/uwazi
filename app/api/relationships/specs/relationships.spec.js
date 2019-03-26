@@ -317,13 +317,20 @@ describe('relationships', () => {
   });
 
   describe('saveEntityBasedReferences()', () => {
-    it('should create connections based on properties', async () => {
-      const entity = {
+    let entity;
+    beforeEach(() => {
+      entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
         metadata: {
-          friend: [{ entity: 'robin' }]
+          family: [{ entity: 'thomasWayne' }],
+          friend: [{ entity: 'robin' }, { entity: 'alfred' }]
         }
+      };
+    });
+    it('should create connections based on properties', async () => {
+      entity.metadata = {
+        friend: [{ entity: 'robin' }]
       };
 
       await relationships.saveEntityBasedReferences(entity, 'en');
@@ -334,15 +341,6 @@ describe('relationships', () => {
     });
 
     it('should not create existing connections based on properties', async () => {
-      const entity = {
-        template: template.toString(),
-        sharedId: 'bruceWayne',
-        metadata: {
-          family: [{ entity: 'thomasWayne' }],
-          friend: [{ entity: 'robin' }, { entity: 'alfred' }]
-        }
-      };
-
       await relationships.saveEntityBasedReferences(entity, 'en');
       await relationships.saveEntityBasedReferences(entity, 'en');
       const connections = await relationships.getByDocument('bruceWayne', 'en');
@@ -359,15 +357,6 @@ describe('relationships', () => {
     });
 
     it('should delete connections based on properties', async () => {
-      const entity = {
-        template: template.toString(),
-        sharedId: 'bruceWayne',
-        metadata: {
-          family: [{ entity: 'thomasWayne' }],
-          friend: [{ entity: 'robin' }, { entity: 'alfred' }]
-        }
-      };
-
       await relationships.saveEntityBasedReferences(entity, 'en');
 
       entity.metadata = {
