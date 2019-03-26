@@ -171,7 +171,6 @@ export default {
   inherit(property, thesauriValues, thesauris, options, templates) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template.get('properties').find(p => p.get('name') === property.get('inheritProperty'));
-    const entitiesThesauri = thesauris.find(t => t.get('_id') === inheritedProperty.get('content'));
     const type = inheritedProperty.get('type');
     let value = thesauriValues.map((v) => {
       const name = Object.keys(v).find(key => key.includes('inherit'));
