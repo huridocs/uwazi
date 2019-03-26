@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import Map from 'app/Map/Map';
 
 import { formatMetadata } from '../../selectors';
 import formater from '../formater';
@@ -12,7 +11,7 @@ describe('metadata formater', () => {
     expect(element.translateContext).toBe(translateContext);
 
     if (value) {
-      expect(element.value).toBe(value);
+      expect(element.value).toEqual(value);
     }
   }
 
@@ -118,6 +117,11 @@ describe('metadata formater', () => {
       assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);
     });
 
+    it('should process geolocation type', () => {
+      assessBasicProperties(geolocation, ['Geolocation', 'geolocation', 'templateID']);
+      expect(geolocation.value.length).toBe(2);
+    });
+
     it('should process multimedia types', () => {
       expect(image.value).toBe('imageURL');
       expect(image.style).toBe('cover');
@@ -133,12 +137,6 @@ describe('metadata formater', () => {
       expect(media.value).toBe('mediaURL');
       expect(media.noLabel).toBe(false);
       expect(media.showInCard).toBe(true);
-    });
-
-    it('should render a Map for geolocation fields', () => {
-      expect(geolocation.value.type).toBe(Map);
-      expect(geolocation.value.props.latitude).toBe(2);
-      expect(geolocation.value.props.longitude).toBe(3);
     });
 
     it('should not fail when field do not exists on the document', () => {
@@ -179,8 +177,9 @@ describe('metadata formater', () => {
       assessBasicProperties(media, ['Media', 'media', 'templateID', 'mediaURL']);
     });
 
-    it('should render a Map for geolocation fields', () => {
-      assessBasicProperties(geolocation, ['Geolocation', 'geolocation', 'templateID', 'Lat / Lon: 2 / 3']);
+    it('should process geolocation type', () => {
+      assessBasicProperties(geolocation, ['Geolocation', 'geolocation', 'templateID', [{ lat: 2, lon: 3 }, { label: 'home', lat: 13, lon: 7 }]]);
+      expect(geolocation.onlyForCards).toBe(true);
     });
 
     describe('when sort property passed', () => {

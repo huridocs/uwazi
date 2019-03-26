@@ -53,6 +53,10 @@ describe('Metadata', () => {
     testMetadata([{ label: 'label array', value: 'some markdown text', type: 'markdown' }]);
   });
 
+  it('should render a Geolocation viewer when the metadata is type geolocation', () => {
+    testMetadata([{ label: 'Geolocation Label', value: [{ lat: 13, lon: 7 }], type: 'geolocation', onlyForCards: true }]);
+  });
+
   it('should render property not have this item when type is null', () => {
     testMetadata([{ label: 'metadata without property', type: null }]);
   });

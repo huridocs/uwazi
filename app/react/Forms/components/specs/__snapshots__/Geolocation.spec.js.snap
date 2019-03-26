@@ -26,10 +26,10 @@ exports[`Geolocation should hide clear fields button when lat and lon are empty 
     className="form-row"
   >
     <div
-      className="form-group"
+      className="form-group half-width"
     >
       <label>
-        Latitude 
+        Latitude
       </label>
       <input
         className="form-control"
@@ -41,10 +41,10 @@ exports[`Geolocation should hide clear fields button when lat and lon are empty 
       />
     </div>
     <div
-      className="form-group"
+      className="form-group half-width"
     >
       <label>
-        Longitude 
+        Longitude
       </label>
       <input
         className="form-control"
@@ -92,10 +92,10 @@ exports[`Geolocation should render button to clear fields 1`] = `
     className="form-row"
   >
     <div
-      className="form-group"
+      className="form-group half-width"
     >
       <label>
-        Latitude 
+        Latitude
       </label>
       <input
         className="form-control"
@@ -107,10 +107,10 @@ exports[`Geolocation should render button to clear fields 1`] = `
       />
     </div>
     <div
-      className="form-group"
+      className="form-group half-width"
     >
       <label>
-        Longitude 
+        Longitude
       </label>
       <input
         className="form-control"
