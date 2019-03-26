@@ -12,7 +12,7 @@ export class PagesList extends Component {
   deletePage(page) {
     return this.context.confirm({
       accept: () => {
-        this.props.deletePage({ sharedId: page.get('sharedId') });
+        this.props.deletePage(page.toJS());
       },
       title: `Confirm delete page: ${page.get('title')}`,
       message: 'Are you sure you want to delete this page?'
@@ -21,7 +21,6 @@ export class PagesList extends Component {
 
   render() {
     const { pages } = this.props;
-
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Pages')}</div>
