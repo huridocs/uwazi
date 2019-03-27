@@ -62,10 +62,10 @@ export class ThesauriForm extends Component {
     const addedValue = values.length > previousProps.thesauri.values.length;
     const lasValueIsGroup = values.length && values[values.length - 1].values;
     const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
-    // if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-    //   console.log('GROUPS', this.groups);
-    //   this.groups[this.groups.length - 1].focus();
-    // }
+    if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
+      console.log('GROUPS', this.groups);
+      this.groups[this.groups.length - 1].focus();
+    }
   }
 
   componentWillUnmount() {
@@ -136,15 +136,19 @@ export class ThesauriForm extends Component {
       <div key={`group-${groupIndex}`}>
         <FormGroup>
           <Field model={`thesauri.data.values[${groupIndex}].label`}>
-            <input ref={i => this.groupInput = i} className="form-control" type="text" placeholder="Group name" />
-            <button
-              tabIndex={groupIndex + 500}
-              type="button"
-              className="btn btn-xs btn-danger"
-              onClick={this.props.removeValue.bind(null, groupIndex, null)}
-            >
-              <Icon icon="trash-alt" /> Delete Group
-            </button>
+            <div className="input-group">
+              <input ref={f => this.groups.push(f)} className="form-control" type="text" placeholder="Group name" />
+              <span className="input-group-btn">
+                <button
+                  tabIndex={groupIndex + 500}
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={this.props.removeValue.bind(null, groupIndex, null)}
+                >
+                  <Icon icon="trash-alt" /> Delete Group
+                </button>
+              </span>
+            </div>
           </Field>
         </FormGroup>
         <ul className="">
@@ -168,19 +172,21 @@ export class ThesauriForm extends Component {
     }
     return (
       <div key={`item-${groupIndex || ''}${index}`}>
-      <FormGroup>
         <Field model={model}>
-          <input className="form-control" type="text" placeholder="Item name" />
-          <button
-            tabIndex={index + 500}
-            type="button"
-            className="btn btn-xs btn-danger"
-            onClick={this.removeItem.bind(null, value)}
-          >
-            <Icon icon="trash-alt" /> Delete
-          </button>
+          <div className="input-group">
+            <input className="form-control" type="text" placeholder="Item name" />
+            <span className="input-group-btn">
+              <button
+                tabIndex={index + 500}
+                type="button"
+                className="btn btn btn-danger"
+                onClick={this.removeItem.bind(null, value)}
+              >
+                <Icon icon="trash-alt" /> Delete
+              </button>
+            </span>
+          </div>
         </Field>
-      </FormGroup>
       </div>
     );
   }
