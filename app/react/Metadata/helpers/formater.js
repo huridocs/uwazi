@@ -183,8 +183,9 @@ export default {
 
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
+      const templateThesauris = thesauris.find(_thesauri => _thesauri.get('_id') === template.get('_id'));
       propType = type;
-      value = this.flattenInheritedMultiValue(value);
+      value = this.flattenInheritedMultiValue(value, type, thesauriValues, templateThesauris);
     }
     return Object.assign(
       {},
@@ -192,10 +193,15 @@ export default {
     );
   },
 
-  flattenInheritedMultiValue(relationshipValues) {
-    return relationshipValues.reduce((result, relationshipValue) => {
+  flattenInheritedMultiValue(relationshipValues, type, thesauriValues, templateThesauris) {
+    return relationshipValues.reduce((result, relationshipValue, index) => {
       if (relationshipValue.value) {
-        return result.concat(relationshipValue.value);
+        let { value } = relationshipValue;
+        if (type === 'geolocation') {
+          const entityLabel = this.getSelectOptions(getOption(templateThesauris, thesauriValues[index].entity), templateThesauris).value;
+          value = value.map(v => ({ ...v, label: `${entityLabel}${v.label ? ` (${v.label})` : ''}` }));
+        }
+        return result.concat(value);
       }
       return result;
     }, []);
