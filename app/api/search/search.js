@@ -113,7 +113,7 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
       if (prop.inherit) {
         const inheritedProperty = templates
         .find(t => t._id.toString() === prop.content.toString())
-        .properties.find(p => p.name === prop.inheritProperty);
+        .properties.find(p => p._id.toString() === prop.inheritProperty);
         if (inheritedProperty.type === 'geolocation') {
           geolocationProperties.push(prop.name);
         }
