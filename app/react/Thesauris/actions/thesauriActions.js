@@ -57,10 +57,19 @@ export function moveValues(valuesToMove, groupIndex) {
 
 function moveEmptyItemToBottom(values) {
   const _values = [...values];
-  const emptyIndex = _values.findIndex((value, index) => !value.label && index < _values.length - 1);
-  if (emptyIndex > -1) {
-    const emptyValue = _values[emptyIndex];
-    _values.splice(emptyIndex, 1);
+  const emptyIdx = _values.reduce((found, value, index) => {
+    if (!value.label && index < _values.length) {
+      return found.concat([index]);
+    }
+    return found;
+  }, []);
+  if (emptyIdx.length > 1) {
+    return null;
+  }
+  if (emptyIdx.length === 1) {
+    const index = emptyIdx[0];
+    const emptyValue = _values[index];
+    _values.splice(index, 1);
     _values.push(emptyValue);
   }
   return _values;
@@ -68,8 +77,10 @@ function moveEmptyItemToBottom(values) {
 
 export function updateValues(updatedValues, groupIndex) {
   return (dispatch, getState) => {
-    console.log('UPDATED', groupIndex, updatedValues);
     const _updatedValues = moveEmptyItemToBottom(updatedValues);
+    if (!_updatedValues) {
+      return;
+    }
     if (groupIndex !== undefined) {
       const values = getState().thesauri.data.values.slice(0);
       values[groupIndex] = { ...values[groupIndex], values: _updatedValues };
