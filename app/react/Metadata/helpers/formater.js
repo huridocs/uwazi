@@ -189,7 +189,14 @@ export default {
     }
     return Object.assign(
       {},
-      { translateContext: template.get('_id'), ...inheritedProperty.toJS(), value, label: property.get('label'), type: propType }
+      {
+        translateContext: template.get('_id'),
+        ...inheritedProperty.toJS(),
+        value,
+        label: property.get('label'),
+        type: propType,
+        onlyForCards: Boolean(options.onlyForCards),
+      }
     );
   },
 
