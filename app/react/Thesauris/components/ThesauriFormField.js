@@ -17,7 +17,6 @@ export class ThesauriFormField extends Component {
   }
 
   renderValue(value, index, groupIndex) {
-
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {
       model = `thesauri.data.values[${groupIndex}].values[${index}].label`;

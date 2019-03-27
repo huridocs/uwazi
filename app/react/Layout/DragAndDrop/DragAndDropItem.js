@@ -12,7 +12,8 @@ export const itemSource = {
       name: props.name,
       items: props.items,
       container: props.container,
-      index: props.index
+      index: props.index,
+      originalItem: props.originalItem
     };
   },
 

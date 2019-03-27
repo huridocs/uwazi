@@ -55,6 +55,39 @@ export function moveValues(valuesToMove, groupIndex) {
   };
 }
 
+function moveEmptyItemToBottom(values) {
+  const _values = [...values];
+  const emptyIndex = _values.findIndex((value, index) => !value.label && index < _values.length - 1);
+  if (emptyIndex > -1) {
+    const emptyValue = _values[emptyIndex];
+    _values.splice(emptyIndex, 1);
+    _values.push(emptyValue);
+  }
+  return _values;
+}
+
+export function updateValues(updatedValues, groupIndex) {
+  return (dispatch, getState) => {
+    console.log('UPDATED', groupIndex, updatedValues);
+    const _updatedValues = moveEmptyItemToBottom(updatedValues);
+    if (groupIndex !== undefined) {
+      const values = getState().thesauri.data.values.slice(0);
+      values[groupIndex] = { ...values[groupIndex], values: _updatedValues };
+      dispatch(formActions.change('thesauri.data.values', values));
+      return;
+    }
+    dispatch(formActions.change('thesauri.data.values', _updatedValues));
+  };
+}
+
+export function updateGroupValues(groupIndex, updatedValues) {
+  return (dispatch, getState) => {
+    const values = getState().thesauri.data.values.slice(0);
+    values[groupIndex] = { ...values[groupIndex], values: updatedValues };
+    dispatch(formActions.change('thesauri.data.values', values));
+  };
+}
+
 export function moveValueToIndex(sourceIndex, sourceGroupIndex, targetIndex, targetGroupIndex) {
   return (dispatch, getState) => {
     const origValues = getState().thesauri.data.values.slice(0);

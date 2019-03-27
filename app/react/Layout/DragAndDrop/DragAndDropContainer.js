@@ -18,9 +18,9 @@ export class DragAndDropContainer extends Component {
     if (!items.find(_item => _item.id === item.id)) {
       return;
     }
-
+    console.log('item', item, item.originalItem);
     items.splice(dragIndex, 1);
-    items.splice(hoverIndex, 0, item);
+    items.splice(hoverIndex, 0, item.originalItem || item);
     this.props.onChange(items);
   }
 
@@ -30,9 +30,9 @@ export class DragAndDropContainer extends Component {
     this.props.onChange(items);
   }
 
-  renderItem(item) {
+  renderItem(item, index) {
     if (this.props.renderItem) {
-      return this.props.renderItem(item);
+      return this.props.renderItem(item, index);
     }
 
     return item.content;
@@ -53,8 +53,9 @@ export class DragAndDropContainer extends Component {
               container={{ id: this.state.id }}
               items={item.items}
               id={item.id}
+              originalItem={item}
             >
-              {this.renderItem(item)}
+              {this.renderItem(item, index)}
             </DragAndDropItem>
 ))}
           <div className="no-properties">
@@ -84,7 +85,7 @@ export const containerTarget = {
     if (!monitor.getDropResult() || !monitor.getDropResult().id) {
       const items = props.items.concat();
       if (!items.find(_item => _item.id === item.id)) {
-        items.push(item);
+        items.push(item.originalItem || item);
         props.onChange(items);
       }
       return { id: component.state.id };
