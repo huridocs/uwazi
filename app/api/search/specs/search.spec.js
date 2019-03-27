@@ -330,7 +330,7 @@ describe('search', () => {
       .catch(catchErrors(done));
     });
 
-    describe('when the query is for geolocation', () => {
+    fdescribe('when the query is for geolocation', () => {
       it('should set size to 9999', (done) => {
         spyOn(elastic, 'search').and.returnValue(Promise.resolve(result));
         search.search({ searchTerm: '', geolocation: true }, 'en')
@@ -341,10 +341,11 @@ describe('search', () => {
         });
       });
 
-      it('should only get entities with geolocation fields ', (done) => {
+      fit('should only get entities with geolocation fields or inherited ', (done) => {
         search.search({ searchTerm: '', geolocation: true }, 'en')
         .then((entities) => {
-          expect(entities.rows.length).toBe(3);
+          console.log(JSON.stringify(entities.aggregations.all._types, null, 4));
+          expect(entities.rows.length).toBe(4);
           done();
         });
       });

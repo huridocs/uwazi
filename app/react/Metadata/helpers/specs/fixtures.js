@@ -37,7 +37,7 @@ export const templates = Immutable.fromJS([
   {
     _id: 'template2',
     properties: [
-      { name: 'text', type: 'text' }
+      { _id: '123', name: 'text', type: 'text' }
     ]
   },
   {
@@ -60,7 +60,7 @@ export const templates = Immutable.fromJS([
       {
         name: 'relationship3',
         inherit: true,
-        inheritProperty: 'text',
+        inheritProperty: '123',
         type: 'relationship',
         label: 'Relationship 3',
         content: 'template2',

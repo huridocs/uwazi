@@ -110,8 +110,17 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
       if (prop.type === 'geolocation') {
         geolocationProperties.push(prop.name);
       }
+      if (prop.inherit) {
+        const inheritedProperty = templates
+        .find(t => t._id.toString() === prop.content.toString())
+        .properties.find(p => p.name === prop.inheritProperty);
+        if (inheritedProperty.type === 'geolocation') {
+          geolocationProperties.push(prop.name);
+        }
+      }
     });
   });
+
   documentsQuery.hasMetadataProperties(geolocationProperties);
   const selectProps = geolocationProperties.map(p => `metadata.${p}`)
   .concat(['title', 'template', 'sharedId', 'language']);
@@ -231,6 +240,7 @@ const search = {
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
+      console.log(JSON.stringify(documentsQuery.query(), null, 4));
       return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
       .then(processResponse)
       .catch(() => {

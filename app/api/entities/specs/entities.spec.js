@@ -115,7 +115,7 @@ describe('entities', () => {
 
       entities.save(entity, { user, language: 'en' })
       .then((createdEntity) => {
-        expect(createdEntity.metadata.relationship).toEqual([{ entity: 'shared3', inherit_string: 'text en' }]);
+        expect(createdEntity.metadata.relationship).toEqual([{ entity: 'shared3', inherit_text: 'text en' }]);
         done();
       })
       .catch(catchErrors(done));

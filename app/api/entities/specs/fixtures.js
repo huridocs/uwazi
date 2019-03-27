@@ -11,6 +11,7 @@ const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
 const templateInheritMetadata = db.id();
+const propertyInheritMetadata = db.id();
 
 const hub1 = db.id();
 const hub2 = db.id();
@@ -73,7 +74,7 @@ export default {
     { _id: templateId,
       name: 'template_test',
       properties: [
-        { type: 'text', name: 'text' },
+        { _id: propertyInheritMetadata, type: 'text', name: 'text' },
         { type: 'select', name: 'select' },
         { type: 'multiselect', name: 'multiselect' },
         { type: 'date', name: 'date' },
@@ -114,7 +115,7 @@ export default {
       { _id: templateInheritMetadata,
         name: 'template_changing_names',
         properties: [
-          { id: '1', type: 'relationship', name: 'relationship', inherit: true, inheritProperty: 'text' },
+          { id: '1', type: 'relationship', name: 'relationship', content: templateId, inherit: true, inheritProperty: propertyInheritMetadata },
         ] }
   ],
   connections: [

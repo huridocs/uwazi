@@ -5,6 +5,7 @@ Array [
   "doc_count",
   "select1",
   "multiselect1",
+  "inherited",
   "groupedDictionary",
   "nestedField",
   "_types",

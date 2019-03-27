@@ -67,7 +67,7 @@ export class FormConfigRelationship extends Component {
               model={`template.data.properties[${index}].inheritProperty`}
               options={templateProperties}
               optionsLabel="label"
-              optionsValue="name"
+              optionsValue="_id"
             />
           </div>
         )}

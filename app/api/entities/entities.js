@@ -35,18 +35,22 @@ const inheritMetadata = async (entity) => {
   if (!entity.metadata || !entity.template) {
     return entity;
   }
-  const template = await getEntityTemplate(entity, entity.language);
+  const _templates = await templates.get();
+  const template = _templates.find(t => t._id.toString() === entity.template.toString());
   return template.properties.reduce(async (entitymemo, prop) => {
     entity = await entitymemo;
     if (!prop.inherit) {
       return entity;
     }
+
+    const inheritedProperty = _templates.find(templ => prop.content && templ._id.toString() === prop.content.toString())
+    .properties.find(p => p._id.toString() === prop.inheritProperty.toString());
     const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
     const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language: entity.language });
     entity.metadata[prop.name] = relatedEntities
     .map((relatedEntity) => {
-      const inheritValue = relatedEntity.metadata[prop.inheritProperty];
-      return { entity: relatedEntity.sharedId, [`inherit_${typeof inheritValue}`]: inheritValue };
+      const inheritValue = relatedEntity.metadata[inheritedProperty.name];
+      return { entity: relatedEntity.sharedId, [`inherit_${inheritedProperty.type}`]: inheritValue };
     });
     return entity;
   }, Promise.resolve(entity));
