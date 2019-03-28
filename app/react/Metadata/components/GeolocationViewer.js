@@ -4,8 +4,7 @@ import formatcoords from 'formatcoords';
 
 import { Map } from 'app/Map';
 
-const GeolocationViewer = (props) => {
-  const { points, onlyForCards } = props;
+const GeolocationViewer = ({ points, onlyForCards }) => {
   if (onlyForCards) {
     return (
       <div>
@@ -22,7 +21,9 @@ const GeolocationViewer = (props) => {
     markers.push({ latitude: lat, longitude: lon, properties: { info: label } });
   });
 
-  return <Map latitude={points[0].lat} longitude={points[0].lon} height={370} markers={markers}/>;
+  const componentProps = markers.length ? { latitude: markers[0].latitude, longitude: markers[0].longitude } : {};
+
+  return <Map {...componentProps} height={370} markers={markers}/>;
 };
 
 GeolocationViewer.defaultProps = {

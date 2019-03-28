@@ -32,4 +32,11 @@ describe('GeolocationViewer', () => {
     render();
     expect(component).toMatchSnapshot();
   });
+
+  it('should not fail if points is just an empty array', () => {
+    props.onlyForCards = false;
+    props.points = [];
+    render();
+    expect(component).toMatchSnapshot();
+  });
 });
