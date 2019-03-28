@@ -21,6 +21,10 @@ describe('migration relationships-to-objects', () => {
     await migration.up(testingDB.mongodb);
     const entitiesMigrated = await testingDB.mongodb.collection('entities').find().toArray();
     const entityWithProp = entitiesMigrated.find(e => e.title === 'migrated');
-    expect(entityWithProp.metadata.pais).toEqual([{ entity: '1' }, { entity: '2' }]);
+    expect(entityWithProp.metadata.pais_relationship).toEqual([{ entity: '1' }, { entity: '2' }]);
+
+    const templatesMigrated = await testingDB.mongodb.collection('templates').find().toArray();
+    expect(templatesMigrated[0].properties[0].name).toEqual('text_text');
+    expect(templatesMigrated[0].properties[1].name).toEqual('pais_relationship');
   });
 });

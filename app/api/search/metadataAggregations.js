@@ -1,19 +1,19 @@
 const aggregation = (key, should, filters) => ({
-    terms: {
-      field: key,
-      missing: 'missing',
-      size: 9999
-    },
-    aggregations: {
-      filtered: {
-        filter: {
-          bool: {
-            should,
-            filter: filters
+      terms: {
+        field: key,
+        missing: 'missing',
+        size: 9999
+      },
+      aggregations: {
+        filtered: {
+          filter: {
+            bool: {
+              should,
+              filter: filters
+            }
           }
         }
       }
-    }
 });
 
 const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
@@ -125,12 +125,14 @@ const relationshipAggregation = (property, should, readOnlyFilters) => {
 };
 
 const propertyToAggregation = (property, dictionaries, baseQuery) => {
-  const path = `metadata.${property.name}.raw`;
+  let path = `metadata.${property.name}.raw`;
+  if (property.relationType) {
+    path = `metadata.${property.name}.entity.raw`;
+  }
   let filters = baseQuery.query.bool.filter.filter(match => match &&
-      (!match.terms || match.terms && !match.terms[path]) &&
-      (!match.bool || !match.bool.should || !match.bool.should[1].terms[path]));
+          (!match.terms || match.terms && !match.terms[path]) &&
+          (!match.bool || !match.bool.should || !match.bool.should[1].terms[path]));
   filters = filters.concat(baseQuery.query.bool.must);
-
   const { should } = baseQuery.query.bool;
   if (property.type === 'nested') {
     return nestedAggregation(property, should, filters);
@@ -139,6 +141,7 @@ const propertyToAggregation = (property, dictionaries, baseQuery) => {
   if (property.type === 'relationshipfilter') {
     return relationshipAggregation(property, should, filters);
   }
+
   if (property.content) {
     dictionary = dictionaries.find(d => property.content.toString() === d._id.toString());
   }

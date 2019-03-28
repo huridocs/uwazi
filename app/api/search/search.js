@@ -7,10 +7,10 @@ import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
 import relationtypes from 'api/relationtypes';
+import templatesModel from 'api/templates/templates';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
-import templatesModel from '../templates';
 
 
 function processFiltes(filters, properties) {
@@ -113,14 +113,13 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
       if (prop.inherit) {
         const inheritedProperty = templates
         .find(t => t._id.toString() === prop.content.toString())
-        .properties.find(p => p._id.toString() === prop.inheritProperty);
+        .properties.find(p => p._id.toString() === prop.inheritProperty.toString());
         if (inheritedProperty.type === 'geolocation') {
           geolocationProperties.push(prop.name);
         }
       }
     });
   });
-
   documentsQuery.hasMetadataProperties(geolocationProperties);
   const selectProps = geolocationProperties.map(p => `metadata.${p}`)
   .concat(['title', 'template', 'sharedId', 'language']);
@@ -240,10 +239,11 @@ const search = {
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
-      console.log(JSON.stringify(documentsQuery.query(), null, 4));
-      return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
+      const body = documentsQuery.query();
+      return elastic.search({ index: elasticIndex, body })
       .then(processResponse)
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         throw createError('Query error', 400);
       });
     });
