@@ -9,8 +9,8 @@ describe('templates utils', () => {
         { label: ' my prop ', type: 'geolocation' }
       ];
       const result = generateNames(properties);
-      expect(result[0].name).toBe('my_prop_text');
-      expect(result[1].name).toBe('my_fore_gn_pr_p__text');
+      expect(result[0].name).toBe('my_prop');
+      expect(result[1].name).toBe('my_fore_gn_pr_p_');
       expect(result[2].name).toBe('my_prop_geolocation');
     });
   });

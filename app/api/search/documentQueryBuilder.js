@@ -188,9 +188,29 @@ export default function () {
       return this;
     },
 
-    hasMetadataProperties(fieldNames) {
+    hasMetadataProperties(properties) {
       const match = { bool: { should: [] } };
-      match.bool.should = fieldNames.map(field => ({ exists: { field: `metadata.${field}` } }));
+      match.bool.should = properties.map((property) => {
+        if (property.type === 'relationship' || property.type === 'nested') {
+          return {
+          nested: {
+            path: `metadata.${property.name}`,
+            query: {
+              bool: {
+                must: [
+                  {
+                    exists: {
+                      field: `metadata.${property.name}`
+                    }
+                  }
+                ]
+              }
+            }
+          }
+          };
+        }
+        return { exists: { field: `metadata.${property.name}` } };
+      });
       addFilter(match);
       return this;
     },

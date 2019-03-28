@@ -219,7 +219,7 @@ const filterToMatch = (filter, path = 'metadata') => {
     match = rangeFilter(filter, path);
   }
 
-  if (filter.type === 'multiselect' || filter.type === 'select' || filter.type === 'relationship') {
+  if (filter.type === 'multiselect' || filter.type === 'select') {
     match = multiselectFilter(filter, path);
   }
 

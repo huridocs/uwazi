@@ -136,18 +136,11 @@ const config = {
           mapping: { type: 'object' }
         }
       }, {
-        nested_fields: {
-          match: '*_nested',
-          path_match: 'metadata.*',
-          path_unmatch: 'metadata.*.*',
-          mapping: { type: 'nested' }
-        }
-      }, {
         object_fields: {
           match_mapping_type: 'object',
           path_match: 'metadata.*',
           path_unmatch: 'metadata.*.*',
-          mapping: { type: 'object' }
+          mapping: { type: 'nested' }
         }
       }, {
         relationships_fields: {

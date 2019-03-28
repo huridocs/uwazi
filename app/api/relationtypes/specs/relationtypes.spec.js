@@ -46,7 +46,7 @@ describe('relationtypes', () => {
     it('should generate names and ids for the properties', (done) => {
       relationtypes.save({ name: 'Indiferent', properties: [{ label: 'Property one', type: 'text' }] })
       .then((result) => {
-        expect(result.properties[0].name).toBe('property_one_text');
+        expect(result.properties[0].name).toBe('property_one');
         expect(result.properties[0]._id).toBeDefined();
         done();
       })

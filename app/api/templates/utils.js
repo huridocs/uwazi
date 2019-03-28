@@ -1,8 +1,11 @@
 import uuid from 'node-uuid';
 
 const generateName = (property) => {
-  const name = property.label ? property.label.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() : property.name;
-  return `${name}_${property.type}`;
+  let name = property.label ? property.label.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() : property.name;
+  if (property.type === 'geolocation') {
+    name = `${name}_${property.type}`;
+  }
+  return name;
 };
 
 export function generateNames(properties) {

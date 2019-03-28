@@ -108,20 +108,20 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
   templates.forEach((template) => {
     template.properties.forEach((prop) => {
       if (prop.type === 'geolocation') {
-        geolocationProperties.push(prop.name);
+        geolocationProperties.push(prop);
       }
       if (prop.inherit) {
         const inheritedProperty = templates
         .find(t => t._id.toString() === prop.content.toString())
         .properties.find(p => p._id.toString() === prop.inheritProperty.toString());
         if (inheritedProperty.type === 'geolocation') {
-          geolocationProperties.push(prop.name);
+          geolocationProperties.push(prop);
         }
       }
     });
   });
   documentsQuery.hasMetadataProperties(geolocationProperties);
-  const selectProps = geolocationProperties.map(p => `metadata.${p}`)
+  const selectProps = geolocationProperties.map(p => `metadata.${p.name}`)
   .concat(['title', 'template', 'sharedId', 'language']);
   documentsQuery.select(selectProps);
 }

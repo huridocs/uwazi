@@ -104,7 +104,7 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    it('should inherit metadata', (done) => {
+    it('should inherit metadata from entities', (done) => {
       const entity = {
         title: 'Inherit some data',
         template: templateInheritMetadata,
@@ -611,13 +611,13 @@ describe('entities', () => {
         entities.getById('shared', 'en')
       ]))
       .then(([docs, docDiferentTemplate]) => {
-        expect(docs[0].metadata.new_name1_text).toBe('value1');
-        expect(docs[0].metadata.new_name2_text).toBe('value2');
-        expect(docs[0].metadata.property3_text).toBe('value3');
+        expect(docs[0].metadata.new_name1).toBe('value1');
+        expect(docs[0].metadata.new_name2).toBe('value2');
+        expect(docs[0].metadata.property3).toBe('value3');
 
-        expect(docs[1].metadata.new_name1_text).toBe('value1');
-        expect(docs[1].metadata.new_name2_text).toBe('value2');
-        expect(docs[1].metadata.property3_text).toBe('value3');
+        expect(docs[1].metadata.new_name1).toBe('value1');
+        expect(docs[1].metadata.new_name2).toBe('value2');
+        expect(docs[1].metadata.property3).toBe('value3');
 
         expect(docDiferentTemplate.metadata.property1).toBe('value1');
         expect(entities.indexEntities).toHaveBeenCalledWith({ template: template._id }, null, 1000);
@@ -636,12 +636,12 @@ describe('entities', () => {
       .then(() => entities.get({ template: templateChangingNames }))
       .then((docs) => {
         expect(docs[0].metadata.property1).not.toBeDefined();
-        expect(docs[0].metadata.new_name_text).toBe('value2');
+        expect(docs[0].metadata.new_name).toBe('value2');
         expect(docs[0].metadata.property2).not.toBeDefined();
         expect(docs[0].metadata.property3).not.toBeDefined();
 
         expect(docs[1].metadata.property1).not.toBeDefined();
-        expect(docs[1].metadata.new_name_text).toBe('value2');
+        expect(docs[1].metadata.new_name).toBe('value2');
         expect(docs[1].metadata.property2).not.toBeDefined();
         expect(docs[1].metadata.property3).not.toBeDefined();
         done();
@@ -659,11 +659,11 @@ describe('entities', () => {
       .then(() => entities.get({ template: templateChangingNames }))
       .then((docs) => {
         expect(docs[0].metadata.property1).not.toBeDefined();
-        expect(docs[0].metadata.property2_text).toBeDefined();
+        expect(docs[0].metadata.property2).toBeDefined();
         expect(docs[0].metadata.property3).not.toBeDefined();
 
         expect(docs[1].metadata.property1).not.toBeDefined();
-        expect(docs[1].metadata.property2_text).toBeDefined();
+        expect(docs[1].metadata.property2).toBeDefined();
         expect(docs[1].metadata.property3).not.toBeDefined();
         done();
       })
@@ -864,7 +864,7 @@ describe('entities', () => {
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
-      expect(entities.createThumbnail.calls.count()).toBe(7);
+      expect(entities.createThumbnail.calls.count()).toBe(6);
       expect(newEntities[0].fullText).toEqual({ 1: 'text' });
       expect(newEntities.length).toBe(8);
     });
