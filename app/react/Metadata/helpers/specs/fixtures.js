@@ -26,6 +26,10 @@ export const doc = {
       { entity: 'value2', inherit_string: 'are' },
       { entity: 'value4', inherit_string: 'you?' }
     ],
+    relationship4: [
+      { entity: 'linkedEntity1', inherit_geolocation: [{ lat: 13, lon: 7, label: '' }] },
+      { entity: 'linkedEntity2', inherit_geolocation: [{ lat: 5, lon: 10, label: 'exisitng label' }, { lat: 23, lon: 8, label: 'another label' }] },
+    ],
     geolocation: [{ lat: 2, lon: 3 }, { lat: 13, lon: 7, label: 'home' }],
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
@@ -37,7 +41,8 @@ export const templates = Immutable.fromJS([
   {
     _id: 'template2',
     properties: [
-      { _id: '123', name: 'text', type: 'text' }
+      { _id: '123', name: 'text', type: 'text' },
+      { name: 'home_geolocation', type: 'geolocation' }
     ]
   },
   {
@@ -66,6 +71,15 @@ export const templates = Immutable.fromJS([
         content: 'template2',
         relationType: 'relationType1'
       },
+      {
+        name: 'relationship4',
+        inherit: true,
+        inheritProperty: 'home_geolocation',
+        type: 'relationship',
+        label: 'Relationship 4',
+        content: 'template2',
+        relationType: 'relationType2'
+      },
       { name: 'geolocation', type: 'geolocation', label: 'Geolocation', showInCard: true },
       { name: 'nested', type: 'nested', label: 'Nested' }
     ]
@@ -87,7 +101,8 @@ export const thesauris = Immutable.fromJS([
         values: [
           { label: 'Value 5', id: 'value5', _id: 'value5', type: 'document' },
           { label: 'Value 6', id: 'value6', _id: 'value6', type: 'document' },
-        ] }
+        ]
+      }
     ]
   },
   {
@@ -95,5 +110,14 @@ export const thesauris = Immutable.fromJS([
     name: 'Multiselect2',
     type: 'template',
     values: [{ label: 'Value 4', id: 'value4', _id: 'value4', type: 'entity' }]
+  },
+  {
+    _id: 'template2',
+    name: 'Geolocations',
+    type: 'template',
+    values: [
+      { label: 'Entity 1 Title', id: 'linkedEntity1', _id: 'linkedEntity1', type: 'entity' },
+      { label: 'Entity 2 Title', id: 'linkedEntity2', _id: 'linkedEntity2', type: 'entity' },
+    ]
   }
 ]);

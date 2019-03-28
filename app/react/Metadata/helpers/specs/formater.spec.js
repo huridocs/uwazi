@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import Immutable from 'immutable';
 
 import { formatMetadata } from '../../selectors';
@@ -35,6 +36,7 @@ describe('metadata formater', () => {
     let relationship1;
     let relationship2;
     let relationship3;
+    let relationship4;
     let image;
     let preview;
     let media;
@@ -44,7 +46,8 @@ describe('metadata formater', () => {
     beforeAll(() => {
       data = formater.prepareMetadata(doc, templates, thesauris);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown,
-       select, image, preview, media, relationship1, relationship2, relationship3, geolocation, nested] =
+       select, image, preview, media, relationship1, relationship2, relationship3, relationship4,
+       geolocation, nested] =
         data.metadata;
     });
 
@@ -56,7 +59,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(16);
+      expect(data.metadata.length).toBe(17);
     });
 
     it('should process text type', () => {
@@ -118,11 +121,22 @@ describe('metadata formater', () => {
       assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);
     });
 
+    describe('Inherit relationships', () => {
+      it('should process inherit relationship types', () => {
+        assessBasicProperties(relationship3, ['Relationship 3', 'text', 'template2']);
+        expect(relationship3.value.length).toBe(3);
+        assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
+      });
 
-    it('should process inherit relationship types', () => {
-      assessBasicProperties(relationship3, ['Relationship 3', 'text', 'template2']);
-      expect(relationship3.value.length).toBe(3);
-      assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
+      it('should append the translated entity title to certain values', () => {
+        assessBasicProperties(relationship4, ['Relationship 4', 'home_geolocation', 'template2']);
+        expect(relationship4.value.length).toBe(3);
+        assessMultiValues(relationship4, [
+          { lat: 13, lon: 7, label: 'Entity 1 Title' },
+          { lat: 5, lon: 10, label: 'Entity 2 Title (exisitng label)' },
+          { lat: 23, lon: 8, label: 'Entity 2 Title (another label)' },
+        ]);
+      });
     });
 
     it('should process geolocation type', () => {
