@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GeolocationViewer should render a map with markers when onlyForCards is false 1`] = `
+exports[`GeolocationViewer should render a map with markers when onlyForCards is false, not failing on nulls 1`] = `
 <Map
   autoCenter={true}
   clickOnCluster={[Function]}

@@ -9,7 +9,7 @@ const GeolocationViewer = (props) => {
   if (onlyForCards) {
     return (
       <div>
-        {points.map((p, i) => {
+        {points.filter(p => Boolean(p)).map((p, i) => {
           const coords = formatcoords(p.lat, p.lon);
           return <div key={i}>{p.label ? `${p.label}: ` : ''}{coords.format('DD MM ss X', { latLonSeparator: ', ', decimalPlaces: 0 })}</div>;
         })}
@@ -18,7 +18,7 @@ const GeolocationViewer = (props) => {
   }
 
   const markers = [];
-  points.forEach(({ lat, lon, label }) => {
+  points.filter(p => Boolean(p)).forEach(({ lat, lon, label }) => {
     markers.push({ latitude: lat, longitude: lon, properties: { info: label } });
   });
 
