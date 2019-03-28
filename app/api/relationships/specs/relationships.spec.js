@@ -2,6 +2,7 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
+import errorLog from 'api/log/errorLog';
 
 import fixtures, {
   connectionID1,
@@ -32,6 +33,7 @@ import search from '../../search/search';
 
 describe('relationships', () => {
   beforeEach((done) => {
+    spyOn(errorLog, 'error');
     spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
@@ -41,27 +43,26 @@ describe('relationships', () => {
   });
 
   describe('getByDocument()', () => {
-    it('should return all the relationships of a document', (done) => {
-      relationships.getByDocument('entity2', 'en')
-      .then((result) => {
-        expect(result.length).toBe(12);
-        const entity1Connection = result.find(connection => connection.entity === 'entity1');
-        expect(entity1Connection.entityData.title).toBe('entity1 title');
-        expect(entity1Connection.entityData.type).toBe('document');
-        expect(entity1Connection.entityData.template).toEqual(template);
-        expect(entity1Connection.entityData.creationDate).toEqual(123);
+    const testEntityData = (connection, testValues) => {
+      Object.keys(testValues).forEach((property) => {
+        expect(connection.entityData[property]).toEqual(testValues[property]);
+      });
+    };
 
-        const entity3Connection = result.find(connection => connection.entity === 'entity3');
-        expect(entity3Connection.entityData.title).toBe('entity3 title');
-        expect(entity3Connection.entityData.type).toBe('entity');
-        expect(entity3Connection.entityData.template).toEqual(template);
-        expect(entity3Connection.entityData.published).toBe(true);
-        expect(entity3Connection.entityData.creationDate).toEqual(456);
-        expect(entity3Connection.entityData.file).toBeUndefined();
+    it('should return all the relationships of a document', async () => {
+      const result = await relationships.getByDocument('entity2', 'en');
+      expect(result.length).toBe(12);
+      const entity1Connection = result.find(connection => connection.entity === 'entity1');
+      testEntityData(entity1Connection, { title: 'entity1 title', type: 'document', creationDate: 123, template });
 
-        done();
-      })
-      .catch(catchErrors(done));
+      const entity3Connection = result.find(connection => connection.entity === 'entity3');
+      testEntityData(entity3Connection, { title: 'entity3 title', type: 'entity', published: true, creationDate: 456, template });
+      expect(entity3Connection.entityData.file).toBeUndefined();
+    });
+
+    it('should exclude ghost / delted entities with error reporting', async () => {
+      await relationships.getByDocument('entity2', 'en');
+      expect(errorLog.error.calls.argsFor(0)[0]).toContain('missingEntity');
     });
 
     it('should return text references only for the relations that match the filename of the entity', async () => {
@@ -153,7 +154,7 @@ describe('relationships', () => {
   describe('countByRelationType()', () => {
     it('should return number of relationships using a relationType', async () => {
       const relationsCount = await relationships.countByRelationType(relation2.toString());
-      expect(relationsCount).toBe(5);
+      expect(relationsCount).toBe(6);
     });
 
     it('should return zero when none is using it', async () => {
