@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import Map from 'app/Map/Map';
 import { Translate } from 'app/I18N';
 
+const defaultValue = { lat: '', lon: '', label: '' };
+
 function isCoordValid(coord) {
   // eslint-disable-next-line no-restricted-globals
   return typeof coord === 'number' && !isNaN(coord);
@@ -32,7 +34,7 @@ export default class Geolocation extends Component {
 
   getInputValues() {
     const { value } = this.props;
-    const { lat, lon, label } = value[0];
+    const { lat, lon, label } = value && value[0] ? value[0] : { ...defaultValue };
     return { lat, lon, label };
   }
 
@@ -60,8 +62,8 @@ export default class Geolocation extends Component {
     const markers = [];
     const { value: [value] } = this.props;
 
-    let lat;
-    let lon;
+    let lat = '';
+    let lon = '';
 
     if (value) {
       ({ lat, lon } = value);
@@ -97,7 +99,7 @@ export default class Geolocation extends Component {
 }
 
 Geolocation.defaultProps = {
-  value: [{ lat: '', lon: '', label: '' }],
+  value: [{ ...defaultValue }],
 };
 
 Geolocation.propTypes = {

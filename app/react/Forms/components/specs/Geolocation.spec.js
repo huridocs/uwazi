@@ -56,6 +56,13 @@ describe('Geolocation', () => {
       instance.mapClick(event);
       expect(props.onChange).toHaveBeenCalledWith([{ lat: 13, lon: 5, label: 'home' }, props.value[1]]);
     });
+
+    it('should work assign default values if original point was null', () => {
+      props.value = [null];
+      render();
+      instance.mapClick({ lngLat: [13, 7] });
+      expect(props.onChange).toHaveBeenCalledWith([{ lat: 7, lon: 13, label: '' }]);
+    });
   });
 
   describe('empty lat/lon values', () => {
