@@ -299,7 +299,7 @@ describe('entities', () => {
 
   describe('updateMetdataFromRelationships', () => {
     it('should update the metdata based on the entity relationships', (done) => {
-      entities.updateMetdataFromRelationships(['shared'], 'en')
+      entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
       .then(() => entities.getById('shared', 'en'))
       .then((updatedEntity) => {
         expect(updatedEntity.metadata.friends).toEqual(['shared2']);
