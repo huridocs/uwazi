@@ -13,7 +13,8 @@ export class ThesauriFormField extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value);
+    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value) ||
+      nextProps.index !== this.props.index;
   }
 
   renderValue(value, index, groupIndex) {
@@ -22,10 +23,9 @@ export class ThesauriFormField extends Component {
       model = `thesauri.data.values[${groupIndex}].values[${index}].label`;
     }
     return (
-      <li key={`item-${groupIndex || ''}${index}`} className="list-group-item">
-        <FormGroup>
-          <Field model={model}>
-            <input className="form-control" type="text" placeholder="Item name" />
+      <div key={`item-${groupIndex || ''}${index}`}>
+        <Field model={model}>
+          <input className="form-control" type="text" placeholder="Item name" />
             <button
               tabIndex={index + 500}
               type="button"
@@ -34,15 +34,14 @@ export class ThesauriFormField extends Component {
             >
               <Icon icon="trash-alt" /> Delete
             </button>
-          </Field>
-        </FormGroup>
-      </li>
+        </Field>
+      </div>
     );
   }
 
   render() {
-    const { connectDropTarget, connectDragSource, value, index, groupIndex } = this.props;
-    return connectDropTarget(connectDragSource(this.renderValue(value, index, groupIndex)));
+    const { value, index, groupIndex } = this.props;
+    return this.renderValue(value, index, groupIndex);
   }
 }
 
@@ -55,9 +54,6 @@ ThesauriFormField.propTypes = {
   value: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
   groupIndex: PropTypes.number,
-  moveToGroup: PropTypes.func.isRequired,
-  connectDragSource: PropTypes.func.isRequired,
-  connectDropTarget: PropTypes.func.isRequired
 };
 
 const fieldSource = {

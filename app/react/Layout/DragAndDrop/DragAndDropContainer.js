@@ -18,7 +18,6 @@ export class DragAndDropContainer extends Component {
     if (!items.find(_item => _item.id === item.id)) {
       return;
     }
-    console.log('item', item, item.originalItem);
     items.splice(dragIndex, 1);
     items.splice(hoverIndex, 0, item.originalItem || item);
     this.props.onChange(items);

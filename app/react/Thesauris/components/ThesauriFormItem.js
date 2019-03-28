@@ -7,13 +7,18 @@ import ThesauriFormGroup from './ThesauriFormGroup';
 export class ThesauriFormItem extends Component {
   constructor(props) {
     super(props);
-    this.focus = () => { this.groupInput.focus(); };
+    this.focus = () => this.groupItem && this.groupItem.focus();
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value) ||
+      nextProps.index !== this.props.index;
   }
 
   render() {
     const { value, index } = this.props;
     if (value.values) {
-      return <ThesauriFormGroup {...this.props} groupIndex={index} />;
+      return <ThesauriFormGroup ref={f => this.groupItem = f} {...this.props} index={index} />;
     }
     return <ThesauriFormField {...this.props} />;
   }

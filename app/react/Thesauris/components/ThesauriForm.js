@@ -3,8 +3,6 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { Field, Form, actions as formActions } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { DropTarget, DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import ShowIf from 'app/App/ShowIf';
 import { notEmpty } from 'app/Metadata/helpers/validator';
@@ -12,7 +10,7 @@ import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues, moveValueToIndex, updateValues, updateGroupValues } from 'app/Thesauris/actions/thesauriActions';
+import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues } from 'app/Thesauris/actions/thesauriActions';
 import ThesauriFormItem from './ThesauriFormItem';
 
 export class ThesauriForm extends Component {
@@ -29,10 +27,7 @@ export class ThesauriForm extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { movingValues: [] };
     this.save = this.save.bind(this);
-    this.toggleToMove = this.toggleToMove.bind(this);
-    this.moveToGroup = this.moveToGroup.bind(this);
   }
 
   componentWillMount() {
@@ -63,7 +58,6 @@ export class ThesauriForm extends Component {
     const lasValueIsGroup = values.length && values[values.length - 1].values;
     const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
     if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-      console.log('GROUPS', this.groups);
       this.groups[this.groups.length - 1].focus();
     }
   }
@@ -71,6 +65,14 @@ export class ThesauriForm extends Component {
   componentWillUnmount() {
     this.props.resetForm('thesauri.data');
     this.props.setInitial('thesauri.data');
+  }
+
+  onChange(values) {
+    this.props.updateValues(values);
+  }
+
+  onGroupChanged(groupIndex, values) {
+    this.props.updateValues(values, groupIndex);
   }
 
   save(thesauri) {
@@ -88,106 +90,15 @@ export class ThesauriForm extends Component {
     this.props.saveThesauri(sanitizedThesauri);
   }
 
-  beenMove(value) {
-    return this.state.movingValues.includes(value);
-  }
-
-  toggleToMove(value) {
-    let movingValues = this.state.movingValues.slice(0);
-    if (movingValues.includes(value)) {
-      movingValues = movingValues.filter(v => v !== value);
-    } else {
-      movingValues.push(value);
-    }
-    this.setState({ movingValues });
-  }
-
-  moveToGroup(values, groupIndex) {
-    console.log('moved', values, groupIndex);
-    // this.props.moveValues(this.state.movingValues, groupIndex);
-    this.props.moveValues(values, groupIndex);
-    this.setState({ movingValues: [] });
-  }
-
-  childrenToMove(group) {
-    if (!group.values) {
-      return [];
-    }
-    const { movingValues } = this.state;
-    return movingValues.filter(v => group.values.some(gv => v.id === gv.id));
-  }
-
-  removeItem(value) {
-    console.log('REMOVED', value);
-  }
-
-  onChange(values) {
-    console.log('CHANGED', values);
-    this.props.updateValues(values);
-  }
-
-  onGroupChanged(groupIndex, values) {
-    console.log('GROUP CH', groupIndex, values);
-    this.props.updateValues(values, groupIndex);
-  }
-
-  renderGroup(value, groupIndex) {
+  renderItem(value, index) {
     return (
-      <div key={`group-${groupIndex}`}>
-        <FormGroup>
-          <Field model={`thesauri.data.values[${groupIndex}].label`}>
-            <div className="input-group">
-              <input ref={f => this.groups.push(f)} className="form-control" type="text" placeholder="Group name" />
-              <span className="input-group-btn">
-                <button
-                  tabIndex={groupIndex + 500}
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={this.props.removeValue.bind(null, groupIndex, null)}
-                >
-                  <Icon icon="trash-alt" /> Delete Group
-                </button>
-              </span>
-            </div>
-          </Field>
-        </FormGroup>
-        <ul className="">
-          <DragAndDropContainer
-            items={value.values}
-            renderItem={(item, index) => this.renderItem(item, index, groupIndex)}
-            onChange={this.onGroupChanged.bind(this, groupIndex)}
-          />
-        </ul>
-      </div>
-    );
-  }
-
-  renderItem(value, index, groupIndex) {
-    if (value.values) {
-      return this.renderGroup(value, index);
-    }
-    let model = `thesauri.data.values[${index}].label`;
-    if (groupIndex !== undefined) {
-      model = `thesauri.data.values[${groupIndex}].values[${index}].label`;
-    }
-    return (
-      <div key={`item-${groupIndex || ''}${index}`}>
-        <Field model={model}>
-          <div className="input-group">
-            <input className="form-control" type="text" placeholder="Item name" />
-            <span className="input-group-btn">
-              <button
-                tabIndex={index + 500}
-                type="button"
-                className="btn btn btn-danger"
-                onClick={this.removeItem.bind(null, value)}
-              >
-                <Icon icon="trash-alt" /> Delete
-              </button>
-            </span>
-          </div>
-        </Field>
-      </div>
+      <ThesauriFormItem
+        ref={f => this.groups.push(f)}
+        value={value}
+        index={index}
+        removeValue={this.props.removeValue}
+        onGroupChanged={this.onGroupChanged.bind(this)}
+      />
     );
   }
 
@@ -219,7 +130,7 @@ export class ThesauriForm extends Component {
                 </Field>
               </FormGroup>
             </div>
-            <div className="FiltersForm-constructor">
+            <div className="thesauri-values">
               <div className="">
                 <b>Items:</b>
               </div>
@@ -228,18 +139,6 @@ export class ThesauriForm extends Component {
                 renderItem={this.renderItem.bind(this)}
                 items={values}
               />
-              {/* {values.map((value, index) => (
-                <ThesauriFormItem
-                  key={index}
-                  ref={f => this.groups.push(f)}
-                  value={value}
-                  index={index}
-                  moveToGroup={this.moveToGroup}
-                  removeValue={this.props.removeValue}
-                  moveValueToIndex={this.props.moveValueToIndex}
-                />
-)
-              )} */}
             </div>
             <div className="settings-footer">
               <BackButton to="/settings/dictionaries" />
@@ -251,7 +150,7 @@ export class ThesauriForm extends Component {
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
-              <button className="btn btn-success save-template">
+              <button type="button" className="btn btn-success save-template">
                 <Icon icon="save"/>
                 <span className="btn-label">Save</span>
               </button>
@@ -275,9 +174,6 @@ ThesauriForm.propTypes = {
   addGroup: PropTypes.func.isRequired,
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
-  moveValues: PropTypes.func.isRequired,
-  moveValueToIndex: PropTypes.func.isRequired,
-  updateGroupValues: PropTypes.func.isRequired,
   updateValues: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
@@ -300,9 +196,6 @@ function bindActions(dispatch) {
     addGroup,
     sortValues,
     removeValue,
-    moveValues,
-    moveValueToIndex,
-    updateGroupValues,
     updateValues,
     resetForm: formActions.reset,
     setInitial: formActions.setInitial,
