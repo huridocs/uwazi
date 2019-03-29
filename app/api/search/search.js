@@ -20,7 +20,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
-    if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
+    if (property.type === 'select' || property.type === 'multiselect') {
       type = 'multiselect';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {

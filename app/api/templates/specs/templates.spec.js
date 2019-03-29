@@ -62,7 +62,7 @@ describe('templates', () => {
 
         templates.save(changedTemplate)
         .then(() => {
-          expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({ select: '', multiselect_multiselect: [] }, templateWithContents);
+          expect(entities.removeValuesFromEntities).toHaveBeenCalledWith({ select: '', multiselect: [] }, templateWithContents);
           done();
         })
         .catch(catchErrors(done));
@@ -129,10 +129,10 @@ describe('templates', () => {
       .then((allTemplates) => {
         const newDoc = allTemplates.find(template => template.name === 'created_template');
 
-        expect(newDoc.properties[0].name).toEqual('label_1_text');
-        expect(newDoc.properties[1].name).toEqual('label_2_select');
-        expect(newDoc.properties[2].name).toEqual('label_3_image');
-        expect(newDoc.properties[3].name).toEqual('label_4_text');
+        expect(newDoc.properties[0].name).toEqual('label_1');
+        expect(newDoc.properties[1].name).toEqual('label_2');
+        expect(newDoc.properties[2].name).toEqual('label_3');
+        expect(newDoc.properties[3].name).toEqual('label_4');
         expect(newDoc.properties[4].name).toEqual('label_5_geolocation');
         done();
       })

@@ -21,6 +21,9 @@ const multiselectFilter = (filter, path = 'metadata') => {
       bool: {
         should: [
           {
+            terms: { [fullPath]: _values }
+          },
+          {
             bool: {
               must_not: [
                 {
@@ -30,15 +33,10 @@ const multiselectFilter = (filter, path = 'metadata') => {
                 }
               ]
             }
-          },
-          {
-            terms: {
-            }
           }
         ]
       }
     };
-    match.bool.should[1].terms[fullPath] = _values;
     return match;
   }
   if (!values.includes('missing') && !filterValue.and) {
@@ -114,9 +112,10 @@ const strictNestedFilter = (filter) => {
 };
 
 const nestedFilter = (filter) => {
+  const condition = filter.value.and ? 'must' : 'should';
   const match = {
     bool: {
-      must: []
+      [condition]: []
     }
   };
 
@@ -184,7 +183,7 @@ const nestedFilter = (filter) => {
     return matchers;
   });
 
-  match.bool.must = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
+  match.bool[condition] = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
   return match;
 };
 
@@ -219,15 +218,22 @@ const filterToMatch = (filter, path = 'metadata') => {
     match = rangeFilter(filter, path);
   }
 
+  if (filter.type === 'relationship') {
+    filter.value = { and: filter.value.and, properties: { entity: filter.value } };
+    match = nestedFilter(filter);
+  }
+
   if (filter.type === 'multiselect' || filter.type === 'select') {
     match = multiselectFilter(filter, path);
   }
 
   if (filter.type === 'nested' && filter.value.strict) {
+    filter.value.and = true;
     match = strictNestedFilter(filter);
   }
 
   if (filter.type === 'nested' && !filter.value.strict) {
+    filter.value.and = true;
     match = nestedFilter(filter);
   }
 

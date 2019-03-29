@@ -42,7 +42,7 @@ export const templates = Immutable.fromJS([
     _id: 'template2',
     properties: [
       { _id: '123', name: 'text', type: 'text' },
-      { name: 'home_geolocation', type: 'geolocation' }
+      { _id: '456', name: 'home_geolocation', type: 'geolocation' }
     ]
   },
   {
@@ -74,7 +74,7 @@ export const templates = Immutable.fromJS([
       {
         name: 'relationship4',
         inherit: true,
-        inheritProperty: 'home_geolocation',
+        inheritProperty: '456',
         type: 'relationship',
         label: 'Relationship 4',
         content: 'template2',
