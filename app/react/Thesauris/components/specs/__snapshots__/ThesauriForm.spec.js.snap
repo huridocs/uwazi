@@ -46,74 +46,47 @@ exports[`ThesauriForm render should render groups and values 1`] = `
           </Modeled(Connect(Field))>
         </FormGroup>
       </div>
-      <ul
-        className="thesauri-values list-group"
+      <div
+        className="thesauri-values"
       >
-        <li
-          className="list-group-item"
+        <div
+          className=""
         >
           <b>
             Items:
           </b>
-          <button
-            alt="move"
-            className="rounded-icon-small"
-            onClick={[Function]}
-            tabIndex={500}
-            type="button"
-          >
-            <Connect(Icon)
-              directionAware={true}
-              icon="arrow-left"
-              size="xs"
-            />
-          </button>
-        </li>
-        <ThesauriFormField
-          childrenToMove={Array []}
-          index={0}
-          key="0"
-          moveToGroup={[Function]}
-          moving={false}
-          removeValue={[Function]}
-          toggleToMove={[Function]}
-          value={
-            Object {
-              "label": "Heroes",
-              "values": Array [
-                Object {
-                  "label": "Batman",
-                },
-                Object {
-                  "label": "Robin",
-                },
-              ],
-            }
+        </div>
+        <DragDropContext(DropTarget(DragAndDropContainer))
+          items={
+            Array [
+              Object {
+                "label": "Heroes",
+                "values": Array [
+                  Object {
+                    "label": "Batman",
+                  },
+                  Object {
+                    "label": "Robin",
+                  },
+                ],
+              },
+              Object {
+                "label": "Villains",
+                "values": Array [
+                  Object {
+                    "label": "Joker",
+                  },
+                  Object {
+                    "label": "Penguin",
+                  },
+                ],
+              },
+            ]
           }
+          onChange={[Function]}
+          renderItem={[Function]}
         />
-        <ThesauriFormField
-          childrenToMove={Array []}
-          index={1}
-          key="1"
-          moveToGroup={[Function]}
-          moving={false}
-          removeValue={[Function]}
-          toggleToMove={[Function]}
-          value={
-            Object {
-              "label": "Villains",
-              "values": Array [
-                Object {
-                  "label": "Joker",
-                },
-                Object {
-                  "label": "Penguin",
-                },
-              ],
-            }
-          }
-        />
-      </ul>
+      </div>
       <div
         className="settings-footer"
       >
@@ -148,6 +121,7 @@ exports[`ThesauriForm render should render groups and values 1`] = `
         </a>
         <button
           className="btn btn-success save-template"
+          type="button"
         >
           <Connect(Icon)
             icon="save"
