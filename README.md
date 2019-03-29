@@ -124,6 +124,8 @@ $ yarn e2e
 
 Note that if you already have an instance running, this will likely throw an error of ports already been used.  Only one instance of Uwazi may be run in a the same port at the same time.
 
+E2E Tests depend on electron.  If something appears to not be working, please run `node_modules/electron/dist/electron --help` to check for problems.
+
 ### Default login
 
 The application's default log in is admin / change this password now 
