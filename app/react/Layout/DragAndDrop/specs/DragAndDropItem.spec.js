@@ -10,6 +10,7 @@ describe('DragAndDropItem', () => {
       props = {
         connectDragSource: jasmine.createSpy('connectDragSource').and.callFake(value => value),
         connectDropTarget: jasmine.createSpy('connectDropTarget').and.callFake(value => value),
+        connectDragPreview: jasmine.createSpy('connectDragPreview'),
         index: 1,
         isDragging: false,
         id: 1,

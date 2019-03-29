@@ -28,13 +28,16 @@ describe('DragAndDropContainer', () => {
       render();
       expect(component.find(DragAndDropItem).length).toBe(2);
       expect(component.find(DragAndDropItem).first().props().children).toBe('A rude awakening');
+      expect(component.find(DragAndDropItem).first().props().originalItem).toEqual(items[0]);
     });
 
     describe('accepts a custom render function', () => {
+      beforeEach(() => {
+        props.renderItem = (item, index) => <span>Avocado {item.content} {index}</span>;
+      });
       it('to render items', () => {
-        props.renderItem = () => <span>Avocado</span>;
         render();
-        expect(component.find(DragAndDropItem).first().find('span').text()).toBe('Avocado');
+        expect(component.find(DragAndDropItem).first().find('span').text()).toBe('Avocado A rude awakening 0');
       });
     });
 
