@@ -2,6 +2,7 @@ import { DragSource, DropTarget } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import { Icon } from 'UI';
 
@@ -83,6 +84,15 @@ export const itemTarget = {
 };
 
 export class DragAndDropItem extends Component {
+  // shouldComponentUpdate(props) {
+  //   Object.keys(props).forEach((key) => {
+  //     if (props[key] !== this.props[key]) {
+  //       console.log(key);
+  //     }
+  //   });
+
+  //   return this.props.id !== props.id;
+  // }
   render() {
     const { iconHandle, isDragging, connectDragPreview, connectDragSource, connectDropTarget } = this.props;
     let propertyClass = 'list-group-item';
@@ -97,7 +107,7 @@ export class DragAndDropItem extends Component {
     const result = connectDropTarget(
       <div className={propertyClass}>
         {iconHandle ? connectDragSource(<span className="draggable"><Icon icon="bars" /></span>) : <Icon icon="bars" />}
-        {this.props.children}
+        {this.props.children(this.props.originalItem, this.props.index)}
       </div>
     );
 
@@ -110,7 +120,8 @@ export class DragAndDropItem extends Component {
 }
 
 DragAndDropItem.defaultProps = {
-  iconHandle: false
+  iconHandle: false,
+  children: () => {},
 };
 
 DragAndDropItem.propTypes = {
@@ -122,7 +133,7 @@ DragAndDropItem.propTypes = {
   iconHandle: PropTypes.bool,
   id: PropTypes.any.isRequired,
   moveItem: PropTypes.func.isRequired,
-  children: PropTypes.any
+  children: PropTypes.func,
 };
 
 let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connect => ({
@@ -135,4 +146,4 @@ dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connect, monitor
   isDragging: monitor.isDragging()
 }))(dragAndDropItem);
 
-export default dragAndDropItem;
+export default connect()(dragAndDropItem);

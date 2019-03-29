@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
 import ThesauriFormField from './ThesauriFormField';
@@ -8,11 +9,6 @@ export class ThesauriFormItem extends Component {
   constructor(props) {
     super(props);
     this.focus = () => this.groupItem && this.groupItem.focus();
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value) ||
-      nextProps.index !== this.props.index;
   }
 
   render() {
@@ -29,4 +25,4 @@ ThesauriFormItem.propTypes = {
   index: PropTypes.number.isRequired
 };
 
-export default ThesauriFormItem;
+export default connect()(ThesauriFormItem);
