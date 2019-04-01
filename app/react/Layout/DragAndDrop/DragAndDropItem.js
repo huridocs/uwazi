@@ -134,15 +134,16 @@ DragAndDropItem.propTypes = {
   id: PropTypes.any.isRequired,
   moveItem: PropTypes.func.isRequired,
   children: PropTypes.func,
+  originalItem: PropTypes.object.isRequired
 };
 
-let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connector => ({
+  connectDropTarget: connector.dropTarget()
 }))(DragAndDropItem);
 
-dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  connectDragPreview: connect.dragPreview(),
+dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connector, monitor) => ({
+  connectDragSource: connector.dragSource(),
+  connectDragPreview: connector.dragPreview(),
   isDragging: monitor.isDragging()
 }))(dragAndDropItem);
 
