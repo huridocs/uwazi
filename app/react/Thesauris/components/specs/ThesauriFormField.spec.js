@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { ThesauriFormField } from '../ThesauriFormField';
 
-describe('ThesauriFormItem', () => {
+describe('ThesauriFormField', () => {
   let component;
   let props;
   beforeEach(() => {

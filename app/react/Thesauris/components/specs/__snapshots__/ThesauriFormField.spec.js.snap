@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ThesauriFormItem should render thesaurus item field 1`] = `
+exports[`ThesauriFormField should render thesaurus item field 1`] = `
 <div
   key="item-1"
 >
