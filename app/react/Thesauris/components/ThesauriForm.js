@@ -28,6 +28,8 @@ export class ThesauriForm extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
+    this.renderItem = this.renderItem.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   componentWillMount() {
@@ -47,20 +49,20 @@ export class ThesauriForm extends Component {
   //   }
   // }
 
-  componentDidUpdate(previousProps) {
-    // if (this.firstLoad) {
-    //   this.firstLoad = false;
-    //   return;
-    // }
-    // const { values } = this.props.thesauri;
-    // const previousValues = previousProps.thesauri.values;
-    // const addedValue = values.length > previousProps.thesauri.values.length;
-    // const lasValueIsGroup = values.length && values[values.length - 1].values;
-    // const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
-    // if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-    //   this.groups[this.groups.length - 1].focus();
-    // }
-  }
+  // componentDidUpdate(previousProps) {
+  //   if (this.firstLoad) {
+  //     this.firstLoad = false;
+  //     return;
+  //   }
+  //   const { values } = this.props.thesauri;
+  //   const previousValues = previousProps.thesauri.values;
+  //   const addedValue = values.length > previousProps.thesauri.values.length;
+  //   const lasValueIsGroup = values.length && values[values.length - 1].values;
+  //   const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
+  //   if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
+  //     this.groups[this.groups.length - 1].focus();
+  //   }
+  // }
 
   componentWillUnmount() {
     this.props.resetForm('thesauri.data');
@@ -134,8 +136,8 @@ export class ThesauriForm extends Component {
                 <b>Items:</b>
               </div>
               <DragAndDropContainer
-                onChange={this.onChange.bind(this)}
-                renderItem={this.renderItem.bind(this)}
+                onChange={this.onChange}
+                renderItem={this.renderItem}
                 items={values}
               />
             </div>

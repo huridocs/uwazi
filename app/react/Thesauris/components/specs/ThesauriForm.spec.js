@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
+import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { mapStateToProps, ThesauriForm } from 'app/Thesauris/components/ThesauriForm.js';
 
 describe('ThesauriForm', () => {
@@ -26,7 +26,7 @@ describe('ThesauriForm', () => {
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
       removeValue: jasmine.createSpy('removeValue'),
-      moveValues: jasmine.createSpy('moveValues'),
+      updateValues: jasmine.createSpy('updateValues'),
       state: { fields: [], $form: {} }
     };
   });
@@ -46,9 +46,18 @@ describe('ThesauriForm', () => {
   });
 
   describe('render', () => {
-    it('should render groups and values', () => {
+    it('should render DragAndDropContainer with thesauri items', () => {
       render();
+      expect(component.find(DragAndDropContainer).props().renderItem).toBe(component.instance().renderItem);
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('renderItem', () => {
+    it('should render ThesauriFormItem with specified value and index', () => {
+      render();
+      const renderedItem = component.instance().renderItem(props.thesauri.values[1], 1);
+      expect(renderedItem).toMatchSnapshot();
     });
   });
 
@@ -71,51 +80,51 @@ describe('ThesauriForm', () => {
     });
   });
 
-  describe('componentWillReceiveProps()', () => {
-    it('should add an empty value at the end of the thesauri and at the end of groups when there is none', () => {
-      instance.componentWillReceiveProps(props);
-      expect(props.addValue.calls.allArgs()).toEqual([[0], [1], []]);
-    });
-  });
+  // describe('componentWillReceiveProps()', () => {
+  //   it('should add an empty value at the end of the thesauri and at the end of groups when there is none', () => {
+  //     instance.componentWillReceiveProps(props);
+  //     expect(props.addValue.calls.allArgs()).toEqual([[0], [1], []]);
+  //   });
+  // });
 
-  describe('componentDidUpdate() when a group is added', () => {
-    it('should focus it', () => {
-      const previousProps = {
-        thesauri: {
-          _id: '123',
-          name: 'thesauri name',
-          values: [
-            { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }
-          ]
-        }
-      };
-      instance.firstLoad = false;
-      instance.groups = [
-        { focus: jasmine.createSpy('focus') },
-        { focus: jasmine.createSpy('focus') }
-      ];
-      instance.componentDidUpdate(previousProps);
-      expect(instance.groups[1].focus).toHaveBeenCalled();
-    });
+  // describe('componentDidUpdate() when a group is added', () => {
+  //   it('should focus it', () => {
+  //     const previousProps = {
+  //       thesauri: {
+  //         _id: '123',
+  //         name: 'thesauri name',
+  //         values: [
+  //           { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }
+  //         ]
+  //       }
+  //     };
+  //     instance.firstLoad = false;
+  //     instance.groups = [
+  //       { focus: jasmine.createSpy('focus') },
+  //       { focus: jasmine.createSpy('focus') }
+  //     ];
+  //     instance.componentDidUpdate(previousProps);
+  //     expect(instance.groups[1].focus).toHaveBeenCalled();
+  //   });
 
-    it('should do nothing when thesauri is empty', () => {
-      props = {
-        thesauri: {
-          _id: '123',
-          name: 'thesauri name',
-          values: []
-        }
-      };
-      instance.firstLoad = false;
-      instance.props = props;
-      instance.groups = [
-        { focus: jasmine.createSpy('focus') },
-        { focus: jasmine.createSpy('focus') }
-      ];
-      instance.componentDidUpdate(props);
-      expect(instance.groups[1].focus).not.toHaveBeenCalled();
-    });
-  });
+  //   it('should do nothing when thesauri is empty', () => {
+  //     props = {
+  //       thesauri: {
+  //         _id: '123',
+  //         name: 'thesauri name',
+  //         values: []
+  //       }
+  //     };
+  //     instance.firstLoad = false;
+  //     instance.props = props;
+  //     instance.groups = [
+  //       { focus: jasmine.createSpy('focus') },
+  //       { focus: jasmine.createSpy('focus') }
+  //     ];
+  //     instance.componentDidUpdate(props);
+  //     expect(instance.groups[1].focus).not.toHaveBeenCalled();
+  //   });
+  // });
 
   describe('mapStateToProps', () => {
     let state;
