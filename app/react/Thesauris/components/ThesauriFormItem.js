@@ -20,7 +20,11 @@ export class ThesauriFormItem extends Component {
 }
 
 ThesauriFormItem.propTypes = {
-  value: PropTypes.object.isRequired,
+  value: PropTypes.shape({
+    id: PropTypes.string,
+    label: PropTypes.string,
+    values: PropTypes.array
+  }).isRequired,
   index: PropTypes.number.isRequired
 };
 
