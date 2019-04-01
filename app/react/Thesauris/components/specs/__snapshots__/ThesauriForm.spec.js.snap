@@ -121,7 +121,7 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
         </a>
         <button
           className="btn btn-success save-template"
-          type="button"
+          type="submit"
         >
           <Connect(Icon)
             icon="save"
