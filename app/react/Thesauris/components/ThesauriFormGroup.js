@@ -24,8 +24,8 @@ export class ThesauriFormGroup extends Component {
   }
 
   onChange(values) {
-    const { index, onGroupChanged } = this.props;
-    onGroupChanged(index, values);
+    const { index, onChange: onGroupChanged } = this.props;
+    onGroupChanged(values, index);
   }
 
   removeGroup() {
@@ -75,7 +75,7 @@ ThesauriFormGroup.propTypes = {
   }).isRequired,
   index: PropTypes.number.isRequired,
   removeValue: PropTypes.func.isRequired,
-  onGroupChanged: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 };
 
 export default ThesauriFormGroup;

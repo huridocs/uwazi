@@ -3,7 +3,7 @@
 exports[`ThesauriFormItem should render ThesauriFormField if single item is provided 1`] = `
 <DropTarget(DragSource(ThesauriFormField))
   index={1}
-  onGroupChanged={[MockFunction]}
+  onChange={[MockFunction]}
   removeValue={[MockFunction]}
   value={
     Object {
@@ -17,7 +17,7 @@ exports[`ThesauriFormItem should render ThesauriFormField if single item is prov
 exports[`ThesauriFormItem should render ThesauriFromGroup if item with values is provided 1`] = `
 <ThesauriFormGroup
   index={1}
-  onGroupChanged={[MockFunction]}
+  onChange={[MockFunction]}
   removeValue={[MockFunction]}
   value={
     Object {

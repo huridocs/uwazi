@@ -25,4 +25,4 @@ ThesauriFormItem.propTypes = {
   index: PropTypes.number.isRequired
 };
 
-export default connect()(ThesauriFormItem);
+export default ThesauriFormItem;

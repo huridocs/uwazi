@@ -70,11 +70,7 @@ export class ThesauriForm extends Component {
     this.props.setInitial('thesauri.data');
   }
 
-  onChange(values) {
-    this.props.updateValues(values);
-  }
-
-  onGroupChanged(groupIndex, values) {
+  onChange(values, groupIndex) {
     this.props.updateValues(values, groupIndex);
   }
 
@@ -100,6 +96,7 @@ export class ThesauriForm extends Component {
         value={value}
         index={index}
         removeValue={this.props.removeValue}
+        onChange={this.onChange}
       />
     );
   }

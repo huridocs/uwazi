@@ -87,14 +87,61 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           renderItem={[Function]}
         />
       </div>
+      <div
+        className="settings-footer"
+      >
+        <BackButton
+          to="/settings/dictionaries"
+        />
+        <a
+          className="btn btn-primary"
+          onClick={[Function]}
+        >
+          <Connect(Icon)
+            icon="plus"
+          />
+          <span
+            className="btn-label"
+          >
+            Add group
+          </span>
+        </a>
+        <a
+          className="btn btn-primary"
+          onClick={[Function]}
+        >
+          <Connect(Icon)
+            icon="sort-alpha-down"
+          />
+          <span
+            className="btn-label"
+          >
+            Sort
+          </span>
+        </a>
+        <button
+          className="btn btn-success save-template"
+          type="button"
+        >
+          <Connect(Icon)
+            icon="save"
+          />
+          <span
+            className="btn-label"
+          >
+            Save
+          </span>
+        </button>
+      </div>
     </div>
   </Connect(Form)>
 </div>
 `;
 
 exports[`ThesauriForm renderItem should render ThesauriFormItem with specified value and index 1`] = `
-<Connect(ThesauriFormItem)
+<ThesauriFormItem
   index={1}
+  onChange={[Function]}
   removeValue={[Function]}
   value={
     Object {
