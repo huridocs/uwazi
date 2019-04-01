@@ -47,9 +47,9 @@ export default {
     { _id: docId1, sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }], fullText: { 1: 'text' } },
     { _id: docId2, sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
     { _id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false },
-    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'en', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text en' } },
-    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'es', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text es' } },
-    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'pt', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text pt' } },
+    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'en', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text en' }, fullText: { 1: 'text' } },
+    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'es', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text es' }, fullText: { 1: 'text' } },
+    { _id: db.id(), sharedId: 'shared3', type: 'entity', language: 'pt', title: 'Inherit from me', creationDate: 1, published: true, metadata: { text: 'text pt' }, fullText: { 1: 'text' } },
     //select/multiselect/date sync
     { _id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' } },
     { _id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' }, fullText: { 1: 'text' } },
@@ -64,7 +64,7 @@ export default {
     { _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: { select2: 'shared' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
     { _id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { select2: 'value' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
     { _id: db.id(), template: templateWithOnlySelect, sharedId: 'otherTemplateWithSelect', type: 'entity', language: 'es', metadata: { select: 'shared10' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } },
+    { _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
     { sharedId: 'shared2', language: 'en' }
   ],
   settings: [
