@@ -35,31 +35,31 @@ export class ThesauriForm extends Component {
   }
 
 
-  componentWillReceiveProps(props) {
-    props.thesauri.values.forEach((value, index) => {
-      if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
-        props.addValue(index);
-      }
-    });
+  // componentWillReceiveProps(props) {
+  //   props.thesauri.values.forEach((value, index) => {
+  //     if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
+  //       props.addValue(index);
+  //     }
+  //   });
 
-    if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
-      props.addValue();
-    }
-  }
+  //   if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
+  //     props.addValue();
+  //   }
+  // }
 
   componentDidUpdate(previousProps) {
-    if (this.firstLoad) {
-      this.firstLoad = false;
-      return;
-    }
-    const { values } = this.props.thesauri;
-    const previousValues = previousProps.thesauri.values;
-    const addedValue = values.length > previousProps.thesauri.values.length;
-    const lasValueIsGroup = values.length && values[values.length - 1].values;
-    const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
-    if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-      this.groups[this.groups.length - 1].focus();
-    }
+    // if (this.firstLoad) {
+    //   this.firstLoad = false;
+    //   return;
+    // }
+    // const { values } = this.props.thesauri;
+    // const previousValues = previousProps.thesauri.values;
+    // const addedValue = values.length > previousProps.thesauri.values.length;
+    // const lasValueIsGroup = values.length && values[values.length - 1].values;
+    // const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
+    // if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
+    //   this.groups[this.groups.length - 1].focus();
+    // }
   }
 
   componentWillUnmount() {
@@ -97,7 +97,6 @@ export class ThesauriForm extends Component {
         value={value}
         index={index}
         removeValue={this.props.removeValue}
-        onGroupChanged={this.onGroupChanged.bind(this)}
       />
     );
   }
@@ -139,21 +138,6 @@ export class ThesauriForm extends Component {
                 renderItem={this.renderItem.bind(this)}
                 items={values}
               />
-            </div>
-            <div className="settings-footer">
-              <BackButton to="/settings/dictionaries" />
-              <a className="btn btn-primary" onClick={this.props.addGroup}>
-                <Icon icon="plus" />
-                <span className="btn-label">Add group</span>
-              </a>
-              <a className="btn btn-primary" onClick={this.props.sortValues}>
-                <Icon icon="sort-alpha-down" />
-                <span className="btn-label">Sort</span>
-              </a>
-              <button type="button" className="btn btn-success save-template">
-                <Icon icon="save"/>
-                <span className="btn-label">Save</span>
-              </button>
             </div>
           </div>
         </Form>

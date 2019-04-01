@@ -27,17 +27,18 @@ describe('DragAndDropContainer', () => {
     it('should render a DragAndDropItem for each item', () => {
       render();
       expect(component.find(DragAndDropItem).length).toBe(2);
-      expect(component.find(DragAndDropItem).first().props().children).toBe('A rude awakening');
       expect(component.find(DragAndDropItem).first().props().originalItem).toEqual(items[0]);
+      expect(component.find(DragAndDropItem).first().props().children(items[0])).toBe('A rude awakening');
     });
 
     describe('accepts a custom render function', () => {
       beforeEach(() => {
-        props.renderItem = (item, index) => <span>Avocado {item.content} {index}</span>;
+        props.renderItem = jest.fn().mockImplementation((item, index) => <span>Avocado {item.content} {index}</span>);
       });
       it('to render items', () => {
         render();
-        expect(component.find(DragAndDropItem).first().find('span').text()).toBe('Avocado A rude awakening 0');
+        component.instance().renderItem(items[0], 0);
+        expect(props.renderItem).toHaveBeenCalledWith(items[0], 0);
       });
     });
 

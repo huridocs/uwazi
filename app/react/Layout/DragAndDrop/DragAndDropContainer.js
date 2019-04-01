@@ -10,6 +10,10 @@ export class DragAndDropContainer extends Component {
   constructor(props) {
     super(props);
     this.state = { id: props.id || ID() };
+    this.container = { id: this.state.id };
+    this.moveItem = this.moveItem.bind(this);
+    this.removeItem = this.removeItem.bind(this);
+    this.renderItem = this.renderItem.bind(this);
   }
 
   moveItem(_dragIndex, hoverIndex, item) {
@@ -43,24 +47,24 @@ export class DragAndDropContainer extends Component {
         {this.props.connectDropTarget(<ul className="list-group">
           {this.props.items.map((item, index) => (
             <DragAndDropItem
-              moveItem={this.moveItem.bind(this)}
-              removeItem={this.removeItem.bind(this)}
+              moveItem={this.moveItem}
+              removeItem={this.removeItem}
               index={index}
               iconHandle={!!item.items}
               key={item.id}
               name={item.name}
-              container={{ id: this.state.id }}
+              container={this.container}
               items={item.items}
               id={item.id}
               originalItem={item}
             >
-              {this.renderItem(item, index)}
+              {this.renderItem}
             </DragAndDropItem>
-))}
+          ))}
           <div className="no-properties">
             <div className="no-properties-wrap">Drag items here</div>
           </div>
-                                      </ul>)}
+        </ul>)}
       </div>
     );
   }
