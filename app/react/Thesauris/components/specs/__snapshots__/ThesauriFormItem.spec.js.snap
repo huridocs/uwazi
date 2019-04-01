@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ThesauriFormItem should render ThesauriFormField if single item is provided 1`] = `
-<DropTarget(DragSource(ThesauriFormField))
+<ThesauriFormField
   index={1}
   onChange={[MockFunction]}
   removeValue={[MockFunction]}
