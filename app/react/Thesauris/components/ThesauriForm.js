@@ -31,7 +31,6 @@ export class ThesauriForm extends Component {
     this.save = this.save.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
-    this.onGroupChanged = this.onGroupChanged.bind(this);
   }
 
   componentWillMount() {
