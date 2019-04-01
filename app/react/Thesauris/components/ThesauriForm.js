@@ -37,7 +37,7 @@ export class ThesauriForm extends Component {
   }
 
 
-  // componentWillReceiveProps(props) {
+  componentWillReceiveProps(props) {
   //   props.thesauri.values.forEach((value, index) => {
   //     if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
   //       props.addValue(index);
@@ -47,9 +47,9 @@ export class ThesauriForm extends Component {
   //   if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
   //     props.addValue();
   //   }
-  // }
+  }
 
-  // componentDidUpdate(previousProps) {
+  componentDidUpdate(previousProps) {
   //   if (this.firstLoad) {
   //     this.firstLoad = false;
   //     return;
@@ -62,7 +62,7 @@ export class ThesauriForm extends Component {
   //   if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
   //     this.groups[this.groups.length - 1].focus();
   //   }
-  // }
+  }
 
   componentWillUnmount() {
     this.props.resetForm('thesauri.data');

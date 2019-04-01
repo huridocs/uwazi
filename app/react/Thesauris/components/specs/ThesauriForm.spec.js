@@ -80,51 +80,51 @@ describe('ThesauriForm', () => {
     });
   });
 
-  // describe('componentWillReceiveProps()', () => {
-  //   it('should add an empty value at the end of the thesauri and at the end of groups when there is none', () => {
-  //     instance.componentWillReceiveProps(props);
-  //     expect(props.addValue.calls.allArgs()).toEqual([[0], [1], []]);
-  //   });
-  // });
+  describe('componentWillReceiveProps()', () => {
+    it('should add an empty value at the end of the thesauri and at the end of groups when there is none', () => {
+      instance.componentWillReceiveProps(props);
+      expect(props.addValue.calls.allArgs()).toEqual([[0], [1], []]);
+    });
+  });
 
-  // describe('componentDidUpdate() when a group is added', () => {
-  //   it('should focus it', () => {
-  //     const previousProps = {
-  //       thesauri: {
-  //         _id: '123',
-  //         name: 'thesauri name',
-  //         values: [
-  //           { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }
-  //         ]
-  //       }
-  //     };
-  //     instance.firstLoad = false;
-  //     instance.groups = [
-  //       { focus: jasmine.createSpy('focus') },
-  //       { focus: jasmine.createSpy('focus') }
-  //     ];
-  //     instance.componentDidUpdate(previousProps);
-  //     expect(instance.groups[1].focus).toHaveBeenCalled();
-  //   });
+  describe('componentDidUpdate() when a group is added', () => {
+    it('should focus it', () => {
+      const previousProps = {
+        thesauri: {
+          _id: '123',
+          name: 'thesauri name',
+          values: [
+            { label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }] }
+          ]
+        }
+      };
+      instance.firstLoad = false;
+      instance.groups = [
+        { focus: jasmine.createSpy('focus') },
+        { focus: jasmine.createSpy('focus') }
+      ];
+      instance.componentDidUpdate(previousProps);
+      expect(instance.groups[1].focus).toHaveBeenCalled();
+    });
 
-  //   it('should do nothing when thesauri is empty', () => {
-  //     props = {
-  //       thesauri: {
-  //         _id: '123',
-  //         name: 'thesauri name',
-  //         values: []
-  //       }
-  //     };
-  //     instance.firstLoad = false;
-  //     instance.props = props;
-  //     instance.groups = [
-  //       { focus: jasmine.createSpy('focus') },
-  //       { focus: jasmine.createSpy('focus') }
-  //     ];
-  //     instance.componentDidUpdate(props);
-  //     expect(instance.groups[1].focus).not.toHaveBeenCalled();
-  //   });
-  // });
+    it('should do nothing when thesauri is empty', () => {
+      props = {
+        thesauri: {
+          _id: '123',
+          name: 'thesauri name',
+          values: []
+        }
+      };
+      instance.firstLoad = false;
+      instance.props = props;
+      instance.groups = [
+        { focus: jasmine.createSpy('focus') },
+        { focus: jasmine.createSpy('focus') }
+      ];
+      instance.componentDidUpdate(props);
+      expect(instance.groups[1].focus).not.toHaveBeenCalled();
+    });
+  });
 
   describe('mapStateToProps', () => {
     let state;
