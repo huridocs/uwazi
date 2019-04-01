@@ -12,9 +12,9 @@ export class ThesauriFormItem extends Component {
   }
 
   render() {
-    const { value, index } = this.props;
+    const { value } = this.props;
     if (value.values) {
-      return <ThesauriFormGroup ref={f => this.groupItem = f} {...this.props} index={index} />;
+      return <ThesauriFormGroup ref={f => this.groupItem = f} {...this.props} />;
     }
     return <ThesauriFormField {...this.props} />;
   }
