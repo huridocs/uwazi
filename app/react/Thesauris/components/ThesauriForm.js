@@ -1,16 +1,17 @@
+import { Field, Form, actions as formActions } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { Field, Form, actions as formActions } from 'react-redux-form';
-import { connect } from 'react-redux';
-import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
-import ShowIf from 'app/App/ShowIf';
-import { notEmpty } from 'app/Metadata/helpers/validator';
-import { BackButton } from 'app/Layout';
-import { Icon } from 'UI';
 
-import FormGroup from 'app/DocumentForm/components/FormGroup';
+import { BackButton } from 'app/Layout';
+import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
+import { Icon } from 'UI';
+import { notEmpty } from 'app/Metadata/helpers/validator';
 import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues } from 'app/Thesauris/actions/thesauriActions';
+import FormGroup from 'app/DocumentForm/components/FormGroup';
+import ShowIf from 'app/App/ShowIf';
+
 import ThesauriFormItem from './ThesauriFormItem';
 
 export class ThesauriForm extends Component {
@@ -38,30 +39,30 @@ export class ThesauriForm extends Component {
 
 
   componentWillReceiveProps(props) {
-  //   props.thesauri.values.forEach((value, index) => {
-  //     if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
-  //       props.addValue(index);
-  //     }
-  //   });
+    props.thesauri.values.forEach((value, index) => {
+      if (value.values && (!value.values.length || value.values[value.values.length - 1].label !== '')) {
+        props.addValue(index);
+      }
+    });
 
-  //   if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
-  //     props.addValue();
-  //   }
+    if (!props.thesauri.values.length || props.thesauri.values[props.thesauri.values.length - 1].label !== '') {
+      props.addValue();
+    }
   }
 
   componentDidUpdate(previousProps) {
-  //   if (this.firstLoad) {
-  //     this.firstLoad = false;
-  //     return;
-  //   }
-  //   const { values } = this.props.thesauri;
-  //   const previousValues = previousProps.thesauri.values;
-  //   const addedValue = values.length > previousProps.thesauri.values.length;
-  //   const lasValueIsGroup = values.length && values[values.length - 1].values;
-  //   const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
-  //   if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
-  //     this.groups[this.groups.length - 1].focus();
-  //   }
+    if (this.firstLoad) {
+      this.firstLoad = false;
+      return;
+    }
+    const { values } = this.props.thesauri;
+    const previousValues = previousProps.thesauri.values;
+    const addedValue = values.length > previousProps.thesauri.values.length;
+    const lasValueIsGroup = values.length && values[values.length - 1].values;
+    const previousLasValueWasGroup = previousValues.length && previousValues[previousValues.length - 1].values;
+    if (lasValueIsGroup && (!previousLasValueWasGroup || addedValue)) {
+      this.groups[this.groups.length - 1].focus();
+    }
   }
 
   componentWillUnmount() {
@@ -140,6 +141,21 @@ export class ThesauriForm extends Component {
                 renderItem={this.renderItem}
                 items={values}
               />
+            </div>
+            <div className="settings-footer">
+              <BackButton to="/settings/dictionaries" />
+              <a className="btn btn-primary" onClick={this.props.addGroup}>
+                <Icon icon="plus" />
+                <span className="btn-label">Add group</span>
+              </a>
+              <a className="btn btn-primary" onClick={this.props.sortValues}>
+                <Icon icon="sort-alpha-down" />
+                <span className="btn-label">Sort</span>
+              </a>
+              <button type="button" className="btn btn-success save-template">
+                <Icon icon="save"/>
+                <span className="btn-label">Save</span>
+              </button>
             </div>
           </div>
         </Form>
