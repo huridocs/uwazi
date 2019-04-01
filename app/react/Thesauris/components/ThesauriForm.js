@@ -149,7 +149,7 @@ export class ThesauriForm extends Component {
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
-              <button type="button" className="btn btn-success save-template">
+              <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save"/>
                 <span className="btn-label">Save</span>
               </button>
