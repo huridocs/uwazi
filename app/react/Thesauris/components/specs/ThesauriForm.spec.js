@@ -144,6 +144,15 @@ describe('ThesauriForm', () => {
     });
   });
 
+  describe('onChange', () => {
+    it('should update values', () => {
+      render();
+      const values = [{ label: 'item' }];
+      instance.onChange(values, 1);
+      expect(props.updateValues).toHaveBeenCalledWith(values, 1);
+    });
+  });
+
   describe('validation', () => {
     describe('name duplicated', () => {
       let thesauris;
