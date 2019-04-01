@@ -31,30 +31,6 @@ export function sortValues() {
   };
 }
 
-export function moveValues(valuesToMove, groupIndex) {
-  return (dispatch, getState) => {
-    let values = getState().thesauri.data.values.slice(0);
-
-    values = values.map((_value, index) => {
-      const value = Object.assign({}, _value);
-      if (value.values) {
-        value.values = value.values.slice(0).filter(v => !valuesToMove.find(_v => v.id === _v.id));
-      }
-      if (groupIndex === index) {
-        value.values.splice(-1, 1);
-        value.values = value.values.concat(valuesToMove);
-      }
-      return value;
-    }).filter(v => !valuesToMove.find(_v => v.id === _v.id));
-
-    if (typeof groupIndex !== 'number') {
-      values.splice(-1, 1);
-      values = values.concat(valuesToMove);
-    }
-    dispatch(formActions.change('thesauri.data.values', values));
-  };
-}
-
 function moveEmptyItemToBottom(values) {
   const _values = [...values];
   const emptyIdx = _values.reduce((found, value, index) => {
