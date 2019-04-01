@@ -4,12 +4,11 @@ import formatcoords from 'formatcoords';
 
 import { Map } from 'app/Map';
 
-const GeolocationViewer = (props) => {
-  const { points, onlyForCards } = props;
+const GeolocationViewer = ({ points, onlyForCards }) => {
   if (onlyForCards) {
     return (
       <div>
-        {points.map((p, i) => {
+        {points.filter(p => Boolean(p)).map((p, i) => {
           const coords = formatcoords(p.lat, p.lon);
           return <div key={i}>{p.label ? `${p.label}: ` : ''}{coords.format('DD MM ss X', { latLonSeparator: ', ', decimalPlaces: 0 })}</div>;
         })}
@@ -18,11 +17,13 @@ const GeolocationViewer = (props) => {
   }
 
   const markers = [];
-  points.forEach(({ lat, lon, label }) => {
+  points.filter(p => Boolean(p)).forEach(({ lat, lon, label }) => {
     markers.push({ latitude: lat, longitude: lon, properties: { info: label } });
   });
 
-  return <Map latitude={points[0].lat} longitude={points[0].lon} height={370} markers={markers}/>;
+  const componentProps = markers.length ? { latitude: markers[0].latitude, longitude: markers[0].longitude } : {};
+
+  return <Map {...componentProps} height={370} markers={markers}/>;
 };
 
 GeolocationViewer.defaultProps = {
