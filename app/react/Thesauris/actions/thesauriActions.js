@@ -91,14 +91,6 @@ export function updateValues(updatedValues, groupIndex) {
   };
 }
 
-export function updateGroupValues(groupIndex, updatedValues) {
-  return (dispatch, getState) => {
-    const values = getState().thesauri.data.values.slice(0);
-    values[groupIndex] = { ...values[groupIndex], values: updatedValues };
-    dispatch(formActions.change('thesauri.data.values', values));
-  };
-}
-
 export function moveValueToIndex(sourceIndex, sourceGroupIndex, targetIndex, targetGroupIndex) {
   return (dispatch, getState) => {
     const origValues = getState().thesauri.data.values.slice(0);

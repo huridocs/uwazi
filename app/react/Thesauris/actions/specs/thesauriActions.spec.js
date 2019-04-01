@@ -179,4 +179,52 @@ describe('thesaurisActions', () => {
       });
     });
   });
+
+  describe('updateValues', () => {
+    let values;
+    beforeEach(() => {
+      values = [
+        { label: '1', id: '1' },
+        { label: '2', id: '2' },
+        { label: '3', id: '3' },
+        { label: '', id: '4' }
+      ];
+      spyOn(formActions, 'change');
+    });
+
+    it('should set the updated values in the store', () => {
+      actions.updateValues(values)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', values);
+    });
+    it('should update values inside group if group index is provided', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'root1', id: 'root1' },
+          { label: 'group', id: 'group', values: [] }
+        ] } } });
+      actions.updateValues(values, 1)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', [
+        { label: 'root1', id: 'root1' },
+        { label: 'group', id: 'group', values }
+      ]);
+    });
+    describe('if there is a single empty item inside the list', () => {
+      it('should move the empty item to the bottom of the list', () => {
+        const newValues = [...values];
+        const expectedValues = [...values];
+        newValues.push({ label: '5', id: '5' });
+        expectedValues.splice(3, 0, { label: '5', id: '5' });
+        actions.updateValues(newValues)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', expectedValues);
+      });
+    });
+    describe('if there are multiple empty items in the list', () => {
+      it('should not update the store', () => {
+        values.push({ label: '', id: '5' });
+        values.push({ label: '6', id: '6' });
+        actions.updateValues(values)(dispatch, getState);
+        expect(formActions.change).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
