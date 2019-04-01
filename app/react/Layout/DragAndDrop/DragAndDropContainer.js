@@ -42,29 +42,31 @@ export class DragAndDropContainer extends Component {
   }
 
   render() {
+    const { connectDropTarget, items } = this.props;
     return (
       <div>
-        {this.props.connectDropTarget(<ul className="list-group">
-          {this.props.items.map((item, index) => (
-            <DragAndDropItem
-              moveItem={this.moveItem}
-              removeItem={this.removeItem}
-              index={index}
-              iconHandle={!!item.items}
-              key={item.id}
-              name={item.name}
-              container={this.container}
-              items={item.items}
-              id={item.id}
-              originalItem={item}
-            >
-              {this.renderItem}
-            </DragAndDropItem>
-          ))}
-          <div className="no-properties">
-            <div className="no-properties-wrap">Drag items here</div>
-          </div>
-        </ul>)}
+        {connectDropTarget(
+          <ul className="list-group">
+            {items.map((item, index) => (
+              <DragAndDropItem
+                moveItem={this.moveItem}
+                removeItem={this.removeItem}
+                index={index}
+                iconHandle={!!item.items}
+                key={item.id}
+                name={item.name}
+                container={this.container}
+                items={item.items}
+                id={item.id}
+                originalItem={item}
+              >
+                {this.renderItem}
+              </DragAndDropItem>
+            ))}
+            <div className="no-properties">
+              <div className="no-properties-wrap">Drag items here</div>
+            </div>
+          </ul>)}
       </div>
     );
   }

@@ -10,11 +10,13 @@ export class ThesauriFormField extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return JSON.stringify(nextProps.value) !== JSON.stringify(this.props.value) ||
-      nextProps.index !== this.props.index;
+    const { value, index } = this.props;
+    return JSON.stringify(nextProps.value) !== JSON.stringify(value) ||
+      nextProps.index !== index;
   }
 
   renderValue(value, index, groupIndex) {
+    const { removeValue } = this.props;
     let model = `thesauri.data.values[${index}].label`;
     if (groupIndex !== undefined) {
       model = `thesauri.data.values[${groupIndex}].values[${index}].label`;
@@ -23,14 +25,14 @@ export class ThesauriFormField extends Component {
       <div key={`item-${groupIndex || ''}${index}`}>
         <Field model={model}>
           <input className="form-control" type="text" placeholder="Item name" />
-            <button
-              tabIndex={index + 500}
-              type="button"
-              className="btn btn-xs btn-danger"
-              onClick={this.props.removeValue.bind(null, index, groupIndex)}
-            >
-              <Icon icon="trash-alt" /> Delete
-            </button>
+          <button
+            tabIndex={index + 500}
+            type="button"
+            className="btn btn-xs btn-danger"
+            onClick={removeValue.bind(null, index, groupIndex)}
+          >
+            <Icon icon="trash-alt" /> Delete
+          </button>
         </Field>
       </div>
     );
@@ -48,7 +50,10 @@ ThesauriFormField.defaultProps = {
 
 ThesauriFormField.propTypes = {
   removeValue: PropTypes.func.isRequired,
-  value: PropTypes.object.isRequired,
+  value: PropTypes.shape({
+    id: PropTypes.string,
+    label: PropTypes.string
+  }).isRequired,
   index: PropTypes.number.isRequired,
   groupIndex: PropTypes.number,
 };

@@ -46,7 +46,7 @@ export class ThesauriFormGroup extends Component {
       <div key={`group-${groupIndex}`} className="group">
         <FormGroup>
           <Field model={`thesauri.data.values[${groupIndex}].label`}>
-            <input ref={i => this.groupInput = i} className="form-control" type="text" placeholder="Group name" />
+            <input ref={(i) => { this.groupInput = i; }} className="form-control" type="text" placeholder="Group name" />
             <button
               tabIndex={groupIndex + 500}
               type="button"

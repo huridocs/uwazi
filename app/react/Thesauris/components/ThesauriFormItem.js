@@ -13,7 +13,7 @@ export class ThesauriFormItem extends Component {
   render() {
     const { value } = this.props;
     if (value.values) {
-      return <ThesauriFormGroup ref={f => this.groupItem = f} {...this.props} />;
+      return <ThesauriFormGroup ref={(f) => { this.groupItem = f; }} {...this.props} />;
     }
     return <ThesauriFormField {...this.props} />;
   }
