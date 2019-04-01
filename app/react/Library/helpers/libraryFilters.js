@@ -57,7 +57,8 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
 const getOptionCount = (aggregations, optionId, name, nestedPath = '') => {
   let aggregation;
   if (aggregations.all && aggregations.all[name]) {
-    const aggregationBuckets = nestedPath ? aggregations.all[name][nestedPath].buckets : aggregations.all[name].buckets;
+    const aggregationObject = nestedPath ? aggregations.all[name][nestedPath] : aggregations.all[name];
+    const aggregationBuckets = aggregationObject ? aggregationObject.buckets : [];
     aggregation = aggregationBuckets.find(bucket => bucket.key.toString() === optionId.toString());
   }
   if (!aggregation) {
