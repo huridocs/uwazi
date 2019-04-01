@@ -35,10 +35,9 @@ describe('metadata path', () => {
       .isVisible(selectors.settingsView.saveDictionaryButton)
       .then((result) => {
         expect(result).toBe(true);
-        console.log('DONE', result);
         done();
       })
-      .catch((e) => { console.error('E', e); catchErrors(done); });
+      .catch(catchErrors(done));
     });
 
     it('should create a new dictionary with two values', (done) => {
