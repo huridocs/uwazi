@@ -314,9 +314,9 @@ describe('entities', () => {
     });
   });
 
-  describe('updateMetadataFromRelationships', () => {
-    it('should update the metadata based on the entity relationships', (done) => {
-      entities.updateMetadataFromRelationships(['shared'], 'en')
+  describe('updateMetdataFromRelationships', () => {
+    it('should update the metdata based on the entity relationships', (done) => {
+      entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
       .then(() => entities.getById('shared', 'en'))
       .then((updatedEntity) => {
         expect(updatedEntity.metadata.friends).toEqual([{ entity: 'shared1' }]);

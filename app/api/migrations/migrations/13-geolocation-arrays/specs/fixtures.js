@@ -57,6 +57,10 @@ export default {
   }],
 
   entities: [{
+    _id: db.id(),
+    title: 'no metadata',
+    template: t1,
+  }, {
     _id: e1,
     title: 'e1',
     template: t2,

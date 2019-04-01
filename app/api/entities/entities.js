@@ -319,16 +319,18 @@ const entitiesModel = {
     .then(_templates => Promise.all(
       entities.map(entityId => Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
       .then(([entity, relations]) => {
-        const template = _templates.find(t => t._id.toString() === entity.template.toString());
-        const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
-        relationshipProperties.forEach((property) => {
-          const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
-              (!property.content || r.entityData.template.toString() === property.content));
-          entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => ({ entity: r.entity })); //eslint-disable-line
-        });
-        if (relationshipProperties.length) {
-          entitiesToReindex.push(entity.sharedId);
-          return this.updateEntity(this.sanitize(entity, template), template);
+        if (entity) {
+          const template = _templates.find(t => t._id.toString() === entity.template.toString());
+          const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+          relationshipProperties.forEach((property) => {
+            const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
+                (!property.content || r.entityData.template.toString() === property.content));
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => ({ entity: r.entity })); //eslint-disable-line
+          });
+          if (relationshipProperties.length) {
+            entitiesToReindex.push(entity.sharedId);
+            return this.updateEntity(this.sanitize(entity, template), template);
+          }
         }
         return Promise.resolve(entity);
       })))
