@@ -106,8 +106,7 @@ function sanitize(doc, template) {
     return doc;
   }
 
-  const metadata = template.properties.reduce((sanitizedMetadata, property) => {
-    const { type, name } = property;
+  const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
     if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedMetadata[name])) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
@@ -120,7 +119,7 @@ function sanitize(doc, template) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
 
-    if (type === 'select' && !sanitizedMetadata[property.name]) {
+    if (type === 'select' && !sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
     }
 
@@ -143,7 +142,9 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(doc, { user, language }, updateRelationships = true) {
+  save(_doc, { user, language }, updateRelationships = true) {
+    const doc = _doc;
+
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -153,14 +154,22 @@ export default {
     const sharedId = doc.sharedId || ID();
     return Promise.all([
       settings.get(),
-      this.getEntityTemplate(doc, language)
+      this.getEntityTemplate(doc, language),
+      templates.get({ default: true }),
     ])
-    .then(([{ languages }, template]) => {
+    .then(([{ languages }, template, [defaultTemplate]]) => {
+      let docTemplate = template;
       if (doc.sharedId) {
         return this.updateEntity(this.sanitize(doc, template), template);
       }
 
-      return this.createEntity(this.sanitize(doc, template), languages, sharedId);
+      if (!doc.template) {
+        doc.template = defaultTemplate._id;
+        doc.metadata = {};
+        docTemplate = defaultTemplate;
+      }
+
+      return this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     })
     .then(() => this.getById(sharedId, language))
     .then((entity) => {
@@ -270,6 +279,7 @@ export default {
       entities.map(entityId => Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
       .then(([entity, relations]) => {
         if (entity) {
+          entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach((property) => {

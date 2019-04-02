@@ -317,32 +317,37 @@ describe('relationships', () => {
   });
 
   describe('saveEntityBasedReferences()', () => {
-    it('should create connections based on properties', async () => {
-      const entity = {
+    let entity;
+
+    beforeEach(() => {
+      entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
-        metadata: {
-          friend: ['robin']
-        }
+        metadata: { family: ['thomasWayne'], friend: ['robin', 'alfred'] }
       };
+    });
 
+    const saveReferencesChangingMetadataTo = async (metadata) => {
+      entity.metadata = metadata;
       await relationships.saveEntityBasedReferences(entity, 'en');
+    };
+
+    it('should create connections based on properties', async () => {
+      await saveReferencesChangingMetadataTo({ friend: ['robin'] });
       const connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
       expect(connections[0].hub).toEqual(connections[1].hub);
     });
 
-    it('should not create existing connections based on properties', async () => {
-      const entity = {
-        template: template.toString(),
-        sharedId: 'bruceWayne',
-        metadata: {
-          family: ['thomasWayne'],
-          friend: ['robin', 'alfred']
-        }
-      };
+    it('should not fail on missing metadata', async () => {
+      await saveReferencesChangingMetadataTo(undefined);
+      const connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
+      expect(connections[0].hub).toEqual(connections[1].hub);
+    });
 
+    it('should not create existing connections based on properties', async () => {
       await relationships.saveEntityBasedReferences(entity, 'en');
       await relationships.saveEntityBasedReferences(entity, 'en');
       const connections = await relationships.getByDocument('bruceWayne', 'en');
@@ -359,31 +364,14 @@ describe('relationships', () => {
     });
 
     it('should delete connections based on properties', async () => {
-      const entity = {
-        template: template.toString(),
-        sharedId: 'bruceWayne',
-        metadata: {
-          family: ['thomasWayne'],
-          friend: ['robin', 'alfred']
-        }
-      };
-
       await relationships.saveEntityBasedReferences(entity, 'en');
 
-      entity.metadata = {
-        family: ['thomasWayne'],
-        friend: ['alfred']
-      };
-      await relationships.saveEntityBasedReferences(entity, 'en');
+      await saveReferencesChangingMetadataTo({ family: ['thomasWayne'], friend: ['alfred'] });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
-      entity.metadata = {
-        family: ['alfred'],
-        friend: ['robin']
-      };
-      await relationships.saveEntityBasedReferences(entity, 'en');
+      await saveReferencesChangingMetadataTo({ family: ['alfred'], friend: ['robin'] });
       connections = await relationships.getByDocument('bruceWayne', 'en');
 
       expect(connections.find(c => c.entity === 'thomasWayne')).not.toBeDefined();
