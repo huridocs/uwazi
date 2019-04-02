@@ -86,7 +86,7 @@ export function addGroup() {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
     const lastIndex = values.length - 1;
-    const newGroup = { label: '', values: [{ label: '', id: ID() }] };
+    const newGroup = { label: '', id: ID(), values: [{ label: '', id: ID() }] };
     if (!values[lastIndex].values) {
       values[lastIndex] = newGroup;
     } else {
