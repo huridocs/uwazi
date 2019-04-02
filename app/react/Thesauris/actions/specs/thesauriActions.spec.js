@@ -62,7 +62,7 @@ describe('thesaurisActions', () => {
       spyOn(formActions, 'change');
       actions.addGroup()(dispatch, getState);
       expect(formActions.change)
-      .toHaveBeenCalledWith('thesauri.data.values', [{ label: 'something' }, { label: '', values: [{ label: '', id: 'unique_id' }] }]);
+      .toHaveBeenCalledWith('thesauri.data.values', [{ label: 'something' }, { label: '', id: 'unique_id', values: [{ label: '', id: 'unique_id' }] }]);
     });
   });
 
