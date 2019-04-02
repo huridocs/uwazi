@@ -102,6 +102,7 @@ export default {
       ] },
     { _id: templateChangingNames,
       name: 'template_changing_names',
+      default: true,
       properties: [
         { id: '1', type: 'text', name: 'property1' },
         { id: '2', type: 'text', name: 'property2' },
