@@ -61,7 +61,7 @@ export default class Map extends Component {
     const longitude = props.longitude || viewport.longitude;
     const newViewport = Object.assign(viewport, { latitude, longitude, markers });
 
-    if (JSON.stringify(this.props.markers) !== JSON.stringify(markers)) {
+    if (!Immutable.fromJS(this.props.markers).equals(Immutable.fromJS(markers))) {
       this.centerOnMarkers(markers);
       this.updateMapStyle(props);
     }
