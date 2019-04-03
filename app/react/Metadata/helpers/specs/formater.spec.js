@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 
 import { formatMetadata } from '../../selectors';
 import formater from '../formater';
-import { doc, templates, thesauris } from './fixtures';
+import { doc, templates, thesauris, relationships } from './fixtures';
 
 describe('metadata formater', () => {
   function assessBasicProperties(element, [label, name, translateContext, value]) {
@@ -44,7 +44,7 @@ describe('metadata formater', () => {
     let nested;
 
     beforeAll(() => {
-      data = formater.prepareMetadata(doc, templates, thesauris);
+      data = formater.prepareMetadata(doc, templates, thesauris, relationships);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown,
        select, image, preview, media, relationship1, relationship2, relationship3, relationship4,
        geolocation, nested] =
@@ -165,7 +165,7 @@ describe('metadata formater', () => {
       doc.metadata.relationship1 = null;
       doc.metadata.multiselect = null;
       doc.metadata.select = null;
-      expect(formater.prepareMetadata.bind(formater, doc, templates, thesauris)).not.toThrow();
+      expect(formater.prepareMetadata.bind(formater, doc, templates, thesauris, relationships)).not.toThrow();
     });
   });
 
@@ -273,16 +273,16 @@ describe('metadata formater', () => {
     it('should use formater.prepareMetadata', () => {
       spyOn(formater, 'prepareMetadata').and.returnValue({ metadata: 'metadataFormated' });
       const state = { templates, thesauris };
-      const metadata = formatMetadata(state, doc);
+      const metadata = formatMetadata(state, doc, null, relationships);
       expect(metadata).toBe('metadataFormated');
-      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris);
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris, relationships);
     });
 
     describe('when passing sortProperty', () => {
       it('should use formater.prepareMetadataForCard', () => {
         spyOn(formater, 'prepareMetadataForCard').and.returnValue({ metadata: 'metadataFormated' });
         const state = { templates, thesauris };
-        const metadata = formatMetadata(state, doc, 'sortProperty');
+        const metadata = formatMetadata(state, doc, 'sortProperty', relationships);
         expect(metadata).toBe('metadataFormated');
         expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, thesauris, 'sortProperty');
       });

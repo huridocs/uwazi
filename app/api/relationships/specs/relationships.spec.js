@@ -34,7 +34,7 @@ import search from '../../search/search';
 describe('relationships', () => {
   beforeEach((done) => {
     spyOn(errorLog, 'error');
-    spyOn(entities, 'updateMetadataFromRelationships').and.returnValue(Promise.resolve());
+    spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -228,7 +228,7 @@ describe('relationships', () => {
 
       it('should call entities to update the metadata', async () => {
         await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
-        expect(entities.updateMetadataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
+        expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
       });
     });
 
@@ -318,25 +318,32 @@ describe('relationships', () => {
 
   describe('saveEntityBasedReferences()', () => {
     let entity;
+
     beforeEach(() => {
       entity = {
         template: template.toString(),
         sharedId: 'bruceWayne',
-        metadata: {
-          family: [{ entity: 'thomasWayne' }],
-          friend: [{ entity: 'robin' }, { entity: 'alfred' }]
-        }
+        metadata: { family: ['thomasWayne'], friend: ['robin', 'alfred'] }
       };
     });
-    it('should create connections based on properties', async () => {
-      entity.metadata = {
-        friend: [{ entity: 'robin' }]
-      };
 
+    const saveReferencesChangingMetadataTo = async (metadata) => {
+      entity.metadata = metadata;
       await relationships.saveEntityBasedReferences(entity, 'en');
+    };
+
+    it('should create connections based on properties', async () => {
+      await saveReferencesChangingMetadataTo({ friend: ['robin'] });
       const connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
+      expect(connections[0].hub).toEqual(connections[1].hub);
+    });
+
+    it('should not fail on missing metadata', async () => {
+      await saveReferencesChangingMetadataTo(undefined);
+      const connections = await relationships.getByDocument('bruceWayne', 'en');
+      expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections[0].hub).toEqual(connections[1].hub);
     });
 
@@ -359,20 +366,12 @@ describe('relationships', () => {
     it('should delete connections based on properties', async () => {
       await relationships.saveEntityBasedReferences(entity, 'en');
 
-      entity.metadata = {
-        family: [{ entity: 'thomasWayne' }],
-        friend: [{ entity: 'alfred' }]
-      };
-      await relationships.saveEntityBasedReferences(entity, 'en');
+      await saveReferencesChangingMetadataTo({ family: ['thomasWayne'], friend: ['alfred'] });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
-      entity.metadata = {
-        family: [{ entity: 'alfred' }],
-        friend: [{ entity: 'robin' }]
-      };
-      await relationships.saveEntityBasedReferences(entity, 'en');
+      await saveReferencesChangingMetadataTo({ family: ['alfred'], friend: ['robin'] });
       connections = await relationships.getByDocument('bruceWayne', 'en');
 
       expect(connections.find(c => c.entity === 'thomasWayne')).not.toBeDefined();
@@ -507,8 +506,8 @@ describe('relationships', () => {
     it('should call entities to update the metadata', async () => {
       await relationships.delete({ entity: 'bruceWayne' }, 'en');
 
-      expect(entities.updateMetadataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
-      expect(entities.updateMetadataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'en');
+      expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'], 'es');
     });
 
     describe('when there is no condition', () => {

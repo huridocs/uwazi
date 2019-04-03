@@ -19,22 +19,23 @@ export const doc = {
     select: 'value3',
     image: 'imageURL',
     media: 'mediaURL',
-    relationship1: [{ entity: 'value1' }, { entity: 'value2' }],
-    relationship2: [{ entity: 'value1' }, { entity: 'value2' }, { entity: 'value4' }],
-    relationship3: [
-      { entity: 'value1', inherit_string: 'how' },
-      { entity: 'value2', inherit_string: 'are' },
-      { entity: 'value4', inherit_string: 'you?' }
-    ],
-    relationship4: [
-      { entity: 'linkedEntity1', inherit_geolocation: [{ lat: 13, lon: 7, label: '' }] },
-      { entity: 'linkedEntity2', inherit_geolocation: [{ lat: 5, lon: 10, label: 'exisitng label' }, { lat: 23, lon: 8, label: 'another label' }] },
-    ],
+    relationship1: ['value1', 'value2'],
+    relationship2: ['value1', 'value2', 'value4'],
+    relationship3: ['value1', 'value2', 'value3'],
+    relationship4: ['linkedEntity1', 'linkedEntity2'],
     geolocation: [{ lat: 2, lon: 3 }, { lat: 13, lon: 7, label: 'home' }],
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
   }
 };
+
+export const relationships = Immutable.fromJS([
+  { entity: 'value1', entityData: { metadata: { text: 'how' } } },
+  { entity: 'value2', entityData: { metadata: { text: 'are' } } },
+  { entity: 'value3', entityData: { metadata: { text: 'you?' } } },
+  { entity: 'linkedEntity1', entityData: { metadata: { home_geolocation: [{ lat: 13, lon: 7, label: '' }] } } },
+  { entity: 'linkedEntity2', entityData: { metadata: { home_geolocation: [{ lat: 5, lon: 10, label: 'exisitng label' }, { lat: 23, lon: 8, label: 'another label' }] } } },
+]);
 
 export const templates = Immutable.fromJS([
   { _id: 'template' },

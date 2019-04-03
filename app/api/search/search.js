@@ -7,10 +7,10 @@ import languages from 'shared/languagesList';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
 import relationtypes from 'api/relationtypes';
-import templatesModel from 'api/templates/templates';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
+import templatesModel from '../templates';
 
 
 function processFiltes(filters, properties) {
@@ -20,7 +20,7 @@ function processFiltes(filters, properties) {
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
-    if (property.type === 'select' || property.type === 'multiselect') {
+    if (property.type === 'select' || property.type === 'multiselect' || property.type === 'relationship') {
       type = 'multiselect';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
@@ -108,20 +108,12 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
   templates.forEach((template) => {
     template.properties.forEach((prop) => {
       if (prop.type === 'geolocation') {
-        geolocationProperties.push(prop);
-      }
-      if (prop.inherit) {
-        const inheritedProperty = templates
-        .find(t => t._id.toString() === prop.content.toString())
-        .properties.find(p => p._id.toString() === prop.inheritProperty.toString());
-        if (inheritedProperty.type === 'geolocation') {
-          geolocationProperties.push(prop);
-        }
+        geolocationProperties.push(prop.name);
       }
     });
   });
   documentsQuery.hasMetadataProperties(geolocationProperties);
-  const selectProps = geolocationProperties.map(p => `metadata.${p.name}`)
+  const selectProps = geolocationProperties.map(p => `metadata.${p}`)
   .concat(['title', 'template', 'sharedId', 'language']);
   documentsQuery.select(selectProps);
 }
@@ -239,11 +231,9 @@ const search = {
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
-      const body = documentsQuery.query();
-      return elastic.search({ index: elasticIndex, body })
+      return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
       .then(processResponse)
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
         throw createError('Query error', 400);
       });
     });

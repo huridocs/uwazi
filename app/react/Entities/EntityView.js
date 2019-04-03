@@ -13,7 +13,7 @@ import * as uiActions from './actions/uiActions';
 export default class Entity extends RouteHandler {
   static requestState({ entityId }, query, state) {
     return Promise.all([
-      entitiesAPI.get(entityId, { omitRelationships: true }),
+      entitiesAPI.get(entityId),
       relationTypesAPI.get(),
       relationships.requestState(entityId, state)
     ])

@@ -14,41 +14,42 @@ const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
   const { values = [] } = filterValue;
   let match;
-  const fullPath = filter.relationType ? `${path}.${filter.name}.entity.raw` : `${path}.${filter.name}.raw`;
   if (values.includes('missing') && !filterValue.and) {
     const _values = values.filter(v => v !== 'missing');
     match = {
       bool: {
         should: [
           {
-            terms: { [fullPath]: _values }
-          },
-          {
             bool: {
               must_not: [
                 {
                   exists: {
-                    field: fullPath
+                    field: `${path}.${filter.name}.raw`
                   }
                 }
               ]
+            }
+          },
+          {
+            terms: {
             }
           }
         ]
       }
     };
+    match.bool.should[1].terms[`${path}.${filter.name}.raw`] = _values;
     return match;
   }
   if (!values.includes('missing') && !filterValue.and) {
     match = { terms: {} };
-    match.terms[fullPath] = values;
+    match.terms[`${path}.${filter.name}.raw`] = values;
   }
 
   if (filterValue.and) {
     match = { bool: { must: [] } };
     match.bool.must = values.map((value) => {
       const m = { term: {} };
-      m.term[fullPath] = value;
+      m.term[`${path}.${filter.name}.raw`] = value;
       return m;
     });
   }
@@ -112,10 +113,9 @@ const strictNestedFilter = (filter) => {
 };
 
 const nestedFilter = (filter) => {
-  const condition = filter.value.and ? 'must' : 'should';
   const match = {
     bool: {
-      [condition]: []
+      must: []
     }
   };
 
@@ -183,7 +183,7 @@ const nestedFilter = (filter) => {
     return matchers;
   });
 
-  match.bool[condition] = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
+  match.bool.must = nestedMatchers.reduce((result, matchers) => result.concat(matchers), []);
   return match;
 };
 
@@ -218,22 +218,15 @@ const filterToMatch = (filter, path = 'metadata') => {
     match = rangeFilter(filter, path);
   }
 
-  if (filter.type === 'relationship') {
-    filter.value = { and: filter.value.and, properties: { entity: filter.value } };
-    match = nestedFilter(filter);
-  }
-
-  if (filter.type === 'multiselect' || filter.type === 'select') {
+  if (filter.type === 'multiselect' || filter.type === 'select' || filter.type === 'relationship') {
     match = multiselectFilter(filter, path);
   }
 
   if (filter.type === 'nested' && filter.value.strict) {
-    filter.value.and = true;
     match = strictNestedFilter(filter);
   }
 
   if (filter.type === 'nested' && !filter.value.strict) {
-    filter.value.and = true;
     match = nestedFilter(filter);
   }
 

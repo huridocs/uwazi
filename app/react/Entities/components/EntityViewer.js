@@ -62,7 +62,7 @@ export class EntityViewer extends Component {
 
 
   render() {
-    const { entity, entityBeingEdited, tab, connectionsGroups } = this.props;
+    const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
     const selectedTab = tab || 'info';
 
     const docAttachments = entity.attachments ? entity.attachments : [];
@@ -122,7 +122,7 @@ export class EntityViewer extends Component {
                   }
                   return (
                     <div>
-                      <ShowMetadata entity={entity} showTitle={false} showType={false} />
+                      <ShowMetadata relationships={relationships} entity={entity} showTitle={false} showType={false} />
                       <AttachmentsList
                         files={Immutable(attachments)}
                         parentId={entity._id}
@@ -183,8 +183,13 @@ export class EntityViewer extends Component {
   }
 }
 
+EntityViewer.defaultProps = {
+  relationships: Immutable([])
+};
+
 EntityViewer.propTypes = {
   entity: PropTypes.object,
+  relationships: PropTypes.object,
   rawEntity: PropTypes.object,
   entityBeingEdited: PropTypes.bool,
   sidepanelOpen: PropTypes.bool,
@@ -211,13 +216,14 @@ const selectEntity = createSelector(
 const selectRelationTypes = createSelector(s => s.relationTypes, r => r.toJS());
 
 const mapStateToProps = state => ({
-    rawEntity: state.entityView.entity,
-    relationTypes: selectRelationTypes(state),
-    entity: selectEntity(state),
-    connectionsGroups: state.relationships.list.connectionsGroups,
-    entityBeingEdited: !!state.entityView.entityForm._id,
-    tab: state.entityView.uiState.get('tab'),
-    library: state.library
+      rawEntity: state.entityView.entity,
+      relationTypes: selectRelationTypes(state),
+      entity: selectEntity(state),
+      relationships: state.entityView.entity.get('relationships'),
+      connectionsGroups: state.relationships.list.connectionsGroups,
+      entityBeingEdited: !!state.entityView.entityForm._id,
+      tab: state.entityView.uiState.get('tab'),
+      library: state.library
 });
 
 function mapDispatchToProps(dispatch) {

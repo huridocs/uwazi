@@ -123,6 +123,26 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
   return results;
 };
 
+const determinePropertyValues = (entity, propertyName) => {
+  const metadata = entity.metadata || {};
+  const propertyValues = metadata[propertyName] || [];
+  return (typeof propertyValues === 'string') ? [propertyValues] : propertyValues;
+};
+
+const getHub = (propertyRelationType, hubs, sharedId) => {
+  const hub = findPropertyHub(propertyRelationType, hubs, sharedId);
+  return hub || [{ entity: sharedId, hub: generateID() }];
+};
+
+const determineReferenceValues = (references, property, entity) => {
+  const hubs = groupByHubs(references);
+  const propertyRelationType = property.relationType.toString();
+  const entityType = property.content;
+  const hub = getHub(propertyRelationType, hubs, entity.sharedId);
+
+  return { propertyRelationType, entityType, hub };
+};
+
 export default {
   get(query, select, pagination) {
     return model.get(query, select, pagination);
@@ -225,17 +245,18 @@ export default {
 
   updateEntitiesMetadataByHub(hubId, language) {
     return this.getHub(hubId)
-    .then(hub => entities.updateMetadataFromRelationships(hub.map(r => r.entity), language));
+    .then(hub => entities.updateMetdataFromRelationships(hub.map(r => r.entity), language));
   },
 
   updateEntitiesMetadata(entitiesIds, language) {
-    return entities.updateMetadataFromRelationships(entitiesIds, language);
+    return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
   saveEntityBasedReferences(entity, language) {
     if (!language) {
       return Promise.reject(createError('Language cant be undefined'));
     }
+
     if (!entity.template) {
       return Promise.resolve([]);
     }
@@ -244,18 +265,8 @@ export default {
     .then(getPropertiesToBeConnections)
     .then(properties => Promise.all([properties, this.getByDocument(entity.sharedId, language)]))
     .then(([properties, references]) => Promise.all(properties.map((property) => {
-      const propertyValue = entity.metadata[property.name] || [];
-      let propertyValues = (propertyValue).map(v => v.entity);
-      if (typeof propertyValues === 'string') {
-        propertyValues = [propertyValues];
-      }
-      const hubs = groupByHubs(references);
-      const propertyRelationType = property.relationType.toString();
-      const entityType = property.content;
-      let hub = findPropertyHub(propertyRelationType, hubs, entity.sharedId);
-      if (!hub) {
-        hub = [{ entity: entity.sharedId, hub: generateID() }];
-      }
+      const propertyValues = determinePropertyValues(entity, property.name);
+      const { propertyRelationType, entityType, hub } = determineReferenceValues(references, property, entity);
 
       const referencesOfThisType = references.filter(reference => reference.template &&
         reference.template.toString() === propertyRelationType.toString()
@@ -276,6 +287,7 @@ export default {
       if (hub.length > 1) {
         save = this.save(hub, language, false);
       }
+
       return save.then(() => Promise.all(referencesToBeDeleted.map(reference => this.delete({ _id: reference._id }, language, false))));
     })));
   },
@@ -329,7 +341,7 @@ export default {
     });
   },
 
-  async delete(relationQuery, language, updateMetadata = true) {
+  async delete(relationQuery, language, updateMetdata = true) {
     if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
@@ -354,7 +366,7 @@ export default {
 
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
-    if (updateMetadata) {
+    if (updateMetdata) {
       await Promise.all(languages.map(l => this.updateEntitiesMetadata(entitiesAffected.map(e => e._id), l.key)));
     }
 

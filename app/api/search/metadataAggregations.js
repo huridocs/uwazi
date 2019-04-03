@@ -1,19 +1,19 @@
 const aggregation = (key, should, filters) => ({
-      terms: {
-        field: key,
-        missing: 'missing',
-        size: 9999
-      },
-      aggregations: {
-        filtered: {
-          filter: {
-            bool: {
-              should,
-              filter: filters
-            }
+    terms: {
+      field: key,
+      missing: 'missing',
+      size: 9999
+    },
+    aggregations: {
+      filtered: {
+        filter: {
+          bool: {
+            should,
+            filter: filters
           }
         }
       }
+    }
 });
 
 const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
@@ -61,23 +61,17 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = tr
     },
     aggregations: {}
   };
-  let filters = readOnlyFilters.filter(match => match.nested && match.nested.path === nestedPath)
+  let nestedFilters = readOnlyFilters.filter(match => match.nested && match.nested.path === nestedPath)
   .map(nestedFilter => nestedFilter.nested.query.bool.must)
   .reduce((result, propFilters) => result.concat(propFilters), []);
 
   property.nestedProperties.forEach((prop) => {
     const nestedPropPath = path ? `${path}.metadata.${prop}.raw` : `metadata.${property.name}.${prop}.raw`;
-    const nestedFilters = readOnlyFilters.map((_match) => {
-      const match = JSON.parse(JSON.stringify(_match));
+    const filters = readOnlyFilters.map((match) => {
       if (match.bool && match.bool.must && match.bool.must[0] && match.bool.must[0].nested) {
         match.bool.must = match.bool.must.filter(nestedMatcher => nestedMatcherIsAggregationProperty(nestedMatcher, nestedPropPath));
+
         if (!match.bool.must.length) {
-          return;
-        }
-      }
-      if (match.bool && match.bool.should && match.bool.should[0] && match.bool.should[0].nested) {
-        match.bool.should = match.bool.should.filter(nestedMatcher => !nestedMatcherIsAggregationProperty(nestedMatcher, nestedPropPath));
-        if (!match.bool.should.length) {
           return;
         }
       }
@@ -87,7 +81,8 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = tr
       return match;
     }).filter(f => f);
 
-    filters = filters.filter(filter => !filter.terms || !filter.terms[nestedPropPath]);
+    nestedFilters = nestedFilters.filter(filter => !filter.terms || !filter.terms[nestedPropPath]);
+
     agg.aggregations[prop] = {
       terms: {
         field: nestedPropPath,
@@ -98,7 +93,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = tr
         filtered: {
           filter: {
             bool: {
-              must: filters
+              must: nestedFilters
             }
           },
           aggregations: {
@@ -109,7 +104,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = tr
                   filter: {
                     bool: {
                       should,
-                      must: nestedFilters
+                      must: filters
                     }
                   }
                 }
@@ -129,26 +124,21 @@ const relationshipAggregation = (property, should, readOnlyFilters) => {
   return nestedAggregation(property, should, readOnlyFilters, 'relationships', false);
 };
 
-
 const propertyToAggregation = (property, dictionaries, baseQuery) => {
   const path = `metadata.${property.name}.raw`;
   let filters = baseQuery.query.bool.filter.filter(match => match &&
-          (!match.terms || match.terms && !match.terms[path]) &&
-          (!match.bool || !match.bool.should || !match.bool.should.length || !match.bool.should[0].terms || !match.bool.should[0].terms[path]));
+      (!match.terms || match.terms && !match.terms[path]) &&
+      (!match.bool || !match.bool.should || !match.bool.should[1].terms[path]));
   filters = filters.concat(baseQuery.query.bool.must);
+
   const { should } = baseQuery.query.bool;
   if (property.type === 'nested') {
     return nestedAggregation(property, should, filters);
   }
   let dictionary;
-  if (property.type === 'relationship') {
-    property.nestedProperties = ['entity'];
-    return nestedAggregation(property, should, filters);
-  }
   if (property.type === 'relationshipfilter') {
     return relationshipAggregation(property, should, filters);
   }
-
   if (property.content) {
     dictionary = dictionaries.find(d => property.content.toString() === d._id.toString());
   }

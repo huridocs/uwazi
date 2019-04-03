@@ -11,10 +11,8 @@ const template1 = db.id();
 const template2 = db.id();
 const templateMetadata1 = db.id();
 const templateMetadata2 = db.id();
-const templateMetadata3 = db.id();
 const countriesDictionaryID = db.id();
 const relationType = db.id();
-const inheritedProperty = db.id();
 
 export default {
   entities: [
@@ -51,18 +49,6 @@ export default {
     { _id: db.id(), sharedId: 'shared3', template: template1, language: 'en', title: 'template1 title en', published: true, user: userId },
     { _id: db.id(), sharedId: 'shared3', template: template1, language: 'es', title: 'template1 title es', published: true, user: userId },
     { _id: db.id(), sharedId: 'shared4', template: template1, language: 'en', title: 'shared 4template1 title en', published: true, user: userId },
-    {
-      _id: db.id(),
-      sharedId: 'shared5',
-      template: templateMetadata3,
-      language: 'en',
-      title: 'entity inheriting data',
-      published: true,
-      user: userId,
-      metadata: {
-        inherited: [{ entity: 'metadata1', value: [{ lat: 1, lon: 2 }] }],
-      }
-    },
     //metadata filters
     {
       _id: db.id(),
@@ -79,8 +65,8 @@ export default {
         rich_text: 'rich',
         multiselect1: ['multiValue1', 'multiValue2'],
         groupedDictionary: ['spainID'],
-        nestedField_nested: [{ nested1: ['1', '2', '3'] }],
-        city_geolocation: [{ lat: 1, lon: 2 }]
+        nestedField: [{ nested1: ['1', '2', '3'] }],
+        city_geolocation: { lat: 1, lon: 2 }
       }
     },
     {
@@ -91,7 +77,7 @@ export default {
       title: 'metadata1 es',
       published: true,
       user: userId,
-      metadata: { field1: 'joker', field2: 'bane', city_geolocation: [{ lat: 1, lon: 2 }] },
+      metadata: { field1: 'joker', field2: 'bane', city_geolocation: { lat: 1, lon: 2 } },
     },
     {
       _id: db.id(),
@@ -126,8 +112,8 @@ export default {
         field3: 'penguin',
         select1: 'selectValue2',
         multiselect1: ['multiValue2'],
-        nestedField_nested: [{ nested1: ['3', '4', '5'] }],
-        country_geolocation: [{ lat: 1, lon: 2 }] }
+        nestedField: [{ nested1: ['3', '4', '5'] }],
+        country_geolocation: { lat: 1, lon: 2 } }
     },
     {
       _id: db.id(),
@@ -140,8 +126,8 @@ export default {
       metadata: {
         field1: 'penguin',
         field3: 'joker',
-        nestedField_nested: [{ nested1: ['5', '6', '7'] }],
-        country_geolocation: [{ lat: 1, lon: 2 }]
+        nestedField: [{ nested1: ['5', '6', '7'] }],
+        country_geolocation: { lat: 1, lon: 2 }
       }
     },
     { _id: db.id(), sharedId: 'missingTemplate', language: 'en', title: 'missingTemplate', published: true, user: userId },
@@ -177,14 +163,14 @@ export default {
     {
       _id: templateMetadata1,
       properties: [
-        { _id: db.id(), name: 'field1', type: 'text', filter: true },
-        { _id: db.id(), name: 'field2', type: 'text', filter: true },
-        { _id: db.id(), name: 'select1', type: 'select', filter: true },
-        { _id: db.id(), name: 'multiselect1', type: 'multiselect', filter: true },
-        { _id: db.id(), name: 'nestedField_nested', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
-        { _id: inheritedProperty, name: 'city_geolocation', type: 'geolocation', filter: true },
-        { _id: db.id(), name: 'groupedDictionary', type: 'multiselect', filter: true, content: countriesDictionaryID },
-        { _id: db.id(), name: 'rich_text', type: 'markdown', filter: true },
+        { name: 'field1', type: 'text', filter: true },
+        { name: 'field2', type: 'text', filter: true },
+        { name: 'select1', type: 'select', filter: true },
+        { name: 'multiselect1', type: 'multiselect', filter: true },
+        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
+        { name: 'city_geolocation', type: 'geolocation', filter: true },
+        { name: 'groupedDictionary', type: 'multiselect', filter: true, content: countriesDictionaryID },
+        { name: 'rich_text', type: 'markdown', filter: true },
       ]
     },
     {
@@ -194,14 +180,8 @@ export default {
         { name: 'field3', type: 'text', filter: true },
         { name: 'select1', type: 'select', filter: true },
         { name: 'multiselect1', type: 'multiselect', filter: true },
-        { name: 'nestedField_nested', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
+        { name: 'nestedField', type: 'nested', nestedProperties: ['nested1', 'nested2'], filter: true },
         { name: 'country_geolocation', type: 'geolocation', filter: true }
-      ]
-    },
-    {
-      _id: templateMetadata3,
-      properties: [
-        { name: 'inherited', type: 'relationship', inherit: true, inheritProperty: inheritedProperty, content: templateMetadata1, relationType }
       ]
     }
   ],

@@ -168,17 +168,18 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  inherit(property, thesauriValues, thesauris, options, templates) {
+  inherit(property, thesauriValues, thesauris, options, templates, relationships) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template.get('properties').find(p => p.get('_id') === property.get('inheritProperty'));
     const type = inheritedProperty.get('type');
-    let value = thesauriValues.map((v) => {
-      const name = Object.keys(v).find(key => key.includes('inherit'));
-      if (this[type] && (v[name] || type === 'preview')) {
-        return this[type](property, v[name], thesauris, options, templates);
+    let value = thesauriValues.map((referencedEntityId) => {
+      const name = inheritedProperty.get('name');
+      const reference = relationships.toJS().find(r => r.entity === referencedEntityId) || { entityData: { metadata: {} } };
+      if (this[type] && (reference.entityData.metadata[name] || type === 'preview')) {
+        return this[type](property, reference.entityData.metadata[name], thesauris, options, templates);
       }
 
-      return { value: v[name] };
+      return { value: reference.entityData.metadata[name] };
     });
 
     let propType = 'inherit';
@@ -205,7 +206,7 @@ export default {
       if (relationshipValue.value) {
         let { value } = relationshipValue;
         if (type === 'geolocation') {
-          const entityLabel = this.getSelectOptions(getOption(templateThesauris, thesauriValues[index].entity), templateThesauris).value;
+          const entityLabel = this.getSelectOptions(getOption(templateThesauris, thesauriValues[index]), templateThesauris).value;
           value = value.map(v => ({ ...v, label: `${entityLabel}${v.label ? ` (${v.label})` : ''}` }));
         }
         return result.concat(value);
@@ -217,7 +218,7 @@ export default {
   relationship(property, thesauriValues, thesauris) {
     const allEntitiesThesauriValues = thesauris
     .filter(_thesauri => _thesauri.get('type') === 'template')
-    .reduce((result, _thesauri) => result.concat(this.getThesauriValues(thesauriValues.map(v => v.entity), _thesauri)), []);
+    .reduce((result, _thesauri) => result.concat(this.getThesauriValues(thesauriValues, _thesauri)), []);
 
     const sortedValues = advancedSort(allEntitiesThesauriValues, { property: 'value' });
 
@@ -251,10 +252,10 @@ export default {
   },
 
   prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
-    return this.prepareMetadata(doc, templates, thesauris, { onlyForCards: true, sortedProperty });
+    return this.prepareMetadata(doc, templates, thesauris, null, { onlyForCards: true, sortedProperty });
   },
 
-  prepareMetadata(_doc, templates, thesauris, options = {}) {
+  prepareMetadata(_doc, templates, thesauris, relationships, options = {}) {
     const doc = _doc;
     const template = templates.find(temp => temp.get('_id') === doc.template);
 
@@ -267,20 +268,20 @@ export default {
     }
 
     let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
-    .map(property => this.applyTransformation(property, { doc, thesauris, options, template, templates }));
+    .map(property => this.applyTransformation(property, { doc, thesauris, options, template, templates, relationships }));
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
     return Object.assign({}, doc, { metadata: metadata.toJS(), documentType: template.name });
   },
 
-  applyTransformation(property, { doc, thesauris, options, template, templates }) {
+  applyTransformation(property, { doc, thesauris, options, template, templates, relationships }) {
     const value = doc.metadata[property.get('name')];
     const showInCard = property.get('showInCard');
 
     const type = property.get('type');
     if (property.get('inherit')) {
-      return this.inherit(property, value, thesauris, { ...options, doc }, templates);
+      return this.inherit(property, value, thesauris, { ...options, doc }, templates, relationships);
     }
 
     if (this[type] && (value || type === 'preview')) {

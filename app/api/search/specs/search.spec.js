@@ -341,10 +341,10 @@ describe('search', () => {
         });
       });
 
-      it('should only get entities with geolocation fields or inherited ', (done) => {
+      it('should only get entities with geolocation fields ', (done) => {
         search.search({ searchTerm: '', geolocation: true }, 'en')
-        .then(({ rows }) => {
-          expect(rows.length).toBe(4);
+        .then((entities) => {
+          expect(entities.rows.length).toBe(3);
           done();
         });
       });
@@ -475,10 +475,10 @@ describe('search', () => {
           Promise.all([
             search.search({ types: [ids.templateMetadata2] }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
-              filters: { nestedField_nested: { properties: { nested1: { any: true } } } } }, 'en')
+              filters: { nestedField: { properties: { nested1: { any: true } } } } }, 'en')
           ])
           .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
-            const nestedAggs = template2NestedAggs.aggregations.all.nestedField_nested.nested1.buckets;
+            const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
             expect(template2NestedAggs.rows.length).toBe(2);
             expect(nestedAggs.find(a => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find(a => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
@@ -486,7 +486,7 @@ describe('search', () => {
             expect(nestedAggs.find(a => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
             expect(nestedAggs.find(a => a.key === '5').filtered.total.filtered.doc_count).toBe(2);
 
-            const bothTemplatesAggs = nestedSearchFirstLevel.aggregations.all.nestedField_nested.nested1.buckets;
+            const bothTemplatesAggs = nestedSearchFirstLevel.aggregations.all.nestedField.nested1.buckets;
             expect(nestedSearchFirstLevel.rows.length).toBe(3);
             expect(bothTemplatesAggs.find(a => a.key === '1').filtered.total.filtered.doc_count).toBe(1);
             expect(bothTemplatesAggs.find(a => a.key === '2').filtered.total.filtered.doc_count).toBe(1);
@@ -504,19 +504,19 @@ describe('search', () => {
           Promise.all([
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
               filters: {
-                nestedField_nested: { properties: { nested1: { values: ['1'] } } }
+                nestedField: { properties: { nested1: { values: ['1'] } } }
               } }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
               filters: {
-                nestedField_nested: { properties: { nested1: { values: ['2'] } } }
+                nestedField: { properties: { nested1: { values: ['2'] } } }
               } }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
               filters: {
-                nestedField_nested: { properties: { nested1: { values: ['3'] } } }
+                nestedField: { properties: { nested1: { values: ['3'] } } }
               } }, 'en'),
             search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
               filters: {
-                nestedField_nested: { properties: { nested1: { values: ['3', '5'] } } }
+                nestedField: { properties: { nested1: { values: ['3', '5'] } } }
               } }, 'en')
           ])
           .then(([value1, value2, value3, value35]) => {
@@ -543,11 +543,11 @@ describe('search', () => {
             Promise.all([
               search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
                 filters: {
-                  nestedField_nested: { properties: { nested1: { values: ['1', '5'] } }, strict: true }
+                  nestedField: { properties: { nested1: { values: ['1', '5'] } }, strict: true }
                 } }, 'en'),
               search.search({ types: [ids.templateMetadata1, ids.templateMetadata2],
                 filters: {
-                  nestedField_nested: { properties: { nested1: { values: ['1', '2'] } }, strict: true }
+                  nestedField: { properties: { nested1: { values: ['1', '2'] } }, strict: true }
                 } }, 'en')
             ])
             .then(([strict15, strict12]) => {

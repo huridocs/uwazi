@@ -13,67 +13,6 @@ import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
-function getEntityTemplate(doc, language) {
-  return new Promise((resolve) => {
-    if (!doc.sharedId && !doc.template) {
-      return resolve(null);
-    }
-    if (doc.template) {
-      return templates.getById(doc.template).then(resolve);
-    }
-    return entitiesModel.getById(doc.sharedId, language) //eslint-disable-line
-    .then((storedDoc) => {
-      if (!storedDoc) {
-        return null;
-      }
-      return templates.getById(storedDoc.template).then(resolve);
-    });
-  });
-}
-
-const inheritMetadata = async (entity) => {
-  if (!entity.metadata || !entity.template) {
-    return entity;
-  }
-  const _templates = await templates.get();
-  const template = _templates.find(t => t._id.toString() === entity.template.toString());
-  return template.properties.reduce(async (entitymemo, prop) => {
-    entity = await entitymemo;
-    if (!prop.inherit) {
-      return entity;
-    }
-
-    const inheritedProperty = _templates.find(templ => prop.content && templ._id.toString() === prop.content.toString())
-    .properties.find(p => p._id.toString() === prop.inheritProperty.toString());
-    const relatedEntitiesIds = entity.metadata[prop.name].map(v => v.entity);
-    const relatedEntities = await model.get({ sharedId: { $in: relatedEntitiesIds }, language: entity.language });
-    entity.metadata[prop.name] = relatedEntities
-    .map((relatedEntity) => {
-      const inheritValue = relatedEntity.metadata[inheritedProperty.name];
-      return { entity: relatedEntity.sharedId, [`inherit_${inheritedProperty.type}`]: inheritValue };
-    });
-    return entity;
-  }, Promise.resolve(entity));
-};
-
-const updateOthersInheritedMetadata = async (entity) => {
-  if (!entity.template) {
-    return Promise.resolve(entity);
-  }
-  const { sharedId, language } = entity;
-  const relatedEntities = await relationships.getByDocument(sharedId, language);
-  const templ = await templates.get();
-  const templatesWithInheritedRelationshipsToThisEntity = templ
-  .filter(template => template.properties.find(property => property.inherit && property.content === entity.template.toString()))
-  .map(t => t._id.toString());
-  const relatedEntitiesThatNeedUpdate = relatedEntities
-  .filter(_entity => templatesWithInheritedRelationshipsToThisEntity.includes(_entity.entityData.template.toString()));
-  return Promise.all(relatedEntitiesThatNeedUpdate.map(async (relationship) => {
-    const entitiesToBeUpdated = await model.get({ sharedId: relationship.entity });
-    return Promise.all(entitiesToBeUpdated.map(async _entity => inheritMetadata(_entity)));
-  }));
-};
-
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
   .then((docLanguages) => {
@@ -117,24 +56,42 @@ function updateEntity(entity, _template) {
       if (typeof entity.template !== 'undefined') {
         d.template = entity.template;
       }
-
       return d;
     });
-    return Promise.all(docs.map(async _entity => inheritMetadata(_entity)))
-    .then(_docs => Promise.all(_docs.map(model.save)));
+
+    return Promise.all(docs.map(d => model.save(d)));
   });
 }
 
 function createEntity(doc, languages, sharedId) {
   const docs = languages.map((lang) => {
-    const langDoc = { ...doc, metadata: { ...doc.metadata } };
+    const langDoc = Object.assign({}, doc);
     langDoc.language = lang.key;
     langDoc.sharedId = sharedId;
-
     return langDoc;
   });
-  return Promise.all(docs.map(inheritMetadata))
-  .then(entities => model.save(entities));
+
+  return model.save(docs);
+}
+
+function getEntityTemplate(doc, language) {
+  return new Promise((resolve) => {
+    if (!doc.sharedId && !doc.template) {
+      return resolve(null);
+    }
+
+    if (doc.template) {
+      return templates.getById(doc.template).then(resolve);
+    }
+
+    return this.getById(doc.sharedId, language)
+    .then((storedDoc) => {
+      if (!storedDoc) {
+        return null;
+      }
+      return templates.getById(storedDoc.template).then(resolve);
+    });
+  });
 }
 
 const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
@@ -149,8 +106,7 @@ function sanitize(doc, template) {
     return doc;
   }
 
-  const metadata = template.properties.reduce((sanitizedMetadata, property) => {
-    const { type, name } = property;
+  const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
     if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedMetadata[name])) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
@@ -163,7 +119,7 @@ function sanitize(doc, template) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
 
-    if (type === 'select' && !sanitizedMetadata[property.name]) {
+    if (type === 'select' && !sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
     }
 
@@ -181,12 +137,14 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-const entitiesModel = {
+export default {
   sanitize,
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(doc, { user, language }, updateRelationships = true) {
+  save(_doc, { user, language }, updateRelationships = true) {
+    const doc = _doc;
+
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -196,25 +154,27 @@ const entitiesModel = {
     const sharedId = doc.sharedId || ID();
     return Promise.all([
       settings.get(),
-      this.getEntityTemplate(doc, language)
+      this.getEntityTemplate(doc, language),
+      templates.get({ default: true }),
     ])
-    .then(([{ languages }, template]) => {
+    .then(([{ languages }, template, [defaultTemplate]]) => {
+      let docTemplate = template;
       if (doc.sharedId) {
         return this.updateEntity(this.sanitize(doc, template), template);
       }
-      return this.createEntity(this.sanitize(doc, template), languages, sharedId);
-    })
-    .then(() => this.getWithRelationships({ sharedId, language }))
-    .then(([entity]) => {
-      if (updateRelationships) {
-        return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language), this.getEntityTemplate(entity, language)]);
+
+      if (!doc.template) {
+        doc.template = defaultTemplate._id;
+        doc.metadata = {};
+        docTemplate = defaultTemplate;
       }
-      return [entity];
+
+      return this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     })
-    .then(([entity]) => {
-      if (entity.metadata && entity.template) {
-        return updateOthersInheritedMetadata(entity).then(updatedEntities => this.saveMultiple(Array.prototype.concat(...updatedEntities))
-        .then(() => [entity]));
+    .then(() => this.getById(sharedId, language))
+    .then((entity) => {
+      if (updateRelationships) {
+        return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
       }
 
       return [entity];
@@ -222,15 +182,14 @@ const entitiesModel = {
     .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
   },
 
-  bulkProcessMetadataFromRelationships(query, language, template) {
-    const limit = 200;
+  bulkProcessMetadataFromRelationships(query, language, limit = 200) {
     const process = (offset, totalRows) => {
       if (offset >= totalRows) {
         return Promise.resolve();
       }
 
       return this.get(query, 'sharedId', { skip: offset, limit })
-      .then(entities => this.updateMetadataFromRelationships(entities.map(entity => entity.sharedId), language, template))
+      .then(entities => this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language))
       .then(() => process(offset + limit, totalRows));
     };
     return this.count(query)
@@ -313,19 +272,20 @@ const entitiesModel = {
     return model.get(query, ['title', 'icon', 'file', 'sharedId']);
   },
 
-  updateMetadataFromRelationships(entities, language) {
+  updateMetdataFromRelationships(entities, language) {
     const entitiesToReindex = [];
     return templates.get()
     .then(_templates => Promise.all(
       entities.map(entityId => Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
       .then(([entity, relations]) => {
         if (entity) {
+          entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach((property) => {
             const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
                 (!property.content || r.entityData.template.toString() === property.content));
-            entity.metadata[property.name] = relationshipsGoingToThisProperty.map((r) => ({ entity: r.entity })); //eslint-disable-line
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity); //eslint-disable-line
           });
           if (relationshipProperties.length) {
             entitiesToReindex.push(entity.sharedId);
@@ -333,8 +293,8 @@ const entitiesModel = {
           }
         }
         return Promise.resolve(entity);
-      })))
-    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } })));
+      }))))
+    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
   },
 
   updateMetadataProperties(template, currentTemplate, language) {
@@ -375,7 +335,7 @@ const entitiesModel = {
         return this.indexEntities({ template: template._id }, null, 1000);
       }
 
-      return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language, template);
+      return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
     });
   },
 
@@ -581,5 +541,3 @@ const entitiesModel = {
 
   count: model.count
 };
-
-export default entitiesModel;
