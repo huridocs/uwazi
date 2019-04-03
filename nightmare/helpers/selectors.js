@@ -26,7 +26,7 @@ export default {
     addNewEntity: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewConnection: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewValueToDictionaryButton: '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > a.btn.btn-primary',
-    firstDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div.list-group-item.draggable > div > div > input',
+    firstDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div.list-group-item > div > div > input',
     secondDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div:nth-child(2) > div > div > input',
     saveDictionaryButton: '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > button',
     saveDocumentButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
