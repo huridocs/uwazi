@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { mockID } from 'shared/uniqueID';
 import { DragAndDropContainer, containerTarget } from '../DragAndDropContainer';
 import DragAndDropItem from '../DragAndDropItem';
-import { mockID } from 'shared/uniqueID';
 
 describe('DragAndDropContainer', () => {
   describe('react component', () => {
