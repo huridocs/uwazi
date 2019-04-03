@@ -49,6 +49,10 @@ class RelationshipCollection extends Array {
       return true;
     });
   }
+
+  removeUnpublished() {
+    return this.filter(relationship => relationship.entityData.published);
+  }
 }
 
 export {
