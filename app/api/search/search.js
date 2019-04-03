@@ -299,10 +299,10 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language) => Promise.
   ))
 );
 
-const getInheritedEntities = async (baseResults, language) => {
+const getInheritedEntities = async (results, language) => {
   const templates = await templatesModel.get();
   const templatesInheritedProperties = determineInheritedProperties(templates);
-  const toFetchByTemplate = whatToFetchByTemplate(baseResults, templatesInheritedProperties);
+  const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
   const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language);
 
   const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
@@ -316,35 +316,42 @@ const getInheritedEntities = async (baseResults, language) => {
   return { templatesInheritedProperties, inheritedEntities };
 };
 
+const processGeolocationResults = (_results, templatesInheritedProperties, inheritedEntities) => {
+  const results = _results;
+  const affectedTemplates = Object.keys(templatesInheritedProperties);
+
+  results.rows.forEach((row, rowIndex) => {
+    if (affectedTemplates.includes(row.template)) {
+      Object.keys(row.metadata).forEach((property) => {
+        if (templatesInheritedProperties[row.template][property]) {
+          row.metadata[property].forEach((entity, index) => {
+            const targetProperty = templatesInheritedProperties[row.template][property].target.name;
+            results.rows[rowIndex].metadata[property][index] = {
+              entity,
+              inherit_geolocation: inheritedEntities[entity].metadata[targetProperty] || [],
+            };
+          });
+        }
+      });
+    }
+  });
+
+  return results;
+};
+
 const search = {
   search: mainSearch,
 
   // TEST!!!
   async searchGeolocations(query, language, user) {
-    const baseResults = await mainSearch(query, language, user);
+    let results = await mainSearch(query, language, user);
 
-    if (baseResults.rows.length) {
-      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(baseResults, language);
-      const affectedTemplates = Object.keys(templatesInheritedProperties);
-
-      baseResults.rows.forEach((row, rowIndex) => {
-        if (affectedTemplates.includes(row.template)) {
-          Object.keys(row.metadata).forEach((property) => {
-            if (templatesInheritedProperties[row.template][property]) {
-              row.metadata[property].forEach((entity, index) => {
-                const targetProperty = templatesInheritedProperties[row.template][property].target.name;
-                baseResults.rows[rowIndex].metadata[property][index] = {
-                  entity,
-                  inherit_geolocation: inheritedEntities[entity].metadata[targetProperty]
-                };
-              });
-            }
-          });
-        }
-      });
+    if (results.rows.length) {
+      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language);
+      results = processGeolocationResults(results, templatesInheritedProperties, inheritedEntities);
     }
 
-    return baseResults;
+    return results;
   },
   // ---
 
