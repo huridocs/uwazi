@@ -76,7 +76,8 @@ export default (app) => {
   );
 
   app.get('/api/references/by_document/:id', (req, res, next) => {
-    relationships.getByDocument(req.params.id, req.language)
+    const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
+    relationships.getByDocument(req.params.id, req.language, unpublished)
     .then(response => res.json(response))
     .catch(next);
   });
