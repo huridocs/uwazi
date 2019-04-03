@@ -102,19 +102,36 @@ function snippetsFromSearchHit(hit) {
   return snippets;
 }
 
+//
+
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.limit(9999);
+  // TEST!!!
   const geolocationProperties = [];
+  const inheritedGeolocationProperties = [];
   templates.forEach((template) => {
     template.properties.forEach((prop) => {
       if (prop.type === 'geolocation') {
         geolocationProperties.push(prop.name);
       }
+
+      if (prop.type === 'relationship' && prop.inherit) {
+        const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
+        const inheritedProperty = contentTemplate.properties.find(p => p._id.toString() === prop.inheritProperty.toString());
+        if (inheritedProperty.type === 'geolocation') {
+          inheritedGeolocationProperties.push(prop.name);
+        }
+      }
     });
   });
-  documentsQuery.hasMetadataProperties(geolocationProperties);
-  const selectProps = geolocationProperties.map(p => `metadata.${p}`)
+
+  documentsQuery.hasMetadataProperties(geolocationProperties.concat(inheritedGeolocationProperties));
+
+  const selectProps = geolocationProperties
+  .map(p => `metadata.${p}`)
+  .concat(inheritedGeolocationProperties.map(p => `metadata.${p}`))
   .concat(['title', 'template', 'sharedId', 'language']);
+
   documentsQuery.select(selectProps);
 }
 
@@ -147,97 +164,189 @@ const processResponse = (response) => {
   return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
 };
 
-const search = {
-  search(query, language, user) {
-    let searchEntitiesbyTitle = Promise.resolve([]);
-    let searchDictionariesByTitle = Promise.resolve([]);
-    if (query.searchTerm) {
-      searchEntitiesbyTitle = entities.get({ $text: { $search: query.searchTerm }, language });
-      const regexp = `.*${query.searchTerm}.*`;
-      searchDictionariesByTitle = dictionariesModel.db.aggregate([
-        { $match: { 'values.label': { $regex: regexp, $options: 'i' } } },
-        { $unwind: '$values' },
-        { $match: { 'values.label': { $regex: regexp, $options: 'i' } } }
-      ]);
+const mainSearch = (query, language, user) => {
+  let searchEntitiesbyTitle = Promise.resolve([]);
+  let searchDictionariesByTitle = Promise.resolve([]);
+  if (query.searchTerm) {
+    searchEntitiesbyTitle = entities.get({ $text: { $search: query.searchTerm }, language });
+    const regexp = `.*${query.searchTerm}.*`;
+    searchDictionariesByTitle = dictionariesModel.db.aggregate([
+      { $match: { 'values.label': { $regex: regexp, $options: 'i' } } },
+      { $unwind: '$values' },
+      { $match: { 'values.label': { $regex: regexp, $options: 'i' } } }
+    ]);
+  }
+
+  return Promise.all([
+    templatesModel.get(),
+    searchEntitiesbyTitle,
+    searchDictionariesByTitle,
+    dictionariesModel.get(),
+    relationtypes.get(),
+    translations.get()
+  ])
+  .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes, _translations]) => {
+    const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
+    const documentsQuery = documentQueryBuilder()
+    .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+    .filterByTemplate(query.types)
+    .filterById(query.ids)
+    .language(language);
+
+    if (query.from) {
+      documentsQuery.from(query.from);
     }
 
-    return Promise.all([
-      templatesModel.get(),
-      searchEntitiesbyTitle,
-      searchDictionariesByTitle,
-      dictionariesModel.get(),
-      relationtypes.get(),
-      translations.get()
-    ])
-    .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes, _translations]) => {
-      const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
-      const documentsQuery = documentQueryBuilder()
-      .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
-      .filterByTemplate(query.types)
-      .filterById(query.ids)
-      .language(language);
+    if (query.limit) {
+      documentsQuery.limit(query.limit);
+    }
 
-      if (query.from) {
-        documentsQuery.from(query.from);
+    if (query.includeUnpublished && user) {
+      documentsQuery.includeUnpublished();
+    }
+
+    if (query.unpublished && user) {
+      documentsQuery.unpublished();
+    }
+
+    const allTemplates = templates.map(t => t._id);
+    const allUniqueProps = allUniqueProperties(templates);
+    const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
+    let properties = comonFilters(templates, relationTypes, filteringTypes);
+    properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
+
+    if (query.sort) {
+      const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+      if (sortingProp && sortingProp.type === 'select') {
+        const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
+        const translation = getLocaleTranslation(_translations, language);
+        const context = getContext(translation, dictionary._id.toString());
+        const keys = dictionary.values.reduce((result, value) => {
+          result[value.id] = translate(context, value.label, value.label);
+          return result;
+        }, {});
+        documentsQuery.sortByForeignKey(query.sort, keys, query.order);
+      } else {
+        documentsQuery.sort(query.sort, query.order);
       }
+    }
 
-      if (query.limit) {
-        documentsQuery.limit(query.limit);
+    if (query.allAggregations) {
+      properties = allUniqueProps;
+    }
+
+    const aggregations = agregationProperties(properties);
+    const filters = processFiltes(query.filters, properties);
+    const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProps, entitiesMatchedByTitle, dictionariesMatchByLabel);
+
+
+    documentsQuery.filterMetadataByFullText(textSearchFilters);
+    documentsQuery.filterMetadata(filters);
+    documentsQuery.aggregations(aggregations, dictionaries);
+
+    if (query.geolocation) {
+      searchGeolocation(documentsQuery, filteringTypes, templates);
+    }
+    return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
+    .then(processResponse)
+    .catch(() => {
+      throw createError('Query error', 400);
+    });
+  });
+};
+
+const determineInheritedProperties = templates => templates.reduce((memo, template) => {
+  const inheritedProperties = memo;
+  template.properties.forEach((property) => {
+    if (property.type === 'relationship' && property.inherit) {
+      const contentTemplate = templates.find(t => t._id.toString() === property.content.toString());
+      const inheritedProperty = contentTemplate.properties.find(
+        p => p.type === 'geolocation' && p._id.toString() === property.inheritProperty.toString()
+      );
+      if (inheritedProperty) {
+        inheritedProperties[template._id.toString()] = inheritedProperties[template._id.toString()] || {};
+        inheritedProperties[template._id.toString()][property.name] = { base: property, target: inheritedProperty };
       }
+    }
+  });
+  return inheritedProperties;
+}, {});
 
-      if (query.includeUnpublished && user) {
-        documentsQuery.includeUnpublished();
-      }
+const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
+  const toFetchByTemplate = {};
 
-      if (query.unpublished && user) {
-        documentsQuery.unpublished();
-      }
-
-      const allTemplates = templates.map(t => t._id);
-      const allUniqueProps = allUniqueProperties(templates);
-      const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      let properties = comonFilters(templates, relationTypes, filteringTypes);
-      properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
-
-      if (query.sort) {
-        const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
-        if (sortingProp && sortingProp.type === 'select') {
-          const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-          const translation = getLocaleTranslation(_translations, language);
-          const context = getContext(translation, dictionary._id.toString());
-          const keys = dictionary.values.reduce((result, value) => {
-            result[value.id] = translate(context, value.label, value.label);
-            return result;
-          }, {});
-          documentsQuery.sortByForeignKey(query.sort, keys, query.order);
-        } else {
-          documentsQuery.sort(query.sort, query.order);
+  baseResults.rows.forEach((row) => {
+    Object.keys(row.metadata || {}).forEach((name) => {
+      if (Object.keys(templatesInheritedProperties[row.template.toString()] || []).includes(name)) {
+        const inheritedProperty = templatesInheritedProperties[row.template.toString()][name];
+        const template = inheritedProperty.base.content;
+        toFetchByTemplate[template] = toFetchByTemplate[template] || { entities: [], properties: [] };
+        toFetchByTemplate[template].entities = toFetchByTemplate[template].entities.concat(row.metadata[name]);
+        if (!toFetchByTemplate[template].properties.includes(inheritedProperty.target.name)) {
+          toFetchByTemplate[template].properties.push(inheritedProperty.target.name);
         }
       }
-
-      if (query.allAggregations) {
-        properties = allUniqueProps;
-      }
-
-      const aggregations = agregationProperties(properties);
-      const filters = processFiltes(query.filters, properties);
-      const textSearchFilters = filtersBasedOnSearchTerm(allUniqueProps, entitiesMatchedByTitle, dictionariesMatchByLabel);
-
-
-      documentsQuery.filterMetadataByFullText(textSearchFilters);
-      documentsQuery.filterMetadata(filters);
-      documentsQuery.aggregations(aggregations, dictionaries);
-
-      if (query.geolocation) {
-        searchGeolocation(documentsQuery, filteringTypes, templates);
-      }
-      return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
-      .then(processResponse)
-      .catch(() => {
-        throw createError('Query error', 400);
-      });
     });
+  });
+
+  return toFetchByTemplate;
+};
+
+const getInheritedEntitiesData = async (toFetchByTemplate, language) => Promise.all(
+  Object.keys(toFetchByTemplate).map(t => entities.get(
+    { language, sharedId: { $in: toFetchByTemplate[t].entities } },
+    { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
+  ))
+);
+
+const getInheritedEntities = async (baseResults, language) => {
+  const templates = await templatesModel.get();
+  const templatesInheritedProperties = determineInheritedProperties(templates);
+  const toFetchByTemplate = whatToFetchByTemplate(baseResults, templatesInheritedProperties);
+  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language);
+
+  const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
+    const memo = _memo;
+    templateEntities.forEach((e) => {
+      memo[e.sharedId] = e;
+    });
+    return memo;
+  }, {});
+
+  return { templatesInheritedProperties, inheritedEntities };
+};
+
+const search = {
+  search: mainSearch,
+
+  // TEST!!!
+  async searchGeolocations(query, language, user) {
+    const baseResults = await mainSearch(query, language, user);
+
+    if (baseResults.rows.length) {
+      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(baseResults, language);
+      const affectedTemplates = Object.keys(templatesInheritedProperties);
+
+      baseResults.rows.forEach((row, rowIndex) => {
+        if (affectedTemplates.includes(row.template)) {
+          Object.keys(row.metadata).forEach((property) => {
+            if (templatesInheritedProperties[row.template][property]) {
+              row.metadata[property].forEach((entity, index) => {
+                const targetProperty = templatesInheritedProperties[row.template][property].target.name;
+                baseResults.rows[rowIndex].metadata[property][index] = {
+                  entity,
+                  inherit_geolocation: inheritedEntities[entity].metadata[targetProperty]
+                };
+              });
+            }
+          });
+        }
+      });
+    }
+
+    return baseResults;
   },
+  // ---
 
   getUploadsByUser(user, language) {
     return entities.get({ user: user._id, language, published: false });
