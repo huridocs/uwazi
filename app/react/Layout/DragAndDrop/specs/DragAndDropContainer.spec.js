@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { DragAndDropContainer, containerTarget } from '../DragAndDropContainer';
 import DragAndDropItem from '../DragAndDropItem';
+import { mockID } from 'shared/uniqueID';
 
 describe('DragAndDropContainer', () => {
   describe('react component', () => {
@@ -18,6 +19,7 @@ describe('DragAndDropContainer', () => {
         items,
         onChange: jasmine.createSpy('onChange')
       };
+      mockID();
     });
 
     const render = () => {
@@ -33,6 +35,12 @@ describe('DragAndDropContainer', () => {
 
     it('should enable iconHandle on children if iconHandle is enabled in container', () => {
       props.iconHandle = true;
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should enable iconHandle for child that has nested items property', () => {
+      items[0].items = [{ id: 3, content: 'sub item' }];
       render();
       expect(component).toMatchSnapshot();
     });
