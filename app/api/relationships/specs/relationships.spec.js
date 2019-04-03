@@ -95,6 +95,13 @@ describe('relationships', () => {
       const relations = await relationships.getByDocument('doc2', 'es');
       expect(relations.filter(r => r.hub.equals(hub8)).length).toBe(0);
     });
+
+    describe('when unpublished flag is false', () => {
+      it('should not return relationships of unpublised entities', async () => {
+        const result = await relationships.getByDocument('entity2', 'en', false);
+        expect(result.length).toBe(5);
+      });
+    });
   });
 
   describe('getGroupsByConnection()', () => {

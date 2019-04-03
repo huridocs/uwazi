@@ -57,7 +57,7 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   }, null);
 }
 
-// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!
+// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!
 const conformRelationships = (rows, parentEntitySharedId) => {
   let order = -1;
   const hubsObject = fromJS(rows)
@@ -158,7 +158,7 @@ export default {
     return model.get({ hub: { $in: hubsIds } });
   },
 
-  getByDocument(sharedId, language) {
+  getByDocument(sharedId, language, unpublished = true) {
     return this.getDocumentHubs(sharedId)
     .then((_relationships) => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
@@ -171,11 +171,17 @@ export default {
           res[doc.sharedId] = doc;
           return res;
         }, {});
-        return new RelationshipCollection(..._relationships)
+        let relationshipsCollection = new RelationshipCollection(..._relationships)
         .removeOtherLanguageTextReferences(connectedDocuments)
         .withConnectedData(connectedDocuments)
         .removeSingleHubs()
         .removeOrphanHubsOf(sharedId);
+
+        if (!unpublished) {
+          relationshipsCollection = relationshipsCollection.removeUnpublished();
+        }
+
+        return relationshipsCollection;
       });
     });
   },
