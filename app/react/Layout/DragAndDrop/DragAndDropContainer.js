@@ -42,7 +42,7 @@ export class DragAndDropContainer extends Component {
   }
 
   render() {
-    const { connectDropTarget, items } = this.props;
+    const { connectDropTarget, items, iconHandle } = this.props;
     return (
       <div>
         {connectDropTarget(
@@ -52,7 +52,7 @@ export class DragAndDropContainer extends Component {
                 moveItem={this.moveItem}
                 removeItem={this.removeItem}
                 index={index}
-                iconHandle={!!item.items}
+                iconHandle={iconHandle || !!item.items}
                 key={item.id}
                 name={item.name}
                 container={this.container}
@@ -72,13 +72,18 @@ export class DragAndDropContainer extends Component {
   }
 }
 
+DragAndDropContainer.defaultProps = {
+  iconHandle: false
+};
+
 DragAndDropContainer.propTypes = {
   items: PropTypes.array,
   id: PropTypes.string,
   isOver: PropTypes.bool,
   renderItem: PropTypes.func,
   connectDropTarget: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  iconHandle: PropTypes.bool
 };
 
 export const containerTarget = {

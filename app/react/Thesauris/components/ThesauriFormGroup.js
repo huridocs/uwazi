@@ -59,6 +59,7 @@ export class ThesauriFormGroup extends Component {
         </FormGroup>
         <DragAndDropContainer
           items={value.values}
+          iconHandle
           renderItem={this.renderItem}
           onChange={this.onChange}
         />

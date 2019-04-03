@@ -31,6 +31,12 @@ describe('DragAndDropContainer', () => {
       expect(component.find(DragAndDropItem).first().props().children(items[0])).toBe('A rude awakening');
     });
 
+    it('should enable iconHandle on children if iconHandle is enabled in container', () => {
+      props.iconHandle = true;
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
     describe('accepts a custom render function', () => {
       beforeEach(() => {
         props.renderItem = jest.fn().mockImplementation((item, index) => <span>Avocado {item.content} {index}</span>);

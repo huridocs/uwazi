@@ -57,6 +57,7 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           </b>
         </div>
         <DragDropContext(DropTarget(DragAndDropContainer))
+          iconHandle={true}
           items={
             Array [
               Object {

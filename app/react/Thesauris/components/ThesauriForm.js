@@ -137,6 +137,7 @@ export class ThesauriForm extends Component {
                 onChange={this.onChange}
                 renderItem={this.renderItem}
                 items={values}
+                iconHandle
               />
             </div>
             <div className="settings-footer">

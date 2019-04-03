@@ -43,6 +43,7 @@ exports[`ThesauriFormGroup render should render group field and DragAndDropConta
     </Modeled(Connect(Field))>
   </FormGroup>
   <DragDropContext(DropTarget(DragAndDropContainer))
+    iconHandle={true}
     items={
       Array [
         Object {
