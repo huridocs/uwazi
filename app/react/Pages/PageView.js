@@ -60,8 +60,15 @@ export class PageView extends RouteHandler {
     this.closeSidePanel();
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
   emptyState() {
     this.closeSidePanel();
+    this.context.store.dispatch(actions.unset('page/pageView'));
+    this.context.store.dispatch(actions.unset('page/itemLists'));
+    this.context.store.dispatch(actions.unset('page/datasets'));
   }
 
   setReduxState(state) {
