@@ -17,12 +17,6 @@ export class ThesauriFormGroup extends Component {
     this.removeGroup = this.removeGroup.bind(this);
   }
 
-  shouldComponentUpdate(nextProps) {
-    const { value, index } = this.props;
-    return JSON.stringify(nextProps.value) !== JSON.stringify(value) ||
-      nextProps.index !== index;
-  }
-
   onChange(values) {
     const { index, onChange: onGroupChanged } = this.props;
     onGroupChanged(values, index);
