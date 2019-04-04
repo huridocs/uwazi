@@ -54,17 +54,12 @@ function URLQueryToState(query, templates, thesauris, relationTypes) {
   return { properties, search: { searchTerm, filters, order, sort, userSelectedSorting } };
 }
 
-const getOptionCount = (aggregations, optionId, name, nestedPath = '') => {
+const getOptionCount = (aggregations, optionId, name) => {
   let aggregation;
   if (aggregations.all && aggregations.all[name]) {
-    const aggregationObject = nestedPath ? aggregations.all[name][nestedPath] : aggregations.all[name];
-    const aggregationBuckets = aggregationObject ? aggregationObject.buckets : [];
-    aggregation = aggregationBuckets.find(bucket => bucket.key.toString() === optionId.toString());
+    aggregation = aggregations.all[name].buckets.find(bucket => bucket.key.toString() === optionId.toString());
   }
-  if (!aggregation) {
-    return 0;
-  }
-  return nestedPath ? aggregation.filtered.total.filtered.doc_count : aggregation.filtered.doc_count;
+  return aggregation ? aggregation.filtered.doc_count : 0;
 };
 
 export function parseWithAggregations(filters, aggregations, showNoValue = true) {
@@ -75,14 +70,10 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
         property.options.push({ id: 'missing', label: 'No Value', noValueKey: true });
       }
       property.options = property.options.map((_option) => {
-        let nestedPath = '';
-        if (property.type === 'relationship') {
-          nestedPath = 'entity';
-        }
-        const option = Object.assign(_option, { results: getOptionCount(aggregations, _option.id, property.name, nestedPath) });
+        const option = Object.assign(_option, { results: getOptionCount(aggregations, _option.id, property.name) });
         if (option.values) {
           option.values = option.values.map((_opt) => {
-            _opt.results = getOptionCount(aggregations, _opt.id, property.name, nestedPath);
+            _opt.results = getOptionCount(aggregations, _opt.id, property.name);
             return _opt;
           });
         }
