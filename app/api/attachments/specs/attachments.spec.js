@@ -79,7 +79,14 @@ describe('attachments', () => {
 
     it('should not delte the local file if other siblings are using it', async () => {
       expect(await fs.exists(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
-      const sibling = { sharedId: toDeleteId.toString(), attachments: [{ filename: 'attachment.txt', originalname: 'common name 1.not' }] };
+      const sibling = {
+        title: 'title',
+        sharedId: toDeleteId.toString(),
+        attachments: [{
+          filename: 'attachment.txt',
+          originalname: 'common name 1.not'
+        }]
+      };
       await entities.saveMultiple([sibling]);
       const response = await attachments.delete(attachmentToDelete);
       const dbEntity = await entities.getById(toDeleteId);

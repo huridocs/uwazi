@@ -116,10 +116,10 @@ describe('templates', () => {
       const newTemplate = {
         name: 'created_template',
         properties: [
-          { label: 'label 1' },
-          { label: 'label 2' },
-          { label: 'label 3' },
-          { label: 'label 4', name: 'name' },
+          { label: 'label 1', type: 'text' },
+          { label: 'label 2', type: 'select' },
+          { label: 'label 3', type: 'image' },
+          { label: 'label 4', name: 'name', type: 'text' },
           { label: 'label 5', type: 'geolocation' }
         ]
       };

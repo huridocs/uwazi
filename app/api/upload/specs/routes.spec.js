@@ -236,8 +236,8 @@ describe('upload routes', () => {
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
       await Promise.all([
-        entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
-        entitiesModel.save({ file: { filename: 'test' } }),
+        entitiesModel.save({ title: 'title', _id: entityId, file: { filename: 'test' } }),
+        entitiesModel.save({ title: 'title', file: { filename: 'test' } }),
       ]);
       await onSocketRespond('post', '/api/reupload', req);
       await fileExists(path.resolve(`${__dirname}/uploads/test`));
