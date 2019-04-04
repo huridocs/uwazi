@@ -41,7 +41,6 @@ export default (app) => {
       req.query.fields = parseQueryProperty(req.query, 'fields');
       req.query.aggregations = parseQueryProperty(req.query, 'aggregations');
 
-      // TEST!!!
       const action = req.query.geolocation ? 'searchGeolocations' : 'search';
 
       return search[action](req.query, req.language, req.user)
