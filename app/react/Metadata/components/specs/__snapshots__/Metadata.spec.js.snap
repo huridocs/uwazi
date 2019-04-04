@@ -153,7 +153,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -166,6 +166,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
         property={
           Object {
             "label": "label array",
+            "name": "label_array",
             "value": Array [
               Object {
                 "value": <Connect(I18NLink)
@@ -271,7 +272,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -284,6 +285,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
         property={
           Object {
             "label": "label array",
+            "name": "label_array",
             "value": Array [
               Object {
                 "value": <Connect(I18NLink)

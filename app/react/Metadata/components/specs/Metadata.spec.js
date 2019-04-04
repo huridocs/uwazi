@@ -18,7 +18,7 @@ describe('Metadata', () => {
   });
 
   const prepareMultivalueMetadata = () => [
-    { label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }
+    { name: 'label_array', label: 'label array', value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value', url: 'url2' }] }
   ];
 
   const testMetadata = (metadata) => {
@@ -74,7 +74,7 @@ describe('Metadata', () => {
   });
 
   it('should not render an empty list', () => {
-    testMetadata([{ label: 'label array', value: [] }]);
+    testMetadata([{ name: 'label_array', label: 'label array', value: [] }]);
   });
 
   describe('when passing compact prop', () => {
