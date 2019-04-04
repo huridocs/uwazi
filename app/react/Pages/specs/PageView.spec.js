@@ -50,6 +50,28 @@ describe('PageView', () => {
     expect(component.find(SelectMultiplePanelContainer).props().storeKey).toBe('library');
   });
 
+  describe('onunmount', () => {
+    it('should emptyState', () => {
+      spyOn(instance, 'emptyState');
+
+      component.unmount();
+
+      expect(instance.emptyState).toHaveBeenCalled();
+    });
+  });
+
+  describe('emptyState', () => {
+    it('should closeSidePanel, and unset sate data', () => {
+      spyOn(instance, 'closeSidePanel');
+      instance.emptyState();
+
+      expect(instance.closeSidePanel).toHaveBeenCalled();
+      expect(context.store.dispatch).toHaveBeenCalledWith(actions.unset('page/pageView'));
+      expect(context.store.dispatch).toHaveBeenCalledWith(actions.unset('page/itemLists'));
+      expect(context.store.dispatch).toHaveBeenCalledWith(actions.unset('page/datasets'));
+    });
+  });
+
   describe('static requestState()', () => {
     it('should request page for view', (done) => {
       PageView.requestState({ pageId: 'abc2' })
