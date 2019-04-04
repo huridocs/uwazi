@@ -6,7 +6,7 @@ exports[`Metadata should not render metadata without value 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="label_0"
   >
     <dt>
       Label
@@ -24,7 +24,7 @@ exports[`Metadata should render a Geolocation viewer when the metadata is type g
 <React.Fragment>
   <dl
     className="metadata-type-geolocation "
-    key="undefined_0"
+    key="geolocation_label_0"
   >
     <dt>
       Geolocation Label
@@ -52,7 +52,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
 <React.Fragment>
   <dl
     className="metadata-type-markdown "
-    key="undefined_0"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -74,7 +74,7 @@ exports[`Metadata should render a media field 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-multimedia "
-    key="undefined_0"
+    key="media_label_0"
   >
     <dt>
       Media Label
@@ -96,7 +96,7 @@ exports[`Metadata should render an image field 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-multimedia "
-    key="undefined_0"
+    key="image_label_0"
   >
     <dt>
       Image Label
@@ -119,7 +119,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -132,6 +132,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
         property={
           Object {
             "label": "label array",
+            "name": "label_array",
             "value": Array [
               Object {
                 "value": "first_value",
@@ -193,7 +194,7 @@ exports[`Metadata should render links when the property has url 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="withurl_0"
   >
     <dt>
       withUrl
@@ -216,7 +217,7 @@ exports[`Metadata should render property not have this item when type is null 1`
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="metadata_without_property_0"
   >
     <dt>
       metadata without property
@@ -234,7 +235,7 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="sortedby_0"
   >
     <dt>
       sortedBy
@@ -252,7 +253,7 @@ exports[`Metadata should render string values 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="undefined_0"
+    key="label_0"
   >
     <dt>
       Label

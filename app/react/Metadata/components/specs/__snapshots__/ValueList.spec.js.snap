@@ -45,17 +45,17 @@ exports[`ValueList should render the values as a ul list 1`] = `
   className="multiline"
 >
   <li
-    key="NaN"
+    key="label_0"
   >
     first_value
   </li>
   <li
-    key="NaN"
+    key="label_1"
   >
     second_value
   </li>
   <li
-    key="NaN"
+    key="label_2"
   >
     third value
   </li>
@@ -67,7 +67,7 @@ exports[`ValueList should rendern icons when the value has one 1`] = `
   className="multiline"
 >
   <li
-    key="NaN"
+    key="label_0"
   >
     <React.Fragment>
       <Connect(Icon)
@@ -82,7 +82,7 @@ exports[`ValueList should rendern icons when the value has one 1`] = `
     </React.Fragment>
   </li>
   <li
-    key="NaN"
+    key="label_1"
   >
     <React.Fragment>
       <Connect(Icon)
@@ -97,7 +97,7 @@ exports[`ValueList should rendern icons when the value has one 1`] = `
     </React.Fragment>
   </li>
   <li
-    key="NaN"
+    key="label_2"
   >
     third value
   </li>

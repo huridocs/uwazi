@@ -11,7 +11,7 @@ const interpose = (array, separator) => [].concat(...array.map(e => [separator, 
 const renderList = prop => (
   <ul className="multiline">
     {prop.value.map((v, index) => {
-        const key = prop.name + index;
+        const key = `${prop.name}_${index}`;
         return <li key={key}>{withIcon(v)}</li>;
       })}
   </ul>
