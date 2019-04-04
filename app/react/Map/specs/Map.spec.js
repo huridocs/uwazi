@@ -298,5 +298,15 @@ describe('Map', () => {
       expect(viewport.longitude).toBe(23);
       expect(viewport.markers).toEqual([]);
     });
+
+    it('should update the style and center on the new markers', () => {
+      render();
+      spyOn(instance, 'centerOnMarkers');
+      spyOn(instance, 'updateMapStyle');
+      instance.componentWillReceiveProps({ latitude: 73, longitude: 23, markers: [] });
+      component.update();
+      expect(instance.centerOnMarkers).toHaveBeenCalled();
+      expect(instance.updateMapStyle).toHaveBeenCalled();
+    });
   });
 });
