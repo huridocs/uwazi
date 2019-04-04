@@ -31,29 +31,71 @@ const markersToStyleFormat = markers => markers.map((marker, index) => {
 
 const noop = () => {};
 
-function getEntityMarkers(entity, templates) {
-  const template = templates.find(_t => _t.get('_id') === entity.get('template'));
-  const color = templates.indexOf(template);
-  const geolocationProps = template.toJS().properties.filter(p => p.type === 'geolocation');
+const getPropertyBasedMarkers = (template, entity, color) => {
+  const markers = [];
+
+  const geolocationProps = template.properties.filter(p => p.type === 'geolocation');
   const geolocationPropNames = geolocationProps.map(p => p.name);
 
-  if (geolocationProps.length && entity.get('metadata')) {
-    const entityData = entity.toJS();
-    const markers = Object.keys(entityData.metadata).reduce((validMarkers, property) => {
-      if (geolocationPropNames.includes(property) && entityData.metadata[property]) {
+  if (geolocationProps.length && entity.metadata) {
+    Object.keys(entity.metadata).forEach((property) => {
+      if (geolocationPropNames.includes(property) && entity.metadata[property]) {
         const { label } = geolocationProps.find(p => p.name === property);
-        entityData.metadata[property].forEach((point) => {
+        entity.metadata[property].forEach((point) => {
           const { lat, lon } = point;
-          validMarkers.push({ properties: { entity: entityData, color, info: point.label }, latitude: lat, longitude: lon, label });
+          markers.push({ properties: { entity, color, info: point.label }, latitude: lat, longitude: lon, label });
         });
       }
-      return validMarkers;
-    }, []);
-    return markers;
+    });
   }
 
-  return [];
-}
+  return markers;
+};
+
+const getInheritedMarkers = (template, entity, templates, color) => {
+  const markers = [];
+
+  const inheritedGeolocationProps = template.properties.filter((property) => {
+    if (property.type === 'relationship' && property.inheritProperty) {
+      const contentTemplate = templates.find(t => t.get('_id').toString() === property.content.toString());
+      const inheritedProperty = contentTemplate.get('properties').find(p => p.get('_id').toString() === property.inheritProperty.toString());
+      return inheritedProperty.get('type') === 'geolocation';
+    }
+
+    return false;
+  });
+
+  const inheritedGeolocationPropNames = inheritedGeolocationProps.map(p => p.name);
+
+  if (inheritedGeolocationProps.length && entity.metadata) {
+    Object.keys(entity.metadata).forEach((property) => {
+      if (inheritedGeolocationPropNames.includes(property) && entity.metadata[property]) {
+        const { label, content: context } = inheritedGeolocationProps.find(p => p.name === property);
+        entity.metadata[property].forEach((relatedProperty) => {
+          relatedProperty.inherit_geolocation.forEach((point) => {
+            const { lat, lon } = point;
+            const properties = { entity, color, info: point.label, inherited: true, inheritedEntity: relatedProperty.entity, context };
+            markers.push({ properties, latitude: lat, longitude: lon, label });
+          });
+        });
+      }
+    });
+  }
+
+  return markers;
+};
+
+const getEntityMarkers = (entity, templates) => {
+  const template = templates.find(_t => _t.get('_id') === entity.get('template'));
+  const color = templates.indexOf(template);
+  const templateJS = template.toJS();
+  const entityJS = entity.toJS();
+
+  const propertyBasedMarkers = getPropertyBasedMarkers(templateJS, entityJS, color);
+  const inheritedMarkers = getInheritedMarkers(templateJS, entityJS, templates, color);
+
+  return [].concat(propertyBasedMarkers, inheritedMarkers);
+};
 
 const getMarkers = (entities, templates) => {
   let markers = [];

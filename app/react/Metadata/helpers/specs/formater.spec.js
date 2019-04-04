@@ -1,8 +1,9 @@
+/* eslint-disable max-statements */
 import Immutable from 'immutable';
 
 import { formatMetadata } from '../../selectors';
 import formater from '../formater';
-import { doc, templates, thesauris } from './fixtures';
+import { doc, templates, thesauris, relationships } from './fixtures';
 
 describe('metadata formater', () => {
   function assessBasicProperties(element, [label, name, translateContext, value]) {
@@ -34,6 +35,8 @@ describe('metadata formater', () => {
     let select;
     let relationship1;
     let relationship2;
+    let relationship3;
+    let relationship4;
     let image;
     let preview;
     let media;
@@ -41,9 +44,10 @@ describe('metadata formater', () => {
     let nested;
 
     beforeAll(() => {
-      data = formater.prepareMetadata(doc, templates, thesauris);
+      data = formater.prepareMetadata(doc, templates, thesauris, relationships);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown,
-       select, image, preview, media, relationship1, relationship2, geolocation, nested] =
+       select, image, preview, media, relationship1, relationship2, relationship3, relationship4,
+       geolocation, nested] =
         data.metadata;
     });
 
@@ -55,7 +59,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(15);
+      expect(data.metadata.length).toBe(17);
     });
 
     it('should process text type', () => {
@@ -111,10 +115,28 @@ describe('metadata formater', () => {
       assessMultiValues(relationship1, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document')]);
     });
 
-    it('should process free relationsip types', () => {
+    it('should process free relationship types', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
       assessMultiValues(relationship2, [formatValue('Value 1', 'document'), formatValue('Value 2', 'document'), formatValue('Value 4')]);
+    });
+
+    describe('Inherit relationships', () => {
+      it('should process inherit relationship types', () => {
+        assessBasicProperties(relationship3, ['Relationship 3', 'text', 'template2']);
+        expect(relationship3.value.length).toBe(3);
+        assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
+      });
+
+      it('should append the translated entity title to certain values', () => {
+        assessBasicProperties(relationship4, ['Relationship 4', 'home_geolocation', 'template2']);
+        expect(relationship4.value.length).toBe(3);
+        assessMultiValues(relationship4, [
+          { lat: 13, lon: 7, label: 'Entity 1 Title' },
+          { lat: 5, lon: 10, label: 'Entity 2 Title (exisitng label)' },
+          { lat: 23, lon: 8, label: 'Entity 2 Title (another label)' },
+        ]);
+      });
     });
 
     it('should process geolocation type', () => {
@@ -143,7 +165,7 @@ describe('metadata formater', () => {
       doc.metadata.relationship1 = null;
       doc.metadata.multiselect = null;
       doc.metadata.select = null;
-      expect(formater.prepareMetadata.bind(formater, doc, templates, thesauris)).not.toThrow();
+      expect(formater.prepareMetadata.bind(formater, doc, templates, thesauris, relationships)).not.toThrow();
     });
   });
 
@@ -251,16 +273,16 @@ describe('metadata formater', () => {
     it('should use formater.prepareMetadata', () => {
       spyOn(formater, 'prepareMetadata').and.returnValue({ metadata: 'metadataFormated' });
       const state = { templates, thesauris };
-      const metadata = formatMetadata(state, doc);
+      const metadata = formatMetadata(state, doc, null, relationships);
       expect(metadata).toBe('metadataFormated');
-      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris);
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris, relationships);
     });
 
     describe('when passing sortProperty', () => {
       it('should use formater.prepareMetadataForCard', () => {
         spyOn(formater, 'prepareMetadataForCard').and.returnValue({ metadata: 'metadataFormated' });
         const state = { templates, thesauris };
-        const metadata = formatMetadata(state, doc, 'sortProperty');
+        const metadata = formatMetadata(state, doc, 'sortProperty', relationships);
         expect(metadata).toBe('metadataFormated');
         expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, thesauris, 'sortProperty');
       });

@@ -13,7 +13,7 @@ import FormatMetadata from '../containers/FormatMetadata';
 
 export class ShowMetadata extends Component {
   render() {
-    const { entity, showTitle, showType } = this.props;
+    const { entity, showTitle, showType, relationships } = this.props;
     let header = '';
     if (showTitle || showType) {
       let title = '';
@@ -41,7 +41,7 @@ export class ShowMetadata extends Component {
             <dd><TimelineViewer entity={entity} /></dd>
           </dl>
         </ShowIf>
-        <FormatMetadata entity={entity} />
+        <FormatMetadata entity={entity} relationships={relationships} />
       </div>
     );
   }
@@ -49,6 +49,7 @@ export class ShowMetadata extends Component {
 
 ShowMetadata.propTypes = {
   entity: PropTypes.object,
+  relationships: PropTypes.object,
   templates: PropTypes.object,
   showTitle: PropTypes.bool,
   showType: PropTypes.bool
