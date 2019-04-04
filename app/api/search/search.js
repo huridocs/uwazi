@@ -102,11 +102,8 @@ function snippetsFromSearchHit(hit) {
   return snippets;
 }
 
-//
-
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.limit(9999);
-  // TEST!!!
   const geolocationProperties = [];
   const inheritedGeolocationProperties = [];
   templates.forEach((template) => {
@@ -342,9 +339,8 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
 const search = {
   search: mainSearch,
 
-  // TEST!!!
   async searchGeolocations(query, language, user) {
-    let results = await mainSearch(query, language, user);
+    let results = await mainSearch({ ...query, geolocation: true }, language, user);
 
     if (results.rows.length) {
       const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language);
@@ -353,7 +349,6 @@ const search = {
 
     return results;
   },
-  // ---
 
   getUploadsByUser(user, language) {
     return entities.get({ user: user._id, language, published: false });
