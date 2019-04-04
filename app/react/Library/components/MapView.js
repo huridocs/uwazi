@@ -7,9 +7,11 @@ import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { getAndSelectDocument, selectDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import SearchBar from 'app/Library/components/SearchBar';
-import { TemplateLabel } from 'app/Layout';
+import { TemplateLabel, EntityTitle } from 'app/Layout';
 import { t } from 'app/I18N';
 import { Icon } from 'app/UI';
+
+const markerInfo = info => <div className="marker-info"><Icon className="tag-icon" icon="tag" />{info}</div>;
 
 export class MapView extends Component {
   static renderInfo(marker) {
@@ -23,7 +25,8 @@ export class MapView extends Component {
             <span className="popup-name">{marker.properties.entity.title}</span>
             <span className="popup-metadata-property">({t(marker.properties.entity.template, marker.label)})</span>
           </div>
-          {marker.properties.info && <div className="marker-info"><Icon className="tag-icon" icon="tag" />{marker.properties.info}</div>}
+          {marker.properties.inherited && markerInfo(<EntityTitle context={marker.properties.context} entity={marker.properties.inheritedEntity} />)}
+          {marker.properties.info && !marker.properties.inherited && markerInfo(marker.properties.info)}
         </div>
       </div>
     );

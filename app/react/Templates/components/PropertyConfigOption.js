@@ -1,11 +1,12 @@
 import { Field } from 'react-redux-form';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translate } from 'app/I18N';
 
 const PropertyConfigOption = ({ children, model, label }) => (
   <Field model={model}>
     <label className="property-label" htmlFor={`test${model}`}>
-      <input id={`test${model}`} type="checkbox"/> {label}
+      <input id={`test${model}`} type="checkbox"/> <Translate>{label}</Translate>
     </label>
     {children}
   </Field>

@@ -96,7 +96,6 @@ export class ThesauriForm extends Component {
       movingValues.push(value);
     }
     this.setState({ movingValues });
-    console.log(movingValues);
   }
 
   moveToGroup(groupIndex) {

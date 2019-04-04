@@ -34,9 +34,7 @@ exports[`ValueList compact render should rendern icons when the value has one 1`
 Array [
   "first_value",
   ", ",
-  <React.Fragment
-    key="second_value"
-  />,
+  <React.Fragment />,
   ", ",
   "third value",
 ]
@@ -47,27 +45,19 @@ exports[`ValueList should render the values as a ul list 1`] = `
   className="multiline"
 >
   <li
-    key="labelfirst_value"
+    key="NaN"
   >
-    <Connect(I18NLink)
-      to="url1"
-    >
-      first_value
-    </Connect(I18NLink)>
+    first_value
   </li>
   <li
-    key="labelsecond_value"
+    key="NaN"
   >
     second_value
   </li>
   <li
-    key="labelthird value"
+    key="NaN"
   >
-    <Connect(I18NLink)
-      to="url2"
-    >
-      third value
-    </Connect(I18NLink)>
+    third value
   </li>
 </ul>
 `;
@@ -77,32 +67,24 @@ exports[`ValueList should rendern icons when the value has one 1`] = `
   className="multiline"
 >
   <li
-    key="labelfirst_value"
+    key="NaN"
   >
-    <Connect(I18NLink)
-      to="url1"
-    >
-      <React.Fragment
-        key="first_value"
-      >
-        <Connect(Icon)
-          className="item-icon item-icon-center"
-          data={
-            Object {
-              "icon": "icon",
-            }
+    <React.Fragment>
+      <Connect(Icon)
+        className="item-icon item-icon-center"
+        data={
+          Object {
+            "icon": "icon",
           }
-        />
-        first_value
-      </React.Fragment>
-    </Connect(I18NLink)>
+        }
+      />
+      first_value
+    </React.Fragment>
   </li>
   <li
-    key="labelsecond_value"
+    key="NaN"
   >
-    <React.Fragment
-      key="second_value"
-    >
+    <React.Fragment>
       <Connect(Icon)
         className="item-icon item-icon-center"
         data={
@@ -115,13 +97,9 @@ exports[`ValueList should rendern icons when the value has one 1`] = `
     </React.Fragment>
   </li>
   <li
-    key="labelthird value"
+    key="NaN"
   >
-    <Connect(I18NLink)
-      to="url2"
-    >
-      third value
-    </Connect(I18NLink)>
+    third value
   </li>
 </ul>
 `;
