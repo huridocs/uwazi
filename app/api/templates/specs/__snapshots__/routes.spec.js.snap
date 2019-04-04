@@ -250,6 +250,27 @@ Object {
               ],
               "type": "string",
             },
+            "inherit": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "inheritProperty": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+              "valids": Array [
+                null,
+              ],
+            },
             "inserting": Object {
               "type": "any",
             },

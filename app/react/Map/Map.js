@@ -24,7 +24,6 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
 export default class Map extends Component {
   constructor(props) {
     super(props);
-
     this.state = getStateDefaults(props);
     this.state.settings.scrollZoom = props.scrollZoom;
     this.state.settings.touchZoom = props.scrollZoom;

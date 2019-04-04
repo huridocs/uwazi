@@ -2,22 +2,16 @@ import { generateNames, generateIds, getUpdatedNames, getDeletedProperties } fro
 
 describe('templates utils', () => {
   describe('generateNames()', () => {
-    it('should sanitize the labels', () => {
+    it('should sanitize the labels and append the type', () => {
       const properties = [
         { label: ' my prop ', type: 'text' },
-        { label: 'my^foreïgn$próp"', type: 'text' }
+        { label: 'my^foreïgn$próp"', type: 'text' },
+        { label: ' my prop ', type: 'geolocation' }
       ];
       const result = generateNames(properties);
       expect(result[0].name).toBe('my_prop');
       expect(result[1].name).toBe('my_fore_gn_pr_p_');
-    });
-
-    it('should append a sufix for special properties', () => {
-      const properties = [
-        { label: ' my prop ', type: 'geolocation' }
-      ];
-      const result = generateNames(properties);
-      expect(result[0].name).toBe('my_prop_geolocation');
+      expect(result[2].name).toBe('my_prop_geolocation');
     });
   });
 
