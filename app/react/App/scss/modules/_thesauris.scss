@@ -131,6 +131,12 @@
   .fa-reorder + div {
     width: 100%;
   }
+
+  .group {
+    .list-group {
+      margin-left: -25px;
+    }
+  }
 }
 
 .thesauri-values {
