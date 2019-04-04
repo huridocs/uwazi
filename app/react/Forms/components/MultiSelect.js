@@ -48,33 +48,24 @@ export default class MultiSelect extends Component {
     }
 
     if (option.options) {
-      return option.options.reduce((allIncluded, _option) => allIncluded && this.checked(_option), true);
+      return option.options.reduce((allIncluded, _option) => allIncluded && this.props.value.includes(_option[this.props.optionsValue]), true);
     }
-    return this.valueSelected(option[this.props.optionsValue]);
-  }
-
-  valueSelected(value) {
-    if (this.props.valueProp) {
-      return Boolean(this.props.value.find(_value => _value[this.props.valueProp] === value));
-    }
-    return this.props.value.includes(value);
+    return this.props.value.includes(option[this.props.optionsValue]);
   }
 
   anyChildChecked(parent) {
     return Boolean(parent.options && !!parent.options.find(itm => this.checked(itm)));
   }
 
-  change(_value) {
-    const value = this.props.valueProp ? { [this.props.valueProp]: _value } : _value;
+  change(value) {
     let newValues = this.props.value ? this.props.value.slice(0) : [];
-    if (this.valueSelected(_value)) {
-      newValues = newValues.filter((_val) => {
-        const val = this.props.valueProp ? _val[this.props.valueProp] : _val;
-        return val !== _value;
-      });
-    } else {
-      newValues.push(value);
+    if (newValues.includes(value)) {
+      newValues = newValues.filter(val => val !== value);
+      this.props.onChange(newValues);
+      return;
     }
+
+    newValues.push(value);
     this.props.onChange(newValues);
   }
 
@@ -301,8 +292,7 @@ MultiSelect.defaultProps = {
   showAll: false,
   hideSearch: false,
   noSort: false,
-  sortbyLabel: false,
-  valueProp: '',
+  sortbyLabel: false
 };
 
 MultiSelect.propTypes = {
@@ -311,7 +301,6 @@ MultiSelect.propTypes = {
   value: PropTypes.array,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
-  valueProp: PropTypes.string,
   filter: PropTypes.string,
   prefix: PropTypes.string,
   optionsToShow: PropTypes.number,
