@@ -84,15 +84,6 @@ export const itemTarget = {
 };
 
 export class DragAndDropItem extends Component {
-  // shouldComponentUpdate(props) {
-  //   Object.keys(props).forEach((key) => {
-  //     if (props[key] !== this.props[key]) {
-  //       console.log(key);
-  //     }
-  //   });
-
-  //   return this.props.id !== props.id;
-  // }
   render() {
     const { iconHandle, isDragging, connectDragPreview, connectDragSource, connectDropTarget } = this.props;
     let propertyClass = 'list-group-item';
