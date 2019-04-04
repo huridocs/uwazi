@@ -32,6 +32,7 @@
       "no-confusing-arrow": "off",
       "newline-per-chained-call": "off",
       "no-prototype-builtins": "off",
+      "implicit-arrow-linebreak": "off",
 
       "object-curly-spacing": ["warn", "always"],
       "max-len": ["error", 150],
@@ -64,7 +65,6 @@
       "no-empty": ["warn"],
       "no-cond-assign": ["warn"],
       "no-multiple-empty-lines": ["warn"],
-      "implicit-arrow-linebreak": ["warn"],
       "lines-between-class-members": ["warn"],
       "max-lines": ["warn", 250],
       "max-params": ["warn", 4],

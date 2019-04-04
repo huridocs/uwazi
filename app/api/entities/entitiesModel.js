@@ -6,7 +6,7 @@ const entitySchema = new mongoose.Schema({
   language: { type: String, index: true },
   mongoLanguage: { type: String, select: false },
   sharedId: { type: String, index: true },
-  title: String,
+  title: { type: String, required: true },
   template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
   file: {
     originalname: String,
