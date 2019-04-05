@@ -10,12 +10,12 @@ import { uploadAttachment } from '../actions/actions';
 export class UploadAttachment extends Component {
   onChangeSingle(e) {
     const file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entityId, file, this.props.storeKey);
+    this.props.uploadAttachment(this.props.entity, file, this.props.storeKey);
   }
 
   onChangeAll(e) {
     const file = e.target.files[0];
-    this.props.uploadAttachment(this.props.entityId, file, this.props.storeKey, { allLanguages: true });
+    this.props.uploadAttachment(this.props.entity, file, this.props.storeKey, { allLanguages: true });
   }
 
   renderUploadButton() {
@@ -55,14 +55,14 @@ export class UploadAttachment extends Component {
   }
 
   render() {
-    const progress = this.props.progress.get(this.props.entityId);
+    const progress = this.props.progress.get(this.props.entity._id);
     return progress ? this.renderProgress(progress) : this.renderUploadButton();
   }
 }
 
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
-  entityId: PropTypes.string,
+  entity: PropTypes.object,
   progress: PropTypes.object,
   languages: PropTypes.object,
   storeKey: PropTypes.string
