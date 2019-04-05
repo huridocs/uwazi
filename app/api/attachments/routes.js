@@ -23,6 +23,12 @@ const storage = multer.diskStorage({
   }
 });
 
+const removeFilename = (file) => {
+  const safeFile = { ...file };
+  delete safeFile.filename;
+  return safeFile;
+};
+
 const assignAttachment = (entity, addedFile) => {
   const conformedEntity = { _id: entity._id, attachments: entity.attachments || [] };
   conformedEntity.attachments.push(addedFile);
@@ -37,11 +43,10 @@ const processSingleLanguage = (entity, req) => {
 };
 
 const processAllLanguages = (entity, req) => processSingleLanguage(entity, req)
-.then(([addedFile]) => Promise.all([addedFile, entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } })]))
+.then(([addedFile]) => Promise.all([addedFile, entities.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } }, '+attachments.filename')]))
 .then(([addedFile, siblings]) => {
   const genericAddedFile = Object.assign({}, addedFile);
   delete genericAddedFile._id;
-
   const additionalLanguageUpdates = [];
 
   siblings.forEach((sibling) => {
@@ -101,7 +106,7 @@ export default (app) => {
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
       processSingleLanguage(entity, req))
     .then(([addedFile]) => {
-      res.json(addedFile);
+      res.json(removeFilename(addedFile));
     })
     .catch(next)
   );

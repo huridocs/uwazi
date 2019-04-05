@@ -60,15 +60,15 @@ describe('Attachments Routes', () => {
     });
 
     it('should download the document with the title as file name (replacing extension with file ext)', async () => {
-      const req = { query: { _id: entityId, file: 'match.doc' } };
+      const req = { query: { _id: entityId, file: attachmentToEdit.toString() } };
       const res = {};
       paths.attachmentsPath = `${__dirname}/uploads`;
 
       await routes.get('/api/attachments/download', req, res);
-      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
+      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/match.doc`, 'common name 2.doc');
       paths.attachmentsPath = `${__dirname}/uploads/`;
       await routes.get('/api/attachments/download', req, res);
-      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
+      expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/match.doc`, 'common name 2.doc');
     });
 
     it('should fail when entity does not exists', async () => {
@@ -112,26 +112,31 @@ describe('Attachments Routes', () => {
     it('should add the uploaded file to attachments, add current timestamp and return the attachment, including its new ID', async () => {
       spyOn(Date, 'now').and.returnValue(1000);
       const addedFile = await routes.post('/api/attachments/upload', req);
-      const dbEntity = await entities.getById(req.body.entityId);
+      const [dbEntity] = await entities.get({ _id: req.body.entityId }, '+attachments.filename');
 
       expect(dbEntity.attachments[2].filename).toEqual(file.filename);
       expect(dbEntity.attachments[2].originalname).toEqual(file.originalname);
       expect(dbEntity.attachments[2].timestamp).toBe(1000);
-      expect(addedFile.filename).toBe('mockfile.doc');
       expect(addedFile._id).toBeDefined();
       expect(addedFile._id.toString()).toBe(dbEntity.attachments[2]._id.toString());
     });
 
-    it('should add the uploaded file to all shared entities and return the file, including its new ID', async () => {
+    it('should not return the filename to the user', async () => {
+      const addedFile = await routes.post('/api/attachments/upload', req);
+      expect(addedFile.filename).toBeUndefined();
+    });
+
+    it('should add the uploaded file to all shared entities and return the file, including its new ID but not the filename', async () => {
       req.body.allLanguages = 'true';
       spyOn(Date, 'now').and.returnValue(1000);
 
       const addedFile = await routes.post('/api/attachments/upload', req);
-      const dbEntities = await entities.get({ sharedId: 'sharedId' });
-
+      const dbEntities = await entities.get({ sharedId: 'sharedId' }, '+attachments.filename +file.filename');
       const dbEntity = dbEntities.find(e => e._id.toString() === entityId.toString());
       const dbEntityEn = dbEntities.find(e => e._id.toString() === entityIdEn.toString());
       const dbEntityPt = dbEntities.find(e => e._id.toString() === entityIdPt.toString());
+
+      expect(addedFile.filename).toBeUndefined();
 
       expect(dbEntity.attachments.length).toBe(3);
 
@@ -152,7 +157,6 @@ describe('Attachments Routes', () => {
           timestamp: 1000
         })
       );
-
       expect(dbEntityEn.attachments.length).toBe(2);
       expect(dbEntityEn.attachments[0].filename).toBe('otherEn.doc');
       expect(dbEntityEn.file.filename).toBe('filenameEn');
@@ -197,7 +201,7 @@ describe('Attachments Routes', () => {
     it('should rename a specific attachment', async () => {
       const response = await routes.post('/api/attachments/rename', req);
       expect(response._id.toString()).toBe(attachmentToEdit.toString());
-      expect(response.filename).toBe('match.doc');
+      expect(response.filename).toBeUndefined();
       expect(response.originalname).toBe('edited name');
 
       const entity = await entities.getById(req.body.entityId);
@@ -212,7 +216,7 @@ describe('Attachments Routes', () => {
 
       const response = await routes.post('/api/attachments/rename', req);
       expect(response._id.toString()).toBe(entityId.toString());
-      expect(response.filename).toBe('filename');
+      expect(response.filename).toBeUndefined();
       expect(response.originalname).toBe('edited source name');
 
       const entity = await entities.getById(req.body.entityId);

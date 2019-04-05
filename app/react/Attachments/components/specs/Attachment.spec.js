@@ -16,7 +16,7 @@ describe('Attachment', () => {
   let context;
 
   beforeEach(() => {
-    file = { originalname: 'Human name 1', filename: 'filename.ext' };
+    file = { originalname: 'Human name 1.ext', _id: 'fileId' };
 
     props = {
       file,
@@ -103,20 +103,20 @@ describe('Attachment', () => {
   });
 
   it('should hold a thumbnail for PDFs and valid images', () => {
-    props.file.filename = 'document.pdf';
+    props.file.originalname = 'document.pdf';
     render();
     expect(component.find('.attachment-thumbnail').find(Icon).props().icon).toContain('file-pdf');
     expect(component.find('.attachment-thumbnail > span').text()).toContain(' pdf');
 
-    props.file.filename = 'image.jpg';
+    props.file.originalname = 'image.jpg';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.jpg');
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=fileId');
 
-    props.file.filename = 'image.JPG';
+    props.file.originalname = 'image.JPG';
     render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=image.JPG');
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/attachments/download?_id=parentId&file=fileId');
 
-    props.file.filename = 'image.doc';
+    props.file.originalname = 'image.doc';
     render();
     expect(component.find('.attachment-thumbnail').children().length).toBe(0);
   });
@@ -148,7 +148,7 @@ describe('Attachment', () => {
 
   it('should allow downloading the attachment', () => {
     render();
-    expect(component.find('.attachment-link').props().href).toBe('/api/attachments/download?_id=parentId&file=filename.ext');
+    expect(component.find('.attachment-link').props().href).toBe('/api/attachments/download?_id=parentId&file=fileId');
   });
 
   describe('mapStateToProps', () => {

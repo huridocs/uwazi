@@ -66,7 +66,7 @@ export default {
     const siblings = await model.get({
       sharedId: entity.sharedId,
       _id: { $ne: entity._id },
-    });
+    }, '+attachments.filename');
 
     const attachmentToDelete = entity.attachments.find(a => a._id.equals(attachmentId));
 

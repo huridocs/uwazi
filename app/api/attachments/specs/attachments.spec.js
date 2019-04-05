@@ -68,7 +68,7 @@ describe('attachments', () => {
     it('should remove the passed file from attachments and delte the local file', async () => {
       expect(await fs.exists(`${paths.attachmentsPath}attachment.txt`)).toBe(true);
       const response = await attachments.delete(attachmentToDelete);
-      const dbEntity = await entities.getById(toDeleteId);
+      const [dbEntity] = await entities.get({ _id: toDeleteId }, '+attachments.filename');
 
       expect(response._id.toString()).toBe(toDeleteId.toString());
       expect(response.attachments.length).toBe(1);
