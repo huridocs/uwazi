@@ -62,7 +62,10 @@ export class UploadAttachment extends Component {
 
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
-  entity: PropTypes.object,
+  selectedSnippet: PropTypes.shape({
+    _id: PropTypes.string,
+    sharedId: PropTypes.string,
+  }).isRequired,
   progress: PropTypes.object,
   languages: PropTypes.object,
   storeKey: PropTypes.string
