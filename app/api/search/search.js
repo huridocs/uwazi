@@ -10,6 +10,7 @@ import relationtypes from 'api/relationtypes';
 import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
+import { removeEntityFilenames } from '../entities/utils';
 import templatesModel from '../templates';
 
 
@@ -117,22 +118,6 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
   .concat(['title', 'template', 'sharedId', 'language']);
   documentsQuery.select(selectProps);
 }
-
-const removeEntityFilenames = rows =>
-  rows.map((entity) => {
-    const safeEntity = { ...entity, file: { ...entity.file } };
-    if (entity.file) {
-      delete safeEntity.file.filename;
-    }
-    if (safeEntity.attachments) {
-      safeEntity.attachments = safeEntity.attachments.map((attachment) => {
-        const safeAttachment = { ...attachment };
-        delete safeAttachment.filename;
-        return safeAttachment;
-      });
-    }
-    return safeEntity;
-  });
 
 const processResponse = (response) => {
   const rows = response.hits.hits.map((hit) => {

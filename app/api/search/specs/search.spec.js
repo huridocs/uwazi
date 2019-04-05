@@ -16,6 +16,8 @@ describe('search', () => {
     [
       { title: 'doc1',
         _id: 'id1',
+        file: { filename: 'fname', originalname: 'fname' },
+        attachments: [{ _id: 'id', filename: 'att1', originalname: 'att1' }],
         snippets: {
           hits: {
             hits: [
@@ -614,6 +616,14 @@ describe('search', () => {
         expect(elastic.search).toHaveBeenCalledWith({ index: elasticIndex, body: expectedQuery });
         done();
       });
+    });
+
+    it('should not include filenames in results', async () => {
+      spyOn(elastic, 'search').and.returnValue(new Promise(resolve => resolve(result)));
+      const res = await search.search({ searchTerm: '' }, 'en')
+      const [row] = res.rows;
+      expect(row.file.filename).toBeUndefined();
+      expect(row.attachments[0].filename).toBeUndefined();
     });
   });
 });
