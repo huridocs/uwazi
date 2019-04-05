@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`entities utils removeEntityFilenames should remove filename from main file and attachments for entity 1`] = `
+Array [
+  Object {
+    "attachments": Array [
+      Object {
+        "_id": "att1",
+        "originalname": "Attachment 1.doc",
+      },
+    ],
+    "file": Object {
+      "originalname": "Main.pdf",
+    },
+    "sharedId": "ent1",
+  },
+  Object {
+    "attachments": Array [
+      Object {
+        "_id": "att2",
+        "originalname": "Attachment 2.doc",
+      },
+    ],
+    "file": Object {
+      "originalname": "Main 2.pdf",
+    },
+    "sharedId": "ent2",
+  },
+]
+`;
