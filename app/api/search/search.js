@@ -105,7 +105,7 @@ function snippetsFromSearchHit(hit) {
 function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.limit(9999);
   const geolocationProperties = [];
-  const inheritedGeolocationProperties = [];
+
   templates.forEach((template) => {
     template.properties.forEach((prop) => {
       if (prop.type === 'geolocation') {
@@ -116,18 +116,15 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
         const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
         const inheritedProperty = contentTemplate.properties.find(p => p._id.toString() === prop.inheritProperty.toString());
         if (inheritedProperty.type === 'geolocation') {
-          inheritedGeolocationProperties.push(prop.name);
+          geolocationProperties.push(prop.name);
         }
       }
     });
   });
 
-  documentsQuery.hasMetadataProperties(geolocationProperties.concat(inheritedGeolocationProperties));
+  documentsQuery.hasMetadataProperties(geolocationProperties);
 
-  const selectProps = geolocationProperties
-  .map(p => `metadata.${p}`)
-  .concat(inheritedGeolocationProperties.map(p => `metadata.${p}`))
-  .concat(['title', 'template', 'sharedId', 'language']);
+  const selectProps = geolocationProperties.map(p => `metadata.${p}`).concat(['title', 'template', 'sharedId', 'language']);
 
   documentsQuery.select(selectProps);
 }
