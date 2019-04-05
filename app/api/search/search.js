@@ -118,6 +118,22 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.select(selectProps);
 }
 
+const removeEntityFilenames = rows =>
+  rows.map((entity) => {
+    const safeEntity = { ...entity, file: { ...entity.file } };
+    if (entity.file) {
+      delete safeEntity.file.filename;
+    }
+    if (safeEntity.attachments) {
+      safeEntity.attachments = safeEntity.attachments.map((attachment) => {
+        const safeAttachment = { ...attachment };
+        delete safeAttachment.filename;
+        return safeAttachment;
+      });
+    }
+    return safeEntity;
+  });
+
 const processResponse = (response) => {
   const rows = response.hits.hits.map((hit) => {
     const result = hit._source;
@@ -144,7 +160,7 @@ const processResponse = (response) => {
     }
   });
 
-  return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
+  return { rows: removeEntityFilenames(rows), totalRows: response.hits.total, aggregations: response.aggregations };
 };
 
 const search = {

@@ -10,7 +10,7 @@ const entitySchema = new mongoose.Schema({
   template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
   file: {
     originalname: String,
-    filename: String,
+    filename: { type: String, select: false },
     mimetype: String,
     size: Number,
     timestamp: Number,
@@ -33,7 +33,7 @@ const entitySchema = new mongoose.Schema({
   }],
   attachments: [{
     originalname: String,
-    filename: String,
+    filename: { type: String, select: false },
     mimetype: String,
     timestamp: Number,
     size: Number,
