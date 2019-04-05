@@ -9,12 +9,13 @@ import path from 'path';
 import PDF from 'api/upload/PDF';
 import { uploadDocumentsPath } from 'api/config/paths';
 
+import { removeEntityFilenames } from './utils';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
 function updateEntity(entity, _template) {
-  return this.getAllLanguages(entity.sharedId)
+  return model.get({ sharedId: entity.sharedId }, '+file.filename +attachments.filename')
   .then((docLanguages) => {
     if (docLanguages[0].template && entity.template && docLanguages[0].template.toString() !== entity.template.toString()) {
       return Promise.all([
@@ -370,17 +371,20 @@ export default {
   },
 
   delete(sharedId) {
-    return this.get({ sharedId })
+    return this.get({ sharedId }, '+file.filename +attachments.filename')
     .then(docs => Promise.all(docs.map(doc => search.delete(doc))).then(() => docs))
-    .then(docs => model.delete({ sharedId })
-    .then(() => docs)
-    .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
-    .then(docs => Promise.all([
-      relationships.delete({ entity: sharedId }, null, false),
-      this.deleteFiles(docs),
-      this.deleteEntityFromMetadata(docs[0].sharedId, docs[0].template)
-    ])
-    .then(() => docs));
+    .then(docs =>
+      model.delete({ sharedId })
+      .then(() => docs)
+      .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
+    .then(docs =>
+      Promise.all([
+        relationships.delete({ entity: sharedId }, null, false),
+        this.deleteFiles(docs),
+        this.deleteEntityFromMetadata(docs[0].sharedId, docs[0].template)
+      ])
+      .then(() => removeEntityFilenames(docs))
+    );
   },
 
   async getRawPage(sharedId, language, pageNumber) {
@@ -500,7 +504,7 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get({ language: defaultLanguage }, '+fullText', { skip: offset, limit })
+      return this.get({ language: defaultLanguage }, '+fullText +file.filename +attachments.filename', { skip: offset, limit })
       .then((entities) => {
         const newLanguageEntities = this.generateNewEntitiesForLanguage(entities, language);
         return this.saveMultiple(newLanguageEntities);
@@ -528,7 +532,7 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get({ language: locale }, null, { skip: offset, limit })
+      return this.get({ language: locale }, '+file.filename +attachments.filename', { skip: offset, limit })
       .then(entities => Promise.all(entities.map(entity => this.deleteLanguageFiles(entity))))
       .then(() => deleteFilesByLanguage(offset + limit, totalRows));
     };

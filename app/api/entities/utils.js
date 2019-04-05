@@ -21,3 +21,20 @@ export function deleteMetadataProperties(documents, properties = []) {
 
   return documents;
 }
+
+export function removeEntityFilenames(entities) {
+  return entities.map((entity) => {
+    const safeEntity = { ...entity, file: { ...entity.file } };
+    if (entity.file) {
+      delete safeEntity.file.filename;
+    }
+    if (safeEntity.attachments) {
+      safeEntity.attachments = safeEntity.attachments.map((attachment) => {
+        const safeAttachment = { ...attachment };
+        delete safeAttachment.filename;
+        return safeAttachment;
+      });
+    }
+    return safeEntity;
+  });
+}

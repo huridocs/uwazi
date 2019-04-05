@@ -704,6 +704,16 @@ describe('entities', () => {
       });
     });
 
+    it('should not contain filenames in returned result', async () => {
+      const deletedDocs = await entities.delete('shared');
+      deletedDocs.forEach((doc) => {
+        expect(doc.file.filename).toBeUndefined();
+        if (doc.attachments) {
+          doc.attachments.forEach(att => expect(att.filename).toBeUndefined());
+        }
+      });
+    });
+
     describe('when database deletion throws an error', () => {
       it('should reindex the documents', (done) => {
         spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject('error'));
@@ -877,15 +887,23 @@ describe('entities', () => {
   });
 
   describe('removeLanguage()', () => {
-    it('should delete all entities from the language', async () => {
+    beforeEach(() => {
       spyOn(search, 'deleteLanguage');
       spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
+    });
+    it('should delete all entities from the language', async () => {
       await entities.addLanguage('ab');
       await entities.removeLanguage('ab');
       const newEntities = await entities.get({ language: 'ab' });
 
       expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
       expect(newEntities.length).toBe(0);
+    });
+    it('should delete files from deleted entities', async () => {
+      const filePath = path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014cc1.pdf');
+      fs.writeFileSync(filePath);
+      await entities.removeLanguage('pt');
+      expect(fs.existsSync(filePath)).toBe(false);
     });
   });
 });
