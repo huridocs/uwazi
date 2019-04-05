@@ -15,7 +15,7 @@ import { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm } f
 
 const getExtension = filename => filename.substr(filename.lastIndexOf('.') + 1);
 
-const getItemOptions = (isSourceDocument, parentId, filename) => {
+const getItemOptions = (isSourceDocument, parentId, fileId) => {
   const options = {};
   options.itemClassName = isSourceDocument ? 'item-source-document' : '';
   options.typeClassName = isSourceDocument ? 'primary' : 'empty';
@@ -24,7 +24,7 @@ const getItemOptions = (isSourceDocument, parentId, filename) => {
   options.replaceable = isSourceDocument;
   options.downloadHref = isSourceDocument ?
     `/api/documents/download?_id=${parentId}` :
-    `/api/attachments/download?_id=${parentId}&file=${filename}`;
+    `/api/attachments/download?_id=${parentId}&file=${fileId}`;
 
   return options;
 };
@@ -33,12 +33,12 @@ const conformThumbnail = (file, item) => {
   const acceptedThumbnailExtensions = ['png', 'gif', 'jpg'];
   let thumbnail = null;
 
-  if (getExtension(file.filename) === 'pdf') {
+  if (getExtension(file.originalname) === 'pdf') {
     thumbnail = <span><Icon icon="file-pdf" /> pdf</span>;
   }
 
-  if (acceptedThumbnailExtensions.indexOf(getExtension(file.filename.toLowerCase())) !== -1) {
-    thumbnail = <img src={item.downloadHref} alt={file.filename} />;
+  if (acceptedThumbnailExtensions.indexOf(getExtension(file.originalname.toLowerCase())) !== -1) {
+    thumbnail = <img src={item.downloadHref} alt={file.originalname} />;
   }
 
   return <div className="attachment-thumbnail">{thumbnail}</div>;
@@ -58,7 +58,7 @@ export class Attachment extends Component {
   render() {
     const { file, parentId, parentSharedId, model, isSourceDocument, storeKey } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';
-    const item = getItemOptions(isSourceDocument, parentId, file.filename);
+    const item = getItemOptions(isSourceDocument, parentId, file._id);
 
     let name = (
       <a className="attachment-link" href={item.downloadHref}>

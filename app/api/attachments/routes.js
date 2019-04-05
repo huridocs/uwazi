@@ -74,12 +74,12 @@ export default (app) => {
   }).required(), 'query'),
 
   (req, res, next) => {
-    entities.getById(req.query._id)
-    .then((response) => {
+    entities.get({ _id: req.query._id }, '+attachments.filename')
+    .then(([response]) => {
       if (!response) {
         throw createError('entitiy does not exist', 404);
       }
-      const file = response.attachments.find(a => a.filename === req.query.file);
+      const file = response.attachments.find(a => a._id.toString() === req.query.file);
       if (!file) {
         throw createError('file not found', 404);
       }
