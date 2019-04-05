@@ -380,7 +380,7 @@ export default {
   },
 
   async deleteTextReferences(sharedId, language) {
-    const [{ _id, file = {} }] = await entities.get({ sharedId, language }, 'file');
+    const [{ _id, file = {} }] = await entities.get({ sharedId, language }, 'file +file.filename');
     const languagesWithSameFile = await entities.count({ 'file.filename': file.filename, sharedId, _id: { $ne: _id } });
     if (!languagesWithSameFile && file.filename) {
       return this.delete({ filename: file.filename });

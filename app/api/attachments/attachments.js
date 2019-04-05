@@ -23,13 +23,13 @@ const attachmentPresentOn = (siblings, attachment) => siblings.reduce((memo, sib
 
 export default {
   async delete(attachmentId) {
-    let [entity] = await entities.get({ 'attachments._id': attachmentId });
+    let [entity] = await entities.get({ 'attachments._id': attachmentId }, '+attachments.filename');
     let result;
     if (entity) {
       result = this.removeAttachment(entity, attachmentId);
     }
 
-    entity = await entities.getById(attachmentId);
+    [entity] = await entities.get({ _id: attachmentId }, '+file.filename');
     if (entity) {
       result = this.removeMainFile(entity, attachmentId);
     }
