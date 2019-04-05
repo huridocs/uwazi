@@ -62,7 +62,7 @@ export class UploadAttachment extends Component {
 
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
-  selectedSnippet: PropTypes.shape({
+  entity: PropTypes.shape({
     _id: PropTypes.string,
     sharedId: PropTypes.string,
   }).isRequired,
