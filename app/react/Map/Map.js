@@ -34,7 +34,6 @@ export default class Map extends Component {
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
-
     this.updateMapStyle(props);
     this.bindActions();
     this.assignDefaults();
@@ -61,7 +60,7 @@ export default class Map extends Component {
     const newViewport = Object.assign(viewport, { latitude, longitude, markers });
 
     if (!Immutable.fromJS(this.props.markers).equals(Immutable.fromJS(markers))) {
-      this.centerOnMarkers(markers);
+      this.autoCenter(markers);
       this.updateMapStyle(props);
     }
     this.setState({ viewport: newViewport });
@@ -148,9 +147,15 @@ export default class Map extends Component {
     this.clickOnCluster(markersOnCluster);
   }
 
-  centerOnMarkers(markers) {
+  autoCenter(markers) {
     const { autoCenter } = this.props;
-    if (!this.map || !markers.length || !autoCenter) {
+    if (autoCenter) {
+      this.centerOnMarkers(markers);
+    }
+  }
+
+  centerOnMarkers(markers) {
+    if (!this.map || !markers.length) {
       return;
     }
     const map = this.map.getMap();
