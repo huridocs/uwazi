@@ -106,14 +106,19 @@ export default async (config) => {
         return Promise.resolve();
       }
 
-      let data = await models[change.namespace].getById(change.mongoId);
+      let data;
+      if (change.namespace === 'entities') {
+        [data] = await models[change.namespace].get({ _id: change.mongoId }, '+file.filename +attachments.filename');
+      } else {
+        data = await models[change.namespace].getById(change.mongoId);
+      }
 
       if (change.namespace === 'settings') {
         data = { _id: data._id, languages: data.languages };
       }
 
       if (change.namespace === 'connections') {
-        const entitiesData = await models.entities.get({ sharedId: data.entity });
+        const entitiesData = await models.entities.get({ sharedId: data.entity }, '+file.filename +attachments.filename');
         const entityTemplate = entitiesData[0].template.toString();
 
         const belongsToValidEntity = Object.keys(templatesConfig).includes(entityTemplate);
@@ -135,7 +140,8 @@ export default async (config) => {
         const isPossibleLeftMetadataRelationship = templateHasValidRelationProperties && !data.template;
 
         const hubOtherConnections = await models.connections.get({ hub: data.hub, _id: { $ne: data._id } });
-        const hubOtherEntities = await models.entities.get({ sharedId: { $in: hubOtherConnections.map(h => h.entity) } });
+        const hubOtherEntities = await models.entities.get({ sharedId: { $in: hubOtherConnections.map(h => h.entity) } },
+          '+file.filename +attachments.filename');
         const hubTemplateIds = hubOtherEntities.map(h => h.template.toString());
         const hubWhitelistedTemplateIds = hubTemplateIds.filter(id => Object.keys(templatesConfig).includes(id));
         const hubOtherTemplates = await models.templates.get({ _id: { $in: hubWhitelistedTemplateIds } });
