@@ -43,10 +43,10 @@ export default (app) => {
 
   const getDocuments = (sharedId, allLanguages, language) => {
     if (allLanguages) {
-      return entities.getAllLanguages(sharedId);
+      return entities.getAllLanguages(sharedId, '+file.filename +attachments.filename');
     }
 
-    return entities.get({ sharedId, language });
+    return entities.get({ sharedId, language }, '+file.filename +attachments.filename');
   };
 
   const uploadProcess = (req, res, allLanguages = true) => getDocuments(req.body.document, allLanguages, req.language)
@@ -55,9 +55,11 @@ export default (app) => {
     debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
     debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
     return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })))
-    .then(() => Promise.all(docs
-    .filter(doc => doc.file && doc.file.filename)
-    .map(doc => deleteFile(doc.file.filename))));
+    .then(() => Promise.all(
+      docs
+      .filter(doc => doc.file && doc.file.filename)
+      .map(doc => deleteFile(doc.file.filename))
+    ));
   })
   .then(() => {
     debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);

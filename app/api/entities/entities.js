@@ -260,8 +260,8 @@ export default {
     })));
   },
 
-  getAllLanguages(sharedId) {
-    return model.get({ sharedId });
+  getAllLanguages(sharedId, select) {
+    return model.get({ sharedId }, select);
   },
 
   countByTemplate(template) {

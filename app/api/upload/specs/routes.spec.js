@@ -108,8 +108,8 @@ describe('upload routes', () => {
       spyOn(Date, 'now').and.returnValue(1000);
       await onSocketRespond('post', '/api/upload', req);
       const [docES, docEN] = await Promise.all([
-        documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText'),
-        documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText')
+        documents.get({ sharedId: 'sharedId1', language: 'es' }, '+fullText +file.filename +attachments.filename'),
+        documents.get({ sharedId: 'sharedId1', language: 'en' }, '+fullText +file.filename +attachments.filename')
       ]);
       expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
       expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
@@ -187,8 +187,8 @@ describe('upload routes', () => {
       it('should update the document with the file path and uploaded flag to true', (done) => {
         iosocket.emit.and.callFake((eventName) => {
           if (eventName === 'documentProcessed') {
-            documents.getById('sharedId1', 'es')
-            .then((modifiedDoc) => {
+            documents.get({ sharedId: 'sharedId1', language: 'es' }, '+file.filename')
+            .then(([modifiedDoc]) => {
               expect(modifiedDoc.file.originalname).toEqual(file.originalname);
               expect(modifiedDoc.file.filename).toEqual(file.filename);
               expect(modifiedDoc.uploaded).toEqual(true);
@@ -265,7 +265,7 @@ describe('upload routes', () => {
       await entitiesModel.save({ _id: entityId, file: null });
       await onSocketRespond('post', '/api/reupload', req);
 
-      const _entities = await entities.get({ sharedId });
+      const _entities = await entities.get({ sharedId }, '+file.filename');
       const _file = {
         filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
         language: 'other',
