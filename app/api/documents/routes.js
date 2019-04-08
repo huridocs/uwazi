@@ -89,6 +89,7 @@ export default (app) => {
     (req, res, next) => {
       documents.get({ _id: req.query._id }, '+file.filename')
       .then(([response]) => {
+        console.log('RES', response);
         if (!response) {
           throw createError('document does not exist', 404);
         }

@@ -7,7 +7,7 @@ const relationshipsSchema = new mongoose.Schema({
   sharedId: { type: mongoose.Schema.Types.ObjectId, index: true },
   template: { type: mongoose.Schema.Types.ObjectId, ref: 'relationTypes', index: true },
   metadata: mongoose.Schema.Types.Mixed,
-  filename: String,
+  filename: { type: String, select: false },
   range: {
     start: Number,
     end: Number,

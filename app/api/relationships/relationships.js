@@ -31,7 +31,7 @@ const createRelationship = async (relationship, language) => {
   const isATextReference = relationship.range;
   let filename;
   if (isATextReference) {
-    const [entity] = await entities.get({ sharedId: relationship.entity, language });
+    const [entity] = await entities.get({ sharedId: relationship.entity, language }, '+file.filename');
     ({ filename } = entity.file);
   }
 
