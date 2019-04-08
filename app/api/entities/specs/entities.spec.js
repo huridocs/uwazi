@@ -10,7 +10,7 @@ import { uploadDocumentsPath } from 'api/config/paths';
 import path from 'path';
 import entities from '../entities.js';
 import fixtures, { batmanFinishesId, templateId, templateChangingNames,
-  syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';
+  syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2, doc1Attachment1Id } from './fixtures.js';
 
 describe('entities', () => {
   beforeEach((done) => {
@@ -140,6 +140,21 @@ describe('entities', () => {
         done();
       })
       .catch(done.fail);
+    });
+
+    it('should not delete filename from file and attachments', async () => {
+      const doc = {
+        _id: docId1,
+        sharedId: 'shared',
+        file: { originalname: 'File.pdf' },
+        attachments: [{ _id: doc1Attachment1Id, originalname: 'Attachment 1.doc' }]
+      };
+      const user = { _id: db.id() };
+
+      await entities.save(doc, { user, language: 'en' });
+      const [updatedDoc] = await entities.get({ _id: docId1 }, '+file.filename +attachments.filename');
+      expect(updatedDoc.file.filename).toBe('8202c463d6158af8065022d9b5014ccb.pdf');
+      expect(updatedDoc.attachments[0].filename).toBe('8202c463d6158af8065022d9b5014ccc.pdf');
     });
 
     describe('when other languages have no metadata', () => {

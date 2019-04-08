@@ -14,6 +14,26 @@ import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
+function useExistingFilenamesOnUpdatedEntity(updatingEntity, existingEntity) {
+  const _entity = { ...updatingEntity };
+  if (updatingEntity.file && !updatingEntity.file.filename) {
+    _entity.file.filename = existingEntity.file.filename;
+  }
+  if (updatingEntity.attachments) {
+    _entity.attachments = _entity.attachments.map((attachment) => {
+      const originalAttachment = existingEntity.attachments.find(a => a._id.toString() === attachment._id.toString());
+      if (!originalAttachment) {
+        return attachment;
+      }
+      return {
+        ...attachment,
+        filename: originalAttachment.filename
+      };
+    });
+  }
+  return _entity;
+}
+
 function updateEntity(entity, _template) {
   return model.get({ sharedId: entity.sharedId }, '+file.filename +attachments.filename')
   .then((docLanguages) => {
@@ -34,7 +54,8 @@ function updateEntity(entity, _template) {
     const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
       if (d._id.toString() === entity._id.toString()) {
-        return entity;
+        const _entity = useExistingFilenamesOnUpdatedEntity(entity, d);
+        return _entity;
       }
       if (!d.metadata) {
         d.metadata = entity.metadata;
