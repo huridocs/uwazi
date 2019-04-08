@@ -30,7 +30,7 @@ class Footer extends Component {
           <li className="footer-nav_separator">&nbsp;</li>
 
           <li className="footer-nav_item">
-            <I18NLink to="/">{t('System', 'Library')}</I18NLink>
+            <I18NLink to="/library">{t('System', 'Library')}</I18NLink>
           </li>
           <NeedAuthorization roles={['admin', 'editor']}>
             <li className="footer-nav_item">
