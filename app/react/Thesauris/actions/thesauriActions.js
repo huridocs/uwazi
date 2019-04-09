@@ -31,27 +31,58 @@ export function sortValues() {
   };
 }
 
-export function moveValues(valuesToMove, groupIndex) {
-  return (dispatch, getState) => {
-    let values = getState().thesauri.data.values.slice(0);
-
-    values = values.map((_value, index) => {
-      const value = Object.assign({}, _value);
-      if (value.values) {
-        value.values = value.values.slice(0).filter(v => !valuesToMove.find(_v => v.id === _v.id));
-      }
-      if (groupIndex === index) {
-        value.values.splice(-1, 1);
-        value.values = value.values.concat(valuesToMove);
-      }
-      return value;
-    }).filter(v => !valuesToMove.find(_v => v.id === _v.id));
-
-    if (!groupIndex) {
-      values.splice(-1, 1);
-      values = values.concat(valuesToMove);
+function moveEmptyItemToBottom(values) {
+  const _values = [...values];
+  const emptyIdx = _values.reduce((found, value, index) => {
+    if (!value.label && index < _values.length) {
+      return found.concat([index]);
     }
-    dispatch(formActions.change('thesauri.data.values', values));
+    return found;
+  }, []);
+  if (emptyIdx.length > 1) {
+    return null;
+  }
+  if (emptyIdx.length === 1) {
+    const index = emptyIdx[0];
+    const emptyValue = _values[index];
+    _values.splice(index, 1);
+    _values.push(emptyValue);
+  }
+  return _values;
+}
+
+function areGroupsRemovedFromList(newValues, oldValues) {
+  return oldValues.some((item) => {
+    if (!item.values) {
+      return false;
+    }
+    return !newValues.some(oldItem => oldItem.id === item.id);
+  });
+}
+
+function listContainsGroups(values) {
+  return values.some(value => value.values);
+}
+
+export function updateValues(updatedValues, groupIndex) {
+  return (dispatch, getState) => {
+    const values = getState().thesauri.data.values.slice(0);
+    const _updatedValues = moveEmptyItemToBottom(updatedValues);
+    if (!_updatedValues) {
+      return;
+    }
+    if (groupIndex !== undefined) {
+      if (listContainsGroups(_updatedValues)) {
+        return;
+      }
+      values[groupIndex] = { ...values[groupIndex], values: _updatedValues };
+      dispatch(formActions.change('thesauri.data.values', values));
+      return;
+    }
+    if (areGroupsRemovedFromList(updatedValues, values)) {
+      return;
+    }
+    dispatch(formActions.change('thesauri.data.values', _updatedValues));
   };
 }
 
@@ -74,7 +105,7 @@ export function addGroup() {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
     const lastIndex = values.length - 1;
-    const newGroup = { label: '', values: [{ label: '', id: ID() }] };
+    const newGroup = { label: '', id: ID(), values: [{ label: '', id: ID() }] };
     if (!values[lastIndex].values) {
       values[lastIndex] = newGroup;
     } else {
@@ -87,7 +118,7 @@ export function addGroup() {
 export function removeValue(index, groupIndex) {
   return (dispatch, getState) => {
     const values = getState().thesauri.data.values.slice(0);
-    if (groupIndex) {
+    if (typeof groupIndex === 'number') {
       values[groupIndex] = Object.assign({}, values[groupIndex]);
       values[groupIndex].values = values[groupIndex].values.slice(0);
       values[groupIndex].values.splice(index, 1);
