@@ -905,8 +905,8 @@ describe('entities', () => {
         return Promise.resolve();
       });
 
-      await entities.saveMultiple([{ _id: docId1, file: {} }]);
-      await entities.addLanguage('ab', 2);
+      await entities.saveMultiple([{ _id: docId1, file: null }]);
+      await entities.addLanguage('ab', 10);
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
       expect(entities.createThumbnail.calls.count()).toBe(6);
