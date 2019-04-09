@@ -590,6 +590,20 @@ describe('entities', () => {
       })
       .catch(done.fail);
     });
+    it('should not remove filenames of entities being updated', async () => {
+      const partialDoc1 = {
+        _id: docId1, sharedId: 'shared',
+        title: 'New title 1',
+        file: { originalname: 'New.pdf' },
+        attachments: [{ _id: doc1Attachment1Id, originalname: 'New attachment.pdf' }]
+      };
+      const partialDoc2 = { _id: docId2, sharedId: 'shared', title: 'New title 2', file: { originalname: 'New 2.pdf' } };
+      await entities.saveMultiple([partialDoc1, partialDoc2]);
+      const [doc1, doc2] = await entities.get({ _id: { $in: [docId1, docId2] } }, '+file.filename +attachments.filename');
+      expect(doc1.file.filename).toBe('8202c463d6158af8065022d9b5014ccb.pdf');
+      expect(doc1.attachments[0].filename).toBe('8202c463d6158af8065022d9b5014ccc.pdf');
+      expect(doc2.file.filename).toBe('8202c463d6158af8065022d9b5014cc1.pdf');
+    });
   });
 
   describe('updateMetadataProperties', () => {

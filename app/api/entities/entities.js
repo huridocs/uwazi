@@ -16,10 +16,10 @@ import settings from '../settings';
 
 function useExistingFilenamesOnUpdatedEntity(updatingEntity, existingEntity) {
   const _entity = { ...updatingEntity };
-  if (updatingEntity.file && !updatingEntity.file.filename) {
+  if (updatingEntity.file && !updatingEntity.file.filename && existingEntity.file) {
     _entity.file.filename = existingEntity.file.filename;
   }
-  if (updatingEntity.attachments) {
+  if (updatingEntity.attachments && existingEntity.attachments) {
     _entity.attachments = _entity.attachments.map((attachment) => {
       const originalAttachment = existingEntity.attachments.find(a => a._id.toString() === attachment._id.toString());
       if (!originalAttachment) {
@@ -259,7 +259,12 @@ export default {
   },
 
   saveMultiple(docs) {
-    return model.save(docs)
+    const docPromises = docs.map(async (doc) => {
+      const [existingDoc] = await model.get({ _id: doc._id }, '+file.filename +attachments.filename');
+      return existingDoc ? useExistingFilenamesOnUpdatedEntity(doc, existingDoc) : doc;
+    });
+    return Promise.all(docPromises)
+    .then(docsWithFiles => model.save(docsWithFiles))
     .then(response => Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText')))
     .then(response => response);
   },
