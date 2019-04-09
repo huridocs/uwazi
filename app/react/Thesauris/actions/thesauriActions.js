@@ -51,8 +51,8 @@ function moveEmptyItemToBottom(values) {
   return _values;
 }
 
-function isGroupRemovedFromList(newValues, oldList) {
-  return oldList.some((item) => {
+function areGroupsRemovedFromList(newValues, oldValues) {
+  return oldValues.some((item) => {
     if (!item.values) {
       return false;
     }
@@ -60,7 +60,7 @@ function isGroupRemovedFromList(newValues, oldList) {
   });
 }
 
-function containsGroups(values) {
+function listContainsGroups(values) {
   return values.some(value => value.values);
 }
 
@@ -72,14 +72,14 @@ export function updateValues(updatedValues, groupIndex) {
       return;
     }
     if (groupIndex !== undefined) {
-      if (containsGroups(_updatedValues)) {
+      if (listContainsGroups(_updatedValues)) {
         return;
       }
       values[groupIndex] = { ...values[groupIndex], values: _updatedValues };
       dispatch(formActions.change('thesauri.data.values', values));
       return;
     }
-    if (isGroupRemovedFromList(updatedValues, values)) {
+    if (areGroupsRemovedFromList(updatedValues, values)) {
       return;
     }
     dispatch(formActions.change('thesauri.data.values', _updatedValues));
