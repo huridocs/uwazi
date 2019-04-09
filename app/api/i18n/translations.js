@@ -4,9 +4,12 @@ import model from './translationsModel.js';
 
 function prepareContexts(contexts) {
   return contexts.map(context => ({
-      ...context,
-      type: context.id === 'System' || context.id === 'Filters' || context.id === 'Menu' ? 'Uwazi UI' : context.type,
-      values: context.values ? context.values.reduce((values, value) => ({ ...values, [value.key]: value.value }), {}) : {}
+    ...context,
+    type: context.id === 'System' || context.id === 'Filters' || context.id === 'Menu' ? 'Uwazi UI' : context.type,
+    values: context.values ? context.values.reduce((values, value) => {
+      values[value.key] = value.value; //eslint-disable-line no-param-reassign
+      return values;
+    }, {}) : {}
   }));
 }
 
