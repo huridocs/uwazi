@@ -51,16 +51,35 @@ function moveEmptyItemToBottom(values) {
   return _values;
 }
 
+function isGroupRemovedFromList(newValues, oldList) {
+  return oldList.some((item) => {
+    if (!item.values) {
+      return false;
+    }
+    return !newValues.some(oldItem => oldItem.id === item.id);
+  });
+}
+
+function containsGroups(values) {
+  return values.some(value => value.values);
+}
+
 export function updateValues(updatedValues, groupIndex) {
   return (dispatch, getState) => {
+    const values = getState().thesauri.data.values.slice(0);
     const _updatedValues = moveEmptyItemToBottom(updatedValues);
     if (!_updatedValues) {
       return;
     }
     if (groupIndex !== undefined) {
-      const values = getState().thesauri.data.values.slice(0);
+      if (containsGroups(_updatedValues)) {
+        return;
+      }
       values[groupIndex] = { ...values[groupIndex], values: _updatedValues };
       dispatch(formActions.change('thesauri.data.values', values));
+      return;
+    }
+    if (isGroupRemovedFromList(updatedValues, values)) {
       return;
     }
     dispatch(formActions.change('thesauri.data.values', _updatedValues));

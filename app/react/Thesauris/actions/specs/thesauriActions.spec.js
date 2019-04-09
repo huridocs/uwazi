@@ -146,6 +146,25 @@ describe('thesaurisActions', () => {
         { label: 'group', id: 'group', values }
       ]);
     });
+    it('should not remove a group from the root list', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'root1', id: 'root1' },
+          { label: 'group', id: 'group', values: [] }
+        ] } } });
+      actions.updateValues(values)(dispatch, getState);
+      expect(formActions.change).not.toHaveBeenCalled();
+    });
+    it('should not move a group inside a group', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'root1', id: 'root1' },
+          { label: 'group', id: 'group', values: [] }
+        ] } } });
+      values[2].values = [{ label: '3.1', id: '3.1' }];
+      actions.updateValues(values, 1)(dispatch, getState);
+      expect(formActions.change).not.toHaveBeenCalled();
+    });
     describe('if there is a single empty item inside the list', () => {
       it('should move the empty item to the bottom of the list', () => {
         const newValues = [...values];
