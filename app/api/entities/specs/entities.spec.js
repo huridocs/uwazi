@@ -592,7 +592,8 @@ describe('entities', () => {
     });
     it('should not remove filenames of entities being updated', async () => {
       const partialDoc1 = {
-        _id: docId1, sharedId: 'shared',
+        _id: docId1,
+        sharedId: 'shared',
         title: 'New title 1',
         file: { originalname: 'New.pdf' },
         attachments: [{ _id: doc1Attachment1Id, originalname: 'New attachment.pdf' }]
