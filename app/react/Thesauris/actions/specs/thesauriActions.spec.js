@@ -62,7 +62,10 @@ describe('thesaurisActions', () => {
       spyOn(formActions, 'change');
       actions.addGroup()(dispatch, getState);
       expect(formActions.change)
-      .toHaveBeenCalledWith('thesauri.data.values', [{ label: 'something' }, { label: '', values: [{ label: '', id: 'unique_id' }] }]);
+      .toHaveBeenCalledWith('thesauri.data.values', [
+        { label: 'something' },
+        { label: '', id: 'unique_id', values: [{ label: '', id: 'unique_id' }] }
+      ]);
     });
   });
 
@@ -87,6 +90,22 @@ describe('thesaurisActions', () => {
       { label: 'A', id: 2, values: [{ label: 'C', id: 4 }, { label: '' }] },
       { label: '' }]);
     });
+    it('should remove value from group even when group has index 0', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'A', id: 2, values: [{ label: 'D', id: 3 }, { label: 'C', id: 4 }, { label: '' }] },
+          { label: 'B', id: 1 },
+          { label: '' }
+        ] } }
+      });
+      spyOn(formActions, 'change');
+      actions.removeValue(1, 0)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', [
+        { label: 'A', id: 2, values: [{ label: 'D', id: 3 }, { label: '' }] },
+        { label: 'B', id: 1 },
+        { label: '' }
+      ]);
+    });
   });
 
   describe('sortValues()', () => {
@@ -99,53 +118,69 @@ describe('thesaurisActions', () => {
     });
   });
 
-  describe('moveValues()', () => {
+  describe('updateValues', () => {
+    let values;
     beforeEach(() => {
-      getState.and.returnValue({
-        thesauri: { data: { values: [
-          { label: 'B', id: 1 },
-          { label: 'A', id: 2, values: [{ label: 'D', id: 3 }, { label: 'C', id: 4 }, { label: '' }] },
-          { label: '' }
-        ] } }
-      });
+      values = [
+        { label: '1', id: '1' },
+        { label: '2', id: '2' },
+        { label: '3', id: '3' },
+        { label: '', id: '4' }
+      ];
       spyOn(formActions, 'change');
     });
 
-    describe('moving to a group', () => {
-      it('should move the values to the given group', () => {
-        actions.moveValues([{ label: 'B', id: 1 }], 1)(dispatch, getState);
-        expect(formActions.change)
-        .toHaveBeenCalledWith('thesauri.data.values', [
-          {
-            label: 'A',
-            id: 2,
-            values: [
-              { label: 'D', id: 3 },
-              { label: 'C', id: 4 },
-              { label: 'B', id: 1 }
-            ]
-          },
-          { label: '' }
-        ]);
+    it('should set the updated values in the store', () => {
+      actions.updateValues(values)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', values);
+    });
+    it('should update values inside group if group index is provided', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'root1', id: 'root1' },
+          { label: 'group', id: 'group', values: [] }
+        ] } } });
+      actions.updateValues(values, 1)(dispatch, getState);
+      expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', [
+        { label: 'root1', id: 'root1' },
+        { label: 'group', id: 'group', values }
+      ]);
+    });
+    it('should not remove a group from the root list', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'root1', id: 'root1' },
+          { label: 'group', id: 'group', values: [] }
+        ] } } });
+      actions.updateValues(values)(dispatch, getState);
+      expect(formActions.change).not.toHaveBeenCalled();
+    });
+    it('should not move a group inside a group', () => {
+      getState.and.returnValue({
+        thesauri: { data: { values: [
+          { label: 'root1', id: 'root1' },
+          { label: 'group', id: 'group', values: [] }
+        ] } } });
+      values[2].values = [{ label: '3.1', id: '3.1' }];
+      actions.updateValues(values, 1)(dispatch, getState);
+      expect(formActions.change).not.toHaveBeenCalled();
+    });
+    describe('if there is a single empty item inside the list', () => {
+      it('should move the empty item to the bottom of the list', () => {
+        const newValues = [...values];
+        const expectedValues = [...values];
+        newValues.push({ label: '5', id: '5' });
+        expectedValues.splice(3, 0, { label: '5', id: '5' });
+        actions.updateValues(newValues)(dispatch, getState);
+        expect(formActions.change).toHaveBeenCalledWith('thesauri.data.values', expectedValues);
       });
     });
-
-    describe('moving outside a group', () => {
-      it('should remove from groups and put it ouside', () => {
-        actions.moveValues([{ label: 'C', id: 4 }])(dispatch, getState);
-        expect(formActions.change)
-        .toHaveBeenCalledWith('thesauri.data.values', [
-          { label: 'B', id: 1 },
-          {
-            label: 'A',
-            id: 2,
-            values: [
-              { label: 'D', id: 3 },
-              { label: '' }
-            ]
-          },
-          { label: 'C', id: 4 }
-        ]);
+    describe('if there are multiple empty items in the list', () => {
+      it('should not update the store', () => {
+        values.push({ label: '', id: '5' });
+        values.push({ label: '6', id: '6' });
+        actions.updateValues(values)(dispatch, getState);
+        expect(formActions.change).not.toHaveBeenCalled();
       });
     });
   });

@@ -2,6 +2,7 @@ import { DragSource, DropTarget } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import { Icon } from 'UI';
 
@@ -12,7 +13,8 @@ export const itemSource = {
       name: props.name,
       items: props.items,
       container: props.container,
-      index: props.index
+      index: props.index,
+      originalItem: props.originalItem
     };
   },
 
@@ -96,7 +98,7 @@ export class DragAndDropItem extends Component {
     const result = connectDropTarget(
       <div className={propertyClass}>
         {iconHandle ? connectDragSource(<span className="draggable"><Icon icon="bars" /></span>) : <Icon icon="bars" />}
-        {this.props.children}
+        {this.props.children(this.props.originalItem, this.props.index)}
       </div>
     );
 
@@ -109,7 +111,8 @@ export class DragAndDropItem extends Component {
 }
 
 DragAndDropItem.defaultProps = {
-  iconHandle: false
+  iconHandle: false,
+  children: () => {},
 };
 
 DragAndDropItem.propTypes = {
@@ -121,17 +124,18 @@ DragAndDropItem.propTypes = {
   iconHandle: PropTypes.bool,
   id: PropTypes.any.isRequired,
   moveItem: PropTypes.func.isRequired,
-  children: PropTypes.any
+  children: PropTypes.func,
+  originalItem: PropTypes.object.isRequired
 };
 
-let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connector => ({
+  connectDropTarget: connector.dropTarget()
 }))(DragAndDropItem);
 
-dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  connectDragPreview: connect.dragPreview(),
+dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connector, monitor) => ({
+  connectDragSource: connector.dragSource(),
+  connectDragPreview: connector.dragPreview(),
   isDragging: monitor.isDragging()
 }))(dragAndDropItem);
 
-export default dragAndDropItem;
+export default connect()(dragAndDropItem);
