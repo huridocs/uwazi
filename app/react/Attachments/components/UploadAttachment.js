@@ -55,17 +55,14 @@ export class UploadAttachment extends Component {
   }
 
   render() {
-    const progress = this.props.progress.get(this.props.entity._id);
+    const progress = this.props.progress.get(this.props.entity);
     return progress ? this.renderProgress(progress) : this.renderUploadButton();
   }
 }
 
 UploadAttachment.propTypes = {
   uploadAttachment: PropTypes.func,
-  entity: PropTypes.shape({
-    _id: PropTypes.string,
-    sharedId: PropTypes.string,
-  }).isRequired,
+  entity: PropTypes.string,
   progress: PropTypes.object,
   languages: PropTypes.object,
   storeKey: PropTypes.string

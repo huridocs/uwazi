@@ -97,7 +97,7 @@ export default (app) => {
       entityId: Joi.string().required(),
       allLanguages: Joi.boolean(),
     }).required()),
-    (req, res, next) => entities.getById(req.body.entityId, req.language)
+    (req, res, next) => entities.getById(req.body.entityId)
     .then(entity => req.body.allLanguages === 'true' ? processAllLanguages(entity, req) :
       processSingleLanguage(entity, req))
     .then(([addedFile]) => {

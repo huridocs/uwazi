@@ -13,7 +13,7 @@ describe('UploadAttachment', () => {
     e = { target: { files: [{ id: 'f1' }] } };
     props = {
       uploadAttachment: jasmine.createSpy('uploadAttachment'),
-      entity: { sharedId: 'idE1', _id: '123' },
+      entity: 'idE1',
       progress: Immutable({}),
       languages: Immutable(['en']),
       storeKey: 'library'
@@ -62,7 +62,7 @@ describe('UploadAttachment', () => {
   describe('when uploading', () => {
     it('should show a progress bar only', () => {
       props.languages = Immutable(['es', 'en']);
-      props.progress = Immutable({ 123: 77 });
+      props.progress = Immutable({ idE1: 77 });
 
       render();
 
