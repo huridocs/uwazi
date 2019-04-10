@@ -84,6 +84,11 @@ export class MetadataProperty extends Component {
               <Icon icon="exclamation-triangle" /> Duplicated label
             </span>
           </ShowIf>
+          <ShowIf if={formState.$form.errors[`properties.${index}.relationType.duplicated`]}>
+            <span className="validation-error">
+              <Icon icon="exclamation-triangle" /> Relationship fields must have diferent relationship or diferent type of entity.
+            </span>
+          </ShowIf>
           <button
             type="button"
             className="btn btn-default btn-xs property-edit"

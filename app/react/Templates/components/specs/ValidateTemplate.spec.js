@@ -1,9 +1,8 @@
-import { validateDuplicatedLabel } from '../ValidateTemplate';
+import { validateDuplicatedLabel, validateDuplicatedRelationship } from '../ValidateTemplate';
 
 describe('ValidateTemplate', () => {
+  let properties;
   describe('validateDuplicatedLabel', () => {
-    let properties;
-
     beforeEach(() => {
       properties = [
         { _id: '1', localID: 'local0', label: 'Label1' },
@@ -33,6 +32,37 @@ describe('ValidateTemplate', () => {
         const prop = { localID: 'local1', label: 'label2' };
         expect(validateDuplicatedLabel(prop, properties)).toBe(true);
       });
+    });
+  });
+  describe('validate duplicated relationship', () => {
+    beforeEach(() => {
+      properties = [
+        { localID: 'local0', label: 'Label0', type: 'relationship', relationType: '1', content: '1' },
+      ];
+    });
+
+    it('should not allow 2 relationships that are equaly configured', () => {
+      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '1' };
+      properties.push(prop);
+      expect(validateDuplicatedRelationship(prop, properties)).toBe(false);
+    });
+
+    it('should not allow 2 relationships with same relationType and one with any template configured', () => {
+      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '' };
+      properties.push(prop);
+      expect(validateDuplicatedRelationship(prop, properties)).toBe(false);
+    });
+
+    it('should allow 2 relationships with diferent relationType configured', () => {
+      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '2', content: '1' };
+      properties.push(prop);
+      expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
+    });
+
+    it('should allow 2 relationships with same relationType  but different content configured', () => {
+      const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '2' };
+      properties.push(prop);
+      expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
     });
   });
 });
