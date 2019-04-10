@@ -1,7 +1,23 @@
 import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
-import { store } from './store';
-import socket from './socket';
+import { notify, removeNotification } from 'app/Notifications/actions/notificationsActions';
+import { store } from '../store';
+import socket from '../socket';
+
+let disconnectNotifyId;
+socket.on('disconnect', () => {
+  if (disconnectNotifyId) {
+    store.dispatch(removeNotification(disconnectNotifyId));
+  }
+  disconnectNotifyId = store.dispatch(notify('Lost connection to the server, your changes may be lost', 'danger', false));
+});
+
+socket.on('reconnect', () => {
+  if (disconnectNotifyId) {
+    store.dispatch(removeNotification(disconnectNotifyId));
+  }
+  disconnectNotifyId = store.dispatch(notify('Connected to server', 'success'));
+});
 
 socket.on('templateChange', (template) => {
   store.dispatch(actions.update('templates', template));
