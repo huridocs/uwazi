@@ -24,8 +24,9 @@ export function deleteMetadataProperties(documents, properties = []) {
 
 export function removeEntityFilenames(entities) {
   return entities.map((entity) => {
-    const safeEntity = { ...entity, file: { ...entity.file } };
+    const safeEntity = { ...entity };
     if (entity.file) {
+      safeEntity.file = { ...entity.file };
       delete safeEntity.file.filename;
     }
     if (safeEntity.attachments) {

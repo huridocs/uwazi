@@ -82,6 +82,12 @@ describe('relationships', () => {
       expect(entity1PtRelationships.filter(r => r.hub.toString() === hub1.toString()).length).toBe(2);
     });
 
+    it('should not include filenames in response', async () => {
+      const connections = await relationships.getByDocument('entity1', 'en');
+      expect(connections.some(conn => conn.filename)).toBe(false);
+      expect(connections.some(conn => conn.entityData.file && conn.entityData.file.filename)).toBe(false);
+    });
+
     it('should set template to null if no template found', async () => {
       const relations = await relationships.getByDocument('entity2', 'en');
       const relationshipWithoutTemplate = relations.find(r => r._id.equals(connectionID9));

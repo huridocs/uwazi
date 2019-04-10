@@ -3,6 +3,7 @@ import templatesAPI from 'api/templates';
 import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
 import entities from 'api/entities/entities';
+import { removeEntityFilenames } from 'api/entities/utils';
 import { generateID } from 'api/odm';
 import { createError } from 'api/utils';
 
@@ -143,6 +144,15 @@ const determineReferenceValues = (references, property, entity) => {
   return { propertyRelationType, entityType, hub };
 };
 
+const removeConnectionFilenames = (connection) => {
+  const _connection = { ...connection };
+  delete _connection.filename;
+  if (_connection.entityData) {
+    [_connection.entityData] = removeEntityFilenames([_connection.entityData]);
+  }
+  return _connection;
+};
+
 export default {
   get(query, select, pagination) {
     return model.get(query, select, pagination);
@@ -155,7 +165,7 @@ export default {
   async getDocumentHubs(entity) {
     const ownRelations = await model.get({ entity });
     const hubsIds = ownRelations.map(relationship => relationship.hub);
-    return model.get({ hub: { $in: hubsIds } });
+    return model.get({ hub: { $in: hubsIds } }, '+filename');
   },
 
   getByDocument(sharedId, language, unpublished = true) {
@@ -181,7 +191,7 @@ export default {
           relationshipsCollection = relationshipsCollection.removeUnpublished();
         }
 
-        return relationshipsCollection;
+        return relationshipsCollection.map(removeConnectionFilenames);
       });
     });
   },
