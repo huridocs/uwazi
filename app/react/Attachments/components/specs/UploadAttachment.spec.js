@@ -13,7 +13,7 @@ describe('UploadAttachment', () => {
     e = { target: { files: [{ id: 'f1' }] } };
     props = {
       uploadAttachment: jasmine.createSpy('uploadAttachment'),
-      entityId: 'idE1',
+      entity: 'idE1',
       progress: Immutable({}),
       languages: Immutable(['en']),
       storeKey: 'library'
@@ -32,7 +32,7 @@ describe('UploadAttachment', () => {
 
     expect(props.uploadAttachment).not.toHaveBeenCalled();
     component.find('label > input').props().onChange(e);
-    expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', { id: 'f1' }, 'library');
+    expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library');
   });
 
   describe('when there are multiple languages', () => {
@@ -49,13 +49,13 @@ describe('UploadAttachment', () => {
 
       expect(props.uploadAttachment).not.toHaveBeenCalled();
       component.find('label > input').at(0).props().onChange(e);
-      expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', { id: 'f1' }, 'library');
+      expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library');
 
       props.uploadAttachment.calls.reset();
 
       expect(props.uploadAttachment).not.toHaveBeenCalled();
       component.find('label > input').at(1).props().onChange(e);
-      expect(props.uploadAttachment).toHaveBeenCalledWith('idE1', { id: 'f1' }, 'library', { allLanguages: true });
+      expect(props.uploadAttachment).toHaveBeenCalledWith(props.entity, { id: 'f1' }, 'library', { allLanguages: true });
     });
   });
 
