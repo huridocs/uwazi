@@ -620,7 +620,7 @@ describe('search', () => {
 
     it('should not include filenames in results', async () => {
       spyOn(elastic, 'search').and.returnValue(new Promise(resolve => resolve(result)));
-      const res = await search.search({ searchTerm: '' }, 'en')
+      const res = await search.search({ searchTerm: '' }, 'en');
       const [row] = res.rows;
       expect(row.file.filename).toBeUndefined();
       expect(row.attachments[0].filename).toBeUndefined();
