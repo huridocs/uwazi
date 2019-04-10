@@ -21,7 +21,10 @@ function useExistingFilenamesOnUpdatedEntity(updatingEntity, existingEntity) {
   }
   if (updatingEntity.attachments && existingEntity.attachments) {
     _entity.attachments = _entity.attachments.map((attachment) => {
-      const originalAttachment = existingEntity.attachments.find(a => a._id.toString() === attachment._id && attachment._id.toString());
+      if (!attachment._id) {
+        return attachment;
+      }
+      const originalAttachment = existingEntity.attachments.find(a => a._id.toString() === attachment._id.toString());
       if (!originalAttachment) {
         return attachment;
       }
