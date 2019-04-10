@@ -24,7 +24,6 @@ export class FormConfigRelationship extends Component {
     const requiredLabel = formState.$form.errors[`properties.${index}.label.required`];
     const duplicatedLabel = formState.$form.errors[`properties.${index}.label.duplicated`];
     const relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
-    const duplicatedRelationType = formState.$form.errors[`properties.${index}.relationType.duplicated`];
     const labelClass = (requiredLabel || duplicatedLabel) ? 'form-group has-error' : 'form-group';
     const template = templates.toJS().find(t => formState.properties[index].content && t._id === formState.properties[index].content.value);
     const templateProperties = template ? template.properties : [];
