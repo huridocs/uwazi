@@ -2,10 +2,13 @@ import csv from 'csvtojson';
 
 import EventEmitter from 'events';
 import entities from 'api/entities';
-import fs from 'fs';
 import templates, { templateUtils } from 'api/templates';
+import PDF from 'api/upload/PDF';
 
 import typeParsers from './typeParsers';
+import ImportFile from './ImportFile';
+
+import { uploadDocumentsPath } from '../config/paths';
 
 const toSafeName = rawEntity =>
   Object.keys(rawEntity).reduce(
@@ -29,15 +32,31 @@ const toMetadata = async (template, entityToImport) =>
     Promise.resolve({})
   );
 
-const importEntity = async (template, rawEntity, { user = {}, language }) =>
-  entities.save(
-    {
-      title: rawEntity.title,
-      template: template._id,
-      metadata: await toMetadata(template, rawEntity)
-    },
+const conversion = async (importFile, fileName) => ({
+  uploaded: true,
+  ...(await new PDF({
+    destination: uploadDocumentsPath,
+    originalname: fileName,
+    filename: await importFile.extractFile(fileName)
+  }).convert())
+});
+
+const importEntity = async (template, rawEntity, importFile, { user = {}, language }) => {
+  const entity = await entities.save(
+  {
+    title: rawEntity.title,
+    template: template._id,
+    metadata: await toMetadata(template, rawEntity),
+    ...(rawEntity.file ? await conversion(importFile, rawEntity.file) : {})
+  },
     { user, language }
   );
+  if (entity.file) {
+    await new PDF({ ...entity.file, destination: uploadDocumentsPath })
+    .createThumbnail(entity._id.toString());
+  }
+  return entity;
+};
 
 export default class CSVLoader extends EventEmitter {
   constructor(options = { stopOnError: true }) {
@@ -53,26 +72,28 @@ export default class CSVLoader extends EventEmitter {
   async load(csvPath, templateId, options = { language: 'en' }) {
     const template = await templates.getById(templateId);
 
-    const file = new ImportFile(csvPath);
+    const file = ImportFile(csvPath);
     const readStream = await file.readStream();
 
-    await csv({
-      delimiter: [',', ';']
-    })
-    .fromStream(readStream)
-    .subscribe(async (rawEntity, index) => {
-      try {
-        const entity = await importEntity(template, toSafeName(rawEntity), options);
-        this.emit('entityLoaded', entity);
-      } catch (e) {
-        if (this.stopOnError) {
-          readStream.unpipe();
-          readStream.destroy();
-          throw e;
+    await new Promise((resolve, reject) => {
+      csv({
+        delimiter: [',', ';']
+      })
+      .fromStream(readStream)
+      .subscribe(async (rawEntity, index) => {
+        try {
+          const entity = await importEntity(template, toSafeName(rawEntity), file, options);
+          this.emit('entityLoaded', entity);
+        } catch (e) {
+          if (this.stopOnError) {
+            readStream.unpipe();
+            readStream.destroy();
+            throw e;
+          }
+          this._errors[index] = e;
+          this.emit('loadError', e, toSafeName(rawEntity), index);
         }
-        this._errors[index] = e;
-        this.emit('loadError', e, toSafeName(rawEntity), index);
-      }
+      }, reject, resolve);
     });
 
     if (Object.keys(this._errors).length) {

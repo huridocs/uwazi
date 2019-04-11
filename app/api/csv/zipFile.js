@@ -26,6 +26,7 @@ export default function (zipFile) {
                 resolve(readStream);
               });
               zipfile.close();
+              return
             }
             zipfile.readEntry();
             // }

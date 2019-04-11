@@ -129,7 +129,7 @@ describe('csvLoader', () => {
         if (entity.title === 'title1' || entity.title === 'title3') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
-        return Promise.resolve();
+        return Promise.resolve({});
       });
       await db.clearAllAndLoad(fixtures);
     });
@@ -167,12 +167,12 @@ describe('csvLoader', () => {
     });
 
     it('should fail when parsing throws an error', async () => {
-      entities.save.and.callFake(() => Promise.resolve());
+      entities.save.and.callFake(() => Promise.resolve({}));
       spyOn(typeParsers, 'text').and.callFake((entity) => {
         if (entity.title === 'title2') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
-        return Promise.resolve();
+        return Promise.resolve({});
       });
 
       const testingLoader = new CSVLoader({ stopOnError: false });

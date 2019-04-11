@@ -70,7 +70,6 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-
   return model.save(docs);
 }
 
