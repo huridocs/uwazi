@@ -4,6 +4,8 @@ import search from './search';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
+const parseQueryProperty = (query, property) => query[property] ? JSON.parse(query[property]) : query[property];
+
 export default (app) => {
   app.get('/api/search/count_by_template',
   validateRequest(Joi.object().keys({
@@ -34,20 +36,14 @@ export default (app) => {
     }), 'query'),
 
     (req, res, next) => {
-      if (req.query.filters) {
-        req.query.filters = JSON.parse(req.query.filters);
-      }
-      if (req.query.types) {
-        req.query.types = JSON.parse(req.query.types);
-      }
-      if (req.query.fields) {
-        req.query.fields = JSON.parse(req.query.fields);
-      }
-      if (req.query.aggregations) {
-        req.query.aggregations = JSON.parse(req.query.aggregations);
-      }
+      req.query.filters = parseQueryProperty(req.query, 'filters');
+      req.query.types = parseQueryProperty(req.query, 'types');
+      req.query.fields = parseQueryProperty(req.query, 'fields');
+      req.query.aggregations = parseQueryProperty(req.query, 'aggregations');
 
-      return search.search(req.query, req.language, req.user)
+      const action = req.query.geolocation ? 'searchGeolocations' : 'search';
+
+      return search[action](req.query, req.language, req.user)
       .then(results => res.json(results))
       .catch(next);
     }

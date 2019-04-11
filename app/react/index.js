@@ -5,7 +5,7 @@ import { AppContainer } from 'react-hot-loader';
 
 import App from './App.js';
 
-import './sockets';
+import './App/sockets';
 
 const render = (Component) => {
   ReactDOM.render(
