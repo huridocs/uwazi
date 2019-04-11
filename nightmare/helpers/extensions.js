@@ -195,6 +195,18 @@ Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
   .then(() => { done(); });
 });
 
+Nightmare.action('waitForCardTemplate', function (selector, templateText, done) {
+  this.wait((cardSelector, cardTemplate) => {
+    const cardTemplateLabel = document.querySelector(`${cardSelector} .item-actions .btn-color`);
+    if (cardTemplateLabel) {
+      return cardTemplateLabel.innerText.match(cardTemplate);
+    }
+
+    return false;
+  }, selector, templateText)
+  .then(() => { done(); });
+});
+
 Nightmare.action('manageItemFromList', function (liElement, targetText, action, done) {
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;

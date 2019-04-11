@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks */
+/* eslint-disable max-nested-callbacks, max-statements */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
@@ -25,6 +25,12 @@ describe('entities', () => {
   });
 
   describe('save', () => {
+    const saveDoc = async (doc, user) => {
+      await entities.save(doc, { user, language: 'es' });
+      const docs = await entities.get({ title: doc.title });
+      return { createdDocumentEs: docs.find(d => d.language === 'es'), createdDocumentEn: docs.find(d => d.language === 'en') };
+    };
+
     it('should uniq the values on multiselect and relationship fields', (done) => {
       const entity = {
         title: 'Batman begins',
@@ -46,32 +52,37 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
-    it('should create a new entity for each language in settings with a language property and a shared id', (done) => {
+    it('should create a new entity for each language in settings with a language property, a shared id, and default template', async () => {
       const universalTime = 1;
       spyOn(date, 'currentUTC').and.returnValue(universalTime);
-      const doc = { title: 'Batman begins', template: templateId };
+      const doc = { title: 'Batman begins' };
       const user = { _id: db.id() };
 
-      entities.save(doc, { user, language: 'es' })
-      .then(() => entities.get())
-      .then((docs) => {
-        const createdDocumentEs = docs.find(d => d.title === 'Batman begins' && d.language === 'es');
-        const createdDocumentEn = docs.find(d => d.title === 'Batman begins' && d.language === 'en');
+      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
 
-        expect(createdDocumentEs.sharedId).toBe(createdDocumentEn.sharedId);
+      expect(createdDocumentEs.sharedId).toBe(createdDocumentEn.sharedId);
 
-        expect(createdDocumentEs.title).toBe(doc.title);
-        expect(createdDocumentEs.user.equals(user._id)).toBe(true);
-        expect(createdDocumentEs.published).toBe(false);
-        expect(createdDocumentEs.creationDate).toEqual(universalTime);
+      expect(createdDocumentEs.template.toString()).toBe(templateChangingNames.toString());
+      expect(createdDocumentEn.template.toString()).toBe(templateChangingNames.toString());
 
-        expect(createdDocumentEn.title).toBe(doc.title);
-        expect(createdDocumentEn.user.equals(user._id)).toBe(true);
-        expect(createdDocumentEn.published).toBe(false);
-        expect(createdDocumentEn.creationDate).toEqual(universalTime);
-        done();
-      })
-      .catch(catchErrors(done));
+      expect(createdDocumentEs.title).toBe(doc.title);
+      expect(createdDocumentEs.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEs.published).toBe(false);
+      expect(createdDocumentEs.creationDate).toEqual(universalTime);
+
+      expect(createdDocumentEn.title).toBe(doc.title);
+      expect(createdDocumentEn.user.equals(user._id)).toBe(true);
+      expect(createdDocumentEn.published).toBe(false);
+      expect(createdDocumentEn.creationDate).toEqual(universalTime);
+    });
+
+    it('should create a new entity, preserving template if passed', async () => {
+      const doc = { title: 'The Dark Knight', template: templateId };
+      const user = { _id: db.id() };
+      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
+
+      expect(createdDocumentEs.template.toString()).toBe(templateId.toString());
+      expect(createdDocumentEn.template.toString()).toBe(templateId.toString());
     });
 
     it('should return the newly created document for the passed language', (done) => {
@@ -304,6 +315,18 @@ describe('entities', () => {
       .then((updatedEntity) => {
         expect(updatedEntity.metadata.friends).toEqual(['shared2']);
         done();
+      });
+    });
+
+    it('should not fail on newly created documents (without metadata)', async () => {
+      const doc = { title: 'Batman begins', template: templateId };
+      const user = { _id: db.id() };
+      const newEntity = await entities.save(doc, { user, language: 'es' });
+
+      await entities.updateMetdataFromRelationships([newEntity.sharedId], 'es');
+      const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
+      expect(updatedEntity.metadata).toEqual({
+        date: null, daterange: null, friends: [], multidate: null, multidaterange: null, multiselect: null, select: null
       });
     });
   });
@@ -854,18 +877,15 @@ describe('entities', () => {
   });
 
   describe('removeLanguage()', () => {
-    it('should delete all entities from the language', (done) => {
+    it('should delete all entities from the language', async () => {
       spyOn(search, 'deleteLanguage');
       spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
-      entities.addLanguage('ab')
-      .then(() => entities.removeLanguage('ab'))
-      .then(() => entities.get({ language: 'ab' }))
-      .then((newEntities) => {
-        expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
-        expect(newEntities.length).toBe(0);
-        done();
-      })
-      .catch(catchErrors(done));
+      await entities.addLanguage('ab');
+      await entities.removeLanguage('ab');
+      const newEntities = await entities.get({ language: 'ab' });
+
+      expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
+      expect(newEntities.length).toBe(0);
     });
   });
 });

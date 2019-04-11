@@ -27,7 +27,7 @@ describe('EntityView', () => {
       EntityView.requestState({ entityId: '123', lang: 'es' }, null, { templates: 'templates' })
       .then((state) => {
         expect(relationships.requestState).toHaveBeenCalledWith('123', { templates: 'templates' });
-        expect(EntitiesAPI.get).toHaveBeenCalledWith('123', { omitRelationships: true });
+        expect(EntitiesAPI.get).toHaveBeenCalledWith('123');
         expect(state.entityView.entity).toEqual(entities[0]);
         expect(state.relationships.list.entityId).toBe('sid');
         expect(state.relationships.list.entity).toEqual({ _id: 1, sharedId: 'sid' });

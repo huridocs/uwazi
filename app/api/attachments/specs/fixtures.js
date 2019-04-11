@@ -12,6 +12,7 @@ const attachmentToEdit = db.id();
 export default {
   entities: [
     {
+      title: 'title',
       sharedId: toDeleteId.toString(),
       _id: toDeleteId,
       file: { originalname: 'source doc', filename: 'mainFile.txt' },
@@ -25,6 +26,7 @@ export default {
       ],
     },
     {
+      title: 'title',
       sharedId,
       _id: entityId,
       file: { originalname: 'source doc', filename: 'filename' },
@@ -38,6 +40,7 @@ export default {
       ],
     },
     {
+      title: 'title',
       sharedId,
       _id: entityIdEn,
       file: { originalname: 'source doc', filename: 'filenameEn' },
@@ -46,6 +49,7 @@ export default {
       ],
     },
     {
+      title: 'title',
       sharedId,
       _id: entityIdPt,
       file: { originalname: 'source doc', filename: 'filenamePt' },

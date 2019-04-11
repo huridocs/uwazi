@@ -39,20 +39,20 @@ describe('Attachments actions', () => {
     });
 
     it('should start the upload', () => {
-      store.dispatch(actions.uploadAttachment('id', file));
-      expect(store.getActions()).toEqual([{ type: types.START_UPLOAD_ATTACHMENT, entity: 'id' }]);
+      store.dispatch(actions.uploadAttachment('sharedId', file));
+      expect(store.getActions()).toEqual([{ type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' }]);
     });
 
     it('should upload the file while dispatching the upload progress', () => {
       const expectedActions = [
-        { type: types.START_UPLOAD_ATTACHMENT, entity: 'id' },
-        { type: types.ATTACHMENT_PROGRESS, entity: 'id', progress: 55 },
-        { type: types.ATTACHMENT_PROGRESS, entity: 'id', progress: 65 },
-        { type: types.ATTACHMENT_COMPLETE, entity: 'id', file: { text: 'file' }, __reducerKey: 'storeKey' }
+        { type: types.START_UPLOAD_ATTACHMENT, entity: 'sharedId' },
+        { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 55 },
+        { type: types.ATTACHMENT_PROGRESS, entity: 'sharedId', progress: 65 },
+        { type: types.ATTACHMENT_COMPLETE, entity: 'sharedId', file: { text: 'file' }, __reducerKey: 'storeKey' }
       ];
 
-      store.dispatch(actions.uploadAttachment('id', file, 'storeKey'));
-      expect(mockUpload.field).toHaveBeenCalledWith('entityId', 'id');
+      store.dispatch(actions.uploadAttachment('sharedId', file, 'storeKey'));
+      expect(mockUpload.field).toHaveBeenCalledWith('entityId', 'sharedId');
       expect(mockUpload.field).toHaveBeenCalledWith('allLanguages', false);
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 

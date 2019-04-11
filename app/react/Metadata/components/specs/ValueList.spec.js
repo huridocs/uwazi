@@ -16,6 +16,7 @@ describe('ValueList', () => {
   beforeEach(() => {
     props.property = {
       label: 'label',
+      name: 'label',
       value: [{ value: 'first_value', url: 'url1' }, { value: 'second_value' }, { value: 'third value', url: 'url2' }]
     };
   });
@@ -27,6 +28,7 @@ describe('ValueList', () => {
   it('should rendern icons when the value has one', () => {
     props.property = {
       label: 'label',
+      name: 'label',
       value: [
         { value: 'first_value', url: 'url1', icon: { icon: 'icon' } },
         { value: 'second_value', icon: { icon: 'icon2' } },
@@ -66,6 +68,7 @@ describe('ValueList', () => {
     it('should rendern icons when the value has one', () => {
       props.property = {
         label: 'label',
+        name: 'label',
         value: [
           { value: 'first_value' },
           { value: 'second_value', icon: { icon: 'icon2' } },

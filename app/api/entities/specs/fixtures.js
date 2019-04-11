@@ -53,13 +53,13 @@ export default {
     { _id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: { property1: 'value1', property2: 'value2', property3: 'value3' }, file: { filename: '123.pdf' } },
     { _id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: { property1: 'value1', property2: 'value2', property3: 'value3' }, file: { filename: '123.pdf' } },
     //docs using entity as thesauri
-    { _id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'multiselect', type: 'entity', language: 'en', metadata: { multiselect: ['shared', 'value1'] }, file: { filename: '123.pdf' } },
-    { _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'multiselect', type: 'entity', language: 'es', metadata: { multiselect2: ['shared', 'value2'] }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { _id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'select', type: 'entity', language: 'en', metadata: { select: 'shared' }, file: { filename: '123.pdf' } },
-    { _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: { select2: 'shared' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { _id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { select2: 'value' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { _id: db.id(), template: templateWithOnlySelect, sharedId: 'otherTemplateWithSelect', type: 'entity', language: 'es', metadata: { select: 'shared10' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } },
+    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'multiselect', type: 'entity', language: 'en', metadata: { multiselect: ['shared', 'value1'] }, file: { filename: '123.pdf' } },
+    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'multiselect', type: 'entity', language: 'es', metadata: { multiselect2: ['shared', 'value2'] }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
+    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'select', type: 'entity', language: 'en', metadata: { select: 'shared' }, file: { filename: '123.pdf' } },
+    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: { select2: 'shared' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
+    { title: 'title', _id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { select2: 'value' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
+    { title: 'title', _id: db.id(), template: templateWithOnlySelect, sharedId: 'otherTemplateWithSelect', type: 'entity', language: 'es', metadata: { select: 'shared10' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
+    { title: 'title', _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } },
     { sharedId: 'shared2', language: 'en' }
   ],
   settings: [
@@ -102,6 +102,7 @@ export default {
       ] },
     { _id: templateChangingNames,
       name: 'template_changing_names',
+      default: true,
       properties: [
         { id: '1', type: 'text', name: 'property1' },
         { id: '2', type: 'text', name: 'property2' },

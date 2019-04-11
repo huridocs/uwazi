@@ -8,26 +8,20 @@ import api from 'app/utils/api';
 
 import * as types from './actionTypes';
 
-export function uploadAttachment(entityId, file, __reducerKey, options = {}) {
+export function uploadAttachment(entity, file, __reducerKey, options = {}) {
   return (dispatch) => {
-    dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity: entityId });
+    dispatch({ type: types.START_UPLOAD_ATTACHMENT, entity });
     superagent.post(`${APIURL}attachments/upload`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
-    .field('entityId', entityId)
+    .field('entityId', entity)
     .field('allLanguages', Boolean(options.allLanguages))
     .attach('file', file, file.name)
     .on('progress', (data) => {
-      dispatch({ type: types.ATTACHMENT_PROGRESS, entity: entityId, progress: Math.floor(data.percent) });
+      dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: Math.floor(data.percent) });
     })
     .on('response', (result) => {
-      dispatch({ type: types.ATTACHMENT_COMPLETE, entity: entityId, file: JSON.parse(result.text), __reducerKey });
-      api.get('entities', { _id: entityId })
-      .then((response) => {
-        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json.rows[0], __reducerKey });
-        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc: response.json.rows[0], __reducerKey });
-      });
+      dispatch({ type: types.ATTACHMENT_COMPLETE, entity, file: JSON.parse(result.text), __reducerKey });
     })
     .end();
   };

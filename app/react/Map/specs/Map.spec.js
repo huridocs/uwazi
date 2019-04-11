@@ -73,6 +73,27 @@ describe('Map', () => {
     });
   });
 
+  describe('autoCenter()', () => {
+    it('should call centerOnMarkers by default center', () => {
+      render();
+      spyOn(instance, 'centerOnMarkers');
+      const _markers = [{ latitude: 2, longitude: 32 }];
+      instance.autoCenter(_markers);
+      expect(instance.centerOnMarkers).toHaveBeenCalled();
+    });
+
+    describe('when autoCenter prop is false', () => {
+      it('should not center', () => {
+        props.autoCenter = false;
+        render();
+        spyOn(instance, 'centerOnMarkers');
+        const _markers = [{ latitude: 2, longitude: 32 }];
+        instance.autoCenter(_markers);
+        expect(instance.centerOnMarkers).not.toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('centerOnMarkers', () => {
     it('should call the map with the markers bounding box to center on them', () => {
       render();
@@ -82,6 +103,7 @@ describe('Map', () => {
         { latitude: 7, longitude: 11 },
         { latitude: 22, longitude: -21 }
       ];
+
       map.stop.and.returnValue(map);
       instance.centerOnMarkers(_markers);
       expect(map.fitBounds)
@@ -297,6 +319,16 @@ describe('Map', () => {
       expect(viewport.latitude).toBe(73);
       expect(viewport.longitude).toBe(23);
       expect(viewport.markers).toEqual([]);
+    });
+
+    it('should update the style and center on the new markers', () => {
+      render();
+      spyOn(instance, 'centerOnMarkers');
+      spyOn(instance, 'updateMapStyle');
+      instance.componentWillReceiveProps({ latitude: 73, longitude: 23, markers: [] });
+      component.update();
+      expect(instance.centerOnMarkers).toHaveBeenCalled();
+      expect(instance.updateMapStyle).toHaveBeenCalled();
     });
   });
 });

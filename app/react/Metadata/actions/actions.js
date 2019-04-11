@@ -3,8 +3,9 @@ import superagent from 'superagent';
 
 import { APIURL } from 'app/config.js';
 import { advancedSort } from 'app/utils/advancedSort';
-import { api as entitiesAPI } from 'app/Entities';
+import { api } from 'app/Entities';
 import { notify } from 'app/Notifications';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import emptyTemplate from '../helpers/defaultTemplate';
 
@@ -102,6 +103,12 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('response', ({ body }) => {
       const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
+      api.get(docSharedId)
+      .then(([doc]) => {
+        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
+        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
+      });
     })
     .end();
   };
@@ -125,7 +132,7 @@ export function multipleUpdate(_entities, values) {
     });
 
     const updatedEntitiesIds = updatedEntities.map(entity => entity.sharedId);
-    return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
+    return api.multipleUpdate(updatedEntitiesIds, values)
     .then(() => {
       dispatch(notify('Update success', 'success'));
       if (values.published !== undefined) {

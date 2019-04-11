@@ -1,5 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { mockID } from 'shared/uniqueID';
 import { DragAndDropContainer, containerTarget } from '../DragAndDropContainer';
 import DragAndDropItem from '../DragAndDropItem';
 
@@ -18,6 +19,7 @@ describe('DragAndDropContainer', () => {
         items,
         onChange: jasmine.createSpy('onChange')
       };
+      mockID();
     });
 
     const render = () => {
@@ -27,14 +29,30 @@ describe('DragAndDropContainer', () => {
     it('should render a DragAndDropItem for each item', () => {
       render();
       expect(component.find(DragAndDropItem).length).toBe(2);
-      expect(component.find(DragAndDropItem).first().props().children).toBe('A rude awakening');
+      expect(component.find(DragAndDropItem).first().props().originalItem).toEqual(items[0]);
+      expect(component.find(DragAndDropItem).first().props().children(items[0])).toBe('A rude awakening');
+    });
+
+    it('should enable iconHandle on children if iconHandle is enabled in container', () => {
+      props.iconHandle = true;
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should enable iconHandle for child that has nested items property', () => {
+      items[0].items = [{ id: 3, content: 'sub item' }];
+      render();
+      expect(component).toMatchSnapshot();
     });
 
     describe('accepts a custom render function', () => {
+      beforeEach(() => {
+        props.renderItem = jest.fn().mockImplementation((item, index) => <span>Avocado {item.content} {index}</span>);
+      });
       it('to render items', () => {
-        props.renderItem = () => <span>Avocado</span>;
         render();
-        expect(component.find(DragAndDropItem).first().find('span').text()).toBe('Avocado');
+        component.instance().renderItem(items[0], 0);
+        expect(props.renderItem).toHaveBeenCalledWith(items[0], 0);
       });
     });
 
