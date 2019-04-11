@@ -64,13 +64,14 @@ function sourceTargetTestContext(Target, Source, actions) {
 
 describe('MetadataProperty', () => {
   let component;
+  let props;
 
   describe('commonProperty', () => {
     let editProperty;
     beforeEach(() => {
       const identity = x => x;
       editProperty = jasmine.createSpy('editProperty');
-      const props = {
+      props = {
         isCommonProperty: true,
         isDragging: false,
         connectDragSource: identity,
@@ -84,19 +85,19 @@ describe('MetadataProperty', () => {
         uiState: Immutable.fromJS({ editingProperty: '' }),
         templates: Immutable.fromJS([])
       };
-
-      component = shallow(<MetadataProperty {...props}/>);
     });
 
     describe('ui actions', () => {
       describe('delete button', () => {
         it('should not be there', () => {
+          component = shallow(<MetadataProperty {...props}/>);
           expect(component.find('.property-remove').length).toBe(0);
         });
       });
 
       describe('edit button', () => {
         it('should editProperty', () => {
+          component = shallow(<MetadataProperty {...props}/>);
           component.find('.property-edit').simulate('click');
           expect(editProperty).toHaveBeenCalledWith('id');
         });
@@ -111,7 +112,7 @@ describe('MetadataProperty', () => {
       const identity = x => x;
       removeProperty = jasmine.createSpy('removeProperty');
       editProperty = jasmine.createSpy('editProperty');
-      const props = {
+      props = {
         isDragging: true,
         connectDragSource: identity,
         connectDropTarget: identity,
@@ -179,6 +180,20 @@ describe('MetadataProperty', () => {
         component.setProps({ type: 'geolocation' });
         expect(component.find(FormConfigInput).length).toBe(1);
         expect(component.find(FormConfigInput).props().canBeFilter).toBe(false);
+      });
+
+      describe('errors', () => {
+        it('should render duplicated relation error', () => {
+          props.formState.$form.errors['properties.1.relationType.duplicated'] = true;
+          component = shallow(<MetadataProperty {...props}/>);
+          expect(component).toMatchSnapshot();
+        });
+
+        it('should render duplicated label error', () => {
+          props.formState.$form.errors['properties.1.label.duplicated'] = true;
+          component = shallow(<MetadataProperty {...props}/>);
+          expect(component).toMatchSnapshot();
+        });
       });
     });
 
