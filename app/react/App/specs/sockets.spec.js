@@ -3,27 +3,30 @@ import '../sockets';
 import { store } from '../../store';
 
 describe('sockets', () => {
-  const mockStore = { dispatch: () => {} };
   beforeEach(() => {
-    spyOn(store, 'dispatch');
-    spyOn(mockStore, 'dispatch');
+    spyOn(store, 'dispatch').and.callFake(argument => typeof argument === 'function' ? argument(store.dispatch) : argument);
   });
 
   describe('disconnect', () => {
     it('should emit a disconnect event', () => {
-      socket._callbacks.$disconnect[0]();
-      store.dispatch.calls.allArgs()[0][0](mockStore.dispatch);
-      expect(store.dispatch).toHaveBeenCalled();
-      expect(mockStore.dispatch.calls.allArgs()[0][0].notification.message).toEqual('Lost connection to the server, your changes may be lost');
+      jasmine.clock().install();
+      socket._callbacks.$disconnect[0]('transport close');
+      jasmine.clock().tick(4000);
+      expect(store.dispatch.calls.allArgs()[1][0].notification.message).toEqual('Lost connection to the server, your changes may be lost');
+      jasmine.clock().uninstall();
     });
   });
 
   describe('reconnect', () => {
-    it('should emit a disconnect event', () => {
+    it('should emit a connect event', () => {
+      jasmine.clock().install();
+      socket._callbacks.$disconnect[0]('transport close');
+      jasmine.clock().tick(4000);
       socket._callbacks.$reconnect[0]();
-      store.dispatch.calls.allArgs()[0][0](mockStore.dispatch);
+      jasmine.clock().tick(4000);
       expect(store.dispatch).toHaveBeenCalled();
-      expect(mockStore.dispatch.calls.allArgs()[0][0].notification.message).toEqual('Connected to server');
+      expect(store.dispatch.calls.allArgs()[5][0].notification.message).toEqual('Connected to server');
+      jasmine.clock().uninstall();
     });
   });
 

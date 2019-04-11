@@ -5,18 +5,25 @@ import { store } from '../store';
 import socket from '../socket';
 
 let disconnectNotifyId;
-socket.on('disconnect', () => {
-  if (disconnectNotifyId) {
-    store.dispatch(removeNotification(disconnectNotifyId));
+let disconnectTimeoutMessage;
+socket.on('disconnect', (reason) => {
+  if (reason === 'transport close') {
+    if (disconnectNotifyId) {
+      store.dispatch(removeNotification(disconnectNotifyId));
+    }
+    disconnectTimeoutMessage = setTimeout(() => {
+      disconnectNotifyId = store.dispatch(notify('Lost connection to the server, your changes may be lost', 'danger', false));
+    }, 3000);
   }
-  disconnectNotifyId = store.dispatch(notify('Lost connection to the server, your changes may be lost', 'danger', false));
 });
 
 socket.on('reconnect', () => {
   if (disconnectNotifyId) {
     store.dispatch(removeNotification(disconnectNotifyId));
+    clearTimeout(disconnectTimeoutMessage);
+    disconnectNotifyId = store.dispatch(notify('Connected to server', 'success'));
+    disconnectNotifyId = null;
   }
-  disconnectNotifyId = store.dispatch(notify('Connected to server', 'success'));
 });
 
 socket.on('templateChange', (template) => {
