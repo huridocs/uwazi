@@ -20,6 +20,7 @@ export default (app) => {
       metadata: Joi.object().keys({
         _id: Joi.objectId(),
         content: Joi.string().allow(''),
+        script: Joi.string().allow(''),
       }),
     }).required()),
 
