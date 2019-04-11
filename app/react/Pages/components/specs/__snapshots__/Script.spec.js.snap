@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PageCreator on componentDidMount should append script as self contained external script 1`] = `
+Object {
+  "args": Array [
+    <script
+      src="data:text/javascript,(function(){console.log(%22works!%22)%3B})()"
+    />,
+  ],
+  "object": <body />,
+  "returnValue": undefined,
+}
+`;
+
+exports[`PageCreator on componentDidUpdate should re-append script 1`] = `
+Object {
+  "args": Array [
+    <script
+      src="data:text/javascript,(function(){console.log(%22new%20script!%22)%3B})()"
+    />,
+  ],
+  "object": <body />,
+  "returnValue": undefined,
+}
+`;
