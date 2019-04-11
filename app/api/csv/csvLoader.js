@@ -40,9 +40,10 @@ const importEntity = async (template, rawEntity, { user = {}, language }) =>
   );
 
 export default class CSVLoader extends EventEmitter {
-  constructor() {
+  constructor(options = { stopOnError: true }) {
     super();
     this._errors = {};
+    this.stopOnError = options.stopOnError;
   }
 
   errors() {
@@ -52,15 +53,22 @@ export default class CSVLoader extends EventEmitter {
   async load(csvPath, templateId, options = { language: 'en' }) {
     const template = await templates.getById(templateId);
 
+    const readStream = fs.createReadStream(csvPath);
+
     await csv({
       delimiter: [',', ';']
     })
-    .fromStream(fs.createReadStream(csvPath))
+    .fromStream(readStream)
     .subscribe(async (rawEntity, index) => {
       try {
         const entity = await importEntity(template, toSafeName(rawEntity), options);
         this.emit('entityLoaded', entity);
       } catch (e) {
+        if (this.stopOnError) {
+          readStream.unpipe();
+          readStream.destroy();
+          throw e;
+        }
         this._errors[index] = e;
         this.emit('loadError', e, toSafeName(rawEntity), index);
       }

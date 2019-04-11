@@ -105,7 +105,25 @@ describe('csvLoader', () => {
     });
   });
 
-  describe('when errors happen', () => {
+  describe('on error', () => {
+    beforeAll(async () => {
+      spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
+      await db.clearAllAndLoad(fixtures);
+    });
+
+    it('should stop processing on the first error', async () => {
+      const testingLoader = new CSVLoader();
+
+      try {
+        await testingLoader.load(csvFile, template1Id);
+        fail('should fail');
+      } catch (e) {
+        expect(e).toEqual(new Error('error-title1'));
+      }
+    });
+  });
+
+  describe('no stop on errors', () => {
     beforeAll(async () => {
       spyOn(entities, 'save').and.callFake((entity) => {
         if (entity.title === 'title1' || entity.title === 'title3') {
@@ -117,7 +135,7 @@ describe('csvLoader', () => {
     });
 
     it('should emit an error', async () => {
-      const testingLoader = new CSVLoader();
+      const testingLoader = new CSVLoader({ stopOnError: false });
 
       const eventErrors = {};
       testingLoader.on('loadError', (error, entity) => {
@@ -135,7 +153,7 @@ describe('csvLoader', () => {
     });
 
     it('should save errors and index them by csv line, should throw an error on finish', async () => {
-      const testingLoader = new CSVLoader();
+      const testingLoader = new CSVLoader({ stopOnError: false });
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -157,7 +175,7 @@ describe('csvLoader', () => {
         return Promise.resolve();
       });
 
-      const testingLoader = new CSVLoader();
+      const testingLoader = new CSVLoader({ stopOnError: false });
 
       try {
         await testingLoader.load(csvFile, template1Id);
