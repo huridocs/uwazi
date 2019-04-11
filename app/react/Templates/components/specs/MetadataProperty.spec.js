@@ -64,10 +64,10 @@ function sourceTargetTestContext(Target, Source, actions) {
 
 describe('MetadataProperty', () => {
   let component;
-  let props;
 
   describe('commonProperty', () => {
     let editProperty;
+    let props;
     beforeEach(() => {
       const identity = x => x;
       editProperty = jasmine.createSpy('editProperty');
@@ -108,6 +108,7 @@ describe('MetadataProperty', () => {
   describe('simple component', () => {
     let removeProperty;
     let editProperty;
+    let props;
     beforeEach(() => {
       const identity = x => x;
       removeProperty = jasmine.createSpy('removeProperty');
