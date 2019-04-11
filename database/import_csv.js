@@ -2,7 +2,7 @@ import CSVLoader from 'api/csv';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import users from 'api/users/users';
 
-const { template, username, language, file } = require('yargs') // eslint-disable-line
+const { template, username, language, file, stop } = require('yargs') // eslint-disable-line
 .option('template', {
   alias: 't',
   describe: '_id of a template',
@@ -21,10 +21,16 @@ const { template, username, language, file } = require('yargs') // eslint-disabl
   describe: 'language to be used for the import',
   default: 'en',
 })
+.option('stop', {
+  alias: 's',
+  describe: 'stop when there is an error',
+  type: 'boolean',
+  default: false,
+})
 .demandOption(['template', 'file'], '\n\n')
 .argv;
 
-const loader = new CSVLoader();
+const loader = new CSVLoader({ stopOnError: stop });
 
 let loaded = 0;
 let errors = 0;
@@ -50,10 +56,18 @@ connect()
   process.stdout.write('\n\n');
   disconnect();
 })
-.catch(() => {
-  process.stdout.write('\n\n');
-  process.stdout.write(` 🎉 imported ${loaded} entities succesfully\n`);
-  process.stdout.write(` ‼ ${errors} entities had errors and were not imported\n`);
-  process.stdout.write('\n\n');
+.catch((e) => {
   disconnect();
+  process.stdout.write('\n\n');
+  if (stop) {
+    process.stdout.write('There was an error and importation stoped !!\n');
+    process.stdout.write(e.message);
+    process.stdout.write(e.stack);
+  }
+
+  if (!stop) {
+    process.stdout.write(` 🎉 imported ${loaded} entities succesfully\n`);
+    process.stdout.write(` ‼ ${errors} entities had errors and were not imported\n`);
+  }
+  process.stdout.write('\n\n');
 });
