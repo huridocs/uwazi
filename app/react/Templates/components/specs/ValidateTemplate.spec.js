@@ -64,5 +64,15 @@ describe('ValidateTemplate', () => {
       properties.push(prop);
       expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
     });
+
+    it('should allow new added relationship properties', () => {
+      properties = [
+        { localID: 'local0', label: 'Label1', type: 'text' },
+        { localID: 'local1', label: 'Label0', type: 'relationship', relationType: '1', content: '1' }
+      ];
+      const prop = { localID: 'local2', label: 'Label1', type: 'relationship' };
+      properties.push(prop);
+      expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
+    });
   });
 });
