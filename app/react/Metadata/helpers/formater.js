@@ -280,7 +280,7 @@ export default {
     const showInCard = property.get('showInCard');
 
     const type = property.get('type');
-    if (property.get('inherit')) {
+    if (property.get('inherit') && relationships) {
       return this.inherit(property, value, thesauris, { ...options, doc }, templates, relationships);
     }
 
