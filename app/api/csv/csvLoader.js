@@ -53,7 +53,8 @@ export default class CSVLoader extends EventEmitter {
   async load(csvPath, templateId, options = { language: 'en' }) {
     const template = await templates.getById(templateId);
 
-    const readStream = fs.createReadStream(csvPath);
+    const file = new ImportFile(csvPath);
+    const readStream = await file.readStream();
 
     await csv({
       delimiter: [',', ';']
