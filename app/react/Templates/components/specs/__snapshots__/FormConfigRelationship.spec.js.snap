@@ -72,6 +72,7 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
           Object {
             "_id": 3,
             "name": "Judge",
+            "properties": Array [],
             "type": "template",
           },
         ]
@@ -81,16 +82,6 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOption
-    label="Inherit property"
-    model="template.data.properties[0].inherit"
-  >
-    <Tip
-      icon="question-circle"
-    >
-      This property will be inherited from the related entities and shown as metadata of this type of entities.
-    </Tip>
-  </PropertyConfigOption>
   <PropertyConfigOptions
     canBeFilter={true}
     index={0}
@@ -176,6 +167,7 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
           Object {
             "_id": 3,
             "name": "Judge",
+            "properties": Array [],
             "type": "template",
           },
         ]
@@ -185,16 +177,6 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOption
-    label="Inherit property"
-    model="template.data.properties[0].inherit"
-  >
-    <Tip
-      icon="question-circle"
-    >
-      This property will be inherited from the related entities and shown as metadata of this type of entities.
-    </Tip>
-  </PropertyConfigOption>
   <PropertyConfigOptions
     canBeFilter={true}
     index={0}
@@ -280,6 +262,7 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
           Object {
             "_id": 3,
             "name": "Judge",
+            "properties": Array [],
             "type": "template",
           },
         ]
@@ -289,16 +272,6 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOption
-    label="Inherit property"
-    model="template.data.properties[0].inherit"
-  >
-    <Tip
-      icon="question-circle"
-    >
-      This property will be inherited from the related entities and shown as metadata of this type of entities.
-    </Tip>
-  </PropertyConfigOption>
   <PropertyConfigOptions
     canBeFilter={true}
     index={0}
@@ -384,6 +357,7 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
           Object {
             "_id": 3,
             "name": "Judge",
+            "properties": Array [],
             "type": "template",
           },
         ]
@@ -393,16 +367,6 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
       placeholder="Any entity or document"
     />
   </div>
-  <PropertyConfigOption
-    label="Inherit property"
-    model="template.data.properties[0].inherit"
-  >
-    <Tip
-      icon="question-circle"
-    >
-      This property will be inherited from the related entities and shown as metadata of this type of entities.
-    </Tip>
-  </PropertyConfigOption>
   <PropertyConfigOptions
     canBeFilter={true}
     index={0}

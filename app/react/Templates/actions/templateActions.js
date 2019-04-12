@@ -76,10 +76,22 @@ export function reorderProperty(originIndex, targetIndex) {
   };
 }
 
+const sanitize = (data) => {
+  data.properties = data.properties.map((_prop) => {
+    const prop = { ..._prop };
+    if (prop.inherit && !prop.content) {
+      prop.inherit = false;
+    }
+    return prop;
+  });
+  return data;
+};
+
 export function saveTemplate(data) {
+  const template = sanitize(data);
   return (dispatch) => {
     dispatch({ type: types.SAVING_TEMPLATE });
-    return api.save(data)
+    return api.save(template)
     .then((response) => {
       dispatch({ type: types.TEMPLATE_SAVED, data: response });
       dispatch(actions.update('templates', response));
