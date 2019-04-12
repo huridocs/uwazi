@@ -5,7 +5,6 @@ import debugLog from 'api/log/debugLog';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import fs from 'fs';
-import languages from 'shared/languages';
 import path from 'path';
 import relationships from 'api/relationships';
 
@@ -56,40 +55,29 @@ export default (app) => {
     debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
     res.json(req.files[0]);
 
-    const file = req.files[0].destination + req.files[0].filename;
-
     const sessionSockets = req.getCurrentSessionSockets();
     sessionSockets.emit('conversionStart', req.body.document);
     debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
+
+    const pdf = new PDF(req.files[0]);
     return Promise.all([
-      new PDF(file, req.files[0].originalname).convert(),
+      pdf.convert(),
       getDocuments(req.body.document, allLanguages, req.language),
-      file
+      pdf
     ]);
   })
-  .then(([conversion, _docs, file]) => {
+  .then(([conversion, _docs, pdf]) => {
     debugLog.debug(`Conversion succeeed for: ${req.files[0].originalname}`);
 
     const thumbnailCreations = [];
 
     const docs = _docs.map((doc) => {
       debugLog.debug(`Assigning Thumbnail creation for: ${doc._id.toString()}`);
-      thumbnailCreations.push(new PDF(file, req.files[0].originalname).createThumbnail(doc._id.toString()));
+      thumbnailCreations.push(pdf.createThumbnail(doc._id.toString()));
 
       return {
         ...doc,
-        processed: true,
-        fullText: conversion.fullText,
-        totalPages: conversion.totalPages,
-        formattedPlainTextPages: conversion.formatted,
-        file: {
-          ...doc.file,
-          language: languages.detect(
-            Object.values(conversion.fullTextWithoutPages).join(''),
-            'franc'
-          )
-        },
-        toc: []
+        ...conversion
       };
     });
 

@@ -42,7 +42,7 @@ export default {
           return;
         }
 
-        new PDF(path.join(uploadDocumentsPath, entity.file.filename)).convert()
+        new PDF({ filename: path.join(uploadDocumentsPath, entity.file.filename) }).extractText()
         .then((conversion) => {
           db.collection('entities').findOneAndUpdate(entity, { $set: { ...conversion } }, () => {
             process.stdout.write(`processed -> ${index}\r`);
@@ -52,8 +52,7 @@ export default {
             }
             cursor.resume();
           });
-        }).catch((e) => {
-          console.log(e);
+        }).catch(() => {
           db.collection('entities').findOneAndUpdate(entity, { $set: { fullText: { 1: '' } } }, () => {
             process.stdout.write(`processed -> ${index}\r`);
             index += 1;
