@@ -69,7 +69,7 @@ describe('templates', () => {
       });
     });
 
-    it('should validate properties not having repeated names and return an error', (done) => {
+    fit('should validate properties not having repeated names and return an error', (done) => {
       const newTemplate = {
         name: 'created_template',
         properties: [
@@ -84,13 +84,12 @@ describe('templates', () => {
       templates.save(newTemplate)
       .then(() => done.fail('properties have repeated names, should have failed with an error'))
       .catch((error) => {
-        expect(error.properties.message).toBe('duplicated_labels');
-        expect(error.properties.value).toEqual(['label 1', 'label 2']);
+        expect(error).toEqual({ code: 400, message: 'duplicated_labels: label 1, label 2' });
         done();
       });
     });
 
-    it('should validate properties not having repeated relationship fields', (done) => {
+    fit('should validate properties not having repeated relationship fields', (done) => {
       const newTemplate = {
         name: 'created_template',
         properties: [
@@ -106,8 +105,7 @@ describe('templates', () => {
       templates.save(newTemplate)
       .then(() => done.fail('properties have repeated relationships, should have failed with an error'))
       .catch((error) => {
-        expect(error.properties.message).toBe('duplicated_relationships');
-        expect(error.properties.value).toEqual(['label 1', 'label 2', 'label 5', 'label 6']);
+        expect(error).toEqual({ code: 400, message: 'duplicated_relationships: label 1, label 2, label 5, label 6' });
         done();
       });
     });

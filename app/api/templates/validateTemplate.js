@@ -1,4 +1,5 @@
 import validate from 'validate.js';
+import createError from 'api/utils/Error';
 
 validate.validators.duplicatedLabels = (properties) => {
   const labels = {};
@@ -24,7 +25,7 @@ validate.validators.duplicatedRelationship = (properties) => {
       return (!sameProperty && sameRelationType && (sameContent || isAnyTemplate));
     });
     if (matchingProperty) {
-      labels.push(property.label.toLowerCase());
+      labels.push(property.label);
     }
   });
 
@@ -42,8 +43,8 @@ const validateTemplate = template => new Promise((resolve, reject) => {
   });
 
   if (errors) {
-    errors.properties = errors.properties[0];
-    reject(errors);
+    const message = errors.properties.map(error => `${error.message}: ${error.value.join(', ')}`).join('. ');
+    reject(createError(message, 400));
   }
 
   resolve();

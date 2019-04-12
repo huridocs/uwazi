@@ -63,13 +63,13 @@ export default function (properties, templates, id) {
       return relationType && relationType.trim() !== '';
     };
 
-    validator[''][`properties.${index}.relationType.duplicated`] = (template) => {
-      if (!template.properties[index] || template.properties[index].type !== 'relationship') {
-        return true;
-      }
-      const prop = template.properties[index];
-      return validateDuplicatedRelationship(prop, template.properties);
-    };
+    // validator[''][`properties.${index}.relationType.duplicated`] = (template) => {
+    //   if (!template.properties[index] || template.properties[index].type !== 'relationship') {
+    //     return true;
+    //   }
+    //   const prop = template.properties[index];
+    //   return validateDuplicatedRelationship(prop, template.properties);
+    // };
   });
 
   return validator;
