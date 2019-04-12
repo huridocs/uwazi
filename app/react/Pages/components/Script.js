@@ -17,7 +17,7 @@ class Script extends Component {
     const { children } = this.props;
     if (children) {
       const s = document.createElement('script');
-      s.src = `data:text/javascript,(function(){${encodeURIComponent(children)}})()`;
+      s.src = `data:text/javascript,(function(){${encodeURIComponent(`\n\n${children}\n\n`)}})()`;
       document.body.appendChild(s);
     }
   }
