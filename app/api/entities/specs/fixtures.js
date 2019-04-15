@@ -60,7 +60,8 @@ export default {
     { title: 'title', _id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { select2: 'value' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
     { title: 'title', _id: db.id(), template: templateWithOnlySelect, sharedId: 'otherTemplateWithSelect', type: 'entity', language: 'es', metadata: { select: 'shared10' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
     { title: 'title', _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } },
-    { sharedId: 'shared2', language: 'en' }
+    { sharedId: 'shared2', language: 'en' },
+    { sharedId: 'source2', language: 'en' }
   ],
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] }

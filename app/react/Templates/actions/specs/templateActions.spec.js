@@ -121,6 +121,18 @@ describe('templateActions', () => {
     afterEach(() => backend.restore());
 
     describe('saveTemplate', () => {
+      it('should sanitize the properties before saving', () => {
+        spyOn(api, 'save').and.returnValue(Promise.resolve({}));
+        const originalTemplateData = { name: 'name',
+          properties: [{ localID: '1', label: 'label', type: 'relationship', inherit: true, relationType: '1', content: '' }]
+        };
+        actions.saveTemplate(originalTemplateData)(() => {});
+        expect(api.save).toHaveBeenCalledWith({
+          name: 'name',
+          properties: [{ content: '', inherit: false, label: 'label', localID: '1', relationType: '1', type: 'relationship' }]
+        });
+      });
+
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {
         spyOn(formActions, 'merge').and.returnValue({ type: 'mergeAction' });
         const originalTemplateData = { name: 'my template',

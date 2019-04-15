@@ -171,8 +171,8 @@ export default {
 
       return this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     })
-    .then(() => this.getById(sharedId, language))
-    .then((entity) => {
+    .then(() => this.getWithRelationships({ sharedId, language }))
+    .then(([entity]) => {
       if (updateRelationships) {
         return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
       }
