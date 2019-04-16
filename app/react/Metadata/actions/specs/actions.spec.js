@@ -16,13 +16,18 @@ const mockStore = configureMockStore(middlewares);
 
 describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
-    it('should load the document with default metadata properties if not present', () => {
+    beforeEach(() => {
+      spyOn(api, 'get');
+    });
+
+    it('should load the document with default metadata properties if not present', async () => {
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
       const dispatch = jasmine.createSpy('dispatch');
       const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      api.get.and.returnValue(Promise.resolve([doc]));
       const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
 
-      actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
+      await actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
       const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', newProp: '', testRelation: [] } };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
@@ -38,6 +43,7 @@ describe('Metadata Actions', () => {
         spyOn(reactReduxForm.actions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
         doc = { title: 'test' };
+        api.get.and.returnValue(Promise.resolve([doc]));
         templates = [{
           _id: 'templateId1',
           name: 'first',
@@ -61,8 +67,8 @@ describe('Metadata Actions', () => {
         }];
       });
 
-      it('should set the first template', () => {
-        actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
+      it('should set the first template', async () => {
+        await actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         const expectedDoc = {
           title: 'test',
@@ -72,15 +78,6 @@ describe('Metadata Actions', () => {
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
-        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-      });
-
-      it('should set the first document template', () => {
-        doc = { title: 'test', type: 'document' };
-
-        actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-
-        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId1' };
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });

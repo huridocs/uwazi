@@ -40,26 +40,26 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
   return resetedMetadata;
 };
 
-export function loadInReduxForm(form, onlyReadEntity, templates) {
+export function loadInReduxForm(form, _entity, templates) {
   return (dispatch) => {
-    const entity = Object.assign({}, onlyReadEntity);
+    api.get(_entity.sharedId)
+    .then(([entity]) => {
+      const sortedTemplates = advancedSort(templates, { property: 'name' });
+      const defaultTemplate = sortedTemplates.find(t => t.default);
+      if (!entity.template && defaultTemplate) {
+        entity.template = defaultTemplate._id;
+      }
 
-    const sortedTemplates = advancedSort(templates, { property: 'name' });
-    const defaultTemplate = sortedTemplates.find(t => t.default);
-    if (!entity.template && defaultTemplate) {
-      entity.template = defaultTemplate._id;
-    }
+      if (!entity.metadata) {
+        entity.metadata = {};
+      }
 
-    if (!entity.metadata) {
-      entity.metadata = {};
-    }
-
-    const template = sortedTemplates.find(t => t._id === entity.template) || emptyTemplate;
-    entity.metadata = resetMetadata(entity.metadata, template, { resetExisting: false }, template);
-
-    dispatch(formActions.reset(form));
-    dispatch(formActions.load(form, entity));
-    dispatch(formActions.setPristine(form));
+      const template = sortedTemplates.find(t => t._id === entity.template) || emptyTemplate;
+      entity.metadata = resetMetadata(entity.metadata, template, { resetExisting: false }, template);
+      dispatch(formActions.reset(form));
+      dispatch(formActions.load(form, entity));
+      dispatch(formActions.setPristine(form));
+    });
   };
 }
 
