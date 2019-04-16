@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { Form, Field } from 'react-redux-form';
+import { MarkDown } from 'app/ReactReduxForms';
 import { PageCreator } from '../PageCreator';
 
 describe('PageCreator', () => {
@@ -37,6 +38,12 @@ describe('PageCreator', () => {
       render();
       expect(component.find(Field).first().props().model).toBe('.title');
       expect(component.find(Field).first().parent().props().className).toBe('template-name form-group');
+    });
+
+    it('should hold the different input fields', () => {
+      render();
+      expect(component.find(MarkDown).props().model).toBe('.metadata.content');
+      expect(component.find('textarea').parent().props().model).toBe('.metadata.script');
     });
 
     describe('when Title is invalid', () => {

@@ -7,11 +7,14 @@ import React, { Component } from 'react';
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
 
+import Script from './Script';
+
 export class PageViewer extends Component {
   render() {
     const { page, itemLists } = this.props;
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
+    const scriptCode = page.getIn(['metadata', 'script']) || '';
 
     return (
       <div className="row">
@@ -22,6 +25,7 @@ export class PageViewer extends Component {
             <Footer/>
           </div>
         </main>
+        <Script>{scriptCode}</Script>
       </div>
     );
   }
