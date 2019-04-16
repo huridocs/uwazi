@@ -39,11 +39,12 @@ export default {
 
   async relationship(entityToImport, templateProperty) {
     const values = entityToImport[templateProperty.name].split('|')
+    .map(v => v.trim())
     .filter(emptyString)
     .filter(unique);
 
-    const current = await entities.get({ title: { $in: values } });
-    const newValues = values.filter(v => !current.map(c => c.title).includes(v));
+    const current = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${v}\\s?`, 'i')) } });
+    const newValues = values.filter(v => !current.map(c => c.title.trim()).includes(v));
 
     await newValues.reduce(
       async (promise, title) => {
@@ -61,22 +62,24 @@ export default {
       Promise.resolve([])
     );
 
-    const toRelateEntities = await entities.get({ title: { $in: values } });
+    const toRelateEntities = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${v}\\s?`, 'i')) } });
     return toRelateEntities.map(e => e.sharedId);
   },
 
   async multiselect(entityToImport, templateProperty) {
     const currentThesauri = await thesauris.getById(templateProperty.content);
+
     const values = entityToImport[templateProperty.name].split('|')
+    .map(v => v.trim())
     .filter(emptyString)
     .filter(unique);
 
     const newValues = values.filter(v =>
-      !currentThesauri.values.find(cv => cv.label === v));
+      !currentThesauri.values.find(cv => cv.label.trim() === v));
 
     if (!newValues.length) {
       return currentThesauri.values
-      .filter(value => values.includes(value.label))
+      .filter(value => values.includes(value.label.trim()))
       .map(value => value.id);
     }
 
@@ -99,7 +102,7 @@ export default {
     }
 
     const thesauriMatching =
-      v => v.label === entityToImport[templateProperty.name];
+      v => v.label.trim() === entityToImport[templateProperty.name].trim();
 
     const value = currentThesauri.values.find(thesauriMatching);
 
