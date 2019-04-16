@@ -34,7 +34,7 @@ export class MetadataTemplate extends Component {
   }
 
   onSubmitFailed() {
-    this.props.notify(t('System', 'Duplicated name', null, false), 'danger');
+    this.props.notify(t('System', 'The template contains errors', null, false), 'danger');
   }
 
   render() {

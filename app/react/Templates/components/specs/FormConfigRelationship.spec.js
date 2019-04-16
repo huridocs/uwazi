@@ -11,7 +11,7 @@ describe('FormConfigRelationship', () => {
   let props;
 
   beforeEach(() => {
-    templates = [{ _id: 3, name: 'Judge', type: 'template' }];
+    templates = [{ _id: 3, name: 'Judge', type: 'template', properties: [] }];
     relationTypes = [{ _id: 1, name: 'relationType1' }, { _id: 2, name: 'relationType2' }];
     props = {
       templates: Immutable.fromJS(templates),

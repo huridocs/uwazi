@@ -107,7 +107,11 @@ describe('Map', () => {
       map.stop.and.returnValue(map);
       instance.centerOnMarkers(_markers);
       expect(map.fitBounds)
-      .toHaveBeenCalledWith([[-21, 2], [32, 23]], { padding: { bottom: 20, left: 20, right: 20, top: 70 }, maxZoom: 5 }, { autoCentered: true });
+      .toHaveBeenCalledWith(
+        [[-21, 2], [32, 23]],
+        { padding: { bottom: 20, left: 20, right: 20, top: 70 }, maxZoom: 5, duration: 0 },
+        { autoCentered: true }
+      );
     });
   });
 

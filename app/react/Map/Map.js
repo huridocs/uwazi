@@ -160,7 +160,7 @@ export default class Map extends Component {
     }
     const map = this.map.getMap();
     const boundaries = getMarkersBoudingBox(markers);
-    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5 }, { autoCentered: true });
+    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5, duration: 0 }, { autoCentered: true });
   }
 
   zoom(amount) {
