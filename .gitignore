@@ -17,5 +17,8 @@ app/api/upload/specs/uploads/*
 !app/api/upload/specs/uploads/spn.pdf
 app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*
+custom_uploads/*
 !uploads/index.html
 !attachments/index.html
+!custom_uploads/.gitkeep
+
