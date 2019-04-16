@@ -69,7 +69,7 @@ describe('templates', () => {
       });
     });
 
-    it('should validate properties not having repeated names and return an error', (done) => {
+    fit('should validate properties not having repeated names and return an error', (done) => {
       const newTemplate = {
         name: 'created_template',
         properties: [
@@ -84,8 +84,28 @@ describe('templates', () => {
       templates.save(newTemplate)
       .then(() => done.fail('properties have repeated names, should have failed with an error'))
       .catch((error) => {
-        expect(error.properties.message).toBe('duplicated_labels');
-        expect(error.properties.value).toEqual(['label 1', 'label 2']);
+        expect(error).toEqual({ code: 400, message: 'duplicated_labels: label 1, label 2' });
+        done();
+      });
+    });
+
+    fit('should validate properties not having repeated relationship fields', (done) => {
+      const newTemplate = {
+        name: 'created_template',
+        properties: [
+          { _id: 1, label: 'label 1', type: 'relationship', relationType: '1', content: '1' },
+          { _id: 2, label: 'label 2', type: 'relationship', relationType: '1', content: '1' },
+          { _id: 3, label: 'label 3', type: 'relationship', relationType: '1', content: '2' },
+          { _id: 4, label: 'label 4', type: 'relationship', relationType: '2', content: '1' },
+          { _id: 5, label: 'label 5', type: 'relationship', relationType: '3', content: '1' },
+          { _id: 6, label: 'label 6', type: 'relationship', relationType: '3', content: '' }
+        ]
+      };
+
+      templates.save(newTemplate)
+      .then(() => done.fail('properties have repeated relationships, should have failed with an error'))
+      .catch((error) => {
+        expect(error).toEqual({ code: 400, message: 'duplicated_relationships: label 1, label 2, label 5, label 6' });
         done();
       });
     });
@@ -183,14 +203,14 @@ describe('templates', () => {
       });
 
       it('should update the translation context for it', (done) => {
-        const newTemplate = { name: 'created template', properties: [{ label: 'label 1' }, { label: 'label 2' }] };
+        const newTemplate = { name: 'created template', properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }] };
         spyOn(translations, 'updateContext');
         templates.save(newTemplate)
         .then((template) => {
           template.name = 'new title';
           template.properties[0].label = 'new label 1';
           template.properties.pop();
-          template.properties.push({ label: 'label 3' });
+          template.properties.push({ label: 'label 3', type: 'text' });
           translations.addContext.calls.reset();
           return templates.save(template);
         })

@@ -176,7 +176,7 @@ export default {
       const name = inheritedProperty.get('name');
       const reference = relationships.toJS().find(r => r.entity === referencedEntityId) || { entityData: { metadata: {} } };
       if (this[type] && (reference.entityData.metadata[name] || type === 'preview')) {
-        return this[type](property, reference.entityData.metadata[name], thesauris, options, templates);
+        return this[type](inheritedProperty, reference.entityData.metadata[name], thesauris, options, templates);
       }
 
       return { value: reference.entityData.metadata[name] };
@@ -280,7 +280,7 @@ export default {
     const showInCard = property.get('showInCard');
 
     const type = property.get('type');
-    if (property.get('inherit')) {
+    if (property.get('inherit') && relationships) {
       return this.inherit(property, value, thesauris, { ...options, doc }, templates, relationships);
     }
 
