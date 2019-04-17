@@ -43,6 +43,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
         files.map(async (f) => {
           try {
             await fs.unlink(path.join(paths.customUploadsPath, f));
+          // eslint-disable-next-line
           } catch (e) {}
         })
       );

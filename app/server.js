@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 import { Server } from 'http';
 import path from 'path';
 
-import { uploadDocumentsPath, customUploadsPath } from './api/config/paths';
+import { customUploadsPath } from './api/config/paths';
 import apiRoutes from './api/api';
 import authRoutes from './api/auth/routes';
 import dbConfig from './api/config/database';
