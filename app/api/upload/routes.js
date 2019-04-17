@@ -16,7 +16,7 @@ import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
 
-const storage = multer.diskStorage({
+export const storageConfig = {
   destination(req, file, cb) {
     const dir = req.route.path.includes('customisation') ?
       customUploadsPath : uploadDocumentsPath;
@@ -25,7 +25,9 @@ const storage = multer.diskStorage({
   filename(req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
   }
-});
+};
+
+const storage = multer.diskStorage(storageConfig);
 
 const deleteFile = filename => new Promise((resolve) => {
   entities.count({ 'file.filename': filename })
