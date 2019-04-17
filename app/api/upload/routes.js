@@ -10,22 +10,12 @@ import languages from 'shared/languages';
 import path from 'path';
 import relationships from 'api/relationships';
 
-import { uploadDocumentsPath, customUploadsPath } from '../config/paths';
+import { uploadDocumentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
-
-export const storageConfig = {
-  destination(req, file, cb) {
-    const dir = req.route.path.includes('customisation') ?
-      customUploadsPath : uploadDocumentsPath;
-    cb(null, path.normalize(`${dir}/`));
-  },
-  filename(req, file, cb) {
-    cb(null, Date.now() + ID() + path.extname(file.originalname));
-  }
-};
+import storageConfig from './storageConfig';
 
 const storage = multer.diskStorage(storageConfig);
 

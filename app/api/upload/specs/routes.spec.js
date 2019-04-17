@@ -2,7 +2,6 @@ import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import { mockID } from 'shared/uniqueID';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents';
 import entities from 'api/entities';
@@ -12,7 +11,7 @@ import search from 'api/search/search';
 
 import fixtures, { entityId, entityEnId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import uploadRoutes, { storageConfig } from '../routes.js';
+import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
 import pathsConfig from '../../config/paths';
@@ -101,40 +100,6 @@ describe('upload routes', () => {
     deleteThumbnails()
     .then(() => {
       db.disconnect().then(done);
-    });
-  });
-
-  describe('storageConfig', () => {
-    describe('destination', () => {
-      it('should return custom uploads path if url path contains customisation', (done) => {
-        req.route = {
-          path: '/api/customisation/upload'
-        };
-        storageConfig.destination(req, file, (e, dest) => {
-          expect(path.normalize(dest)).toBe(path.normalize(pathsConfig.customUploadsPath));
-          done();
-        });
-      });
-      it('should return uploaded documents path if url not a customisation path', (done) => {
-        req.route = {
-          path: '/api/upload'
-        };
-        storageConfig.destination(req, file, (e, dest) => {
-          expect(path.normalize(dest)).toBe(path.normalize(pathsConfig.uploadDocumentsPath));
-          done();
-        });
-      });
-    });
-    describe('filename', () => {
-      it('should generate filename based on unique id and original file extension', (done) => {
-        jest.spyOn(Date, 'now').mockReturnValue(1000);
-        mockID('fileid');
-        storageConfig.filename(req, file, (e, filename) => {
-          expect(filename).toBe('1000fileid.pdf');
-          Date.now.mockRestore();
-          done();
-        });
-      });
     });
   });
 
