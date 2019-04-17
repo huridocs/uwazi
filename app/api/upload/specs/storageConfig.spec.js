@@ -19,18 +19,13 @@ describe('storageConfig', () => {
       storageConfig.destination(req, file, cb);
     }
     it('should return custom uploads path if url path contains customisation', (done) => {
-      req.route = {
-        path: '/api/customisation/upload'
-      };
+      req.route.path = '/api/customisation/upload';
       testDestination((e, dest) => {
         expect(path.normalize(dest)).toBe(path.normalize(pathsConfig.customUploadsPath));
         done();
       });
     });
     it('should return uploaded documents path if url not a customisation path', (done) => {
-      req.route = {
-        path: '/api/upload'
-      };
       testDestination((e, dest) => {
         expect(path.normalize(dest)).toBe(path.normalize(pathsConfig.uploadDocumentsPath));
         done();

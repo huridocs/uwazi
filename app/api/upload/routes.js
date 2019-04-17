@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import multer from 'multer';
 
-import ID from 'shared/uniqueID';
 import debugLog from 'api/log/debugLog';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
