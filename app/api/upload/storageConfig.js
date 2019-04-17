@@ -1,6 +1,7 @@
 import path from 'path';
-import ID from 'shared/uniqueID';
 import { uploadDocumentsPath, customUploadsPath } from '../config/paths';
+import { generateFileName } from 'api/utils/files';
+
 
 const storageConfig = {
   destination(req, file, cb) {
@@ -9,7 +10,7 @@ const storageConfig = {
     cb(null, path.normalize(`${dir}/`));
   },
   filename(req, file, cb) {
-    cb(null, Date.now() + ID() + path.extname(file.originalname));
+    cb(null, generateFileName(file));
   }
 };
 

@@ -1,4 +1,7 @@
 import fs from 'fs';
+import path from 'path';
+
+import ID from 'shared/uniqueID';
 
 function deleteFile(file) {
   return new Promise((resolve, reject) => {
@@ -15,4 +18,7 @@ function deleteFiles(files) {
   return Promise.all(files.map(file => deleteFile(file)));
 }
 
-export { deleteFiles, deleteFile };
+const generateFileName = file =>
+  Date.now() + ID() + path.extname(file.originalname);
+
+export { deleteFiles, deleteFile, generateFileName };
