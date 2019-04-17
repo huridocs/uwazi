@@ -20,5 +20,5 @@ uploaded_documents/*
 custom_uploads/*
 !uploads/index.html
 !attachments/index.html
-!custom_uploads/.gitkeep
+!custom_uploads/index.html
 
