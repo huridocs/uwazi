@@ -26,6 +26,7 @@ describe('Uploads', () => {
     it('should show only filtered ones', (done) => {
       nightmare
       .library.editCard('Wolverine')
+      .wait('#metadataForm > div:nth-child(2) > ul > li.wide > select')
       .select('#metadataForm > div:nth-child(2) > ul > li.wide > select', comicCharacter)
       .library.saveCard()
       .refresh()
