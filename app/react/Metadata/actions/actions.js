@@ -42,7 +42,7 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
 
 export function loadInReduxForm(form, _entity, templates) {
   return (dispatch) => {
-    api.get(_entity.sharedId)
+    (_entity.sharedId ? api.get(_entity.sharedId) : Promise.resolve([_entity]))
     .then(([entity]) => {
       const sortedTemplates = advancedSort(templates, { property: 'name' });
       const defaultTemplate = sortedTemplates.find(t => t.default);

@@ -20,17 +20,23 @@ describe('Metadata Actions', () => {
       spyOn(api, 'get');
     });
 
-    it('should load the document with default metadata properties if not present', async () => {
+    it('should request the document and load with default metadata properties if not present', async () => {
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
       const dispatch = jasmine.createSpy('dispatch');
-      const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      const doc = { sharedId: '1', title: 'updated title', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
       api.get.and.returnValue(Promise.resolve([doc]));
       const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
 
-      await actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', newProp: '', testRelation: [] } };
+      await actions.loadInReduxForm('formNamespace', { sharedId: '1', title: 'old title' }, templates)(dispatch);
+      const expectedDoc = {
+        sharedId: '1',
+        title: 'updated title',
+        template: 'templateId',
+        metadata: { test: 'test', newProp: '', testRelation: [] }
+      };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(api.get).toHaveBeenCalledWith('1');
     });
 
     describe('When doc has no template', () => {
@@ -43,7 +49,6 @@ describe('Metadata Actions', () => {
         spyOn(reactReduxForm.actions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
         doc = { title: 'test' };
-        api.get.and.returnValue(Promise.resolve([doc]));
         templates = [{
           _id: 'templateId1',
           name: 'first',
