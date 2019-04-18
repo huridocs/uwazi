@@ -56,6 +56,8 @@ authRoutes(app);
 
 app.use(privateInstanceMiddleware);
 app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
+app.use('/assets', express.static(customUploadsPath));
+// retained for backwards compatibility
 app.use('/uploaded_documents', express.static(customUploadsPath));
 
 
