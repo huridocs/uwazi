@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 
-import { uploadDocumentsPath } from '../config/paths';
+import { customUploadsPath } from '../config/paths';
 import model from './uploadsModel';
 
 const deleteFile = filename => new Promise((resolve, reject) => {
-  fs.unlink(path.join(uploadDocumentsPath, filename), (err) => {
+  fs.unlink(path.join(customUploadsPath, filename), (err) => {
     if (err) {
       reject(err);
     }
