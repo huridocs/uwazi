@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import multer from 'multer';
 
-import ID from 'shared/uniqueID';
 import debugLog from 'api/log/debugLog';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
@@ -15,15 +14,9 @@ import { validateRequest } from '../utils';
 import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
+import storageConfig from './storageConfig';
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, path.normalize(`${uploadDocumentsPath}/`));
-  },
-  filename(req, file, cb) {
-    cb(null, Date.now() + ID() + path.extname(file.originalname));
-  }
-});
+const storage = multer.diskStorage(storageConfig);
 
 const deleteFile = filename => new Promise((resolve) => {
   entities.count({ 'file.filename': filename })
