@@ -5,6 +5,7 @@ import translations from 'api/i18n';
 
 import CSVLoader from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
+import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
 describe('csvLoader', () => {
@@ -185,6 +186,27 @@ describe('csvLoader', () => {
           1: new Error('error-title2'),
         });
       }
+    });
+  });
+
+  describe('when sharedId is provided', () => {
+    it('should update the entitiy', async () => {
+      const entity = await entities.save(
+        { title: 'entity', template: template1Id },
+        { user: {}, language: 'en' }
+      );
+      const csv = `id                , title    ,
+                   ${entity.sharedId}, new title,
+                                     , title2   ,`;
+
+      const testingLoader = new CSVLoader();
+      await testingLoader.load(stream(csv), template1Id, { language: 'en' });
+
+      const [expected] = await entities.get({
+        sharedId: entity.sharedId,
+        language: 'en'
+      });
+      expect(expected.title).toBe('new title');
     });
   });
 });

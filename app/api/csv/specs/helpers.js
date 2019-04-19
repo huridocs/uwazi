@@ -1,8 +1,9 @@
 import path from 'path';
 import yazl from 'yazl';
 import fs from 'fs';
+import { Readable } from 'stream';
 
-import async_fs from 'api/utils/async-fs';
+import asyncFs from 'api/utils/async-fs';
 
 import configPaths from '../../config/paths';
 
@@ -22,9 +23,18 @@ const createTestingZip = (filesToZip, fileName) =>
   });
 
 const fileExists = async fileName =>
-  async_fs.exists(path.join(configPaths.uploadDocumentsPath, fileName));
+  asyncFs.exists(path.join(configPaths.uploadDocumentsPath, fileName));
+
+const stream = string =>
+  new Readable({
+    read() {
+      this.push(string);
+      this.push(null);
+    }
+  });
 
 export {
+  stream,
   createTestingZip,
   fileExists
 };

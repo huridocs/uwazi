@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
+
 import { generateFileName } from 'api/utils/files';
 
 import zipFile from './zipFile';
@@ -7,6 +9,9 @@ import { uploadDocumentsPath } from '../config/paths';
 
 const ImportFile = filePath => ({
   async readStream(fileName) {
+    if (filePath instanceof Readable) {
+      return filePath;
+    }
     if (path.extname(filePath) === '.zip') {
       return zipFile(filePath).findReadStream(
         (entry) => {

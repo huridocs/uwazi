@@ -41,14 +41,20 @@ const conversion = async (importFile, fileName) => ({
   }).convert())
 });
 
+const currentEntityIdentifiers = async (rawEntity, language) =>
+  rawEntity.id ?
+    entities.get({ sharedId: rawEntity.id, language }, '_id sharedId').then(([e]) => e) :
+    {};
+
 const importEntity = async (template, rawEntity, importFile, { user = {}, language }) => {
   const entity = await entities.save(
-  {
-    title: rawEntity.title,
-    template: template._id,
-    metadata: await toMetadata(template, rawEntity),
-    ...(rawEntity.file ? await conversion(importFile, rawEntity.file) : {})
-  },
+    {
+      title: rawEntity.title,
+      template: template._id,
+      metadata: await toMetadata(template, rawEntity),
+      ...(await currentEntityIdentifiers(rawEntity, language)),
+      ...(rawEntity.file ? await conversion(importFile, rawEntity.file) : {})
+    },
     { user, language }
   );
   if (entity.file) {
