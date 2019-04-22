@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EntityInfo should wrap children in a div, passing classname 1`] = `
+<div
+  className="passed classnames"
+  onClick={[Function]}
+>
+  <span
+    key="1"
+  >
+    multiple
+  </span>
+  <b
+    key="2"
+  >
+    children
+  </b>
+</div>
+`;

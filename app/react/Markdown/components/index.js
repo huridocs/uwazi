@@ -16,6 +16,7 @@ import ListChart from './ListChart';
 import GaugeChart from './GaugeChart';
 import Value from './Value';
 import SearchBox from './SearchBox';
+import EntityInfo from './EntityInfo';
 
 export default {
   MarkdownMedia,
@@ -33,5 +34,6 @@ export default {
   Value,
   Icon,
   Map,
-  Link
+  Link,
+  EntityInfo,
 };
