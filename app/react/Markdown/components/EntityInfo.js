@@ -1,4 +1,3 @@
-// TEST!!!
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -19,21 +18,27 @@ class EntityInfo extends Component {
   }
 
   render() {
-    const { entity, classname, children } = this.props;
-    return <div className={classname} onClick={() => this.getAndSelect(entity)}>{children}</div>;
+    const { entity, tag, classname, children } = this.props;
+    return React.createElement(
+      tag,
+      { className: classname, onClick: () => this.getAndSelect(entity) },
+      children
+    );
   }
 }
 
 EntityInfo.defaultProps = {
   entity: '',
+  tag: 'div',
   children: '',
   classname: '',
 };
 
 EntityInfo.propTypes = {
   getAndSelectDocument: PropTypes.func.isRequired,
-  classname: PropTypes.string,
   entity: PropTypes.string,
+  tag: PropTypes.string,
+  classname: PropTypes.string,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,

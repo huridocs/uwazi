@@ -13,18 +13,23 @@ describe('EntityInfo', () => {
     spyOn(libraryActions, 'getAndSelectDocument');
   });
 
-  const render = () => {
+  const render = (customProps) => {
     props = {
       entity: 'sharedId',
       classname: 'passed classnames',
       children: [<span key="1">multiple</span>, <b key="2">children</b>]
     };
-    const mappedProps = { ...props, ...mapDispatchToProps(dispatch) };
+    const mappedProps = { ...props, ...customProps, ...mapDispatchToProps(dispatch) };
     component = shallow(<EntityInfo.WrappedComponent {...mappedProps}/>);
   };
 
   it('should wrap children in a div, passing classname', () => {
     render();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should allow changing the tag wrapping element', () => {
+    render({ tag: 'p' });
     expect(component).toMatchSnapshot();
   });
 
