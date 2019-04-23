@@ -13,10 +13,7 @@ export default {
   },
 
   async date(entityToImport, templateProperty) {
-    const date = new Date(entityToImport[templateProperty.name]);
-    const dateUTC = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(),
-      date.getHours(), date.getMinutes(), date.getSeconds());
-    return dateUTC / 1000;
+    return new Date(`${entityToImport[templateProperty.name]} UTC`).getTime() / 1000;
   },
 
   async link(entityToImport, templateProperty) {
