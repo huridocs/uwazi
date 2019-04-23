@@ -40,13 +40,15 @@ describe('csvLoader zip file', () => {
   });
 
   afterAll(async () => {
+    await fileUtils.deleteFiles([
+      path.join(configPaths.uploadDocumentsPath, 'generated1.pdf'),
+      path.join(configPaths.uploadDocumentsPath, 'generated2.pdf'),
+      path.join(configPaths.uploadDocumentsPath, 'generated3.pdf'),
+      path.join(configPaths.uploadDocumentsPath, `${imported[0]._id}.jpg`),
+      path.join(configPaths.uploadDocumentsPath, `${imported[1]._id}.jpg`),
+      path.join(configPaths.uploadDocumentsPath, `${imported[2]._id}.jpg`),
+    ]);
     await removeTestingZip();
-    fs.unlinkSync(path.join(configPaths.uploadDocumentsPath, 'generated1.pdf'));
-    fs.unlinkSync(path.join(configPaths.uploadDocumentsPath, 'generated2.pdf'));
-    fs.unlinkSync(path.join(configPaths.uploadDocumentsPath, 'generated3.pdf'));
-    fs.unlinkSync(path.join(configPaths.uploadDocumentsPath, `${imported[0]._id}.jpg`));
-    fs.unlinkSync(path.join(configPaths.uploadDocumentsPath, `${imported[1]._id}.jpg`));
-    fs.unlinkSync(path.join(configPaths.uploadDocumentsPath, `${imported[2]._id}.jpg`));
   });
 
   it('should save files into uploaded_documents', async () => {

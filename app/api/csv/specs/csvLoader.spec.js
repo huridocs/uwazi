@@ -9,7 +9,6 @@ import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
 describe('csvLoader', () => {
-  afterAll(async () => db.disconnect());
   const csvFile = path.join(__dirname, '/test.csv');
   const loader = new CSVLoader();
 
@@ -23,23 +22,11 @@ describe('csvLoader', () => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
   });
 
-  it('should use the passed language', async () => {
-    spyOn(entities, 'save').and.returnValue(Promise.resolve({}));
-    try {
-      await loader.load(csvFile, template1Id, { language: 'es' });
-    } catch (e) {
-      throw loader.errors()[Object.keys(loader.errors())[0]];
-    }
-    expect(entities.save.calls.argsFor(0)[1].language).toBe('es');
-  });
+  afterAll(async () => db.disconnect());
 
   it('should use the passed user', async () => {
     spyOn(entities, 'save').and.returnValue(Promise.resolve({}));
-    try {
-      await loader.load(csvFile, template1Id, { user: { username: 'user' } });
-    } catch (e) {
-      throw loader.errors()[Object.keys(loader.errors())[0]];
-    }
+    await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
     expect(entities.save.calls.argsFor(0)[1].user).toEqual({ username: 'user' });
   });
 
@@ -53,7 +40,7 @@ describe('csvLoader', () => {
       });
 
       try {
-        await loader.load(csvFile, template1Id);
+        await loader.load(csvFile, template1Id, { language: 'en' });
       } catch (e) {
         throw loader.errors()[Object.keys(loader.errors())[0]];
       }
@@ -107,13 +94,11 @@ describe('csvLoader', () => {
   });
 
   describe('on error', () => {
-    beforeAll(async () => {
-      spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
-      await db.clearAllAndLoad(fixtures);
-    });
-
     it('should stop processing on the first error', async () => {
       const testingLoader = new CSVLoader();
+
+      await db.clearAllAndLoad(fixtures);
+      spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
 
       try {
         await testingLoader.load(csvFile, template1Id);

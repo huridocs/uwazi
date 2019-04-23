@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 
 import entities from 'api/entities';
+import entitiesModel from 'api/entities/entitiesModel';
 
 import { deleteUploadedFile } from 'api/utils/files';
 import PDF from './PDF';
@@ -28,7 +29,7 @@ const processFile = async (docs, file) => {
   const convertedDocs = docs.map(doc => ({ ...doc, ...conversion }));
   await Promise.all(docs.map(doc => pdf.createThumbnail(doc._id.toString())));
 
-  return entities.saveMultiple(
+  return entitiesModel.save(
     convertedDocs.map(doc => ({
       ...doc,
       file: { ...doc.file, timestamp: Date.now() }

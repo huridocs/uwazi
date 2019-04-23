@@ -36,6 +36,7 @@ export default (app) => {
       })
       .start();
 
+      await entities.indexEntities({ sharedId: req.body.document }, '+fullText');
       socket(req).emit('documentProcessed', req.body.document);
     } catch (err) {
       errorLog.error(err);

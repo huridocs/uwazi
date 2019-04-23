@@ -1,68 +1,12 @@
-import csv from 'csvtojson';
-
 import EventEmitter from 'events';
-import entities from 'api/entities';
-import templates, { templateUtils } from 'api/templates';
-import PDF from 'api/upload/PDF';
 
-import typeParsers from './typeParsers';
-import ImportFile from './ImportFile';
+import templates from 'api/templates';
+import settings from 'api/settings';
 
-import { uploadDocumentsPath } from '../config/paths';
-
-const toSafeName = rawEntity =>
-  Object.keys(rawEntity).reduce(
-    (translatedObject, key) => ({
-      ...translatedObject,
-      [templateUtils.safeName(key)]: rawEntity[key]
-    }),
-    {}
-  );
-
-const toMetadata = async (template, entityToImport) =>
-  template.properties
-  .filter(prop => entityToImport[prop.name])
-  .reduce(
-    async (meta, prop) => ({
-      ...(await meta),
-      [prop.name]: typeParsers[prop.type] ?
-        await typeParsers[prop.type](entityToImport, prop) :
-        await typeParsers.default(entityToImport, prop)
-    }),
-    Promise.resolve({})
-  );
-
-const conversion = async (importFile, fileName) => ({
-  uploaded: true,
-  ...(await new PDF({
-    destination: uploadDocumentsPath,
-    originalname: fileName,
-    filename: await importFile.extractFile(fileName)
-  }).convert())
-});
-
-const currentEntityIdentifiers = async (rawEntity, language) =>
-  rawEntity.id ?
-    entities.get({ sharedId: rawEntity.id, language }, '_id sharedId').then(([e]) => e) :
-    {};
-
-const importEntity = async (template, rawEntity, importFile, { user = {}, language }) => {
-  const entity = await entities.save(
-    {
-      title: rawEntity.title,
-      template: template._id,
-      metadata: await toMetadata(template, rawEntity),
-      ...(await currentEntityIdentifiers(rawEntity, language)),
-      ...(rawEntity.file ? await conversion(importFile, rawEntity.file) : {})
-    },
-    { user, language }
-  );
-  if (entity.file) {
-    await new PDF({ ...entity.file, destination: uploadDocumentsPath })
-    .createThumbnail(entity._id.toString());
-  }
-  return entity;
-};
+import csv from './csv';
+import importFile from './importFile';
+import { importEntity, translateEntity } from './importEntity';
+import { extractEntity, toSafeName } from './entityRow';
 
 export default class CSVLoader extends EventEmitter {
   constructor(options = { stopOnError: true }) {
@@ -77,33 +21,32 @@ export default class CSVLoader extends EventEmitter {
 
   async load(csvPath, templateId, options = { language: 'en' }) {
     const template = await templates.getById(templateId);
+    const file = importFile(csvPath);
+    const availableLanguages = (await settings.get()).languages.map(l => l.key);
 
-    const file = ImportFile(csvPath);
-    const readStream = await file.readStream();
+    await csv(await file.readStream(), this.stopOnError)
+    .onRow(async (row) => {
+      const { rawEntity, rawTranslations } =
+        extractEntity(row, availableLanguages, options.language);
 
-    await new Promise((resolve, reject) => {
-      csv({
-        delimiter: [',', ';']
-      })
-      .fromStream(readStream)
-      .subscribe(async (rawEntity, index) => {
-        try {
-          const entity = await importEntity(template, toSafeName(rawEntity), file, options);
-          this.emit('entityLoaded', entity);
-        } catch (e) {
-          if (this.stopOnError) {
-            readStream.unpipe();
-            readStream.destroy();
-            throw e;
-          }
-          this._errors[index] = e;
-          this.emit('loadError', e, toSafeName(rawEntity), index);
-        }
-      }, reject, resolve);
-    });
+      const entity = await importEntity(rawEntity, template, file, options);
+      if (rawTranslations.length) {
+        await translateEntity(entity, rawTranslations, template, file);
+      }
+      this.emit('entityLoaded', entity);
+    })
+    .onError((e, row, index) => {
+      this._errors[index] = e;
+      this.emit('loadError', e, toSafeName(row), index);
+    })
+    .read();
+
+    if (Object.keys(this._errors).length === 1) {
+      throw this._errors[0];
+    }
 
     if (Object.keys(this._errors).length) {
-      throw new Error('errors ocurred !');
+      throw new Error('multiple errors ocurred !');
     }
   }
 }
