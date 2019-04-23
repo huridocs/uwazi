@@ -142,7 +142,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(_doc, { user, language }, updateRelationships = true) {
+  save(_doc, { user, language }, updateRelationships = true, index = true) {
     const doc = _doc;
 
     if (!doc.sharedId) {
@@ -179,7 +179,7 @@ export default {
 
       return [entity];
     })
-    .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
+    .then(([entity]) => index ? this.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity);
   },
 
   bulkProcessMetadataFromRelationships(query, language, limit = 200) {
@@ -243,7 +243,7 @@ export default {
   },
 
   multipleUpdate(ids, values, params) {
-    return Promise.all(ids.map(id => this.getById(id, params.language)
+    return ids.reduce((previousPromise, id) => previousPromise.then(() => this.getById(id, params.language))
     .then((entity) => {
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
@@ -255,8 +255,10 @@ export default {
       if (values.published !== undefined) {
         entity.published = values.published;
       }
-      return this.save(entity, params);
-    })));
+      return this.save(entity, params, true, false);
+    }), Promise.resolve())
+    .then(() => this.indexEntities({ sharedId: { $in: ids } }))
+    .then(() => ids);
   },
 
   getAllLanguages(sharedId) {
