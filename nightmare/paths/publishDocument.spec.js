@@ -126,16 +126,13 @@ describe('PublishDocument', () => {
     nightmare
     .waitForTheEntityToBeIndexed()
     .click(selectors.navigation.libraryNavButton)
-    .wait(400)
     .waitToClick(selectors.libraryView.libraryFirstDocument)
-    .wait(400)
     .waitToClick(selectors.libraryView.editEntityButton)
+    .wait(selectors.newEntity.form.type)
     .select(selectors.newEntity.form.type, '58ad7d240d44252fee4e6201')
     .waitToClick(selectors.libraryView.saveButton)
-    .wait(4000)
     .waitForTheEntityToBeIndexed()
     .refresh()
-    .wait(4000)
     .waitToClick(selectors.libraryView.libraryFirstDocument)
     .getInnerText(selectors.libraryView.sidePanelDocumentType)
     .then((text) => {

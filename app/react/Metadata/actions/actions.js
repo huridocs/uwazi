@@ -40,26 +40,19 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
   return resetedMetadata;
 };
 
-export function loadInReduxForm(form, onlyReadEntity, templates) {
+export function loadInReduxForm(form, _entity, templates) {
   return (dispatch) => {
-    const entity = Object.assign({}, onlyReadEntity);
-
-    const sortedTemplates = advancedSort(templates, { property: 'name' });
-    const defaultTemplate = sortedTemplates.find(t => t.default);
-    if (!entity.template && defaultTemplate) {
-      entity.template = defaultTemplate._id;
-    }
-
-    if (!entity.metadata) {
-      entity.metadata = {};
-    }
-
-    const template = sortedTemplates.find(t => t._id === entity.template) || emptyTemplate;
-    entity.metadata = resetMetadata(entity.metadata, template, { resetExisting: false }, template);
-
-    dispatch(formActions.reset(form));
-    dispatch(formActions.load(form, entity));
-    dispatch(formActions.setPristine(form));
+    (_entity.sharedId ? api.get(_entity.sharedId) : Promise.resolve([_entity]))
+    .then(([entity]) => {
+      const sortedTemplates = advancedSort(templates, { property: 'name' });
+      const defaultTemplate = sortedTemplates.find(t => t.default);
+      const template = entity.template || defaultTemplate._id;
+      const templateconfig = sortedTemplates.find(t => t._id === template) || emptyTemplate;
+      const metadata = resetMetadata(entity.metadata || {}, templateconfig, { resetExisting: false }, templateconfig);
+      dispatch(formActions.reset(form));
+      dispatch(formActions.load(form, { ...entity, metadata, template }));
+      dispatch(formActions.setPristine(form));
+    });
   };
 }
 

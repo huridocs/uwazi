@@ -69,7 +69,7 @@ describe('templates', () => {
       });
     });
 
-    fit('should validate properties not having repeated names and return an error', (done) => {
+    it('should validate properties not having repeated names and return an error', (done) => {
       const newTemplate = {
         name: 'created_template',
         properties: [
@@ -89,7 +89,7 @@ describe('templates', () => {
       });
     });
 
-    fit('should validate properties not having repeated relationship fields', (done) => {
+    it('should validate properties not having repeated relationship fields', (done) => {
       const newTemplate = {
         name: 'created_template',
         properties: [
