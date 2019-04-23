@@ -61,18 +61,17 @@ describe('csvLoader typeParsers', () => {
   describe('date', () => {
     it('should parse date and return a timestamp', async () => {
       const templateProp = { name: 'date_prop' };
-      let rawEntity = { date_prop: '2014' };
 
-      let expected = await typeParsers.date(rawEntity, templateProp);
+      let expected = await typeParsers.date({ date_prop: '2014' }, templateProp);
       expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('01-01-2014');
 
-      rawEntity = { date_prop: '2014 11 6' };
+      expected = await typeParsers.date({ date_prop: '2014 11 6' }, templateProp);
+      expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('06-11-2014');
 
-      expected = await typeParsers.date(rawEntity, templateProp);
+      expected = await typeParsers.date({ date_prop: '1/1/1996 00:00:00' }, templateProp);
+      expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
 
-      rawEntity = { date_prop: '1/1/1996 00:00:00' };
-
-      expected = await typeParsers.date(rawEntity, templateProp);
+      expected = await typeParsers.date({ date_prop: '1/1/1996 23:59:59' }, templateProp);
       expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
     });
   });
