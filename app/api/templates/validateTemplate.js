@@ -34,11 +34,25 @@ validate.validators.duplicatedRelationship = (properties) => {
   }
 };
 
+validate.validators.requiredInheritedProperty = (properties) => {
+  const labels = [];
+  properties.forEach((property) => {
+    if (property.inherit && !property.inheritProperty) {
+      labels.push(property.label);
+    }
+  });
+
+  if (labels.length) {
+    return { message: 'required_inherited_property', value: labels };
+  }
+};
+
 const validateTemplate = template => new Promise((resolve, reject) => {
   const errors = validate(template, {
       properties: {
         duplicatedLabels: true,
-        duplicatedRelationship: true
+        duplicatedRelationship: true,
+        requiredInheritedProperty: true,
       }
   });
 
