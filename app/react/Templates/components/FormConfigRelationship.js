@@ -20,11 +20,10 @@ export class FormConfigRelationship extends Component {
     const property = data.properties[index];
 
     const options = templates.toJS().filter(template => template._id !== data._id);
-
-    const requiredLabel = formState.$form.errors[`properties.${index}.label.required`];
-    const duplicatedLabel = formState.$form.errors[`properties.${index}.label.duplicated`];
+    const labelError = formState.$form.errors[`properties.${index}.label.required`] || formState.$form.errors[`properties.${index}.label.duplicated`];
     const relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
-    const labelClass = (requiredLabel || duplicatedLabel) ? 'form-group has-error' : 'form-group';
+    const inheritPropertyError = formState.$form.errors[`properties.${index}.inheritProperty.required`] && formState.$form.submitFailed;
+    const labelClass = labelError ? 'form-group has-error' : 'form-group';
     const template = templates.toJS().find(t => formState.properties[index].content && t._id === formState.properties[index].content.value);
     const templateProperties = template ? template.properties : [];
 
@@ -62,7 +61,7 @@ export class FormConfigRelationship extends Component {
           </PropertyConfigOption>
         )}
         { Boolean(formState.properties[index].inherit && formState.properties[index].inherit.value && templateProperties.length) && (
-          <div className="form-group">
+          <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
             <Select
               model={`template.data.properties[${index}].inheritProperty`}
               options={templateProperties}

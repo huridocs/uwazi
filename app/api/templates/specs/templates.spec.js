@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks */
+/* eslint-disable max-statements */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
@@ -106,6 +107,22 @@ describe('templates', () => {
       .then(() => done.fail('properties have repeated relationships, should have failed with an error'))
       .catch((error) => {
         expect(error).toEqual({ code: 400, message: 'duplicated_relationships: label 1, label 2, label 5, label 6' });
+        done();
+      });
+    });
+
+    it('should validate required inherited property', (done) => {
+      const newTemplate = {
+        name: 'created_template',
+        properties: [
+          { _id: 1, label: 'label 1', type: 'relationship', relationType: '1', inherit: true, content: '', inheritProperty: '' }
+        ]
+      };
+
+      templates.save(newTemplate)
+      .then(() => done.fail('properties have repeated relationships, should have failed with an error'))
+      .catch((error) => {
+        expect(error).toEqual({ code: 400, message: 'required_inherited_property: label 1' });
         done();
       });
     });
