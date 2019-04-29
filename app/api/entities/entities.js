@@ -398,7 +398,7 @@ export default {
       this.deleteFiles(docs),
       this.deleteEntityFromMetadata(docs[0].sharedId, docs[0].template)
     ])
-    .then(() => docs)).catch(console.log);
+    .then(() => docs));
   },
 
   async getRawPage(sharedId, language, pageNumber) {
