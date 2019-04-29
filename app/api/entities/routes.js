@@ -102,7 +102,7 @@ export default (app) => {
     }).required(), 'body'),
     (req, res, next) => {
       entities.deleteMultiple(req.body.sharedIds)
-      .then(response => res.json(response))
+      .then(() => res.json('ok'))
       .catch(next);
     });
 };
