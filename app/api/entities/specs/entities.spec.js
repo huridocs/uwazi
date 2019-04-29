@@ -849,8 +849,8 @@ describe('entities', () => {
       spyOn(entities, 'delete').and.returnValue(Promise.resolve());
       entities.deleteMultiple(['id1', 'id2'])
       .then(() => {
-        expect(entities.delete).toHaveBeenCalledWith('id1');
-        expect(entities.delete).toHaveBeenCalledWith('id2');
+        expect(entities.delete).toHaveBeenCalledWith('id1', false);
+        expect(entities.delete).toHaveBeenCalledWith('id2', false);
         done();
       })
       .catch(catchErrors(done));

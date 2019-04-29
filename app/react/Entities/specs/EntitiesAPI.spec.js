@@ -26,7 +26,7 @@ describe('EntitiesAPI', () => {
     .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
     .get(`${APIURL}entities?param1=1&_id=documentId`, { body: JSON.stringify({ rows: paramedResponse }) })
     .delete(`${APIURL}entities?sharedId=id`, { body: JSON.stringify({ backednResponse: 'testdelete' }) })
-    .delete(`${APIURL}entities/multiple?sharedIds=%5B%22id1%22%2C%22id2%22%5D`, { body: JSON.stringify({ backednResponse: 'testdeleteMultiple' }) })
+    .post(`${APIURL}entities/bulkdelete`, { body: JSON.stringify({ backednResponse: 'testdeleteMultiple' }) })
     .post(`${APIURL}entities`, { body: JSON.stringify({ backednResponse: 'test' }) })
     .post(`${APIURL}entities/multipleupdate`, { body: JSON.stringify({ backednResponse: 'test multiple' }) });
   });

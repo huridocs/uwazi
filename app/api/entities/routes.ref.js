@@ -120,17 +120,17 @@
 
 /**
 * @swagger
-* /entities/multiple:
-*   delete:
+* /entities/bulkdelete:
+*   post:
 *     tags:
 *       - entities
 *     description: Deletes multiple entities
 *     parameters:
 *       - name: sharedIds
-*         description: URL encoded array of the sharedId of the entities
-*         in:  query
+*         description: array of the sharedId of the entities
+*         in:  body
 *         required: true
-*         type: string
+*         type: array
 *         example: '["SHARED_ID_ONE","SHARED_ID_TWO"]'
 *     responses:
 *       200:

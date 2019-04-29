@@ -95,14 +95,14 @@ export default (app) => {
       .catch(next);
     });
 
-  app.delete('/api/entities/multiple',
+  app.post('/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
     validateRequest(Joi.object().keys({
       sharedIds: Joi.array().items(Joi.string()).required()
-    }).required(), 'query'),
+    }).required(), 'body'),
     (req, res, next) => {
-      entities.deleteMultiple(JSON.parse(req.query.sharedIds))
-      .then(response => res.json(response))
+      entities.deleteMultiple(req.body.sharedIds)
+      .then(() => res.json('ok'))
       .catch(next);
     });
 };
