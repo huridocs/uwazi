@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import ID from 'shared/uniqueID';
+import configPaths from '../config/paths';
 
 function deleteFile(file) {
   return new Promise((resolve, reject) => {
@@ -18,7 +19,10 @@ function deleteFiles(files) {
   return Promise.all(files.map(file => deleteFile(file)));
 }
 
+const deleteUploadedFile = filename =>
+  deleteFile(path.join(configPaths.uploadDocumentsPath, filename));
+
 const generateFileName = file =>
   Date.now() + ID() + path.extname(file.originalname);
 
-export { deleteFiles, deleteFile, generateFileName };
+export { deleteUploadedFile, deleteFiles, deleteFile, generateFileName };
