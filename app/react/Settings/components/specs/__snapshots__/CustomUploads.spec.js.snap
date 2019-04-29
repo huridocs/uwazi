@@ -45,7 +45,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
       >
         <Thumbnail
           alt=""
-          file="/uploaded_documents/file1"
+          file="/assets/file1"
         />
         <div
           className="info"
@@ -55,7 +55,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           <span
             className="thumbnail-url"
           >
-            /uploaded_documents/file1
+            /assets/file1
           </span>
           <ConfirmButton
             action={[Function]}
@@ -71,7 +71,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
       >
         <Thumbnail
           alt=""
-          file="/uploaded_documents/file2"
+          file="/assets/file2"
         />
         <div
           className="info"
@@ -81,7 +81,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
           <span
             className="thumbnail-url"
           >
-            /uploaded_documents/file2
+            /assets/file2
           </span>
           <ConfirmButton
             action={[Function]}

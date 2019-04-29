@@ -1,4 +1,4 @@
-import { validateDuplicatedLabel, validateDuplicatedRelationship } from '../ValidateTemplate';
+import { validateDuplicatedLabel, validateDuplicatedRelationship, validateRequiredInheritproperty } from '../ValidateTemplate';
 
 describe('ValidateTemplate', () => {
   let properties;
@@ -73,6 +73,13 @@ describe('ValidateTemplate', () => {
       const prop = { localID: 'local2', label: 'Label1', type: 'relationship' };
       properties.push(prop);
       expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
+    });
+  });
+
+  describe('validate required inherit property', () => {
+    it('should not pass validation when a property is check as inherit but has no inherit property selected', () => {
+      const prop = { localID: 'local1', label: 'Label0', type: 'relationship', inherit: true, relationType: '1', content: '1' };
+      expect(validateRequiredInheritproperty(prop, properties)).toBe(false);
     });
   });
 });

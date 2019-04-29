@@ -52,6 +52,12 @@ Object {
             "",
           ],
         },
+        "script": Object {
+          "type": "string",
+          "valids": Array [
+            "",
+          ],
+        },
       },
       "type": "object",
     },

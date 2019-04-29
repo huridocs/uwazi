@@ -38,7 +38,7 @@ describe('notificationsActions', () => {
       });
 
       describe('when delay is false', () => {
-        fit('should not remove the notification', () => {
+        it('should not remove the notification', () => {
           const message = 'message';
           const type = 'type';
           actions.notify(message, type, false)(dispatch);

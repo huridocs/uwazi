@@ -44,6 +44,25 @@ const removeWhitespacesInsideTableTags = html => html
 .replace(/((\/)?(table|thead|tbody|tr|th|td)>)[\s\n]+(<(\/)?(table|thead|tbody|tr|th|td))/g, '$1$4')
 .replace(/((\/)?(table|thead|tbody|tr|th|td)>)[\s\n]+(<(\/)?(table|thead|tbody|tr|th|td))/g, '$1$4');
 
+const getNodeTypeAndConfig = (_config, node, isCustomComponentPlaceholder, isCustomComponent) => {
+  let type;
+  let config = _config;
+
+  if (isCustomComponentPlaceholder) {
+    [, type] = node.children[0].data.match(customComponentTypeMatcher);
+    config = getConfig(node.children[0].data);
+  }
+
+  if (isCustomComponent) {
+    [, type] = node.data.match(customComponentTypeMatcher);
+    config = getConfig(node.data);
+  }
+
+  type = availableComponents.includes(node.name ? node.name.toLowerCase() : '') ? components[node.name.toLowerCase()] : type;
+
+  return { type, config };
+};
+
 export default (_markdown, callback, withHtml = false) => {
   let renderer = markdownIt;
   if (withHtml) {
@@ -52,8 +71,9 @@ export default (_markdown, callback, withHtml = false) => {
 
   const markdown = _markdown.replace(new RegExp(`(${customComponentMatcher})`, 'g'), '$1\n');
 
-  const html = removeWhitespacesInsideTableTags(renderer.render(markdown)
-  .replace(new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'), '<placeholder>$1</placeholder>'));
+  const html = removeWhitespacesInsideTableTags(
+    renderer.render(markdown).replace(new RegExp(`<p>(${customComponentMatcher})</p>`, 'g'), '<placeholder>$1</placeholder>')
+  );
 
   const isValidNode = (node) => {
     const isBadNode = node.type === 'tag' && node.name.match(/<|>/g);
@@ -67,43 +87,25 @@ export default (_markdown, callback, withHtml = false) => {
     shouldProcessNode() {
       return true;
     },
+
     processNode: (node, children, index) => {
       if (node.name && node.name.toLowerCase() === 'dataset') {
         return false;
       }
 
-      let type;
-      let config = node.attribs;
       const isCustomComponentPlaceholder = node.name === 'placeholder' &&
         node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
-
-      if (isCustomComponentPlaceholder) {
-        [, type] = node.children[0].data.match(customComponentTypeMatcher);
-        config = getConfig(node.children[0].data);
-      }
 
       const isCustomComponent = node && (!node.parent || node.parent && node.parent.name !== 'placeholder') &&
         node.data && node.data.match(customComponentMatcher);
 
-      if (isCustomComponent) {
-        [, type] = node.data.match(customComponentTypeMatcher);
-        config = getConfig(node.data);
-      }
+      const { type, config } = getNodeTypeAndConfig(node.attribs, node, isCustomComponentPlaceholder, isCustomComponent);
 
-      if (availableComponents.includes(node.name ? node.name.toLowerCase() : '')) {
-        type = components[node.name.toLowerCase()];
-      }
+      const newNode = callback(type, config, index, children);
 
-      let newNode = callback(type, config, index, children);
-
-      if (!newNode) {
-        newNode = processNodeDefinitions.processDefaultNode(node, children, index);
-      }
-
-      return newNode;
+      return newNode || processNodeDefinitions.processDefaultNode(node, children, index);
     }
   }];
-
 
   return myParser.parseWithInstructions(html, isValidNode, processingInstructions);
 };

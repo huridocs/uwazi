@@ -263,12 +263,10 @@ Object {
               "type": "boolean",
             },
             "inheritProperty": Object {
-              "invalids": Array [
-                "",
-              ],
               "type": "string",
               "valids": Array [
                 null,
+                "",
               ],
             },
             "inserting": Object {

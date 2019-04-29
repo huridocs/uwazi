@@ -46,7 +46,10 @@ export default {
     {
       _id: thesauri1Id,
       name: 'thesauri1',
-      values: [],
+      values: [{
+        label: ' value4 ',
+        id: db.id().toString(),
+      }],
     }
   ],
 

@@ -8,7 +8,8 @@ const pagesSchema = new mongoose.Schema({
   sharedId: String,
   creationDate: { type: Number, select: false },
   metadata: new mongoose.Schema({
-    content: String
+    content: String,
+    script: String,
   }),
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', select: false }
 });

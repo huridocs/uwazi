@@ -28,7 +28,7 @@ export default (app) => {
           defaultfilter: Joi.boolean(),
           required: Joi.boolean(),
           inherit: Joi.boolean(),
-          inheritProperty: Joi.string().allow(null),
+          inheritProperty: Joi.string().allow(null).allow(''),
           sortable: Joi.boolean(),
           showInCard: Joi.boolean(),
           fullWidth: Joi.boolean(),
