@@ -45,4 +45,15 @@ describe('TemplateLabel', () => {
     render();
     expect(component.prop('typeIndex')).toBe('btn-color btn-color-1');
   });
+
+  it('should cycle back through colors if there more than 18 templates', () => {
+    const templates = [];
+    for (let i = 0; i < 19; i += 1) {
+      templates.push({ _id: `templateId${i}`, name: `title ${i}` });
+    }
+    initialState.templates = immutable(templates);
+    props.template = 'templateId18';
+    render();
+    expect(component.prop('typeIndex')).toBe('btn-color btn-color-0');
+  });
 });

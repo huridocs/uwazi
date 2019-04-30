@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import t from '../I18N/t';
 
+const NUM_COLORS = 18;
+
 const getTemplateInfo = createSelector(
   s => s.templates,
   (s, p) => p.template,
@@ -11,7 +13,7 @@ const getTemplateInfo = createSelector(
     let typeIndex;
     const name = templates.reduce((result, template, index) => {
       if (template.get('_id') === currentTemplate) {
-        typeIndex = `btn-color btn-color-${index}`;
+        typeIndex = `btn-color btn-color-${index % NUM_COLORS}`;
         return template.get('name');
       }
       return result;
