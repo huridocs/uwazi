@@ -2,18 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { TwitterPicker } from 'react-color';
 
-const COLORS = [
-  '#C03B22', '#D9534F', '#E91E63', '#A03AB1',
-  '#6F46B8', '#3F51B5', '#2196F3', '#37BDCf',
-  '#359990', '#5CB85C', '#8BC34A', '#CDDC39',
-  '#CCBC2F', '#F0AD4E', '#EC9920', '#E46841',
-  '#795548', '#9E9E9E', '#607D8B'
-];
+import { COLORS } from 'app/utils/colors';
 
 class ColorPicker extends Component {
   constructor(props) {
     super(props);
-    this.state = { color: props.value, active: false };
+    this.state = { active: false };
     this.onButtonClick = this.onButtonClick.bind(this);
     this.onBlur = this.onBlur.bind(this);
     this.onColorChange = this.onColorChange.bind(this);
@@ -21,7 +15,6 @@ class ColorPicker extends Component {
 
   onColorChange({ hex }) {
     const { onChange } = this.props;
-    this.setState({ color: hex });
     onChange(hex);
   }
 
@@ -34,19 +27,20 @@ class ColorPicker extends Component {
   }
 
   render() {
-    const { color, active } = this.state;
+    const { active } = this.state;
+    const { value, defaultValue } = this.props;
     return (
       <div className="ColorPicker">
         <div
           className="ColorPicker__button"
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: value || defaultValue }}
           onClick={this.onButtonClick}
         />
         {active && (
           <div className="ColorPicker__popover">
             <div className="ColorPicker__cover" onClick={this.onBlur}/>
             <TwitterPicker
-              color={color}
+              color={value || defaultValue}
               colors={COLORS}
               onChangeComplete={this.onColorChange}
             />
@@ -58,11 +52,13 @@ class ColorPicker extends Component {
 }
 
 ColorPicker.defaultProps = {
-  value: ''
+  value: '',
+  defaultValue: ''
 };
 
 ColorPicker.propTypes = {
   value: PropTypes.string,
+  defaultValue: PropTypes.string,
   onChange: PropTypes.func.isRequired,
 };
 

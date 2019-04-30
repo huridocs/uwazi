@@ -9,12 +9,21 @@ import { FormGroup } from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import { notify } from 'app/Notifications';
+import { COLORS } from 'app/utils/colors';
 
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import validator from './ValidateTemplate';
+
+const getTemplateDefaultColor = (allTemplates, templateId) => {
+  if (!templateId) {
+    return COLORS[allTemplates.size % COLORS.length];
+  }
+  const index = allTemplates.findIndex(tpl => tpl.get('_id') === templateId);
+  return COLORS[index % COLORS.length];
+};
 
 export class MetadataTemplate extends Component {
   constructor(props) {
@@ -39,7 +48,7 @@ export class MetadataTemplate extends Component {
   }
 
   render() {
-    const { connectDropTarget } = this.props;
+    const { connectDropTarget, defaultColor } = this.props;
     const commonProperties = this.props.commonProperties || [];
     return (
       <div>
@@ -60,6 +69,10 @@ export class MetadataTemplate extends Component {
             <Control
               model=".color"
               component={ColorPicker}
+              defaultValue={defaultColor}
+              mapProps={{
+                defaultValue: props => props.defaultValue
+              }}
             />
           </div>
 
@@ -112,7 +125,8 @@ MetadataTemplate.propTypes = {
   notify: PropTypes.func,
   properties: PropTypes.array,
   commonProperties: PropTypes.array,
-  templates: PropTypes.object
+  templates: PropTypes.object,
+  defaultColor: PropTypes.string
 };
 
 const target = {
@@ -148,7 +162,8 @@ const mapStateToProps = ({ template, templates, relationTypes }, props) => {
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
     templates: _templates,
-    savingTemplate: template.uiState.get('savingTemplate')
+    savingTemplate: template.uiState.get('savingTemplate'),
+    defaultColor: getTemplateDefaultColor(templates, template.data._id)
   };
 };
 

@@ -2,9 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
+import { COLORS } from 'app/utils/colors';
 import t from '../I18N/t';
-
-const NUM_COLORS = 19;
 
 const getTemplateInfo = createSelector(
   s => s.templates,
@@ -15,7 +14,7 @@ const getTemplateInfo = createSelector(
       if (template.get('_id') === currentTemplate) {
         styleProps = template.get('color') ?
           { className: 'btn-color', style: { backgroundColor: template.get('color') } } :
-          { className: `btn-color btn-color-${index % NUM_COLORS}` };
+          { className: `btn-color btn-color-${index % COLORS.length}` };
         return template.get('name');
       }
       return result;
