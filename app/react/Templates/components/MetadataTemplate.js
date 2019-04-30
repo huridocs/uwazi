@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { DropTarget } from 'react-dnd';
 import { I18NLink, t } from 'app/I18N';
-import { actions as formActions, Field, Form } from 'react-redux-form';
+import { actions as formActions, Field, Form, Control } from 'react-redux-form';
 import { FormGroup } from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
@@ -13,6 +13,7 @@ import { notify } from 'app/Notifications';
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
+import ColorPicker from 'app/Forms/components/ColorPicker';
 import validator from './ValidateTemplate';
 
 export class MetadataTemplate extends Component {
@@ -56,6 +57,10 @@ export class MetadataTemplate extends Component {
                 <input placeholder="Template name" className="form-control"/>
               </Field>
             </FormGroup>
+            <Control
+              model=".color"
+              component={ColorPicker}
+            />
           </div>
 
           <ShowIf if={!this.props.relationType}>

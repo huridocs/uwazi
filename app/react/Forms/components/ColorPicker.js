@@ -1,0 +1,63 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { TwitterPicker } from 'react-color';
+
+const COLORS = [
+  '#C03B22', '#D9534F', '#E91E63', '#A03AB1',
+  '#6F46B8', '#3F51B5', '#2196F3', '#37BDCf',
+  '#359990', '#5CB85C', '#8BC34A', '#CDDC39',
+  '#CCBC2F', '#F0AD4E', '#EC9920', '#E46841',
+  '#795548', '#9E9E9E', '#607D8B'
+];
+
+class ColorPicker extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { color: props.value, active: false };
+    this.toggleActiveState = this.toggleActiveState.bind(this);
+    this.onColorChange = this.onColorChange.bind(this);
+  }
+
+  onColorChange({ hex }) {
+    const { onChange } = this.props;
+    this.setState({ color: hex });
+    onChange(hex);
+  }
+
+  toggleActiveState() {
+    this.setState(oldState => ({ active: !oldState.active }));
+  }
+
+  render() {
+    const { color, active } = this.state;
+    return (
+      <div className="ColorPicker" onBlur={this.toggleActiveState}>
+        <div
+          className="ColorPicker__display-box"
+          style={{ backgroundColor: color }}
+          onClick={this.toggleActiveState}
+        />
+        {active && (
+          <div className="ColorPicker__picker-container">
+            <TwitterPicker
+              color={color}
+              colors={COLORS}
+              onChangeComplete={this.onColorChange}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+}
+
+ColorPicker.defaultProps = {
+  value: ''
+};
+
+ColorPicker.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+export default ColorPicker;
