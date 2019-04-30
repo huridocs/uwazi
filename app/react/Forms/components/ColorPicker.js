@@ -14,7 +14,8 @@ class ColorPicker extends Component {
   constructor(props) {
     super(props);
     this.state = { color: props.value, active: false };
-    this.toggleActiveState = this.toggleActiveState.bind(this);
+    this.onButtonClick = this.onButtonClick.bind(this);
+    this.onBlur = this.onBlur.bind(this);
     this.onColorChange = this.onColorChange.bind(this);
   }
 
@@ -24,18 +25,22 @@ class ColorPicker extends Component {
     onChange(hex);
   }
 
-  toggleActiveState() {
+  onButtonClick() {
     this.setState(oldState => ({ active: !oldState.active }));
+  }
+
+  onBlur() {
+    this.setState({ active: false });
   }
 
   render() {
     const { color, active } = this.state;
     return (
-      <div className="ColorPicker" onBlur={this.toggleActiveState}>
+      <div className="ColorPicker" onBlur={this.onBlur}>
         <div
           className="ColorPicker__display-box"
           style={{ backgroundColor: color }}
-          onClick={this.toggleActiveState}
+          onClick={this.onButtonClick}
         />
         {active && (
           <div className="ColorPicker__picker-container">

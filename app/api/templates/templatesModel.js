@@ -32,6 +32,7 @@ const commonPropertiesSchema = new mongoose.Schema({
 
 const templateSchema = new mongoose.Schema({
   name: String,
+  color: { type: String, default: '' },
   default: Boolean,
   properties: [propertiesSchema],
   commonProperties: [commonPropertiesSchema]
