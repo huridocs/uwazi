@@ -36,14 +36,15 @@ class ColorPicker extends Component {
   render() {
     const { color, active } = this.state;
     return (
-      <div className="ColorPicker" onBlur={this.onBlur}>
+      <div className="ColorPicker">
         <div
-          className="ColorPicker__display-box"
+          className="ColorPicker__button"
           style={{ backgroundColor: color }}
           onClick={this.onButtonClick}
         />
         {active && (
-          <div className="ColorPicker__picker-container">
+          <div className="ColorPicker__popover">
+            <div className="ColorPicker__cover" onClick={this.onBlur}/>
             <TwitterPicker
               color={color}
               colors={COLORS}
