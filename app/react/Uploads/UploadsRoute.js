@@ -20,6 +20,7 @@ import { wrapDispatch } from 'app/Multireducer';
 
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
+import ImportPanel from 'app/Uploads/components/ImportPanel';
 
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
@@ -106,6 +107,7 @@ export default class Uploads extends RouteHandler {
         <LibraryFilters uploadsSection storeKey="uploads"/>
         <ViewMetadataPanel storeKey="uploads" searchTerm={query.searchTerm}/>
         <SelectMultiplePanelContainer storeKey="uploads"/>
+        <ImportPanel/>
       </div>
     );
   }

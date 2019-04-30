@@ -17,6 +17,18 @@ export function enterUploads() {
   };
 }
 
+export function showImportPanel() {
+  return (dispatch) => {
+    dispatch(basicActions.set('showImportPanel', true));
+  };
+}
+
+export function closeImportPanel() {
+  return (dispatch) => {
+    dispatch(basicActions.set('showImportPanel', false));
+  };
+}
+
 export function newEntity() {
   return (dispatch, getState) => {
     const newEntityMetadata = { title: '', type: 'entity' };
