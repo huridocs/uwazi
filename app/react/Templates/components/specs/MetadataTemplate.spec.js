@@ -8,7 +8,7 @@ import { shallow } from 'enzyme';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 
-import { MetadataTemplate, dropTarget } from 'app/Templates/components/MetadataTemplate';
+import { MetadataTemplate, dropTarget, mapStateToProps } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
 
@@ -189,6 +189,21 @@ describe('MetadataTemplate', () => {
 
         expect(actions.inserted).toHaveBeenCalledWith(index);
       });
+    });
+  });
+
+  describe('mapStateToProps', () => {
+    it('should select next available template color as defaultColor for new template', () => {
+      const template = { data: {}, uiState: Immutable.fromJS({}) };
+      const templates = Immutable.fromJS([{ _id: 'id1' }, { _id: 'id2' }, { _id: 'id3' }]);
+      const res = mapStateToProps({ template, templates }, {});
+      expect(res.defaultColor).toMatchSnapshot();
+    });
+    it('should select defaultColor based on template index if template already exists', () => {
+      const template = { data: { _id: 'id2' }, uiState: Immutable.fromJS({}) };
+      const templates = Immutable.fromJS([{ _id: 'id1' }, { _id: 'id2' }, { _id: 'id3' }]);
+      const res = mapStateToProps({ template, templates }, {});
+      expect(res.defaultColor).toMatchSnapshot();
     });
   });
 });

@@ -155,7 +155,7 @@ const dropTarget = DropTarget('METADATA_OPTION', target, connector => ({
 
 export { dropTarget };
 
-const mapStateToProps = ({ template, templates, relationTypes }, props) => {
+export const mapStateToProps = ({ template, templates, relationTypes }, props) => {
   const _templates = props.relationType ? relationTypes : templates;
   return {
     _id: template.data._id,
