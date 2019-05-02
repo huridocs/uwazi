@@ -73,6 +73,12 @@ Object {
       ],
       "type": "string",
     },
+    "color": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "commonProperties": Object {
       "flags": Object {
         "sparse": false,
