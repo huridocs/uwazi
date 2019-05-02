@@ -109,16 +109,13 @@ export default class MultiSelect extends Component {
     return sortedOptions;
   }
 
-  hoistCheckedOptions(options, optionsValue, optionsLabel, isSubGroup = false) {
-    let checkedOptions = [];
-    let otherOptions = [];
-    options.forEach((option) => {
+  hoistCheckedOptions(options) {
+    const [checkedOptions, otherOptions] = options.reduce(([checked, others], option) => {
       if (this.checked(option) || this.anyChildChecked(option)) {
-        checkedOptions.push(option);
-        return;
+        return [checked.concat([option]), others];
       }
-      otherOptions.push(option);
-    });
+      return [checked, others.concat([option])];
+    }, [[], []]);
     let partitionedOptions = checkedOptions.concat(otherOptions);
     const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
     if (noValueOption && !this.checked(noValueOption)) {

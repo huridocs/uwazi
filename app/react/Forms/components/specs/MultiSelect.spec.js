@@ -143,9 +143,6 @@ describe('MultiSelect', () => {
         onChange: jasmine.createSpy('onChange')
       };
     });
-    const render = () => {
-      component = shallow(<MultiSelect {...props}/>);
-    };
 
     it('should render the options', () => {
       render();
