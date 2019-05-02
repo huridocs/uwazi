@@ -12,7 +12,7 @@ export default (app) => {
       _id: Joi.string(),
       __v: Joi.number(),
       name: Joi.string().required(),
-      color: Joi.string(),
+      color: Joi.string().allow(''),
       default: Joi.boolean(),
       properties: Joi.array().required().items(
         Joi.object().keys({
