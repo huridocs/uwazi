@@ -27,7 +27,8 @@ function sourceTargetTestContext(Target, Source, actions) {
           connectDropTarget: identity,
           formState: { fields: {}, errors: {} },
           backUrl: 'url',
-          saveTemplate: jasmine.createSpy('saveTemplate')
+          saveTemplate: jasmine.createSpy('saveTemplate'),
+          defaultColor: '#112233'
         };
         const sourceProps = {
           label: 'source',
