@@ -256,7 +256,6 @@ export default class MultiSelect extends Component {
 
     if (tooManyOptions) {
       const numberOfActiveOptions = options.filter(opt => this.checked(opt)).length;
-      console.log('number of active options', numberOfActiveOptions);
       const optionsToShow = this.props.optionsToShow > numberOfActiveOptions ? this.props.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
     }
