@@ -188,10 +188,11 @@ export default {
       mainSuperpower: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > select',
       suporPowers: {
         fly: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-        laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
+        laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(8) > label',
+        moreButton: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(7) > button'
       },
       firstSighting: '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > input',
-      whoIsHe: '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
+      whoIsHe: '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
     },
     viewer: {
       title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',

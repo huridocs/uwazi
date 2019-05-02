@@ -35,6 +35,7 @@ describe('publish entity path', () => {
     .write(selectors.newEntity.form.age, '40')
     .waitToClick(selectors.newEntity.form.knownAccomplices.joker)
     .select(selectors.newEntity.form.mainSuperpower, 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb')
+    .waitToClick(selectors.newEntity.form.suporPowers.moreButton)
     .waitToClick(selectors.newEntity.form.suporPowers.fly)
     .wait(selectors.newEntity.form.suporPowers.laserBeam)
     .waitToClick(selectors.newEntity.form.suporPowers.laserBeam)
