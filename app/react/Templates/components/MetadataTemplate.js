@@ -126,7 +126,7 @@ MetadataTemplate.propTypes = {
   properties: PropTypes.array,
   commonProperties: PropTypes.array,
   templates: PropTypes.object,
-  defaultColor: PropTypes.string.isRequired
+  defaultColor: PropTypes.string
 };
 
 const target = {
