@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MetadataTemplate render() should render template color field 1`] = `
+<DefaultConnectedControl
+  component={[Function]}
+  defaultValue="#112233"
+  mapProps={
+    Object {
+      "defaultValue": [Function],
+    }
+  }
+  model=".color"
+/>
+`;

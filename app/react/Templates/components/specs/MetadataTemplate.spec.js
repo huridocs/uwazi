@@ -5,7 +5,7 @@ import { DragDropContext } from 'react-dnd';
 import { Provider } from 'react-redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import { modelReducer, formReducer, Field } from 'react-redux-form';
+import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 
 import { MetadataTemplate, dropTarget } from 'app/Templates/components/MetadataTemplate';
@@ -87,7 +87,8 @@ describe('MetadataTemplate', () => {
     connectDropTarget: x => x,
     formState: { fields: {} },
     templates: Immutable.fromJS([]),
-    saveTemplate: jasmine.createSpy('saveTemplate')
+    saveTemplate: jasmine.createSpy('saveTemplate'),
+    defaultColor: '#112233'
   };
 
   describe('render()', () => {
@@ -103,6 +104,11 @@ describe('MetadataTemplate', () => {
     it('should render the template name field', () => {
       const component = shallow(<MetadataTemplate {...props} />);
       expect(component.find(Field).getElements()[0].props.model).toBe('.name');
+    });
+
+    it('should render template color field', () => {
+      const component = shallow(<MetadataTemplate {...props} />);
+      expect(component.find(Control).first()).toMatchSnapshot();
     });
 
     describe('when fields is empty', () => {
