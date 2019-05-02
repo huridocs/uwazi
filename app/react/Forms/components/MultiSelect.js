@@ -109,6 +109,25 @@ export default class MultiSelect extends Component {
     return sortedOptions;
   }
 
+  hoistCheckedOptions(options, optionsValue, optionsLabel, isSubGroup = false) {
+    let checkedOptions = [];
+    let otherOptions = [];
+    options.forEach((option) => {
+      if (this.checked(option) || this.anyChildChecked(option)) {
+        checkedOptions.push(option);
+        return;
+      }
+      otherOptions.push(option);
+    });
+    let partitionedOptions = checkedOptions.concat(otherOptions);
+    const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
+    if (noValueOption && !this.checked(noValueOption)) {
+      partitionedOptions = partitionedOptions.filter(opt => !opt.noValueKey);
+      partitionedOptions.push(noValueOption);
+    }
+    return partitionedOptions;
+  }
+
   moreLessLabel(totalOptions) {
     if (this.state.showAll) {
       return t('System', 'x less');
@@ -227,12 +246,17 @@ export default class MultiSelect extends Component {
 
     const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
-    if (!this.props.noSort) {
+    if (this.props.sort) {
       options = this.sort(options, optionsValue, optionsLabel);
+    }
+
+    if (!this.props.sort && !this.state.showAll) {
+      options = this.hoistCheckedOptions(options);
     }
 
     if (tooManyOptions) {
       const numberOfActiveOptions = options.filter(opt => this.checked(opt)).length;
+      console.log('number of active options', numberOfActiveOptions);
       const optionsToShow = this.props.optionsToShow > numberOfActiveOptions ? this.props.optionsToShow : numberOfActiveOptions;
       options = options.slice(0, optionsToShow);
     }
@@ -291,7 +315,7 @@ MultiSelect.defaultProps = {
   optionsToShow: 5,
   showAll: false,
   hideSearch: false,
-  noSort: false,
+  sort: false,
   sortbyLabel: false
 };
 
@@ -306,6 +330,6 @@ MultiSelect.propTypes = {
   optionsToShow: PropTypes.number,
   showAll: PropTypes.bool,
   hideSearch: PropTypes.bool,
-  noSort: PropTypes.bool,
+  sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool
 };
