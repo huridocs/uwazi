@@ -35,6 +35,11 @@ export class TemplateLabel extends Component {
   }
 }
 
+TemplateLabel.defaultProps = {
+  className: 'btn-color',
+  style: undefined
+};
+
 TemplateLabel.propTypes = {
   template: PropTypes.string,
   name: PropTypes.string,
