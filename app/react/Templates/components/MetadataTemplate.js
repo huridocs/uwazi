@@ -4,16 +4,26 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { DropTarget } from 'react-dnd';
 import { I18NLink, t } from 'app/I18N';
-import { actions as formActions, Field, Form } from 'react-redux-form';
+import { actions as formActions, Field, Form, Control } from 'react-redux-form';
 import { FormGroup } from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import { notify } from 'app/Notifications';
+import { COLORS } from 'app/utils/colors';
 
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
+import ColorPicker from 'app/Forms/components/ColorPicker';
 import validator from './ValidateTemplate';
+
+const getTemplateDefaultColor = (allTemplates, templateId) => {
+  if (!templateId) {
+    return COLORS[allTemplates.size % COLORS.length];
+  }
+  const index = allTemplates.findIndex(tpl => tpl.get('_id') === templateId);
+  return COLORS[index % COLORS.length];
+};
 
 export class MetadataTemplate extends Component {
   constructor(props) {
@@ -38,7 +48,7 @@ export class MetadataTemplate extends Component {
   }
 
   render() {
-    const { connectDropTarget } = this.props;
+    const { connectDropTarget, defaultColor } = this.props;
     const commonProperties = this.props.commonProperties || [];
     return (
       <div>
@@ -56,6 +66,14 @@ export class MetadataTemplate extends Component {
                 <input placeholder="Template name" className="form-control"/>
               </Field>
             </FormGroup>
+            <Control
+              model=".color"
+              component={ColorPicker}
+              defaultValue={defaultColor}
+              mapProps={{
+                defaultValue: props => props.defaultValue
+              }}
+            />
           </div>
 
           <ShowIf if={!this.props.relationType}>
@@ -107,7 +125,8 @@ MetadataTemplate.propTypes = {
   notify: PropTypes.func,
   properties: PropTypes.array,
   commonProperties: PropTypes.array,
-  templates: PropTypes.object
+  templates: PropTypes.object,
+  defaultColor: PropTypes.string.isRequired
 };
 
 const target = {
@@ -136,14 +155,15 @@ const dropTarget = DropTarget('METADATA_OPTION', target, connector => ({
 
 export { dropTarget };
 
-const mapStateToProps = ({ template, templates, relationTypes }, props) => {
+export const mapStateToProps = ({ template, templates, relationTypes }, props) => {
   const _templates = props.relationType ? relationTypes : templates;
   return {
     _id: template.data._id,
     commonProperties: template.data.commonProperties,
     properties: template.data.properties,
     templates: _templates,
-    savingTemplate: template.uiState.get('savingTemplate')
+    savingTemplate: template.uiState.get('savingTemplate'),
+    defaultColor: getTemplateDefaultColor(templates, template.data._id)
   };
 };
 
