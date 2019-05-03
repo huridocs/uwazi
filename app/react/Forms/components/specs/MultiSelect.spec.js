@@ -142,10 +142,20 @@ describe('MultiSelect', () => {
         optionsLabel: 'name',
         onChange: jasmine.createSpy('onChange')
       };
-      component = shallow(<MultiSelect {...props}/>);
     });
 
-    it('should render the options by results and then by label', () => {
+    it('should render the options', () => {
+      render();
+      const optionElements = component.find('input[type="checkbox"]');
+
+      expect(optionElements.length).toBe(3);
+      expect(optionElements.first().props().value).toBe('option1');
+      expect(optionElements.last().props().value).toBe('option2');
+    });
+
+    it('should render the options by the result and then label if list is sorted', () => {
+      props.sort = true;
+      render();
       const optionElements = component.find('input[type="checkbox"]');
 
       expect(optionElements.length).toBe(3);

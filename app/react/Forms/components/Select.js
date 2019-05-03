@@ -4,20 +4,21 @@ import { advancedSort } from 'app/utils/advancedSort';
 
 export default class Select extends Component {
   render() {
-    const { options, optionsValue, optionsLabel, required, placeholder } = this.props;
-
-    const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
-
-    const sortedOptions = sortRoot ? advancedSort(options, { property: optionsLabel }) : options;
+    const { options, optionsValue, optionsLabel, required, placeholder, sort } = this.props;
+    let _options = options;
+    if (sort) {
+      const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
+      _options = sortRoot ? advancedSort(options, { property: optionsLabel }) : options;
+    }
 
     const disbaled = Boolean(required);
     return (
       <select className="form-control" onChange={this.props.onChange} value={this.props.value}>
         <option disbaled={disbaled.toString()} value="" >{placeholder}</option>;
-        {sortedOptions.map((option, index) => {
+        {_options.map((option, index) => {
           const key = option._id || option.id || index;
           if (option.options) {
-            const groupOptions = advancedSort(option.options, { property: optionsLabel });
+            const groupOptions = sort ? advancedSort(option.options, { property: optionsLabel }) : option.options;
             return (
               <optgroup key={key} label={option.label}>
                 {groupOptions.map((opt, indx) => {
@@ -39,7 +40,8 @@ Select.defaultProps = {
   optionsValue: 'value',
   optionsLabel: 'label',
   placeholder: 'Select...',
-  required: false
+  required: false,
+  sort: false,
 };
 
 Select.propTypes = {
@@ -49,5 +51,6 @@ Select.propTypes = {
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
-  required: PropTypes.bool
+  required: PropTypes.bool,
+  sort: PropTypes.bool
 };

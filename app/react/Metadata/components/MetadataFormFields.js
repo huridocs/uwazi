@@ -50,7 +50,7 @@ export class MetadataFormFields extends Component {
       if (!property.content) {
         thesauri = Array.prototype.concat(...thesauris.filter(filterThesauri => filterThesauri.type === 'template').map(translateOptions));
       }
-      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} />;
+      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />;
     case 'date':
       return <DatePicker model={_model} format={this.props.dateFormat}/>;
     case 'daterange':

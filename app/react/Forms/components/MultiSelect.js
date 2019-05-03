@@ -109,6 +109,22 @@ export default class MultiSelect extends Component {
     return sortedOptions;
   }
 
+  hoistCheckedOptions(options) {
+    const [checkedOptions, otherOptions] = options.reduce(([checked, others], option) => {
+      if (this.checked(option) || this.anyChildChecked(option)) {
+        return [checked.concat([option]), others];
+      }
+      return [checked, others.concat([option])];
+    }, [[], []]);
+    let partitionedOptions = checkedOptions.concat(otherOptions);
+    const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
+    if (noValueOption && !this.checked(noValueOption)) {
+      partitionedOptions = partitionedOptions.filter(opt => !opt.noValueKey);
+      partitionedOptions.push(noValueOption);
+    }
+    return partitionedOptions;
+  }
+
   moreLessLabel(totalOptions) {
     if (this.state.showAll) {
       return t('System', 'x less');
@@ -227,8 +243,12 @@ export default class MultiSelect extends Component {
 
     const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
-    if (!this.props.noSort) {
+    if (this.props.sort) {
       options = this.sort(options, optionsValue, optionsLabel);
+    }
+
+    if (!this.props.sort && !this.state.showAll) {
+      options = this.hoistCheckedOptions(options);
     }
 
     if (tooManyOptions) {
@@ -291,7 +311,7 @@ MultiSelect.defaultProps = {
   optionsToShow: 5,
   showAll: false,
   hideSearch: false,
-  noSort: false,
+  sort: false,
   sortbyLabel: false
 };
 
@@ -306,6 +326,6 @@ MultiSelect.propTypes = {
   optionsToShow: PropTypes.number,
   showAll: PropTypes.bool,
   hideSearch: PropTypes.bool,
-  noSort: PropTypes.bool,
+  sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool
 };
