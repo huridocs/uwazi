@@ -16,25 +16,34 @@ export default class PDF extends EventEmitter {
   }
 
   async extractText() {
-    const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
-    const pages = result.stdout.split('\f').slice(0, -1);
-    return {
-      fullText: pages.reduce(
-        (memo, page, index) => ({
-          ...memo,
-          [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`)
-        }),
-        {}
-      ),
-      fullTextWithoutPages: pages.reduce(
-        (memo, page, index) => ({
-          ...memo,
-          [index + 1]: page
-        }),
-        {}
-      ),
-      totalPages: pages.length
-    };
+    try {
+      const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
+      const pages = result.stdout.split('\f').slice(0, -1);
+      return {
+        fullText: pages.reduce(
+          (memo, page, index) => ({
+            ...memo,
+            [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`)
+          }),
+          {}
+        ),
+        fullTextWithoutPages: pages.reduce(
+          (memo, page, index) => ({
+            ...memo,
+            [index + 1]: page
+          }),
+          {}
+        ),
+        totalPages: pages.length
+      };
+    } catch (e) {
+      if (e.name === 'ChildProcessError') {
+        const _err = new Error(`${e.message}\nstderr output:\n${e.stderr}`);
+        _err.error = _err.message;
+        throw _err;
+      }
+      throw e;
+    }
   }
 
   async createThumbnail(documentId) {
