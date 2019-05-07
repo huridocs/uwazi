@@ -48,7 +48,9 @@ export default class MultiSelect extends Component {
     }
 
     if (option.options) {
-      return option.options.reduce((allIncluded, _option) => allIncluded && this.props.value.includes(_option[this.props.optionsValue]), true);
+      return option.options.length ?
+        option.options.reduce((allIncluded, _option) => allIncluded && this.props.value.includes(_option[this.props.optionsValue]), true) :
+        false;
     }
     return this.props.value.includes(option[this.props.optionsValue]);
   }

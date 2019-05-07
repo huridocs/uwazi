@@ -22,7 +22,7 @@ describe('MultiSelect', () => {
             { label: 'Group option1', value: 'group-option1', results: 2 },
             { label: 'Group option2', value: 'group-option2', results: 1 }
           ]
-        }
+        },
       ],
       onChange: jasmine.createSpy('onChange')
     };
@@ -53,6 +53,12 @@ describe('MultiSelect', () => {
   it('should display a not found message when there are no options', () => {
     props.options = [];
     props.sourceName = 'My List';
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should not render an empty group as selected', () => {
+    props.options.push({ label: 'Empty Group', value: 'empty', options: [] });
     render();
     expect(component).toMatchSnapshot();
   });
