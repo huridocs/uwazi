@@ -225,7 +225,7 @@ export default class MultiSelect extends Component {
   }
 
   render() {
-    let { optionsValue, optionsLabel, sourceName } = this.props;
+    let { optionsValue, optionsLabel } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
 
