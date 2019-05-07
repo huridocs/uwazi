@@ -215,8 +215,17 @@ export default class MultiSelect extends Component {
     );
   }
 
+  renderInfoForEmptyOptions() {
+    const { sourceName } = this.props;
+    const info = sourceName ? `No items of type '${sourceName}' found.` :
+      'No options found.';
+    return (
+      <span>{ info }</span>
+    );
+  }
+
   render() {
-    let { optionsValue, optionsLabel } = this.props;
+    let { optionsValue, optionsLabel, sourceName } = this.props;
     optionsValue = optionsValue || 'value';
     optionsLabel = optionsLabel || 'label';
 
@@ -279,6 +288,7 @@ export default class MultiSelect extends Component {
             </div>
           </ShowIf>
         </li>
+        {!options.length && this.renderInfoForEmptyOptions() }
         {options.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);
@@ -312,7 +322,8 @@ MultiSelect.defaultProps = {
   showAll: false,
   hideSearch: false,
   sort: false,
-  sortbyLabel: false
+  sortbyLabel: false,
+  sourceName: ''
 };
 
 MultiSelect.propTypes = {
@@ -327,5 +338,6 @@ MultiSelect.propTypes = {
   showAll: PropTypes.bool,
   hideSearch: PropTypes.bool,
   sort: PropTypes.bool,
-  sortbyLabel: PropTypes.bool
+  sortbyLabel: PropTypes.bool,
+  sourceName: PropTypes.string
 };
