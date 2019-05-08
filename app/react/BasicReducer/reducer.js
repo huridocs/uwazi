@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 
 const SET = 'SET';
 const UPDATE = 'UPDATE';
+const UPDATE_IN = 'UPDATE_IN';
 const UNSET = 'UNSET';
 const REMOVE = 'REMOVE';
 const PUSH = 'PUSH';
@@ -30,6 +31,13 @@ export default function createReducer(namespace, defaultValue) {
       }
       return currentState.set(index, Immutable.fromJS(action.value));
 
+    case `${namespace}/${UPDATE_IN}`:
+      index = currentState.getIn(action.key).findIndex(o => o.get('_id') === action.value._id);
+      if (index === -1) {
+        return currentState.setIn(action.key, currentState.getIn(action.key).push(Immutable.fromJS(action.value)));
+      }
+      return currentState.setIn([...action.key], currentState.getIn(action.key).set(index, Immutable.fromJS(action.value)));
+
     default:
       return Immutable.fromJS(currentState);
     }
@@ -39,6 +47,14 @@ export default function createReducer(namespace, defaultValue) {
 export function update(namespace, value) {
   return {
     type: `${namespace}/${UPDATE}`,
+    value
+  };
+}
+
+export function updateIn(namespace, key, value) {
+  return {
+    type: `${namespace}/${UPDATE_IN}`,
+    key,
     value
   };
 }

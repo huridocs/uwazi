@@ -235,6 +235,7 @@ export function saveDocument(doc, formKey) {
     dispatch(notify('Document updated', 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
+    dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     dispatch(selectSingleDocument(updatedDoc));
   });
 }
@@ -266,6 +267,7 @@ export function saveEntity(entity, formModel) {
     if (entity._id) {
       dispatch(notify('Entity updated', 'success'));
       dispatch(updateEntity(updatedDoc));
+      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     } else {
       dispatch(notify('Entity created', 'success'));
       dispatch(elementCreated(updatedDoc));
