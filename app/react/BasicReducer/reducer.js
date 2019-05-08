@@ -34,9 +34,9 @@ export default function createReducer(namespace, defaultValue) {
     case `${namespace}/${UPDATE_IN}`:
       index = currentState.getIn(action.key).findIndex(o => o.get('_id') === action.value._id);
       if (index === -1) {
-        return currentState.setIn(action.key, currentState.getIn(action.key).push(Immutable.fromJS(action.value)));
+        return currentState.updateIn(action.key, collection => collection.push(Immutable.fromJS(action.value)));
       }
-      return currentState.setIn([...action.key], currentState.getIn(action.key).set(index, Immutable.fromJS(action.value)));
+      return currentState.setIn([...action.key, index], Immutable.fromJS(action.value));
 
     default:
       return Immutable.fromJS(currentState);
