@@ -157,7 +157,7 @@ export class SortButtons extends Component {
                   className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
                   onClick={() => this.handleClick('_score')}
                 >
-                  <span>{t('System', 'Relevance')}</span>
+                  <span>{t('System', 'Search relevance')}</span>
                 </a>
               </li>
             )}
