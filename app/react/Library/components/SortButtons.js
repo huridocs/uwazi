@@ -150,7 +150,7 @@ export class SortButtons extends Component {
               { isActive: search.sort === 'creationDate', search, type: 'date' })}
             {search.searchTerm && (
               <li
-                key={'relevance'}
+                key='relevance'
                 className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
               >
                 <a
