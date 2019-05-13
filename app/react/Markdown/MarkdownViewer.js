@@ -44,7 +44,7 @@ class MarkdownViewer extends Component {
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {
-      result = <CustomComponents.MarkdownMedia key={index} config={config} />;
+      result = <CustomComponents.MarkdownMedia key={index} config={config} compact={this.props.compact}/>;
     }
 
     if (type === 'customhook') {
@@ -93,13 +93,15 @@ class MarkdownViewer extends Component {
 MarkdownViewer.defaultProps = {
   lists: [],
   markdown: '',
-  html: false
+  html: false,
+  compact: false
 };
 
 MarkdownViewer.propTypes = {
   markdown: PropTypes.string,
   lists: PropTypes.arrayOf(PropTypes.object),
-  html: PropTypes.bool
+  html: PropTypes.bool,
+  compact: PropTypes.bool
 };
 
 export default MarkdownViewer;

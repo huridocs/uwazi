@@ -20,7 +20,7 @@ const showByType = (prop, compact) => {
     result = <img key={prop.value} className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
     break;
   case 'media':
-    result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
+    result = <MarkdownViewer markdown={`{media}(${prop.value})`} compact/>;
     break;
   case 'geolocation':
     result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;

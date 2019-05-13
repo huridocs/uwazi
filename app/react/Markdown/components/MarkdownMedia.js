@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
 
@@ -42,14 +43,13 @@ class MarkdownMedia extends Component {
 
   render() {
     const config = propsToConfig(this.props);
-
+    const { compact } = this.props;
     return (
-      <div className="video-container">
+      <div className={`video-container ${compact ? 'compact' : ''}`}>
         <div>
           <ReactPlayer
             ref={(ref) => { this.player = ref; }}
             width="100%"
-            height="100%"
             url={config.url}
             controls
           />
@@ -61,5 +61,13 @@ class MarkdownMedia extends Component {
     );
   }
 }
+
+MarkdownMedia.defaultProps = {
+  compact: false
+};
+
+MarkdownMedia.propTypes = {
+  compact: PropTypes.bool
+};
 
 export default MarkdownMedia;
