@@ -50,6 +50,7 @@ describe('MultiSelect', () => {
     expect(groupAggregation.at(0)).toMatchSnapshot();
   });
 
+<<<<<<< HEAD
   it('should display a not found message when there are no options', () => {
     props.options = [];
     props.sourceName = 'My List';
@@ -58,6 +59,9 @@ describe('MultiSelect', () => {
   });
 
   it('should not render an empty group as selected', () => {
+=======
+  it('should not render an empty group', () => {
+>>>>>>> Do not render empty groups in multiselect fields
     props.options.push({ label: 'Empty Group', value: 'empty', options: [] });
     render();
     expect(component).toMatchSnapshot();
