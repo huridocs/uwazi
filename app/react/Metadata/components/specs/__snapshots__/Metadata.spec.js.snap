@@ -61,6 +61,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
       className=""
     >
       <MarkdownViewer
+        compact={false}
         html={false}
         lists={Array []}
         markdown="some markdown text"
@@ -83,6 +84,7 @@ exports[`Metadata should render a media field 1`] = `
       className=""
     >
       <MarkdownViewer
+        compact={true}
         html={false}
         lists={Array []}
         markdown="{media}(http://youtube.com/videoid)"
