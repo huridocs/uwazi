@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
+import { createError } from 'api/utils';
 
 export default class PDF extends EventEmitter {
   constructor(filepath) {
@@ -38,11 +39,9 @@ export default class PDF extends EventEmitter {
       };
     } catch (e) {
       if (e.name === 'ChildProcessError') {
-        const _err = new Error(`${e.message}\nstderr output:\n${e.stderr}`);
-        _err.error = _err.message;
-        throw _err;
+        throw createError(`${e.message}\nstderr output:\n${e.stderr}`);
       }
-      throw e;
+      throw createError(e.message);
     }
   }
 

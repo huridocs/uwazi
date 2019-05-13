@@ -105,8 +105,8 @@ export default (app) => {
     });
   })
   .catch((err) => {
-    errorLog.error(err.error);
-    debugLog.debug(err.error);
+    errorLog.error(err);
+    debugLog.debug(err);
 
     getDocuments(req.body.document, allLanguages, req.language)
     .then((docs) => {

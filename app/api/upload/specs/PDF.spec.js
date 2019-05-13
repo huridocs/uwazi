@@ -41,8 +41,7 @@ describe('PDF', () => {
         await pdf.convert();
         fail('should throw error');
       } catch (e) {
-        expect(e.error).toBe(e.message);
-        expect(e.error).toMatch(/may not be a pdf/i);
+        expect(e.message).toMatch(/may not be a pdf/i);
       }
     });
   });
