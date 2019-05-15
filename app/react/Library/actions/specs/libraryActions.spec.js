@@ -255,6 +255,7 @@ describe('libraryActions', () => {
           { type: notificationsTypes.NOTIFY, notification: { message: 'Document updated', type: 'success', id: 'unique_id' } },
           { type: 'rrf/reset', model: 'library.sidepanel.metadata' },
           { type: types.UPDATE_DOCUMENT, doc: 'response' },
+          { type: 'library.markers/UPDATE_IN', key: ['rows'], value: 'response' },
           { type: types.SELECT_SINGLE_DOCUMENT, doc: 'response' }
         ];
         const store = mockStore({});
