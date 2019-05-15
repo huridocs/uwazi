@@ -2,6 +2,7 @@ import React from 'react';
 
 import { ImportProgress } from 'app/Uploads/components/ImportProgress';
 import { shallow } from 'enzyme';
+import Immutable from 'immutable';
 
 describe('ImportProgress', () => {
   let component;
@@ -9,7 +10,7 @@ describe('ImportProgress', () => {
 
   beforeEach(() => {
     props = {
-      importState: { importStart: true, importProgress: 5, importError: '', importEnd: false },
+      importState: { importStart: true, importProgress: 5, importError: Immutable.fromJS({}), importEnd: false },
       close: jasmine.createSpy('close'),
     };
   });
@@ -25,7 +26,7 @@ describe('ImportProgress', () => {
     });
 
     it('should render a state for errors', () => {
-      props.importState.importError = 'Something bad happened';
+      props.importState.importError = Immutable.fromJS({ message: 'Something bad happened' });
       render();
       expect(component).toMatchSnapshot();
     });

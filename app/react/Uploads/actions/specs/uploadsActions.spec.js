@@ -71,7 +71,7 @@ describe('uploadsActions', () => {
     it('should deactivate the flag in the state', () => {
       const dispatch = jasmine.createSpy('dispatch');
       actions.closeImportProgress()(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'importError/SET', value: '' });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'importError/SET', value: {} });
       expect(dispatch).toHaveBeenCalledWith({ type: 'importProgress/SET', value: 0 });
       expect(dispatch).toHaveBeenCalledWith({ type: 'importEnd/SET', value: false });
       expect(dispatch).toHaveBeenCalledWith({ type: 'importStart/SET', value: false });

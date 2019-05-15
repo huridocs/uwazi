@@ -240,7 +240,7 @@ describe('libraryActions', () => {
         actions.searchDocuments(
           { search: { searchTerm: 'batman' }, filters: { properties: [] } }, storeKey
         )(dispatch, getState);
-        expect(browserHistory.push).toHaveBeenCalledWith('/library/?view=chart&q=(searchTerm:batman,sort:_score)');
+        expect(browserHistory.push).toHaveBeenCalledWith('/library/?view=chart&q=(limit:30,searchTerm:batman,sort:_score)');
       });
     });
 

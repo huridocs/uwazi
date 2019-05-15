@@ -28,7 +28,8 @@ export class ImportPanel extends Component {
   }
 
   renderForm() {
-    const template = this.props.templates.find(templ => templ.get('default')).get('_id');
+    const { templates } = this.props;
+    const template = templates.find(templ => templ.get('default')).get('_id');
     return (
       <div>
         <div className="alert alert-info">
@@ -44,21 +45,21 @@ export class ImportPanel extends Component {
           <div className="form-group">
             <ul className="search__filter">
               <li>
-                <label><Translate>File</Translate></label>
+                <label htmlFor="file"><Translate>File</Translate></label>
               </li>
               <li className="wide">
-                <Control.file model=".file" accept=".zip,.csv" />
+                <Control.file id="file" model=".file" accept=".zip,.csv" />
               </li>
             </ul>
           </div>
           <div className="form-group">
             <ul className="search__filter">
               <li>
-                <label><Translate>Template</Translate></label>
+                <label htmlFor="template"><Translate>Template</Translate></label>
               </li>
               <li className="wide">
-                <Control.select model=".template" >
-                  {this.props.templates.map(t => <option key={t.get('_id')} value={t.get('_id')}>{t.get('name')}</option>)}
+                <Control.select id="template" model=".template" >
+                  {templates.map(t => <option key={t.get('_id')} value={t.get('_id')}>{t.get('name')}</option>)}
                 </Control.select>
               </li>
             </ul>

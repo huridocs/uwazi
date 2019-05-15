@@ -23,6 +23,7 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
   </div>
   <Connect(Icon)
     icon="times"
+    onClick={[Function]}
     style={
       Object {
         "cursor": "pointer",
@@ -46,11 +47,13 @@ exports[`ImportProgress rendering states should render a state for errors 1`] = 
     <Connect(Translate)>
       Import error
     </Connect(Translate)>
-    : 
-    Something bad happened
+    <p>
+      Something bad happened
+    </p>
   </div>
   <Connect(Icon)
     icon="times"
+    onClick={[Function]}
     style={
       Object {
         "cursor": "pointer",

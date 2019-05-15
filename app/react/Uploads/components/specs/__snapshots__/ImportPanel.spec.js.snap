@@ -29,12 +29,19 @@ exports[`ImportPanel rendering states should render a form 1`] = `
       <div
         className="force-ltr"
       >
-        You can upload a CSV or ZIP file to import large amount of entities, following this 
-        <a>
-          instructions
+        <Connect(Translate)>
+          Upload a ZIP or CSV file.
+        </Connect(Translate)>
+         
+        <a
+          href="https://github.com/huridocs/uwazi/wiki/Import-CSV"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <Connect(Translate)>
+            Import instructions
+          </Connect(Translate)>
         </a>
-         to format your data.
-        <br />
       </div>
     </div>
     <LocalForm
@@ -54,7 +61,9 @@ exports[`ImportPanel rendering states should render a form 1`] = `
           className="search__filter"
         >
           <li>
-            <label>
+            <label
+              htmlFor="file"
+            >
               <Connect(Translate)>
                 File
               </Connect(Translate)>
@@ -65,6 +74,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
           >
             <DefaultConnectedControlFile
               accept=".zip,.csv"
+              id="file"
               model=".file"
             />
           </li>
@@ -77,7 +87,9 @@ exports[`ImportPanel rendering states should render a form 1`] = `
           className="search__filter"
         >
           <li>
-            <label>
+            <label
+              htmlFor="template"
+            >
               <Connect(Translate)>
                 Template
               </Connect(Translate)>
@@ -87,6 +99,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
             className="wide"
           >
             <DefaultConnectedControlSelect
+              id="template"
               model=".template"
             >
               <option
@@ -112,7 +125,7 @@ exports[`ImportPanel rendering states should render a form 1`] = `
         type="submit"
       >
         <Connect(Icon)
-          icon="file"
+          icon="upload"
         />
         <span
           className="btn-label"
