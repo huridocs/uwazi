@@ -279,6 +279,7 @@ export default class MultiSelect extends Component {
             </div>
           </ShowIf>
         </li>
+        {!options.length && <span>{ t('System', 'No options found') }</span> }
         {options.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);

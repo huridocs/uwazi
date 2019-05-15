@@ -50,6 +50,13 @@ describe('MultiSelect', () => {
     expect(groupAggregation.at(0)).toMatchSnapshot();
   });
 
+  it('should display a not found message when there are no options', () => {
+    props.options = [];
+    props.sourceName = 'My List';
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
   describe('when checking an option', () => {
     it('should call onChange with the new value', () => {
       render();

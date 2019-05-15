@@ -117,6 +117,7 @@ export default [
 { key: 'No Table of Content description', label: 'Table of Content allows users to navigate easier throught the document.' },
 { key: 'No text match', label: 'No text match' },
 { key: 'No text match description', label: 'You can type something different in the search box to get some results.' },
+{ key: 'No options found', label: 'No options found' },
 { key: 'No property', label: 'Item does not have this property' },
 { key: 'No value', label: 'No value' },
 { key: 'No', label: 'No' },

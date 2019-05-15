@@ -1,5 +1,62 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MultiSelect should display a not found message when there are no options 1`] = `
+<ul
+  className="multiselect is-active"
+>
+  <li
+    className="multiselectActions"
+  >
+    <ShowIf
+      if={false}
+    >
+      <div
+        className="form-group"
+      >
+        <Connect(Icon)
+          icon="search"
+          onClick={[Function]}
+        />
+        <input
+          className="form-control"
+          onChange={[Function]}
+          placeholder="Search item"
+          type="text"
+          value=""
+        />
+      </div>
+    </ShowIf>
+  </li>
+  <span>
+    No options found
+  </span>
+  <li
+    className="multiselectActions"
+  >
+    <ShowIf
+      if={false}
+    >
+      <button
+        className="btn btn-xs btn-default"
+        onClick={[Function]}
+      >
+        <Connect(Icon)
+          icon="caret-down"
+        />
+        <i
+          className="fa fa-caret-down"
+        />
+        <span>
+          -5
+           
+          x more
+        </span>
+      </button>
+    </ShowIf>
+  </li>
+</ul>
+`;
+
 exports[`MultiSelect should not render aggregations on the groups when not defined 1`] = `
 <span
   className="multiselectItem-results"
