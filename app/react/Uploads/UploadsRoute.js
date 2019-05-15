@@ -21,13 +21,15 @@ import { wrapDispatch } from 'app/Multireducer';
 import UploadBox from 'app/Uploads/components/UploadBox';
 import UploadsHeader from 'app/Uploads/components/UploadsHeader';
 import ImportPanel from 'app/Uploads/components/ImportPanel';
-
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import socket from '../socket';
+
 
 export default class Uploads extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
+    this.refreshSearch = this.refreshSearch.bind(this);
   }
 
   static renderTools() {
@@ -79,9 +81,18 @@ export default class Uploads extends RouteHandler {
     );
   }
 
+  refreshSearch() {
+    super.getClientState();
+  }
+
   componentDidMount() {
     const dispatch = wrapDispatch(this.context.store.dispatch, 'uploads');
+    socket.on('IMPORT_CSV_END', this.refreshSearch);
     dispatch(enterLibrary());
+  }
+
+  componentWillUnmount() {
+    socket.removeListener('IMPORT_CSV_END', this.refreshSearch);
   }
 
   componentWillReceiveProps(nextProps) {

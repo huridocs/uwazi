@@ -29,6 +29,15 @@ export function closeImportPanel() {
   };
 }
 
+export function closeImportProgress() {
+  return (dispatch) => {
+    dispatch(basicActions.set('importProgress', 0));
+    dispatch(basicActions.set('importStart', false));
+    dispatch(basicActions.set('importEnd', false));
+    dispatch(basicActions.set('importError', ''));
+  };
+}
+
 export function newEntity() {
   return (dispatch, getState) => {
     const newEntityMetadata = { title: '', type: 'entity' };
@@ -44,6 +53,24 @@ export function createDocument(newDoc) {
     dispatch({ type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId });
     dispatch({ type: types.ELEMENT_CREATED, doc });
     return doc;
+  });
+}
+
+export function importData([file], template) {
+  return dispatch => new Promise((resolve) => {
+    superagent.post(`${APIURL}import`)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .field('template', template)
+    .attach('file', file, file.name)
+    .on('progress', (data) => {
+      dispatch(basicActions.set('importUploadProgress', Math.floor(data.percent)));
+    })
+    .on('response', (response) => {
+      dispatch(basicActions.set('importUploadProgress', 0));
+      resolve(JSON.parse(response.text));
+    })
+    .end();
   });
 }
 

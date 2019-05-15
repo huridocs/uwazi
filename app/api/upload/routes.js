@@ -6,6 +6,8 @@ import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import relationships from 'api/relationships';
 
+import CSVLoader from 'api/csv';
+import { uploadDocumentsPath } from '../config/paths';
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
@@ -57,6 +59,42 @@ export default (app) => {
     }).required()),
 
     (req, res) => uploadProcess(req, res)
+  );
+
+  app.post(
+    '/api/import',
+
+    needsAuthorization(['admin', 'editor']),
+
+    upload.any(),
+
+    validateRequest(Joi.object({
+      template: Joi.string().required()
+    }).required()),
+
+    (req, res) => {
+      const loader = new CSVLoader();
+      let loaded = 0;
+
+      loader.on('entityLoaded', () => {
+        loaded += 1;
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
+      });
+
+      loader.on('loadError', (error, entity, index) => {
+        console.log(error);
+        const formatedError = `an error ocurred importing entity number ${index} ${entity.title}`;
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', formatedError);
+      });
+
+      req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
+      loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
+      .then(() => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
+      }).catch(() => {});
+
+      res.json('ok');
+    }
   );
 
   app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {
