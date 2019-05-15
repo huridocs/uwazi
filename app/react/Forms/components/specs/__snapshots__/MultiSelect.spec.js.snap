@@ -28,7 +28,7 @@ exports[`MultiSelect should display a not found message when there are no option
     </ShowIf>
   </li>
   <span>
-    No items of type 'My List' found.
+    No options found
   </span>
   <li
     className="multiselectActions"

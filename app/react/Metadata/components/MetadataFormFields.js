@@ -34,7 +34,6 @@ const translateOptions = thesauri => thesauri.values.map((option) => {
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
-    let thesauriSourceName = '';
     const propertyType = property.type;
     switch (propertyType) {
     case 'select':
@@ -42,18 +41,17 @@ export class MetadataFormFields extends Component {
       return <Select model={_model} optionsValue="id" options={translateOptions(thesauri)}/>;
     case 'multiselect':
       thesauri = thesauris.find(opt => opt._id.toString() === property.content.toString());
-      return <MultiSelect model={_model} optionsValue="id" options={translateOptions(thesauri)} prefix={_model} sourceName={thesauri.name} />;
+      return <MultiSelect model={_model} optionsValue="id" options={translateOptions(thesauri)} prefix={_model} />;
     case 'relationship':
       if (property.content) {
         const source = (thesauris.find(opt => opt._id.toString() === property.content.toString()));
         thesauri = translateOptions(source);
-        thesauriSourceName = source.name;
       }
 
       if (!property.content) {
         thesauri = Array.prototype.concat(...thesauris.filter(filterThesauri => filterThesauri.type === 'template').map(translateOptions));
       }
-      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort sourceName={thesauriSourceName}/>;
+      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />;
     case 'date':
       return <DatePicker model={_model} format={this.props.dateFormat}/>;
     case 'daterange':
