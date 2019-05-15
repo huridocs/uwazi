@@ -8,7 +8,8 @@ import relationships from 'api/relationships';
 
 import CSVLoader from 'api/csv';
 import { uploadDocumentsPath } from '../config/paths';
-import { validateRequest } from '../utils';
+import { validateRequest, handleError } from '../utils';
+import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
@@ -81,17 +82,15 @@ export default (app) => {
         req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
       });
 
-      loader.on('loadError', (error, entity, index) => {
-        console.log(error);
-        const formatedError = `an error ocurred importing entity number ${index} ${entity.title}`;
-        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', formatedError);
+      loader.on('loadError', (error) => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(error));
       });
 
       req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
       loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
       .then(() => {
         req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
-      }).catch(() => {});
+      }).catch(console.log);
 
       res.json('ok');
     }

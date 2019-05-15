@@ -12,7 +12,6 @@ export class ImportProgress extends Component {
     if (!importStart && !importProgress) {
       return false;
     }
-
     if (importEnd) {
       return (
         <div className="alert alert-info">
@@ -25,12 +24,13 @@ export class ImportProgress extends Component {
       );
     }
 
-    if (importError) {
+    if (importError.get('message')) {
       return (
         <div className="alert alert-danger">
           <Icon icon="exclamation-triangle" size="2x" />
           <div className="force-ltr">
-            <Translate>Import error</Translate>: {importError}
+            <Translate>Import error</Translate>
+            <p>{importError.get('message')}</p>
           </div>
           <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
         </div>

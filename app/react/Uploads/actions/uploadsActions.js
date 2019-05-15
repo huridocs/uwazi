@@ -34,7 +34,7 @@ export function closeImportProgress() {
     dispatch(basicActions.set('importProgress', 0));
     dispatch(basicActions.set('importStart', false));
     dispatch(basicActions.set('importEnd', false));
-    dispatch(basicActions.set('importError', ''));
+    dispatch(basicActions.set('importError', {}));
   };
 }
 

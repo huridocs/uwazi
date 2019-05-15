@@ -3,6 +3,7 @@ import db from 'api/utils/testing_db';
 const entityId = db.id();
 const entityEnId = db.id();
 const uploadId = db.id();
+const templateId = db.id();
 
 export default {
   entities: [
@@ -12,11 +13,18 @@ export default {
   uploads: [
     { _id: uploadId, originalname: 'upload1' },
     { _id: db.id(), originalname: 'upload2' },
-  ]
+  ],
+  templates: [
+    { _id: templateId, default: true, name: 'mydoc', properties: [] }
+  ],
+  settings: [
+    { _id: db.id(), languages: [{ key: 'es', default: true }] }
+  ],
 };
 
 export {
   entityId,
   entityEnId,
   uploadId,
+  templateId,
 };

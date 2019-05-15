@@ -82,7 +82,7 @@ export default class Uploads extends RouteHandler {
   }
 
   refreshSearch() {
-    super.getClientState();
+    super.getClientState(this.props);
   }
 
   componentDidMount() {

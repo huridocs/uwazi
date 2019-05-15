@@ -34,7 +34,10 @@ export class ImportPanel extends Component {
         <div className="alert alert-info">
           <Icon icon="info-circle" size="2x" />
           <div className="force-ltr">
-          Upload a ZIP or CSV file. <a rel="noopener noreferrer" href="https://github.com/huridocs/uwazi/wiki/Import-CSV" target="_blank">Import instructions</a><br/>
+            <Translate>Upload a ZIP or CSV file.</Translate>&nbsp;
+            <a rel="noopener noreferrer" href="https://github.com/huridocs/uwazi/wiki/Import-CSV" target="_blank">
+              <Translate>Import instructions</Translate>
+            </a>
           </div>
         </div>
         <LocalForm onSubmit={this.handleSubmit} id="import" initialState={{ template }}>
@@ -64,7 +67,7 @@ export class ImportPanel extends Component {
         </LocalForm>
         <div className="sidepanel-footer">
           <button form="import" type="submit" className="btn btn-primary">
-            <Icon icon="file" /><span className="btn-label"><Translate>Import</Translate></span>
+            <Icon icon="upload" /><span className="btn-label"><Translate>Import</Translate></span>
           </button>
         </div>
       </div>

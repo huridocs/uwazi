@@ -52,5 +52,5 @@ socket.on('translationsChange', (translations) => {
 
 socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', true)));
 socket.on('IMPORT_CSV_PROGRESS', progress => store.dispatch(actions.set('importProgress', progress)));
-socket.on('IMPORT_CSV_ERROR', error => store.dispatch(actions.set('importError', JSON.stringify(error))));
+socket.on('IMPORT_CSV_ERROR', error => store.dispatch(actions.set('importError', error)));
 socket.on('IMPORT_CSV_END', () => store.dispatch(actions.set('importEnd', true)));

@@ -7,5 +7,5 @@ export default combineReducers({
   importProgress: createReducer('importProgress', 0),
   importStart: createReducer('importStart', false),
   importEnd: createReducer('importEnd', false),
-  importError: createReducer('importError', ''),
+  importError: createReducer('importError', {}),
 });
