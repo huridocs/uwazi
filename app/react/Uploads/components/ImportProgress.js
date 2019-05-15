@@ -5,6 +5,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { bindActionCreators } from 'redux';
 import { closeImportProgress } from 'app/Uploads/actions/uploadsActions';
+import Immutable from 'immutable';
 
 export class ImportProgress extends Component {
   render() {
@@ -49,7 +50,12 @@ export class ImportProgress extends Component {
 }
 
 ImportProgress.propTypes = {
-  importState: PropTypes.object.isRequired,
+  importState: PropTypes.shape({
+    importStart: PropTypes.bool.isRequired,
+    importEnd: PropTypes.bool.isRequired,
+    importProgress: PropTypes.number.isRequired,
+    importError: PropTypes.instanceOf(Immutable.Map).isRequired
+  }).isRequired,
   close: PropTypes.func.isRequired
 };
 
