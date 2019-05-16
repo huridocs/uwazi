@@ -34,6 +34,16 @@ describe('PDF', () => {
       const conversion = await pdf.convert();
       expect(conversion.totalPages).toBe(11);
     });
+
+    it('should throw error with proper error message pdf is invalid or malformed', async () => {
+      pdf = new PDFObject(`${__dirname}/1invalid.test.pdf`);
+      try {
+        await pdf.convert();
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/may not be a pdf/i);
+      }
+    });
   });
 
   describe('createThumbnail', () => {

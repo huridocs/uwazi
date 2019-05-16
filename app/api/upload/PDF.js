@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
+import { createError } from 'api/utils';
 
 export default class PDF extends EventEmitter {
   constructor(filepath) {
@@ -16,25 +17,32 @@ export default class PDF extends EventEmitter {
   }
 
   async extractText() {
-    const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
-    const pages = result.stdout.split('\f').slice(0, -1);
-    return {
-      fullText: pages.reduce(
-        (memo, page, index) => ({
-          ...memo,
-          [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`)
-        }),
-        {}
-      ),
-      fullTextWithoutPages: pages.reduce(
-        (memo, page, index) => ({
-          ...memo,
-          [index + 1]: page
-        }),
-        {}
-      ),
-      totalPages: pages.length
-    };
+    try {
+      const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
+      const pages = result.stdout.split('\f').slice(0, -1);
+      return {
+        fullText: pages.reduce(
+          (memo, page, index) => ({
+            ...memo,
+            [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`)
+          }),
+          {}
+        ),
+        fullTextWithoutPages: pages.reduce(
+          (memo, page, index) => ({
+            ...memo,
+            [index + 1]: page
+          }),
+          {}
+        ),
+        totalPages: pages.length
+      };
+    } catch (e) {
+      if (e.name === 'ChildProcessError') {
+        throw createError(`${e.message}\nstderr output:\n${e.stderr}`);
+      }
+      throw createError(e.message);
+    }
   }
 
   async createThumbnail(documentId) {
