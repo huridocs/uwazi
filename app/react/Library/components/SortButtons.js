@@ -132,13 +132,19 @@ export class SortButtons extends Component {
     this.setState({ active: !this.state.active });
   }
 
+  validateSearch() {
+    const { search } = this.props;
+    const _search = { ...search };
+    if (_search.sort === '_score' && !_search.searchTerm) {
+      _search.sort = 'creationDate';
+      _search.order = 'desc';
+    }
+    return _search;
+  }
+
   render() {
     const { templates } = this.props;
-    const search = { ...this.props.search };
-    if (!search.searchTerm && search.sort === '_score') {
-      search.sort = 'creationDate';
-      search.order = 'desc';
-    }
+    const search = this.validateSearch();
     const order = search.order === 'asc' ? 'up' : 'down';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
