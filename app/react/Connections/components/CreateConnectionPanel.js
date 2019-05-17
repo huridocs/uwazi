@@ -42,13 +42,13 @@ export class CreateConnectionPanel extends Component {
           <ul className="connections-list multiselect">
             {this.props.relationTypes.map(template => (
               <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')} className="multiselectItem">
-                <label className="multiselectItem-label">
+                <label className="multiselectItem-label" htmlFor={template.get('_id')}>
                   <span className="multiselectItem-icon">{this.renderCheckType(template)}</span>
                   <span className="multiselectItem-name">{template.get('name')}</span>
                 </label>
               </li>
 ))}
-          </ul>     
+          </ul>
         </div>
 
         <div className="sidepanel-footer">
