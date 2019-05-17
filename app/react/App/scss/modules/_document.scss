@@ -220,9 +220,12 @@ mark.searchTerm {
   .item {
     -webkit-flex-direction: row;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     min-height: auto;
     padding: 5px 15px 5px 15px;
     border-color: $c-grey-light !important;
+    margin-bottom: 0;
 
     &:hover {
       background-color: transparentize($c-primary-light, 0.7);
@@ -241,6 +244,8 @@ mark.searchTerm {
     .search-form {
       margin: 0 -15px;
     }
+
+    
   }
   .item-info {
     padding: 0;
