@@ -51,7 +51,12 @@ describe('PDF', () => {
     });
 
     it('should throw error with proper error message pdf is invalid or malformed', async () => {
-      pdf = new PDFObject(`${__dirname}/1invalid.test.pdf`);
+      const invalidFile = {
+        filename: '1invalid.test.pdf',
+        originalname: 'originalName.pdf',
+        destination: __dirname,
+      };
+      pdf = new PDFObject(invalidFile);
       try {
         await pdf.convert();
         fail('should throw error');

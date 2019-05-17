@@ -10,7 +10,7 @@ export default class PDF extends EventEmitter {
   constructor(file) {
     super();
     this.file = file;
-    this.filepath = path.join(file.destination || '', file.filename);
+    this.filepath = path.join(file.destination || '', file.filename || '');
   }
 
   getThumbnailPath(documentId) {
