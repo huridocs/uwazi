@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import entities from 'api/entities';
+import entities, { model } from 'api/entities';
 import thesauris from 'api/thesauris';
 import db from 'api/utils/testing_db';
 
@@ -189,10 +189,8 @@ describe('csvLoader typeParsers', () => {
     beforeAll(async () => {
       spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
 
-      await entities.save(
-        { title: '   value1  ', template: templateToRelateId },
-        { user: {}, language: 'en' }
-      );
+      await model.save({ title: '   value1  ', template: templateToRelateId, sharedId: '123', language: 'en' });
+      await model.save({ title: '   value1  ', template: templateToRelateId, sharedId: '123', language: 'es' });
       value1 = await typeParsers.relationship(
         { relationship_prop: 'value1|value3| value3' },
         templateProp
@@ -218,7 +216,7 @@ describe('csvLoader typeParsers', () => {
         templateProp
       );
 
-      entitiesRelated = await entities.get({ template: templateToRelateId });
+      entitiesRelated = await entities.get({ template: templateToRelateId, language: 'en' });
     });
 
     it('should create entities and return the ids', async () => {
