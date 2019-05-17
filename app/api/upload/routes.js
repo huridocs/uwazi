@@ -65,7 +65,7 @@ export default (app) => {
   app.post(
     '/api/import',
 
-    needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin']),
 
     upload.any(),
 

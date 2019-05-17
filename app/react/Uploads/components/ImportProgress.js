@@ -6,6 +6,7 @@ import { Icon } from 'UI';
 import { bindActionCreators } from 'redux';
 import { closeImportProgress } from 'app/Uploads/actions/uploadsActions';
 import Immutable from 'immutable';
+import StackTrace from 'app/components/Elements/StackTrace';
 
 export class ImportProgress extends Component {
   render() {
@@ -18,7 +19,9 @@ export class ImportProgress extends Component {
         <div className="alert alert-info">
           <Icon icon="check" size="2x" />
           <div className="force-ltr">
-            <Translate>Import completed</Translate>, {importProgress} <Translate>processed</Translate>
+            <Translate>Import completed:</Translate>&nbsp;{importProgress} <Translate>created</Translate>
+            <br/>
+            <Translate>Indexing entities may take a few minutes</Translate>
           </div>
           <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
         </div>
@@ -27,14 +30,17 @@ export class ImportProgress extends Component {
 
     if (importError.get('message')) {
       return (
-        <div className="alert alert-danger">
-          <Icon icon="exclamation-triangle" size="2x" />
-          <div className="force-ltr">
-            <Translate>Import error</Translate>
-            <p>{importError.get('message')}</p>
+        <div>
+          <div className="alert alert-danger">
+            <Icon icon="exclamation-triangle" size="2x" />
+            <div className="force-ltr">
+              <Translate>The import process throw an error:</Translate>
+            </div>
+            <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
           </div>
-          <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
+          <StackTrace message={importError.get('message')}/>
         </div>
+
       );
     }
 

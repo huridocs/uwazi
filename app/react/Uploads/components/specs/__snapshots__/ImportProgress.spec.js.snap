@@ -12,13 +12,17 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
     className="force-ltr"
   >
     <Connect(Translate)>
-      Import completed
+      Import completed:
     </Connect(Translate)>
-    , 
+     
     5
      
     <Connect(Translate)>
-      processed
+      created
+    </Connect(Translate)>
+    <br />
+    <Connect(Translate)>
+      Indexing entities may take a few minutes
     </Connect(Translate)>
   </div>
   <Connect(Icon)
@@ -34,31 +38,33 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
 `;
 
 exports[`ImportProgress rendering states should render a state for errors 1`] = `
-<div
-  className="alert alert-danger"
->
-  <Connect(Icon)
-    icon="exclamation-triangle"
-    size="2x"
-  />
+<div>
   <div
-    className="force-ltr"
+    className="alert alert-danger"
   >
-    <Connect(Translate)>
-      Import error
-    </Connect(Translate)>
-    <p>
-      Something bad happened
-    </p>
-  </div>
-  <Connect(Icon)
-    icon="times"
-    onClick={[Function]}
-    style={
-      Object {
-        "cursor": "pointer",
+    <Connect(Icon)
+      icon="exclamation-triangle"
+      size="2x"
+    />
+    <div
+      className="force-ltr"
+    >
+      <Connect(Translate)>
+        The import process throw an error:
+      </Connect(Translate)>
+    </div>
+    <Connect(Icon)
+      icon="times"
+      onClick={[Function]}
+      style={
+        Object {
+          "cursor": "pointer",
+        }
       }
-    }
+    />
+  </div>
+  <StackTrace
+    message="Something bad happened"
   />
 </div>
 `;
