@@ -43,7 +43,7 @@ export class SortButtons extends Component {
 
           sorts.push({
             property: property.name,
-            html: this.createSortItem(sorts.length + 3, sortString, template._id, property.label, sortOptions)
+            html: this.createSortItem(sortString, sortString, template._id, property.label, sortOptions)
           });
         }
       });
@@ -132,27 +132,41 @@ export class SortButtons extends Component {
     this.setState({ active: !this.state.active });
   }
 
+  validateSearch() {
+    const { search } = this.props;
+    const _search = { ...search };
+    if (_search.sort === '_score' && !_search.searchTerm) {
+      _search.sort = 'creationDate';
+      _search.order = 'desc';
+    }
+    return _search;
+  }
+
   render() {
-    const { search, templates } = this.props;
+    const { templates } = this.props;
+    const search = this.validateSearch();
     const order = search.order === 'asc' ? 'up' : 'down';
     const additionalSorts = this.getAdditionalSorts(templates, search, order);
     return (
       <div className="sort-buttons">
         <div className={`Dropdown order-by ${this.state.active ? 'is-active' : ''}`}>
           <ul className="Dropdown-list" onClick={this.toggle.bind(this)}>
-            {this.createSortItem(0, 'title', 'System', 'Title', { isActive: search.sort === 'title', search, type: 'string' })}
-            {this.createSortItem(1, 'creationDate', 'System', 'Date added', { isActive: search.sort === 'creationDate', search, type: 'date' })}
-            <li
-              key={2}
-              className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
-            >
-              <a
-                className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
-                onClick={() => this.handleClick('_score')}
+            {this.createSortItem('title', 'title', 'System', 'Title', { isActive: search.sort === 'title', search, type: 'string' })}
+            {this.createSortItem('creationDate', 'creationDate', 'System', 'Date added',
+              { isActive: search.sort === 'creationDate', search, type: 'date' })}
+            {search.searchTerm && (
+              <li
+                key="relevance"
+                className={`Dropdown-option ${search.sort === '_score' ? 'is-active' : ''}`}
               >
-                <span>{t('System', 'Relevance')}</span>
-              </a>
-            </li>
+                <a
+                  className={`Dropdown-option__item ${search.sort === '_score' ? 'is-active' : ''}`}
+                  onClick={() => this.handleClick('_score')}
+                >
+                  <span>{t('System', 'Search relevance')}</span>
+                </a>
+              </li>
+            )}
             {additionalSorts}
           </ul>
         </div>
@@ -180,7 +194,6 @@ export function mapStateToProps(state, ownProps) {
   }
 
   const search = stateProperty.split(/[.,\/]/).reduce((memo, property) => Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null, state);
-
   return { stateProperty, search, templates };
 }
 

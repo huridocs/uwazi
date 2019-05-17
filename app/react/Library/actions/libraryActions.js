@@ -190,7 +190,7 @@ export function searchDocuments({ search, filters }, storeKey, limit) {
     finalSearchParams.searchTerm = state.search.searchTerm;
 
 
-    const currentSearch = browserHistory.getCurrentLocation().q || '()';
+    const currentSearch = browserHistory.getCurrentLocation().query.q || '()';
     const currentSearchParams = rison.decode(decodeURIComponent(currentSearch));
     if (finalSearchParams.searchTerm && finalSearchParams.searchTerm !== currentSearchParams.searchTerm) {
       finalSearchParams.sort = '_score';
