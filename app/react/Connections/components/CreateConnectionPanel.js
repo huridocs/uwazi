@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+import { t } from 'app/I18N';
 
 import { closePanel } from '../actions/uiActions';
 import { setRelationType, setTargetDocument } from '../actions/actions';
@@ -16,10 +17,10 @@ import SearchResults from './SearchResults';
 export class CreateConnectionPanel extends Component {
   renderCheckType(template) {
     if (this.props.connection.get('template') === template.get('_id')) {
-      return <Icon icon="check" />;
+      return <Icon icon="check"/>;
     }
 
-    return <Icon icon={['far', 'square']} />;
+    return <Icon icon={['far', 'square']}/>;
   }
 
   render() {
@@ -37,19 +38,17 @@ export class CreateConnectionPanel extends Component {
           <button className="closeSidepanel close-modal" onClick={this.props.closePanel}>
             <Icon icon="times" />
           </button>
-
-          <ul className="connections-list">
+          <div className="connections-list-title">{ t('System', 'Select relationship type') }</div>
+          <ul className="connections-list multiselect">
             {this.props.relationTypes.map(template => (
-              <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')}>
-                {this.renderCheckType(template)}
-                {template.get('name')}
+              <li onClick={() => this.props.setRelationType(template.get('_id'))} key={template.get('_id')} className="multiselectItem">
+                <label className="multiselectItem-label">
+                  <span className="multiselectItem-icon">{this.renderCheckType(template)}</span>
+                  <span className="multiselectItem-name">{template.get('name')}</span>
+                </label>
               </li>
 ))}
-          </ul>
-
-          <div className="search-form">
-            <SearchForm connectionType={connection.type}/>
-          </div>
+          </ul>     
         </div>
 
         <div className="sidepanel-footer">
@@ -70,6 +69,9 @@ export class CreateConnectionPanel extends Component {
         </div>
 
         <div className="sidepanel-body">
+          <div className="search-box">
+            <SearchForm connectionType={connection.type}/>
+          </div>
           <SearchResults
             results={searchResults}
             searching={uiState.get('searching')}

@@ -163,6 +163,7 @@ mark.searchTerm {
   border-bottom: 1px solid $c-grey-lighten;
   overflow-y: auto;
   max-height: 150px;
+  font-size: 0.9em;
 
   li {
     cursor: pointer;
@@ -176,7 +177,14 @@ mark.searchTerm {
   .fa.fa-check {
     color: $c-success;
   }
+
+  &-title {
+    line-height: normal;
+    margin-top: 25px;
+    height: auto;
+  }
 }
+
 
 .search-form {
   .form-group {
