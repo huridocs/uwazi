@@ -70,7 +70,6 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-
   return model.save(docs);
 }
 
@@ -478,7 +477,7 @@ export default {
 
   async createThumbnail(entity) {
     const filePath = path.join(uploadDocumentsPath, entity.file.filename);
-    return new PDF(filePath).createThumbnail(entity._id.toString());
+    return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
   },
 
   async deleteLanguageFiles(entity) {

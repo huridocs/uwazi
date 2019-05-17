@@ -1,15 +1,16 @@
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
+import languages from 'shared/languages';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
 import { createError } from 'api/utils';
 
 export default class PDF extends EventEmitter {
-  constructor(filepath) {
+  constructor(file) {
     super();
-    this.filepath = filepath;
-    this.optimizedPath = filepath;
+    this.file = file;
+    this.filepath = path.join(file.destination || '', file.filename || '');
   }
 
   getThumbnailPath(documentId) {
@@ -70,7 +71,23 @@ export default class PDF extends EventEmitter {
     });
   }
 
+  generateFileInfo(conversion) {
+    return {
+      ...this.file,
+      language: languages.detect(
+        Object.values(conversion.fullTextWithoutPages).join(''),
+        'franc'
+      )
+    };
+  }
+
   convert() {
-    return this.extractText();
+    return this.extractText()
+    .then(conversion => ({
+      ...conversion,
+      file: this.generateFileInfo(conversion),
+      processed: true,
+      toc: [],
+    }));
   }
 }
