@@ -7,9 +7,7 @@ import errorLog from 'api/log/errorLog';
 import relationships from 'api/relationships';
 
 import CSVLoader from 'api/csv';
-import { uploadDocumentsPath } from '../config/paths';
 import { validateRequest, handleError } from '../utils';
-import PDF from './PDF';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
@@ -90,7 +88,7 @@ export default (app) => {
       loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
       .then(() => {
         req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
-      }).catch(console.log);
+      }).catch(() => {});
 
       res.json('ok');
     }
