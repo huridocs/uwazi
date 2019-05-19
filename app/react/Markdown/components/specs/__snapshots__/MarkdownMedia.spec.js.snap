@@ -20,11 +20,13 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
           },
           "file": Object {
             "attributes": Object {},
+            "dashVersion": "2.9.2",
             "forceAudio": false,
             "forceDASH": false,
             "forceHLS": false,
             "forceVideo": false,
             "hlsOptions": Object {},
+            "hlsVersion": "0.10.1",
             "tracks": Array [],
           },
           "mixcloud": Object {
@@ -59,6 +61,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
             "options": Object {},
           },
           "youtube": Object {
+            "embedOptions": Object {},
             "playerVars": Object {
               "iv_load_policy": 3,
               "modestbranding": 1,
@@ -72,10 +75,14 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
       }
       controls={true}
       height="360px"
+      light={false}
       loop={false}
       muted={false}
       onBuffer={[Function]}
+      onBufferEnd={[Function]}
+      onDisablePIP={[Function]}
       onDuration={[Function]}
+      onEnablePIP={[Function]}
       onEnded={[Function]}
       onError={[Function]}
       onPause={[Function]}
@@ -84,6 +91,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
       onReady={[Function]}
       onSeek={[Function]}
       onStart={[Function]}
+      pip={false}
       playbackRate={1}
       playing={false}
       playsinline={false}
@@ -152,11 +160,13 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
           },
           "file": Object {
             "attributes": Object {},
+            "dashVersion": "2.9.2",
             "forceAudio": false,
             "forceDASH": false,
             "forceHLS": false,
             "forceVideo": false,
             "hlsOptions": Object {},
+            "hlsVersion": "0.10.1",
             "tracks": Array [],
           },
           "mixcloud": Object {
@@ -191,6 +201,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
             "options": Object {},
           },
           "youtube": Object {
+            "embedOptions": Object {},
             "playerVars": Object {
               "iv_load_policy": 3,
               "modestbranding": 1,
@@ -204,10 +215,14 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
       }
       controls={true}
       height="360px"
+      light={false}
       loop={false}
       muted={false}
       onBuffer={[Function]}
+      onBufferEnd={[Function]}
+      onDisablePIP={[Function]}
       onDuration={[Function]}
+      onEnablePIP={[Function]}
       onEnded={[Function]}
       onError={[Function]}
       onPause={[Function]}
@@ -216,6 +231,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
       onReady={[Function]}
       onSeek={[Function]}
       onStart={[Function]}
+      pip={false}
       playbackRate={1}
       playing={false}
       playsinline={false}
