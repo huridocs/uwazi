@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import './scss/StackTrace.scss';
+import './scss/stackTrace.scss';
 import { Icon } from 'UI';
 
 class StackTrace extends Component {
