@@ -241,6 +241,12 @@ mark.searchTerm {
       color: $c-grey-dark;
     }
 
+    .item-actions {
+      .btn-color {
+        margin-right: 0;
+      }
+    }
+
     .search-form {
       margin: 0 -15px;
     }
