@@ -66,14 +66,16 @@ export class MetadataTemplate extends Component {
                 <input placeholder="Template name" className="form-control"/>
               </Field>
             </FormGroup>
-            <Control
-              model=".color"
-              component={ColorPicker}
-              defaultValue={defaultColor}
-              mapProps={{
-                defaultValue: props => props.defaultValue
-              }}
-            />
+            { defaultColor && (
+              <Control
+                model=".color"
+                component={ColorPicker}
+                defaultValue={defaultColor}
+                mapProps={{
+                  defaultValue: props => props.defaultValue
+                }}
+              />
+            )}
           </div>
 
           <ShowIf if={!this.props.relationType}>
@@ -110,7 +112,8 @@ export class MetadataTemplate extends Component {
 }
 
 MetadataTemplate.defaultProps = {
-  savingTemplate: false
+  savingTemplate: false,
+  defaultColor: null
 };
 
 MetadataTemplate.propTypes = {
@@ -126,7 +129,7 @@ MetadataTemplate.propTypes = {
   properties: PropTypes.array,
   commonProperties: PropTypes.array,
   templates: PropTypes.object,
-  defaultColor: PropTypes.string.isRequired
+  defaultColor: PropTypes.string
 };
 
 const target = {
