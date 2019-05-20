@@ -6,7 +6,8 @@ import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
 import relationships from 'api/relationships';
 
-import { validateRequest } from '../utils';
+import CSVLoader from 'api/csv';
+import { validateRequest, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
@@ -57,6 +58,40 @@ export default (app) => {
     }).required()),
 
     (req, res) => uploadProcess(req, res)
+  );
+
+  app.post(
+    '/api/import',
+
+    needsAuthorization(['admin']),
+
+    upload.any(),
+
+    validateRequest(Joi.object({
+      template: Joi.string().required()
+    }).required()),
+
+    (req, res) => {
+      const loader = new CSVLoader();
+      let loaded = 0;
+
+      loader.on('entityLoaded', () => {
+        loaded += 1;
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
+      });
+
+      loader.on('loadError', (error) => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(error));
+      });
+
+      req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
+      loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
+      .then(() => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
+      }).catch(() => {});
+
+      res.json('ok');
+    }
   );
 
   app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {

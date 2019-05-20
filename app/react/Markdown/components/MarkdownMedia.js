@@ -15,7 +15,6 @@ const propsToConfig = (props) => {
     parsedProps = JSON.parse(parsedProps);
   } catch (error) {
     parsedProps = {};
-    console.log(error);
   }
 
   config.options = parsedProps;
