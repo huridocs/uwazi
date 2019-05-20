@@ -4,6 +4,7 @@ import entities from './entities';
 import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
+import captchaAuthorization from '../auth/captchaMiddleware';
 import { validateRequest } from '../utils';
 import { saveSchema, metadataSchema, iconSchema } from './endpointSchema';
 
@@ -13,6 +14,22 @@ export default (app) => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor']),
+    validateRequest(saveSchema),
+    (req, res, next) => entities.save(req.body, { user: req.user, language: req.language })
+    .then((response) => {
+      res.json(response);
+      return templates.getById(response.template);
+    })
+    .then(template => thesauris.templateToThesauri(template, req.language, req.user))
+    .then((templateTransformed) => {
+      req.io.sockets.emit('thesauriChange', templateTransformed);
+    })
+    .catch(next)
+  );
+
+  app.post(
+    '/api/entities/public',
+    captchaAuthorization(),
     validateRequest(saveSchema),
     (req, res, next) => entities.save(req.body, { user: req.user, language: req.language })
     .then((response) => {
