@@ -50,7 +50,7 @@ exports[`ImportProgress rendering states should render a state for errors 1`] = 
       className="force-ltr"
     >
       <Connect(Translate)>
-        The import process throw an error:
+        The import process threw an error:
       </Connect(Translate)>
     </div>
     <Connect(Icon)

@@ -34,7 +34,7 @@ export class ImportProgress extends Component {
           <div className="alert alert-danger">
             <Icon icon="exclamation-triangle" size="2x" />
             <div className="force-ltr">
-              <Translate>The import process throw an error:</Translate>
+              <Translate>The import process threw an error:</Translate>
             </div>
             <Icon style={{ cursor: 'pointer' }} icon="times" onClick={close}/>
           </div>
