@@ -84,12 +84,12 @@ export class PublicForm extends Component {
   }
 
   render() {
-    const { properties, thesauris, file, attachments } = this.props;
+    const { template, thesauris, file, attachments } = this.props;
     const model = '';
     return (
-      <LocalForm model="publicform" initialState={{ file: '', attachments: '' }} getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={values => this.handleSubmit(values)}>
+      <LocalForm model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={values => this.handleSubmit(values)}>
         {PublicForm.renderTitle()}
-        <MetadataFormFields thesauris={thesauris} model={model} template={properties} />
+        <MetadataFormFields thesauris={thesauris} model={model} template={template} />
         {file ? PublicForm.renderFile() : false}
         {attachments ? PublicForm.renderAttachments() : false}
         {this.renderCaptcha()}
@@ -99,27 +99,22 @@ export class PublicForm extends Component {
   }
 }
 
-PublicForm.defaultProps = {
-  file: false,
-  attachments: false,
-};
-
 PublicForm.propTypes = {
-  file: PropTypes.bool,
-  attachments: PropTypes.bool,
-  properties: PropTypes.instanceOf(Immutable.Map).isRequired,
+  file: PropTypes.bool.isRequired,
+  attachments: PropTypes.bool.isRequired,
+  template: PropTypes.instanceOf(Immutable.Map).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
 };
 
 export const mapStateToProps = (state, props) => ({
-  properties: state.templates.find(template => template.get('_id') === props.template),
-  thesauris: state.thesauris,
-  file: Boolean(props.file),
-  attachments: Boolean(props.attachments),
+    template: state.templates.find(template => template.get('_id') === props.template),
+    thesauris: state.thesauris,
+    file: props.file !== undefined,
+    attachments: props.attachments !== undefined,
 });
 
-function mapDispatchToProps(dispatch) {
+export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
 

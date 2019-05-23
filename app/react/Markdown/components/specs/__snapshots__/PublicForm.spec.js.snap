@@ -1,0 +1,299 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicForm should allow changing the tag wrapping element 1`] = `
+<LocalForm
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="publicform"
+  onSubmit={[Function]}
+>
+  <div
+    className="form-group"
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label
+          htmlFor="text"
+        >
+          <Connect(Translate)>
+            Title
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <DefaultConnectedControlText
+          className="form-control"
+          id="text"
+          model=".title"
+        />
+      </li>
+    </ul>
+  </div>
+  <Connect(MetadataFormFields)
+    model=""
+    template={
+      Immutable.Map {
+        "properties": Immutable.List [
+          Immutable.Map {
+            "type": "text",
+            "name": "text",
+          },
+        ],
+      }
+    }
+    thesauris={Immutable.List []}
+  />
+  <ul
+    className="search__filter"
+  >
+    <li>
+      <label>
+        <Connect(Translate)>
+          Are you a robot?
+        </Connect(Translate)>
+        <span
+          className="required"
+        >
+          *
+        </span>
+      </label>
+    </li>
+    <li
+      className="wide"
+    >
+      <Captcha
+        model=".captcha"
+        refresh={[Function]}
+      />
+    </li>
+  </ul>
+  <input
+    className="btn btn-success"
+    type="submit"
+    value="Submit"
+  />
+</LocalForm>
+`;
+
+exports[`PublicForm should render a form 1`] = `
+<LocalForm
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="publicform"
+  onSubmit={[Function]}
+>
+  <div
+    className="form-group"
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label
+          htmlFor="text"
+        >
+          <Connect(Translate)>
+            Title
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <DefaultConnectedControlText
+          className="form-control"
+          id="text"
+          model=".title"
+        />
+      </li>
+    </ul>
+  </div>
+  <Connect(MetadataFormFields)
+    model=""
+    template={
+      Immutable.Map {
+        "properties": Immutable.List [
+          Immutable.Map {
+            "type": "text",
+            "name": "text",
+          },
+        ],
+      }
+    }
+    thesauris={Immutable.List []}
+  />
+  <ul
+    className="search__filter"
+  >
+    <li>
+      <label>
+        <Connect(Translate)>
+          Are you a robot?
+        </Connect(Translate)>
+        <span
+          className="required"
+        >
+          *
+        </span>
+      </label>
+    </li>
+    <li
+      className="wide"
+    >
+      <Captcha
+        model=".captcha"
+        refresh={[Function]}
+      />
+    </li>
+  </ul>
+  <input
+    className="btn btn-success"
+    type="submit"
+    value="Submit"
+  />
+</LocalForm>
+`;
+
+exports[`PublicForm should render a form with file and attachments 1`] = `
+<LocalForm
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="publicform"
+  onSubmit={[Function]}
+>
+  <div
+    className="form-group"
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label
+          htmlFor="text"
+        >
+          <Connect(Translate)>
+            Title
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <DefaultConnectedControlText
+          className="form-control"
+          id="text"
+          model=".title"
+        />
+      </li>
+    </ul>
+  </div>
+  <Connect(MetadataFormFields)
+    model=""
+    template={
+      Immutable.Map {
+        "properties": Immutable.List [
+          Immutable.Map {
+            "type": "text",
+            "name": "text",
+          },
+        ],
+      }
+    }
+    thesauris={Immutable.List []}
+  />
+  <div
+    className="form-group"
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label
+          htmlFor="file"
+        >
+          <Connect(Translate)>
+            File
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <DefaultConnectedControlFile
+          accept=".pdf"
+          className="form-control"
+          id="file"
+          model=".file"
+        />
+      </li>
+    </ul>
+  </div>
+  <div
+    className="form-group"
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label
+          htmlFor="file"
+        >
+          <Connect(Translate)>
+            Attachments
+          </Connect(Translate)>
+          <Tip
+            icon="question-circle"
+          >
+            <Connect(Translate)>
+              You can select more than one file at once.
+            </Connect(Translate)>
+          </Tip>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <DefaultConnectedControlFile
+          className="form-control"
+          id="file"
+          model=".attachments"
+          multiple="multiple"
+        />
+      </li>
+    </ul>
+  </div>
+  <ul
+    className="search__filter"
+  >
+    <li>
+      <label>
+        <Connect(Translate)>
+          Are you a robot?
+        </Connect(Translate)>
+        <span
+          className="required"
+        >
+          *
+        </span>
+      </label>
+    </li>
+    <li
+      className="wide"
+    >
+      <Captcha
+        model=".captcha"
+        refresh={[Function]}
+      />
+    </li>
+  </ul>
+  <input
+    className="btn btn-success"
+    type="submit"
+    value="Submit"
+  />
+</LocalForm>
+`;
