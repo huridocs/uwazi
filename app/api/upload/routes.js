@@ -7,8 +7,10 @@ import errorLog from 'api/log/errorLog';
 import relationships from 'api/relationships';
 
 import CSVLoader from 'api/csv';
+import { saveSchema } from 'api/entities/endpointSchema';
 import { validateRequest, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import captchaAuthorization from '../auth/captchaMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
 import uploadFile from './uploadProcess';
@@ -58,6 +60,21 @@ export default (app) => {
     }).required()),
 
     (req, res) => uploadProcess(req, res)
+  );
+
+  app.post(
+    '/api/entities/public',
+    multer().any(),
+    captchaAuthorization(),
+    validateRequest(saveSchema),
+    (req, res, next) => {
+      console.log(req.files, req.body);
+      return entities.save(req.body, { user: req.user, language: req.language })
+      .then((response) => {
+        res.json(response);
+      })
+      .catch(next);
+    }
   );
 
   app.post(

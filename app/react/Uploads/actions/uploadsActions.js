@@ -93,6 +93,30 @@ export function upload(docId, file, endpoint = 'upload') {
   });
 }
 
+export function publicSubmit(data) {
+  return dispatch => new Promise((resolve) => {
+    const request = superagent.post(`${APIURL}entities/public`)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest');
+    Object.keys(data).forEach((key) => {
+      if (!data[key]) {
+        return;
+      }
+      if (key === 'file' || key === 'attachments') {
+        return request.attach(key, data[key]);
+      }
+      request.field(key, data[key]);
+    });
+    request
+    .then((response) => {
+      dispatch(notify('Success', 'success'));
+      resolve(response);
+    }).catch((error) => {
+      dispatch(notify(JSON.parse(error.response.text).error, 'danger'));
+    });
+  });
+}
+
 export function uploadCustom(file) {
   return (dispatch) => {
     const id = `customUpload_${uniqueID()}`;
