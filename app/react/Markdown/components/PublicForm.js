@@ -59,17 +59,27 @@ export class PublicForm extends Component {
     );
   }
 
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
   attachDispatch(dispatch) {
     this.formDispatch = dispatch;
+  }
+
+  resetForm() {
+    this.formDispatch(actions.reset('publicform'));
   }
 
   handleSubmit(_values) {
     const values = { ..._values };
     const { submit } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
-    submit(values);
-    this.refreshCaptcha();
-    this.formDispatch(actions.reset('publicform'));
+    submit(values).then(() => {
+      this.refreshCaptcha();
+      this.resetForm();
+    });
   }
 
   renderCaptcha() {
@@ -87,7 +97,7 @@ export class PublicForm extends Component {
     const { template, thesauris, file, attachments } = this.props;
     const model = '';
     return (
-      <LocalForm model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={values => this.handleSubmit(values)}>
+      <LocalForm model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={this.handleSubmit}>
         {PublicForm.renderTitle()}
         <MetadataFormFields thesauris={thesauris} model={model} template={template} />
         {file ? PublicForm.renderFile() : false}

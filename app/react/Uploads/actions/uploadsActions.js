@@ -97,23 +97,33 @@ export function publicSubmit(data) {
   return dispatch => new Promise((resolve) => {
     const request = superagent.post(`${APIURL}entities/public`)
     .set('Accept', 'application/json')
-    .set('X-Requested-With', 'XMLHttpRequest');
-    Object.keys(data).forEach((key) => {
-      if (!data[key]) {
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .field('title', data.title)
+    .field('captcha', data.captcha);
+    if (data.file) {
+      request.attach('file', data.file);
+    }
+
+    if (data.attachments) {
+      data.attachments.forEach((attachment, index) => {
+        request.attach(`attachments[${index}]`, attachment);
+      });
+    }
+
+    metadata = data.metadata || {};
+    Object.keys(metadata).forEach((key) => {
+      if (!metadata[key]) {
         return;
       }
-      if (key === 'file' || key === 'attachments') {
-        return request.attach(key, data[key]);
-      }
-      request.field(key, data[key]);
+      request.field(`metadata[${key}]`, metadata[key]);
     });
+
     request
-    .then((response) => {
+    .on('response', (response) => {
       dispatch(notify('Success', 'success'));
       resolve(response);
-    }).catch((error) => {
-      dispatch(notify(JSON.parse(error.response.text).error, 'danger'));
-    });
+    })
+    .end();
   });
 }
 

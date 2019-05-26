@@ -3,16 +3,18 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import * as uploadsActions from 'app/Uploads/actions/uploadsActions';
 import { LocalForm } from 'react-redux-form';
-import PublicForm, { mapDispatchToProps } from '../PublicForm.js';
+import PublicForm from '../PublicForm.js';
 
 describe('PublicForm', () => {
   let props;
   let component;
   let instance;
-  const dispatch = () => {};
+  let submit;
+  let request;
 
   beforeEach(() => {
-    spyOn(uploadsActions, 'publicSubmit');
+    request = Promise.resolve('ok');
+    submit = jasmine.createSpy('submit').and.returnValue(request);
   });
 
   const render = (customProps) => {
@@ -21,8 +23,9 @@ describe('PublicForm', () => {
       thesauris: Immutable.fromJS([]),
       file: false,
       attachments: false,
+      submit
     };
-    const mappedProps = { ...props, ...customProps, ...mapDispatchToProps(dispatch) };
+    const mappedProps = { ...props, ...customProps };
     component = shallow(<PublicForm.WrappedComponent {...mappedProps}/>);
     instance = component.instance();
     instance.refreshCaptcha = jasmine.createSpy('refreshCaptcha');
@@ -42,13 +45,16 @@ describe('PublicForm', () => {
   it('should submit the values', () => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    expect(uploadsActions.publicSubmit).toHaveBeenCalledWith({ file: undefined, title: 'test' });
+    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test' });
   });
 
-  it('should refresh the captcha and clear the form after submit', () => {
+  it('should refresh the captcha and clear the form after submit', (done) => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    expect(instance.refreshCaptcha).toHaveBeenCalled();
-    expect(instance.formDispatch).toHaveBeenCalledWith({ model: 'publicform', type: 'rrf/reset' });
+    request.then(() => {
+      expect(instance.formDispatch).toHaveBeenCalledWith({ model: 'publicform', type: 'rrf/reset' });
+      expect(instance.refreshCaptcha).toHaveBeenCalled();
+      done();
+    });
   });
 });

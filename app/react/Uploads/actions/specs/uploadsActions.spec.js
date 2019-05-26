@@ -32,8 +32,8 @@ const emitProgressAndResponse = (superAgent, response) => {
   superAgent.emit('response', response);
 };
 
-const mockSuperAgent = () => {
-  const mockUpload = superagent.post(`${APIURL}/import`);
+const mockSuperAgent = (url = `${APIURL}import`) => {
+  const mockUpload = superagent.post(url);
   spyOn(mockUpload, 'field').and.returnValue(mockUpload);
   spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
   spyOn(superagent, 'post').and.returnValue(mockUpload);
@@ -134,6 +134,34 @@ describe('uploadsActions', () => {
         .then(() => {
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
           expect(store.getActions()).toEqual(expectedActions);
+          done();
+        });
+
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok' });
+      });
+    });
+
+    describe('publicSubmit', () => {
+      it('should send the form data and upload the files', (done) => {
+        const mockUpload = mockSuperAgent(`${APIURL}entities/public`);
+        const store = mockStore({});
+        const file = getMockFile();
+
+        const formData = {
+          title: 'test',
+          metadata: { prop: 'value' },
+          captcha: 23,
+          file,
+          attachments: [file, file]
+        };
+        store.dispatch(actions.publicSubmit(formData))
+        .then(() => {
+          expect(mockUpload.field).toHaveBeenCalledWith('title', 'test');
+          expect(mockUpload.field).toHaveBeenCalledWith('captcha', 23);
+          expect(mockUpload.field).toHaveBeenCalledWith('metadata[prop]', 'value');
+          expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
+          expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
+          expect(mockUpload.attach).toHaveBeenCalledWith('attachments[1]', file);
           done();
         });
 
