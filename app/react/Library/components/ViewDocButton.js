@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Map } from 'immutable';
 import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
-import { scrollTo, activateReference } from 'app/Viewer/actions/uiActions';
+import { activateReference } from 'app/Viewer/actions/uiActions';
 
 export class ViewDocButton extends Component {
   constructor(props) {
@@ -49,8 +50,8 @@ ViewDocButton.propTypes = {
   sharedId: PropTypes.string.isRequired,
   processed: PropTypes.bool,
   searchTerm: PropTypes.string,
-  targetReference: PropTypes.object,
-  activateReference: PropTypes.func
+  targetReference: PropTypes.instanceOf(Map),
+  activateReference: PropTypes.func.isRequired
 };
 
 export function mapStateToProps(state, props) {
@@ -60,7 +61,7 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ scrollTo, activateReference }, dispatch);
+  return bindActionCreators({ activateReference }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewDocButton);

@@ -9,7 +9,7 @@ import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';
 
 import { Item } from 'app/Layout';
-import { is } from 'immutable';
+import { is, Map } from 'immutable';
 
 export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
@@ -111,7 +111,7 @@ Doc.propTypes = {
   className: PropTypes.string,
   additionalText: PropTypes.string,
   storeKey: PropTypes.string,
-  targetReference: PropTypes.object
+  targetReference: PropTypes.instanceOf(Map)
 };
 
 Doc.contextTypes = {
