@@ -148,7 +148,7 @@ export function activateReference(reference, docInfo, tab) {
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     const scrollDelay = docInfo ? 0 : 500;
     setTimeout(() => {
-      const actualDocInfo = docInfo ? docInfo : getState().documentViewer.doc.get('pdfInfo').toJS();
+      const actualDocInfo = docInfo || getState().documentViewer.doc.get('pdfInfo').toJS();
       scrollTo(reference, actualDocInfo);
     }, scrollDelay);
   };
