@@ -86,6 +86,10 @@ export class Doc extends Component {
   }
 }
 
+Doc.defaultProps = {
+  targetReference: null
+};
+
 Doc.propTypes = {
   doc: PropTypes.object,
   searchParams: PropTypes.object,
@@ -97,6 +101,7 @@ Doc.propTypes = {
   className: PropTypes.string,
   additionalText: PropTypes.string,
   storeKey: PropTypes.string,
+  targetReference: PropTypes.object
 };
 
 Doc.contextTypes = {

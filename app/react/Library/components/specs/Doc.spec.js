@@ -107,6 +107,14 @@ describe('Doc', () => {
     });
   });
 
+  describe('when target reference is specified', () => {
+    it('should pass the target reference to the ViewDocButton', () => {
+      props.targetReference = Immutable({ range: { start: 100, end: 200 } });
+      render();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
   describe('onClick', () => {
     it('should call onClick', () => {
       props.onClick = jasmine.createSpy('onClick');
