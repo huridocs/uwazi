@@ -14,6 +14,7 @@ import { is, Map } from 'immutable';
 export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
     return !is(this.props.doc, nextProps.doc) ||
+           !is(this.props.targetReference, nextProps.targetReference) ||
            this.props.active !== nextProps.active ||
            this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
   }
