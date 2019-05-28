@@ -8,6 +8,10 @@ import relationships from 'api/relationships';
 
 import CSVLoader from 'api/csv';
 import { saveSchema } from 'api/entities/endpointSchema';
+import { generateFileName } from 'api/utils/files';
+import fs from 'fs';
+import path from 'path';
+import configPaths from '../config/paths';
 import { validateRequest, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
@@ -63,16 +67,45 @@ export default (app) => {
   );
 
   app.post(
-    '/api/entities/public',
+    '/api/public',
     multer().any(),
     captchaAuthorization(),
     validateRequest(saveSchema),
     (req, res, next) => {
-      console.log(req.files, req.body);
-      return entities.save(req.body, { user: req.user, language: req.language })
+      const entity = req.body;
+      entity.attachments = [];
+      if (req.files.length) {
+        req.files.forEach((file) => {
+          if (file.fieldname.includes('attachment')) {
+            const filename = generateFileName(file);
+            const pathToFile = path.join(configPaths.uploadDocumentsPath, filename);
+            fs.appendFile(pathToFile, file.buffer, (err) => {
+              if (err) {
+                throw err;
+              }
+            });
+            entity.attachments.push(Object.assign(file, { filename }));
+          }
+        });
+      }
+      return entities.save(entity, { user: req.user, language: req.language })
       .then((response) => {
-        res.json(response);
+        const file = req.file.find(_file => _file.fieldname.includes('file'));
+        if (file) {
+          const filename = generateFileName(file);
+          const pathToFile = path.join(configPaths.uploadDocumentsPath, filename);
+          fs.appendFile(pathToFile, file.buffer, (err) => {
+            if (err) {
+              throw err;
+            }
+            return entities.getAllLanguages(response.sharedId).then(createdEntities => uploadFile(createdEntities, file))
+            .then(() => response);
+          });
+        }
+
+        return response;
       })
+      .then(response => res.json(response))
       .catch(next);
     }
   );

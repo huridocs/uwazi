@@ -95,7 +95,7 @@ export function upload(docId, file, endpoint = 'upload') {
 
 export function publicSubmit(data) {
   return dispatch => new Promise((resolve) => {
-    const request = superagent.post(`${APIURL}entities/public`)
+    const request = superagent.post(`${APIURL}public`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
     .field('title', data.title)
