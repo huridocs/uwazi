@@ -113,6 +113,12 @@ describe('Doc', () => {
       render();
       expect(component).toMatchSnapshot();
     });
+    it('should update component if target reference changes', () => {
+      props.targetReference = null;
+      render();
+      const nextProps = { ...props, targetReference: Immutable({ range: {} }) };
+      expect(component.instance().shouldComponentUpdate(nextProps)).toBe(true);
+    });
   });
 
   describe('onClick', () => {

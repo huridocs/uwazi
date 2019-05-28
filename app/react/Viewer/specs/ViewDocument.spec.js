@@ -108,6 +108,14 @@ describe('ViewDocument', () => {
       instance.onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
     });
+    it('should emit documentLoaded event', () => {
+      spyOn(uiActions, 'scrollToPage');
+      spyOn(utils.events, 'emit');
+      render();
+
+      instance.onDocumentReady();
+      expect(utils.events.emit).toHaveBeenCalledWith('documentLoaded');
+    });
   });
 
   describe('changePage', () => {
