@@ -2,6 +2,9 @@ import EventEmitter from 'events';
 
 import templates from 'api/templates';
 import settings from 'api/settings';
+import translations from 'api/i18n';
+import translationsModel from 'api/i18n/translationsModel';
+import thesauris from 'api/thesauris';
 
 import csv from './csv';
 import importFile from './importFile';
@@ -48,5 +51,32 @@ export default class CSVLoader extends EventEmitter {
     if (Object.keys(this._errors).length) {
       throw new Error('multiple errors ocurred !');
     }
+  }
+
+  async loadThesauri(csvPath, thesauriId, { language }) { //eslint-disable-line class-methods-use-this
+    const file = importFile(csvPath);
+    const availableLanguages = (await settings.get()).languages.map(l => l.key).filter(l => l !== language);
+    const { thesauriValues, thesauriTranslations } = await csv(await file.readStream()).toThesauri(language, availableLanguages);
+
+    const thesauri = await thesauris.getById(thesauriId);
+
+    await thesauris.save({ ...thesauri, values: thesauriValues });
+
+    await Object.keys(thesauriTranslations).reduce(async (prev, lang) => {
+      await prev;
+      const translationValues = thesauriTranslations[lang];
+      const [currentTranslation] = (await translationsModel.get({ locale: lang }));
+      const currentContext = currentTranslation.contexts.find(c => c.id.toString() === thesauriId.toString());
+
+      return translations.save({
+        ...currentTranslation,
+        contexts: [
+          {
+            ...currentContext,
+            values: translationValues,
+          }
+        ]
+      });
+    }, Promise.resolve());
   }
 }
