@@ -4,7 +4,7 @@ import { actions as formActions } from 'react-redux-form';
 import React from 'react';
 
 import { actions } from 'app/BasicReducer';
-import { isClient } from 'app/utils';
+import { isClient, events } from 'app/utils';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import { toUrlParams } from 'shared/JSONRequest';
 import RouteHandler from 'app/App/RouteHandler';
@@ -85,6 +85,7 @@ class ViewDocument extends RouteHandler {
   }
 
   onDocumentReady() {
+    events.emit('documentLoaded');
     if (this.props.location.query.raw !== 'true' && this.props.location.query.page) {
       scrollToPage(this.props.location.query.page, 0);
     }
