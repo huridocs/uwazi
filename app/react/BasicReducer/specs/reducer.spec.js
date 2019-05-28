@@ -43,6 +43,26 @@ describe('BasicReducer', () => {
     });
   });
 
+  describe('Update In', () => {
+    let reducer;
+    let state;
+    beforeEach(() => {
+      reducer = createReducer('1', { nested: { key: [] } });
+      state = Immutable({ nested: { key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }] } });
+    });
+    it('should update passed value in a list in a nested key at the namespace', () => {
+      const newState = reducer(state, actions.updateIn('1', ['nested', 'key'], { _id: 1, title: 'changed test' }));
+      expect(newState.toJS()).toEqual({ nested: { key: [{ _id: 1, title: 'changed test' }, { _id: 2, title: 'test2' }] } });
+    });
+    describe('when value does not exist', () => {
+      it('should push it to the collection at the specified key path', () => {
+        const newState = reducer(state, actions.updateIn('1', ['nested', 'key'], { _id: 3, title: 'new' }));
+        expect(newState.toJS()).toEqual(
+          { nested: { key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }, { _id: 3, title: 'new' }] } });
+      });
+    });
+  });
+
   describe('Set', () => {
     it('should set value passed on the same namespace', () => {
       const reducer1 = createReducer('1');

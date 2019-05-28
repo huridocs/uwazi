@@ -56,7 +56,8 @@ describe('Entity zone', () => {
           mainSuperpower: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > select',
           suporPowers: {
             fly: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-            laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
+            laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(8) > label',
+            moreButton: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(7) > button'
           },
           firstSighting: '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > input',
           whoIsHe: '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
@@ -81,6 +82,7 @@ describe('Entity zone', () => {
       .write(selectors.manBatEntity.form.age, '39')
       .waitToClick(selectors.manBatEntity.form.knownAccomplices.joker)
       .select(selectors.manBatEntity.form.mainSuperpower, 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb')
+      .waitToClick(selectors.manBatEntity.form.suporPowers.moreButton)
       .waitToClick(selectors.manBatEntity.form.suporPowers.fly)
       .wait(selectors.manBatEntity.form.suporPowers.laserBeam)
       .waitToClick(selectors.manBatEntity.form.suporPowers.laserBeam)

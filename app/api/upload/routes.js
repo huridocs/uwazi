@@ -4,118 +4,47 @@ import multer from 'multer';
 import debugLog from 'api/log/debugLog';
 import entities from 'api/entities';
 import errorLog from 'api/log/errorLog';
-import fs from 'fs';
-import languages from 'shared/languages';
-import path from 'path';
 import relationships from 'api/relationships';
 
-import { uploadDocumentsPath } from '../config/paths';
-import { validateRequest } from '../utils';
-import PDF from './PDF';
+import CSVLoader from 'api/csv';
+import { validateRequest, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
+import uploadFile from './uploadProcess';
 
 const storage = multer.diskStorage(storageConfig);
 
-const deleteFile = filename => new Promise((resolve) => {
-  entities.count({ 'file.filename': filename })
-  .then((entitiesUsingFile) => {
-    if (entitiesUsingFile === 0) {
-      fs.unlink(path.join(uploadDocumentsPath, filename), () => {
-        resolve();
-      });
-    } else {
-      resolve();
-    }
+const getDocuments = (sharedId, allLanguages, language) =>
+  entities.get({
+    sharedId,
+    ...(!allLanguages && { language })
   });
-});
 
 export default (app) => {
   const upload = multer({ storage });
 
-  const getDocuments = (sharedId, allLanguages, language) => {
-    if (allLanguages) {
-      return entities.getAllLanguages(sharedId);
+  const socket = req => req.getCurrentSessionSockets();
+
+  const uploadProcess = async (req, res, allLanguages = true) => {
+    try {
+      const docs = await getDocuments(req.body.document, allLanguages, req.language);
+
+      await uploadFile(docs, req.files[0])
+      .on('conversionStart', () => {
+        res.json(req.files[0]);
+        socket(req).emit('conversionStart', req.body.document);
+      })
+      .start();
+
+      await entities.indexEntities({ sharedId: req.body.document }, '+fullText');
+      socket(req).emit('documentProcessed', req.body.document);
+    } catch (err) {
+      errorLog.error(err);
+      debugLog.debug(err);
+      socket(req).emit('conversionFailed', req.body.document);
     }
-
-    return entities.get({ sharedId, language });
   };
-
-  const uploadProcess = (req, res, allLanguages = true) => getDocuments(req.body.document, allLanguages, req.language)
-  .then((docs) => {
-    debugLog.debug(`Upload Process for ${docs[0]._id.toString()}`);
-    debugLog.debug(`Original name ${fs.existsSync(req.files[0].originalname)}`);
-    debugLog.debug(`File exists ${fs.existsSync(req.files[0].path)}`);
-    return entities.saveMultiple(docs.map(doc => ({ ...doc, file: req.files[0], uploaded: true })))
-    .then(() => Promise.all(docs
-    .filter(doc => doc.file && doc.file.filename)
-    .map(doc => deleteFile(doc.file.filename))));
-  })
-  .then(() => {
-    debugLog.debug(`Documents saved as uploaded for: ${req.files[0].originalname}`);
-    res.json(req.files[0]);
-
-    const file = req.files[0].destination + req.files[0].filename;
-
-    const sessionSockets = req.getCurrentSessionSockets();
-    sessionSockets.emit('conversionStart', req.body.document);
-    debugLog.debug(`Starting conversion of: ${req.files[0].originalname}`);
-    return Promise.all([
-      new PDF(file, req.files[0].originalname).convert(),
-      getDocuments(req.body.document, allLanguages, req.language),
-      file
-    ]);
-  })
-  .then(([conversion, _docs, file]) => {
-    debugLog.debug(`Conversion succeeed for: ${req.files[0].originalname}`);
-
-    const thumbnailCreations = [];
-
-    const docs = _docs.map((doc) => {
-      debugLog.debug(`Assigning Thumbnail creation for: ${doc._id.toString()}`);
-      thumbnailCreations.push(new PDF(file, req.files[0].originalname).createThumbnail(doc._id.toString()));
-
-      return {
-        ...doc,
-        processed: true,
-        fullText: conversion.fullText,
-        totalPages: conversion.totalPages,
-        formattedPlainTextPages: conversion.formatted,
-        file: {
-          ...doc.file,
-          language: languages.detect(
-            Object.values(conversion.fullTextWithoutPages).join(''),
-            'franc'
-          )
-        },
-        toc: []
-      };
-    });
-
-    debugLog.debug('Creating PDF thumbnails');
-
-    return Promise.all(thumbnailCreations)
-    .then(() => {
-      debugLog.debug('Saving documents');
-      return entities.saveMultiple(docs.map(doc => ({ ...doc, file: { ...doc.file, timestamp: Date.now() } }))).then(() => {
-        const sessionSockets = req.getCurrentSessionSockets();
-        sessionSockets.emit('documentProcessed', req.body.document);
-      });
-    });
-  })
-  .catch((err) => {
-    errorLog.error(err.error);
-    debugLog.debug(err.error);
-
-    getDocuments(req.body.document, allLanguages, req.language)
-    .then((docs) => {
-      entities.saveMultiple(docs.map(doc => ({ ...doc, processed: false })));
-    });
-
-    const sessionSockets = req.getCurrentSessionSockets();
-    sessionSockets.emit('conversionFailed', req.body.document);
-  });
 
   app.post(
     '/api/upload',
@@ -129,6 +58,40 @@ export default (app) => {
     }).required()),
 
     (req, res) => uploadProcess(req, res)
+  );
+
+  app.post(
+    '/api/import',
+
+    needsAuthorization(['admin']),
+
+    upload.any(),
+
+    validateRequest(Joi.object({
+      template: Joi.string().required()
+    }).required()),
+
+    (req, res) => {
+      const loader = new CSVLoader();
+      let loaded = 0;
+
+      loader.on('entityLoaded', () => {
+        loaded += 1;
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_PROGRESS', loaded);
+      });
+
+      loader.on('loadError', (error) => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(error));
+      });
+
+      req.getCurrentSessionSockets().emit('IMPORT_CSV_START');
+      loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
+      .then(() => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
+      }).catch(() => {});
+
+      res.json('ok');
+    }
   );
 
   app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {

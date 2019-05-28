@@ -1,0 +1,24 @@
+.ColorPicker {
+  position: relative;
+
+  &__button {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    margin-left: 6px;
+    cursor: pointer;
+  }
+
+  &__popover {
+    position: absolute;
+    z-index: 10;
+  }
+
+  &__cover {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+  }
+}

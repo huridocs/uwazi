@@ -172,40 +172,32 @@ export function encodeSearch(search, appendQ = true) {
   return appendQ ? `?q=${rison.encode(search)}` : rison.encode(search);
 }
 
-export function searchDocuments({ search, filters }, storeKey, limit) {
+function setSearchInUrl(searchParams) {
+  const { pathname } = browserHistory.getCurrentLocation();
+  const path = (`${pathname}/`).replace(/\/\//g, '/');
+  const query = browserHistory.getCurrentLocation().query || {};
+
+  query.q = encodeSearch(searchParams, false);
+  browserHistory.push(path + toUrlParams(query));
+}
+
+export function searchDocuments({ search, filters }, storeKey, limit = 30) {
   return (dispatch, getState) => {
     const state = getState()[storeKey];
-    let currentFilters;
-    if (filters) {
-      currentFilters = filters;
-    }
-    if (filters && filters.toJS) {
-      currentFilters = filters.toJS();
-    }
-    if (!currentFilters) {
-      currentFilters = state.filters.toJS();
-    }
+    let currentFilters = filters || state.filters;
+    currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
 
     const finalSearchParams = processFilters(search, currentFilters, limit);
     finalSearchParams.searchTerm = state.search.searchTerm;
 
-
-    const currentSearch = browserHistory.getCurrentLocation().q || '()';
-    const currentSearchParams = rison.decode(decodeURIComponent(currentSearch));
+    const currentSearchParams = rison.decode(decodeURIComponent(browserHistory.getCurrentLocation().q || '()'));
     if (finalSearchParams.searchTerm && finalSearchParams.searchTerm !== currentSearchParams.searchTerm) {
       finalSearchParams.sort = '_score';
     }
 
-    if (search.userSelectedSorting) {
-      dispatch(actions.set(`${storeKey}.selectedSorting`, search));
-    }
+    if (search.userSelectedSorting) dispatch(actions.set(`${storeKey}.selectedSorting`, search));
 
-    const { pathname } = browserHistory.getCurrentLocation();
-    const path = (`${pathname}/`).replace(/\/\//g, '/');
-    const query = browserHistory.getCurrentLocation().query || {};
-
-    query.q = encodeSearch(finalSearchParams, false);
-    browserHistory.push(path + toUrlParams(query));
+    setSearchInUrl(finalSearchParams);
   };
 }
 
@@ -235,13 +227,15 @@ export function saveDocument(doc, formKey) {
     dispatch(notify('Document updated', 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
+    dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     dispatch(selectSingleDocument(updatedDoc));
   });
 }
 
 export function multipleUpdate(entities, values) {
   return (dispatch) => {
-    const updatedEntities = entities.toJS().map((entity) => {
+    const updatedEntities = entities.toJS().map((_entity) => {
+      const entity = { ..._entity };
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
         entity.icon = values.icon;
@@ -266,6 +260,7 @@ export function saveEntity(entity, formModel) {
     if (entity._id) {
       dispatch(notify('Entity updated', 'success'));
       dispatch(updateEntity(updatedDoc));
+      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     } else {
       dispatch(notify('Entity created', 'success'));
       dispatch(elementCreated(updatedDoc));

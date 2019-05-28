@@ -1,14 +1,16 @@
 import EventEmitter from 'events';
 import fs from 'fs';
 import path from 'path';
+import languages from 'shared/languages';
 import { spawn } from 'child-process-promise';
 import errorLog from 'api/log/errorLog';
+import { createError } from 'api/utils';
 
 export default class PDF extends EventEmitter {
-  constructor(filepath) {
+  constructor(file) {
     super();
-    this.filepath = filepath;
-    this.optimizedPath = filepath;
+    this.file = file;
+    this.filepath = path.join(file.destination || '', file.filename || '');
   }
 
   getThumbnailPath(documentId) {
@@ -16,25 +18,32 @@ export default class PDF extends EventEmitter {
   }
 
   async extractText() {
-    const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
-    const pages = result.stdout.split('\f').slice(0, -1);
-    return {
-      fullText: pages.reduce(
-        (memo, page, index) => ({
-          ...memo,
-          [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`)
-        }),
-        {}
-      ),
-      fullTextWithoutPages: pages.reduce(
-        (memo, page, index) => ({
-          ...memo,
-          [index + 1]: page
-        }),
-        {}
-      ),
-      totalPages: pages.length
-    };
+    try {
+      const result = await spawn('pdftotext', [this.filepath, '-'], { capture: ['stdout', 'stderr'] });
+      const pages = result.stdout.split('\f').slice(0, -1);
+      return {
+        fullText: pages.reduce(
+          (memo, page, index) => ({
+            ...memo,
+            [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`)
+          }),
+          {}
+        ),
+        fullTextWithoutPages: pages.reduce(
+          (memo, page, index) => ({
+            ...memo,
+            [index + 1]: page
+          }),
+          {}
+        ),
+        totalPages: pages.length
+      };
+    } catch (e) {
+      if (e.name === 'ChildProcessError') {
+        throw createError(`${e.message}\nstderr output:\n${e.stderr}`);
+      }
+      throw createError(e.message);
+    }
   }
 
   async createThumbnail(documentId) {
@@ -62,7 +71,23 @@ export default class PDF extends EventEmitter {
     });
   }
 
+  generateFileInfo(conversion) {
+    return {
+      ...this.file,
+      language: languages.detect(
+        Object.values(conversion.fullTextWithoutPages).join(''),
+        'franc'
+      )
+    };
+  }
+
   convert() {
-    return this.extractText();
+    return this.extractText()
+    .then(conversion => ({
+      ...conversion,
+      file: this.generateFileInfo(conversion),
+      processed: true,
+      toc: [],
+    }));
   }
 }

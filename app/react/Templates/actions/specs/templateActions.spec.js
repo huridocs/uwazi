@@ -34,6 +34,7 @@ describe('templateActions', () => {
     spyOn(formActions, 'move');
     spyOn(formActions, 'remove');
     spyOn(formActions, 'reset');
+    spyOn(formActions, 'resetErrors');
   });
 
   describe('addProperty()', () => {
@@ -98,8 +99,9 @@ describe('templateActions', () => {
 
   describe('removeProperty', () => {
     it('should remove the property from the data', () => {
-      actions.removeProperty(1)(dispatch, getState);
-      expect(formActions.change).toHaveBeenCalledWith('template.data.properties', [{ name: 'property1' }]);
+      actions.removeProperty(1)(dispatch);
+      expect(formActions.remove).toHaveBeenCalledWith('template.data.properties', 1);
+      expect(formActions.resetErrors).toHaveBeenCalledWith('template.data');
     });
   });
 

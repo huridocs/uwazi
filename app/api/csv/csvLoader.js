@@ -1,48 +1,18 @@
-import csv from 'csvtojson';
-
 import EventEmitter from 'events';
-import entities from 'api/entities';
-import fs from 'fs';
-import templates, { templateUtils } from 'api/templates';
 
-import typeParsers from './typeParsers';
+import templates from 'api/templates';
+import settings from 'api/settings';
 
-const toSafeName = rawEntity =>
-  Object.keys(rawEntity).reduce(
-    (translatedObject, key) => ({
-      ...translatedObject,
-      [templateUtils.safeName(key)]: rawEntity[key]
-    }),
-    {}
-  );
-
-const toMetadata = async (template, entityToImport) =>
-  template.properties
-  .filter(prop => entityToImport[prop.name])
-  .reduce(
-    async (meta, prop) => ({
-      ...(await meta),
-      [prop.name]: typeParsers[prop.type] ?
-        await typeParsers[prop.type](entityToImport, prop) :
-        await typeParsers.default(entityToImport, prop)
-    }),
-    Promise.resolve({})
-  );
-
-const importEntity = async (template, rawEntity, { user = {}, language }) =>
-  entities.save(
-    {
-      title: rawEntity.title,
-      template: template._id,
-      metadata: await toMetadata(template, rawEntity)
-    },
-    { user, language }
-  );
+import csv from './csv';
+import importFile from './importFile';
+import { importEntity, translateEntity } from './importEntity';
+import { extractEntity, toSafeName } from './entityRow';
 
 export default class CSVLoader extends EventEmitter {
-  constructor() {
+  constructor(options = { stopOnError: true }) {
     super();
     this._errors = {};
+    this.stopOnError = options.stopOnError;
   }
 
   errors() {
@@ -51,23 +21,32 @@ export default class CSVLoader extends EventEmitter {
 
   async load(csvPath, templateId, options = { language: 'en' }) {
     const template = await templates.getById(templateId);
+    const file = importFile(csvPath);
+    const availableLanguages = (await settings.get()).languages.map(l => l.key);
 
-    await csv({
-      delimiter: [',', ';']
-    })
-    .fromStream(fs.createReadStream(csvPath))
-    .subscribe(async (rawEntity, index) => {
-      try {
-        const entity = await importEntity(template, toSafeName(rawEntity), options);
-        this.emit('entityLoaded', entity);
-      } catch (e) {
-        this._errors[index] = e;
-        this.emit('loadError', e, toSafeName(rawEntity), index);
+    await csv(await file.readStream(), this.stopOnError)
+    .onRow(async (row) => {
+      const { rawEntity, rawTranslations } =
+        extractEntity(row, availableLanguages, options.language);
+
+      const entity = await importEntity(rawEntity, template, file, options);
+      if (rawTranslations.length) {
+        await translateEntity(entity, rawTranslations, template, file);
       }
-    });
+      this.emit('entityLoaded', entity);
+    })
+    .onError((e, row, index) => {
+      this._errors[index] = e;
+      this.emit('loadError', e, toSafeName(row), index);
+    })
+    .read();
+
+    if (Object.keys(this._errors).length === 1) {
+      throw this._errors[0];
+    }
 
     if (Object.keys(this._errors).length) {
-      throw new Error('errors ocurred !');
+      throw new Error('multiple errors ocurred !');
     }
   }
 }

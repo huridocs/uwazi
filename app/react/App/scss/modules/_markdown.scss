@@ -159,6 +159,11 @@
     height: 100%;
 }
 
+.video-container.compact > div:first-child {
+  height: 100%;
+  padding-bottom: 0;
+}
+
 .video-container .timelink {
   display: flex;
   cursor: pointer;

@@ -5,6 +5,11 @@ import PDFObject from '../PDF.js';
 
 describe('PDF', () => {
   let pdf;
+  const file = {
+    filename: '12345.test.pdf',
+    originalname: 'originalName.pdf',
+    destination: __dirname,
+  };
   const filepath = `${__dirname}/12345.test.pdf`;
   const thumbnailName = `${__dirname}/documentId.jpg`;
 
@@ -17,7 +22,7 @@ describe('PDF', () => {
   };
 
   beforeEach(() => {
-    pdf = new PDFObject(filepath);
+    pdf = new PDFObject(file);
   });
 
   describe('convert', () => {
@@ -30,9 +35,34 @@ describe('PDF', () => {
       expect(pages[3]).toMatch('Page[[3]] 3[[3]]');
     });
 
-    it('should return the total number of pages', async () => {
+    it('should return the conversion object', async () => {
       const conversion = await pdf.convert();
-      expect(conversion.totalPages).toBe(11);
+      expect(conversion).toEqual(expect.objectContaining({
+        totalPages: 11,
+        processed: true,
+        toc: [],
+        file: {
+          language: 'eng',
+          filename: '12345.test.pdf',
+          originalname: 'originalName.pdf',
+          destination: __dirname,
+        }
+      }));
+    });
+
+    it('should throw error with proper error message pdf is invalid or malformed', async () => {
+      const invalidFile = {
+        filename: '1invalid.test.pdf',
+        originalname: 'originalName.pdf',
+        destination: __dirname,
+      };
+      pdf = new PDFObject(invalidFile);
+      try {
+        await pdf.convert();
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/may not be a pdf/i);
+      }
     });
   });
 
@@ -62,7 +92,9 @@ describe('PDF', () => {
 
     it('should correctly log errors, but continue with the flow', async () => {
       spyOn(errorLog, 'error');
-      pdf = new PDFObject('/missingpath/pdf.pdf');
+      pdf = new PDFObject({
+        filename: '/missingpath/pdf.pdf'
+      });
       const thumbnailResponse = await pdf.createThumbnail('documentId');
       expect(thumbnailResponse instanceof Error).toBe(true);
       expect(errorLog.error).toHaveBeenCalledWith('Thumbnail creation error for: /missingpath/pdf.pdf');

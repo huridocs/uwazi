@@ -261,18 +261,18 @@ describe('entities', () => {
     });
   });
 
-  describe('DELETE /api/entities/multiple', () => {
+  describe('POST /api/entities/bulkdelete', () => {
     beforeEach(() => {
       spyOn(entities, 'deleteMultiple').and.returnValue(Promise.resolve({ json: 'ok' }));
     });
 
     it('should have a validation schema', () => {
-      expect(routes.delete.validation('/api/entities/multiple')).toMatchSnapshot();
+      expect(routes.post.validation('/api/entities/bulkdelete')).toMatchSnapshot();
     });
 
     it('should use entities to delete it', (done) => {
-      const req = { query: { sharedIds: '[123, 456]' } };
-      return routes.delete('/api/entities/multiple', req)
+      const req = { body: { sharedIds: [123, 456] } };
+      return routes.post('/api/entities/bulkdelete', req)
       .then(() => {
         expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
         done();

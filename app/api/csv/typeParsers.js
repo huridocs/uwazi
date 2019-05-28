@@ -60,7 +60,7 @@ export default {
     );
 
     const toRelateEntities = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${v}\\s?`, 'i')) } });
-    return toRelateEntities.map(e => e.sharedId);
+    return toRelateEntities.map(e => e.sharedId).filter((id, index, ids) => ids.indexOf(id) === index);
   },
 
   async multiselect(entityToImport, templateProperty) {

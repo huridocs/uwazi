@@ -17,7 +17,9 @@ export default {
     while (await cursor.hasNext()) {
       const doc = await cursor.next();
       if (doc.file && doc.file.filename) {
-        await new PDF(path.join(uploadDocumentsPath, doc.file.filename)).createThumbnail(doc._id.toString());
+        await new PDF({
+          filename: path.join(uploadDocumentsPath, doc.file.filename)
+        }).createThumbnail(doc._id.toString());
         process.stdout.write(`processed -> ${index}\r`);
         index += 1;
       }

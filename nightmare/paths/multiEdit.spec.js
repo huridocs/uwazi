@@ -66,18 +66,18 @@ describe('multi edit path', () => {
       .click(selectors.libraryView.libraryFirstDocument)
       .getInnerText(selectors.libraryView.libraryMetadataPanel)
       .then((text) => {
-        expect(text.match('create chaos')).not.toBe(null);
+        expect(text.match('hyper speed kick')).not.toBe(null);
         return nightmare.click(selectors.libraryView.librarySecondDocument)
         .getInnerText(selectors.libraryView.libraryMetadataPanel);
       })
       .then((text) => {
-        expect(text.match('create chaos')).not.toBe(null);
+        expect(text.match('hyper speed kick')).not.toBe(null);
         return nightmare.click(selectors.libraryView.libraryThirdDocument)
         .wait(selectors.libraryView.libraryMetadataPanel)
         .getInnerText(selectors.libraryView.libraryMetadataPanel);
       })
       .then((text) => {
-        expect(text.match('create chaos')).not.toBe(null);
+        expect(text.match('hyper speed kick')).not.toBe(null);
         done();
       })
       .catch(catchErrors(done));
@@ -145,13 +145,13 @@ describe('multi edit path', () => {
       .click(selectors.libraryView.librarySecondDocument)
       .getInnerText(selectors.libraryView.libraryMetadataPanel)
       .then((text) => {
-        expect(text.match('create chaos')).not.toBe(null);
+        expect(text.match('hyper speed kick')).not.toBe(null);
         expect(text.match('Secret Service')).not.toBe(null);
         return nightmare.click(selectors.libraryView.libraryThirdDocument)
         .getInnerText(selectors.libraryView.libraryMetadataPanel);
       })
       .then((text) => {
-        expect(text.match('create chaos')).not.toBe(null);
+        expect(text.match('hyper speed kick')).not.toBe(null);
         expect(text.match('Secret Service')).not.toBe(null);
         done();
       })

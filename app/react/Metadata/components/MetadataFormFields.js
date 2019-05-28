@@ -44,13 +44,14 @@ export class MetadataFormFields extends Component {
       return <MultiSelect model={_model} optionsValue="id" options={translateOptions(thesauri)} prefix={_model} />;
     case 'relationship':
       if (property.content) {
-        thesauri = translateOptions(thesauris.find(opt => opt._id.toString() === property.content.toString()));
+        const source = (thesauris.find(opt => opt._id.toString() === property.content.toString()));
+        thesauri = translateOptions(source);
       }
 
       if (!property.content) {
         thesauri = Array.prototype.concat(...thesauris.filter(filterThesauri => filterThesauri.type === 'template').map(translateOptions));
       }
-      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} />;
+      return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />;
     case 'date':
       return <DatePicker model={_model} format={this.props.dateFormat}/>;
     case 'daterange':

@@ -48,10 +48,26 @@ describe('SortButtons', () => {
         ]);
         render();
 
-        expect(component.find('li').length).toBe(4);
+        expect(component.find('li').length).toBe(3);
 
         expect(component.find('li').last().children().at(0).find('span').last().text()).toBe('sortableProperty (A-Z)');
         expect(component.find('li').last().children().at(1).find('span').last().text()).toBe('sortableProperty (Z-A)');
+      });
+    });
+
+    describe('when there is an active search term', () => {
+      it('should display sort by search relevance option', () => {
+        props.search.searchTerm = 'keyword';
+        render();
+        expect(component.find('li').at(2).children().at(0).find('span').last().text()).toBe('Search relevance');
+      });
+    });
+
+    describe('when relevance sorting is active and there is no search term', () => {
+      it('should fall back to sorting by most recent creation date', () => {
+        props.search.sort = '_score';
+        render();
+        expect(component).toMatchSnapshot();
       });
     });
 

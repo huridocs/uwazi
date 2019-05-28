@@ -70,7 +70,6 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-
   return model.save(docs);
 }
 
@@ -367,13 +366,29 @@ export default {
     });
   },
 
-  deleteMultiple(sharedIds) {
-    return Promise.all(sharedIds.map(sharedId => this.delete(sharedId)));
+  deleteIndexes(sharedIds) {
+    const deleteIndexBatch = (offset, totalRows) => {
+      const limit = 200;
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+      return this.get({ sharedId: { $in: sharedIds } }, null, { skip: offset, limit })
+      .then(entities => search.bulkDelete(entities))
+      .then(() => deleteIndexBatch(offset + limit, totalRows));
+    };
+
+    return this.count({ sharedId: { $in: sharedIds } })
+    .then(totalRows => deleteIndexBatch(0, totalRows));
   },
 
-  delete(sharedId) {
+  deleteMultiple(sharedIds) {
+    return this.deleteIndexes(sharedIds)
+    .then(() => sharedIds.reduce((previousPromise, sharedId) => previousPromise.then(() => this.delete(sharedId, false)), Promise.resolve()));
+  },
+
+  delete(sharedId, deleteIndex = true) {
     return this.get({ sharedId })
-    .then(docs => Promise.all(docs.map(doc => search.delete(doc))).then(() => docs))
+    .then(docs => deleteIndex ? Promise.all(docs.map(doc => search.delete(doc))).then(() => docs) : Promise.resolve(docs))
     .then(docs => model.delete({ sharedId })
     .then(() => docs)
     .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
@@ -462,7 +477,7 @@ export default {
 
   async createThumbnail(entity) {
     const filePath = path.join(uploadDocumentsPath, entity.file.filename);
-    return new PDF(filePath).createThumbnail(entity._id.toString());
+    return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
   },
 
   async deleteLanguageFiles(entity) {

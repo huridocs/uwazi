@@ -115,6 +115,26 @@ describe('search', () => {
     });
   });
 
+  describe('bulkdelete', () => {
+    it('should delete documents in a bulk action', (done) => {
+      spyOn(elastic, 'bulk').and.returnValue(Promise.resolve({ items: [] }));
+      const entities = [
+        { _id: 'id1', title: 'test1', pdfInfo: 'Should not be included' },
+        { _id: 'id2', title: 'test2', pdfInfo: 'Should not be included' }
+      ];
+
+      search.bulkDelete(entities)
+      .then(() => {
+        expect(elastic.bulk).toHaveBeenCalledWith({ body: [
+          { delete: { _index: elasticIndex, _type: 'entity', _id: 'id1' } },
+          { delete: { _index: elasticIndex, _type: 'entity', _id: 'id2' } },
+        ] });
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('deleteLanguage', () => {
     it('should delete the index', (done) => {
       spyOn(elastic, 'deleteByQuery').and.returnValue(Promise.resolve());

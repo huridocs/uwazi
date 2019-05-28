@@ -5,10 +5,10 @@ import translations from 'api/i18n';
 
 import CSVLoader from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
+import { stream } from './helpers';
 import typeParsers from '../typeParsers';
 
 describe('csvLoader', () => {
-  afterAll(async () => db.disconnect());
   const csvFile = path.join(__dirname, '/test.csv');
   const loader = new CSVLoader();
 
@@ -22,23 +22,11 @@ describe('csvLoader', () => {
     spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
   });
 
-  it('should use the passed language', async () => {
-    spyOn(entities, 'save').and.returnValue(Promise.resolve({}));
-    try {
-      await loader.load(csvFile, template1Id, { language: 'es' });
-    } catch (e) {
-      throw loader.errors()[Object.keys(loader.errors())[0]];
-    }
-    expect(entities.save.calls.argsFor(0)[1].language).toBe('es');
-  });
+  afterAll(async () => db.disconnect());
 
   it('should use the passed user', async () => {
     spyOn(entities, 'save').and.returnValue(Promise.resolve({}));
-    try {
-      await loader.load(csvFile, template1Id, { user: { username: 'user' } });
-    } catch (e) {
-      throw loader.errors()[Object.keys(loader.errors())[0]];
-    }
+    await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
     expect(entities.save.calls.argsFor(0)[1].user).toEqual({ username: 'user' });
   });
 
@@ -52,7 +40,7 @@ describe('csvLoader', () => {
       });
 
       try {
-        await loader.load(csvFile, template1Id);
+        await loader.load(csvFile, template1Id, { language: 'en' });
       } catch (e) {
         throw loader.errors()[Object.keys(loader.errors())[0]];
       }
@@ -105,19 +93,35 @@ describe('csvLoader', () => {
     });
   });
 
-  describe('when errors happen', () => {
+  describe('on error', () => {
+    it('should stop processing on the first error', async () => {
+      const testingLoader = new CSVLoader();
+
+      await db.clearAllAndLoad(fixtures);
+      spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
+
+      try {
+        await testingLoader.load(csvFile, template1Id);
+        fail('should fail');
+      } catch (e) {
+        expect(e).toEqual(new Error('error-title1'));
+      }
+    });
+  });
+
+  describe('no stop on errors', () => {
     beforeAll(async () => {
       spyOn(entities, 'save').and.callFake((entity) => {
         if (entity.title === 'title1' || entity.title === 'title3') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
-        return Promise.resolve();
+        return Promise.resolve({});
       });
       await db.clearAllAndLoad(fixtures);
     });
 
     it('should emit an error', async () => {
-      const testingLoader = new CSVLoader();
+      const testingLoader = new CSVLoader({ stopOnError: false });
 
       const eventErrors = {};
       testingLoader.on('loadError', (error, entity) => {
@@ -135,7 +139,7 @@ describe('csvLoader', () => {
     });
 
     it('should save errors and index them by csv line, should throw an error on finish', async () => {
-      const testingLoader = new CSVLoader();
+      const testingLoader = new CSVLoader({ stopOnError: false });
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -149,15 +153,15 @@ describe('csvLoader', () => {
     });
 
     it('should fail when parsing throws an error', async () => {
-      entities.save.and.callFake(() => Promise.resolve());
+      entities.save.and.callFake(() => Promise.resolve({}));
       spyOn(typeParsers, 'text').and.callFake((entity) => {
         if (entity.title === 'title2') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
-        return Promise.resolve();
+        return Promise.resolve({});
       });
 
-      const testingLoader = new CSVLoader();
+      const testingLoader = new CSVLoader({ stopOnError: false });
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -167,6 +171,27 @@ describe('csvLoader', () => {
           1: new Error('error-title2'),
         });
       }
+    });
+  });
+
+  describe('when sharedId is provided', () => {
+    it('should update the entitiy', async () => {
+      const entity = await entities.save(
+        { title: 'entity', template: template1Id },
+        { user: {}, language: 'en' }
+      );
+      const csv = `id                , title    ,
+                   ${entity.sharedId}, new title,
+                                     , title2   ,`;
+
+      const testingLoader = new CSVLoader();
+      await testingLoader.load(stream(csv), template1Id, { language: 'en' });
+
+      const [expected] = await entities.get({
+        sharedId: entity.sharedId,
+        language: 'en'
+      });
+      expect(expected.title).toBe('new title');
     });
   });
 });

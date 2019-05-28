@@ -73,6 +73,12 @@ Object {
       ],
       "type": "string",
     },
+    "color": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
     "commonProperties": Object {
       "flags": Object {
         "sparse": false,

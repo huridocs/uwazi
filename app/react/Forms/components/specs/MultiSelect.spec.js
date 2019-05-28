@@ -22,7 +22,7 @@ describe('MultiSelect', () => {
             { label: 'Group option1', value: 'group-option1', results: 2 },
             { label: 'Group option2', value: 'group-option2', results: 1 }
           ]
-        }
+        },
       ],
       onChange: jasmine.createSpy('onChange')
     };
@@ -48,6 +48,19 @@ describe('MultiSelect', () => {
     render();
     const groupAggregation = component.find('.multiselect-group .multiselectItem .multiselectItem-results');
     expect(groupAggregation.at(0)).toMatchSnapshot();
+  });
+
+  it('should display a not found message when there are no options', () => {
+    props.options = [];
+    props.sourceName = 'My List';
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should not render an empty group', () => {
+    props.options.push({ label: 'Empty Group', value: 'empty', options: [] });
+    render();
+    expect(component).toMatchSnapshot();
   });
 
   describe('when checking an option', () => {
@@ -142,10 +155,20 @@ describe('MultiSelect', () => {
         optionsLabel: 'name',
         onChange: jasmine.createSpy('onChange')
       };
-      component = shallow(<MultiSelect {...props}/>);
     });
 
-    it('should render the options by results and then by label', () => {
+    it('should render the options', () => {
+      render();
+      const optionElements = component.find('input[type="checkbox"]');
+
+      expect(optionElements.length).toBe(3);
+      expect(optionElements.first().props().value).toBe('option1');
+      expect(optionElements.last().props().value).toBe('option2');
+    });
+
+    it('should render the options by the result and then label if list is sorted', () => {
+      props.sort = true;
+      render();
       const optionElements = component.find('input[type="checkbox"]');
 
       expect(optionElements.length).toBe(3);
