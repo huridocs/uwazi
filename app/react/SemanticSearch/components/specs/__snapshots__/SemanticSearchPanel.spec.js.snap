@@ -9,7 +9,7 @@ exports[`SemanticSearchPanel should render SearchList with searches from the sta
     className="closeSidepanel close-modal"
     onClick={[Function]}
   >
-    <Component
+    <Connect(Icon)
       icon="times"
     />
   </button>
@@ -83,7 +83,7 @@ exports[`SemanticSearchPanel should render new search form when search button is
     className="closeSidepanel close-modal"
     onClick={[Function]}
   >
-    <Component
+    <Connect(Icon)
       icon="times"
     />
   </button>
