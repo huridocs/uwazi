@@ -9,10 +9,11 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
   Joi.number().allow('').allow(null),
   Joi.string().allow('').allow(null),
   dateRangeSchema,
-  Joi.object().keys({
+  Joi.array().items(Joi.object().keys({
     lat: Joi.number(),
     lon: Joi.number(),
-  }).allow(''),
+    label: Joi.string().allow(null).allow(''),
+  })).allow(''),
   Joi.object().keys({
     label: Joi.string(),
     url: Joi.string(),
@@ -22,8 +23,10 @@ const metadataSchema = Joi.object().keys().pattern(Joi.string().allow(''), Joi.a
     Joi.string(),
     dateRangeSchema
   )).allow(''),
-  Joi.array().items(Joi.object().pattern(Joi.string(),
-    Joi.array().items(Joi.string()))).allow('')
+  Joi.array().items(Joi.object().pattern(
+    Joi.string(),
+    Joi.array().items(Joi.string())
+  )).allow('')
 ));
 
 const iconSchema = Joi.object().keys({
@@ -62,11 +65,12 @@ const saveSchema = Joi.object().keys({
     })
   })),
   attachments: Joi.array().items(Joi.object().keys({
+    _id: Joi.string(),
     originalname: Joi.string(),
     filename: Joi.string(),
     mimetype: Joi.string(),
     size: Joi.number(),
-    timestamp: Joi.string(),
+    timestamp: Joi.number()
   })),
   creationDate: Joi.number(),
   processed: Joi.boolean(),

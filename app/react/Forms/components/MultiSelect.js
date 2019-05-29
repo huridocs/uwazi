@@ -8,6 +8,8 @@ import ShowIf from 'app/App/ShowIf';
 
 import { filterOptions } from '../utils/optionsUtils';
 
+const isNotAnEmptyGroup = option => !option.options || option.options.length;
+
 export default class MultiSelect extends Component {
   constructor(props) {
     super(props);
@@ -48,7 +50,8 @@ export default class MultiSelect extends Component {
     }
 
     if (option.options) {
-      return option.options.reduce((allIncluded, _option) => allIncluded && this.props.value.includes(_option[this.props.optionsValue]), true);
+      return option.options.reduce((allIncluded, _option) => allIncluded &&
+        this.props.value.includes(_option[this.props.optionsValue]), true);
     }
     return this.props.value.includes(option[this.props.optionsValue]);
   }
@@ -107,6 +110,22 @@ export default class MultiSelect extends Component {
       sortedOptions.push(noValueOption);
     }
     return sortedOptions;
+  }
+
+  hoistCheckedOptions(options) {
+    const [checkedOptions, otherOptions] = options.reduce(([checked, others], option) => {
+      if (this.checked(option) || this.anyChildChecked(option)) {
+        return [checked.concat([option]), others];
+      }
+      return [checked, others.concat([option])];
+    }, [[], []]);
+    let partitionedOptions = checkedOptions.concat(otherOptions);
+    const noValueOption = partitionedOptions.find(opt => opt.noValueKey);
+    if (noValueOption && !this.checked(noValueOption)) {
+      partitionedOptions = partitionedOptions.filter(opt => !opt.noValueKey);
+      partitionedOptions.push(noValueOption);
+    }
+    return partitionedOptions;
   }
 
   moreLessLabel(totalOptions) {
@@ -207,7 +226,8 @@ export default class MultiSelect extends Component {
     let options = this.props.options.slice();
     const totalOptions = options.filter((option) => {
       let notDefined;
-      return option.results === notDefined || option.results > 0 || this.checked(option);
+      return isNotAnEmptyGroup(option) &&
+        (option.results === notDefined || option.results > 0 || !option.options || option.options.length || this.checked(option));
     });
     options = totalOptions;
     options = options.map((option) => {
@@ -227,8 +247,12 @@ export default class MultiSelect extends Component {
 
     const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
 
-    if (!this.props.noSort) {
+    if (this.props.sort) {
       options = this.sort(options, optionsValue, optionsLabel);
+    }
+
+    if (!this.props.sort && !this.state.showAll) {
+      options = this.hoistCheckedOptions(options);
     }
 
     if (tooManyOptions) {
@@ -259,6 +283,7 @@ export default class MultiSelect extends Component {
             </div>
           </ShowIf>
         </li>
+        {!options.length && <span>{ t('System', 'No options found') }</span> }
         {options.map((option, index) => {
           if (option.options) {
             return this.renderGroup(option, index);
@@ -291,7 +316,7 @@ MultiSelect.defaultProps = {
   optionsToShow: 5,
   showAll: false,
   hideSearch: false,
-  noSort: false,
+  sort: false,
   sortbyLabel: false
 };
 
@@ -306,6 +331,6 @@ MultiSelect.propTypes = {
   optionsToShow: PropTypes.number,
   showAll: PropTypes.bool,
   hideSearch: PropTypes.bool,
-  noSort: PropTypes.bool,
+  sort: PropTypes.bool,
   sortbyLabel: PropTypes.bool
 };

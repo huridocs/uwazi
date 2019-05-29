@@ -14,6 +14,20 @@ export function validateDuplicatedLabel(property, properties) {
   }, true);
 }
 
+export function validateDuplicatedRelationship(property, properties) {
+  return properties.reduce((validity, prop) => {
+    const sameProperty = (prop._id || prop.localID) === (property._id || property.localID);
+    const differentRelationtype = !prop.relationType || (prop.relationType !== property.relationType);
+    const differentContent = prop.content !== property.content;
+    const isNotAnyTemplate = Boolean(property.content && property.content.trim() !== '');
+    return validity && (sameProperty || differentRelationtype || (differentContent && isNotAnyTemplate));
+  }, true);
+}
+
+export function validateRequiredInheritproperty(prop) {
+  return !prop || !prop.inherit || Boolean(prop.inheritProperty);
+}
+
 export default function (properties, templates, id) {
   const validator = {
     '': {},
@@ -51,6 +65,19 @@ export default function (properties, templates, id) {
       }
       const { relationType } = template.properties[index];
       return relationType && relationType.trim() !== '';
+    };
+
+    validator[''][`properties.${index}.relationType.duplicated`] = (template) => {
+      if (!template.properties[index] || template.properties[index].type !== 'relationship') {
+        return true;
+      }
+      const prop = template.properties[index];
+      return validateDuplicatedRelationship(prop, template.properties);
+    };
+
+    validator[''][`properties.${index}.inheritProperty.required`] = (template) => {
+      const prop = template.properties[index];
+      return validateRequiredInheritproperty(prop);
     };
   });
 

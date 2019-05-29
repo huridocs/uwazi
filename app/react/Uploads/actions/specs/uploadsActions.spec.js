@@ -16,6 +16,30 @@ import api from '../../../utils/api';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
+const getMockFile = () => {
+  // needed to work with firefox/chrome and phantomjs
+  let file = { name: 'filename' };
+  const isChrome = typeof File === 'function';
+  if (isChrome) {
+    file = new File([], 'filename');
+  }
+  return file;
+};
+
+const emitProgressAndResponse = (superAgent, response) => {
+  superAgent.emit('progress', { percent: 65.1 });
+  superAgent.emit('progress', { percent: 75 });
+  superAgent.emit('response', response);
+};
+
+const mockSuperAgent = () => {
+  const mockUpload = superagent.post(`${APIURL}/import`);
+  spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+  spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+  spyOn(superagent, 'post').and.returnValue(mockUpload);
+  return mockUpload;
+};
+
 describe('uploadsActions', () => {
   beforeEach(() => {
     mockID();
@@ -26,6 +50,33 @@ describe('uploadsActions', () => {
   });
 
   afterEach(() => backend.restore());
+
+  describe('showImportPanel()', () => {
+    it('should activate the flag in the state', () => {
+      const dispatch = jasmine.createSpy('dispatch');
+      actions.showImportPanel()(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({ type: 'showImportPanel/SET', value: true });
+    });
+  });
+
+  describe('closeImportPanel()', () => {
+    it('should deactivate the flag in the state', () => {
+      const dispatch = jasmine.createSpy('dispatch');
+      actions.closeImportPanel()(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({ type: 'showImportPanel/SET', value: false });
+    });
+  });
+
+  describe('closeImportProgress()', () => {
+    it('should deactivate the flag in the state', () => {
+      const dispatch = jasmine.createSpy('dispatch');
+      actions.closeImportProgress()(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({ type: 'importError/SET', value: {} });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'importProgress/SET', value: 0 });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'importEnd/SET', value: false });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'importStart/SET', value: false });
+    });
+  });
 
   describe('enterUploads()', () => {
     it('should return a ENTER_UPLOADS_SECTION', () => {
@@ -67,45 +118,53 @@ describe('uploadsActions', () => {
       });
     });
 
-    describe('uploadDocument', () => {
-      it('should create a document and upload file while dispatching the upload progress', () => {
-        const mockUpload = superagent.post(`${APIURL}upload`);
-        spyOn(mockUpload, 'field').and.returnValue(mockUpload);
-        spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
-        spyOn(superagent, 'post').and.returnValue(mockUpload);
+    describe('importData', () => {
+      it('should upload a file and then import the data', (done) => {
+        const mockUpload = mockSuperAgent();
 
         const expectedActions = [
-          { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
+          { type: 'importUploadProgress/SET', value: 65 },
+          { type: 'importUploadProgress/SET', value: 75 },
+          { type: 'importUploadProgress/SET', value: 0 }
+        ];
+        const store = mockStore({});
+        const file = getMockFile();
+
+        store.dispatch(actions.importData([file], '123'))
+        .then(() => {
+          expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+          expect(store.getActions()).toEqual(expectedActions);
+          done();
+        });
+
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok' });
+      });
+    });
+
+    describe('uploadDocument', () => {
+      it('should create a document and upload file while dispatching the upload progress', () => {
+        const mockUpload = mockSuperAgent();
+
+        const expectedActions = [
           { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
+          { type: types.UPLOAD_PROGRESS, doc: 'abc1', progress: 75 },
           { type: types.UPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'a', originalname: 'a', size: 1 } }
         ];
         const store = mockStore({});
-
-        // needed to work with firefox/chrome and phantomjs
-        let file = { name: 'filename' };
-        const isChrome = typeof File === 'function';
-        if (isChrome) {
-          file = new File([], 'filename');
-        }
-        //
+        const file = getMockFile();
 
         store.dispatch(actions.uploadDocument('abc1', file));
         expect(mockUpload.field).toHaveBeenCalledWith('document', 'abc1');
         expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
 
-        mockUpload.emit('progress', { percent: 55.1 });
-        mockUpload.emit('progress', { percent: 65 });
-        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
         expect(store.getActions()).toEqual(expectedActions);
       });
     });
 
     describe('uploadCustom', () => {
       it('should upload a file and then add it to the customUploads', (done) => {
-        const mockUpload = superagent.post(`${APIURL}customisation/upload`);
-        spyOn(mockUpload, 'field').and.returnValue(mockUpload);
-        spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
-        spyOn(superagent, 'post').and.returnValue(mockUpload);
+        const mockUpload = mockSuperAgent();
 
         const expectedActions = [
           { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 65 },
@@ -114,14 +173,7 @@ describe('uploadsActions', () => {
           basicActions.push('customUploads', { test: 'test' })
         ];
         const store = mockStore({});
-
-        // needed to work with firefox/chrome and phantomjs
-        let file = { name: 'filename' };
-        const isChrome = typeof File === 'function';
-        if (isChrome) {
-          file = new File([], 'filename');
-        }
-        //
+        const file = getMockFile();
 
         store.dispatch(actions.uploadCustom(file))
         .then(() => {
@@ -130,9 +182,7 @@ describe('uploadsActions', () => {
           done();
         });
 
-        mockUpload.emit('progress', { percent: 65.1 });
-        mockUpload.emit('progress', { percent: 75 });
-        mockUpload.emit('response', { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: { filename: 'a', originalname: 'a', size: 1 } });
       });
     });
 

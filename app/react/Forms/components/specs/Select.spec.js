@@ -38,7 +38,8 @@ describe('Select', () => {
     expect(optionElements.last().text()).toBe('Option2');
   });
 
-  it('should sort the options alphabetically', () => {
+  it('should sort the options alphabetically if sort option is true', () => {
+    props.sort = true;
     props.options.push({ label: 'An option', value: 'option3' });
     render();
     const optionElements = component.find('option');
@@ -78,12 +79,12 @@ describe('Select', () => {
       const optionElements = component.find('option');
 
       expect(optionElements.length).toBe(4);
-      expect(optionElements.at(1).props().value).toBe('option3');
-      expect(optionElements.at(1).text()).toBe('An Option');
-      expect(optionElements.at(2).props().value).toBe('option1');
-      expect(optionElements.at(2).text()).toBe('Option1');
-      expect(optionElements.at(3).props().value).toBe('option2');
-      expect(optionElements.at(3).text()).toBe('Option2');
+      expect(optionElements.at(1).props().value).toBe('option1');
+      expect(optionElements.at(1).text()).toBe('Option1');
+      expect(optionElements.at(2).props().value).toBe('option2');
+      expect(optionElements.at(2).text()).toBe('Option2');
+      expect(optionElements.at(3).props().value).toBe('option3');
+      expect(optionElements.at(3).text()).toBe('An Option');
     });
   });
 
@@ -112,7 +113,8 @@ describe('Select', () => {
       expect(optionElements.at(3).text()).toBe('opt 3');
     });
 
-    it('should render the inner options alphabetically (but not the groups)', () => {
+    it('should render the inner options alphabetically (but not the groups) if sort=true', () => {
+      props.sort = true;
       props.options = [
         { label: 'Option group 1', options: [{ label: 'opt 1', id: 1 }, { label: 'opt 1', id: 4 }] },
         { label: 'An option group', options: [{ label: 'opt 3', id: 3 }, { label: 'opt 4', id: 4 }, { label: 'An Option', id: 5 }] }

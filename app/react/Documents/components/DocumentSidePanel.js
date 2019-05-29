@@ -74,7 +74,7 @@ export class DocumentSidePanel extends Component {
 
   render() {
     const { doc, docBeingEdited, DocumentForm, readOnly, references, EntityForm,
-           connectionsGroups, isTargetDoc, excludeConnectionsTab } = this.props;
+           connectionsGroups, isTargetDoc, excludeConnectionsTab, relationships } = this.props;
     const TocForm = this.props.tocFormComponent;
 
     const docAttachments = doc.get('attachments') ? doc.get('attachments').toJS() : [];
@@ -246,7 +246,7 @@ export class DocumentSidePanel extends Component {
                 }
                 return (
                   <div>
-                    <ShowMetadata entity={this.props.doc.toJS()} showTitle showType />
+                    <ShowMetadata relationships={relationships} entity={this.props.doc.toJS()} showTitle showType />
                     <AttachmentsList
                       files={fromJS(attachments)}
                       readOnly={false}
@@ -287,6 +287,7 @@ DocumentSidePanel.defaultProps = {
   docBeingEdited: false,
   searchTerm: '',
   references: Immutable.fromJS([]),
+  relationships: Immutable.fromJS([]),
   tocFormState: {},
   formDirty: false,
   isTargetDoc: false,
@@ -312,6 +313,7 @@ DocumentSidePanel.propTypes = {
   resetForm: PropTypes.func.isRequired,
   connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
   references: PropTypes.instanceOf(Immutable.List),
+  relationships: PropTypes.instanceOf(Immutable.List),
   tocFormState: PropTypes.instanceOf(Object),
   tocForm: PropTypes.array,
   saveToc: PropTypes.func,
@@ -345,7 +347,8 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     references,
     excludeConnectionsTab: Boolean(ownProps.references),
-    connectionsGroups: state.relationships.list.connectionsGroups
+    connectionsGroups: state.relationships.list.connectionsGroups,
+    relationships: ownProps.references
   };
 };
 

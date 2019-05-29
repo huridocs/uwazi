@@ -30,7 +30,7 @@ export function savePage(data) {
 }
 
 export function deletePage(page) {
-  return dispatch => api.delete(page)
+  return dispatch => api.delete({ sharedId: page.sharedId })
   .then(() => {
     dispatch(actions.remove('pages', page));
   });

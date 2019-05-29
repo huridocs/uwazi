@@ -26,6 +26,7 @@ describe('Uploads', () => {
     it('should show only filtered ones', (done) => {
       nightmare
       .library.editCard('Wolverine')
+      .wait('#metadataForm > div:nth-child(2) > ul > li.wide > select')
       .select('#metadataForm > div:nth-child(2) > ul > li.wide > select', comicCharacter)
       .library.saveCard()
       .refresh()
@@ -40,13 +41,13 @@ describe('Uploads', () => {
   });
 
   describe('when uploading a pdf', () => {
-    it('should create the new document and show a "no type state"', (done) => {
+    it('should create the new document and assign default template', (done) => {
       const expectedTitle = 'Valid';
 
       nightmare
       .upload('.upload-box input', `${__dirname}/test_files/valid.pdf`)
       .waitForCardToBeCreated(expectedTitle)
-      .waitForCardStatus(selectors.uploadsView.firstDocument, 'No type selected')
+      .waitForCardTemplate(selectors.uploadsView.firstDocument, 'Test entity')
       .getResultsAsJson()
       .then((results) => {
         expect(results[0].title).toBe(expectedTitle);

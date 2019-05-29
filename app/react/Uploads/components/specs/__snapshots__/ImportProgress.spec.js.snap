@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ImportProgress rendering states should render a state for end 1`] = `
+<div
+  className="alert alert-info"
+>
+  <Connect(Icon)
+    icon="check"
+    size="2x"
+  />
+  <div
+    className="force-ltr"
+  >
+    <Connect(Translate)>
+      Import completed:
+    </Connect(Translate)>
+     
+    5
+     
+    <Connect(Translate)>
+      created
+    </Connect(Translate)>
+    <br />
+    <Connect(Translate)>
+      Indexing entities may take a few minutes
+    </Connect(Translate)>
+  </div>
+  <Connect(Icon)
+    icon="times"
+    onClick={[Function]}
+    style={
+      Object {
+        "cursor": "pointer",
+      }
+    }
+  />
+</div>
+`;
+
+exports[`ImportProgress rendering states should render a state for errors 1`] = `
+<div>
+  <div
+    className="alert alert-danger"
+  >
+    <Connect(Icon)
+      icon="exclamation-triangle"
+      size="2x"
+    />
+    <div
+      className="force-ltr"
+    >
+      <Connect(Translate)>
+        The import process threw an error:
+      </Connect(Translate)>
+    </div>
+    <Connect(Icon)
+      icon="times"
+      onClick={[Function]}
+      style={
+        Object {
+          "cursor": "pointer",
+        }
+      }
+    />
+  </div>
+  <StackTrace
+    message="Something bad happened"
+  />
+</div>
+`;
+
+exports[`ImportProgress rendering states should render a state for normal progress 1`] = `
+<div
+  className="alert alert-info"
+>
+  <Connect(Icon)
+    icon="cog"
+    size="2x"
+  />
+  <div
+    className="force-ltr"
+  >
+    <Connect(Translate)>
+      Importing data in progress
+    </Connect(Translate)>
+    : 
+    5
+  </div>
+</div>
+`;

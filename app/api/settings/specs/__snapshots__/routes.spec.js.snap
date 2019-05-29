@@ -145,6 +145,18 @@ Object {
               ],
               "type": "string",
             },
+            "rtl": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
           },
           "type": "object",
         },

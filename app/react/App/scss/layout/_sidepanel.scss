@@ -132,7 +132,6 @@ $c-sidebar: $c-white;
   .item {
     transition: all 0ms;
     width: 100%;
-    margin: 0 !important;
     border-top: 0;
     border-left: 0;
     border-right: 0;
@@ -158,9 +157,9 @@ $c-sidebar: $c-white;
   }
 
   .search-box {
-    width: calc(100% - 10px);
+    width: calc(100% - 30px);
     max-width: 100%;
-    margin: 5px 5px 1.2em 5px;
+    margin: 15px 15px 30px 15px;
     z-index: 1;
 
     .form-control {

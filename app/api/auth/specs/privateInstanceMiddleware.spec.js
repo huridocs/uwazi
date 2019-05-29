@@ -70,6 +70,11 @@ describe('privateInstanceMiddleware', () => {
       req.url = 'host:port/api/resetpassword';
       expectNextPromise(done);
     });
+
+    it('should allow the unlockaccount endpoint', (done) => {
+      req.url = 'host:port/api/unlockaccount';
+      expectNextPromise(done);
+    });
   });
 
   describe('Other private-related calls', () => {
@@ -117,6 +122,11 @@ describe('privateInstanceMiddleware', () => {
 
     it('should call next when instance is private and the url matches setpassword', () => {
       req.url = 'url/setpassword/somehash';
+      expectNext();
+    });
+
+    it('should call next when instance is private and the url matches unlockaccount', () => {
+      req.url = 'url/unlockaccount/someAccount';
       expectNext();
     });
   });

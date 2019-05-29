@@ -5,14 +5,19 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
   <div
     className="form-group"
   >
-    <label>
-      Label
+    <label
+      htmlFor="label"
+    >
+      <Connect(Translate)>
+        Label
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
     >
       <input
         className="form-control"
+        id="label"
       />
     </Modeled(Connect(Field))>
   </div>
@@ -20,29 +25,9 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
     className="form-group"
   >
     <label>
-      Select list
-    </label>
-    <Select
-      model="template.data.properties[0].content"
-      options={
-        Array [
-          Object {
-            "_id": 3,
-            "name": "Judge",
-            "type": "template",
-          },
-        ]
-      }
-      optionsLabel="name"
-      optionsValue="_id"
-      placeholder="Any entity or document"
-    />
-  </div>
-  <div
-    className="form-group"
-  >
-    <label>
-      Relationship
+      <Connect(Translate)>
+        Relationship
+      </Connect(Translate)>
       <span
         className="required"
       >
@@ -70,6 +55,31 @@ exports[`FormConfigRelationship should render fields with the correct datas 1`] 
           "required": [Function],
         }
       }
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      <Connect(Translate)>
+        Entities
+      </Connect(Translate)>
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "properties": Array [],
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
     />
   </div>
   <PropertyConfigOptions
@@ -90,14 +100,19 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
   <div
     className="form-group has-error"
   >
-    <label>
-      Label
+    <label
+      htmlFor="label"
+    >
+      <Connect(Translate)>
+        Label
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
     >
       <input
         className="form-control"
+        id="label"
       />
     </Modeled(Connect(Field))>
   </div>
@@ -105,29 +120,9 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
     className="form-group"
   >
     <label>
-      Select list
-    </label>
-    <Select
-      model="template.data.properties[0].content"
-      options={
-        Array [
-          Object {
-            "_id": 3,
-            "name": "Judge",
-            "type": "template",
-          },
-        ]
-      }
-      optionsLabel="name"
-      optionsValue="_id"
-      placeholder="Any entity or document"
-    />
-  </div>
-  <div
-    className="form-group"
-  >
-    <label>
-      Relationship
+      <Connect(Translate)>
+        Relationship
+      </Connect(Translate)>
       <span
         className="required"
       >
@@ -155,6 +150,31 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
           "required": [Function],
         }
       }
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      <Connect(Translate)>
+        Entities
+      </Connect(Translate)>
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "properties": Array [],
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
     />
   </div>
   <PropertyConfigOptions
@@ -175,14 +195,19 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
   <div
     className="form-group has-error"
   >
-    <label>
-      Label
+    <label
+      htmlFor="label"
+    >
+      <Connect(Translate)>
+        Label
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
     >
       <input
         className="form-control"
+        id="label"
       />
     </Modeled(Connect(Field))>
   </div>
@@ -190,29 +215,9 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
     className="form-group"
   >
     <label>
-      Select list
-    </label>
-    <Select
-      model="template.data.properties[0].content"
-      options={
-        Array [
-          Object {
-            "_id": 3,
-            "name": "Judge",
-            "type": "template",
-          },
-        ]
-      }
-      optionsLabel="name"
-      optionsValue="_id"
-      placeholder="Any entity or document"
-    />
-  </div>
-  <div
-    className="form-group"
-  >
-    <label>
-      Relationship
+      <Connect(Translate)>
+        Relationship
+      </Connect(Translate)>
       <span
         className="required"
       >
@@ -240,6 +245,31 @@ exports[`FormConfigRelationship when the fields are invalid and dirty or the for
           "required": [Function],
         }
       }
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      <Connect(Translate)>
+        Entities
+      </Connect(Translate)>
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "properties": Array [],
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
     />
   </div>
   <PropertyConfigOptions
@@ -260,14 +290,19 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
   <div
     className="form-group"
   >
-    <label>
-      Label
+    <label
+      htmlFor="label"
+    >
+      <Connect(Translate)>
+        Label
+      </Connect(Translate)>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
     >
       <input
         className="form-control"
+        id="label"
       />
     </Modeled(Connect(Field))>
   </div>
@@ -275,29 +310,9 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
     className="form-group"
   >
     <label>
-      Select list
-    </label>
-    <Select
-      model="template.data.properties[0].content"
-      options={
-        Array [
-          Object {
-            "_id": 3,
-            "name": "Judge",
-            "type": "template",
-          },
-        ]
-      }
-      optionsLabel="name"
-      optionsValue="_id"
-      placeholder="Any entity or document"
-    />
-  </div>
-  <div
-    className="form-group"
-  >
-    <label>
-      Relationship
+      <Connect(Translate)>
+        Relationship
+      </Connect(Translate)>
       <span
         className="required"
       >
@@ -325,6 +340,31 @@ exports[`FormConfigRelationship when use as filter is selected should show the d
           "required": [Function],
         }
       }
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      <Connect(Translate)>
+        Entities
+      </Connect(Translate)>
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "properties": Array [],
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
     />
   </div>
   <PropertyConfigOptions

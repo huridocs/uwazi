@@ -26,8 +26,8 @@ export default {
     addNewEntity: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewConnection: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
     addNewValueToDictionaryButton: '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > a.btn.btn-primary',
-    firstDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > ul > li:nth-child(2) > div > div > input',
-    secondDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > ul > li:nth-child(3) > div > div > input',
+    firstDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div.list-group-item > div > div > input',
+    secondDictionaryValForm: '#app > div.content > div > div > div.settings-content > div > form > div > div.thesauri-values > div:nth-child(2) > ul > div:nth-child(2) > div > div > input',
     saveDictionaryButton: '#app > div.content > div > div > div.settings-content > div > form > div > div.settings-footer > button',
     saveDocumentButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveEntityButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
@@ -98,8 +98,8 @@ export default {
     createReferenceSidePanelIsActive: '#app > div.content > div > div > aside.side-panel.create-reference.is-active',
     createReferenceSidePanelSelect: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > select',
     createReferenceSidePanelSelectFirstType: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > ul > li:nth-child(1)',
-    createReferenceSidePanelInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-header > div > div > input',
-    createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div > div > div',
+    createReferenceSidePanelInput: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > .search-box input',
+    createReferenceSidePanelFirstSearchSuggestion: '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body .item-group > .item',
     createReferenceSidePanelNextButton: '#app > div.content > div > div > aside.side-panel.undefined.create-reference.is-active > div.sidepanel-footer > button.edit-metadata.btn.btn-success',
     targetDocument: '.document-viewer.show-target-document',
     saveConnectionButton: '#app > div.content > div > div > main > div > div > div > div:nth-child(1) > div.ContextMenu.ContextMenu-center > button',
@@ -188,10 +188,11 @@ export default {
       mainSuperpower: '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > select',
       suporPowers: {
         fly: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(3) > label',
-        laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(5) > label'
+        laserBeam: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(8) > label',
+        moreButton: '#metadataForm > div:nth-child(3) > div:nth-child(5) > ul > li.wide > ul > li:nth-child(7) > button'
       },
       firstSighting: '#metadataForm > div:nth-child(3) > div:nth-child(6) > ul > li.wide > div > input',
-      whoIsHe: '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea'
+      whoIsHe: '#metadataForm > div:nth-child(3) > div:nth-child(7) > ul > li.wide > div > div.tab-content.tab-content-visible > textarea',
     },
     viewer: {
       title: '#app > div.content > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-body > div > div.tab-content.tab-content-visible > div > div.view > div > div > h1',

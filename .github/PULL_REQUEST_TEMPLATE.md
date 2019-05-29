@@ -1,4 +1,4 @@
-Fixes issue #
+fixes #
 
 PR checklist:
 - [ ] Update READ.me ?

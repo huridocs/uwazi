@@ -6,21 +6,24 @@ import { FormConfigRelationship } from '../FormConfigRelationship';
 
 describe('FormConfigRelationship', () => {
   let component;
-  let thesauris;
+  let templates;
   let relationTypes;
   let props;
 
   beforeEach(() => {
-    thesauris = [{ _id: 1, name: 'thesauri1' }, { _id: 2, name: 'thesauri2' }, { _id: 3, name: 'Judge', type: 'template' }];
+    templates = [{ _id: 3, name: 'Judge', type: 'template', properties: [] }];
     relationTypes = [{ _id: 1, name: 'relationType1' }, { _id: 2, name: 'relationType2' }];
     props = {
-      thesauris: Immutable.fromJS(thesauris),
+      templates: Immutable.fromJS(templates),
       relationTypes: Immutable.fromJS(relationTypes),
       index: 0,
       type: 'relationship',
       data: { properties: [{ filter: false }] },
       formState: {
         'properties.0.label': { valid: true, dirty: false, errors: {} },
+        properties: [
+          { content: { value: 3 } }
+        ],
         $form: {
           errors: {
             'properties.0.label.required': false,

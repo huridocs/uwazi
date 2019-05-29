@@ -9,7 +9,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
 
-import fixtures, { entityId, entityEnId } from './fixtures.js';
+import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
@@ -70,7 +70,6 @@ describe('upload routes', () => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       iosocket = jasmine.createSpyObj('socket', ['emit']);
-      const io = { getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit }) };
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',
@@ -82,7 +81,15 @@ describe('upload routes', () => {
         path: `${__dirname}/uploads/f2082bf51b6ef839690485d7153e847a.pdf`,
         size: 171411271
       };
-      req = { language: 'es', user: 'admin', headers: {}, body: { document: 'sharedId1' }, files: [file], io };
+      req = {
+        language: 'es',
+        user: 'admin',
+        headers: {},
+        body: { document: 'sharedId1' },
+        files: [file],
+        io: {},
+        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+      };
 
       db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
       spyOn(errorLog, 'error'); //just to avoid annoying console output
@@ -229,8 +236,8 @@ describe('upload routes', () => {
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
       await Promise.all([
-        entitiesModel.save({ _id: entityId, file: { filename: 'test' } }),
-        entitiesModel.save({ file: { filename: 'test' } }),
+        entitiesModel.save({ title: 'title', _id: entityId, file: { filename: 'test' } }),
+        entitiesModel.save({ title: 'title', file: { filename: 'test' } }),
       ]);
       await onSocketRespond('post', '/api/reupload', req);
       await fileExists(path.resolve(`${__dirname}/uploads/test`));
@@ -298,6 +305,56 @@ describe('upload routes', () => {
       const result = await routes.delete('/api/customisation/upload', { query: { _id: 'upload_id' } });
       expect(result).toBe('upload_deleted');
       expect(uploads.delete).toHaveBeenCalledWith('upload_id');
+    });
+  });
+
+  describe('POST/import', () => {
+    beforeEach(() => {
+      file = {
+        fieldname: 'file',
+        originalname: 'importcsv.csv',
+        encoding: '7bit',
+        mimetype: 'application/octet-stream',
+        destination: `${__dirname}/uploads/`,
+        filename: 'importcsv.csv',
+        path: `${__dirname}/uploads/importcsv.csv`,
+        size: 112
+      };
+      req = {
+        language: 'es',
+        user: 'admin',
+        headers: {},
+        body: { template: templateId },
+        files: [file],
+        io: {},
+        getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+      };
+    });
+
+    it('should import a csv', (done) => {
+      let start = false;
+      let progress = 0;
+      iosocket.emit.and.callFake((eventName, data) => {
+        if (eventName === 'IMPORT_CSV_PROGRESS') {
+          progress = data;
+        }
+        if (eventName === 'IMPORT_CSV_START') {
+          start = true;
+        }
+        if (eventName === 'IMPORT_CSV_END') {
+          expect(start).toBe(true);
+          expect(progress).toBe(2);
+          entities.get({ template: templateId })
+          .then((entitiesCreated) => {
+            expect(entitiesCreated.length).toBe(2);
+            expect(entitiesCreated[0].title).toBe('imported entity one');
+            expect(entitiesCreated[1].title).toBe('imported entity two');
+            done();
+          });
+        }
+      });
+
+      routes.post('/api/import', req);
     });
   });
 });

@@ -82,13 +82,13 @@ describe('relationships routes', () => {
 
   describe('GET by_document', () => {
     it('should return relationships.getByDocument', (done) => {
-      const req = { params: { id: 'documentId' }, language: 'es' };
+      const req = { params: { id: 'documentId' }, language: 'es', user: { role: 'admin' } };
 
       spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
 
       routes.get('/api/references/by_document/:id', req)
       .then((response) => {
-        expect(relationships.getByDocument).toHaveBeenCalledWith('documentId', 'es');
+        expect(relationships.getByDocument).toHaveBeenCalledWith('documentId', 'es', true);
         expect(response).toBe('byDocument');
         done();
       })

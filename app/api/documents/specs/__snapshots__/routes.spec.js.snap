@@ -116,6 +116,12 @@ Object {
       "items": Array [
         Object {
           "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
             "filename": Object {
               "invalids": Array [
                 "",
@@ -143,9 +149,10 @@ Object {
             },
             "timestamp": Object {
               "invalids": Array [
-                "",
+                Infinity,
+                -Infinity,
               ],
-              "type": "string",
+              "type": "number",
             },
           },
           "type": "object",
@@ -290,23 +297,38 @@ Object {
                 ],
               },
               Object {
-                "children": Object {
-                  "lat": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                  },
-                  "lon": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                  },
+                "flags": Object {
+                  "sparse": false,
                 },
-                "type": "object",
+                "items": Array [
+                  Object {
+                    "children": Object {
+                      "label": Object {
+                        "type": "string",
+                        "valids": Array [
+                          null,
+                          "",
+                        ],
+                      },
+                      "lat": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                      "lon": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                    },
+                    "type": "object",
+                  },
+                ],
+                "type": "array",
                 "valids": Array [
                   "",
                 ],

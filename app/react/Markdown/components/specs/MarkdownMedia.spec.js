@@ -26,6 +26,12 @@ describe('MarkdownMedia', () => {
       expect(component).toMatchSnapshot();
     });
 
+    it('should use compact class name if compact prop is set', () => {
+      props.compact = true;
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
     it('should assign the ReactPlayer ref to this.player', () => {
       const playerRef = {};
       render();

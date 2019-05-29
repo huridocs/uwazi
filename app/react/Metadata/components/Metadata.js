@@ -4,32 +4,40 @@ import React from 'react';
 import { t, I18NLink } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 
+import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
 
 const showByType = (prop, compact) => {
   let result = prop.value;
-  if (prop.type === null) {
+  switch (prop.type) {
+  case null:
     result = t('System', 'No property');
-  }
-
-  if (prop.type === 'markdown') {
+    break;
+  case 'markdown':
     result = <MarkdownViewer markdown={prop.value} />;
-  }
+    break;
+  case 'image':
+    result = <img key={prop.value} className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
+    break;
+  case 'media':
+    result = <MarkdownViewer markdown={`{media}(${prop.value})`} compact/>;
+    break;
+  case 'geolocation':
+    result = <GeolocationViewer points={prop.value} onlyForCards={Boolean(prop.onlyForCards)} />;
+    break;
+  default:
+    if (prop.url) {
+      result = <I18NLink key={prop.url} to={prop.url}>{prop.value}</I18NLink>;
+    }
 
-  if (prop.type === 'image') {
-    result = <img className={`multimedia-img ${prop.style}`} src={prop.value} alt={prop.label} />;
-  }
-
-  if (prop.type === 'media') {
-    result = <MarkdownViewer markdown={`{media}(${prop.value})`} />;
-  }
-
-  if (prop.url) {
-    result = <I18NLink to={prop.url}>{prop.value}</I18NLink>;
-  }
-
-  if (prop.value && prop.value.map) {
-    result = <ValueList compact={compact} property={prop} />;
+    if (prop.value && prop.value.map) {
+      prop.value = prop.value.map((_value) => {
+        const value = showByType(_value, compact);
+        return value && value.value ? value : { value };
+      });
+      result = <ValueList compact={compact} property={prop} />;
+    }
+    break;
   }
 
   return result;
@@ -44,18 +52,18 @@ const removeEmptyValues = (p) => {
 
 const Metadata = ({ metadata, compact, renderLabel }) => (
   <React.Fragment>
-    {metadata.filter(removeEmptyValues).map((prop) => {
-      let type = prop.type ? prop.type : 'default';
-      type = type === 'image' || type === 'media' ? 'multimedia' : type;
-      return (
-        <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={prop.label}>
-          {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
-          <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-            {showByType(prop, compact)}
-          </dd>
-        </dl>
-      );
-    })}
+    {metadata.filter(removeEmptyValues).map((prop, index) => {
+          let type = prop.type ? prop.type : 'default';
+          type = type === 'image' || type === 'media' ? 'multimedia' : type;
+          return (
+            <dl className={`metadata-type-${type} ${prop.fullWidth ? 'full-width' : ''}`} key={`${prop.name}_${index}`}>
+              {renderLabel(prop, <dt>{t(prop.translateContext, prop.label)}</dt>)}
+              <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+                {showByType(prop, compact)}
+              </dd>
+            </dl>
+          );
+        })}
   </React.Fragment>
 );
 

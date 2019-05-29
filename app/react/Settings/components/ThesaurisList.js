@@ -51,7 +51,7 @@ export class ThesaurisList extends Component {
                 </a>
               </div>
             </li>
-))}
+          ))}
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/dictionaries/new" className="btn btn-success">

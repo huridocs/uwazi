@@ -6,7 +6,7 @@ import path from 'path';
 
 import uploads from '../uploads';
 import uploadsModel from '../uploadsModel';
-import { uploadDocumentsPath } from '../../config/paths';
+import { customUploadsPath } from '../../config/paths';
 
 describe('uploads', () => {
   let file;
@@ -49,13 +49,13 @@ describe('uploads', () => {
 
   describe('delete', () => {
     it('should delete the file', async () => {
-      fs.writeFileSync(path.join(uploadDocumentsPath, 'upload.filename'));
+      fs.writeFileSync(path.join(customUploadsPath, 'upload.filename'));
 
-      expect(fs.existsSync(path.join(uploadDocumentsPath, 'upload.filename'))).toBe(true);
+      expect(fs.existsSync(path.join(customUploadsPath, 'upload.filename'))).toBe(true);
 
       await uploads.delete(uploadId);
 
-      expect(fs.existsSync(path.join(uploadDocumentsPath, 'upload.filename'))).toBe(false);
+      expect(fs.existsSync(path.join(customUploadsPath, 'upload.filename'))).toBe(false);
     });
   });
 });

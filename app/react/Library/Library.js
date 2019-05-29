@@ -8,6 +8,7 @@ import setReduxState from 'app/Library/helpers/setReduxState';
 import SearchButton from 'app/Library/components/SearchButton';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
+import ImportProgress from 'app/Uploads/components/ImportProgress';
 
 export default class Library extends RouteHandler {
   constructor(props, context) {
@@ -17,9 +18,12 @@ export default class Library extends RouteHandler {
 
   static renderTools() {
     return (
-      <div className="searchBox">
-        <SearchButton storeKey="library"/>
-      </div>
+      <React.Fragment>
+        <div className="searchBox">
+          <SearchButton storeKey="library"/>
+        </div>
+        <ImportProgress/>
+      </React.Fragment>
     );
   }
 

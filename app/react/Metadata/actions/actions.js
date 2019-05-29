@@ -3,8 +3,9 @@ import superagent from 'superagent';
 
 import { APIURL } from 'app/config.js';
 import { advancedSort } from 'app/utils/advancedSort';
-import { api as entitiesAPI } from 'app/Entities';
+import { api } from 'app/Entities';
 import { notify } from 'app/Notifications';
+import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import emptyTemplate from '../helpers/defaultTemplate';
 
@@ -39,26 +40,19 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
   return resetedMetadata;
 };
 
-export function loadInReduxForm(form, onlyReadEntity, templates) {
+export function loadInReduxForm(form, _entity, templates) {
   return (dispatch) => {
-    const entity = Object.assign({}, onlyReadEntity);
-
-    const sortedTemplates = advancedSort(templates, { property: 'name' });
-    const defaultTemplate = sortedTemplates.find(t => t.default);
-    if (!entity.template && defaultTemplate) {
-      entity.template = defaultTemplate._id;
-    }
-
-    if (!entity.metadata) {
-      entity.metadata = {};
-    }
-
-    const template = sortedTemplates.find(t => t._id === entity.template) || emptyTemplate;
-    entity.metadata = resetMetadata(entity.metadata, template, { resetExisting: false }, template);
-
-    dispatch(formActions.reset(form));
-    dispatch(formActions.load(form, entity));
-    dispatch(formActions.setPristine(form));
+    (_entity.sharedId ? api.get(_entity.sharedId) : Promise.resolve([_entity]))
+    .then(([entity]) => {
+      const sortedTemplates = advancedSort(templates, { property: 'name' });
+      const defaultTemplate = sortedTemplates.find(t => t.default);
+      const template = entity.template || defaultTemplate._id;
+      const templateconfig = sortedTemplates.find(t => t._id === template) || emptyTemplate;
+      const metadata = resetMetadata(entity.metadata || {}, templateconfig, { resetExisting: false }, templateconfig);
+      dispatch(formActions.reset(form));
+      dispatch(formActions.load(form, { ...entity, metadata, template }));
+      dispatch(formActions.setPristine(form));
+    });
   };
 }
 
@@ -102,6 +96,12 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('response', ({ body }) => {
       const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
+      api.get(docSharedId)
+      .then(([doc]) => {
+        dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
+        dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
+        dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
+      });
     })
     .end();
   };
@@ -125,7 +125,7 @@ export function multipleUpdate(_entities, values) {
     });
 
     const updatedEntitiesIds = updatedEntities.map(entity => entity.sharedId);
-    return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
+    return api.multipleUpdate(updatedEntitiesIds, values)
     .then(() => {
       dispatch(notify('Update success', 'success'));
       if (values.published !== undefined) {

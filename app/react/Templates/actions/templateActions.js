@@ -22,6 +22,10 @@ export function addProperty(property = {}, _index) {
       property.content = getState().thesauris.get(0).get('_id');
     }
 
+    if (property.type === 'relationship') {
+      property.inherit = false;
+    }
+
     if (property.type === 'nested') {
       property.nestedProperties = [{ key: '', label: '' }];
     }
@@ -59,10 +63,9 @@ export function selectProperty(index) {
 }
 
 export function removeProperty(index) {
-  return (dispatch, getState) => {
-    const properties = getState().template.data.properties.slice(0);
-    properties.splice(index, 1);
-    dispatch(formActions.change('template.data.properties', properties));
+  return (dispatch) => {
+    dispatch(formActions.remove('template.data.properties', index));
+    dispatch(formActions.resetErrors('template.data'));
   };
 }
 
@@ -72,10 +75,22 @@ export function reorderProperty(originIndex, targetIndex) {
   };
 }
 
+const sanitize = (data) => {
+  data.properties = data.properties.map((_prop) => {
+    const prop = { ..._prop };
+    if (prop.inherit && !prop.content) {
+      prop.inherit = false;
+    }
+    return prop;
+  });
+  return data;
+};
+
 export function saveTemplate(data) {
+  const template = sanitize(data);
   return (dispatch) => {
     dispatch({ type: types.SAVING_TEMPLATE });
-    return api.save(data)
+    return api.save(template)
     .then((response) => {
       dispatch({ type: types.TEMPLATE_SAVED, data: response });
       dispatch(actions.update('templates', response));

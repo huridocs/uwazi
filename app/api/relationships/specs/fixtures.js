@@ -55,6 +55,7 @@ export default {
 
     {entity: 'entity2', hub: hub3, template: relation2},
     {entity: 'doc4', hub: hub3, template: relation2},
+    {entity: 'missingEntity', hub: hub3, template: relation2},
 
     {entity: 'entity2', hub: hub4, template: relation1},
     {entity: 'doc5', hub: hub4, template: relation1},
@@ -134,7 +135,11 @@ export default {
     {sharedId: 'doc2', language: 'es', title: 'doc2 title', type: 'document', template: template, published: true, file: {filename: 'doc2esFile'}},
 
     {sharedId: 'entity1', language: 'en', title: 'entity1 title', file: {}, type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {sharedId: 'entity1', language: 'es', title: 'entity1 title', file: {}, type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
+    {sharedId: 'entity1', language: 'pt', title: 'entity1 title', file: {}, type: 'document', template: template, icon: 'icon1', metadata: {data: 'data1'}, creationDate: 123},
     {sharedId: 'entity2', language: 'en', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
+    {sharedId: 'entity2', language: 'es', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
+    {sharedId: 'entity2', language: 'pt', title: 'entity2 title', type: 'document', template: template, icon: 'icon1', metadata: {data: 'data2'}, creationDate: 123},
     {_id: entity3, sharedId: 'entity3', language: 'en', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity3', language: 'ru', title: 'entity3 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
     {sharedId: 'entity4', language: 'en', title: 'entity4 title', type: 'entity', template: template, published: true, icon: 'icon3', metadata: {data: 'data2'}, creationDate: 456},
@@ -148,11 +153,17 @@ export default {
     {sharedId: selectValueID, language: 'en', title: 'selectValue', type: 'entity'},
     {sharedId: value1ID, language: 'en', title: 'value1', type: 'entity'},
     {sharedId: value2ID, language: 'en', title: 'value2', type: 'entity', template},
+    {sharedId: value2ID, language: 'pt', title: 'value2', type: 'entity', template},
     {sharedId: 'bruceWayne', language: 'en', title: 'bruceWayne', type: 'entity', template},
+    {sharedId: 'bruceWayne', language: 'pt', title: 'bruceWayne', type: 'entity', template},
     {sharedId: 'thomasWayne', language: 'en', title: 'thomasWayne', type: 'entity', template},
+    {sharedId: 'thomasWayne', language: 'pt', title: 'thomasWayne', type: 'entity', template},
     {sharedId: 'alfred', language: 'en', title: 'alfred', type: 'entity', template},
     {sharedId: 'robin', language: 'en', title: 'robin', type: 'entity', template},
-    {sharedId: 'IHaveNoTemplate', language: 'en', title: 'no template', type: 'entity', template}
+    {sharedId: 'IHaveNoTemplate', language: 'en', title: 'no template', type: 'entity', template},
+    {sharedId: 'IHaveNoTemplate', language: 'pt', title: 'no template', type: 'entity', template},
+    {sharedId: 'entity_id', language: 'en', title: 'en entity', type: 'entity', template},
+    {sharedId: 'entity_id', language: 'pt', title: 'en entity', type: 'entity', template},
   ],
   dictionaries: [
     {_id: thesauri}

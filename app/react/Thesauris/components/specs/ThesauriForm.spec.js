@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
+import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { mapStateToProps, ThesauriForm } from 'app/Thesauris/components/ThesauriForm.js';
 
 describe('ThesauriForm', () => {
@@ -26,7 +26,7 @@ describe('ThesauriForm', () => {
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
       removeValue: jasmine.createSpy('removeValue'),
-      moveValues: jasmine.createSpy('moveValues'),
+      updateValues: jasmine.createSpy('updateValues'),
       state: { fields: [], $form: {} }
     };
   });
@@ -37,7 +37,7 @@ describe('ThesauriForm', () => {
   };
 
   describe('when unmount', () => {
-    it('shoould reset the form', () => {
+    it('should reset the form', () => {
       render();
       component.unmount();
       expect(props.resetForm).toHaveBeenCalled();
@@ -46,9 +46,18 @@ describe('ThesauriForm', () => {
   });
 
   describe('render', () => {
-    it('should render groups and values', () => {
+    it('should render DragAndDropContainer with thesauri items', () => {
       render();
+      expect(component.find(DragAndDropContainer).props().renderItem).toBe(component.instance().renderItem);
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('renderItem', () => {
+    it('should render ThesauriFormItem with specified value and index', () => {
+      render();
+      const renderedItem = component.instance().renderItem(props.thesauri.values[1], 1);
+      expect(renderedItem).toMatchSnapshot();
     });
   });
 
@@ -132,6 +141,44 @@ describe('ThesauriForm', () => {
     it('should map the thesauri to initialValues', () => {
       expect(mapStateToProps(state).thesauri).toEqual({ name: 'thesauri name', values: [] });
       expect(mapStateToProps(state).thesauris).toEqual(Immutable.fromJS([{ name: 'Countries' }]));
+    });
+  });
+
+  describe('onChange', () => {
+    it('should update values', () => {
+      render();
+      const values = [{ label: 'item' }];
+      instance.onChange(values, 1);
+      expect(props.updateValues).toHaveBeenCalledWith(values, 1);
+    });
+  });
+
+  describe('validation', () => {
+    describe('name duplicated', () => {
+      let thesauris;
+      let id;
+      beforeEach(() => {
+        thesauris = [
+          { _id: 'id1', name: 'Countries' },
+          { _id: 'id2', name: 'Cities' },
+          { _id: 'id3', name: 'People', type: 'template' }
+        ];
+        id = 'id1';
+      });
+      function testValidationResult(inputValue, expectedResult) {
+        const { name: { duplicated } } = ThesauriForm.validation(thesauris, id);
+        const res = duplicated(inputValue);
+        expect(res).toBe(expectedResult);
+      }
+      it('should return false if another thesaurus exists with the same name', () => {
+        testValidationResult('Cities', false);
+      });
+      it('should return true if thesaurus with similar name is itself', () => {
+        testValidationResult('Countries', true);
+      });
+      it('should return true if template has same name', () => {
+        testValidationResult('People', true);
+      });
     });
   });
 });

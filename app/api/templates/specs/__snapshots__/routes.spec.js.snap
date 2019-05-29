@@ -73,6 +73,12 @@ Object {
       ],
       "type": "string",
     },
+    "color": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
     "commonProperties": Object {
       "flags": Object {
         "sparse": false,
@@ -249,6 +255,25 @@ Object {
                 "",
               ],
               "type": "string",
+            },
+            "inherit": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "inheritProperty": Object {
+              "type": "string",
+              "valids": Array [
+                null,
+                "",
+              ],
             },
             "inserting": Object {
               "type": "any",

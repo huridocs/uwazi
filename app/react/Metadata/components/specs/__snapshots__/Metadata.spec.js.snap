@@ -6,7 +6,7 @@ exports[`Metadata should not render metadata without value 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="Label"
+    key="label_0"
   >
     <dt>
       Label
@@ -20,11 +20,39 @@ exports[`Metadata should not render metadata without value 1`] = `
 </React.Fragment>
 `;
 
+exports[`Metadata should render a Geolocation viewer when the metadata is type geolocation 1`] = `
+<React.Fragment>
+  <dl
+    className="metadata-type-geolocation "
+    key="geolocation_label_0"
+  >
+    <dt>
+      Geolocation Label
+    </dt>
+    <dd
+      className=""
+    >
+      <GeolocationViewer
+        onlyForCards={true}
+        points={
+          Array [
+            Object {
+              "lat": 13,
+              "lon": 7,
+            },
+          ]
+        }
+      />
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-markdown "
-    key="label array"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -33,6 +61,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
       className=""
     >
       <MarkdownViewer
+        compact={false}
         html={false}
         lists={Array []}
         markdown="some markdown text"
@@ -46,7 +75,7 @@ exports[`Metadata should render a media field 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-multimedia "
-    key="Media Label"
+    key="media_label_0"
   >
     <dt>
       Media Label
@@ -55,6 +84,7 @@ exports[`Metadata should render a media field 1`] = `
       className=""
     >
       <MarkdownViewer
+        compact={true}
         html={false}
         lists={Array []}
         markdown="{media}(http://youtube.com/videoid)"
@@ -68,7 +98,7 @@ exports[`Metadata should render an image field 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-multimedia "
-    key="Image Label"
+    key="image_label_0"
   >
     <dt>
       Image Label
@@ -79,6 +109,7 @@ exports[`Metadata should render an image field 1`] = `
       <img
         alt="Image Label"
         className="multimedia-img cover"
+        key="http://some.url.com/image.jpg"
         src="http://some.url.com/image.jpg"
       />
     </dd>
@@ -90,7 +121,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="label array"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -103,6 +134,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
         property={
           Object {
             "label": "label array",
+            "name": "label_array",
             "value": Array [
               Object {
                 "value": "first_value",
@@ -123,7 +155,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="label array"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -136,14 +168,21 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
         property={
           Object {
             "label": "label array",
+            "name": "label_array",
             "value": Array [
               Object {
-                "url": "url1",
-                "value": "first_value",
+                "value": <Connect(I18NLink)
+                  to="url1"
+                >
+                  first_value
+                </Connect(I18NLink)>,
               },
               Object {
-                "url": "url2",
-                "value": "second_value",
+                "value": <Connect(I18NLink)
+                  to="url2"
+                >
+                  second_value
+                </Connect(I18NLink)>,
               },
             ],
           }
@@ -158,7 +197,7 @@ exports[`Metadata should render links when the property has url 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="withUrl"
+    key="withurl_0"
   >
     <dt>
       withUrl
@@ -167,6 +206,7 @@ exports[`Metadata should render links when the property has url 1`] = `
       className=""
     >
       <Connect(I18NLink)
+        key="url"
         to="url"
       >
         string value
@@ -180,7 +220,7 @@ exports[`Metadata should render property not have this item when type is null 1`
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="metadata without property"
+    key="metadata_without_property_0"
   >
     <dt>
       metadata without property
@@ -198,7 +238,7 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="sortedBy"
+    key="sortedby_0"
   >
     <dt>
       sortedBy
@@ -216,7 +256,7 @@ exports[`Metadata should render string values 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="Label"
+    key="label_0"
   >
     <dt>
       Label
@@ -234,7 +274,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
 <React.Fragment>
   <dl
     className="metadata-type-default "
-    key="label array"
+    key="label_array_0"
   >
     <dt>
       label array
@@ -247,14 +287,21 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
         property={
           Object {
             "label": "label array",
+            "name": "label_array",
             "value": Array [
               Object {
-                "url": "url1",
-                "value": "first_value",
+                "value": <Connect(I18NLink)
+                  to="url1"
+                >
+                  first_value
+                </Connect(I18NLink)>,
               },
               Object {
-                "url": "url2",
-                "value": "second_value",
+                "value": <Connect(I18NLink)
+                  to="url2"
+                >
+                  second_value
+                </Connect(I18NLink)>,
               },
             ],
           }

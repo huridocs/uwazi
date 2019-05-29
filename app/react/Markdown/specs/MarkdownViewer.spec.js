@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { Component } from 'react';
 
 import { shallow } from 'enzyme';

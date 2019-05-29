@@ -59,7 +59,7 @@ export default {
   },
 
   deleteMultiple(entities) {
-    return api.delete('entities/multiple', { sharedIds: entities.map(entity => entity.sharedId) })
+    return api.post('entities/bulkdelete', { sharedIds: entities.map(entity => entity.sharedId) })
     .then(response => response.json);
   }
 };

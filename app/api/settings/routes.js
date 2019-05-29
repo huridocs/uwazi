@@ -25,6 +25,7 @@ export default (app) => {
           _id: Joi.string(),
           key: Joi.string(),
           label: Joi.string(),
+          rtl: Joi.boolean(),
           default: Joi.boolean()
         })
       ),

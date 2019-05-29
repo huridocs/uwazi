@@ -30,6 +30,7 @@ class MarkdownViewer extends Component {
   }
 
   inlineComponent(type, config, index) {
+    const { compact } = this.props;
     let result;
     if (type === 'list') {
       result = this.list(config, index);
@@ -44,7 +45,7 @@ class MarkdownViewer extends Component {
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {
-      result = <CustomComponents.MarkdownMedia key={index} config={config} />;
+      result = <CustomComponents.MarkdownMedia key={index} config={config} compact={compact}/>;
     }
 
     if (type === 'customhook') {
@@ -93,13 +94,15 @@ class MarkdownViewer extends Component {
 MarkdownViewer.defaultProps = {
   lists: [],
   markdown: '',
-  html: false
+  html: false,
+  compact: false
 };
 
 MarkdownViewer.propTypes = {
   markdown: PropTypes.string,
   lists: PropTypes.arrayOf(PropTypes.object),
-  html: PropTypes.bool
+  html: PropTypes.bool,
+  compact: PropTypes.bool
 };
 
 export default MarkdownViewer;

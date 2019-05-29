@@ -233,13 +233,37 @@ a.mapboxgl-ctrl-logo {
 }
 
 .mapboxgl-popup {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: -webkit-flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: -webkit-flex;
+  display: flex;
+  will-change: transform;
+  pointer-events: none;
+
+  .popup-container {
     display: flex;
-    will-change: transform;
-    pointer-events: none;
+
+    .template-label {
+      white-space: nowrap;
+      margin-right: 0.5em;
+    }
+
+    .popup-metadata-property {
+      margin-left: 0.5em;
+      color: #666;
+    }
+
+    .marker-info {
+      margin-left: -1.5em;
+      margin-top: 0.3em;
+    }
+
+    .tag-icon {
+      color: #ccc;
+      margin-right: 0.5em;
+    }
+  }
 }
 .mapboxgl-popup-anchor-top,
 .mapboxgl-popup-anchor-top-left,
@@ -337,7 +361,7 @@ a.mapboxgl-ctrl-logo {
     background: #fff;
     border-radius: 3px;
     box-shadow: 0px 2px 2px rgba(0,0,0,0.20);
-    padding: 10px 10px 15px;
+    padding: 10px 10px 10px;
     pointer-events: auto;
     border: 1px solid #ccc;
 }

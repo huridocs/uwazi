@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`migration geolocation-arrays should replace every geolocation metadata value with an array ommiting already migrated data 1`] = `
+Array [
+  Object {
+    "metadata": Object {
+      "current_address": Object {
+        "lat": 13,
+        "lon": 7,
+      },
+      "text": "some text",
+    },
+    "title": "e1",
+  },
+  Object {
+    "metadata": Object {
+      "current_address_geolocation": Array [
+        Object {
+          "lat": 13,
+          "lon": 7,
+        },
+      ],
+      "important_places_geolocation": Array [
+        Object {
+          "lat": 5,
+          "lon": 10,
+        },
+      ],
+      "text": "another text",
+    },
+    "title": "e2",
+  },
+  Object {
+    "metadata": Object {
+      "current_address_geolocation": Array [
+        Object {
+          "lat": 23,
+          "lon": 8,
+        },
+      ],
+      "text": "text on e3",
+    },
+    "title": "e3",
+  },
+  Object {
+    "metadata": Object {
+      "home_geolocation": Array [
+        Object {
+          "lat": 23,
+          "lon": 6,
+        },
+      ],
+      "text": "text on e4",
+    },
+    "title": "e4",
+  },
+  Object {
+    "metadata": Object {
+      "important_places_geolocation": Array [
+        Object {
+          "lat": 18,
+          "lon": 7,
+        },
+      ],
+      "text": "text on e5",
+    },
+    "title": "e5",
+  },
+  Object {
+    "metadata": Object {
+      "home_geolocation": Array [
+        Object {
+          "lat": 16,
+          "lon": 3,
+        },
+      ],
+      "text": "text on e6",
+    },
+    "title": "e6",
+  },
+  Object {
+    "title": "no metadata",
+  },
+]
+`;

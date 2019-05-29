@@ -1,22 +1,26 @@
+import { Field, Form, actions as formActions } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { Field, Form, actions as formActions } from 'react-redux-form';
-import { connect } from 'react-redux';
-import ShowIf from 'app/App/ShowIf';
-import { notEmpty } from 'app/Metadata/helpers/validator';
-import { BackButton } from 'app/Layout';
-import { Icon } from 'UI';
 
+import { BackButton } from 'app/Layout';
+import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
+import { Icon } from 'UI';
+import { notEmpty } from 'app/Metadata/helpers/validator';
+import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues } from 'app/Thesauris/actions/thesauriActions';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
-import { saveThesauri, addValue, removeValue, addGroup, sortValues, moveValues } from 'app/Thesauris/actions/thesauriActions';
-import ThesauriFormField from './ThesauriFormField';
+import ShowIf from 'app/App/ShowIf';
+
+import ThesauriFormItem from './ThesauriFormItem';
 
 export class ThesauriForm extends Component {
   static validation(thesauris, id) {
     return {
       name: {
-        duplicated: val => !thesauris.find(thesauri => thesauri._id !== id && thesauri.name.trim().toLowerCase() === val.trim().toLowerCase()),
+        duplicated: val => !thesauris.find(thesauri => thesauri.type !== 'template' &&
+          thesauri._id !== id &&
+          thesauri.name.trim().toLowerCase() === val.trim().toLowerCase()),
         required: notEmpty
       }
     };
@@ -24,10 +28,9 @@ export class ThesauriForm extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { movingValues: [] };
     this.save = this.save.bind(this);
-    this.toggleToMove = this.toggleToMove.bind(this);
-    this.moveToGroup = this.moveToGroup.bind(this);
+    this.renderItem = this.renderItem.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   componentWillMount() {
@@ -67,6 +70,10 @@ export class ThesauriForm extends Component {
     this.props.setInitial('thesauri.data');
   }
 
+  onChange(values, groupIndex) {
+    this.props.updateValues(values, groupIndex);
+  }
+
   save(thesauri) {
     const sanitizedThesauri = Object.assign({}, thesauri);
     sanitizedThesauri.values = sanitizedThesauri.values
@@ -82,24 +89,16 @@ export class ThesauriForm extends Component {
     this.props.saveThesauri(sanitizedThesauri);
   }
 
-  beenMove(value) {
-    return this.state.movingValues.includes(value);
-  }
-
-  toggleToMove(value) {
-    let movingValues = this.state.movingValues.slice(0);
-    if (movingValues.includes(value)) {
-      movingValues = movingValues.filter(v => v !== value);
-    } else {
-      movingValues.push(value);
-    }
-    this.setState({ movingValues });
-    console.log(movingValues);
-  }
-
-  moveToGroup(groupIndex) {
-    this.props.moveValues(this.state.movingValues, groupIndex);
-    this.setState({ movingValues: [] });
+  renderItem(value, index) {
+    return (
+      <ThesauriFormItem
+        ref={f => this.groups.push(f)}
+        value={value}
+        index={index}
+        removeValue={this.props.removeValue}
+        onChange={this.onChange}
+      />
+    );
   }
 
   render() {
@@ -130,33 +129,17 @@ export class ThesauriForm extends Component {
                 </Field>
               </FormGroup>
             </div>
-            <ul className="thesauri-values list-group">
-              <li className="list-group-item">
+            <div className="thesauri-values">
+              <div className="">
                 <b>Items:</b>
-                <button
-                  tabIndex={500}
-                  type="button"
-                  className="rounded-icon-small"
-                  alt="move"
-                  onClick={this.moveToGroup.bind(this, null)}
-                >
-                  <Icon icon="arrow-left" size="xs" directionAware />
-                </button>
-              </li>
-              {values.map((value, index) => (
-                <ThesauriFormField
-                  key={index}
-                  ref={f => this.groups.push(f)}
-                  value={value}
-                  index={index}
-                  moveToGroup={this.moveToGroup}
-                  toggleToMove={this.toggleToMove}
-                  removeValue={this.props.removeValue}
-                  moving={this.beenMove(value)}
-                />
-)
-              )}
-            </ul>
+              </div>
+              <DragAndDropContainer
+                onChange={this.onChange}
+                renderItem={this.renderItem}
+                items={values}
+                iconHandle
+              />
+            </div>
             <div className="settings-footer">
               <BackButton to="/settings/dictionaries" />
               <a className="btn btn-primary" onClick={this.props.addGroup}>
@@ -167,7 +150,7 @@ export class ThesauriForm extends Component {
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
-              <button className="btn btn-success save-template">
+              <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save"/>
                 <span className="btn-label">Save</span>
               </button>
@@ -191,7 +174,7 @@ ThesauriForm.propTypes = {
   addGroup: PropTypes.func.isRequired,
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
-  moveValues: PropTypes.func.isRequired,
+  updateValues: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
   state: PropTypes.object.isRequired,
@@ -213,13 +196,11 @@ function bindActions(dispatch) {
     addGroup,
     sortValues,
     removeValue,
-    moveValues,
+    updateValues,
     resetForm: formActions.reset,
     setInitial: formActions.setInitial,
     validate: formActions.validate
   }, dispatch);
 }
 
-const form = connect(mapStateToProps, bindActions)(ThesauriForm);
-
-export default form;
+export default connect(mapStateToProps, bindActions, null, { withRef: true })(ThesauriForm);

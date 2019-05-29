@@ -11,7 +11,7 @@ import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
 if (isClient) {
-  require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min');//eslint-disable-line
+  require('mapbox-gl').setRTLTextPlugin('/public/mapbox-gl-rtl-text.js.min'); //eslint-disable-line
 }
 
 const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
@@ -24,7 +24,6 @@ const getStateDefaults = ({ latitude, longitude, width, height, zoom }) => ({
 export default class Map extends Component {
   constructor(props) {
     super(props);
-
     this.state = getStateDefaults(props);
     this.state.settings.scrollZoom = props.scrollZoom;
     this.state.settings.touchZoom = props.scrollZoom;
@@ -35,24 +34,16 @@ export default class Map extends Component {
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
-
     this.updateMapStyle(props);
-    this._onViewportChange = (viewport) => { this.setState({ viewport }); };
-    this._onViewStateChange = (viewport) => { this.setState({ viewport }); };
-
-    this.zoom = this.zoom.bind(this);
-    this.zoomIn = () => this.zoom(+1);
-    this.zoomOut = () => this.zoom(-1);
-
-    this.setSize = this.setSize.bind(this);
-    this.onClick = this.onClick.bind(this);
-    this.onHover = this.onHover.bind(this);
+    this.bindActions();
+    this.assignDefaults();
   }
 
   componentDidMount() {
+    const { markers } = this.props;
     this.setSize();
     const map = this.map.getMap();
-    map.on('load', () => this.centerOnMarkers(this.props.markers));
+    map.on('load', () => this.centerOnMarkers(markers));
     map.on('moveend', (e) => {
       if (e.autoCentered) {
         this.setViweport(map);
@@ -62,16 +53,17 @@ export default class Map extends Component {
   }
 
   componentWillReceiveProps(props) {
+    const { viewport } = this.state;
     const { markers } = props;
-    const latitude = props.latitude || this.state.viewport.latitude;
-    const longitude = props.longitude || this.state.viewport.longitude;
-    const viewport = Object.assign(this.state.viewport, { latitude, longitude, markers });
+    const latitude = props.latitude || viewport.latitude;
+    const longitude = props.longitude || viewport.longitude;
+    const newViewport = Object.assign(viewport, { latitude, longitude, markers });
 
-    if (JSON.stringify(props.markers) !== JSON.stringify(this.props.markers)) {
-      this.centerOnMarkers(markers);
+    if (!Immutable.fromJS(this.props.markers).equals(Immutable.fromJS(markers))) {
+      this.autoCenter(markers);
       this.updateMapStyle(props);
     }
-    this.setState({ viewport });
+    this.setState({ viewport: newViewport });
   }
 
   componentWillUnmount() {
@@ -79,75 +71,111 @@ export default class Map extends Component {
   }
 
   onClick(e) {
-    const markers = e.features.filter(f => f.layer.id === 'unclustered-point');
+    const { markers, onClick } = this.props;
+    const unclusteredPoints = e.features.filter(f => f.layer.id === 'unclustered-point');
     const cluster = e.features.find(f => f.layer.id === 'clusters');
 
-    if (markers.length === 1) {
-      this.clickOnMarker(this.props.markers[markers[0].properties.index]);
+    switch (true) {
+    case (unclusteredPoints.length === 1):
+      this.clickOnMarker(markers[unclusteredPoints[0].properties.index]);
+      break;
+    case (unclusteredPoints.length > 1):
+      this.clickOnCluster(unclusteredPoints.map(marker => markers[marker.properties.index]));
+      break;
+    default:
+      break;
     }
-    if (markers.length > 1) {
-      const markersOnCluster = markers.map(marker => this.props.markers[marker.properties.index]);
-      this.clickOnCluster(markersOnCluster);
-    }
-    if (cluster) {
-      const map = this.map.getMap();
-      const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
-      this.supercluster.load(currentData);
-      const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
-      this.clickOnCluster(markersOnCluster);
-    }
-    this.props.onClick(e);
+
+    if (cluster) { this.processClusterOnClick(cluster); }
+
+    onClick(e);
   }
 
   onHover(e) {
+    const { markers, cluster } = this.props;
+    const { selectedMarker } = this.state;
+
     const feature = e.features.find(f => f.layer.id === 'unclustered-point');
     if (feature) {
-      this.hoverOnMarker(this.props.markers[feature.properties.index]);
+      this.hoverOnMarker(markers[feature.properties.index]);
     }
-    if (!feature && this.state.selectedMarker && this.props.cluster) {
+    if (!feature && selectedMarker && cluster) {
       this.setState({ selectedMarker: null });
     }
   }
 
   setSize() {
     const { viewport } = this.state;
-    viewport.width = this.props.width || this.container.offsetWidth;
-    viewport.height = this.props.height || this.container.offsetHeight;
+    const { width, height } = this.props;
+    viewport.width = width || this.container.offsetWidth;
+    viewport.height = height || this.container.offsetHeight;
     this.setState({ viewport });
   }
 
   setViweport(map) {
-    const viewport = Object.assign(this.state.viewport, {
+    const { viewport } = this.state;
+    const newViewport = Object.assign(viewport, {
       latitude: map.getCenter().lat,
       longitude: map.getCenter().lng,
       zoom: map.getZoom(),
       pitch: map.getPitch(),
       bearing: map.getBearing()
     });
-    this.setState({ viewport });
+    this.setState({ viewport: newViewport });
+  }
+
+  bindActions() {
+    this.zoom = this.zoom.bind(this);
+    this.setSize = this.setSize.bind(this);
+    this.onClick = this.onClick.bind(this);
+    this.onHover = this.onHover.bind(this);
+  }
+
+  assignDefaults() {
+    this._onViewportChange = (viewport) => { this.setState({ viewport }); };
+    this._onViewStateChange = (viewport) => { this.setState({ viewport }); };
+
+    this.zoomIn = () => this.zoom(+1);
+    this.zoomOut = () => this.zoom(-1);
+  }
+
+  processClusterOnClick(cluster) {
+    const map = this.map.getMap();
+    const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
+    this.supercluster.load(currentData);
+    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
+    this.clickOnCluster(markersOnCluster);
+  }
+
+  autoCenter(markers) {
+    const { autoCenter } = this.props;
+    if (autoCenter) {
+      this.centerOnMarkers(markers);
+    }
   }
 
   centerOnMarkers(markers) {
-    if (!this.map || !markers.length || !this.props.autoCenter) {
+    if (!this.map || !markers.length) {
       return;
     }
     const map = this.map.getMap();
     const boundaries = getMarkersBoudingBox(markers);
-    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5 }, { autoCentered: true });
+    map.stop().fitBounds(boundaries, { padding: { top: 70, left: 20, right: 20, bottom: 20 }, maxZoom: 5, duration: 0 }, { autoCentered: true });
   }
 
   zoom(amount) {
+    const { viewport } = this.state;
     if (!this.map) { return; }
     const map = this.map.getMap();
-    this._onViewStateChange(Object.assign({}, this.state.viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, { transitionDuration: 500 }));
+    this._onViewStateChange(Object.assign({}, viewport, { zoom: map.getZoom() + amount }, TRANSITION_PROPS, { transitionDuration: 500 }));
   }
 
-  updateMapStyle(props) {
-    if (!this.props.cluster) {
+  updateMapStyle({ cluster, markers }) {
+    if (!cluster) {
       return;
     }
 
-    const markersData = markersToStyleFormat(props.markers);
+    const markersData = markersToStyleFormat(markers);
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']);
     if (!currentData.equals(Immutable.fromJS(markersData))) {
       const style = this.mapStyle.setIn(['sources', 'markers', 'data', 'features'], Immutable.fromJS(markersData));
@@ -157,23 +185,30 @@ export default class Map extends Component {
   }
 
   clickOnMarker(marker) {
-    this.props.clickOnMarker(marker);
+    const { clickOnMarker } = this.props;
+    clickOnMarker(marker);
   }
 
   clickOnCluster(cluster) {
-    this.props.clickOnCluster(cluster);
+    const { clickOnCluster } = this.props;
+    clickOnCluster(cluster);
   }
 
   hoverOnMarker(marker) {
-    if (this.state.selectedMarker !== marker) {
+    const { selectedMarker } = this.state;
+    const { hoverOnMarker } = this.props;
+
+    if (selectedMarker !== marker) {
       this.setState({ selectedMarker: marker });
     }
-    this.props.hoverOnMarker(marker);
+
+    hoverOnMarker(marker);
   }
 
   renderMarker(marker, onClick, onMouseEnter, onMouseLeave) {
-    if (this.props.renderMarker) {
-      return this.props.renderMarker(marker, onClick);
+    const { renderMarker } = this.props;
+    if (renderMarker) {
+      return renderMarker(marker, onClick);
     }
     return (
       <Icon
@@ -190,12 +225,13 @@ export default class Map extends Component {
 
   renderPopup() {
     const { selectedMarker } = this.state;
-    if (selectedMarker && (this.props.renderPopupInfo || (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))) {
+    const { renderPopupInfo } = this.props;
+    if (selectedMarker && (renderPopupInfo || (selectedMarker && selectedMarker.properties && selectedMarker.properties.info))) {
       const { longitude, latitude } = selectedMarker;
       return (
         <Popup tipSize={6} anchor="bottom" longitude={longitude} latitude={latitude} offsetTop={-20} closeButton={false}>
           <div>
-            {this.props.renderPopupInfo ? this.props.renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
+            {renderPopupInfo ? renderPopupInfo(selectedMarker) : selectedMarker.properties.info}
           </div>
         </Popup>
       );
@@ -222,7 +258,8 @@ export default class Map extends Component {
   }
 
   renderControls() {
-    if (this.state.showControls) {
+    const { showControls } = this.state;
+    if (showControls) {
       return (
         <div className="mapbox-navigation">
           <NavigationControl onViewportChange={this._onViewportChange} />

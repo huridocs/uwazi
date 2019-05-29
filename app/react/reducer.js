@@ -18,6 +18,7 @@ import semanticSearch from 'app/SemanticSearch/reducers/reducer';
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
 import progress from 'app/Uploads/reducers/progressReducer';
+import importEntities from 'app/Uploads/reducers/importReducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
 import login from 'app/Users/reducers/login';
@@ -32,6 +33,7 @@ export default combineReducers({
   library: library('library'),
   uploads: library('uploads'),
   progress,
+  importEntities,
   locale,
   inlineEdit,
   semanticSearch,

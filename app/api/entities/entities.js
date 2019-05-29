@@ -70,7 +70,6 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-
   return model.save(docs);
 }
 
@@ -106,8 +105,7 @@ function sanitize(doc, template) {
     return doc;
   }
 
-  const metadata = template.properties.reduce((sanitizedMetadata, property) => {
-    const { type, name } = property;
+  const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
     if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedMetadata[name])) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
@@ -120,7 +118,7 @@ function sanitize(doc, template) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
 
-    if (type === 'select' && !sanitizedMetadata[property.name]) {
+    if (type === 'select' && !sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
     }
 
@@ -143,7 +141,9 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(doc, { user, language }, updateRelationships = true) {
+  save(_doc, { user, language }, updateRelationships = true, index = true) {
+    const doc = _doc;
+
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
@@ -153,24 +153,32 @@ export default {
     const sharedId = doc.sharedId || ID();
     return Promise.all([
       settings.get(),
-      this.getEntityTemplate(doc, language)
+      this.getEntityTemplate(doc, language),
+      templates.get({ default: true }),
     ])
-    .then(([{ languages }, template]) => {
+    .then(([{ languages }, template, [defaultTemplate]]) => {
+      let docTemplate = template;
       if (doc.sharedId) {
         return this.updateEntity(this.sanitize(doc, template), template);
       }
 
-      return this.createEntity(this.sanitize(doc, template), languages, sharedId);
+      if (!doc.template) {
+        doc.template = defaultTemplate._id;
+        doc.metadata = {};
+        docTemplate = defaultTemplate;
+      }
+
+      return this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
     })
-    .then(() => this.getById(sharedId, language))
-    .then((entity) => {
+    .then(() => this.getWithRelationships({ sharedId, language }))
+    .then(([entity]) => {
       if (updateRelationships) {
         return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
       }
 
       return [entity];
     })
-    .then(([entity]) => this.indexEntities({ sharedId }, '+fullText').then(() => entity));
+    .then(([entity]) => index ? this.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity);
   },
 
   bulkProcessMetadataFromRelationships(query, language, limit = 200) {
@@ -238,7 +246,7 @@ export default {
   },
 
   multipleUpdate(ids, values, params) {
-    return Promise.all(ids.map(id => this.getById(id, params.language)
+    return ids.reduce((previousPromise, id) => previousPromise.then(() => this.getById(id, params.language))
     .then((entity) => {
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
@@ -250,8 +258,10 @@ export default {
       if (values.published !== undefined) {
         entity.published = values.published;
       }
-      return this.save(entity, params);
-    })));
+      return this.save(entity, params, true, false);
+    }), Promise.resolve())
+    .then(() => this.indexEntities({ sharedId: { $in: ids } }))
+    .then(() => ids);
   },
 
   getAllLanguages(sharedId) {
@@ -273,16 +283,19 @@ export default {
     .then(_templates => Promise.all(
       entities.map(entityId => Promise.all([this.getById(entityId, language), relationships.getByDocument(entityId, language)])
       .then(([entity, relations]) => {
-        const template = _templates.find(t => t._id.toString() === entity.template.toString());
-        const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
-        relationshipProperties.forEach((property) => {
-          const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
-              (!property.content || r.entityData.template.toString() === property.content));
-          entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity); //eslint-disable-line
-        });
-        if (relationshipProperties.length) {
-          entitiesToReindex.push(entity.sharedId);
-          return this.updateEntity(this.sanitize(entity, template), template);
+        if (entity) {
+          entity.metadata = entity.metadata || {};
+          const template = _templates.find(t => t._id.toString() === entity.template.toString());
+          const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+          relationshipProperties.forEach((property) => {
+            const relationshipsGoingToThisProperty = relations.filter(r => r.template && r.template.toString() === property.relationType &&
+                (!property.content || r.entityData.template.toString() === property.content));
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => r.entity); //eslint-disable-line
+          });
+          if (relationshipProperties.length) {
+            entitiesToReindex.push(entity.sharedId);
+            return this.updateEntity(this.sanitize(entity, template), template);
+          }
         }
         return Promise.resolve(entity);
       }))))
@@ -357,13 +370,29 @@ export default {
     });
   },
 
-  deleteMultiple(sharedIds) {
-    return Promise.all(sharedIds.map(sharedId => this.delete(sharedId)));
+  deleteIndexes(sharedIds) {
+    const deleteIndexBatch = (offset, totalRows) => {
+      const limit = 200;
+      if (offset >= totalRows) {
+        return Promise.resolve();
+      }
+      return this.get({ sharedId: { $in: sharedIds } }, null, { skip: offset, limit })
+      .then(entities => search.bulkDelete(entities))
+      .then(() => deleteIndexBatch(offset + limit, totalRows));
+    };
+
+    return this.count({ sharedId: { $in: sharedIds } })
+    .then(totalRows => deleteIndexBatch(0, totalRows));
   },
 
-  delete(sharedId) {
+  deleteMultiple(sharedIds) {
+    return this.deleteIndexes(sharedIds)
+    .then(() => sharedIds.reduce((previousPromise, sharedId) => previousPromise.then(() => this.delete(sharedId, false)), Promise.resolve()));
+  },
+
+  delete(sharedId, deleteIndex = true) {
     return this.get({ sharedId })
-    .then(docs => Promise.all(docs.map(doc => search.delete(doc))).then(() => docs))
+    .then(docs => deleteIndex ? Promise.all(docs.map(doc => search.delete(doc))).then(() => docs) : Promise.resolve(docs))
     .then(docs => model.delete({ sharedId })
     .then(() => docs)
     .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
@@ -452,7 +481,7 @@ export default {
 
   async createThumbnail(entity) {
     const filePath = path.join(uploadDocumentsPath, entity.file.filename);
-    return new PDF(filePath).createThumbnail(entity._id.toString());
+    return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
   },
 
   async deleteLanguageFiles(entity) {
@@ -478,7 +507,7 @@ export default {
     });
   },
 
-  async addLanguage(language) {
+  async addLanguage(language, limit = 100) {
     const [lanuageTranslationAlreadyExists] = await this.get({ locale: language }, null, { limit: 1 });
     if (lanuageTranslationAlreadyExists) {
       return Promise.resolve();
@@ -488,7 +517,6 @@ export default {
 
     const defaultLanguage = languages.find(l => l.default).key;
     const duplicate = (offset, totalRows) => {
-      const limit = 200;
       if (offset >= totalRows) {
         return Promise.resolve();
       }
@@ -498,12 +526,14 @@ export default {
         const newLanguageEntities = this.generateNewEntitiesForLanguage(entities, language);
         return this.saveMultiple(newLanguageEntities);
       })
-      .then((newEntities) => {
-        newEntities.map((entity) => {
+      .then(async (newEntities) => {
+        await newEntities.reduce(async (previous, entity) => {
+          await previous;
           if (entity.file) {
-            this.createThumbnail(entity);
+            return this.createThumbnail(entity);
           }
-        });
+          return Promise.resolve();
+        }, Promise.resolve());
         return duplicate(offset + limit, totalRows);
       });
     };

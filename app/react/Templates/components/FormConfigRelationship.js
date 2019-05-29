@@ -5,8 +5,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { Select } from 'app/ReactReduxForms';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import PropertyConfigOptions from './PropertyConfigOptions';
+import PropertyConfigOption from './PropertyConfigOption';
+import Tip from '../../Layout/Tip';
 
 export class FormConfigRelationship extends Component {
   static contentValidation() {
@@ -14,33 +16,37 @@ export class FormConfigRelationship extends Component {
   }
 
   render() {
-    const { index, data, formState, type } = this.props;
-    const thesauris = this.props.thesauris.toJS();
+    const { index, data, formState, type, templates, relationTypes } = this.props;
     const property = data.properties[index];
-    const relationTypes = this.props.relationTypes.toJS();
 
-    const options = thesauris.filter(thesauri => thesauri._id !== data._id && thesauri.type === 'template');
-
-    let labelClass = 'form-group';
-    const labelKey = `properties.${index}.label`;
-    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
-    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
+    const options = templates.toJS().filter(template => template._id !== data._id);
+    const labelError = formState.$form.errors[`properties.${index}.label.required`] || formState.$form.errors[`properties.${index}.label.duplicated`];
     const relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
-    if (requiredLabel || duplicatedLabel) {
-      labelClass += ' has-error';
-    }
+    const inheritPropertyError = formState.$form.errors[`properties.${index}.inheritProperty.required`] && formState.$form.submitFailed;
+    const labelClass = labelError ? 'form-group has-error' : 'form-group';
+    const template = templates.toJS().find(t => formState.properties[index].content && t._id === formState.properties[index].content.value);
+    const templateProperties = template ? template.properties : [];
 
     return (
       <div>
         <div className={labelClass}>
-          <label>Label</label>
+          <label htmlFor="label"><Translate>Label</Translate></label>
           <Field model={`template.data.properties[${index}].label`}>
-            <input className="form-control"/>
+            <input id="label" className="form-control"/>
           </Field>
         </div>
-
+        <div className={relationTypeError ? 'form-group has-error' : 'form-group'}>
+          <label><Translate>Relationship</Translate><span className="required">*</span></label>
+          <Select
+            model={`template.data.properties[${index}].relationType`}
+            options={relationTypes.toJS()}
+            optionsLabel="name"
+            validators={FormConfigRelationship.contentValidation()}
+            optionsValue="_id"
+          />
+        </div>
         <div className="form-group">
-          <label>{t('System', 'Select list')}</label>
+          <label><Translate>Entities</Translate></label>
           <Select
             model={`template.data.properties[${index}].content`}
             options={options}
@@ -49,17 +55,21 @@ export class FormConfigRelationship extends Component {
             optionsValue="_id"
           />
         </div>
-
-        <div className={relationTypeError ? 'form-group has-error' : 'form-group'}>
-          <label>{t('System', 'Relationship')}<span className="required">*</span></label>
-          <Select
-            model={`template.data.properties[${index}].relationType`}
-            options={relationTypes}
-            optionsLabel="name"
-            validators={FormConfigRelationship.contentValidation()}
-            optionsValue="_id"
-          />
-        </div>
+        {Boolean(formState.properties[index].content && templateProperties.length) && (
+          <PropertyConfigOption label="Inherit property" model={`template.data.properties[${index}].inherit`}>
+            <Tip>This property will be inherited from the related entities and shown as metadata of this type of entities.</Tip>
+          </PropertyConfigOption>
+        )}
+        { Boolean(formState.properties[index].inherit && formState.properties[index].inherit.value && templateProperties.length) && (
+          <div className={inheritPropertyError ? 'form-group has-error' : 'form-group'}>
+            <Select
+              model={`template.data.properties[${index}].inheritProperty`}
+              options={templateProperties}
+              optionsLabel="label"
+              optionsValue="_id"
+            />
+          </div>
+        )}
         <PropertyConfigOptions index={index} property={property} type={type} />
       </div>
     );
@@ -67,7 +77,7 @@ export class FormConfigRelationship extends Component {
 }
 
 FormConfigRelationship.propTypes = {
-  thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
+  templates: PropTypes.instanceOf(Immutable.List).isRequired,
   relationTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   data: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
@@ -78,7 +88,7 @@ FormConfigRelationship.propTypes = {
 export function mapStateToProps(state) {
   return {
     data: state.template.data,
-    thesauris: state.thesauris,
+    templates: state.templates,
     relationTypes: state.relationTypes,
     formState: state.template.formState
   };

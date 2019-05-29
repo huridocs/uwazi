@@ -7,8 +7,10 @@ const propertiesSchema = new mongoose.Schema({
   type: String,
   content: String,
   relationType: String,
+  inheritProperty: String,
   name: String,
   filter: Boolean,
+  inherit: Boolean,
   noLabel: Boolean,
   fullWidth: Boolean,
   defaultfilter: Boolean,
@@ -30,6 +32,7 @@ const commonPropertiesSchema = new mongoose.Schema({
 
 const templateSchema = new mongoose.Schema({
   name: String,
+  color: { type: String, default: '' },
   default: Boolean,
   properties: [propertiesSchema],
   commonProperties: [commonPropertiesSchema]

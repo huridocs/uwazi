@@ -1,7 +1,6 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
-
 import { validateRequest } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
@@ -13,6 +12,7 @@ export default (app) => {
       _id: Joi.string(),
       __v: Joi.number(),
       name: Joi.string().required(),
+      color: Joi.string().allow(''),
       default: Joi.boolean(),
       properties: Joi.array().required().items(
         Joi.object().keys({
@@ -28,6 +28,8 @@ export default (app) => {
           noLabel: Joi.boolean(),
           defaultfilter: Joi.boolean(),
           required: Joi.boolean(),
+          inherit: Joi.boolean(),
+          inheritProperty: Joi.string().allow(null).allow(''),
           sortable: Joi.boolean(),
           showInCard: Joi.boolean(),
           fullWidth: Joi.boolean(),

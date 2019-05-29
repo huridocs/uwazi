@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { MarkDown } from 'app/ReactReduxForms';
-import { resetPage, savePage } from 'app/Pages/actions/pageActions';
+import { resetPage as resetPageAction, savePage as savePageAction } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'UI';
@@ -14,11 +14,12 @@ import validator from './ValidatePage';
 
 export class PageCreator extends Component {
   componentWillUnmount() {
-    this.props.resetPage();
+    const { resetPage } = this.props;
+    resetPage();
   }
 
   render() {
-    const { formState, page, savingPage } = this.props;
+    const { formState, page, savePage, savingPage } = this.props;
     const backUrl = '/settings/pages';
     const pageUrl = `/page/${page.data.sharedId}`;
 
@@ -31,7 +32,7 @@ export class PageCreator extends Component {
       <div className="page-creator">
         <Form
           model="page.data"
-          onSubmit={this.props.savePage}
+          onSubmit={savePage}
           validators={validator()}
         >
           <div className="panel panel-default">
@@ -46,20 +47,34 @@ export class PageCreator extends Component {
               <ShowIf if={Boolean(page.data._id)}>
                 <div className="alert alert-info">
                   <Icon icon="terminal" /> {pageUrl}
-                  <a target="_blank" href={pageUrl} className="pull-right">(view page)</a>
+                  <a target="_blank" rel="noopener noreferrer" href={pageUrl} className="pull-right">(view page)</a>
                 </div>
               </ShowIf>
               <MarkDown htmlOnViewer model=".metadata.content" rows={18} />
               <div className="alert alert-info">
                 <Icon icon="info-circle" size="2x" />
                 <div className="force-ltr">
-                  Use <a target="_blank" href="https://guides.github.com/features/mastering-markdown/">Markdown</a> syntax
+                  Use <a target="_blank" rel="noopener noreferrer" href="https://guides.github.com/features/mastering-markdown/">Markdown</a> syntax
                   to create page content<br/>
                   You can also embed advanced components like maps, charts
                   and document lists in your page.&nbsp;
-                  <a target="_blank" href="https://github.com/huridocs/uwazi/wiki/Components">Click here</a> to
+                  <a target="_blank" rel="noopener noreferrer" href="https://github.com/huridocs/uwazi/wiki/Components">Click here</a> to
                   learn more about the components.
                 </div>
+              </div>
+              <div>
+                <div><span className="form-group-label">Page Javascript</span></div>
+                <div className="alert alert-warning">
+                  <Icon icon="exclamation-triangle" size="2x" />
+                  <div className="force-ltr">
+                    With great power comes great responsibility!<br /><br />
+                    This area allows you to append custom Javascript to the page.  This opens up a new universe of possibilities.<br />
+                    It could also very easily break the app.  Only write code here if you know exactly what you are doing.
+                  </div>
+                </div>
+                <Field model=".metadata.script">
+                  <textarea placeholder="// Javascript - With great power comes great responsibility!" className="form-control" rows={12} />
+                </Field>
               </div>
             </div>
           </div>
@@ -93,7 +108,7 @@ function mapStateToProps({ page }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ resetPage, savePage }, dispatch);
+  return bindActionCreators({ resetPage: resetPageAction, savePage: savePageAction }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PageCreator);

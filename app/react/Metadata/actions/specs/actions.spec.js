@@ -16,16 +16,27 @@ const mockStore = configureMockStore(middlewares);
 
 describe('Metadata Actions', () => {
   describe('loadInReduxForm', () => {
-    it('should load the document with default metadata properties if not present', () => {
+    beforeEach(() => {
+      spyOn(api, 'get');
+    });
+
+    it('should request the document and load with default metadata properties if not present', async () => {
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
       const dispatch = jasmine.createSpy('dispatch');
-      const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      const doc = { sharedId: '1', title: 'updated title', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      api.get.and.returnValue(Promise.resolve([doc]));
       const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
 
-      actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-      const expectedDoc = { title: 'test', template: 'templateId', metadata: { test: 'test', newProp: '', testRelation: [] } };
+      await actions.loadInReduxForm('formNamespace', { sharedId: '1', title: 'old title' }, templates)(dispatch);
+      const expectedDoc = {
+        sharedId: '1',
+        title: 'updated title',
+        template: 'templateId',
+        metadata: { test: 'test', newProp: '', testRelation: [] }
+      };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
+      expect(api.get).toHaveBeenCalledWith('1');
     });
 
     describe('When doc has no template', () => {
@@ -61,8 +72,8 @@ describe('Metadata Actions', () => {
         }];
       });
 
-      it('should set the first template', () => {
-        actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
+      it('should set the first template', async () => {
+        await actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
 
         const expectedDoc = {
           title: 'test',
@@ -72,15 +83,6 @@ describe('Metadata Actions', () => {
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
         expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
-        expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-      });
-
-      it('should set the first document template', () => {
-        doc = { title: 'test', type: 'document' };
-
-        actions.loadInReduxForm('formNamespace', doc, templates)(dispatch);
-
-        const expectedDoc = { title: 'test', type: 'document', metadata: { test: '', newProp: '', multi: [] }, template: 'templateId1' };
         expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       });
     });
@@ -183,6 +185,7 @@ describe('Metadata Actions', () => {
     let mockUpload;
     let store;
     let file;
+    let doc;
 
     beforeEach(() => {
       mockUpload = superagent.post(`${APIURL}reupload`);
@@ -201,10 +204,11 @@ describe('Metadata Actions', () => {
       jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve({ documentViewer: { doc: 'doc' } }));
       jest.spyOn(routeActions, 'setViewerState').mockImplementation(() => ({ type: 'setViewerState' }));
       store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
-      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
     });
 
     it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
+      api.get = () => Promise.resolve([doc]);
+      store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
       const expectedActions = [
         { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },

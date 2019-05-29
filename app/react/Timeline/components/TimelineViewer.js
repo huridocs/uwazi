@@ -281,17 +281,14 @@ export class TimelineViewer extends Component {
           const activeClassName = `timeline-year-active ${track.className.replace('timeline-item-', '')}`;
           const active = year >= track.active.start && year <= track.active.end ? activeClassName : '';
           return (
-            <div
-              key={year}
-              className={`timeline-year ${nth5} ${active}`}
-              >
+            <div key={year} className={`timeline-year ${nth5} ${active}`} >
               <ShowIf if={year === track.active.start}>
                 <span className={`timeline-track-label item-type__name ${track.className}`}>{track.label}</span>
               </ShowIf>
 
               {track.years[year].map((reference, index) => {
                 if (reference.reference) {
-                  const linkType = reference.reference.entityData.type === 'document' ? 'document' : 'entity';
+                  const linkType = reference.reference.entityData.file ? 'document' : 'entity';
                   return (
                     <I18NLink
                       to={`/${linkType}/${reference.data.sharedId}`}

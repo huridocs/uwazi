@@ -48,7 +48,30 @@ Object {
 }
 `;
 
-exports[`entities DELETE /api/entities/multiple should have a validation schema 1`] = `
+exports[`entities GET should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "omitRelationships": Object {
+      "type": "any",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`entities POST /api/entities/bulkdelete should have a validation schema 1`] = `
 Object {
   "children": Object {
     "sharedIds": Object {
@@ -65,29 +88,6 @@ Object {
         },
       ],
       "type": "array",
-    },
-  },
-  "flags": Object {
-    "presence": "required",
-  },
-  "type": "object",
-}
-`;
-
-exports[`entities GET should have a validation schema 1`] = `
-Object {
-  "children": Object {
-    "_id": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "omitRelationships": Object {
-      "type": "any",
     },
   },
   "flags": Object {
@@ -195,23 +195,38 @@ Object {
                     ],
                   },
                   Object {
-                    "children": Object {
-                      "lat": Object {
-                        "invalids": Array [
-                          Infinity,
-                          -Infinity,
-                        ],
-                        "type": "number",
-                      },
-                      "lon": Object {
-                        "invalids": Array [
-                          Infinity,
-                          -Infinity,
-                        ],
-                        "type": "number",
-                      },
+                    "flags": Object {
+                      "sparse": false,
                     },
-                    "type": "object",
+                    "items": Array [
+                      Object {
+                        "children": Object {
+                          "label": Object {
+                            "type": "string",
+                            "valids": Array [
+                              null,
+                              "",
+                            ],
+                          },
+                          "lat": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                          "lon": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                        },
+                        "type": "object",
+                      },
+                    ],
+                    "type": "array",
                     "valids": Array [
                       "",
                     ],
@@ -432,6 +447,12 @@ Object {
       "items": Array [
         Object {
           "children": Object {
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
             "filename": Object {
               "invalids": Array [
                 "",
@@ -459,9 +480,10 @@ Object {
             },
             "timestamp": Object {
               "invalids": Array [
-                "",
+                Infinity,
+                -Infinity,
               ],
-              "type": "string",
+              "type": "number",
             },
           },
           "type": "object",
@@ -606,23 +628,38 @@ Object {
                 ],
               },
               Object {
-                "children": Object {
-                  "lat": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                  },
-                  "lon": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                  },
+                "flags": Object {
+                  "sparse": false,
                 },
-                "type": "object",
+                "items": Array [
+                  Object {
+                    "children": Object {
+                      "label": Object {
+                        "type": "string",
+                        "valids": Array [
+                          null,
+                          "",
+                        ],
+                      },
+                      "lat": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                      "lon": Object {
+                        "invalids": Array [
+                          Infinity,
+                          -Infinity,
+                        ],
+                        "type": "number",
+                      },
+                    },
+                    "type": "object",
+                  },
+                ],
+                "type": "array",
                 "valids": Array [
                   "",
                 ],
