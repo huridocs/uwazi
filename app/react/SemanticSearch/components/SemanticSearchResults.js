@@ -55,16 +55,11 @@ export class SemanticSearchResults extends Component {
   renderAditionalText(doc) {
     const results = doc.toJS().semanticSearch.results || [];
     const { filters: { threshold } } = this.props;
-    const averageScore = (results.reduce((total, r) => total + r.score, 0) / results.length * 100).toFixed(2);
     return (
       <div className="item-metadata">
         <div className="metadata-type-text">
           <div><Translate>Sentences above threshold</Translate></div>
           <div>{sentencesAboveThreshold(doc, threshold)} out of {results.length}</div>
-        </div>
-        <div className="metadata-type-text">
-          <div><Translate>Average sentence score</Translate></div>
-          <div>{averageScore}%</div>
         </div>
       </div>
     );

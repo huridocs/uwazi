@@ -57,19 +57,6 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
                   3
                 </div>
               </div>
-              <div
-                className="metadata-type-text"
-              >
-                <div>
-                  <Connect(Translate)>
-                    Average sentence score
-                  </Connect(Translate)>
-                </div>
-                <div>
-                  43.33
-                  %
-                </div>
-              </div>
             </div>
           }
           doc={
@@ -157,19 +144,6 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                   3
                 </div>
               </div>
-              <div
-                className="metadata-type-text"
-              >
-                <div>
-                  <Connect(Translate)>
-                    Average sentence score
-                  </Connect(Translate)>
-                </div>
-                <div>
-                  43.33
-                  %
-                </div>
-              </div>
             </div>
           }
           doc={
@@ -210,19 +184,6 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                   1
                    out of 
                   3
-                </div>
-              </div>
-              <div
-                className="metadata-type-text"
-              >
-                <div>
-                  <Connect(Translate)>
-                    Average sentence score
-                  </Connect(Translate)>
-                </div>
-                <div>
-                  33.33
-                  %
                 </div>
               </div>
             </div>
