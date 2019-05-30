@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import SnippetList from 'app/Documents/components/SnippetList';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { Form } from 'react-redux-form';
@@ -39,7 +39,15 @@ export class DocumentResults extends Component {
         </dt>
         <dd>
           <Form model="semanticSearch.resultsFilters">
-            <NumericRangeSlide model=".threshold" min={0.3} max={1} step={0.01} delay={200} />
+            <NumericRangeSlide
+              model=".threshold"
+              min={0.3}
+              max={1}
+              step={0.01}
+              delay={200}
+              minLabel={t('System', 'More exploration')}
+              maxLabel={t('System', 'More precision')}
+            />
           </Form>
         </dd>
       </dl>

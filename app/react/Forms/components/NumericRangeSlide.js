@@ -48,19 +48,25 @@ export default class NumericRangeSlide extends Component {
   }
 
   render() {
-    const { min, max, step, prefix } = this.props;
+    const { min, max, step, prefix, minLabel, maxLabel } = this.props;
     const { value } = this.state;
     return (
       <React.Fragment>
-        <input
-          type="range"
-          list={`${prefix}-tickmarks`}
-          min={min}
-          max={max}
-          step={step}
-          onChange={this.onChange}
-          value={value}
-        />
+        <div className="NumericRangeSlide">
+          <input
+            type="range"
+            list={`${prefix}-tickmarks`}
+            min={min}
+            max={max}
+            step={step}
+            onChange={this.onChange}
+            value={value}
+          />
+          <div className="NumericRangeSlide-range-labels">
+            <span>{ minLabel }</span>
+            <span>{ maxLabel }</span>
+          </div>
+        </div>
         { this.renderTickMarksDatalist() }
       </React.Fragment>
     );
@@ -74,7 +80,9 @@ NumericRangeSlide.defaultProps = {
   min: 0,
   max: 100,
   prefix: '',
-  delay: 0
+  delay: 0,
+  minLabel: '',
+  maxLabel: ''
 };
 
 NumericRangeSlide.propTypes = {
@@ -85,4 +93,6 @@ NumericRangeSlide.propTypes = {
   delay: PropTypes.number,
   max: PropTypes.number,
   prefix: PropTypes.string,
+  minLabel: PropTypes.any,
+  maxLabel: PropTypes.any
 };

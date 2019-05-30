@@ -9,8 +9,24 @@ import SidePanel from 'app/Layout/SidePanel';
 import { t } from 'app/I18N';
 
 const filters = [
-  { label: 'Threshold', model: 'threshold', min: 0.3, max: 1, step: 0.01 },
-  { label: 'Minimum relevant sentences per document', model: 'minRelevantSentences', min: 1, max: 50, step: 1 }
+  {
+    label: 'Threshold',
+    model: 'threshold',
+    min: 0.3,
+    max: 1,
+    step: 0.01,
+    minLabel: 'More exploration',
+    maxLabel: 'More precision'
+  },
+  {
+    label: 'Minimum relevant sentences per document',
+    model: 'minRelevantSentences',
+    min: 1,
+    max: 50,
+    step: 1,
+    minLabel: '',
+    maxLabel: ''
+  }
 ];
 
 const filterValue = (filter, filtersValues) => filter.model === 'threshold' ? `${filtersValues[filter.model] * 100}%` : filtersValues[filter.model];
@@ -35,6 +51,8 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
                     min={filter.min}
                     max={filter.max}
                     step={filter.step}
+                    minLabel={t('System', filter.minLabel)}
+                    maxLabel={t('System', filter.maxLabel)}
                   />
                 </dd>
               </dl>

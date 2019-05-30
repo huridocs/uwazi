@@ -31,7 +31,9 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
             <NumericRangeSlide
               delay={200}
               max={1}
+              maxLabel="More precision"
               min={0.3}
+              minLabel="More exploration"
               model=".threshold"
               prefix="threshold"
               step={0.01}
@@ -50,7 +52,9 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
             <NumericRangeSlide
               delay={200}
               max={50}
+              maxLabel=""
               min={1}
+              minLabel=""
               model=".minRelevantSentences"
               prefix="minRelevantSentences"
               step={1}
