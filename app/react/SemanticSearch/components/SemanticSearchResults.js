@@ -14,13 +14,26 @@ import ResultsSidePanel from './ResultsSidePanel';
 
 
 const sentencesAboveThreshold = (item, threshold) => {
-  const count = item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
-  return count >= 0 ? count : item.getIn(['semanticSearch', 'results']).size;
+  let count = item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
+  count = count >= 0 ? count : item.getIn(['semanticSearch', 'results']).size;
+  return {
+    count,
+    percentage: count / item.getIn(['semanticSearch', 'results']).size * 100
+  };
 };
-const filterItems = (items, { threshold, minRelevantSentences }) => items.filter((item) => {
-  const aboveThreshold = sentencesAboveThreshold(item, threshold);
-  return aboveThreshold >= minRelevantSentences;
-});
+
+const filterAndSortItems = (items, { threshold, minRelevantSentences }) => {
+  return items.map(item =>
+    item.setIn(['semanticSearch', 'aboveThreshold'], sentencesAboveThreshold(item, threshold))
+  )
+  .filter(item =>
+    item.getIn(['semanticSearch', 'aboveThreshold']).count >= minRelevantSentences
+  )
+  .sort((a, b) =>
+    b.getIn(['semanticSearch', 'aboveThreshold']).percentage -
+      a.getIn(['semanticSearch', 'aboveThreshold']).percentage
+  );
+};
 
 export class SemanticSearchResults extends Component {
   constructor(props) {
@@ -53,15 +66,15 @@ export class SemanticSearchResults extends Component {
   }
 
   renderAditionalText(doc) {
-    const results = doc.toJS().semanticSearch.results || [];
-    const { filters: { threshold } } = this.props;
-    const aboveThreshold = sentencesAboveThreshold(doc, threshold);
-    const percentage = aboveThreshold / results.length * 100;
+    const resultsSize = doc.getIn(['semanticSearch', 'results']).size;
+    const aboveThreshold = doc.getIn(['semanticSearch', 'aboveThreshold']).count;
+    const percentage = doc.getIn(['semanticSearch', 'aboveThreshold']).percentage;
+
     return (
       <div className="item-metadata">
         <div className="metadata-type-text">
           <div><Translate>Sentences above threshold</Translate></div>
-          <div>{aboveThreshold} out of {results.length} ({percentage.toFixed(2)}%)</div>
+          <div>{aboveThreshold} out of {resultsSize} ({percentage.toFixed(2)}%)</div>
         </div>
       </div>
     );
@@ -128,7 +141,7 @@ export const mapStateToProps = (state) => {
   const searchTerm = search.get('searchTerm');
   const results = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
-  const items = results ? filterItems(results, filters) : Immutable.fromJS([]);
+  const items = results ? filterAndSortItems(results, filters) : Immutable.fromJS([]);
   const isEmpty = Object.keys(search).length === 0;
 
   return {

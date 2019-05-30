@@ -27,14 +27,14 @@ describe('SemanticSearchResults', () => {
           results: [
             {
               semanticSearch: {
-                averageScore: 0.4,
-                results: [{ score: 0.6 }, { score: 0.5 }, { score: 0.2 }]
+                averageScore: 0.6,
+                results: [{ score: 0.7 }, { score: 0.2 }, { score: 0.1 }]
               }
             },
             {
               semanticSearch: {
-                averageScore: 0.6,
-                results: [{ score: 0.7 }, { score: 0.2 }, { score: 0.1 }]
+                averageScore: 0.4,
+                results: [{ score: 0.6 }, { score: 0.5 }, { score: 0.2 }]
               }
             }
           ]
@@ -51,7 +51,7 @@ describe('SemanticSearchResults', () => {
 
   const render = () => shallow(<SemanticSearchResults {...getProps()} />);
 
-  it('should render results in ItemList', () => {
+  it('should render results in ItemList sorted by descending percentage of sentences above threshold', () => {
     const component = render();
     expect(component).toMatchSnapshot();
   });
