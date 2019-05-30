@@ -16,7 +16,7 @@ export class UpdateNotifier {
   notifySearchUpdate(searchId, updates) {
     const closedSessions = [];
     const ps = Object.values(this.requests).map(async (req) => {
-      const sockets = req.io.getCurrentSessionSockets();
+      const sockets = req.getCurrentSessionSockets();
       if (sockets.sockets.length === 0) {
         closedSessions.push(req.session.id);
       }
