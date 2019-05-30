@@ -53,7 +53,7 @@ export class DocumentResults extends Component {
     }
     const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, threshold).sort((a, b) => a.score < b.score);
     const snippetsToRender = filteredResults.slice(0, 50).map(s => Object.assign(
-      {}, s, { text: `${s.text} (${(s.score * 100).toFixed(1)}%)` })
+      {}, s, { text: `${s.text} (${(s.score * 100).toFixed(2)}%)` })
     );
     const snippets = Immutable.fromJS({ count: snippetsToRender.length, metadata: [], fullText: snippetsToRender });
     const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
@@ -77,7 +77,7 @@ export class DocumentResults extends Component {
           </dl>
           <dl className="metadata-type-numeric">
             <dt><Translate>Average sentence score</Translate></dt>
-            <dd>{ (doc.semanticSearch.averageScore * 100).toFixed(1) }%</dd>
+            <dd>{ (doc.semanticSearch.averageScore * 100).toFixed(2) }%</dd>
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}
