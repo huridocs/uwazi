@@ -80,11 +80,11 @@ exports[`DocumentResults render should render a result 1`] = `
     >
       <dt>
         <Connect(Translate)>
-          Average sentence score
+          % of document above threshold
         </Connect(Translate)>
       </dt>
       <dd>
-        NaN
+        50.00
         %
       </dd>
     </dl>

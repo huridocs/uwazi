@@ -76,8 +76,8 @@ export class DocumentResults extends Component {
             <dd>{ filteredResults.length }</dd>
           </dl>
           <dl className="metadata-type-numeric">
-            <dt><Translate>Average sentence score</Translate></dt>
-            <dd>{ (doc.semanticSearch.averageScore * 100).toFixed(2) }%</dd>
+            <dt><Translate>% of document above threshold</Translate></dt>
+            <dd>{ (filteredResults.length / doc.semanticSearch.results.length * 100).toFixed(2) }%</dd>
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}
