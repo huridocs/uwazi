@@ -10,7 +10,7 @@ import { t } from 'app/I18N';
 
 const filters = [
   { label: 'Threshold', model: 'threshold', min: 0.3, max: 1, step: 0.01 },
-  { label: 'Minimum relevant sentences', model: 'minRelevantSentences', min: 1, max: 50, step: 1 }
+  { label: 'Minimum relevant sentences per document', model: 'minRelevantSentences', min: 1, max: 50, step: 1 }
 ];
 
 const filterValue = (filter, filtersValues) => filter.model === 'threshold' ? `${filtersValues[filter.model] * 100}%` : filtersValues[filter.model];
