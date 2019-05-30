@@ -55,11 +55,13 @@ export class SemanticSearchResults extends Component {
   renderAditionalText(doc) {
     const results = doc.toJS().semanticSearch.results || [];
     const { filters: { threshold } } = this.props;
+    const aboveThreshold = sentencesAboveThreshold(doc, threshold);
+    const percentage = aboveThreshold / results.length * 100;
     return (
       <div className="item-metadata">
         <div className="metadata-type-text">
           <div><Translate>Sentences above threshold</Translate></div>
-          <div>{sentencesAboveThreshold(doc, threshold)} out of {results.length}</div>
+          <div>{aboveThreshold} out of {results.length} ({percentage.toFixed(2)}%)</div>
         </div>
       </div>
     );
