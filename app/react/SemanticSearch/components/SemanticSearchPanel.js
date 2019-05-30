@@ -44,13 +44,10 @@ export class SemanticSearchSidePanel extends Component {
   }
 
   async onSubmit(model) {
-    const { currentSearch, selectedDocuments } = this.props;
+    const { currentSearch } = this.props;
     const { searchTerm } = model;
-    const documents = selectedDocuments ?
-      selectedDocuments.toJS().map(doc => doc.sharedId) : [];
     this.props.submitNewSearch({
       searchTerm,
-      documents,
       query: currentSearch
     });
   }
@@ -109,7 +106,6 @@ export class SemanticSearchSidePanel extends Component {
 
 SemanticSearchSidePanel.propTypes = {
   currentSearch: PropTypes.object.isRequired,
-  selectedDocuments: PropTypes.object.isRequired,
   searches: PropTypes.object.isRequired,
   hideSemanticSearch: PropTypes.func.isRequired,
   fetchSearches: PropTypes.func.isRequired,
@@ -122,7 +118,6 @@ SemanticSearchSidePanel.propTypes = {
 export function mapStateToProps(state, props) {
   return {
     currentSearch: state[props.storeKey].search,
-    selectedDocuments: state[props.storeKey].ui.get('selectedDocuments'),
     searches: state.semanticSearch.searches,
     search: state.semanticSearch.search,
     open: state.semanticSearch.showSemanticSearchPanel
