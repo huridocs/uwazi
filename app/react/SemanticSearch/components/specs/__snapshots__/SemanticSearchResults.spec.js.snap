@@ -53,6 +53,8 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
                 </div>
                 <div>
                   2
+                   out of 
+                  3
                 </div>
               </div>
               <div
@@ -151,6 +153,8 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                 </div>
                 <div>
                   2
+                   out of 
+                  3
                 </div>
               </div>
               <div
@@ -204,6 +208,8 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                 </div>
                 <div>
                   1
+                   out of 
+                  3
                 </div>
               </div>
               <div

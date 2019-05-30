@@ -60,7 +60,7 @@ export class SemanticSearchResults extends Component {
       <div className="item-metadata">
         <div className="metadata-type-text">
           <div><Translate>Sentences above threshold</Translate></div>
-          <div>{sentencesAboveThreshold(doc, threshold)}</div>
+          <div>{sentencesAboveThreshold(doc, threshold)} out of {results.length}</div>
         </div>
         <div className="metadata-type-text">
           <div><Translate>Average sentence score</Translate></div>
