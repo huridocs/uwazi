@@ -4,55 +4,21 @@ import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { MetadataFormFields } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
-import Tip from 'app/Layout/Tip';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
 import { bindActionCreators } from 'redux';
 
 export class PublicForm extends Component {
-  static renderFile() {
-    return (
-      <div className="form-group">
-        <ul className="search__filter">
-          <li>
-            <label htmlFor="file"><Translate>File</Translate></label>
-          </li>
-          <li className="wide">
-            <Control.file id="file" className="form-control" model=".file" accept=".pdf" />
-          </li>
-        </ul>
-      </div>
-    );
-  }
-
-  static renderAttachments() {
-    return (
-      <div className="form-group">
-        <ul className="search__filter">
-          <li>
-            <label htmlFor="file">
-              <Translate>Attachments</Translate>
-              <Tip><Translate>You can select more than one file at once.</Translate></Tip>
-            </label>
-          </li>
-          <li className="wide">
-            <Control.file id="file" className="form-control" multiple="multiple" model=".attachments" />
-          </li>
-        </ul>
-      </div>
-    );
-  }
-
   static renderTitle() {
     return (
       <div className="form-group">
         <ul className="search__filter">
           <li>
-            <label htmlFor="text"><Translate>Title</Translate></label>
+            <label htmlFor="title"><Translate>Title</Translate></label>
           </li>
           <li className="wide">
-            <Control.text id="text" className="form-control" model=".title" />
+            <Control.text id="title" className="form-control" model=".title" />
           </li>
         </ul>
       </div>
@@ -62,6 +28,7 @@ export class PublicForm extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.fileFields = [];
   }
 
   attachDispatch(dispatch) {
@@ -70,6 +37,7 @@ export class PublicForm extends Component {
 
   resetForm() {
     this.formDispatch(actions.reset('publicform'));
+    this.fileFields.forEach((input) => { input.value = ''; });
   }
 
   handleSubmit(_values) {
@@ -93,6 +61,23 @@ export class PublicForm extends Component {
     );
   }
 
+  renderFileField(id, options) {
+    const defaults = { getRef: (node) => { this.fileFields.push(node); }, className: 'form-control', model: `.${id}` };
+    const props = Object.assign(defaults, options);
+    return (
+      <div className="form-group">
+        <ul className="search__filter">
+          <li>
+            <label htmlFor={id}>
+              <Translate>File</Translate>
+              <Control.file id={id} {...props} />
+            </label>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+
   render() {
     const { template, thesauris, file, attachments } = this.props;
     const model = '';
@@ -100,8 +85,8 @@ export class PublicForm extends Component {
       <LocalForm model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={this.handleSubmit}>
         {PublicForm.renderTitle()}
         <MetadataFormFields thesauris={thesauris} model={model} template={template} />
-        {file ? PublicForm.renderFile() : false}
-        {attachments ? PublicForm.renderAttachments() : false}
+        {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
+        {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
         {this.renderCaptcha()}
         <input type="submit" className="btn btn-success" value="Submit"/>
       </LocalForm>

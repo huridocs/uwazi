@@ -15,7 +15,7 @@ exports[`PublicForm should render a form 1`] = `
     >
       <li>
         <label
-          htmlFor="text"
+          htmlFor="title"
         >
           <Connect(Translate)>
             Title
@@ -27,7 +27,7 @@ exports[`PublicForm should render a form 1`] = `
       >
         <DefaultConnectedControlText
           className="form-control"
-          id="text"
+          id="title"
           model=".title"
         />
       </li>
@@ -94,7 +94,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
     >
       <li>
         <label
-          htmlFor="text"
+          htmlFor="title"
         >
           <Connect(Translate)>
             Title
@@ -106,7 +106,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       >
         <DefaultConnectedControlText
           className="form-control"
-          id="text"
+          id="title"
           model=".title"
         />
       </li>
@@ -139,17 +139,14 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           <Connect(Translate)>
             File
           </Connect(Translate)>
+          <DefaultConnectedControlFile
+            accept=".pdf"
+            className="form-control"
+            getRef={[Function]}
+            id="file"
+            model=".file"
+          />
         </label>
-      </li>
-      <li
-        className="wide"
-      >
-        <DefaultConnectedControlFile
-          accept=".pdf"
-          className="form-control"
-          id="file"
-          model=".file"
-        />
       </li>
     </ul>
   </div>
@@ -161,29 +158,19 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
     >
       <li>
         <label
-          htmlFor="file"
+          htmlFor="attachments"
         >
           <Connect(Translate)>
-            Attachments
+            File
           </Connect(Translate)>
-          <Tip
-            icon="question-circle"
-          >
-            <Connect(Translate)>
-              You can select more than one file at once.
-            </Connect(Translate)>
-          </Tip>
+          <DefaultConnectedControlFile
+            className="form-control"
+            getRef={[Function]}
+            id="attachments"
+            model=".attachments"
+            multiple="multiple"
+          />
         </label>
-      </li>
-      <li
-        className="wide"
-      >
-        <DefaultConnectedControlFile
-          className="form-control"
-          id="file"
-          model=".attachments"
-          multiple="multiple"
-        />
       </li>
     </ul>
   </div>
