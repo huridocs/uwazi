@@ -115,7 +115,7 @@ exports[`DocumentResults render should render a result 1`] = `
         "fullText": Immutable.List [
           Immutable.Map {
             "score": 9,
-            "text": "undefined (900.0%)",
+            "text": "undefined (900.00%)",
           },
         ],
       }

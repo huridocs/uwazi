@@ -64,7 +64,7 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
                   </Connect(Translate)>
                 </div>
                 <div>
-                  43.3
+                  43.33
                   %
                 </div>
               </div>
@@ -162,7 +162,7 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                   </Connect(Translate)>
                 </div>
                 <div>
-                  43.3
+                  43.33
                   %
                 </div>
               </div>
@@ -215,7 +215,7 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
                   </Connect(Translate)>
                 </div>
                 <div>
-                  33.3
+                  33.33
                   %
                 </div>
               </div>

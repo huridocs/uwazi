@@ -40,10 +40,10 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
         </dl>
         <dl
           className="metadata-type-text"
-          key="Minimum relevant sentences"
+          key="Minimum relevant sentences per document"
         >
           <dt>
-            Minimum relevant sentences
+            Minimum relevant sentences per document
              
           </dt>
           <dd>
