@@ -165,7 +165,7 @@ describe('uploadsActions', () => {
           done();
         });
 
-        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok' });
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok', status: 200 });
       });
     });
 
