@@ -6,9 +6,20 @@ exports[`PublicForm should render a form 1`] = `
   initialState={Object {}}
   model="publicform"
   onSubmit={[Function]}
+  validators={
+    Object {
+      "captcha": Object {
+        "required": [Function],
+      },
+      "title": Object {
+        "required": [Function],
+      },
+    }
+  }
 >
-  <div
-    className="form-group"
+  <Connect(FormGroup)
+    key="title"
+    model=".title"
   >
     <ul
       className="search__filter"
@@ -20,6 +31,11 @@ exports[`PublicForm should render a form 1`] = `
           <Connect(Translate)>
             Title
           </Connect(Translate)>
+          <span
+            className="required"
+          >
+            *
+          </span>
         </label>
       </li>
       <li
@@ -32,9 +48,9 @@ exports[`PublicForm should render a form 1`] = `
         />
       </li>
     </ul>
-  </div>
+  </Connect(FormGroup)>
   <Connect(MetadataFormFields)
-    model=""
+    model="publicform"
     template={
       Immutable.Map {
         "properties": Immutable.List [
@@ -47,30 +63,35 @@ exports[`PublicForm should render a form 1`] = `
     }
     thesauris={Immutable.List []}
   />
-  <ul
-    className="search__filter"
+  <Connect(FormGroup)
+    key="captcha"
+    model=".captcha"
   >
-    <li>
-      <label>
-        <Connect(Translate)>
-          Are you a robot?
-        </Connect(Translate)>
-        <span
-          className="required"
-        >
-          *
-        </span>
-      </label>
-    </li>
-    <li
-      className="wide"
+    <ul
+      className="search__filter"
     >
-      <Captcha
-        model=".captcha"
-        refresh={[Function]}
-      />
-    </li>
-  </ul>
+      <li>
+        <label>
+          <Connect(Translate)>
+            Are you a robot?
+          </Connect(Translate)>
+          <span
+            className="required"
+          >
+            *
+          </span>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <Captcha
+          model=".captcha"
+          refresh={[Function]}
+        />
+      </li>
+    </ul>
+  </Connect(FormGroup)>
   <input
     className="btn btn-success"
     type="submit"
@@ -85,9 +106,20 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
   initialState={Object {}}
   model="publicform"
   onSubmit={[Function]}
+  validators={
+    Object {
+      "captcha": Object {
+        "required": [Function],
+      },
+      "title": Object {
+        "required": [Function],
+      },
+    }
+  }
 >
-  <div
-    className="form-group"
+  <Connect(FormGroup)
+    key="title"
+    model=".title"
   >
     <ul
       className="search__filter"
@@ -99,6 +131,11 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           <Connect(Translate)>
             Title
           </Connect(Translate)>
+          <span
+            className="required"
+          >
+            *
+          </span>
         </label>
       </li>
       <li
@@ -111,9 +148,9 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
         />
       </li>
     </ul>
-  </div>
+  </Connect(FormGroup)>
   <Connect(MetadataFormFields)
-    model=""
+    model="publicform"
     template={
       Immutable.Map {
         "properties": Immutable.List [
@@ -174,30 +211,35 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       </li>
     </ul>
   </div>
-  <ul
-    className="search__filter"
+  <Connect(FormGroup)
+    key="captcha"
+    model=".captcha"
   >
-    <li>
-      <label>
-        <Connect(Translate)>
-          Are you a robot?
-        </Connect(Translate)>
-        <span
-          className="required"
-        >
-          *
-        </span>
-      </label>
-    </li>
-    <li
-      className="wide"
+    <ul
+      className="search__filter"
     >
-      <Captcha
-        model=".captcha"
-        refresh={[Function]}
-      />
-    </li>
-  </ul>
+      <li>
+        <label>
+          <Connect(Translate)>
+            Are you a robot?
+          </Connect(Translate)>
+          <span
+            className="required"
+          >
+            *
+          </span>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <Captcha
+          model=".captcha"
+          refresh={[Function]}
+        />
+      </li>
+    </ul>
+  </Connect(FormGroup)>
   <input
     className="btn btn-success"
     type="submit"

@@ -2,26 +2,27 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
-import { MetadataFormFields } from 'app/Metadata';
+import { MetadataFormFields, validator } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
 import { bindActionCreators } from 'redux';
+import { FormGroup } from 'app/Forms';
 
 export class PublicForm extends Component {
   static renderTitle() {
     return (
-      <div className="form-group">
+      <FormGroup key="title" model=".title">
         <ul className="search__filter">
           <li>
-            <label htmlFor="title"><Translate>Title</Translate></label>
+            <label htmlFor="title"><Translate>Title</Translate><span className="required">*</span></label>
           </li>
           <li className="wide">
             <Control.text id="title" className="form-control" model=".title" />
           </li>
         </ul>
-      </div>
+      </FormGroup>
     );
   }
 
@@ -29,6 +30,7 @@ export class PublicForm extends Component {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fileFields = [];
+    this.validators = Object.assign({ captcha: { required: val => val && val.length } }, validator.generate(props.template.toJS()));
   }
 
   attachDispatch(dispatch) {
@@ -52,12 +54,14 @@ export class PublicForm extends Component {
 
   renderCaptcha() {
     return (
-      <ul className="search__filter">
-        <li><label><Translate>Are you a robot?</Translate><span className="required">*</span></label></li>
-        <li className="wide">
-          <Captcha refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
-        </li>
-      </ul>
+      <FormGroup key="captcha" model=".captcha">
+        <ul className="search__filter">
+          <li><label><Translate>Are you a robot?</Translate><span className="required">*</span></label></li>
+          <li className="wide">
+            <Captcha refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
+          </li>
+        </ul>
+      </FormGroup>
     );
   }
 
@@ -80,11 +84,10 @@ export class PublicForm extends Component {
 
   render() {
     const { template, thesauris, file, attachments } = this.props;
-    const model = '';
     return (
-      <LocalForm model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={this.handleSubmit}>
+      <LocalForm validators={this.validators} model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={this.handleSubmit}>
         {PublicForm.renderTitle()}
-        <MetadataFormFields thesauris={thesauris} model={model} template={template} />
+        <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
         {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
         {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
         {this.renderCaptcha()}
