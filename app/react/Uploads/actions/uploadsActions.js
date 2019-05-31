@@ -94,7 +94,7 @@ export function upload(docId, file, endpoint = 'upload') {
 }
 
 export function publicSubmit(data) {
-  return dispatch => new Promise((resolve) => {
+  return dispatch => new Promise((resolve, reject) => {
     const request = superagent.post(`${APIURL}public`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
@@ -120,8 +120,19 @@ export function publicSubmit(data) {
 
     request
     .on('response', (response) => {
-      dispatch(notify('Success', 'success'));
-      resolve(response);
+      if (response.status === 200) {
+        dispatch(notify('Success', 'success'));
+        resolve(response);
+        return;
+      }
+
+      if (response.status === 403) {
+        dispatch(notify('Captcha error', 'danger'));
+        return;
+      }
+
+      dispatch(notify('An error has ocurred', 'danger'));
+      reject(response);
     })
     .end();
   });

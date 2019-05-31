@@ -73,7 +73,7 @@ export class PublicForm extends Component {
         <ul className="search__filter">
           <li>
             <label htmlFor={id}>
-              <Translate>File</Translate>
+              <Translate>{id === 'file' ? 'File' : 'Attachments'}</Translate>
               <Control.file id={id} {...props} />
             </label>
           </li>

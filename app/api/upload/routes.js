@@ -101,8 +101,8 @@ export default (app) => {
           await entities.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
           socket(req).emit('documentProcessed', newEntity.sharedId);
         });
-        res.json(newEntity);
       }
+      res.json(newEntity);
     });
 
   app.post(

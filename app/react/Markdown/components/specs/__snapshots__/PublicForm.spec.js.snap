@@ -198,7 +198,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           htmlFor="attachments"
         >
           <Connect(Translate)>
-            File
+            Attachments
           </Connect(Translate)>
           <DefaultConnectedControlFile
             className="form-control"
