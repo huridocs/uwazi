@@ -46,6 +46,7 @@ export class PublicForm extends Component {
     const values = { ..._values };
     const { submit } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
+    values.template = this.props.template.get('_id');
     submit(values).then(() => {
       this.refreshCaptcha();
       this.resetForm();

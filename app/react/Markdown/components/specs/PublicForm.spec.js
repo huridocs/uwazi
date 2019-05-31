@@ -18,7 +18,7 @@ describe('PublicForm', () => {
 
   const render = (customProps) => {
     props = {
-      template: Immutable.fromJS({ properties: [{ type: 'text', name: 'text' }] }),
+      template: Immutable.fromJS({ _id: '123', properties: [{ type: 'text', name: 'text' }] }),
       thesauris: Immutable.fromJS([]),
       file: false,
       attachments: false,
@@ -44,7 +44,7 @@ describe('PublicForm', () => {
   it('should submit the values', () => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test' });
+    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test', template: '123' });
   });
 
   it('should refresh the captcha and clear the form after submit', (done) => {

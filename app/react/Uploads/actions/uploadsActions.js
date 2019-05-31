@@ -99,7 +99,8 @@ export function publicSubmit(data) {
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
     .field('title', data.title)
-    .field('captcha', data.captcha);
+    .field('captcha', data.captcha)
+    .field('template', data.template);
     if (data.file) {
       request.attach('file', data.file);
     }
