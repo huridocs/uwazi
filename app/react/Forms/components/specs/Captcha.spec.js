@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { TwitterPicker } from 'react-color';
 
 import Captcha from '../Captcha';
 
