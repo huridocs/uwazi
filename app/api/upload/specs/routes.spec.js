@@ -56,18 +56,6 @@ describe('upload routes', () => {
     });
   };
 
-  const deleteThumbnail = thumbnailId => new Promise((resolve) => {
-    const thumbnailURI = `${__dirname}/uploads/${thumbnailId}.jpg`;
-    fs.stat(path.resolve(thumbnailURI), (err) => {
-      if (err) { return resolve(); }
-      fs.unlinkSync(thumbnailURI);
-      return resolve();
-    });
-  });
-
-  const deleteThumbnails = () => deleteThumbnail(entityId)
-  .then(() => deleteThumbnail(entityEnId));
-
   const checkThumbnails = () => {
     const thumbnail1URI = `${__dirname}/uploads/${entityId}.jpg`;
     const thumbnail2URI = `${__dirname}/uploads/${entityEnId}.jpg`;

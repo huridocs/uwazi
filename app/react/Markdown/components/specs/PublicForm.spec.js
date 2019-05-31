@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import * as uploadsActions from 'app/Uploads/actions/uploadsActions';
 import { LocalForm } from 'react-redux-form';
 import PublicForm from '../PublicForm.js';
 
