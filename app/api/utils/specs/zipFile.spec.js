@@ -37,14 +37,11 @@ describe('zipFile', () => {
     });
 
     describe('when not file found', () => {
-      it('should throw an error', async () => {
-        try {
-          await zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
-          .findReadStream(entry => entry.fileName === 'non_existent');
-          fail('should throw an error');
-        } catch (e) {
-          expect(e).toBeDefined();
-        }
+      it('should return null', async () => {
+        const stream = await zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
+        .findReadStream(entry => entry.fileName === 'non_existent');
+
+        expect(stream).toBe(null);
       });
     });
 

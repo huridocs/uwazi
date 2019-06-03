@@ -9,7 +9,7 @@ export default {
     if (!this.stopped) {
       await cb();
       await timeout(interval);
-      await this.start(cb);
+      await this.start(cb, interval);
     }
   },
 

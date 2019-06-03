@@ -24,6 +24,7 @@ import uwaziMessage from '../message';
 import syncWorker from './api/sync/syncWorker';
 import repeater from './api/utils/Repeater';
 import vaultSync from './api/evidences_vault';
+import settings from './api/settings';
 
 mongoose.Promise = Promise;
 
@@ -94,15 +95,22 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
 
   const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
 
-  http.listen(port, bindAddress, () => {
+  http.listen(port, bindAddress, async () => {
     syncWorker.start();
 
-    repeater.start(() => vaultSync.sync('2ccb1db10dbfd8d48c9aa6a009806eec', '5bfbb1a0471dd0fc16ada146'));
+    const { evidencesVault } = await settings.get();
+    if (evidencesVault && evidencesVault.token && evidencesVault.template) {
+      console.info('==> 📥 evidences vault config detected, started sync ....');
+      repeater.start(
+        () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
+        10000
+      );
+    }
 
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');
-      console.info('webpack is watching...');
+      console.info('==> 📦 webpack is watching...');
       console.info(uwaziMessage);
     }
   });
