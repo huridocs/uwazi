@@ -10,6 +10,7 @@ const searchSchema = new mongoose.Schema({
     sharedId: String,
     status: String
   }],
+  query: Object,
   creationDate: Number
 });
 

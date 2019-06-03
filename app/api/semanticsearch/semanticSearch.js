@@ -24,7 +24,8 @@ const getSearchDocuments = async ({ documents, query }, language, user) => {
   if (documents && documents.length) {
     return documents;
   }
-  const res = await search.search(query, language, user);
+  const _query = { ...query, limit: 9999, searchTerm: '' };
+  const res = await search.search(_query, language, user);
   return res.rows.map(document => document.sharedId);
 };
 
@@ -105,6 +106,7 @@ const create = async (args, language, user) => {
     })),
     status: PENDING,
     searchTerm: args.searchTerm,
+    query: args.query,
     language,
     creationDate: date.currentUTC()
   };
