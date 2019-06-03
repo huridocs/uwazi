@@ -39,7 +39,7 @@ describe('semanticSearch', () => {
       expect(workers.notifyNewSearch).toHaveBeenCalledWith(created._id);
     });
     describe('when query is provided instead of documents list', () => {
-      it('should fetch the documents based on the query', async () => {
+      it('should fetch the documents using search with a 9999 result limit and empty searchTerm', async () => {
         jest.spyOn(search, 'search').mockResolvedValue({
           rows: [
             { sharedId: 'docA' },
@@ -49,7 +49,8 @@ describe('semanticSearch', () => {
         const query = { filters: {} };
         const args = { searchTerm: 'term', query };
         const created = await semanticSearch.create(args, 'en', 'user');
-        expect(search.search).toHaveBeenCalledWith(query, 'en', 'user');
+        const expectedQuery = { ...query, searchTerm: '', limit: 9999 };
+        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'en', 'user');
         expect(created.documents).toEqual([
           { sharedId: 'docA', status: 'pending' },
           { sharedId: 'docB', status: 'pending' }
