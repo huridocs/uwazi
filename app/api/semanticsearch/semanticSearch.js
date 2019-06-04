@@ -116,7 +116,7 @@ const create = async (args, language, user) => {
   return savedSearch;
 };
 
-const filterSearchResults = async (searchId, { skip = 0, limit = 50, threshold = 0.3, minRelevantSentences = 5 }) =>
+const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.3, minRelevantSentences = 5 }) =>
   resultsModel.db.aggregate([
     {
       $match: { searchId: Types.ObjectId(searchId) }
@@ -138,14 +138,14 @@ const filterSearchResults = async (searchId, { skip = 0, limit = 50, threshold =
         status: 1,
         results: 1,
         numRelevant: { $size: '$results' },
-        percentage: { $divide: [{ $size: '$results' }, '$totalResults'] }
+        relevantRate: { $divide: [{ $size: '$results' }, '$totalResults'] }
       }
     },
     {
       $match: { numRelevant: { $gte: minRelevantSentences } }
     },
     {
-      $sort: { percentage: -1 }
+      $sort: { relevantRate: -1 }
     },
     {
       $skip: skip
@@ -155,12 +155,12 @@ const filterSearchResults = async (searchId, { skip = 0, limit = 50, threshold =
     }
   ]);
 
-const getSearch = async (searchId) => {
+const getSearch = async (searchId, args) => {
   const theSearch = await model.getById(searchId);
   if (!theSearch) {
     throw createError('Search not found', 404);
   }
-  const results = await filterSearchResults(searchId, {});
+  const results = await getSearchResults(searchId, args);
   const docIds = results.map(r => r.sharedId);
   const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
   const docsWithResults = docs.map(doc => (
@@ -247,6 +247,7 @@ const semanticSearch = {
   getAllSearches,
   getPending,
   getInProgress,
+  getSearchResults,
   getSearch,
   getSearchesByDocument,
   deleteSearch,
