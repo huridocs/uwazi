@@ -1,5 +1,6 @@
 import { promisify } from 'util';
 import async from 'async';
+import { Types } from 'mongoose';
 import { search } from '../search';
 import model from './model';
 import resultsModel from './resultsModel';
@@ -115,12 +116,51 @@ const create = async (args, language, user) => {
   return savedSearch;
 };
 
+const filterSearchResults = async (searchId, { skip = 0, limit = 50, threshold = 0.3, minRelevantSentences = 5 }) =>
+  resultsModel.db.aggregate([
+    {
+      $match: { searchId: Types.ObjectId(searchId) }
+    },
+    {
+      $project: {
+        searchId: 1,
+        sharedId: 1,
+        status: 1,
+        totalResults: { $size: '$results' },
+        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } }
+      }
+    },
+    {
+      $project: {
+        totalResults: 1,
+        searchId: 1,
+        sharedId: 1,
+        status: 1,
+        results: 1,
+        numRelevant: { $size: '$results' },
+        percentage: { $divide: [{ $size: '$results' }, '$totalResults'] }
+      }
+    },
+    {
+      $match: { numRelevant: { $gte: minRelevantSentences } }
+    },
+    {
+      $sort: { percentage: -1 }
+    },
+    {
+      $skip: skip
+    },
+    {
+      $limit: limit
+    }
+  ]);
+
 const getSearch = async (searchId) => {
   const theSearch = await model.getById(searchId);
   if (!theSearch) {
     throw createError('Search not found', 404);
   }
-  const results = await resultsModel.get({ searchId });
+  const results = await filterSearchResults(searchId, {});
   const docIds = results.map(r => r.sharedId);
   const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
   const docsWithResults = docs.map(doc => (
