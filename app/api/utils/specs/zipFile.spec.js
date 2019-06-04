@@ -1,15 +1,15 @@
 import path from 'path';
 import fs from 'fs';
+import { createTestingZip } from 'api/csv/specs/helpers';
 import zipFile from '../zipFile';
-import { createTestingZip } from './helpers';
 
-describe('ImportFile', () => {
+describe('zipFile', () => {
   beforeAll(async () => {
     await createTestingZip([
       path.join(__dirname, '/zipData/test.csv'),
       path.join(__dirname, '/zipData/1.pdf'),
       path.join(__dirname, '/zipData/2.pdf'),
-    ], 'zipTest.zip');
+    ], 'zipTest.zip', __dirname);
   });
 
   afterAll(() => {
@@ -18,10 +18,6 @@ describe('ImportFile', () => {
   });
 
   describe('findReadStream', () => {
-    it('should be true', () => {
-      expect(true).toBe(true);
-    });
-
     it('should return a readable stream for matched file', async (done) => {
       let fileContents;
       (

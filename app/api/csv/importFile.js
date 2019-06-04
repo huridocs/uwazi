@@ -3,8 +3,8 @@ import path from 'path';
 import { Readable } from 'stream';
 
 import { generateFileName } from 'api/utils/files';
+import zipFile from 'api/utils/zipFile';
 
-import zipFile from './zipFile';
 import configPaths from '../config/paths';
 
 const createFile = async (fileStream, fileName) =>
