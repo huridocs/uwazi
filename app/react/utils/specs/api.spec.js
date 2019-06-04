@@ -48,7 +48,7 @@ describe('api', () => {
         api.cookie('cookie');
         api.get('test_get')
         .then(() => {
-          const { headers } = backend.calls().matched[0][1];
+          const { headers } = backend.calls()[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -62,7 +62,7 @@ describe('api', () => {
     it('should prefix url with config api url', (done) => {
       api.post('test_post', { data: 'post' })
       .then((response) => {
-        expect(backend.calls().matched[0][1].body).toBe(JSON.stringify({ data: 'post' }));
+        expect(backend.calls()[0][1].body).toBe(JSON.stringify({ data: 'post' }));
         expect(response.json.method).toBe('POST');
         done();
       })

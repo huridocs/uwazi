@@ -175,7 +175,7 @@
     "eslint-plugin-jasmine": "2.9.2",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "v7.12.4",
-    "fetch-mock": "5.9.3",
+    "fetch-mock": "v7.3.3",
     "identity-obj-proxy": "^3.0.0",
     "img-loader": "2.0.1",
     "jasmine": "2.7.0",

@@ -58,7 +58,7 @@ describe('JSONRequest', () => {
       it('should send them (with some default headers)', (done) => {
         request.post('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const { headers } = backend.calls().matched[0][1];
+          const { headers } = backend.calls()[0][1];
           expect(headers.Cookie).toBe('cookie');
           expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
           done();
@@ -71,7 +71,7 @@ describe('JSONRequest', () => {
       it('should send the authorization cookie in the headers', async () => {
         request.cookie('cookie');
         await request.get('http://localhost:3000/api/test');
-        const { headers } = backend.calls().matched[0][1];
+        const { headers } = backend.calls()[0][1];
         expect(headers.Cookie).toBe('cookie');
       });
     });
@@ -108,7 +108,7 @@ describe('JSONRequest', () => {
       it('should send them', (done) => {
         request.put('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const { headers } = backend.calls().matched[0][1];
+          const { headers } = backend.calls()[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -171,7 +171,7 @@ describe('JSONRequest', () => {
       it('should send them', (done) => {
         request.get('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const { headers } = backend.calls().matched[0][1];
+          const { headers } = backend.calls()[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();
@@ -202,7 +202,7 @@ describe('JSONRequest', () => {
       it('should send them', (done) => {
         request.delete('http://localhost:3000/api/test', {}, { Cookie: 'cookie' })
         .then(() => {
-          const { headers } = backend.calls().matched[0][1];
+          const { headers } = backend.calls()[0][1];
           expect(headers.Cookie).toBe('cookie');
 
           done();
