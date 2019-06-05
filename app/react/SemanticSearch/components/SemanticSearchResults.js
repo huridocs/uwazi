@@ -7,7 +7,7 @@ import Helmet from 'react-helmet';
 import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import { selectSemanticSearchDocument, addSearchResults } from 'app/SemanticSearch/actions/actions';
+import { selectSemanticSearchDocument, addSearchResults, getSearch } from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
 import { Translate } from 'app/I18N';
 import ResultsSidePanel from './ResultsSidePanel';
@@ -50,6 +50,14 @@ export class SemanticSearchResults extends Component {
     Boolean(nextProps.searchTerm !== searchTerm);
   }
 
+  componentDidUpdate(prevProps) {
+    const { filters, searchId } = this.props;
+    if (filters.minRelevantSentences !== prevProps.filters.minRelevantSentences ||
+      filters.threshold !== prevProps.filters.threshold) {
+      this.props.getSearch(searchId, filters);
+    }
+  }
+
   componentWillUnmount() {
     socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
   }
@@ -66,9 +74,9 @@ export class SemanticSearchResults extends Component {
   }
 
   renderAditionalText(doc) {
-    const resultsSize = doc.getIn(['semanticSearch', 'results']).size;
-    const aboveThreshold = doc.getIn(['semanticSearch', 'aboveThreshold']).count;
-    const percentage = doc.getIn(['semanticSearch', 'aboveThreshold']).percentage;
+    const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);
+    const aboveThreshold = doc.getIn(['semanticSearch', 'numRelevant']);
+    const percentage = doc.getIn(['semanticSearch', 'relevantRate']) * 100;
 
     return (
       <div className="item-metadata">
@@ -133,6 +141,7 @@ SemanticSearchResults.propTypes = {
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
   addSearchResults: PropTypes.func.isRequired,
+  getSearch: PropTypes.func.isRequired,
   filters: PropTypes.object,
 };
 
@@ -141,7 +150,9 @@ export const mapStateToProps = (state) => {
   const searchTerm = search.get('searchTerm');
   const results = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
-  const items = results ? filterAndSortItems(results, filters) : Immutable.fromJS([]);
+  console.log('results', results.toJS());
+  // const items = results ? filterAndSortItems(results, filters) : Immutable.fromJS([]);
+  const items = Immutable.fromJS(results);
   const isEmpty = Object.keys(search).length === 0;
 
   return {
@@ -156,7 +167,8 @@ export const mapStateToProps = (state) => {
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     selectSemanticSearchDocument,
-    addSearchResults
+    addSearchResults,
+    getSearch
   }, dispatch);
 }
 

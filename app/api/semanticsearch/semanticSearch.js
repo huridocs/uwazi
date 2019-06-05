@@ -127,7 +127,7 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         sharedId: 1,
         status: 1,
         totalResults: { $size: '$results' },
-        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } }
+        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', Number(threshold)] } } }
       }
     },
     {
@@ -142,16 +142,16 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
       }
     },
     {
-      $match: { numRelevant: { $gte: minRelevantSentences } }
+      $match: { numRelevant: { $gte: Number(minRelevantSentences) } }
     },
     {
       $sort: { relevantRate: -1 }
     },
     {
-      $skip: skip
+      $skip: Number(skip)
     },
     {
-      $limit: limit
+      $limit: Number(limit)
     }
   ]);
 
@@ -160,6 +160,7 @@ const getSearch = async (searchId, args) => {
   if (!theSearch) {
     throw createError('Search not found', 404);
   }
+
   const results = await getSearchResults(searchId, args);
   const docIds = results.map(r => r.sharedId);
   const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });

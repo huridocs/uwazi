@@ -82,3 +82,10 @@ export function addSearchResults(newDocs) {
     dispatch(actions.set('semanticSearch/search', newResults));
   };
 }
+
+export function getSearch(searchId, args) {
+  return dispatch => api.getSearch(searchId, args)
+  .then(search =>
+    dispatch(actions.set('semanticSearch/search', search))
+  );
+}
