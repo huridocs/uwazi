@@ -60,7 +60,7 @@ export class DocumentResults extends Component {
       return false;
     }
     const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, threshold).sort((a, b) => a.score < b.score);
-    const snippetsToRender = filteredResults.slice(0, 50).map(s => Object.assign(
+    const snippetsToRender = doc.semanticSearch.results.map(s => Object.assign(
       {}, s, { text: `${s.text} (${(s.score * 100).toFixed(2)}%)` })
     );
     const snippets = Immutable.fromJS({ count: snippetsToRender.length, metadata: [], fullText: snippetsToRender });
@@ -81,11 +81,11 @@ export class DocumentResults extends Component {
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
             <dt><Translate>Sentences above threshold</Translate></dt>
-            <dd>{ filteredResults.length }</dd>
+            <dd>{ doc.semanticSearch.numRelevant }</dd>
           </dl>
           <dl className="metadata-type-numeric">
             <dt><Translate>% of document above threshold</Translate></dt>
-            <dd>{ (filteredResults.length / doc.semanticSearch.results.length * 100).toFixed(2) }%</dd>
+            <dd>{ (doc.semanticSearch.relevantRate * 100).toFixed(2) }%</dd>
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}

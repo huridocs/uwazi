@@ -84,8 +84,25 @@ export function addSearchResults(newDocs) {
 }
 
 export function getSearch(searchId, args) {
+  return (dispatch, getState) => api.getSearch(searchId, args)
+  .then((search) => {
+    dispatch(actions.set('semanticSearch/search', search));
+    const selectedDoc = getState().semanticSearch.selectedDocument;
+    console.log('selected doc', selectedDoc && selectedDoc.toJS());
+    if (selectedDoc) {
+      const updatedDoc = search.results.find(doc => doc.sharedId === selectedDoc.get('sharedId'));
+      if (updatedDoc) {
+        console.log('selecting doc', updatedDoc);
+        dispatch(actions.set('semanticSearch/selectedDocument', updatedDoc));
+      }
+    }
+  });
+}
+
+
+export function getMoreSearchResults(searchId, args) {
   return dispatch => api.getSearch(searchId, args)
   .then(search =>
-    dispatch(actions.set('semanticSearch/search', search))
+    dispatch(actions.concatIn('semanticSearch/search', ['results'], search.results))
   );
 }

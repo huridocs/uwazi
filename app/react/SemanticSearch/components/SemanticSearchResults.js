@@ -7,38 +7,17 @@ import Helmet from 'react-helmet';
 import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import { selectSemanticSearchDocument, addSearchResults, getSearch } from 'app/SemanticSearch/actions/actions';
+import { selectSemanticSearchDocument, addSearchResults, getSearch, getMoreSearchResults } from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
 import { Translate } from 'app/I18N';
 import ResultsSidePanel from './ResultsSidePanel';
 
-
-const sentencesAboveThreshold = (item, threshold) => {
-  let count = item.getIn(['semanticSearch', 'results']).toJS().findIndex(({ score }) => score < threshold);
-  count = count >= 0 ? count : item.getIn(['semanticSearch', 'results']).size;
-  return {
-    count,
-    percentage: count / item.getIn(['semanticSearch', 'results']).size * 100
-  };
-};
-
-const filterAndSortItems = (items, { threshold, minRelevantSentences }) => {
-  return items.map(item =>
-    item.setIn(['semanticSearch', 'aboveThreshold'], sentencesAboveThreshold(item, threshold))
-  )
-  .filter(item =>
-    item.getIn(['semanticSearch', 'aboveThreshold']).count >= minRelevantSentences
-  )
-  .sort((a, b) =>
-    b.getIn(['semanticSearch', 'aboveThreshold']).percentage -
-      a.getIn(['semanticSearch', 'aboveThreshold']).percentage
-  );
-};
-
 export class SemanticSearchResults extends Component {
   constructor(props) {
     super(props);
+    this.state = { page: 1 };
     this.onClick = this.onClick.bind(this);
+    this.onLoadMoreClick = this.onLoadMoreClick.bind(this);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -54,6 +33,7 @@ export class SemanticSearchResults extends Component {
     const { filters, searchId } = this.props;
     if (filters.minRelevantSentences !== prevProps.filters.minRelevantSentences ||
       filters.threshold !== prevProps.filters.threshold) {
+      this.setState({ page: 1 });
       this.props.getSearch(searchId, filters);
     }
   }
@@ -70,7 +50,18 @@ export class SemanticSearchResults extends Component {
   }
 
   onClick(e, doc) {
+    console.log('doc', doc.toJS());
     this.props.selectSemanticSearchDocument(doc);
+  }
+
+  onLoadMoreClick() {
+    const { searchId, filters } = this.props;
+    const { page } = this.state;
+    const limit = 30;
+    const skip = page * limit;
+    const args = { ...filters, skip, limit };
+    this.setState({ page: page + 1 });
+    this.props.getMoreSearchResults(searchId, args);
   }
 
   renderAditionalText(doc) {
@@ -89,7 +80,7 @@ export class SemanticSearchResults extends Component {
   }
 
   render() {
-    const { items, isEmpty, searchTerm } = this.props;
+    const { items, isEmpty, searchTerm, totalCount } = this.props;
     return (
       <div className="row panels-layout">
         { isEmpty && (
@@ -107,7 +98,7 @@ export class SemanticSearchResults extends Component {
               </h3>
               <div className="documents-counter">
                 <span className="documents-counter-label">
-                  <b>{ items.size }</b> <Translate>documents</Translate>
+                  <b>{ totalCount }</b> <Translate>documents</Translate>
                 </span>
               </div>
               <RowList>
@@ -120,6 +111,15 @@ export class SemanticSearchResults extends Component {
                   />
                   ))}
               </RowList>
+              <p className="col-sm-12 text-center documents-counter">
+                <b> {items.size} </b> <Translate>of</Translate>
+                <b> {totalCount} </b> <Translate>documents</Translate>
+              </p>
+              <div className="col-sm-12 text-center documents-counter">
+                <button onClick={this.onLoadMoreClick} type="button" className="btn btn-default btn-load-more">
+                  30 <Translate>x more</Translate>
+                </button>
+              </div>
             </main>
             <ResultsSidePanel />
           </React.Fragment>
@@ -142,21 +142,23 @@ SemanticSearchResults.propTypes = {
   selectSemanticSearchDocument: PropTypes.func.isRequired,
   addSearchResults: PropTypes.func.isRequired,
   getSearch: PropTypes.func.isRequired,
+  getMoreSearchResults: PropTypes.func.isRequired,
   filters: PropTypes.object,
 };
 
 export const mapStateToProps = (state) => {
   const { search } = state.semanticSearch;
   const searchTerm = search.get('searchTerm');
-  const results = search.get('results');
+  const items = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
-  console.log('results', results.toJS());
-  // const items = results ? filterAndSortItems(results, filters) : Immutable.fromJS([]);
-  const items = Immutable.fromJS(results);
+  // console.log('results', items.toJS());
+  // console.log('rnak', items.toJS().map(r => (r.semanticSearch.relevantRate * 100).toFixed(2)));
+  // const items = Immutable.fromJS(results);
   const isEmpty = Object.keys(search).length === 0;
 
   return {
     searchId: search.get('_id'),
+    totalCount: search.get('documents').size,
     searchTerm,
     filters,
     items,
@@ -168,7 +170,8 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     selectSemanticSearchDocument,
     addSearchResults,
-    getSearch
+    getSearch,
+    getMoreSearchResults,
   }, dispatch);
 }
 
