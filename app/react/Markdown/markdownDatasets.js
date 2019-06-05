@@ -1,6 +1,7 @@
 import HtmlParser from 'htmlparser2/lib/Parser';
 import queryString from 'query-string';
 import rison from 'rison';
+import Big from 'big.js';
 
 import searchApi from 'app/Search/SearchAPI';
 import entitiesApi from 'app/Entities/EntitiesAPI';
@@ -63,6 +64,15 @@ const getAggregations = (state, { property, dataset = 'default' }) => {
   return !data ? undefinedValue : data.getIn(['aggregations', 'all', property, 'buckets']);
 };
 
+const addValues = (aggregations, values) => {
+  let result = new Big(0);
+  values.forEach((key) => {
+    const value = aggregations.find(bucket => bucket.get('key') === key).getIn(['filtered', 'doc_count']);
+    result = result.plus(value || 0);
+  });
+  return Number(result);
+};
+
 export default {
   async fetch(markdown) {
     const datasets = parseDatasets(markdown);
@@ -78,8 +88,9 @@ export default {
   getAggregations,
 
   getAggregation(state, { property, value, dataset = 'default' }) {
+    const values = value ? value.split(',') : [''];
     const aggregations = getAggregations(state, { property, dataset });
-    return aggregations ? aggregations.find(bucket => bucket.get('key') === value).getIn(['filtered', 'doc_count']) : undefinedValue;
+    return aggregations ? addValues(aggregations, values) : undefinedValue;
   },
 
   getMetadataValue(state, { property, dataset = 'default' }) {

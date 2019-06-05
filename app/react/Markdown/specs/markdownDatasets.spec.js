@@ -157,8 +157,13 @@ describe('markdownDatasets', () => {
     const dataset = {
       aggregations: {
         all: {
-          types: {
-            buckets: [{ key: 'id1', filtered: { doc_count: 1 } }, { key: 'id2', filtered: { doc_count: 25 } }]
+          _types: {
+            buckets: [
+              { key: 'id1', filtered: { doc_count: 1 } },
+              { key: 'id2', filtered: { doc_count: 25 } },
+              { key: 'id3', filtered: { doc_count: 5.6 } },
+              { key: 'id4', filtered: { doc_count: 7.8 } },
+            ]
           },
           property1: {
             buckets: [{ key: 'id3', filtered: { doc_count: 5 } }]
@@ -170,7 +175,7 @@ describe('markdownDatasets', () => {
     const dataset2 = {
       aggregations: {
         all: {
-          types: {
+          _types: {
             buckets: [{ key: 'id5', filtered: { doc_count: 6 } }, { key: 'id7', filtered: { doc_count: 76 } }]
           },
           property4: {
@@ -190,14 +195,25 @@ describe('markdownDatasets', () => {
     };
 
     it('should get the aggregation for the type/property and value', () => {
-      let aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id2' });
+      let aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id2' });
       expect(aggregation).toBe(25);
 
       aggregation = markdownDatasets.getAggregation(state, { property: 'property1', value: 'id3' });
       expect(aggregation).toBe(5);
 
-      aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id5', dataset: 'another_dataset' });
+      aggregation = markdownDatasets.getAggregation(state, { dataset: 'another_dataset', property: '_types', value: 'id5' });
       expect(aggregation).toBe(6);
+    });
+
+    it('should get multiple values, adding them together if value is a list, omitting undefined', () => {
+      let aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id1,id2' });
+      expect(aggregation).toBe(26);
+
+      aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id4,id3' });
+      expect(aggregation).toBe(13.4);
+
+      // aggregation = markdownDatasets.getAggregation(state, { dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' });
+      // expect(aggregation).toBe(82);
     });
 
     it('should return null when dataset do not exists', () => {
