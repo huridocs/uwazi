@@ -99,7 +99,6 @@ export function getSearch(searchId, args) {
   });
 }
 
-
 export function getMoreSearchResults(searchId, args) {
   return dispatch => api.getSearch(searchId, args)
   .then(search =>

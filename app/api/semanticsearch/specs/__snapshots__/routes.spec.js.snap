@@ -1,5 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`search routes GET /api/semantic-search/:searchId should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "limit": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "minRelevantSentences": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "skip": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "threshold": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+  },
+  "type": "object",
+}
+`;
+
 exports[`search routes POST /api/semantic-search should have a validation schema 1`] = `
 Object {
   "children": Object {

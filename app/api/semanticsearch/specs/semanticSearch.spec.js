@@ -42,8 +42,10 @@ describe('semanticSearch', () => {
       it('should fetch the documents using search with a 9999 result limit and empty searchTerm', async () => {
         jest.spyOn(search, 'search').mockResolvedValue({
           rows: [
-            { sharedId: 'docA' },
-            { sharedId: 'docB' }
+            { sharedId: 'docA', file: {} },
+            { sharedId: 'entity1' },
+            { sharedId: 'docB', file: {} },
+            { sharedId: 'anotherEntity' }
           ]
         });
         const query = { filters: {} };

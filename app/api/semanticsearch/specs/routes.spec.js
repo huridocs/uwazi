@@ -51,15 +51,19 @@ describe('search routes', () => {
   });
 
   describe('GET /api/semantic-search/:searchId', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/semantic-search/:searchId')).toMatchSnapshot();
+    });
+
     it('should return specified search', (done) => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'getSearch').mockResolvedValue(result);
-      const req = { params: { searchId: 's1' } };
+      const req = { params: { searchId: 's1' }, query: { limit: '30', skip: '90', threshold: '0.5' } };
 
       routes.get('/api/semantic-search/:searchId', req)
       .then((response) => {
         expect(response).toEqual(result);
-        expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1');
+        expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1', { limit: '30', skip: '90', threshold: '0.5' });
         done();
       })
       .catch(catchErrors(done));
