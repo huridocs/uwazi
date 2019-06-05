@@ -20,7 +20,7 @@ Object {
 }
 `;
 
-exports[`semanticSearch getSearch should fetch a search by id and its document entities with semantic search results 1`] = `
+exports[`semanticSearch getSearch should fetch a search by id and its document entities with filtered semantic search results 1`] = `
 Object {
   "documents": Array [
     Object {
@@ -37,25 +37,25 @@ Object {
     Object {
       "language": "en",
       "semanticSearch": Object {
+        "numRelevant": 1,
+        "relevantRate": 0.5,
         "results": Array [
           Object {
             "page": 1,
             "score": 0.5,
             "sentence": "stuff",
           },
-          Object {
-            "page": 2,
-            "score": 0.2,
-            "sentence": "this",
-          },
         ],
         "sharedId": "doc1",
+        "totalResults": 2,
       },
       "sharedId": "doc1",
     },
     Object {
       "language": "en",
       "semanticSearch": Object {
+        "numRelevant": 2,
+        "relevantRate": 0.6666666666666666,
         "results": Array [
           Object {
             "page": 1,
@@ -63,12 +63,13 @@ Object {
             "sentence": "that",
           },
           Object {
-            "page": 2,
-            "score": 0.1,
-            "sentence": "what",
+            "page": 4,
+            "score": 0.6,
+            "sentence": "then",
           },
         ],
         "sharedId": "doc2",
+        "totalResults": 3,
       },
       "sharedId": "doc2",
     },
@@ -76,6 +77,44 @@ Object {
   "searchTerm": "torture",
   "status": "completed",
 }
+`;
+
+exports[`semanticSearch getSearchResults should return search results filtered with the specified args and sorted by proportion of relevant docs 1`] = `
+Array [
+  Object {
+    "numRelevant": 3,
+    "relevantRate": 0.75,
+    "results": Array [
+      Object {
+        "score": 0.8,
+      },
+      Object {
+        "score": 0.67,
+      },
+      Object {
+        "score": 0.71,
+      },
+    ],
+    "sharedId": "3",
+    "status": "completed",
+    "totalResults": 4,
+  },
+  Object {
+    "numRelevant": 2,
+    "relevantRate": 0.6666666666666666,
+    "results": Array [
+      Object {
+        "score": 0.7,
+      },
+      Object {
+        "score": 0.9,
+      },
+    ],
+    "sharedId": "2",
+    "status": "completed",
+    "totalResults": 3,
+  },
+]
 `;
 
 exports[`semanticSearch processDocument should save the results of the document sorted by score in descending order, and compute average score 1`] = `

@@ -3,6 +3,7 @@ import db from 'api/utils/testing_db';
 const search1Id = db.id();
 const search2Id = db.id();
 const search3Id = db.id();
+const searchIdForFilters = db.id();
 const doc1Id = 'doc1';
 const docWithoutTextId = 'docWithoutText';
 
@@ -83,7 +84,17 @@ export default {
       sharedId: 'doc2',
       results: [
         { page: 1, sentence: 'that', score: 0.8 },
+        { page: 4, sentence: 'then', score: 0.6 },
         { page: 2, sentence: 'what', score: 0.1 }
+      ]
+    },
+    {
+      _id: db.id(),
+      searchId: search3Id,
+      sharedId: 'doc3',
+      results: [
+        { page: 1, sentence: 'that', score: 0.4 },
+        { page: 1, sentence: 'then', score: 0.3 }
       ]
     },
     {
@@ -91,7 +102,42 @@ export default {
       searchId: db.id(),
       sharedId: 'someOtherDoc',
       results: []
-    }
+    },
+    {
+      searchId: searchIdForFilters,
+      sharedId: '1',
+      status: 'completed',
+      documents: [],
+      results: [{ score: 0.4 }, { score: 0.2 }, { score: 0.3 }],
+    },
+    {
+      searchId: searchIdForFilters,
+      sharedId: '2',
+      status: 'completed',
+      documents: [],
+      results: [{ score: 0.7 }, { score: 0.9 }, { score: 0.3 }],
+    },
+    {
+      searchId: searchIdForFilters,
+      sharedId: '3',
+      status: 'completed',
+      documents: [],
+      results: [{ score: 0.8 }, { score: 0.2 }, { score: 0.67 }, { score: 0.71 }],
+    },
+    {
+      searchId: searchIdForFilters,
+      sharedId: '4',
+      status: 'completed',
+      documents: [],
+      results: [{ score: 0.67 }, { score: 0.92 }, { score: 0.74 }, { score: 0.8 }],
+    },
+    {
+      searchId: searchIdForFilters,
+      sharedId: '5',
+      status: 'completed',
+      documents: [],
+      results: [{ score: 0.9 }, { score: 0.2 }, { score: 0.3 }],
+    },
   ]
 };
 
@@ -99,6 +145,7 @@ export {
   search1Id,
   search2Id,
   search3Id,
+  searchIdForFilters,
   doc1Id,
   docWithoutTextId
 };
