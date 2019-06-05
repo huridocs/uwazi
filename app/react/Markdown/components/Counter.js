@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import markdownDatasets from '../markdownDatasets';
 
-export const CounterComponent = ({ count }) => count;
+const CounterComponent = ({ count }) => count;
 
 CounterComponent.defaultProps = {
   count: '-',
