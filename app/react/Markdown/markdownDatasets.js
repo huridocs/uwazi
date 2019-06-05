@@ -67,8 +67,9 @@ const getAggregations = (state, { property, dataset = 'default' }) => {
 const addValues = (aggregations, values) => {
   let result = new Big(0);
   values.forEach((key) => {
-    const value = aggregations.find(bucket => bucket.get('key') === key).getIn(['filtered', 'doc_count']);
-    result = result.plus(value || 0);
+    const value = aggregations.find(bucket => bucket.get('key') === key);
+    const filteredValue = value ? value.getIn(['filtered', 'doc_count']) : 0;
+    result = result.plus(filteredValue || 0);
   });
   return Number(result);
 };

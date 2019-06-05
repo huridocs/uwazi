@@ -212,8 +212,8 @@ describe('markdownDatasets', () => {
       aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id4,id3' });
       expect(aggregation).toBe(13.4);
 
-      // aggregation = markdownDatasets.getAggregation(state, { dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' });
-      // expect(aggregation).toBe(82);
+      aggregation = markdownDatasets.getAggregation(state, { dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' });
+      expect(aggregation).toBe(82);
     });
 
     it('should return null when dataset do not exists', () => {
