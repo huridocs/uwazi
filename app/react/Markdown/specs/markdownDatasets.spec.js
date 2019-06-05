@@ -194,26 +194,18 @@ describe('markdownDatasets', () => {
       }
     };
 
+    const expectAggregation = options => expect(markdownDatasets.getAggregation(state, options));
+
     it('should get the aggregation for the type/property and value', () => {
-      let aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id2' });
-      expect(aggregation).toBe(25);
-
-      aggregation = markdownDatasets.getAggregation(state, { property: 'property1', value: 'id3' });
-      expect(aggregation).toBe(5);
-
-      aggregation = markdownDatasets.getAggregation(state, { dataset: 'another_dataset', property: '_types', value: 'id5' });
-      expect(aggregation).toBe(6);
+      expectAggregation({ property: '_types', value: 'id2' }).toBe(25);
+      expectAggregation({ property: 'property1', value: 'id3' }).toBe(5);
+      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5' }).toBe(6);
     });
 
     it('should get multiple values, adding them together if value is a list, omitting undefined', () => {
-      let aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id1,id2' });
-      expect(aggregation).toBe(26);
-
-      aggregation = markdownDatasets.getAggregation(state, { property: '_types', value: 'id4,id3' });
-      expect(aggregation).toBe(13.4);
-
-      aggregation = markdownDatasets.getAggregation(state, { dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' });
-      expect(aggregation).toBe(82);
+      expectAggregation({ property: '_types', value: 'id1,id2' }).toBe(26);
+      expectAggregation({ property: '_types', value: 'id4,id3' }).toBe(13.4);
+      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' }).toBe(82);
     });
 
     it('should return null when dataset do not exists', () => {
