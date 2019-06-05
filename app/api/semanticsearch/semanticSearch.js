@@ -27,7 +27,7 @@ const getSearchDocuments = async ({ documents, query }, language, user) => {
   }
   const _query = { ...query, limit: 9999, searchTerm: '' };
   const res = await search.search(_query, language, user);
-  return res.rows.map(document => document.sharedId);
+  return res.rows.filter(doc => doc.file).map(doc => doc.sharedId);
 };
 
 const updateSearchDocumentStatus = async (searchId, sharedId, status) => model.db.findOneAndUpdate({
