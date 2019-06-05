@@ -24,7 +24,7 @@ export default function createReducer(namespace, defaultValue) {
       return currentState.push(Immutable.fromJS(action.value));
 
     case `${namespace}/${CONCAT}`:
-      return currentState.contact(Immutable.fromJS(action.value));
+      return currentState.concat(Immutable.fromJS(action.value));
 
     case `${namespace}/${CONCAT_IN}`:
       return currentState.updateIn(action.key, collection => collection.concat(Immutable.fromJS(action.value)));
