@@ -70,9 +70,9 @@ describe('search routes', () => {
     });
   });
 
-  describe('GET /api/semantic-search/:searchId/doc-ids', () => {
+  describe('GET /api/semantic-search/:searchId/list', () => {
     it('should have a validation schema', () => {
-      expect(routes.get.validation('/api/semantic-search/:searchId/doc-ids')).toMatchSnapshot();
+      expect(routes.get.validation('/api/semantic-search/:searchId/list')).toMatchSnapshot();
     });
 
     it('should return all search result docs ids that match filters', (done) => {
@@ -80,7 +80,7 @@ describe('search routes', () => {
       jest.spyOn(semanticSearch, 'getAllFilteredResultsDocIds').mockResolvedValue(result);
       const req = { params: { searchId: 's1' }, query: { threshold: '0.5', minRelevantSentences: '2' } };
 
-      routes.get('/api/semantic-search/:searchId/doc-ids', req)
+      routes.get('/api/semantic-search/:searchId/list', req)
       .then((response) => {
         expect(response).toEqual(result);
         expect(semanticSearch.getAllFilteredResultsDocIds).toHaveBeenCalledWith('s1', { threshold: 0.5, minRelevantSentences: 2 });

@@ -47,7 +47,7 @@ export default (app) => {
       .catch(next);
     }
   );
-  app.get('/api/semantic-search/:searchId/doc-ids',
+  app.get('/api/semantic-search/:searchId/list',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
       threshold: Joi.number(),

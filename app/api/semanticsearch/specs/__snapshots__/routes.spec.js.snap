@@ -36,43 +36,7 @@ Object {
 }
 `;
 
-exports[`search routes GET /api/semantic-search/:searchId should have a validation schema 2`] = `
-Object {
-  "children": Object {
-    "limit": Object {
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-    "minRelevantSentences": Object {
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-    "skip": Object {
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-    "threshold": Object {
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-  },
-  "type": "object",
-}
-`;
-
-exports[`search routes GET /api/semantic-search/:searchId/doc-ids should have a validation schema 1`] = `
+exports[`search routes GET /api/semantic-search/:searchId/list should have a validation schema 1`] = `
 Object {
   "children": Object {
     "minRelevantSentences": Object {
