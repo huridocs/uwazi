@@ -15,7 +15,7 @@ describe('SearchDescription', () => {
 
   beforeEach(() => {
     searchTerm = 'test';
-    query = { filters: { p1: { values: ['p1v1', 'p1v2'] }, p2: { values: ['p2v1'] } }, types: ['t1'] };
+    query = { filters: { p1: { values: ['p1v1', 'p1v2'] }, p2: { values: ['p2v1'] }, p4: { from: 3243 } }, types: ['t1'] };
     properties = [
       {
         name: 'p1',
@@ -39,6 +39,10 @@ describe('SearchDescription', () => {
         options: [
           { id: 'p3v1', label: 'Prop 3 Val 1' }
         ]
+      },
+      {
+        name: 'p4',
+        label: 'Prop 4'
       }
     ];
     state = {
