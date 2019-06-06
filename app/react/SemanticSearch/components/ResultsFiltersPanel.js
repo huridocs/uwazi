@@ -15,8 +15,8 @@ const filters = [
     min: 0.3,
     max: 1,
     step: 0.01,
-    minLabel: 'More exploration',
-    maxLabel: 'More precision'
+    minLabel: 'Exploration',
+    maxLabel: 'Precision'
   },
   {
     label: 'Minimum relevant sentences per document',

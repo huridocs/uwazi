@@ -45,8 +45,8 @@ export class DocumentResults extends Component {
               max={1}
               step={0.01}
               delay={200}
-              minLabel={t('System', 'More exploration')}
-              maxLabel={t('System', 'More precision')}
+              minLabel={t('System', 'Exploration')}
+              maxLabel={t('System', 'Precision')}
             />
           </Form>
         </dd>
