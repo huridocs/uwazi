@@ -9,7 +9,10 @@ describe('DocumentResults', () => {
     props = {
       doc: {
         semanticSearch: {
-          results: [{ score: 0.2, text: 'one' }, { score: 0.5, text: 'two' }], relevantRate: 0.5, numRelevant: 1
+          results: [{ score: 0.5, text: 'one' }, { score: 0.2, text: 'two' }],
+          relevantRate: 0.5,
+          numRelevant: 1,
+          totalResults: 2,
         },
         avgScore: 0.4
       },
