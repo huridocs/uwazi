@@ -47,6 +47,23 @@ export default (app) => {
       .catch(next);
     }
   );
+  app.get('/api/semantic-search/:searchId/doc-ids',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      threshold: Joi.number(),
+      minRelevantSentences: Joi.number()
+    }), 'query'),
+    (req, res, next) => {
+      const args = {
+        ...req.query,
+        threshold: Number(req.query.threshold),
+        minRelevantSentences: Number(req.query.minRelevantSentences)
+      };
+      semanticSearch.getAllFilteredResultsDocIds(req.params.searchId, args)
+      .then(search => res.json(search))
+      .catch(next);
+    }
+  );
   app.delete('/api/semantic-search/:searchId',
     needsAuthorization(),
     (req, res, next) => {

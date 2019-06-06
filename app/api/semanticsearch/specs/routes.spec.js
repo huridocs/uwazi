@@ -70,6 +70,26 @@ describe('search routes', () => {
     });
   });
 
+  describe('GET /api/semantic-search/:searchId/doc-ids', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/semantic-search/:searchId/doc-ids')).toMatchSnapshot();
+    });
+
+    it('should return all search result docs ids that match filters', (done) => {
+      const result = [{ sharedId: '1', template: 't1' }];
+      jest.spyOn(semanticSearch, 'getAllFilteredResultsDocIds').mockResolvedValue(result);
+      const req = { params: { searchId: 's1' }, query: { threshold: '0.5', minRelevantSentences: '2' } };
+
+      routes.get('/api/semantic-search/:searchId/doc-ids', req)
+      .then((response) => {
+        expect(response).toEqual(result);
+        expect(semanticSearch.getAllFilteredResultsDocIds).toHaveBeenCalledWith('s1', { threshold: 0.5, minRelevantSentences: 2 });
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('DELETE /api/semantic-search/:searchId', () => {
     it('should delete specified', (done) => {
       const result = { _id: 's1' };
