@@ -20,6 +20,23 @@ Object {
 }
 `;
 
+exports[`semanticSearch getAllFilteredResultsDocIds should return the shared id and templates of all results that match the filters 1`] = `
+Array [
+  Object {
+    "sharedId": "2",
+    "template": "t2",
+  },
+  Object {
+    "sharedId": "3",
+    "template": "t3",
+  },
+  Object {
+    "sharedId": "4",
+    "template": "t4",
+  },
+]
+`;
+
 exports[`semanticSearch getSearch should fetch a search by id and its document entities with filtered semantic search results 1`] = `
 Object {
   "documents": Array [

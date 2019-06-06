@@ -174,6 +174,29 @@ const getSearch = async (searchId, args) => {
   return theSearch;
 };
 
+const getAllFilteredResultsDocIds = async (searchId, args) => {
+  const theSearch = await model.getById(searchId);
+  if (!theSearch) {
+    throw createError('Search not found', 404);
+  }
+
+  const { threshold, minRelevantSentences } = args;
+  return resultsModel.db.aggregate([
+    { $match: { searchId: Types.ObjectId(searchId) } },
+    {
+      $project: {
+        sharedId: 1,
+        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', Number(threshold)] } } } }
+      }
+    },
+    { $match: { numRelevant: { $gte: minRelevantSentences } } },
+    { $lookup: { from: 'entities', localField: 'sharedId', foreignField: 'sharedId', as: 'document' } },
+    { $unwind: '$document' },
+    { $match: { 'document.language': theSearch.language } },
+    { $project: { _id: 0, sharedId: 1, template: '$document.template' } }
+  ]);
+};
+
 const getDocumentResultsByIds = async (searchId, docIds) => {
   const theSearch = searchId._id ? searchId : await model.getById(searchId);
   const results = await resultsModel.get({ searchId, sharedId: { $in: docIds } });
@@ -250,6 +273,7 @@ const semanticSearch = {
   getInProgress,
   getSearchResults,
   getSearch,
+  getAllFilteredResultsDocIds,
   getSearchesByDocument,
   deleteSearch,
   stopSearch,
