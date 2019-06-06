@@ -22,7 +22,7 @@ export class SemanticSearchResults extends Component {
 
   shouldComponentUpdate(nextProps) {
     const { items, filters, isEmpty, searchTerm } = this.props;
-    return Boolean(nextProps.items.size !== items.size) ||
+    return (!Immutable.is(nextProps.items, items)) ||
     Boolean(nextProps.filters.threshold !== filters.threshold) ||
     Boolean(nextProps.filters.minRelevantSentences !== filters.minRelevantSentences) ||
     Boolean(nextProps.isEmpty !== isEmpty) ||
@@ -50,7 +50,6 @@ export class SemanticSearchResults extends Component {
   }
 
   onClick(e, doc) {
-    console.log('doc', doc.toJS());
     this.props.selectSemanticSearchDocument(doc);
   }
 
@@ -102,10 +101,10 @@ export class SemanticSearchResults extends Component {
                 </span>
               </div>
               <RowList>
-                {items.map((doc, index) => (
+                {items.map((doc) => (
                   <Doc
                     doc={doc}
-                    key={index}
+                    key={doc.get('sharedId')}
                     onClick={this.onClick}
                     additionalText={this.renderAditionalText(doc)}
                   />
@@ -130,13 +129,15 @@ export class SemanticSearchResults extends Component {
 }
 
 SemanticSearchResults.defaultProps = {
-  searchTerm: ''
+  searchTerm: '',
+  items: Immutable.fromJS([])
 };
 
 
 SemanticSearchResults.propTypes = {
   searchId: PropTypes.string,
-  items: PropTypes.object.isRequired,
+  totalCount: PropTypes.number.isRequired,
+  items: PropTypes.object,
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
@@ -151,11 +152,11 @@ export const mapStateToProps = (state) => {
   const searchTerm = search.get('searchTerm');
   const items = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
-  const isEmpty = Object.keys(search).length === 0;
+  const isEmpty = search.size === 0;
 
   return {
     searchId: search.get('_id'),
-    totalCount: search.get('documents').size,
+    totalCount: isEmpty ? 0 : search.get('documents').size,
     searchTerm,
     filters,
     items,

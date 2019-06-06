@@ -29,7 +29,8 @@ const filters = [
   }
 ];
 
-const filterValue = (filter, filtersValues) => filter.model === 'threshold' ? `${filtersValues[filter.model] * 100}%` : filtersValues[filter.model];
+const filterValue = (filter, filtersValues) => filter.model === 'threshold' ?
+  `${(filtersValues[filter.model] * 100).toFixed(2)}%` : filtersValues[filter.model];
 
 export function ResultsFiltersPanel({ open, filtersValues }) {
   return (

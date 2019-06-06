@@ -116,7 +116,7 @@ const create = async (args, language, user) => {
   return savedSearch;
 };
 
-const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.3, minRelevantSentences = 5 }) =>
+const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.4, minRelevantSentences = 5 }) =>
   resultsModel.db.aggregate([
     {
       $match: { searchId: Types.ObjectId(searchId) }

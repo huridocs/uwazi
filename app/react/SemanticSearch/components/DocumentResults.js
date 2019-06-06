@@ -35,7 +35,7 @@ export class DocumentResults extends Component {
     return (
       <dl className="metadata-type-text">
         <dt className="item-header">
-          <Translate>Threshold</Translate> {threshold * 100} %
+          <Translate>Threshold</Translate> {(threshold * 100).toFixed(2)} %
         </dt>
         <dd>
           <Form model="semanticSearch.resultsFilters">
@@ -101,7 +101,7 @@ DocumentResults.propTypes = {
 };
 
 const mapStateToProps = ({ semanticSearch }) => ({
-    threshold: semanticSearch.resultsFilters.threshold
+  threshold: semanticSearch.resultsFilters.threshold
 });
 
 

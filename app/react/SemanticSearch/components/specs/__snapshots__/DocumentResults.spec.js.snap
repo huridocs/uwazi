@@ -21,14 +21,18 @@ exports[`DocumentResults render should render a result 1`] = `
                 "semanticSearch": Immutable.Map {
                   "results": Immutable.List [
                     Immutable.Map {
-                      "score": 9,
+                      "score": 0.2,
+                      "text": "one",
                     },
                     Immutable.Map {
-                      "score": 11,
+                      "score": 0.5,
+                      "text": "two",
                     },
                   ],
+                  "relevantRate": 0.5,
+                  "numRelevant": 1,
                 },
-                "avgScore": 10,
+                "avgScore": 0.4,
               }
             }
           />
@@ -46,7 +50,7 @@ exports[`DocumentResults render should render a result 1`] = `
           Threshold
         </Connect(Translate)>
          
-        30
+        30.00
          %
       </dt>
       <dd>
@@ -97,14 +101,18 @@ exports[`DocumentResults render should render a result 1`] = `
         "semanticSearch": Immutable.Map {
           "results": Immutable.List [
             Immutable.Map {
-              "score": 9,
+              "score": 0.2,
+              "text": "one",
             },
             Immutable.Map {
-              "score": 11,
+              "score": 0.5,
+              "text": "two",
             },
           ],
+          "relevantRate": 0.5,
+          "numRelevant": 1,
         },
-        "avgScore": 10,
+        "avgScore": 0.4,
       }
     }
     documentViewUrl="/entity/undefined"
@@ -112,12 +120,16 @@ exports[`DocumentResults render should render a result 1`] = `
     selectSnippet={[Function]}
     snippets={
       Immutable.Map {
-        "count": 1,
+        "count": 2,
         "metadata": Immutable.List [],
         "fullText": Immutable.List [
           Immutable.Map {
-            "score": 9,
-            "text": "undefined (900.00%)",
+            "score": 0.2,
+            "text": "one (20.00%)",
+          },
+          Immutable.Map {
+            "score": 0.5,
+            "text": "two (50.00%)",
           },
         ],
       }

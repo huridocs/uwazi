@@ -7,8 +7,13 @@ describe('DocumentResults', () => {
   let component;
   beforeEach(() => {
     props = {
-      doc: { semanticSearch: { results: [{ score: 9 }, { score: 11 }] }, avgScore: 10 },
-      filters: { threshold: 10 },
+      doc: {
+        semanticSearch: {
+          results: [{ score: 0.2, text: 'one' }, { score: 0.5, text: 'two' }], relevantRate: 0.5, numRelevant: 1
+        },
+        avgScore: 0.4
+      },
+      filters: { threshold: 0.4 },
       threshold: 0.3,
       changeTreshHold: jasmine.createSpy('changeTreshhold'),
       selectTab: jasmine.createSpy('selectTab'),
