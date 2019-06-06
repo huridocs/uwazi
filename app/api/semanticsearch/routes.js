@@ -42,7 +42,13 @@ export default (app) => {
       minRelevantSentences: Joi.number()
     }), 'query'),
     (req, res, next) => {
-      semanticSearch.getSearch(req.params.searchId, req.query)
+      const args = {
+        limit: Number(req.query.limit),
+        skip: Number(req.query.skip),
+        threshold: Number(req.query.threshold),
+        minRelevantSentences: Number(req.query.minRelevantSentences)
+      };
+      semanticSearch.getSearch(req.params.searchId, args)
       .then(search => res.json(search))
       .catch(next);
     }
@@ -59,7 +65,7 @@ export default (app) => {
         threshold: Number(req.query.threshold),
         minRelevantSentences: Number(req.query.minRelevantSentences)
       };
-      semanticSearch.getAllFilteredResultsDocIds(req.params.searchId, args)
+      semanticSearch.listSearchResultsDocs(req.params.searchId, args)
       .then(search => res.json(search))
       .catch(next);
     }

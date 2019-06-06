@@ -234,13 +234,13 @@ describe('semanticSearch', () => {
     });
   });
 
-  describe('getAllFilteredResultsDocIds', () => {
+  describe('listSearchResultsDocs', () => {
     it('should return the shared id and templates of all results that match the filters', async () => {
       const args = {
         minRelevantSentences: 2,
         threshold: 0.6
       };
-      const results = await semanticSearch.getAllFilteredResultsDocIds(searchIdForFilters, args);
+      const results = await semanticSearch.listSearchResultsDocs(searchIdForFilters, args);
       const docIds = results.map(r => r.sharedId);
       expect(results.length).toBe(3);
       expect(docIds.includes('2')).toBe(true);

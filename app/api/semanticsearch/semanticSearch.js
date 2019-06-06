@@ -127,7 +127,7 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         sharedId: 1,
         status: 1,
         totalResults: { $size: '$results' },
-        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', Number(threshold)] } } }
+        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } }
       }
     },
     {
@@ -142,16 +142,16 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
       }
     },
     {
-      $match: { numRelevant: { $gte: Number(minRelevantSentences) } }
+      $match: { numRelevant: { $gte: minRelevantSentences } }
     },
     {
       $sort: { relevantRate: -1 }
     },
     {
-      $skip: Number(skip)
+      $skip: skip
     },
     {
-      $limit: Number(limit)
+      $limit: limit
     }
   ]);
 
@@ -174,7 +174,7 @@ const getSearch = async (searchId, args) => {
   return theSearch;
 };
 
-const getAllFilteredResultsDocIds = async (searchId, args) => {
+const listSearchResultsDocs = async (searchId, args) => {
   const theSearch = await model.getById(searchId);
   if (!theSearch) {
     throw createError('Search not found', 404);
@@ -273,7 +273,7 @@ const semanticSearch = {
   getInProgress,
   getSearchResults,
   getSearch,
-  getAllFilteredResultsDocIds,
+  listSearchResultsDocs,
   getSearchesByDocument,
   deleteSearch,
   stopSearch,
