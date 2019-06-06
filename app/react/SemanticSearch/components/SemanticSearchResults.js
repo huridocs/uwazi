@@ -10,6 +10,7 @@ import Doc from 'app/Library/components/Doc';
 import { selectSemanticSearchDocument, addSearchResults } from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
 import { Translate } from 'app/I18N';
+import { selectDocuments } from 'app/Library/actions/libraryActions';
 import ResultsSidePanel from './ResultsSidePanel';
 
 
@@ -22,18 +23,16 @@ const sentencesAboveThreshold = (item, threshold) => {
   };
 };
 
-const filterAndSortItems = (items, { threshold, minRelevantSentences }) => {
-  return items.map(item =>
-    item.setIn(['semanticSearch', 'aboveThreshold'], sentencesAboveThreshold(item, threshold))
-  )
-  .filter(item =>
-    item.getIn(['semanticSearch', 'aboveThreshold']).count >= minRelevantSentences
-  )
-  .sort((a, b) =>
-    b.getIn(['semanticSearch', 'aboveThreshold']).percentage -
+const filterAndSortItems = (items, { threshold, minRelevantSentences }) => items.map(item =>
+  item.setIn(['semanticSearch', 'aboveThreshold'], sentencesAboveThreshold(item, threshold))
+)
+.filter(item =>
+  item.getIn(['semanticSearch', 'aboveThreshold']).count >= minRelevantSentences
+)
+.sort((a, b) =>
+  b.getIn(['semanticSearch', 'aboveThreshold']).percentage -
       a.getIn(['semanticSearch', 'aboveThreshold']).percentage
-  );
-};
+);
 
 export class SemanticSearchResults extends Component {
   constructor(props) {
@@ -68,7 +67,7 @@ export class SemanticSearchResults extends Component {
   renderAditionalText(doc) {
     const resultsSize = doc.getIn(['semanticSearch', 'results']).size;
     const aboveThreshold = doc.getIn(['semanticSearch', 'aboveThreshold']).count;
-    const percentage = doc.getIn(['semanticSearch', 'aboveThreshold']).percentage;
+    const { percentage } = doc.getIn(['semanticSearch', 'aboveThreshold']);
 
     return (
       <div className="item-metadata">
@@ -78,6 +77,11 @@ export class SemanticSearchResults extends Component {
         </div>
       </div>
     );
+  }
+
+  multiEdit() {
+    const { items, selectDocuments: edit } = this.props;
+    edit(items);
   }
 
   render() {
@@ -97,6 +101,13 @@ export class SemanticSearchResults extends Component {
               <h3>
                 <Translate>Semantic search</Translate>: { searchTerm }
               </h3>
+              <button
+                type="button"
+                onClick={this.multiEdit}
+                className="btn btn-default"
+              >
+                <Translate>Edit all documents that match this criteria</Translate>
+              </button>
               <div className="documents-counter">
                 <span className="documents-counter-label">
                   <b>{ items.size }</b> <Translate>documents</Translate>
@@ -133,6 +144,7 @@ SemanticSearchResults.propTypes = {
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
   addSearchResults: PropTypes.func.isRequired,
+  selectDocuments: PropTypes.func.isRequired,
   filters: PropTypes.object,
 };
 
@@ -156,7 +168,8 @@ export const mapStateToProps = (state) => {
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     selectSemanticSearchDocument,
-    addSearchResults
+    addSearchResults,
+    selectDocuments
   }, dispatch);
 }
 

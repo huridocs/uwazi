@@ -24,6 +24,7 @@ export function unselectSemanticSearchDocument() {
 }
 
 export function submitNewSearch(args) {
+  console.log(args);
   return dispatch => api.search(args)
   .then(() => dispatch(fetchSearches()));
 }

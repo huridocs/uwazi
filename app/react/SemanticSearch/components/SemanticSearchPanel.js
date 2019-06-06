@@ -20,8 +20,6 @@ export class SemanticSearchSidePanel extends Component {
     super(props);
 
     this.registeredForUpdates = false;
-    this.onSubmit = this.onSubmit.bind(this);
-    this.submitForm = this.submitForm.bind(this);
     this.onSearchUpdated = this.onSearchUpdated.bind(this);
 
     socket.on('semanticSearchUpdated', this.onSearchUpdated);
@@ -43,21 +41,8 @@ export class SemanticSearchSidePanel extends Component {
     this.props.updateSearch(updatedSearch);
   }
 
-  async onSubmit(model) {
-    const { currentSearch } = this.props;
-    const { searchTerm } = model;
-    this.props.submitNewSearch({
-      searchTerm,
-      query: currentSearch
-    });
-  }
-
   attachDispatch(dispatch) {
     this.formDispatch = dispatch;
-  }
-
-  submitForm() {
-    this.formDispatch(actions.submit('searchText'));
   }
 
   close() {
@@ -72,28 +57,6 @@ export class SemanticSearchSidePanel extends Component {
         <button className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
           <Icon icon="times" />
         </button>
-        <div className="sidepanel-header">
-          <span className="sidepanel-title">{t('System', 'Semantic search')}</span>
-          <LocalForm
-            model="searchText"
-            autoComplete="off"
-            onSubmit={this.onSubmit}
-            getDispatch={dispatch => this.attachDispatch(dispatch)}
-            className="form-inline semantic-search-form"
-          >
-            <div className="input-group">
-              <Field model=".searchTerm">
-                <input
-                  type="text"
-                  placeholder={t('System', 'Search', null, false)}
-                  className="form-control"
-                  autoComplete="off"
-                />
-              </Field>
-            </div>
-            <button className="btn btn-default new-search" type="submit">{t('System', 'Start new search')}</button>
-          </LocalForm>
-        </div>
         <div className="sidepanel-body">
           <ShowIf if={!!searches}>
             <SearchList searches={searches} />
@@ -109,7 +72,6 @@ SemanticSearchSidePanel.propTypes = {
   searches: PropTypes.object.isRequired,
   hideSemanticSearch: PropTypes.func.isRequired,
   fetchSearches: PropTypes.func.isRequired,
-  submitNewSearch: PropTypes.func.isRequired,
   registerForUpdates: PropTypes.func.isRequired,
   updateSearch: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired

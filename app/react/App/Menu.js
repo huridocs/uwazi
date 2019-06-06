@@ -28,11 +28,11 @@ export class Menu extends Component {
     }
     return (
       <NeedAuthorization roles={['admin']}>
-        <li className="menuNav-item">
-          <I18NLink onClick={this.props.showSemanticSearch} to={this.libraryUrl()} className="menuNav-btn btn btn-default">
+        <li className="menuNav-item semantic-search">
+          <button type="button" onClick={this.props.showSemanticSearch} className="menuNav-btn btn btn-default">
             <Icon icon="flask" />
             <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
-          </I18NLink>
+          </button>
         </li>
       </NeedAuthorization>
     );
