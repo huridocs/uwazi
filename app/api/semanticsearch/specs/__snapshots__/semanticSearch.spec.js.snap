@@ -50,6 +50,11 @@ Object {
             "score": 0.6,
             "sentence": "then",
           },
+          Object {
+            "page": 2,
+            "score": 0.1,
+            "sentence": "what",
+          },
         ],
         "sharedId": "doc2",
         "totalResults": 3,
@@ -66,6 +71,11 @@ Object {
             "page": 1,
             "score": 0.5,
             "sentence": "stuff",
+          },
+          Object {
+            "page": 2,
+            "score": 0.2,
+            "sentence": "this",
           },
         ],
         "sharedId": "doc1",
@@ -89,6 +99,9 @@ Array [
         "score": 0.8,
       },
       Object {
+        "score": 0.2,
+      },
+      Object {
         "score": 0.67,
       },
       Object {
@@ -108,6 +121,9 @@ Array [
       },
       Object {
         "score": 0.9,
+      },
+      Object {
+        "score": 0.3,
       },
     ],
     "sharedId": "2",

@@ -126,8 +126,9 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         searchId: 1,
         sharedId: 1,
         status: 1,
+        results: 1,
         totalResults: { $size: '$results' },
-        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } }
+        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } } }
       }
     },
     {
@@ -137,8 +138,8 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         sharedId: 1,
         status: 1,
         results: 1,
-        numRelevant: { $size: '$results' },
-        relevantRate: { $divide: [{ $size: '$results' }, '$totalResults'] }
+        numRelevant: 1,
+        relevantRate: { $divide: ['$numRelevant', '$totalResults'] }
       }
     },
     {
@@ -186,7 +187,7 @@ const listSearchResultsDocs = async (searchId, args) => {
     {
       $project: {
         sharedId: 1,
-        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', Number(threshold)] } } } }
+        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } } }
       }
     },
     { $match: { numRelevant: { $gte: minRelevantSentences } } },
