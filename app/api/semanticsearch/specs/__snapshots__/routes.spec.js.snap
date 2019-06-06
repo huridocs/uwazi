@@ -8,12 +8,24 @@ Object {
         Infinity,
         -Infinity,
       ],
+      "rules": Array [
+        Object {
+          "arg": 0,
+          "name": "min",
+        },
+      ],
       "type": "number",
     },
     "minRelevantSentences": Object {
       "invalids": Array [
         Infinity,
         -Infinity,
+      ],
+      "rules": Array [
+        Object {
+          "arg": 0,
+          "name": "min",
+        },
       ],
       "type": "number",
     },
@@ -22,12 +34,24 @@ Object {
         Infinity,
         -Infinity,
       ],
+      "rules": Array [
+        Object {
+          "arg": 0,
+          "name": "min",
+        },
+      ],
       "type": "number",
     },
     "threshold": Object {
       "invalids": Array [
         Infinity,
         -Infinity,
+      ],
+      "rules": Array [
+        Object {
+          "arg": 0,
+          "name": "min",
+        },
       ],
       "type": "number",
     },
@@ -40,16 +64,34 @@ exports[`search routes GET /api/semantic-search/:searchId/list should have a val
 Object {
   "children": Object {
     "minRelevantSentences": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         Infinity,
         -Infinity,
       ],
+      "rules": Array [
+        Object {
+          "arg": 0,
+          "name": "min",
+        },
+      ],
       "type": "number",
     },
     "threshold": Object {
+      "flags": Object {
+        "presence": "required",
+      },
       "invalids": Array [
         Infinity,
         -Infinity,
+      ],
+      "rules": Array [
+        Object {
+          "arg": 0,
+          "name": "min",
+        },
       ],
       "type": "number",
     },

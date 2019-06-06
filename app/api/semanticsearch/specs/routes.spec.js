@@ -60,7 +60,7 @@ describe('search routes', () => {
       jest.spyOn(semanticSearch, 'getSearch').mockResolvedValue(result);
       const req = {
         params: { searchId: 's1' },
-        query: { limit: '30', skip: '90', threshold: '0.5', minRelevantSentences: '5' }
+        query: { limit: '30', skip: '90', threshold: '0.5' }
       };
 
       routes.get('/api/semantic-search/:searchId', req)
