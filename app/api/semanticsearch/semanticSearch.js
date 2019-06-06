@@ -164,10 +164,10 @@ const getSearch = async (searchId, args) => {
   const results = await getSearchResults(searchId, args);
   const docIds = results.map(r => r.sharedId);
   const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
-  const docsWithResults = docs.map(doc => (
+  const docsWithResults = results.map(result => (
     {
-      ...doc,
-      semanticSearch: results.find(res => res.sharedId === doc.sharedId)
+      ...docs.find(doc => doc.sharedId === result.sharedId),
+      semanticSearch: result
     }
   ));
   theSearch.results = docsWithResults;

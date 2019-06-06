@@ -151,9 +151,6 @@ export const mapStateToProps = (state) => {
   const searchTerm = search.get('searchTerm');
   const items = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
-  // console.log('results', items.toJS());
-  // console.log('rnak', items.toJS().map(r => (r.semanticSearch.relevantRate * 100).toFixed(2)));
-  // const items = Immutable.fromJS(results);
   const isEmpty = Object.keys(search).length === 0;
 
   return {

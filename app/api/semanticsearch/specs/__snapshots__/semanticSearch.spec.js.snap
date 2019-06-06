@@ -37,23 +37,6 @@ Object {
     Object {
       "language": "en",
       "semanticSearch": Object {
-        "numRelevant": 1,
-        "relevantRate": 0.5,
-        "results": Array [
-          Object {
-            "page": 1,
-            "score": 0.5,
-            "sentence": "stuff",
-          },
-        ],
-        "sharedId": "doc1",
-        "totalResults": 2,
-      },
-      "sharedId": "doc1",
-    },
-    Object {
-      "language": "en",
-      "semanticSearch": Object {
         "numRelevant": 2,
         "relevantRate": 0.6666666666666666,
         "results": Array [
@@ -72,6 +55,23 @@ Object {
         "totalResults": 3,
       },
       "sharedId": "doc2",
+    },
+    Object {
+      "language": "en",
+      "semanticSearch": Object {
+        "numRelevant": 1,
+        "relevantRate": 0.5,
+        "results": Array [
+          Object {
+            "page": 1,
+            "score": 0.5,
+            "sentence": "stuff",
+          },
+        ],
+        "sharedId": "doc1",
+        "totalResults": 2,
+      },
+      "sharedId": "doc1",
     },
   ],
   "searchTerm": "torture",
