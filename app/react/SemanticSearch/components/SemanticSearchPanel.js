@@ -15,6 +15,19 @@ import { fetchSearches, submitNewSearch, registerForUpdates, updateSearch } from
 
 import SearchList from './SearchList';
 
+function sanitizeSearchFilters(filters) {
+  return Object.keys(filters)
+  .reduce((partial, key) => {
+    if (typeof filters[key] === 'object' && Object.keys(filters[key]).length === 0) {
+      return partial;
+    }
+    if (!filters[key]) {
+      return partial;
+    }
+    return { ...partial, [key]: filters[key] };
+  }, {});
+}
+
 export class SemanticSearchSidePanel extends Component {
   constructor(props) {
     super(props);
@@ -44,11 +57,11 @@ export class SemanticSearchSidePanel extends Component {
   }
 
   async onSubmit(model) {
-    const { currentSearch } = this.props;
+    const { currentFilters, currentTypes } = this.props;
     const { searchTerm } = model;
     this.props.submitNewSearch({
       searchTerm,
-      query: currentSearch
+      query: { filters: sanitizeSearchFilters(currentFilters), types: currentTypes.toJS() }
     });
   }
 
@@ -105,7 +118,8 @@ export class SemanticSearchSidePanel extends Component {
 }
 
 SemanticSearchSidePanel.propTypes = {
-  currentSearch: PropTypes.object.isRequired,
+  currentFilters: PropTypes.object.isRequired,
+  currentTypes: PropTypes.object.isRequired,
   searches: PropTypes.object.isRequired,
   hideSemanticSearch: PropTypes.func.isRequired,
   fetchSearches: PropTypes.func.isRequired,
@@ -117,7 +131,8 @@ SemanticSearchSidePanel.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    currentSearch: state[props.storeKey].search,
+    currentFilters: state[props.storeKey].search.filters,
+    currentTypes: state[props.storeKey].filters.get('documentTypes'),
     searches: state.semanticSearch.searches,
     search: state.semanticSearch.search,
     open: state.semanticSearch.showSemanticSearchPanel
