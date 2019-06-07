@@ -11,7 +11,9 @@ exports[`SearchItem should render search details with link to results page  1`] 
     <div
       className="title"
     >
-      query
+      <Connect(SearchDescription)
+        searchTerm="query"
+      />
     </div>
     <div
       className="buttons"
@@ -42,7 +44,9 @@ exports[`SearchItem when search status is inProgress should render in-progress i
     <div
       className="title"
     >
-      query
+      <Connect(SearchDescription)
+        searchTerm="query"
+      />
     </div>
     <div
       className="buttons"
@@ -87,7 +91,9 @@ exports[`SearchItem when search status is stopped should render progress bar and
     <div
       className="title"
     >
-      query
+      <Connect(SearchDescription)
+        searchTerm="query"
+      />
     </div>
     <div
       className="buttons"
