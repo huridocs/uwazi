@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { Icon } from 'UI';
-import { searchDocuments } from 'app/Library/actions/libraryActions';
+import { searchDocuments, processFilters } from 'app/Library/actions/libraryActions';
 import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import SearchTips from 'app/Library/components/SearchTips';
@@ -92,8 +92,9 @@ SearchBar.propTypes = {
 
 export function mapStateToProps(state, props) {
   const features = state.settings.collection.toJS().features || {};
+  const search = processFilters(state[props.storeKey].search, state[props.storeKey].filters.toJS());
   return {
-    search: state[props.storeKey].search,
+    search,
     semanticSearchEnabled: features.semanticSearch
   };
 }

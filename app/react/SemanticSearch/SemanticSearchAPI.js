@@ -12,6 +12,11 @@ export default {
     return api.get(url)
     .then(response => response.json);
   },
+  getEntitiesMatchingFilters(searchId, args) {
+    const query = args ? `?${qs.stringify(args)}` : '';
+    const url = `semantic-search/${searchId}/list${query}`;
+    return api.get(url).then(response => response.json);
+  },
   getSearch(searchId, args) {
     const query = args ? `?${qs.stringify(args)}` : '';
     const url = `semantic-search/${searchId}${query}`;

@@ -4,44 +4,26 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from 'app/I18N';
 import * as metadataActions from 'app/Metadata/actions/actions';
-import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
-import { advancedSort } from 'app/utils/advancedSort';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
-import MetadataForm from './MetadataForm';
-import comonTemplate from '../helpers/comonTemplate';
-
-const sortedTemplates = createSelector(
-  s => s.templates,
-  (templates) => {
-    const _templates = templates ? templates.toJS() : [];
-    return advancedSort(_templates, { property: 'name' });
-  }
-);
-
-const commonTemplate = createSelector(
-  sortedTemplates,
-  s => s.entities,
-  comonTemplate
-);
+import comonTemplate from 'app/Metadata/helpers/comonTemplate';
+import MetadataForm from 'app/Metadata/components/MetadataForm';
+import { setEditSearchEntities, getSearch } from 'app/SemanticSearch/actions/actions';
 
 export class SemanticSearchMultieditPanel extends Component {
   constructor(props) {
     super(props);
     this.close = this.close.bind(this);
-    this.delete = this.delete.bind(this);
     this.cancel = this.cancel.bind(this);
     this.save = this.save.bind(this);
-    this.edit = this.edit.bind(this);
-    this.publish = this.publish.bind(this);
-    this.unpublish = this.unpublish.bind(this);
     this.changeTemplate = this.changeTemplate.bind(this);
   }
 
   close() {
     this.props.resetForm(this.props.formKey);
+    this.props.setEntities([]);
   }
 
   metadataFieldModified(key) {
@@ -50,7 +32,7 @@ export class SemanticSearchMultieditPanel extends Component {
   }
 
   save(formValues) {
-    const { entities, template, formState } = this.props;
+    const { entities, template, formState, searchId } = this.props;
     const modifiedValues = { metadata: {} };
     Object.keys(formValues.metadata).forEach((key) => {
       if (this.metadataFieldModified(key)) {
@@ -69,24 +51,23 @@ export class SemanticSearchMultieditPanel extends Component {
     return this.props.multipleUpdate(entities, modifiedValues)
     .then(() => {
       this.close();
+      this.props.getSearch(searchId);
     });
   }
 
   changeTemplate(formModel, template) {
+    const updatedEntities = this.props.entities.map(entity => entity.set('template', template));
+    this.props.setEntities(updatedEntities);
   }
 
   cancel() {
     this.context.confirm({
       accept: () => {
-        this.props.resetForm(this.props.formKey);
+        this.close();
       },
       title: t('System', 'Confirm', null, false),
       message: t('System', 'Discard changes', null, false)
     });
-  }
-
-  edit() {
-    this.props.loadForm(this.props.formKey, this.props.template.toJS());
   }
 
   renderEditingForm() {
@@ -157,30 +138,38 @@ SemanticSearchMultieditPanel.defaultProps = {
 SemanticSearchMultieditPanel.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map),
   open: PropTypes.bool,
-  loadForm: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
+  setEntities: PropTypes.func.isRequired,
   multipleUpdate: PropTypes.func.isRequired,
-  templates: PropTypes.instanceOf(Immutable.List).isRequired,
+  getSearch: PropTypes.func.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   formState: PropTypes.instanceOf(Object).isRequired,
-  state: PropTypes.instanceOf(Object).isRequired,
   entities: PropTypes.instanceOf(Object).isRequired,
-  formKey: PropTypes.string.isRequired
+  formKey: PropTypes.string.isRequired,
+  searchId: PropTypes.string.isRequired
 };
 
 SemanticSearchMultieditPanel.contextTypes = {
   confirm: PropTypes.func
 };
 
-export const mapStateToProps = (state, props) => ({
-    template: commonTemplate(props),
-    open: state.semanticSearch.editing,
-});
+export const mapStateToProps = (state) => {
+  const entities = state.semanticSearch.multiedit;
+  return {
+      template: comonTemplate(state.templates.toJS(), entities),
+      thesauris: state.thesauris,
+      entities,
+      open: Boolean(entities.size),
+      formState: state.semanticSearch.multipleEditForm,
+  };
+};
 
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadForm: metadataActions.loadTemplate,
     resetForm: metadataActions.resetReduxForm,
+    setEntities: setEditSearchEntities,
+    getSearch,
     multipleUpdate: metadataActions.multipleUpdate,
   }, wrapDispatch(dispatch, props.storeKey));
 }

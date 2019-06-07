@@ -7,12 +7,13 @@ import Helmet from 'react-helmet';
 import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import { selectSemanticSearchDocument, addSearchResults, getSearch, getMoreSearchResults } from 'app/SemanticSearch/actions/actions';
+import { selectSemanticSearchDocument, addSearchResults, getSearch, getMoreSearchResults, editSearchEntities } from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
 import { Translate } from 'app/I18N';
-import { multipleUpdate } from 'app/Metadata/actions/actions';
-import ResultsSidePanel from './ResultsSidePanel';
 import SearchDescription from 'app/Library/components/SearchDescription';
+import { Icon } from 'UI';
+import ResultsSidePanel from './ResultsSidePanel';
+import SemanticSearchMultieditPanel from './SemanticSearchMultieditPanel';
 
 export class SemanticSearchResults extends Component {
   constructor(props) {
@@ -82,12 +83,12 @@ export class SemanticSearchResults extends Component {
   }
 
   multiEdit() {
-    const { items, multipleUpdate: edit } = this.props;
-    edit(items);
+    const { editSearchEntities: edit, filters, searchId } = this.props;
+    edit(searchId, filters);
   }
 
   render() {
-    const { items, isEmpty, searchTerm, totalCount, query } = this.props;
+    const { items, isEmpty, searchTerm, totalCount, query, searchId } = this.props;
     return (
       <div className="row panels-layout">
         { isEmpty && (
@@ -101,14 +102,15 @@ export class SemanticSearchResults extends Component {
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <h3>
-                <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query.toJS()}/>
+                <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query}/>
               </h3>
               <button
                 type="button"
                 onClick={this.multiEdit}
-                className="btn btn-default"
+                className="btn btn-success"
               >
-                <Translate>Edit all documents that match this criteria</Translate>
+                <Icon icon="pencil-alt"/>
+                <Translate>Edit all documents matching this criteria</Translate>
               </button>
               <div className="documents-counter">
                 <span className="documents-counter-label">
@@ -136,6 +138,7 @@ export class SemanticSearchResults extends Component {
               </div>
             </main>
             <ResultsSidePanel />
+            <SemanticSearchMultieditPanel searchId={searchId} formKey="semanticSearch.multipleEdit"/>
           </React.Fragment>
         )}
       </div>
@@ -157,7 +160,7 @@ SemanticSearchResults.propTypes = {
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
   addSearchResults: PropTypes.func.isRequired,
-  multipleUpdate: PropTypes.func.isRequired,
+  editSearchEntities: PropTypes.func.isRequired,
   getSearch: PropTypes.func.isRequired,
   getMoreSearchResults: PropTypes.func.isRequired,
   filters: PropTypes.object,
@@ -169,10 +172,10 @@ export const mapStateToProps = (state) => {
   const items = search.get('results');
   const filters = state.semanticSearch.resultsFilters;
   const isEmpty = search.size === 0;
-
+  const { _id, query } = search.toJS();
   return {
-    searchId: search.get('_id'),
-    query: search.get('query'),
+    searchId: _id,
+    query: query || { searchTerm: '' },
     totalCount: isEmpty ? 0 : search.get('documents').size,
     searchTerm,
     filters,
@@ -184,7 +187,7 @@ export const mapStateToProps = (state) => {
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     selectSemanticSearchDocument,
-    multipleUpdate,
+    editSearchEntities,
     addSearchResults,
     getSearch,
     getMoreSearchResults,

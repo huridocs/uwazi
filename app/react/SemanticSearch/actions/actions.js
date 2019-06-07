@@ -10,6 +10,19 @@ export function fetchSearches() {
   });
 }
 
+export function setEditSearchEntities(entities = []) {
+  return (dispatch) => {
+    dispatch(actions.set('semanticSearch/multiedit', entities));
+  };
+}
+
+export function editSearchEntities(searchId, args) {
+  return dispatch => api.getEntitiesMatchingFilters(searchId, args)
+  .then((response) => {
+    dispatch(setEditSearchEntities(response));
+  });
+}
+
 export function selectSemanticSearchDocument(doc) {
   return (dispatch) => {
     dispatch(actions.set('semanticSearch/selectedDocument', doc));

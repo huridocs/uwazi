@@ -13,6 +13,7 @@ export default combineReducers({
   minRelevantScore: modelReducer('semanticSearch.minRelevantScore'),
   selectedDocument: createReducer('semanticSearch/selectedDocument', Immutable.fromJS({})),
   showSemanticSearchPanel: createReducer('semanticSearch/showSemanticSearchPanel', false),
-  multipleEdit: modelReducer('semanticSearch.multipleEdit', {}),
-  multipleEditForm: formReducer('semanticSearch.multipleEdit', {}),
+  multipleEdit: modelReducer('semanticSearch.multipleEdit', { metadata: {} }),
+  multipleEditForm: formReducer('semanticSearch.multipleEdit', { metadata: {} }),
+  multiedit: createReducer('semanticSearch/multiedit', []),
 });

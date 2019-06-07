@@ -108,7 +108,6 @@ export class SelectMultiplePanel extends Component {
   }
 
   changeTemplate(formModel, template) {
-    console.log(template);
     const updatedEntities = this.props.entitiesSelected.map(entity => entity.set('template', template));
     this.props.updateSelectedEntities(updatedEntities);
   }
