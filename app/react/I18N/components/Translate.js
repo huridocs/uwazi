@@ -18,7 +18,7 @@ export class Translate extends Component {
     if (this.props.i18nmode) {
       e.stopPropagation();
       e.preventDefault();
-      this.props.edit(this.props.context, this.props.children);
+      this.props.edit(this.props.context, this.props.translationKey);
     }
   }
 
@@ -37,6 +37,7 @@ Translate.defaultProps = {
 
 Translate.propTypes = {
   text: PropTypes.string.isRequired,
+  translationKey: PropTypes.string.isRequired,
   context: PropTypes.string,
   children: PropTypes.string.isRequired,
   edit: PropTypes.func.isRequired,
@@ -49,10 +50,12 @@ export const mapStateToProps = (state, props) => {
     Translate.translation = translations.find(t => t.locale === state.locale) || { contexts: [] };
   }
   const _ctx = props.context || 'System';
+  const key = props.translationKey || props.children;
   const context = Translate.translation.contexts.find(ctx => ctx.id === _ctx) || { values: {} };
   const canEditThisValue = (_ctx === 'System' || !!context.values[props.children]);
   return {
-    text: context.values[props.children] || props.children,
+    translationKey: key,
+    text: context.values[key] || props.children,
     i18nmode: state.inlineEdit.get('inlineEdit') && canEditThisValue
   };
 };
