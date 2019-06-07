@@ -73,7 +73,7 @@ describe('SearchDescription', () => {
   describe('mapStateToProps', () => {
     beforeEach(() => {
 
-    })
+    });
     it('should get properties from templates, thesauri and relation types', () => {
       const props = mapStateToProps(state, { query });
       expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(query, ['templates'], ['thesauri'], ['relationTypes']);
