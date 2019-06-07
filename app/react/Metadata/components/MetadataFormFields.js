@@ -81,7 +81,7 @@ export class MetadataFormFields extends Component {
     case 'preview':
       return <div><em>This content is automatically generated</em></div>;
     case 'text':
-      return <Field model={_model}><input className="form-control"/></Field>;
+      return <Field model={_model}><input type="text" className="form-control"/></Field>;
     default:
       return false;
     }
@@ -91,7 +91,6 @@ export class MetadataFormFields extends Component {
     const thesauris = this.props.thesauris.toJS();
     const fields = this.props.template.get('properties').toJS();
     const templateID = this.props.template.get('_id');
-
     return (
       <div>
         {fields.map(property => (

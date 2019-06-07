@@ -7,7 +7,7 @@ import Helmet from 'react-helmet';
 import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
-import { selectSemanticSearchDocument, addSearchResults, getSearch, getMoreSearchResults, editSearchEntities } from 'app/SemanticSearch/actions/actions';
+import * as semanticSearchActions from 'app/SemanticSearch/actions/actions';
 import Immutable from 'immutable';
 import { Translate } from 'app/I18N';
 import SearchDescription from 'app/Library/components/SearchDescription';
@@ -101,17 +101,19 @@ export class SemanticSearchResults extends Component {
           <React.Fragment>
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
-              <h3>
-                <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query}/>
-              </h3>
-              <button
-                type="button"
-                onClick={this.multiEdit}
-                className="btn btn-success"
-              >
-                <Icon icon="pencil-alt"/>
-                <Translate>Edit all documents matching this criteria</Translate>
-              </button>
+              <div>
+                <h3>
+                  <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query}/>
+                </h3>
+                <button
+                  type="button"
+                  onClick={this.multiEdit}
+                  className="btn btn-success edit-semantic-search"
+                >
+                  <Icon icon="pencil-alt"/>&nbsp;
+                  <Translate>Edit all documents matching this criteria</Translate>
+                </button>
+              </div>
               <div className="documents-counter">
                 <span className="documents-counter-label">
                   <b>{ totalCount }</b> <Translate>documents</Translate>
@@ -186,13 +188,7 @@ export const mapStateToProps = (state) => {
 };
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    selectSemanticSearchDocument,
-    editSearchEntities,
-    addSearchResults,
-    getSearch,
-    getMoreSearchResults,
-  }, dispatch);
+  return bindActionCreators(semanticSearchActions, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SemanticSearchResults);

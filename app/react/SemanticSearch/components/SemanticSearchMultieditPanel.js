@@ -11,6 +11,18 @@ import { Icon } from 'UI';
 import comonTemplate from 'app/Metadata/helpers/comonTemplate';
 import MetadataForm from 'app/Metadata/components/MetadataForm';
 import { setEditSearchEntities, getSearch } from 'app/SemanticSearch/actions/actions';
+import { createSelector } from 'reselect';
+
+const getTemplates = createSelector(
+  s => s.templates,
+  templates => templates.toJS()
+);
+
+const commonTemplate = createSelector(
+  getTemplates,
+  s => s.semanticSearch.multiedit,
+  comonTemplate
+);
 
 export class SemanticSearchMultieditPanel extends Component {
   constructor(props) {
@@ -156,7 +168,7 @@ SemanticSearchMultieditPanel.contextTypes = {
 export const mapStateToProps = (state) => {
   const entities = state.semanticSearch.multiedit;
   return {
-      template: comonTemplate(state.templates.toJS(), entities),
+      template: commonTemplate(state),
       thesauris: state.thesauris,
       entities,
       open: Boolean(entities.size),

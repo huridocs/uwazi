@@ -8,11 +8,19 @@
   }
 }
 
+.semantic-search-results-viewer h3 {
+  display: inline;
+}
+
 .semantic-search-button {
   position: absolute;
   padding: 11px 15px;
   top: 0;
   right: -170px
+}
+
+.edit-semantic-search {
+  float: right;
 }
 
 .semantic-search-button:focus {

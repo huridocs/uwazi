@@ -13,25 +13,31 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
     <main
       className="semantic-search-results-viewer document-viewer with-panel"
     >
-      <h3>
-        <Connect(Translate)>
-          Semantic search
-        </Connect(Translate)>
-        : 
-        <Connect(SearchDescription)
-          query={Object {}}
-          searchTerm="query"
-        />
-      </h3>
-      <button
-        className="btn btn-default"
-        onClick={[Function]}
-        type="button"
-      >
-        <Connect(Translate)>
-          Edit all documents that match this criteria
-        </Connect(Translate)>
-      </button>
+      <div>
+        <h3>
+          <Connect(Translate)>
+            Semantic search
+          </Connect(Translate)>
+          : 
+          <Connect(SearchDescription)
+            query={Object {}}
+            searchTerm="query"
+          />
+        </h3>
+        <button
+          className="btn btn-success edit-semantic-search"
+          onClick={[Function]}
+          type="button"
+        >
+          <Connect(Icon)
+            icon="pencil-alt"
+          />
+           
+          <Connect(Translate)>
+            Edit all documents matching this criteria
+          </Connect(Translate)>
+        </button>
+      </div>
       <div
         className="documents-counter"
       >
@@ -183,6 +189,10 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
       </div>
     </main>
     <Connect(ResultsSidePanel) />
+    <Connect(SemanticSearchMultieditPanel)
+      formKey="semanticSearch.multipleEdit"
+      searchId="id"
+    />
   </React.Fragment>
 </div>
 `;
@@ -200,25 +210,31 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
     <main
       className="semantic-search-results-viewer document-viewer with-panel"
     >
-      <h3>
-        <Connect(Translate)>
-          Semantic search
-        </Connect(Translate)>
-        : 
-        <Connect(SearchDescription)
-          query={Object {}}
-          searchTerm="query"
-        />
-      </h3>
-      <button
-        className="btn btn-default"
-        onClick={[Function]}
-        type="button"
-      >
-        <Connect(Translate)>
-          Edit all documents that match this criteria
-        </Connect(Translate)>
-      </button>
+      <div>
+        <h3>
+          <Connect(Translate)>
+            Semantic search
+          </Connect(Translate)>
+          : 
+          <Connect(SearchDescription)
+            query={Object {}}
+            searchTerm="query"
+          />
+        </h3>
+        <button
+          className="btn btn-success edit-semantic-search"
+          onClick={[Function]}
+          type="button"
+        >
+          <Connect(Icon)
+            icon="pencil-alt"
+          />
+           
+          <Connect(Translate)>
+            Edit all documents matching this criteria
+          </Connect(Translate)>
+        </button>
+      </div>
       <div
         className="documents-counter"
       >
@@ -370,6 +386,10 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
       </div>
     </main>
     <Connect(ResultsSidePanel) />
+    <Connect(SemanticSearchMultieditPanel)
+      formKey="semanticSearch.multipleEdit"
+      searchId="id"
+    />
   </React.Fragment>
 </div>
 `;

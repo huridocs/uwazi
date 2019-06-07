@@ -229,7 +229,7 @@ export class SelectMultiplePanel extends Component {
         </div>
         <div className="sidepanel-body">
           {!editing && this.renderList()}
-          {editing && this.renderEditingForm2()}
+          {editing && this.renderEditingForm()}
         </div>
         <div className="sidepanel-footer">
           {!editing && this.renderListButtons(canBePublished, canBeUnPublished)}
