@@ -6,7 +6,7 @@ import { NumericRangeSlide } from 'app/ReactReduxForms';
 
 
 import SidePanel from 'app/Layout/SidePanel';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 const filters = [
   {
@@ -60,6 +60,11 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
             ))}
           </div>
         </Form>
+        <div className="semantic-search-help">
+          <p><Translate>Semantic search overview</Translate></p>
+          <p><Translate>Semantic search threshold help</Translate></p>
+          <p><Translate>Semantic search minimum sentences help</Translate></p>
+        </div>
       </div>
     </SidePanel>
   );

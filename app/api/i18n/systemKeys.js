@@ -208,5 +208,19 @@ export default [
   '"status" within a distance of 5 words, such as "the procedural status", "the specific legal status".' },
 { key: 'Search Tips: boolean',
   label: 'AND, OR and NOT for boolean searches. Ie. "status AND women NOT Nicaragua" will match anything ' +
-  'containing both the words status and women, and necessarily not containing the word Nicaragua.' }
+  'containing both the words status and women, and necessarily not containing the word Nicaragua.' },
+{ key: 'Semantic search overview',
+  label: 'Semantic search is a technique to provide contextual results.' +
+  ' Its ability to capture concepts and word associations in human language enables the retrieval' +
+  ' of related information such as synonyms, connected categories or entities, etc. .' },
+{ key: 'Semantic search threshold help',
+  label: 'The threshold determines how close the results match the search concept.\n' +
+  ' Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise.' +
+  ' Move the slider to the left to more broaden the concept and explore related content.'
+},
+{
+  key: 'Semantic search minimum sentences help',
+  label: 'Semantic search is applied to each sentence in a document.\n' +
+  'Filter the documents by the minimum number of sentences that exceed the threshold.'
+}
 ];

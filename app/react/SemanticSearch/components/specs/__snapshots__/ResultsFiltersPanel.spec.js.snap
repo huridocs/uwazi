@@ -31,9 +31,9 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
             <NumericRangeSlide
               delay={200}
               max={1}
-              maxLabel="More precision"
+              maxLabel="Precision"
               min={0.3}
-              minLabel="More exploration"
+              minLabel="Exploration"
               model=".threshold"
               prefix="threshold"
               step={0.01}
@@ -63,6 +63,25 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
         </dl>
       </div>
     </Connect(Form)>
+    <div
+      className="semantic-search-help"
+    >
+      <p>
+        <Connect(Translate)>
+          Semantic search overview
+        </Connect(Translate)>
+      </p>
+      <p>
+        <Connect(Translate)>
+          Semantic search threshold help
+        </Connect(Translate)>
+      </p>
+      <p>
+        <Connect(Translate)>
+          Semantic search minimum sentences help
+        </Connect(Translate)>
+      </p>
+    </div>
   </div>
 </SidePanel>
 `;
