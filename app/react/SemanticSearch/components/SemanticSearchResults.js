@@ -164,6 +164,7 @@ SemanticSearchResults.propTypes = {
   getSearch: PropTypes.func.isRequired,
   getMoreSearchResults: PropTypes.func.isRequired,
   filters: PropTypes.object,
+  query: PropTypes.object
 };
 
 export const mapStateToProps = (state) => {

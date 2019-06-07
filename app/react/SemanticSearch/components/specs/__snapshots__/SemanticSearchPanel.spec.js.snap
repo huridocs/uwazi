@@ -14,44 +14,6 @@ exports[`SemanticSearchPanel should render SearchList with searches from the sta
     />
   </button>
   <div
-    className="sidepanel-header"
-  >
-    <span
-      className="sidepanel-title"
-    >
-      Semantic search
-    </span>
-    <LocalForm
-      autoComplete="off"
-      className="form-inline semantic-search-form"
-      getDispatch={[Function]}
-      initialState={Object {}}
-      model="searchText"
-      onSubmit={[Function]}
-    >
-      <div
-        className="input-group"
-      >
-        <Modeled(Connect(Field))
-          model=".searchTerm"
-        >
-          <input
-            autoComplete="off"
-            className="form-control"
-            placeholder="Search"
-            type="text"
-          />
-        </Modeled(Connect(Field))>
-      </div>
-      <button
-        className="btn btn-default new-search"
-        type="submit"
-      >
-        Start new search
-      </button>
-    </LocalForm>
-  </div>
-  <div
     className="sidepanel-body"
   >
     <ShowIf

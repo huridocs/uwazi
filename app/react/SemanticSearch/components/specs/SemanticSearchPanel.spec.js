@@ -67,15 +67,4 @@ describe('SemanticSearchPanel', () => {
     const component = render();
     expect(component).toMatchSnapshot();
   });
-  it('should submit new search based on library filters when form is submitted', () => {
-    const component = render();
-    component.find('.semantic-search-form').simulate('submit', { searchTerm: 'test' });
-    expect(actions.submitNewSearch).toHaveBeenCalledWith({
-      searchTerm: 'test',
-      query: {
-        filters: { prop1: { values: ['value1'] } },
-        types: ['type1']
-      }
-    });
-  });
 });

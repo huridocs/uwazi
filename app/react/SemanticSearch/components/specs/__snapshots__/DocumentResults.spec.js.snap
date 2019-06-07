@@ -61,9 +61,9 @@ exports[`DocumentResults render should render a result 1`] = `
           <NumericRangeSlide
             delay={200}
             max={1}
-            maxLabel="More precision"
+            maxLabel="Precision"
             min={0.3}
-            minLabel="More exploration"
+            minLabel="Exploration"
             model=".threshold"
             step={0.01}
           />

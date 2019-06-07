@@ -26,7 +26,7 @@ export class SearchDescription extends Component {
   render() {
     const { searchTerm, query, properties } = this.props;
     const descriptions = query && query.filters ? getPropertiesTexts(query, properties) : [];
-    const descriptionText = descriptions.length ? ` with ${descriptions.join(' and ')}` : '';
+    const descriptionText = descriptions.length ? ` ${descriptions.join(' - ')}` : '';
     return (
       <span>{ searchTerm }{ descriptionText }</span>
     );
