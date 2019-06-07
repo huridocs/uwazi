@@ -22,6 +22,8 @@ import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
 import uwaziMessage from '../message';
 import syncWorker from './api/sync/syncWorker';
+import repeater from './api/utils/Repeater';
+import vaultSync from './api/evidences_vault';
 
 mongoose.Promise = Promise;
 
@@ -94,6 +96,9 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
 
   http.listen(port, bindAddress, () => {
     syncWorker.start();
+
+    repeater.start(() => vaultSync.sync('2ccb1db10dbfd8d48c9aa6a009806eec', '5bfbb1a0471dd0fc16ada146'));
+
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');
