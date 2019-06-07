@@ -21,16 +21,17 @@ exports[`DocumentResults render should render a result 1`] = `
                 "semanticSearch": Immutable.Map {
                   "results": Immutable.List [
                     Immutable.Map {
-                      "score": 0.2,
+                      "score": 0.5,
                       "text": "one",
                     },
                     Immutable.Map {
-                      "score": 0.5,
+                      "score": 0.2,
                       "text": "two",
                     },
                   ],
                   "relevantRate": 0.5,
                   "numRelevant": 1,
+                  "totalResults": 2,
                 },
                 "avgScore": 0.4,
               }
@@ -101,16 +102,17 @@ exports[`DocumentResults render should render a result 1`] = `
         "semanticSearch": Immutable.Map {
           "results": Immutable.List [
             Immutable.Map {
-              "score": 0.2,
+              "score": 0.5,
               "text": "one",
             },
             Immutable.Map {
-              "score": 0.5,
+              "score": 0.2,
               "text": "two",
             },
           ],
           "relevantRate": 0.5,
           "numRelevant": 1,
+          "totalResults": 2,
         },
         "avgScore": 0.4,
       }
@@ -120,16 +122,12 @@ exports[`DocumentResults render should render a result 1`] = `
     selectSnippet={[Function]}
     snippets={
       Immutable.Map {
-        "count": 2,
+        "count": 1,
         "metadata": Immutable.List [],
         "fullText": Immutable.List [
           Immutable.Map {
-            "score": 0.2,
-            "text": "one (20.00%)",
-          },
-          Immutable.Map {
             "score": 0.5,
-            "text": "two (50.00%)",
+            "text": "one (50.00%)",
           },
         ],
       }

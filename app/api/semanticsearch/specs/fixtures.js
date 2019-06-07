@@ -41,6 +41,10 @@ export default {
         { sharedId: 'doc1', status: 'completed' },
         { sharedId: 'doc2', status: 'completed' }
       ]
+    },
+    {
+      _id: searchIdForFilters,
+      language: 'en'
     }
   ],
   entities: [
@@ -66,6 +70,41 @@ export default {
     {
       _id: db.id(), sharedId: 'doc5', language: 'en',
       fullText: { 1: 'text5' }
+    },
+    {
+      sharedId: '1',
+      template: 't1',
+      language: 'en'
+    },
+    {
+      sharedId: '2',
+      template: 't2',
+      language: 'en'
+    },
+    {
+      sharedId: '3',
+      template: 't3',
+      language: 'en'
+    },
+    {
+      sharedId: '3',
+      template: 't3',
+      language: 'es'
+    },
+    {
+      sharedId: '4',
+      template: 't4',
+      language: 'en'
+    },
+    {
+      sharedId: '5',
+      template: 't5',
+      language: 'en'
+    },
+    {
+      sharedId: '5',
+      template: 't5',
+      language: 'es'
     }
   ],
   semanticsearchresults: [

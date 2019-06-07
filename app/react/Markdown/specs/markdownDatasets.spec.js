@@ -157,8 +157,13 @@ describe('markdownDatasets', () => {
     const dataset = {
       aggregations: {
         all: {
-          types: {
-            buckets: [{ key: 'id1', filtered: { doc_count: 1 } }, { key: 'id2', filtered: { doc_count: 25 } }]
+          _types: {
+            buckets: [
+              { key: 'id1', filtered: { doc_count: 1 } },
+              { key: 'id2', filtered: { doc_count: 25 } },
+              { key: 'id3', filtered: { doc_count: 5.6 } },
+              { key: 'id4', filtered: { doc_count: 7.8 } },
+            ]
           },
           property1: {
             buckets: [{ key: 'id3', filtered: { doc_count: 5 } }]
@@ -170,7 +175,7 @@ describe('markdownDatasets', () => {
     const dataset2 = {
       aggregations: {
         all: {
-          types: {
+          _types: {
             buckets: [{ key: 'id5', filtered: { doc_count: 6 } }, { key: 'id7', filtered: { doc_count: 76 } }]
           },
           property4: {
@@ -189,15 +194,18 @@ describe('markdownDatasets', () => {
       }
     };
 
+    const expectAggregation = options => expect(markdownDatasets.getAggregation(state, options));
+
     it('should get the aggregation for the type/property and value', () => {
-      let aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id2' });
-      expect(aggregation).toBe(25);
+      expectAggregation({ property: '_types', value: 'id2' }).toBe(25);
+      expectAggregation({ property: 'property1', value: 'id3' }).toBe(5);
+      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5' }).toBe(6);
+    });
 
-      aggregation = markdownDatasets.getAggregation(state, { property: 'property1', value: 'id3' });
-      expect(aggregation).toBe(5);
-
-      aggregation = markdownDatasets.getAggregation(state, { property: 'types', value: 'id5', dataset: 'another_dataset' });
-      expect(aggregation).toBe(6);
+    it('should get multiple values, adding them together if value is a list, omitting undefined', () => {
+      expectAggregation({ property: '_types', value: 'id1,id2' }).toBe(26);
+      expectAggregation({ property: '_types', value: 'id4,id3' }).toBe(13.4);
+      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' }).toBe(82);
     });
 
     it('should return null when dataset do not exists', () => {

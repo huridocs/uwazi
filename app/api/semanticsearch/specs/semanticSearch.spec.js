@@ -160,7 +160,7 @@ describe('semanticSearch', () => {
     it('should return all searches', async () => {
       const searches = await semanticSearch.getAllSearches();
       expect(searches[0]._id).toEqual(search1Id);
-      expect(searches.length).toBe(3);
+      expect(searches.length).toBe(4);
     });
   });
 
@@ -231,6 +231,22 @@ describe('semanticSearch', () => {
       } catch (e) {
         expect(e).toEqual(createError('Search not found', 404));
       }
+    });
+  });
+
+  describe('listSearchResultsDocs', () => {
+    it('should return the shared id and templates of all results that match the filters', async () => {
+      const args = {
+        minRelevantSentences: 2,
+        threshold: 0.6
+      };
+      const results = await semanticSearch.listSearchResultsDocs(searchIdForFilters, args);
+      const docIds = results.map(r => r.sharedId);
+      expect(results.length).toBe(3);
+      expect(docIds.includes('2')).toBe(true);
+      expect(docIds.includes('3')).toBe(true);
+      expect(docIds.includes('4')).toBe(true);
+      expect(results).toMatchSnapshot();
     });
   });
 

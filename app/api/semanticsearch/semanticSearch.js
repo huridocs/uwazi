@@ -126,8 +126,9 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         searchId: 1,
         sharedId: 1,
         status: 1,
+        results: 1,
         totalResults: { $size: '$results' },
-        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', Number(threshold)] } } }
+        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } } }
       }
     },
     {
@@ -137,21 +138,21 @@ const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.
         sharedId: 1,
         status: 1,
         results: 1,
-        numRelevant: { $size: '$results' },
-        relevantRate: { $divide: [{ $size: '$results' }, '$totalResults'] }
+        numRelevant: 1,
+        relevantRate: { $divide: ['$numRelevant', '$totalResults'] }
       }
     },
     {
-      $match: { numRelevant: { $gte: Number(minRelevantSentences) } }
+      $match: { numRelevant: { $gte: minRelevantSentences } }
     },
     {
       $sort: { relevantRate: -1 }
     },
     {
-      $skip: Number(skip)
+      $skip: skip
     },
     {
-      $limit: Number(limit)
+      $limit: limit
     }
   ]);
 
@@ -172,6 +173,29 @@ const getSearch = async (searchId, args) => {
   ));
   theSearch.results = docsWithResults;
   return theSearch;
+};
+
+const listSearchResultsDocs = async (searchId, args) => {
+  const theSearch = await model.getById(searchId);
+  if (!theSearch) {
+    throw createError('Search not found', 404);
+  }
+
+  const { threshold, minRelevantSentences } = args;
+  return resultsModel.db.aggregate([
+    { $match: { searchId: Types.ObjectId(searchId) } },
+    {
+      $project: {
+        sharedId: 1,
+        numRelevant: { $size: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', threshold] } } } }
+      }
+    },
+    { $match: { numRelevant: { $gte: minRelevantSentences } } },
+    { $lookup: { from: 'entities', localField: 'sharedId', foreignField: 'sharedId', as: 'document' } },
+    { $unwind: '$document' },
+    { $match: { 'document.language': theSearch.language } },
+    { $project: { _id: 0, sharedId: 1, template: '$document.template' } }
+  ]);
 };
 
 const getDocumentResultsByIds = async (searchId, docIds) => {
@@ -250,6 +274,7 @@ const semanticSearch = {
   getInProgress,
   getSearchResults,
   getSearch,
+  listSearchResultsDocs,
   getSearchesByDocument,
   deleteSearch,
   stopSearch,

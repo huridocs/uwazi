@@ -12,6 +12,7 @@ import Immutable from 'immutable';
 import { Translate } from 'app/I18N';
 import { multipleUpdate } from 'app/Metadata/actions/actions';
 import ResultsSidePanel from './ResultsSidePanel';
+import SearchDescription from 'app/Library/components/SearchDescription';
 
 export class SemanticSearchResults extends Component {
   constructor(props) {
@@ -86,7 +87,7 @@ export class SemanticSearchResults extends Component {
   }
 
   render() {
-    const { items, isEmpty, searchTerm, totalCount } = this.props;
+    const { items, isEmpty, searchTerm, totalCount, query } = this.props;
     return (
       <div className="row panels-layout">
         { isEmpty && (
@@ -100,7 +101,7 @@ export class SemanticSearchResults extends Component {
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <h3>
-                <Translate>Semantic search</Translate>: { searchTerm }
+                <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query.toJS()}/>
               </h3>
               <button
                 type="button"
@@ -171,6 +172,7 @@ export const mapStateToProps = (state) => {
 
   return {
     searchId: search.get('_id'),
+    query: search.get('query'),
     totalCount: isEmpty ? 0 : search.get('documents').size,
     searchTerm,
     filters,

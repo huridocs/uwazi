@@ -14,7 +14,7 @@ import { TemplateLabel, DocumentLanguage } from 'app/Layout';
 
 const findResultsAboveThreshold = (results, threshold) => {
   const boundingIndex = results.findIndex(({ score }) => score < threshold);
-  return results.slice(0, boundingIndex);
+  return boundingIndex >= 0 ? results.slice(0, boundingIndex) : results;
 };
 
 export class DocumentResults extends Component {
@@ -45,8 +45,8 @@ export class DocumentResults extends Component {
               max={1}
               step={0.01}
               delay={200}
-              minLabel={t('System', 'More exploration')}
-              maxLabel={t('System', 'More precision')}
+              minLabel={t('System', 'Exploration')}
+              maxLabel={t('System', 'Precision')}
             />
           </Form>
         </dd>
@@ -59,8 +59,8 @@ export class DocumentResults extends Component {
     if (!doc.semanticSearch) {
       return false;
     }
-    const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, threshold).sort((a, b) => a.score < b.score);
-    const snippetsToRender = doc.semanticSearch.results.map(s => Object.assign(
+    const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, threshold);
+    const snippetsToRender = filteredResults.map(s => Object.assign(
       {}, s, { text: `${s.text} (${(s.score * 100).toFixed(2)}%)` })
     );
     const snippets = Immutable.fromJS({ count: snippetsToRender.length, metadata: [], fullText: snippetsToRender });
@@ -81,11 +81,11 @@ export class DocumentResults extends Component {
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
             <dt><Translate>Sentences above threshold</Translate></dt>
-            <dd>{ doc.semanticSearch.numRelevant }</dd>
+            <dd>{ filteredResults.length }</dd>
           </dl>
           <dl className="metadata-type-numeric">
             <dt><Translate>% of document above threshold</Translate></dt>
-            <dd>{ (doc.semanticSearch.relevantRate * 100).toFixed(2) }%</dd>
+            <dd>{ (filteredResults.length / doc.semanticSearch.totalResults * 100).toFixed(2) }%</dd>
           </dl>
         </div>
         {this.renderSnippetsList(doc, snippets, documentViewUrl)}

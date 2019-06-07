@@ -58,12 +58,36 @@ describe('search routes', () => {
     it('should return specified search', (done) => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'getSearch').mockResolvedValue(result);
-      const req = { params: { searchId: 's1' }, query: { limit: '30', skip: '90', threshold: '0.5' } };
+      const req = {
+        params: { searchId: 's1' },
+        query: { limit: '30', skip: '90', threshold: '0.5' }
+      };
 
       routes.get('/api/semantic-search/:searchId', req)
       .then((response) => {
         expect(response).toEqual(result);
-        expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1', { limit: '30', skip: '90', threshold: '0.5' });
+        expect(semanticSearch.getSearch).toHaveBeenCalledWith('s1',
+          { limit: 30, skip: 90, threshold: 0.5, minRelevantSentences: 5 });
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('GET /api/semantic-search/:searchId/list', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/semantic-search/:searchId/list')).toMatchSnapshot();
+    });
+
+    it('should return all search result docs ids that match filters', (done) => {
+      const result = [{ sharedId: '1', template: 't1' }];
+      jest.spyOn(semanticSearch, 'listSearchResultsDocs').mockResolvedValue(result);
+      const req = { params: { searchId: 's1' }, query: { threshold: '0.5', minRelevantSentences: '2' } };
+
+      routes.get('/api/semantic-search/:searchId/list', req)
+      .then((response) => {
+        expect(response).toEqual(result);
+        expect(semanticSearch.listSearchResultsDocs).toHaveBeenCalledWith('s1', { threshold: 0.5, minRelevantSentences: 2 });
         done();
       })
       .catch(catchErrors(done));

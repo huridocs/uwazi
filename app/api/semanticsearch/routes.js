@@ -36,13 +36,36 @@ export default (app) => {
   app.get('/api/semantic-search/:searchId',
     needsAuthorization(),
     validateRequest(Joi.object().keys({
-      limit: Joi.number(),
-      skip: Joi.number(),
-      threshold: Joi.number(),
-      minRelevantSentences: Joi.number()
+      limit: Joi.number().min(0),
+      skip: Joi.number().min(0),
+      threshold: Joi.number().min(0),
+      minRelevantSentences: Joi.number().min(0)
     }), 'query'),
     (req, res, next) => {
-      semanticSearch.getSearch(req.params.searchId, req.query)
+      const args = {
+        limit: Number(req.query.limit || 30),
+        skip: Number(req.query.skip || 0),
+        threshold: Number(req.query.threshold || 0.4),
+        minRelevantSentences: Number(req.query.minRelevantSentences || 5)
+      };
+      semanticSearch.getSearch(req.params.searchId, args)
+      .then(search => res.json(search))
+      .catch(next);
+    }
+  );
+  app.get('/api/semantic-search/:searchId/list',
+    needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      threshold: Joi.number().min(0).required(),
+      minRelevantSentences: Joi.number().min(0).required()
+    }), 'query'),
+    (req, res, next) => {
+      const args = {
+        ...req.query,
+        threshold: Number(req.query.threshold),
+        minRelevantSentences: Number(req.query.minRelevantSentences)
+      };
+      semanticSearch.listSearchResultsDocs(req.params.searchId, args)
       .then(search => res.json(search))
       .catch(next);
     }

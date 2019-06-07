@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { I18NLink } from 'app/I18N';
+import SearchDescription from 'app/Library/components/SearchDescription';
 import { Icon, ProgressBar } from 'UI';
 
 import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';
@@ -64,7 +65,7 @@ export class SearchItem extends Component {
     return (
       <I18NLink className="semantic-search-list-item" to={`semanticsearch/${search._id}`}>
         <div className="item-header">
-          <div className="title">{search.searchTerm}</div>
+          <div className="title"><SearchDescription searchTerm={search.searchTerm} query={search.query} /></div>
           { this.renderButtons() }
         </div>
         <div>
