@@ -26,14 +26,20 @@ describe('SemanticSearchResults', () => {
           status: 'completed',
           results: [
             {
+              sharedId: 'one',
               semanticSearch: {
                 averageScore: 0.6,
+                numRelevant: 2,
+                relevantRate: 0.5,
                 results: [{ score: 0.7 }, { score: 0.2 }, { score: 0.1 }]
               }
             },
             {
+              sharedId: 'two',
               semanticSearch: {
                 averageScore: 0.4,
+                numRelevant: 1,
+                relevantRate: 0.4,
                 results: [{ score: 0.6 }, { score: 0.5 }, { score: 0.2 }]
               }
             }

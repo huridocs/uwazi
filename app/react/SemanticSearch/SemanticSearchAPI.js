@@ -1,4 +1,5 @@
 import api from 'app/utils/api';
+import qs from 'query-string';
 
 export default {
   search(args) {
@@ -11,8 +12,9 @@ export default {
     return api.get(url)
     .then(response => response.json);
   },
-  getSearch(searchId) {
-    const url = `semantic-search/${searchId}`;
+  getSearch(searchId, args) {
+    const query = args ? `?${qs.stringify(args)}` : '';
+    const url = `semantic-search/${searchId}${query}`;
     return api.get(url).then(response => response.json);
   },
   deleteSearch(searchId) {

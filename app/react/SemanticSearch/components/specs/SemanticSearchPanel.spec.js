@@ -12,7 +12,10 @@ describe('SemanticSearchPanel', () => {
   beforeEach(() => {
     initialState = {
       library: {
-        search: { query: 'library search' },
+        search: { filters: { prop1: { values: ['value1'] }, prop2: {} } },
+        filters: Immutable.fromJS({
+          documentTypes: ['type1']
+        }),
         ui: {
           selectedDocuments: [],
           showSemanticSearchPanel: true
@@ -29,6 +32,7 @@ describe('SemanticSearchPanel', () => {
       { searchTerm: 'search1' },
       { searchTerm: 'search2' }
     ]);
+    jest.spyOn(actions, 'submitNewSearch');
     dispatch = jest.fn();
   });
 
@@ -63,9 +67,15 @@ describe('SemanticSearchPanel', () => {
     const component = render();
     expect(component).toMatchSnapshot();
   });
-  it('should render new search form when search button is clicked', () => {
+  it('should submit new search based on library filters when form is submitted', () => {
     const component = render();
-    component.find('.new-search').simulate('click');
-    expect(component.update()).toMatchSnapshot();
+    component.find('.semantic-search-form').simulate('submit', { searchTerm: 'test' });
+    expect(actions.submitNewSearch).toHaveBeenCalledWith({
+      searchTerm: 'test',
+      query: {
+        filters: { prop1: { values: ['value1'] } },
+        types: ['type1']
+      }
+    });
   });
 });

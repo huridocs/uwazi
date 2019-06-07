@@ -35,8 +35,14 @@ export default (app) => {
   );
   app.get('/api/semantic-search/:searchId',
     needsAuthorization(),
+    validateRequest(Joi.object().keys({
+      limit: Joi.number(),
+      skip: Joi.number(),
+      threshold: Joi.number(),
+      minRelevantSentences: Joi.number()
+    }), 'query'),
     (req, res, next) => {
-      semanticSearch.getSearch(req.params.searchId)
+      semanticSearch.getSearch(req.params.searchId, req.query)
       .then(search => res.json(search))
       .catch(next);
     }

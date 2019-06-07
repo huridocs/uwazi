@@ -1,5 +1,6 @@
 import { promisify } from 'util';
 import async from 'async';
+import { Types } from 'mongoose';
 import { search } from '../search';
 import model from './model';
 import resultsModel from './resultsModel';
@@ -24,8 +25,9 @@ const getSearchDocuments = async ({ documents, query }, language, user) => {
   if (documents && documents.length) {
     return documents;
   }
-  const res = await search.search(query, language, user);
-  return res.rows.map(document => document.sharedId);
+  const _query = { ...query, limit: 9999, searchTerm: '' };
+  const res = await search.search(_query, language, user);
+  return res.rows.filter(doc => doc.file).map(doc => doc.sharedId);
 };
 
 const updateSearchDocumentStatus = async (searchId, sharedId, status) => model.db.findOneAndUpdate({
@@ -105,6 +107,7 @@ const create = async (args, language, user) => {
     })),
     status: PENDING,
     searchTerm: args.searchTerm,
+    query: args.query,
     language,
     creationDate: date.currentUTC()
   };
@@ -113,18 +116,58 @@ const create = async (args, language, user) => {
   return savedSearch;
 };
 
-const getSearch = async (searchId) => {
+const getSearchResults = async (searchId, { skip = 0, limit = 30, threshold = 0.4, minRelevantSentences = 5 }) =>
+  resultsModel.db.aggregate([
+    {
+      $match: { searchId: Types.ObjectId(searchId) }
+    },
+    {
+      $project: {
+        searchId: 1,
+        sharedId: 1,
+        status: 1,
+        totalResults: { $size: '$results' },
+        results: { $filter: { input: '$results', as: 'result', cond: { $gte: ['$$result.score', Number(threshold)] } } }
+      }
+    },
+    {
+      $project: {
+        totalResults: 1,
+        searchId: 1,
+        sharedId: 1,
+        status: 1,
+        results: 1,
+        numRelevant: { $size: '$results' },
+        relevantRate: { $divide: [{ $size: '$results' }, '$totalResults'] }
+      }
+    },
+    {
+      $match: { numRelevant: { $gte: Number(minRelevantSentences) } }
+    },
+    {
+      $sort: { relevantRate: -1 }
+    },
+    {
+      $skip: Number(skip)
+    },
+    {
+      $limit: Number(limit)
+    }
+  ]);
+
+const getSearch = async (searchId, args) => {
   const theSearch = await model.getById(searchId);
   if (!theSearch) {
     throw createError('Search not found', 404);
   }
-  const results = await resultsModel.get({ searchId });
+
+  const results = await getSearchResults(searchId, args);
   const docIds = results.map(r => r.sharedId);
   const docs = await documentsModel.get({ sharedId: { $in: docIds }, language: theSearch.language });
-  const docsWithResults = docs.map(doc => (
+  const docsWithResults = results.map(result => (
     {
-      ...doc,
-      semanticSearch: results.find(res => res.sharedId === doc.sharedId)
+      ...docs.find(doc => doc.sharedId === result.sharedId),
+      semanticSearch: result
     }
   ));
   theSearch.results = docsWithResults;
@@ -205,6 +248,7 @@ const semanticSearch = {
   getAllSearches,
   getPending,
   getInProgress,
+  getSearchResults,
   getSearch,
   getSearchesByDocument,
   deleteSearch,

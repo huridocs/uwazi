@@ -7,7 +7,7 @@ import model from '../model';
 import resultsModel from '../resultsModel';
 import api from '../api';
 
-import fixtures, { search1Id, search2Id, search3Id, doc1Id, docWithoutTextId } from './fixtures';
+import fixtures, { search1Id, search2Id, search3Id, searchIdForFilters, doc1Id, docWithoutTextId } from './fixtures';
 import { createError } from '../../utils';
 
 describe('semanticSearch', () => {
@@ -39,17 +39,20 @@ describe('semanticSearch', () => {
       expect(workers.notifyNewSearch).toHaveBeenCalledWith(created._id);
     });
     describe('when query is provided instead of documents list', () => {
-      it('should fetch the documents based on the query', async () => {
+      it('should fetch the documents using search with a 9999 result limit and empty searchTerm', async () => {
         jest.spyOn(search, 'search').mockResolvedValue({
           rows: [
-            { sharedId: 'docA' },
-            { sharedId: 'docB' }
+            { sharedId: 'docA', file: {} },
+            { sharedId: 'entity1' },
+            { sharedId: 'docB', file: {} },
+            { sharedId: 'anotherEntity' }
           ]
         });
         const query = { filters: {} };
         const args = { searchTerm: 'term', query };
         const created = await semanticSearch.create(args, 'en', 'user');
-        expect(search.search).toHaveBeenCalledWith(query, 'en', 'user');
+        const expectedQuery = { ...query, searchTerm: '', limit: 9999 };
+        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'en', 'user');
         expect(created.documents).toEqual([
           { sharedId: 'docA', status: 'pending' },
           { sharedId: 'docB', status: 'pending' }
@@ -180,15 +183,35 @@ describe('semanticSearch', () => {
   describe('getAllDocumentResults', () => {
     it('should return all document results of the specified search', async () => {
       const results = await semanticSearch.getAllDocumentResults(search3Id);
-      expect(results.length).toEqual(2);
+      expect(results.length).toEqual(3);
       expect(results.some(doc => doc.sharedId === 'doc1')).toBe(true);
       expect(results.some(doc => doc.sharedId === 'doc2')).toBe(true);
+      expect(results.some(doc => doc.sharedId === 'doc3')).toBe(true);
+    });
+  });
+
+  describe('getSearchResults', () => {
+    it('should return search results filtered with the specified args and sorted by proportion of relevant docs', async () => {
+      const args = {
+        skip: 1,
+        limit: 2,
+        minRelevantSentences: 1,
+        threshold: 0.6
+      };
+      const results = await semanticSearch.getSearchResults(searchIdForFilters, args);
+      expect(results.map(r => r.sharedId)).toEqual(['3', '2']);
+      expect(results.map((r) => {
+        const withoutIds = { ...r };
+        delete withoutIds._id;
+        delete withoutIds.searchId;
+        return withoutIds;
+      })).toMatchSnapshot();
     });
   });
 
   describe('getSearch', () => {
-    it('should fetch a search by id and its document entities with semantic search results', async () => {
-      const res = await semanticSearch.getSearch(search3Id);
+    it('should fetch a search by id and its document entities with filtered semantic search results', async () => {
+      const res = await semanticSearch.getSearch(search3Id, { threshold: 0.5, minRelevantSentences: 1 });
       res.results.forEach((doc) => {
         //eslint-disable-next-line no-param-reassign
         delete doc._id;
@@ -203,7 +226,7 @@ describe('semanticSearch', () => {
     });
     it('should return 404 if search does not exist', async () => {
       try {
-        await semanticSearch.getSearch(db.id());
+        await semanticSearch.getSearch(db.id(), {});
         fail('should throw error');
       } catch (e) {
         expect(e).toEqual(createError('Search not found', 404));

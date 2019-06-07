@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Field, LocalForm, actions } from 'react-redux-form';
-
-import { t } from 'app/I18N';
 import socket from 'app/socket';
 import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
@@ -68,7 +65,8 @@ export class SemanticSearchSidePanel extends Component {
 }
 
 SemanticSearchSidePanel.propTypes = {
-  currentSearch: PropTypes.object.isRequired,
+  currentFilters: PropTypes.object.isRequired,
+  currentTypes: PropTypes.object.isRequired,
   searches: PropTypes.object.isRequired,
   hideSemanticSearch: PropTypes.func.isRequired,
   fetchSearches: PropTypes.func.isRequired,
@@ -79,7 +77,8 @@ SemanticSearchSidePanel.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    currentSearch: state[props.storeKey].search,
+    currentFilters: state[props.storeKey].search.filters,
+    currentTypes: state[props.storeKey].filters.get('documentTypes'),
     searches: state.semanticSearch.searches,
     search: state.semanticSearch.search,
     open: state.semanticSearch.showSemanticSearchPanel

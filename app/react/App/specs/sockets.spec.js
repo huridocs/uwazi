@@ -11,7 +11,7 @@ describe('sockets', () => {
     it('should emit a disconnect event', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
-      jasmine.clock().tick(4000);
+      jasmine.clock().tick(8000);
       expect(store.dispatch.calls.allArgs()[1][0].notification.message).toEqual('Lost connection to the server, your changes may be lost');
       jasmine.clock().uninstall();
     });
@@ -21,9 +21,9 @@ describe('sockets', () => {
     it('should emit a connect event', () => {
       jasmine.clock().install();
       socket._callbacks.$disconnect[0]('transport close');
-      jasmine.clock().tick(4000);
+      jasmine.clock().tick(8000);
       socket._callbacks.$reconnect[0]();
-      jasmine.clock().tick(4000);
+      jasmine.clock().tick(8000);
       expect(store.dispatch).toHaveBeenCalled();
       expect(store.dispatch.calls.allArgs()[5][0].notification.message).toEqual('Connected to server');
       jasmine.clock().uninstall();

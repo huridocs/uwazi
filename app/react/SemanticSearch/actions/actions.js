@@ -23,9 +23,23 @@ export function unselectSemanticSearchDocument() {
   };
 }
 
+function sanitizeSearchFilters(filters) {
+  return Object.keys(filters)
+  .reduce((partial, key) => {
+    const emptyFilter = !filters[key] || typeof filters[key] === 'object' && !Object.keys(filters[key]).length;
+    if (emptyFilter) {
+      return partial;
+    }
+    return { ...partial, [key]: filters[key] };
+  }, {});
+}
+
 export function submitNewSearch(args) {
-  console.log(args);
-  return dispatch => api.search(args)
+  const { searchTerm } = args;
+  const query = Object.assign({}, args, { searchTerm: '' }, { filters: sanitizeSearchFilters(args.filters) });
+  const search = Object.assign({ searchTerm, query });
+
+  return dispatch => api.search(search)
   .then(() => dispatch(fetchSearches()));
 }
 
@@ -82,4 +96,25 @@ export function addSearchResults(newDocs) {
     }, existingDocs));
     dispatch(actions.set('semanticSearch/search', newResults));
   };
+}
+
+export function getSearch(searchId, args) {
+  return (dispatch, getState) => api.getSearch(searchId, args)
+  .then((search) => {
+    dispatch(actions.set('semanticSearch/search', search));
+    const selectedDoc = getState().semanticSearch.selectedDocument;
+    if (selectedDoc) {
+      const updatedDoc = search.results.find(doc => doc.sharedId === selectedDoc.get('sharedId'));
+      if (updatedDoc) {
+        dispatch(actions.set('semanticSearch/selectedDocument', updatedDoc));
+      }
+    }
+  });
+}
+
+export function getMoreSearchResults(searchId, args) {
+  return dispatch => api.getSearch(searchId, args)
+  .then(search =>
+    dispatch(actions.concatIn('semanticSearch/search', ['results'], search.results))
+  );
 }

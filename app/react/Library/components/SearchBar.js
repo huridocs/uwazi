@@ -10,7 +10,6 @@ import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import SearchTips from 'app/Library/components/SearchTips';
 import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
-import Tip from 'app/Layout/Tip';
 
 export class SearchBar extends Component {
   constructor(props) {
@@ -29,9 +28,7 @@ export class SearchBar extends Component {
   }
 
   submitSemanticSearch() {
-    const { searchTerm } = this.props.search;
-    const search = Object.assign({}, this.props.search, { searchTerm: '' });
-    this.props.semanticSearch({ searchTerm, query: search });
+    this.props.semanticSearch(this.props.search);
   }
 
   submitSearch() {

@@ -2,15 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Form } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
-import ShowIf from 'app/App/ShowIf';
-import { comonProperties } from 'shared/comonProperties';
 import * as metadataActions from 'app/Metadata/actions/actions';
-import validator from 'app/Metadata/helpers/validator';
-import { Select as SimpleSelect, FormGroup } from 'app/Forms';
-import { IconSelector } from 'app/ReactReduxForms';
 import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
 import { advancedSort } from 'app/utils/advancedSort';
@@ -18,7 +12,8 @@ import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
-import MetadataFormFields from './MetadataFormFields';
+import MetadataForm from './MetadataForm';
+import comonTemplate from '../helpers/comonTemplate';
 
 const sortedTemplates = createSelector(
   s => s.templates,
@@ -31,19 +26,7 @@ const sortedTemplates = createSelector(
 const commonTemplate = createSelector(
   sortedTemplates,
   s => s.entitiesSelected,
-  (templates, entitiesSelected) => {
-    const selectedTemplates = entitiesSelected.map(entity => entity.get('template'))
-    .filter((type, index, _types) => _types.indexOf(type) === index);
-    const properties = comonProperties(templates, selectedTemplates);
-    const _id = selectedTemplates.size === 1 ? selectedTemplates.first() : '';
-
-    const withoutTemplate = entitiesSelected.reduce((memo, entity) => memo && !entity.get('template'), true);
-
-    if (withoutTemplate) {
-      return Immutable.fromJS(templates.find(template => template.default));
-    }
-    return Immutable.fromJS({ _id, properties });
-  }
+  comonTemplate
 );
 
 export class SelectMultiplePanel extends Component {
@@ -56,6 +39,7 @@ export class SelectMultiplePanel extends Component {
     this.edit = this.edit.bind(this);
     this.publish = this.publish.bind(this);
     this.unpublish = this.unpublish.bind(this);
+    this.changeTemplate = this.changeTemplate.bind(this);
   }
 
   close() {
@@ -80,15 +64,15 @@ export class SelectMultiplePanel extends Component {
 
   save(formValues) {
     const modifiedValues = { metadata: {} };
-    const comonTemplate = this.props.template.toJS();
+    const template = this.props.template.toJS();
     Object.keys(formValues.metadata).forEach((key) => {
       if (this.metadataFieldModified(key)) {
         modifiedValues.metadata[key] = formValues.metadata[key];
       }
     });
 
-    if (comonTemplate._id) {
-      modifiedValues.template = comonTemplate._id;
+    if (template._id) {
+      modifiedValues.template = template._id;
     }
 
     if (this.props.formState.icon && !this.props.formState.icon.pristine) {
@@ -123,7 +107,8 @@ export class SelectMultiplePanel extends Component {
     });
   }
 
-  changeTemplate(template) {
+  changeTemplate(formModel, template) {
+    console.log(template);
     const updatedEntities = this.props.entitiesSelected.map(entity => entity.set('template', template));
     this.props.updateSelectedEntities(updatedEntities);
   }
@@ -142,29 +127,92 @@ export class SelectMultiplePanel extends Component {
     this.props.loadForm(this.props.formKey, this.props.template.toJS());
   }
 
-  validation(template) {
-    if (!template) {
-      return {};
-    }
-    const validation = validator.generate(template.toJS());
-    delete validation.title;
-    Object.keys(this.props.state.metadata || {}).forEach((key) => {
-      if (!this.metadataFieldModified(key)) {
-        delete validation[`metadata.${key}`];
-      }
-    });
+  renderEditingForm() {
+    const { formKey, thesauris } = this.props;
 
-    return validation;
+    return (
+      <React.Fragment>
+        <div className="alert alert-warning">
+          <Icon icon="exclamation-triangle" size="2x" />
+          <p>
+          Warning: you are editing multiple files.
+          Fields marked with a <Icon icon="exclamation-triangle" /> will be updated with the same value.
+          </p>
+        </div>
+        <MetadataForm
+          id="multiEdit"
+          model={formKey}
+          onSubmit={this.save}
+          thesauris={thesauris}
+          template={this.props.template}
+          changeTemplate={this.changeTemplate}
+          multipleEdition
+        />
+      </React.Fragment>
+    );
+  }
+
+  renderEditingButtons() {
+    return (
+      <React.Fragment>
+        <button type="button" onClick={this.cancel} className="cancel-edit-metadata btn btn-primary">
+          <Icon icon="times" />
+          <span className="btn-label">{t('System', 'Cancel')}</span>
+        </button>
+        <button type="submit" form="multiEdit" className="btn btn-success">
+          <Icon icon="save" />
+          <span className="btn-label">{t('System', 'Save')}</span>
+        </button>
+      </React.Fragment>
+    );
+  }
+
+  renderListButtons(canBePublished, canBeUnPublished) {
+    return (
+      <React.Fragment>
+        <button type="button" onClick={this.edit} className="edit btn btn-primary">
+          <Icon icon="pencil-alt" />
+          <span className="btn-label">{t('System', 'Edit')}</span>
+        </button>
+        <button type="button" className="delete btn btn-danger" onClick={this.delete}>
+          <Icon icon="trash-alt" />
+          <span className="btn-label">{t('System', 'Delete')}</span>
+        </button>
+        {canBePublished && (
+          <button type="button" className="publish btn btn-success" onClick={this.publish}>
+            <Icon icon="paper-plane" />
+            <span className="btn-label">{t('System', 'Publish')}</span>
+          </button>
+        )}
+        {canBeUnPublished && (
+          <button type="button" className="unpublish btn btn-warning" onClick={this.unpublish}>
+            <Icon icon="paper-plane" />
+            <span className="btn-label">{t('System', 'Unpublish')}</span>
+          </button>
+        )}
+      </React.Fragment>
+    );
+  }
+
+  renderList() {
+    const { entitiesSelected, getAndSelectDocument } = this.props;
+    return (
+      <ul className="entities-list">
+        {entitiesSelected.map((entity, index) => {
+          const onClick = getAndSelectDocument.bind(this, entity.get('sharedId'));
+          return (
+            <li key={index} onClick={onClick}>
+              <span className="entity-title">{entity.get('title')}</span>
+              <TemplateLabel template={entity.get('template')}/>
+            </li>
+        );
+        })}
+      </ul>
+    );
   }
 
   render() {
-    const { entitiesSelected, open, editing, templates, template } = this.props;
-    const validation = this.validation(template);
-    const templateId = template ? template.get('_id') : null;
-
-    const templateOptions = templates.toJS()
-    .map(tmpl => ({ label: tmpl.name, value: tmpl._id }));
-
+    const { entitiesSelected, open, editing } = this.props;
     const canBePublished = this.props.entitiesSelected.reduce((previousCan, entity) => {
       const isEntity = !entity.get('file');
       return previousCan && (entity.get('processed') || isEntity) && !entity.get('published') && !!entity.get('template');
@@ -176,107 +224,17 @@ export class SelectMultiplePanel extends Component {
       <SidePanel open={open} className="multi-edit">
         <div className="sidepanel-header">
           <Icon icon="check" /> <span>{entitiesSelected.size} {t('System', 'selected')}</span>
-          <button className="closeSidepanel close-modal" onClick={this.close}>
+          <button type="button" className="closeSidepanel close-modal" onClick={this.close}>
             <Icon icon="times" />
           </button>
         </div>
         <div className="sidepanel-body">
-          <ShowIf if={!editing}>
-            <ul className="entities-list">
-              {entitiesSelected.map((entity, index) => {
-                const onClick = this.props.getAndSelectDocument.bind(this, entity.get('sharedId'));
-                return (
-                  <li key={index} onClick={onClick}>
-                    <span className="entity-title">{entity.get('title')}</span>
-                    <TemplateLabel template={entity.get('template')}/>
-                  </li>
-              );
-              })}
-            </ul>
-          </ShowIf>
-          <ShowIf if={editing}>
-            <Form id="multiEdit" model={this.props.formKey} onSubmit={this.save} validators={validation}>
-              <FormGroup>
-                <div className="alert alert-warning">
-                  <Icon icon="exclamation-triangle" size="2x" />
-                  <p>
-                    Warning: you are editing multiple files.
-                    Fields marked with a <Icon icon="exclamation-triangle" /> will be updated with the same value.
-                  </p>
-                </div>
-                <ShowIf if={!!templateOptions.length}>
-                  <FormGroup>
-                    <ul className="search__filter">
-                      <li><label>{t('System', 'Type')} <span className="required">*</span></label></li>
-                      <li className="wide">
-                        <SimpleSelect
-                          className="form-control template-selector"
-                          value={templateId}
-                          options={templateOptions}
-                          onChange={e => this.changeTemplate(e.target.value)}
-                        />
-                      </li>
-                    </ul>
-                  </FormGroup>
-                </ShowIf>
-                <ul className="search__filter">
-                  <li>
-                    <ShowIf if={this.props.formState.icon && !this.props.formState.icon.pristine}>
-                      <span><i className="fa fa-warning" />&nbsp;</span>
-                    </ShowIf>
-                    <label>{t('System', 'Icon')} / {t('System', 'Flag')}</label>
-                  </li>
-                  <li className="wide">
-                    <IconSelector model=".icon"/>
-                  </li>
-                </ul>
-              </FormGroup>
-              <MetadataFormFields
-                model={this.props.formKey}
-                template={template}
-                thesauris={this.props.thesauris}
-                multipleEdition
-              />
-            </Form>
-          </ShowIf>
+          {!editing && this.renderList()}
+          {editing && this.renderEditingForm2()}
         </div>
         <div className="sidepanel-footer">
-          <ShowIf if={!editing}>
-            <button onClick={this.edit} className="edit btn btn-primary">
-              <Icon icon="pencil-alt" />
-              <span className="btn-label">{t('System', 'Edit')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={!editing}>
-            <button className="delete btn btn-danger" onClick={this.delete}>
-              <Icon icon="trash-alt" />
-              <span className="btn-label">{t('System', 'Delete')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={!editing && canBePublished}>
-            <button className="publish btn btn-success" onClick={this.publish}>
-              <Icon icon="paper-plane" />
-              <span className="btn-label">{t('System', 'Publish')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={!editing && canBeUnPublished}>
-            <button className="unpublish btn btn-warning" onClick={this.unpublish}>
-              <Icon icon="paper-plane" />
-              <span className="btn-label">{t('System', 'Unpublish')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={editing}>
-            <button onClick={this.cancel} className="cancel-edit-metadata btn btn-primary">
-              <Icon icon="times" />
-              <span className="btn-label">{t('System', 'Cancel')}</span>
-            </button>
-          </ShowIf>
-          <ShowIf if={editing}>
-            <button type="submit" form="multiEdit" className="btn btn-success">
-              <Icon icon="save" />
-              <span className="btn-label">{t('System', 'Save')}</span>
-            </button>
-          </ShowIf>
+          {!editing && this.renderListButtons(canBePublished, canBeUnPublished)}
+          {editing && this.renderEditingButtons()}
         </div>
       </SidePanel>
     );
@@ -325,7 +283,7 @@ function mapDispatchToProps(dispatch, props) {
     deleteEntities,
     loadForm: metadataActions.loadTemplate,
     resetForm: metadataActions.resetReduxForm,
-    multipleUpdate: metadataActions.multipleUpdate
+    multipleUpdate: metadataActions.multipleUpdate,
   }, wrapDispatch(dispatch, props.storeKey));
 }
 

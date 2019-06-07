@@ -27,7 +27,7 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
           className="documents-counter-label"
         >
           <b>
-            1
+            0
           </b>
            
           <Connect(Translate)>
@@ -54,9 +54,8 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
                 <div>
                   2
                    out of 
-                  3
                    (
-                  66.67
+                  50.00
                   %)
                 </div>
               </div>
@@ -64,8 +63,58 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
           }
           doc={
             Immutable.Map {
+              "sharedId": "one",
+              "semanticSearch": Immutable.Map {
+                "averageScore": 0.6,
+                "numRelevant": 2,
+                "relevantRate": 0.5,
+                "results": Immutable.List [
+                  Immutable.Map {
+                    "score": 0.7,
+                  },
+                  Immutable.Map {
+                    "score": 0.2,
+                  },
+                  Immutable.Map {
+                    "score": 0.1,
+                  },
+                ],
+              },
+            }
+          }
+          key="one"
+          onClick={[Function]}
+        />
+        <Connect(Doc)
+          additionalText={
+            <div
+              className="item-metadata"
+            >
+              <div
+                className="metadata-type-text"
+              >
+                <div>
+                  <Connect(Translate)>
+                    Sentences above threshold
+                  </Connect(Translate)>
+                </div>
+                <div>
+                  1
+                   out of 
+                   (
+                  40.00
+                  %)
+                </div>
+              </div>
+            </div>
+          }
+          doc={
+            Immutable.Map {
+              "sharedId": "two",
               "semanticSearch": Immutable.Map {
                 "averageScore": 0.4,
+                "numRelevant": 1,
+                "relevantRate": 0.4,
                 "results": Immutable.List [
                   Immutable.Map {
                     "score": 0.6,
@@ -77,17 +126,49 @@ exports[`SemanticSearchResults should only display items that match filters 1`] 
                     "score": 0.2,
                   },
                 ],
-                "aboveThreshold": Object {
-                  "count": 2,
-                  "percentage": 66.66666666666666,
-                },
               },
             }
           }
-          key="0"
+          key="two"
           onClick={[Function]}
         />
       </RowList>
+      <p
+        className="col-sm-12 text-center documents-counter"
+      >
+        <b>
+           
+          2
+           
+        </b>
+         
+        <Connect(Translate)>
+          of
+        </Connect(Translate)>
+        <b>
+           
+          0
+           
+        </b>
+         
+        <Connect(Translate)>
+          documents
+        </Connect(Translate)>
+      </p>
+      <div
+        className="col-sm-12 text-center documents-counter"
+      >
+        <button
+          className="btn btn-default btn-load-more"
+          onClick={[Function]}
+          type="button"
+        >
+          30 
+          <Connect(Translate)>
+            x more
+          </Connect(Translate)>
+        </button>
+      </div>
     </main>
     <Connect(ResultsSidePanel) />
   </React.Fragment>
@@ -121,7 +202,7 @@ exports[`SemanticSearchResults should render results in ItemList sorted by desce
           className="documents-counter-label"
         >
           <b>
-            2
+            0
           </b>
            
           <Connect(Translate)>
@@ -148,9 +229,8 @@ exports[`SemanticSearchResults should render results in ItemList sorted by desce
                 <div>
                   2
                    out of 
-                  3
                    (
-                  66.67
+                  50.00
                   %)
                 </div>
               </div>
@@ -158,27 +238,26 @@ exports[`SemanticSearchResults should render results in ItemList sorted by desce
           }
           doc={
             Immutable.Map {
+              "sharedId": "one",
               "semanticSearch": Immutable.Map {
-                "averageScore": 0.4,
+                "averageScore": 0.6,
+                "numRelevant": 2,
+                "relevantRate": 0.5,
                 "results": Immutable.List [
                   Immutable.Map {
-                    "score": 0.6,
-                  },
-                  Immutable.Map {
-                    "score": 0.5,
+                    "score": 0.7,
                   },
                   Immutable.Map {
                     "score": 0.2,
                   },
+                  Immutable.Map {
+                    "score": 0.1,
+                  },
                 ],
-                "aboveThreshold": Object {
-                  "count": 2,
-                  "percentage": 66.66666666666666,
-                },
               },
             }
           }
-          key="0"
+          key="one"
           onClick={[Function]}
         />
         <Connect(Doc)
@@ -197,9 +276,8 @@ exports[`SemanticSearchResults should render results in ItemList sorted by desce
                 <div>
                   1
                    out of 
-                  3
                    (
-                  33.33
+                  40.00
                   %)
                 </div>
               </div>
@@ -207,30 +285,65 @@ exports[`SemanticSearchResults should render results in ItemList sorted by desce
           }
           doc={
             Immutable.Map {
+              "sharedId": "two",
               "semanticSearch": Immutable.Map {
-                "averageScore": 0.6,
+                "averageScore": 0.4,
+                "numRelevant": 1,
+                "relevantRate": 0.4,
                 "results": Immutable.List [
                   Immutable.Map {
-                    "score": 0.7,
+                    "score": 0.6,
+                  },
+                  Immutable.Map {
+                    "score": 0.5,
                   },
                   Immutable.Map {
                     "score": 0.2,
                   },
-                  Immutable.Map {
-                    "score": 0.1,
-                  },
                 ],
-                "aboveThreshold": Object {
-                  "count": 1,
-                  "percentage": 33.33333333333333,
-                },
               },
             }
           }
-          key="1"
+          key="two"
           onClick={[Function]}
         />
       </RowList>
+      <p
+        className="col-sm-12 text-center documents-counter"
+      >
+        <b>
+           
+          2
+           
+        </b>
+         
+        <Connect(Translate)>
+          of
+        </Connect(Translate)>
+        <b>
+           
+          0
+           
+        </b>
+         
+        <Connect(Translate)>
+          documents
+        </Connect(Translate)>
+      </p>
+      <div
+        className="col-sm-12 text-center documents-counter"
+      >
+        <button
+          className="btn btn-default btn-load-more"
+          onClick={[Function]}
+          type="button"
+        >
+          30 
+          <Connect(Translate)>
+            x more
+          </Connect(Translate)>
+        </button>
+      </div>
     </main>
     <Connect(ResultsSidePanel) />
   </React.Fragment>
@@ -242,40 +355,14 @@ exports[`SemanticSearchResults when the search is empty should render not found 
   className="row panels-layout"
 >
   <React.Fragment>
+    <p>
+      Search not found
+    </p>
     <HelmetWrapper
       defer={true}
       encodeSpecialCharacters={true}
-      title=" - Semantic search results"
+      title="Semantic search not found"
     />
-    <main
-      className="semantic-search-results-viewer document-viewer with-panel"
-    >
-      <h3>
-        <Connect(Translate)>
-          Semantic search
-        </Connect(Translate)>
-        : 
-      </h3>
-      <div
-        className="documents-counter"
-      >
-        <span
-          className="documents-counter-label"
-        >
-          <b>
-            0
-          </b>
-           
-          <Connect(Translate)>
-            documents
-          </Connect(Translate)>
-        </span>
-      </div>
-      <RowList
-        zoomLevel={0}
-      />
-    </main>
-    <Connect(ResultsSidePanel) />
   </React.Fragment>
 </div>
 `;

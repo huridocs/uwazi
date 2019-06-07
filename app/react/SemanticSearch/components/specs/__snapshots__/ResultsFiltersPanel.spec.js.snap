@@ -25,7 +25,7 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
           <dt>
             Threshold
              
-            1000%
+            80.00%
           </dt>
           <dd>
             <NumericRangeSlide
