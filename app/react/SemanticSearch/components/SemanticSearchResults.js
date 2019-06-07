@@ -101,7 +101,7 @@ export class SemanticSearchResults extends Component {
             <Helmet title={`${searchTerm} - Semantic search results`} />
             <main className="semantic-search-results-viewer document-viewer with-panel">
               <h3>
-                <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query.toJS()}/>
+                <Translate>Semantic search</Translate>: <SearchDescription searchTerm={searchTerm} query={query && query.toJS()}/>
               </h3>
               <button
                 type="button"
@@ -161,6 +161,7 @@ SemanticSearchResults.propTypes = {
   getSearch: PropTypes.func.isRequired,
   getMoreSearchResults: PropTypes.func.isRequired,
   filters: PropTypes.object,
+  query: PropTypes.object
 };
 
 export const mapStateToProps = (state) => {

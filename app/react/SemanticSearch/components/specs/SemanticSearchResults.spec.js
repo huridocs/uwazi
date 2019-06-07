@@ -22,6 +22,7 @@ describe('SemanticSearchResults', () => {
         search: Immutable.fromJS({
           _id: 'id',
           searchTerm: 'query',
+          query: {},
           documents: [],
           status: 'completed',
           results: [
@@ -57,7 +58,7 @@ describe('SemanticSearchResults', () => {
 
   const render = () => shallow(<SemanticSearchResults {...getProps()} />);
 
-  it('should render results in ItemList sorted by descending percentage of sentences above threshold', () => {
+  it('should render results in ItemList', () => {
     const component = render();
     expect(component).toMatchSnapshot();
   });

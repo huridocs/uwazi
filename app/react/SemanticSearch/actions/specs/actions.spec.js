@@ -47,10 +47,11 @@ describe('Semantic Search actions', () => {
   describe('submitNewSearch', () => {
     it('should start new search and fetch searches', async () => {
       jest.spyOn(api, 'search').mockResolvedValue({ searchTerm: 'search' });
-      const args = { searchTerm: 'search' };
+      const args = { searchTerm: 'search', filters: { a: {}, b: { values: ['c'] } } };
       const action = actions.submitNewSearch(args);
       await action(dispatch);
-      expect(api.search).toHaveBeenCalledWith(args);
+      expect(api.search).toHaveBeenCalledWith(
+        { searchTerm: 'search', query: { searchTerm: '', filters: { b: { values: ['c'] } } } });
       expectFetchSearchesToHaveBeenDispatched(dispatch);
     });
   });
