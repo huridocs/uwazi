@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Form } from 'react-redux-form';
 import { NumericRangeSlide } from 'app/ReactReduxForms';
-
+import { Icon } from 'UI';
 
 import SidePanel from 'app/Layout/SidePanel';
 import { t, Translate } from 'app/I18N';
@@ -61,27 +61,30 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
           </div>
         </Form>
         <div className="semantic-search-help">
-          <p>
-            <Translate translationKey="Semantic search overview">
-              Semantic search is a technique to provide contextual results.
-              Its ability to capture concepts and word associations in human language enables the retrieval of related
-              information such as synonyms, connected categories or entities, etc. .
-            </Translate>
-          </p>
-          <p>
-            <Translate translationKey="Semantic search threshold help">
-              The threshold determines how close the results match the search concept.
-              Move the slider to the right to narrow down the concept of the search query.
-              The obtained results will be more precise.
-              Move the slider to the left to more broaden the concept and explore related content.
-            </Translate>
-          </p>
-          <p>
-            <Translate translationKey="Semantic search minimum sentences help">
-              Semantic search is applied to each sentence in a document.
-              Filter the documents by the minimum number of sentences that exceed the threshold.
-            </Translate>
-          </p>
+          <div className="alert alert-info alert-vertical">
+            <Icon icon="info-circle" size="2x" />
+            <p>
+              <Translate translationKey="Semantic search overview">
+                Semantic search is a technique to provide contextual results.
+                Its ability to capture concepts and word associations in human language enables the retrieval of related
+                information such as synonyms, connected categories or entities, etc. .
+              </Translate>
+            </p>
+            <p>
+              <Translate translationKey="Semantic search threshold help">
+                The threshold determines how close the results match the search concept.
+                Move the slider to the right to narrow down the concept of the search query.
+                The obtained results will be more precise.
+                Move the slider to the left to more broaden the concept and explore related content.
+              </Translate>
+            </p>
+            <p>
+              <Translate translationKey="Semantic search minimum sentences help">
+                Semantic search is applied to each sentence in a document.
+                Filter the documents by the minimum number of sentences that exceed the threshold.
+              </Translate>
+            </p>
+          </div>
         </div>
       </div>
     </SidePanel>

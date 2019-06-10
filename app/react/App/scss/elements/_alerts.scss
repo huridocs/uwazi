@@ -66,6 +66,16 @@
   }
 }
 
+.alert.alert-vertical {
+  display: flex;
+  flex-direction: column;
+
+  & > svg:first-child {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+}
+
 .list-group .alert {
   margin: 0;
 }
@@ -73,6 +83,10 @@
 .sidepanel-body {
   .alert {
     background: $c-warning-light;
+  }
+
+  .alert-info {
+    background: $c-info-light;
   }
 }
 
