@@ -19,11 +19,16 @@ export function initializeFiltersForm(values = {}) {
 }
 
 export function selectDocument(doc) {
-  let document = doc;
-  if (doc.toJS) {
-    document = doc.toJS();
-  }
-  return { type: types.SELECT_DOCUMENT, doc: document };
+  return (dispatch, getState) => {
+    let document = doc;
+    if (doc.toJS) {
+      document = doc.toJS();
+    }
+    if (getState().library.sidepanel.tab === 'semantic-search-results' && !document.semanticSearch) {
+      dispatch(actions.set('library.sidepanel.tab', ''));
+    }
+    dispatch({ type: types.SELECT_DOCUMENT, doc: document });
+  };
 }
 
 export function getAndSelectDocument(id) {
