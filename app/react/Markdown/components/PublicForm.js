@@ -11,7 +11,7 @@ import { bindActionCreators } from 'redux';
 import { FormGroup } from 'app/Forms';
 import Loader from 'app/components/Elements/Loader';
 
-export class PublicForm extends Component {
+class PublicForm extends Component {
   static renderTitle() {
     return (
       <FormGroup key="title" model=".title">
