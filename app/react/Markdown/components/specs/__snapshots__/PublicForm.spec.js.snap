@@ -183,7 +183,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
             htmlFor="file"
           >
             <Connect(Translate)>
-              File
+              Document
             </Connect(Translate)>
             <DefaultConnectedControlFile
               accept=".pdf"
