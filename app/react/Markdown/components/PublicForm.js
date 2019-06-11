@@ -9,6 +9,7 @@ import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
 import { bindActionCreators } from 'redux';
 import { FormGroup } from 'app/Forms';
+import Loader from 'app/components/Elements/Loader';
 
 export class PublicForm extends Component {
   static renderTitle() {
@@ -26,48 +27,17 @@ export class PublicForm extends Component {
     );
   }
 
-  constructor(props) {
-    super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.fileFields = [];
-    this.validators = Object.assign({ captcha: { required: val => val && val.length } }, validator.generate(props.template.toJS()));
-  }
-
-  attachDispatch(dispatch) {
-    this.formDispatch = dispatch;
-  }
-
-  resetForm() {
-    this.formDispatch(actions.reset('publicform'));
-    this.fileFields.forEach((input) => { input.value = ''; });
-  }
-
-  handleSubmit(_values) {
-    const values = { ..._values };
-    const { submit } = this.props;
-    values.file = _values.file ? _values.file[0] : undefined;
-    values.template = this.props.template.get('_id');
-    submit(values).then(() => {
-      this.refreshCaptcha();
-      this.resetForm();
-    });
-  }
-
-  renderCaptcha() {
+  static renderSubmitState() {
     return (
-      <FormGroup key="captcha" model=".captcha">
-        <ul className="search__filter">
-          <li><label><Translate>Are you a robot?</Translate><span className="required">*</span></label></li>
-          <li className="wide">
-            <Captcha refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
-          </li>
-        </ul>
-      </FormGroup>
+      <div className="public-form submiting">
+        <h3><Translate>Submiting</Translate></h3>
+        <Loader/>
+      </div>
     );
   }
 
-  renderFileField(id, options) {
-    const defaults = { getRef: (node) => { this.fileFields.push(node); }, className: 'form-control', model: `.${id}` };
+  static renderFileField(id, options) {
+    const defaults = { className: 'form-control', model: `.${id}` };
     const props = Object.assign(defaults, options);
     return (
       <div className="form-group">
@@ -83,17 +53,70 @@ export class PublicForm extends Component {
     );
   }
 
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.validators = Object.assign({ captcha: { required: val => val && val.length } }, validator.generate(props.template.toJS()));
+    this.state = { submiting: false };
+  }
+
+  attachDispatch(dispatch) {
+    this.formDispatch = dispatch;
+  }
+
+  resetForm() {
+    this.formDispatch(actions.reset('publicform'));
+  }
+
+  handleSubmit(_values) {
+    const values = { ..._values };
+    const { submit, template } = this.props;
+    values.file = _values.file ? _values.file[0] : undefined;
+    values.template = template.get('_id');
+
+    this.setState({ submiting: true });
+    submit(values).then(() => {
+      this.refreshCaptcha();
+      this.resetForm();
+      this.setState({ submiting: false });
+    });
+  }
+
+  renderCaptcha() {
+    return (
+      <FormGroup key="captcha" model=".captcha">
+        <ul className="search__filter">
+          <li><label><Translate>Captcha</Translate><span className="required">*</span></label></li>
+          <li className="wide">
+            <Captcha refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
+          </li>
+        </ul>
+      </FormGroup>
+    );
+  }
+
   render() {
     const { template, thesauris, file, attachments } = this.props;
+    const { submiting } = this.state;
+    if (submiting) {
+      return PublicForm.renderSubmitState();
+    }
     return (
-      <LocalForm validators={this.validators} model="publicform" getDispatch={dispatch => this.attachDispatch(dispatch)} onSubmit={this.handleSubmit}>
-        {PublicForm.renderTitle()}
-        <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
-        {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
-        {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
-        {this.renderCaptcha()}
-        <input type="submit" className="btn btn-success" value="Submit"/>
-      </LocalForm>
+      <div className="public-form">
+        <LocalForm
+          validators={this.validators}
+          model="publicform"
+          getDispatch={dispatch => this.attachDispatch(dispatch)}
+          onSubmit={this.handleSubmit}
+        >
+          {PublicForm.renderTitle()}
+          <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
+          {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
+          {attachments ? PublicForm.renderFileField('attachments', { multiple: 'multiple' }) : false}
+          {this.renderCaptcha()}
+          <input type="submit" className="btn btn-success" value="Submit"/>
+        </LocalForm>
+      </div>
     );
   }
 }

@@ -156,9 +156,9 @@ describe('uploadsActions', () => {
         };
         store.dispatch(actions.publicSubmit(formData))
         .then(() => {
-          expect(mockUpload.field).toHaveBeenCalledWith('title', 'test');
+          delete formData.captcha;
+          expect(mockUpload.field).toHaveBeenCalledWith('entity', JSON.stringify(formData));
           expect(mockUpload.field).toHaveBeenCalledWith('captcha', 23);
-          expect(mockUpload.field).toHaveBeenCalledWith('metadata[prop]', 'value');
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[1]', file);
@@ -168,6 +168,7 @@ describe('uploadsActions', () => {
         emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok', status: 200 });
       });
     });
+
 
     describe('uploadDocument', () => {
       it('should create a document and upload file while dispatching the upload progress', () => {

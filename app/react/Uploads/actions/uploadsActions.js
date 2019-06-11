@@ -68,7 +68,7 @@ export function importData([file], template) {
     })
     .on('response', (response) => {
       dispatch(basicActions.set('importUploadProgress', 0));
-      resolve(JSON.parse(response.text));
+      resolve(response);
     })
     .end();
   });
@@ -98,26 +98,22 @@ export function publicSubmit(data) {
     const request = superagent.post(`${APIURL}public`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
-    .field('title', data.title)
-    .field('captcha', data.captcha)
-    .field('template', data.template);
+    .field('captcha', data.captcha);
+    delete data.captcha;
+
     if (data.file) {
       request.attach('file', data.file);
+      delete data.file;
     }
 
     if (data.attachments) {
       data.attachments.forEach((attachment, index) => {
         request.attach(`attachments[${index}]`, attachment);
+        delete data.attachments;
       });
     }
 
-    metadata = data.metadata || {};
-    Object.keys(metadata).forEach((key) => {
-      if (!metadata[key]) {
-        return;
-      }
-      request.field(`metadata[${key}]`, metadata[key]);
-    });
+    request.field('entity', JSON.stringify(data));
 
     request
     .on('response', (response) => {

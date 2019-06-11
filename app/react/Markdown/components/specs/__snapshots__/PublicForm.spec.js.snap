@@ -1,251 +1,257 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PublicForm should render a form 1`] = `
-<LocalForm
-  getDispatch={[Function]}
-  initialState={Object {}}
-  model="publicform"
-  onSubmit={[Function]}
-  validators={
-    Object {
-      "captcha": Object {
-        "required": [Function],
-      },
-      "title": Object {
-        "required": [Function],
-      },
-    }
-  }
+<div
+  className="public-form"
 >
-  <Connect(FormGroup)
-    key="title"
-    model=".title"
-  >
-    <ul
-      className="search__filter"
-    >
-      <li>
-        <label
-          htmlFor="title"
-        >
-          <Connect(Translate)>
-            Title
-          </Connect(Translate)>
-          <span
-            className="required"
-          >
-            *
-          </span>
-        </label>
-      </li>
-      <li
-        className="wide"
-      >
-        <DefaultConnectedControlText
-          className="form-control"
-          id="title"
-          model=".title"
-        />
-      </li>
-    </ul>
-  </Connect(FormGroup)>
-  <Connect(MetadataFormFields)
+  <LocalForm
+    getDispatch={[Function]}
+    initialState={Object {}}
     model="publicform"
-    template={
-      Immutable.Map {
-        "_id": "123",
-        "properties": Immutable.List [
-          Immutable.Map {
-            "type": "text",
-            "name": "text",
-          },
-        ],
+    onSubmit={[Function]}
+    validators={
+      Object {
+        "captcha": Object {
+          "required": [Function],
+        },
+        "title": Object {
+          "required": [Function],
+        },
       }
     }
-    thesauris={Immutable.List []}
-  />
-  <Connect(FormGroup)
-    key="captcha"
-    model=".captcha"
   >
-    <ul
-      className="search__filter"
+    <Connect(FormGroup)
+      key="title"
+      model=".title"
     >
-      <li>
-        <label>
-          <Connect(Translate)>
-            Are you a robot?
-          </Connect(Translate)>
-          <span
-            className="required"
-          >
-            *
-          </span>
-        </label>
-      </li>
-      <li
-        className="wide"
+      <ul
+        className="search__filter"
       >
-        <Captcha
-          model=".captcha"
-          refresh={[Function]}
-        />
-      </li>
-    </ul>
-  </Connect(FormGroup)>
-  <input
-    className="btn btn-success"
-    type="submit"
-    value="Submit"
-  />
-</LocalForm>
+        <li>
+          <label
+            htmlFor="title"
+          >
+            <Connect(Translate)>
+              Title
+            </Connect(Translate)>
+            <span
+              className="required"
+            >
+              *
+            </span>
+          </label>
+        </li>
+        <li
+          className="wide"
+        >
+          <DefaultConnectedControlText
+            className="form-control"
+            id="title"
+            model=".title"
+          />
+        </li>
+      </ul>
+    </Connect(FormGroup)>
+    <Connect(MetadataFormFields)
+      model="publicform"
+      template={
+        Immutable.Map {
+          "_id": "123",
+          "properties": Immutable.List [
+            Immutable.Map {
+              "type": "text",
+              "name": "text",
+            },
+          ],
+        }
+      }
+      thesauris={Immutable.List []}
+    />
+    <Connect(FormGroup)
+      key="captcha"
+      model=".captcha"
+    >
+      <ul
+        className="search__filter"
+      >
+        <li>
+          <label>
+            <Connect(Translate)>
+              Captcha
+            </Connect(Translate)>
+            <span
+              className="required"
+            >
+              *
+            </span>
+          </label>
+        </li>
+        <li
+          className="wide"
+        >
+          <Captcha
+            model=".captcha"
+            refresh={[Function]}
+          />
+        </li>
+      </ul>
+    </Connect(FormGroup)>
+    <input
+      className="btn btn-success"
+      type="submit"
+      value="Submit"
+    />
+  </LocalForm>
+</div>
 `;
 
 exports[`PublicForm should render a form with file and attachments 1`] = `
-<LocalForm
-  getDispatch={[Function]}
-  initialState={Object {}}
-  model="publicform"
-  onSubmit={[Function]}
-  validators={
-    Object {
-      "captcha": Object {
-        "required": [Function],
-      },
-      "title": Object {
-        "required": [Function],
-      },
-    }
-  }
+<div
+  className="public-form"
 >
-  <Connect(FormGroup)
-    key="title"
-    model=".title"
-  >
-    <ul
-      className="search__filter"
-    >
-      <li>
-        <label
-          htmlFor="title"
-        >
-          <Connect(Translate)>
-            Title
-          </Connect(Translate)>
-          <span
-            className="required"
-          >
-            *
-          </span>
-        </label>
-      </li>
-      <li
-        className="wide"
-      >
-        <DefaultConnectedControlText
-          className="form-control"
-          id="title"
-          model=".title"
-        />
-      </li>
-    </ul>
-  </Connect(FormGroup)>
-  <Connect(MetadataFormFields)
+  <LocalForm
+    getDispatch={[Function]}
+    initialState={Object {}}
     model="publicform"
-    template={
-      Immutable.Map {
-        "_id": "123",
-        "properties": Immutable.List [
-          Immutable.Map {
-            "type": "text",
-            "name": "text",
-          },
-        ],
+    onSubmit={[Function]}
+    validators={
+      Object {
+        "captcha": Object {
+          "required": [Function],
+        },
+        "title": Object {
+          "required": [Function],
+        },
       }
     }
-    thesauris={Immutable.List []}
-  />
-  <div
-    className="form-group"
   >
-    <ul
-      className="search__filter"
+    <Connect(FormGroup)
+      key="title"
+      model=".title"
     >
-      <li>
-        <label
-          htmlFor="file"
-        >
-          <Connect(Translate)>
-            File
-          </Connect(Translate)>
-          <DefaultConnectedControlFile
-            accept=".pdf"
-            className="form-control"
-            getRef={[Function]}
-            id="file"
-            model=".file"
-          />
-        </label>
-      </li>
-    </ul>
-  </div>
-  <div
-    className="form-group"
-  >
-    <ul
-      className="search__filter"
-    >
-      <li>
-        <label
-          htmlFor="attachments"
-        >
-          <Connect(Translate)>
-            Attachments
-          </Connect(Translate)>
-          <DefaultConnectedControlFile
-            className="form-control"
-            getRef={[Function]}
-            id="attachments"
-            model=".attachments"
-            multiple="multiple"
-          />
-        </label>
-      </li>
-    </ul>
-  </div>
-  <Connect(FormGroup)
-    key="captcha"
-    model=".captcha"
-  >
-    <ul
-      className="search__filter"
-    >
-      <li>
-        <label>
-          <Connect(Translate)>
-            Are you a robot?
-          </Connect(Translate)>
-          <span
-            className="required"
-          >
-            *
-          </span>
-        </label>
-      </li>
-      <li
-        className="wide"
+      <ul
+        className="search__filter"
       >
-        <Captcha
-          model=".captcha"
-          refresh={[Function]}
-        />
-      </li>
-    </ul>
-  </Connect(FormGroup)>
-  <input
-    className="btn btn-success"
-    type="submit"
-    value="Submit"
-  />
-</LocalForm>
+        <li>
+          <label
+            htmlFor="title"
+          >
+            <Connect(Translate)>
+              Title
+            </Connect(Translate)>
+            <span
+              className="required"
+            >
+              *
+            </span>
+          </label>
+        </li>
+        <li
+          className="wide"
+        >
+          <DefaultConnectedControlText
+            className="form-control"
+            id="title"
+            model=".title"
+          />
+        </li>
+      </ul>
+    </Connect(FormGroup)>
+    <Connect(MetadataFormFields)
+      model="publicform"
+      template={
+        Immutable.Map {
+          "_id": "123",
+          "properties": Immutable.List [
+            Immutable.Map {
+              "type": "text",
+              "name": "text",
+            },
+          ],
+        }
+      }
+      thesauris={Immutable.List []}
+    />
+    <div
+      className="form-group"
+    >
+      <ul
+        className="search__filter"
+      >
+        <li>
+          <label
+            htmlFor="file"
+          >
+            <Connect(Translate)>
+              File
+            </Connect(Translate)>
+            <DefaultConnectedControlFile
+              accept=".pdf"
+              className="form-control"
+              id="file"
+              model=".file"
+            />
+          </label>
+        </li>
+      </ul>
+    </div>
+    <div
+      className="form-group"
+    >
+      <ul
+        className="search__filter"
+      >
+        <li>
+          <label
+            htmlFor="attachments"
+          >
+            <Connect(Translate)>
+              Attachments
+            </Connect(Translate)>
+            <DefaultConnectedControlFile
+              className="form-control"
+              id="attachments"
+              model=".attachments"
+              multiple="multiple"
+            />
+          </label>
+        </li>
+      </ul>
+    </div>
+    <Connect(FormGroup)
+      key="captcha"
+      model=".captcha"
+    >
+      <ul
+        className="search__filter"
+      >
+        <li>
+          <label>
+            <Connect(Translate)>
+              Captcha
+            </Connect(Translate)>
+            <span
+              className="required"
+            >
+              *
+            </span>
+          </label>
+        </li>
+        <li
+          className="wide"
+        >
+          <Captcha
+            model=".captcha"
+            refresh={[Function]}
+          />
+        </li>
+      </ul>
+    </Connect(FormGroup)>
+    <input
+      className="btn btn-success"
+      type="submit"
+      value="Submit"
+    />
+  </LocalForm>
+</div>
 `;

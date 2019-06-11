@@ -81,6 +81,7 @@ export default (app) => {
     '/api/public',
     multer().any(),
     captchaAuthorization(),
+    (req, res, next) => { req.body = JSON.parse(req.body.entity); console.log(req.body); return next(); },
     validateRequest(saveSchema),
     async (req, res) => {
       const entity = req.body;
