@@ -133,7 +133,7 @@ const config = {
         geo_point_fields: {
           match: '*_geolocation',
           path_match: 'metadata.*',
-          mapping: { type: 'nested' }
+          mapping: { type: 'object' }
         }
       }, {
         nested_fields: {
