@@ -5,7 +5,7 @@ import instanceElasticTesting from 'api/utils/elastic_testing';
 import inheritanceFixtures, { ids } from './fixturesInheritance';
 
 describe('search.searchGeolocations', () => {
-  const elasticTesting = instanceElasticTesting('search_index_test');
+  const elasticTesting = instanceElasticTesting('search.geolocation_index_test');
 
   beforeAll(async () => {
     await db.clearAllAndLoad(inheritanceFixtures);
