@@ -60,6 +60,10 @@ Array [
             },
           ],
         },
+        Object {
+          "entity": "noExiste",
+          "inherit_geolocation": Array [],
+        },
       ],
     },
     "sharedId": "entity08",
@@ -186,6 +190,10 @@ Array [
               "lon": 222,
             },
           ],
+        },
+        Object {
+          "entity": "noExiste",
+          "inherit_geolocation": Array [],
         },
       ],
     },
