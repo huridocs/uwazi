@@ -175,11 +175,12 @@ export default {
     let value = thesauriValues.map((referencedEntityId) => {
       const name = inheritedProperty.get('name');
       const reference = relationships.toJS().find(r => r.entity === referencedEntityId) || { entityData: { metadata: {} } };
-      if (this[type] && (reference.entityData.metadata[name] || type === 'preview')) {
-        return this[type](inheritedProperty, reference.entityData.metadata[name], thesauris, options, templates);
+      const metadata = reference.entityData.metadata ? reference.entityData.metadata : {};
+      if (this[type] && (metadata[name] || type === 'preview')) {
+        return this[type](inheritedProperty, metadata[name], thesauris, options, templates);
       }
 
-      return { value: reference.entityData.metadata[name] };
+      return { value: metadata[name] };
     });
 
     let propType = 'inherit';

@@ -13,7 +13,7 @@ socket.on('disconnect', (reason) => {
     }
     disconnectTimeoutMessage = setTimeout(() => {
       disconnectNotifyId = store.dispatch(notify('Lost connection to the server, your changes may be lost', 'danger', false));
-    }, 3000);
+    }, 8000);
   }
 });
 
