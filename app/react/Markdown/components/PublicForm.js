@@ -79,6 +79,8 @@ class PublicForm extends Component {
       this.resetForm();
       this.setState({ submiting: false });
       this.refreshCaptcha();
+    }).catch(() => {
+      this.setState({ submiting: false });
     });
   }
 

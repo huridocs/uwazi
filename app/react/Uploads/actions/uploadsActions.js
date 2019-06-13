@@ -123,13 +123,13 @@ export function publicSubmit(data) {
         return;
       }
 
+      reject(response);
       if (response.status === 403) {
         dispatch(notify('Captcha error', 'danger'));
         return;
       }
 
       dispatch(notify('An error has ocurred', 'danger'));
-      reject(response);
     })
     .end();
   });
