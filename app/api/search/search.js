@@ -397,7 +397,6 @@ const search = {
       body.push(action);
       body.push(_doc);
 
-
       if (doc.fullText) {
         const fullText = Object.values(doc.fullText).join('\f');
 
@@ -424,7 +423,7 @@ const search = {
       if (res.items) {
         res.items.forEach((f) => {
           if (f.index.error) {
-            console.log(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
+            throw createError(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
           }
         });
       }
