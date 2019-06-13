@@ -38,17 +38,23 @@ describe('upload routes', () => {
     return promise;
   };
 
-  const deleteThumbnail = thumbnailId => new Promise((resolve) => {
-    const thumbnailURI = `${__dirname}/uploads/${thumbnailId}.jpg`;
-    fs.stat(path.resolve(thumbnailURI), (err) => {
-      if (err) { return resolve(); }
-      fs.unlinkSync(thumbnailURI);
-      return resolve();
-    });
-  });
+  const deleteAllFiles = (cb) => {
+    const directory = `${__dirname}/uploads/`;
+    const dontDeleteFiles = ['eng.pdf', 'spn.pdf', 'importcsv.csv', 'f2082bf51b6ef839690485d7153e847a.pdf'];
+    fs.readdir(directory, (err, files) => {
+      if (err) throw err;
 
-  const deleteThumbnails = () => deleteThumbnail(entityId)
-  .then(() => deleteThumbnail(entityEnId));
+      files.forEach((fileName) => {
+        if (dontDeleteFiles.includes(fileName)) {
+          return;
+        }
+        fs.unlink(path.join(directory, fileName), (error) => {
+          if (error) throw error;
+        });
+      });
+      cb();
+    });
+  };
 
   const checkThumbnails = () => {
     const thumbnail1URI = `${__dirname}/uploads/${entityId}.jpg`;
@@ -65,8 +71,7 @@ describe('upload routes', () => {
   };
 
   beforeEach((done) => {
-    deleteThumbnails()
-    .then(() => {
+    deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
       spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       iosocket = jasmine.createSpyObj('socket', ['emit']);
@@ -93,13 +98,6 @@ describe('upload routes', () => {
 
       db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
       spyOn(errorLog, 'error'); //just to avoid annoying console output
-    });
-  });
-
-  afterAll((done) => {
-    deleteThumbnails()
-    .then(() => {
-      db.disconnect().then(done);
     });
   });
 
@@ -355,6 +353,60 @@ describe('upload routes', () => {
       });
 
       routes.post('/api/import', req);
+    });
+  });
+
+  describe('api/public', () => {
+    beforeEach((done) => {
+      deleteAllFiles(() => {
+        spyOn(Date, 'now').and.returnValue(1000);
+        pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+        const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
+        file = {
+          fieldname: 'file',
+          originalname: 'gadgets-01.pdf',
+          encoding: '7bit',
+          mimetype: 'application/octet-stream',
+          buffer
+        };
+
+        const attachment = {
+          fieldname: 'attachment0',
+          originalname: 'attachment-01.pdf',
+          encoding: '7bit',
+          mimetype: 'application/octet-stream',
+          buffer
+        };
+        req = {
+          language: 'es',
+          headers: {},
+          body: { title: 'public submit' },
+          user: {},
+          files: [file, attachment],
+          io: {},
+          getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
+        };
+        done();
+      });
+    });
+
+    it('should create the entity and store the files', async () => {
+      await onSocketRespond('post', '/api/public', req);
+      const [newEntity] = await entities.get({ title: 'public submit' });
+      expect(newEntity.title).toBe('public submit');
+      expect(newEntity.file.originalname).toBe('gadgets-01.pdf');
+      expect(newEntity.processed).toBe(true);
+      expect(newEntity.attachments.length).toBe(1);
+      expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
+      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(true);
+      expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))).toBe(true);
+    });
+  });
+
+
+  afterAll((done) => {
+    deleteAllFiles(() => {
+      db.disconnect().then(done);
     });
   });
 });

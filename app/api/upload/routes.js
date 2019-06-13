@@ -7,8 +7,14 @@ import errorLog from 'api/log/errorLog';
 import relationships from 'api/relationships';
 
 import CSVLoader from 'api/csv';
+import { saveSchema } from 'api/entities/endpointSchema';
+import { generateFileName } from 'api/utils/files';
+import fs from 'fs';
+import path from 'path';
+import configPaths from '../config/paths';
 import { validateRequest, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
+import captchaAuthorization from '../auth/captchaMiddleware';
 import uploads from './uploads';
 import storageConfig from './storageConfig';
 import uploadFile from './uploadProcess';
@@ -21,6 +27,18 @@ const getDocuments = (sharedId, allLanguages, language) =>
     ...(!allLanguages && { language })
   });
 
+const storeFile = (file, cb) => {
+  const filename = generateFileName(file);
+  const destination = configPaths.uploadDocumentsPath;
+  const pathToFile = path.join(destination, filename);
+  fs.appendFile(pathToFile, file.buffer, (err) => {
+    if (err) {
+      throw err;
+    }
+    cb(Object.assign(file, { filename, destination }));
+  });
+};
+
 export default (app) => {
   const upload = multer({ storage });
 
@@ -29,7 +47,6 @@ export default (app) => {
   const uploadProcess = async (req, res, allLanguages = true) => {
     try {
       const docs = await getDocuments(req.body.document, allLanguages, req.language);
-
       await uploadFile(docs, req.files[0])
       .on('conversionStart', () => {
         res.json(req.files[0]);
@@ -59,6 +76,35 @@ export default (app) => {
 
     (req, res) => uploadProcess(req, res)
   );
+
+  app.post(
+    '/api/public',
+    multer().any(),
+    captchaAuthorization(),
+    (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
+    validateRequest(saveSchema),
+    async (req, res) => {
+      const entity = req.body;
+      entity.attachments = [];
+      if (req.files.length) {
+        req.files.forEach((file) => {
+          if (file.fieldname.includes('attachment')) {
+            storeFile(file, _file => entity.attachments.push(_file));
+          }
+        });
+      }
+      const newEntity = await entities.save(entity, { user: req.user, language: req.language });
+      const file = req.files.find(_file => _file.fieldname.includes('file'));
+      if (file) {
+        storeFile(file, async (_file) => {
+          const newEntities = await entities.getAllLanguages(newEntity.sharedId);
+          await uploadFile(newEntities, _file).start();
+          await entities.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
+          socket(req).emit('documentProcessed', newEntity.sharedId);
+        });
+      }
+      res.json(newEntity);
+    });
 
   app.post(
     '/api/import',

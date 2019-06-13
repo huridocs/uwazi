@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import session from 'express-session';
 import uniqueID from 'shared/uniqueID';
+import svgCaptcha from 'svg-captcha';
 
 import { validateRequest } from '../utils';
 
@@ -59,5 +60,13 @@ export default (app) => {
   app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
+  });
+
+  app.get('/captcha', (req, res) => {
+    const captcha = svgCaptcha.createMathExpr({ mathMin: 1, mathMax: 19, mathOperator: '+' });
+    req.session.captcha = captcha.text;
+
+    res.type('svg');
+    res.status(200).send(captcha.data);
   });
 };

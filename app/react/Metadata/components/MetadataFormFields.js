@@ -34,6 +34,7 @@ const translateOptions = thesauri => thesauri.values.map((option) => {
 export class MetadataFormFields extends Component {
   getField(property, _model, thesauris) {
     let thesauri;
+    const { dateFormat } = this.props;
     const propertyType = property.type;
     switch (propertyType) {
     case 'select':
@@ -53,9 +54,9 @@ export class MetadataFormFields extends Component {
       }
       return <MultiSelect model={_model} optionsValue="id" options={thesauri} prefix={_model} sort />;
     case 'date':
-      return <DatePicker model={_model} format={this.props.dateFormat}/>;
+      return <DatePicker model={_model} format={dateFormat}/>;
     case 'daterange':
-      return <DateRange model={_model} format={this.props.dateFormat}/>;
+      return <DateRange model={_model} format={dateFormat}/>;
     case 'numeric':
       return <Numeric model={_model}/>;
     case 'markdown':
@@ -63,9 +64,9 @@ export class MetadataFormFields extends Component {
     case 'nested':
       return <Nested model={_model}/>;
     case 'multidate':
-      return <MultiDate model={_model} format={this.props.dateFormat}/>;
+      return <MultiDate model={_model} format={dateFormat}/>;
     case 'multidaterange':
-      return <MultiDateRange model={_model} format={this.props.dateFormat}/>;
+      return <MultiDateRange model={_model} format={dateFormat}/>;
     case 'geolocation':
       return <Geolocation model={_model} />;
     case 'link':
@@ -88,9 +89,9 @@ export class MetadataFormFields extends Component {
   }
 
   render() {
-    const thesauris = this.props.thesauris.toJS();
-    const fields = this.props.template.get('properties').toJS();
-    const templateID = this.props.template.get('_id');
+    const { thesauris, template, multipleEdition, model } = this.props;
+    const fields = template.get('properties').toJS();
+    const templateID = template.get('_id');
 
     return (
       <div>
@@ -100,15 +101,15 @@ export class MetadataFormFields extends Component {
               <li>
                 <label>
                   <MultipleEditionFieldWarning
-                    multipleEdition={this.props.multipleEdition}
-                    model={this.props.model}
+                    multipleEdition={multipleEdition}
+                    model={model}
                     field={`metadata.${property.name}`}
                   />
                   {t(templateID, property.label)}
                   {property.required ? <span className="required">*</span> : ''}
                 </label>
               </li>
-              <li className="wide">{this.getField(property, `.metadata.${property.name}`, thesauris)}</li>
+              <li className="wide">{this.getField(property, `.metadata.${property.name}`, thesauris.toJS())}</li>
             </ul>
           </FormGroup>
           ))}

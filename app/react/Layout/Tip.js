@@ -16,7 +16,7 @@ Tip.defaultProps = {
 };
 
 Tip.propTypes = {
-  children: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   icon: PropTypes.string
 };
 
