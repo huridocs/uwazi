@@ -4,6 +4,7 @@ import * as forms from 'app/Forms';
 
 const Select = props => <Control.select component={forms.Select} {...props}/>;
 const DatePicker = props => <Control component={forms.DatePicker} {...props}/>;
+const Captcha = props => <Control component={forms.Captcha} {...props}/>;
 const DateRange = props => <Control.select component={forms.DateRange} {...props}/>;
 const MultiSelect = props => <Control.select component={forms.MultiSelect} {...props}/>;
 const MarkDown = props => <Control.text component={forms.MarkDown} {...props}/>;
@@ -24,6 +25,7 @@ export default {
   Select,
   FormGroup,
   DatePicker,
+  Captcha,
   DateRange,
   MultiSelect,
   MarkDown,

@@ -73,6 +73,15 @@ export default {
     },
     {
       _id: db.id(),
+      sharedId: 'entity04.1',
+      template: template1,
+      language: 'en',
+      title: 'entity without metadata',
+      published: true,
+      user: userId
+    },
+    {
+      _id: db.id(),
       sharedId: 'entity05',
       template: template2,
       language: 'en',
@@ -106,7 +115,7 @@ export default {
         regular_geolocation_geolocation: [{ lat: 18, lon: 7 }],
         regular_relationship: ['entity02'],
         inhertied_country: ['entity06'],
-        inhertied_home: ['entity01', 'entity03', 'entity04']
+        inhertied_home: ['entity01', 'entity03', 'entity04', 'entity04.1']
       },
       published: true,
       user: userId

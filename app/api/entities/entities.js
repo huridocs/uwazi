@@ -143,7 +143,6 @@ export default {
   getEntityTemplate,
   save(_doc, { user, language }, updateRelationships = true, index = true) {
     const doc = _doc;
-
     if (!doc.sharedId) {
       doc.user = user._id;
       doc.creationDate = date.currentUTC();
