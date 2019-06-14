@@ -168,7 +168,7 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  inherit(property, thesauriValues, thesauris, options, templates, relationships) {
+  inherit(property, thesauriValues = [], thesauris, options, templates, relationships) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template.get('properties').find(p => p.get('_id') === property.get('inheritProperty'));
     const type = inheritedProperty.get('type');
