@@ -689,7 +689,7 @@
   background: $c-white;
   border-radius: 4px;
 
-  span {
+  > span {
     display: inline-block;
     line-height: 34px;
     width: 50px;

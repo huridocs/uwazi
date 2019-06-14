@@ -1,4 +1,5 @@
 import languageMiddleware from './utils/languageMiddleware';
+import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import elasticConfig from './config/elasticIndexes';
 
 export default (app, server) => {
@@ -7,12 +8,14 @@ export default (app, server) => {
 
   //common middlewares
   app.use(languageMiddleware);
+  app.use(activitylogMiddleware);
 
   //module routes
   //require('./auth/routes.js')(app);
 
   require('./socketio/middleware.js')(server, app);
   require('./relationships/routes.js')(app);
+  require('./activitylog/routes.js')(app);
   require('./users/routes.js')(app);
   require('./templates/routes.js')(app);
   require('./search/routes.js')(app);
