@@ -321,6 +321,7 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
           row.metadata[property].forEach((entity, index) => {
             const targetProperty = templatesInheritedProperties[row.template][property].target.name;
             const inherited = inheritedEntities[entity] ? inheritedEntities[entity] : { metadata: {} };
+            inherited.metadata = inherited.metadata || {};
             results.rows[rowIndex].metadata[property][index] = {
               entity,
               inherit_geolocation: inherited.metadata[targetProperty] || [],

@@ -37,6 +37,10 @@ Array [
           "entity": "entity04",
           "inherit_geolocation": Array [],
         },
+        Object {
+          "entity": "entity04.1",
+          "inherit_geolocation": Array [],
+        },
       ],
       "regular_geolocation_geolocation": Array [
         Object {
@@ -166,6 +170,10 @@ Array [
         },
         Object {
           "entity": "entity04",
+          "inherit_geolocation": Array [],
+        },
+        Object {
+          "entity": "entity04.1",
           "inherit_geolocation": Array [],
         },
       ],
