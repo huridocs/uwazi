@@ -13,7 +13,6 @@ describe('SemanticSearchMultieditPanel', () => {
   let props;
 
   const mockAction = (obj, fn) => jest.spyOn(obj, fn).mockReturnValue(() => {});
-
   beforeEach(() => {
     props = {
       storeKey: 'library',
@@ -25,12 +24,12 @@ describe('SemanticSearchMultieditPanel', () => {
         multiedit: Immutable.fromJS([
           { searchId: 'doc1', template: 'tpl1' },
           { searchId: 'doc2', template: 'tpl1' },
-          { searchId: 'doc3', template: 'tpl3' }
+          { searchId: 'doc3', template: 'tpl3' },
         ]),
         multipleEditForm: {
           metadata: {
             unchangedField: { pristine: true },
-            changedField: { pristine: false }
+            changedField: { pristine: false },
           }
         }
       },
@@ -45,7 +44,7 @@ describe('SemanticSearchMultieditPanel', () => {
           _id: 'tpl2',
           properties: [
             { name: 'p1', type: 'select', content: 't1' },
-            { name: 'p2', type: 'text' }
+            { name: 'p2', type: 'text' },
           ]
         }
       ]),
@@ -58,7 +57,7 @@ describe('SemanticSearchMultieditPanel', () => {
     mockAction(metadataActions, 'multipleUpdate');
     mockAction(searchActions, 'setEditSearchEntities');
     mockAction(searchActions, 'getSearch');
-    dispatch = jest.fn();
+    dispatch = jest.fn().mockImplementation(() => Promise.resolve());
     jest.spyOn(multiReducer, 'wrapDispatch').mockReturnValue(dispatch);
   });
 
@@ -85,7 +84,6 @@ describe('SemanticSearchMultieditPanel', () => {
 
   describe('save', () => {
     it('should apply changes to entities and refetch the search', async () => {
-      jest.spyOn(metadataActions, 'multipleUpdate').mockReturnValue(() => Promise.resolve());
       const component = render();
       const formValues = {
         metadata: {
@@ -93,9 +91,12 @@ describe('SemanticSearchMultieditPanel', () => {
           changedField: 'val2'
         }
       };
+      const instance = component.instance();
+      spyOn(instance, 'close');
       await component.instance().save(formValues);
       expect(metadataActions.multipleUpdate.mock.calls).toMatchSnapshot();
       expect(searchActions.getSearch).toHaveBeenCalledWith('searchId');
+      expect(instance.close).toHaveBeenCalled();
     });
   });
 });

@@ -8,7 +8,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
-import comonTemplate from 'app/Metadata/helpers/comonTemplate';
+import commonTemplate from 'app/Metadata/helpers/comonTemplate';
 import MetadataForm from 'app/Metadata/components/MetadataForm';
 import { setEditSearchEntities, getSearch } from 'app/SemanticSearch/actions/actions';
 import { createSelector } from 'reselect';
@@ -18,10 +18,10 @@ const getTemplates = createSelector(
   templates => templates.toJS()
 );
 
-const commonTemplate = createSelector(
+const commonTemplateSelector = createSelector(
   getTemplates,
   s => s.semanticSearch.multiedit,
-  comonTemplate
+  commonTemplate
 );
 
 export class SemanticSearchMultieditPanel extends Component {
@@ -59,7 +59,6 @@ export class SemanticSearchMultieditPanel extends Component {
     if (formState.icon && !formState.icon.pristine) {
       modifiedValues.icon = formValues.icon;
     }
-
     return this.props.multipleUpdate(entities, modifiedValues)
     .then(() => {
       this.close();
@@ -168,7 +167,7 @@ SemanticSearchMultieditPanel.contextTypes = {
 export const mapStateToProps = (state) => {
   const entities = state.semanticSearch.multiedit;
   return {
-      template: commonTemplate(state),
+      template: commonTemplateSelector(state),
       thesauris: state.thesauris,
       entities,
       open: Boolean(entities.size),

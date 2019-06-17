@@ -21,6 +21,32 @@ Array [
 ]
 `;
 
+exports[`SemanticSearchMultieditPanel save should apply changes to entities and refetch the search 1`] = `
+Array [
+  Array [
+    Immutable.List [
+      Immutable.Map {
+        "searchId": "doc1",
+        "template": "tpl1",
+      },
+      Immutable.Map {
+        "searchId": "doc2",
+        "template": "tpl1",
+      },
+      Immutable.Map {
+        "searchId": "doc3",
+        "template": "tpl3",
+      },
+    ],
+    Object {
+      "metadata": Object {
+        "changedField": "val2",
+      },
+    },
+  ],
+]
+`;
+
 exports[`SemanticSearchMultieditPanel should render multi edit form for semantic search multi edit documents 1`] = `
 <SidePanel
   className="multi-edit"
