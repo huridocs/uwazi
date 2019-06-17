@@ -62,14 +62,7 @@ describe('SemanticSearchResults', () => {
     const component = render();
     expect(component).toMatchSnapshot();
   });
-  it('should only display items that match filters', () => {
-    state.semanticSearch.resultsFilters = {
-      threshold: 0.4,
-      minRelevantSentences: 2
-    };
-    const component = render();
-    expect(component).toMatchSnapshot();
-  });
+
   describe('when the search is empty', () => {
     it('should render not found page', () => {
       state.semanticSearch.search = Immutable.fromJS({});
@@ -82,5 +75,17 @@ describe('SemanticSearchResults', () => {
     const component = render();
     component.find(Doc).first().simulate('click');
     expect(actions.selectSemanticSearchDocument).toHaveBeenCalled();
+  });
+
+  describe('when load more button is clicked', () => {
+    it('should fetch the next 30 results using the same filters', () => {
+      jest.spyOn(actions, 'getMoreSearchResults').mockImplementation(() => {});
+      const component = render();
+      component.find('.btn-load-more').first().simulate('click');
+      expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', { limit: 30, minRelevantSentences: 1, threshold: 0.3, skip: 30 });
+      component.update();
+      component.find('.btn-load-more').first().simulate('click');
+      expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', { limit: 30, minRelevantSentences: 1, threshold: 0.3, skip: 60 });
+    });
   });
 });

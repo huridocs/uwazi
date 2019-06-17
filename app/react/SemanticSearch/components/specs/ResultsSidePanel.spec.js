@@ -10,7 +10,7 @@ describe('DocumentResults', () => {
   });
 
   describe('render', () => {
-    it('should render a result', () => {
+    it('should render results filters panel and document side panel', () => {
       expect(component).toMatchSnapshot();
     });
   });

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DocumentResults render should render a result 1`] = `
+exports[`DocumentResults render should render results filters panel and document side panel 1`] = `
 <React.Fragment>
   <Connect(ResultsFiltersPanel)
     storeKey="library"

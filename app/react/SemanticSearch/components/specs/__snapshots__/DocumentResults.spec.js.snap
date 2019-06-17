@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DocumentResults render should render a result 1`] = `
+exports[`DocumentResults render should render result snippets above threshold 1`] = `
 <React.Fragment>
   <div
     className="view"

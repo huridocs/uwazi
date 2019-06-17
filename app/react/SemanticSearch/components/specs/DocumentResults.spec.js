@@ -16,7 +16,6 @@ describe('DocumentResults', () => {
         },
         avgScore: 0.4
       },
-      filters: { threshold: 0.4 },
       threshold: 0.3,
       changeTreshHold: jasmine.createSpy('changeTreshhold'),
       selectTab: jasmine.createSpy('selectTab'),
@@ -27,7 +26,7 @@ describe('DocumentResults', () => {
   });
 
   describe('render', () => {
-    it('should render a result', () => {
+    it('should render result snippets above threshold', () => {
       expect(component).toMatchSnapshot();
     });
   });

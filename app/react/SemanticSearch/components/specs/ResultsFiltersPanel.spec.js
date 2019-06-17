@@ -16,7 +16,7 @@ describe('ResultsFiltersPanel', () => {
   });
 
   describe('render', () => {
-    it('should render a result', () => {
+    it('should render search filters and instructions', () => {
       expect(component).toMatchSnapshot();
     });
   });
