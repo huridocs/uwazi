@@ -21,16 +21,17 @@ const prepareRegexpQueries = (query) => {
 };
 
 const timeQuery = (query) => {
-  const result = {};
-  if (query.time && (query.time.from || query.time.to)) {
-    result.time = {};
-    if (query.time.from) {
-      result.time.$gt = new Date(parseInt(query.time.from, 10) * 1000);
-    }
+  if (!query.time) {
+    return {};
+  }
 
-    if (query.time.to) {
-      result.time.$lt = new Date(parseInt(query.time.to, 10) * 1000);
-    }
+  const result = { time: {} };
+  if (query.time.from) {
+    result.time.$gt = new Date(parseInt(query.time.from, 10) * 1000);
+  }
+
+  if (query.time.to) {
+    result.time.$lt = new Date(parseInt(query.time.to, 10) * 1000);
   }
   return result;
 };
