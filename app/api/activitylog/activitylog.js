@@ -32,7 +32,6 @@ const timeQuery = (query) => {
       result.time.$lt = new Date(parseInt(query.time.to, 10) * 1000);
     }
   }
-  console.log(result);
   return result;
 };
 
@@ -41,7 +40,7 @@ export default {
     return model.save(entry);
   },
 
-  get(query) {
+  get(query = {}) {
     const mongoQuery = Object.assign(prepareRegexpQueries(query), timeQuery(query));
     if (query.method && query.method.length) {
       mongoQuery.method = { $in: query.method };
@@ -51,8 +50,7 @@ export default {
       mongoQuery.username = query.username;
     }
 
-    const pagination = { limit: parseInt(query.limit || 2000, 10) };
-    console.log(mongoQuery);
+    const pagination = { limit: parseInt(query.limit || 2000, 10), sort: { time: -1 } };
     return model.get(mongoQuery, null, pagination);
   }
 };

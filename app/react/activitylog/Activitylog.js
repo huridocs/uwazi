@@ -4,8 +4,8 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import api from 'app/utils/api';
 
-import ActivityLogForm from './components/ActivityLogForm';
-import ActivityLogList from './components/ActivityLogList';
+import ActivitylogForm from './components/ActivitylogForm';
+import ActivitylogList from './components/ActivitylogList';
 
 export class ActivityLog extends RouteHandler {
   static requestState() {
@@ -20,8 +20,8 @@ export class ActivityLog extends RouteHandler {
   render() {
     return (
       <div className="activity-log">
-        <ActivityLogForm />
-        <ActivityLogList />
+        <ActivitylogForm />
+        <ActivitylogList />
       </div>
     );
   }

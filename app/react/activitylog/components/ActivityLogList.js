@@ -25,9 +25,8 @@ class ActivityLogList extends Component {
         <td>{ActivityLogList.renderMethod(entry.get('method'))}</td>
         <td>{entry.get('url')}</td>
         <td>{entry.get('username') || '-'}</td>
-        <td>{entry.get('query')}</td>
-        <td>{entry.get('body')}</td>
-        <td>{entry.get('params')}</td>
+        <td className="tdquery">{entry.get('query')}</td>
+        <td className="tdbody">{entry.get('body')}</td>
         <td>{time}</td>
       </tr>
     );
@@ -45,7 +44,6 @@ class ActivityLogList extends Component {
               <th>User</th>
               <th>Query</th>
               <th>Body</th>
-              <th>Params</th>
               <th>Time</th>
             </tr>
           </thead>
