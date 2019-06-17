@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { LocalForm, Control } from 'react-redux-form';
-import { activitylogSearch } from 'app/activitylog/actions/activitylogActions';
+import { activitylogSearch } from 'app/Activitylog/actions/activitylogActions';
 import { bindActionCreators } from 'redux';
 import { MultiSelect, DateRange } from 'app/ReactReduxForms';
 

@@ -26,10 +26,8 @@ export default class DatePicker extends Component {
     if (!_value) {
       return onChange(null);
     }
-    const value = moment.utc(_value, 'X');
-    this.setState({ value: value.toDate() });
+    const value = moment(_value);
 
-    value.add(value.utcOffset(), 'minute');
     if (endOfDay) {
       value.utc().endOf('day');
     }
