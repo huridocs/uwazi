@@ -6,7 +6,7 @@ import { activitylogSearch } from 'app/activitylog/actions/activitylogActions';
 import { bindActionCreators } from 'redux';
 import { MultiSelect, DateRange } from 'app/ReactReduxForms';
 
-class ActivityLogForm extends Component {
+class ActivitylogForm extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -62,19 +62,15 @@ class ActivityLogForm extends Component {
               <label htmlFor="url">Body</label>
               <Control.text className="form-control" model=".body" id="body" />
             </div>
-            <div className="form-group">
-              <label htmlFor="url">Params</label>
-              <Control.text className="form-control" model=".params" id="params" />
-            </div>
           </div>
-          <input type="submit" className="btn btn-success" value="Search"/>
+          <div className="col-lg-12"><input type="submit" className="btn btn-success" value="Search"/></div>
         </LocalForm>
       </div>
     );
   }
 }
 
-ActivityLogForm.propTypes = {
+ActivitylogForm.propTypes = {
   submit: PropTypes.func.isRequired
 };
 
@@ -82,4 +78,4 @@ export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: activitylogSearch }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(ActivityLogForm);
+export default connect(null, mapDispatchToProps)(ActivitylogForm);

@@ -1,16 +1,16 @@
 import activitylog from './activitylog';
 
 const ignorelist = [
-  '/captcha',
-  '/404',
-  '/api/activitylog',
-  '/favicon.ico'
+  'GET/api/activitylog',
+  'POST/api/users',
+  'POST/api/login'
 ];
 
 export default (req, res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
-  if (!ignorelist.includes(baseurl) && baseurl.includes('api')) {
+
+  if (!ignorelist.includes(method + baseurl) && baseurl.includes('/api/')) {
     const time = Date.now();
     const entry = {
       url: baseurl,

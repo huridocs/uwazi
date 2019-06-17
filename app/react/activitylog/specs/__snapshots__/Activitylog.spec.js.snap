@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = `
+<div
+  className="activity-log"
+>
+  <Connect(ActivitylogForm) />
+  <Connect(ActivityLogList) />
+</div>
+`;

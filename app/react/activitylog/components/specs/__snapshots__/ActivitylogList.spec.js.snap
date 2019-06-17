@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivitylogList should render a table with the activity log entries 1`] = `
+<div
+  className="activity-log-list"
+>
+  <table
+    className="table"
+  >
+    <thead>
+      <tr>
+        <th>
+          Method
+        </th>
+        <th>
+          Url
+        </th>
+        <th>
+          User
+        </th>
+        <th>
+          Query
+        </th>
+        <th>
+          Body
+        </th>
+        <th>
+          Time
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        key="1"
+      >
+        <td>
+          <span
+            className="badge btn-color-6"
+          >
+            POST
+          </span>
+        </td>
+        <td>
+          /api/entities
+        </td>
+        <td>
+          -
+        </td>
+        <td
+          className="tdquery"
+        >
+          {}
+        </td>
+        <td
+          className="tdbody"
+        >
+          {"title":"hey"}
+        </td>
+        <td>
+          01/01/1970 1:00:12 AM
+        </td>
+      </tr>
+      <tr
+        key="2"
+      >
+        <td>
+          <span
+            className="badge btn-color-9"
+          >
+            GET
+          </span>
+        </td>
+        <td>
+          /api/entities
+        </td>
+        <td>
+          -
+        </td>
+        <td
+          className="tdquery"
+        >
+          {"_id": "123"}
+        </td>
+        <td
+          className="tdbody"
+        >
+          {}
+        </td>
+        <td>
+          01/01/1970 1:00:12 AM
+        </td>
+      </tr>
+      <tr
+        key="3"
+      >
+        <td>
+          <span
+            className="badge btn-color-2"
+          >
+            DELETE
+          </span>
+        </td>
+        <td>
+          /api/entities
+        </td>
+        <td>
+          -
+        </td>
+        <td
+          className="tdquery"
+        >
+          {}
+        </td>
+        <td
+          className="tdbody"
+        >
+          {"_id":"123"}
+        </td>
+        <td>
+          01/01/1970 1:00:12 AM
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+`;
