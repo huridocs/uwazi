@@ -176,7 +176,7 @@ export const mapStateToProps = (state) => {
   };
 };
 
-function mapDispatchToProps(dispatch, props) {
+export function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadForm: metadataActions.loadTemplate,
     resetForm: metadataActions.resetReduxForm,
