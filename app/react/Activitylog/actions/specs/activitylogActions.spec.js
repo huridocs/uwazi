@@ -1,5 +1,5 @@
 import { APIURL } from 'app/config.js';
-import { activitylogSearch } from 'app/activitylog/actions/activitylogActions';
+import { activitylogSearch } from 'app/Activitylog/actions/activitylogActions';
 import backend from 'fetch-mock';
 
 describe('activitylog actions', () => {
