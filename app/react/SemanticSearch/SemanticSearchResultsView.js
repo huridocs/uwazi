@@ -8,8 +8,8 @@ import ResultsViewer from './components/SemanticSearchResults';
 import semanticSearchAPI from './SemanticSearchAPI';
 
 export default class SemanticSearchResultsView extends RouteHandler {
-  static requestState({ searchId }) {
-    return semanticSearchAPI.getSearch(searchId)
+  static requestState({ searchId }, query, state) {
+    return semanticSearchAPI.getSearch(searchId, state.semanticSearch.resultsFilters)
     .then(search => ({ semanticSearch: { search } }));
   }
 
