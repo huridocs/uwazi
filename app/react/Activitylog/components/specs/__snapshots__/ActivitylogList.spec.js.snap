@@ -57,7 +57,7 @@ exports[`ActivitylogList should render a table with the activity log entries 1`]
           {"title":"hey"}
         </td>
         <td>
-          01/01/1970 1:00:12 AM
+          06/17/2019 3:36:12 PM
         </td>
       </tr>
       <tr
@@ -87,7 +87,7 @@ exports[`ActivitylogList should render a table with the activity log entries 1`]
           {}
         </td>
         <td>
-          01/01/1970 1:00:12 AM
+          06/17/2019 3:36:12 PM
         </td>
       </tr>
       <tr
@@ -117,7 +117,7 @@ exports[`ActivitylogList should render a table with the activity log entries 1`]
           {"_id":"123"}
         </td>
         <td>
-          01/01/1970 1:00:12 AM
+          06/17/2019 3:36:12 PM
         </td>
       </tr>
     </tbody>
