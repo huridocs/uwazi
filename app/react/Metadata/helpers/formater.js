@@ -168,18 +168,19 @@ export default {
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  inherit(property, thesauriValues, thesauris, options, templates, relationships) {
+  inherit(property, thesauriValues = [], thesauris, options, templates, relationships) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
     const inheritedProperty = template.get('properties').find(p => p.get('_id') === property.get('inheritProperty'));
     const type = inheritedProperty.get('type');
     let value = thesauriValues.map((referencedEntityId) => {
       const name = inheritedProperty.get('name');
       const reference = relationships.toJS().find(r => r.entity === referencedEntityId) || { entityData: { metadata: {} } };
-      if (this[type] && (reference.entityData.metadata[name] || type === 'preview')) {
-        return this[type](inheritedProperty, reference.entityData.metadata[name], thesauris, options, templates);
+      const metadata = reference.entityData.metadata ? reference.entityData.metadata : {};
+      if (this[type] && (metadata[name] || type === 'preview')) {
+        return this[type](inheritedProperty, metadata[name], thesauris, options, templates);
       }
 
-      return { value: reference.entityData.metadata[name] };
+      return { value: metadata[name] };
     });
 
     let propType = 'inherit';

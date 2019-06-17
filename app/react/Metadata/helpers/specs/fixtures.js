@@ -22,7 +22,7 @@ export const doc = {
     relationship1: ['value1', 'value2'],
     relationship2: ['value1', 'value2', 'value4'],
     relationship3: ['value1', 'value2', 'value3'],
-    relationship4: ['linkedEntity1', 'linkedEntity2'],
+    relationship4: ['linkedEntity1', 'linkedEntity2', 'linkedEntityWithoutMetadata'],
     geolocation: [{ lat: 2, lon: 3 }, { lat: 13, lon: 7, label: 'home' }],
     nested: [{ nestedKey: [1, 2] }, { nestedKey: [3, 4] }],
     select2: ''
@@ -38,6 +38,7 @@ export const relationships = Immutable.fromJS([
     entity: 'linkedEntity2',
     entityData: { metadata: { home_geolocation: [{ lat: 5, lon: 10, label: 'exisitng label' }, { lat: 23, lon: 8, label: 'another label' }] } }
   },
+  { entity: 'linkedEntityWithoutMetadata', entityData: {} },
 ]);
 
 export const templates = Immutable.fromJS([

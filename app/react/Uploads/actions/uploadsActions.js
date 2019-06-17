@@ -68,7 +68,7 @@ export function importData([file], template) {
     })
     .on('response', (response) => {
       dispatch(basicActions.set('importUploadProgress', 0));
-      resolve(JSON.parse(response.text));
+      resolve(response);
     })
     .end();
   });
@@ -88,6 +88,48 @@ export function upload(docId, file, endpoint = 'upload') {
       const _file = { filename: response.body.filename, originalname: response.body.originalname, size: response.body.size };
       dispatch({ type: types.UPLOAD_COMPLETE, doc: docId, file: _file });
       resolve(JSON.parse(response.text));
+    })
+    .end();
+  });
+}
+
+export function publicSubmit(data) {
+  return dispatch => new Promise((resolve, reject) => {
+    const request = superagent.post(`${APIURL}public`)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .field('captcha', data.captcha);
+    delete data.captcha;
+
+    if (data.file) {
+      request.attach('file', data.file);
+      delete data.file;
+    }
+
+    if (data.attachments) {
+      data.attachments.forEach((attachment, index) => {
+        request.attach(`attachments[${index}]`, attachment);
+        delete data.attachments;
+      });
+    }
+
+    request.field('entity', JSON.stringify(data));
+
+    request
+    .on('response', (response) => {
+      if (response.status === 200) {
+        dispatch(notify('Success', 'success'));
+        resolve(response);
+        return;
+      }
+
+      reject(response);
+      if (response.status === 403) {
+        dispatch(notify('Captcha error', 'danger'));
+        return;
+      }
+
+      dispatch(notify('An error has ocurred', 'danger'));
     })
     .end();
   });

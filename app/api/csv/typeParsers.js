@@ -1,9 +1,12 @@
 import entities from 'api/entities';
 import thesauris from 'api/thesauris';
-import { unique, emptyString } from 'api/utils/filters';
 import url from 'url';
 
+import { unique, emptyString } from 'api/utils/filters';
+import geolocation from './typeParsers/geolocation.js';
+
 export default {
+  geolocation,
   async default(entityToImport, templateProperty) {
     return this.text(entityToImport, templateProperty);
   },

@@ -10,6 +10,7 @@ import Slideshow from './Slideshow';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
 import PayPalDonateLink from './PayPalDonateLink';
+import PublicForm from './PublicForm';
 import MarkdownMedia from './MarkdownMedia';
 import PieChart from './PieChart';
 import ListChart from './ListChart';
@@ -25,6 +26,7 @@ export default {
   Slideshow,
   MarkdownLink,
   PayPalDonateLink,
+  PublicForm,
   SearchBox,
   Counter,
   BarChart,

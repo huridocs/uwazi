@@ -128,6 +128,17 @@ describe('metadata formater', () => {
         assessMultiValues(relationship3, [{ value: 'how' }, { value: 'are' }, { value: 'you?' }]);
       });
 
+      it('should not fail when inherited property is undefined', () => {
+        const emptyDoc = {
+          _id: 'languageSpecificId',
+          template: 'templateID',
+          title: 'corte interamericana de derechos humanos',
+          metadata: {}
+        };
+
+        expect(() => formater.prepareMetadata(emptyDoc, templates, thesauris, relationships)).not.toThrow();
+      });
+
       it('should append the translated entity title to certain values', () => {
         assessBasicProperties(relationship4, ['Relationship 4', 'home_geolocation', 'template2']);
         expect(relationship4.value.length).toBe(3);

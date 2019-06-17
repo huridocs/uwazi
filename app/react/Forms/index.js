@@ -1,5 +1,6 @@
 import Select from './components/Select';
 import DatePicker from './components/DatePicker';
+import Captcha from './components/Captcha';
 import DateRange from './components/DateRange';
 import FormGroup from './components/FormGroup';
 import MultiSelect from './components/MultiSelect';
@@ -23,6 +24,7 @@ export {
   Select,
   FormGroup,
   DatePicker,
+  Captcha,
   DateRange,
   MultiSelect,
   MarkDown,
