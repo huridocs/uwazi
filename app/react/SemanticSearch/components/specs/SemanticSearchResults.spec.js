@@ -88,4 +88,13 @@ describe('SemanticSearchResults', () => {
       expect(actions.getMoreSearchResults).toHaveBeenCalledWith('id', { limit: 30, minRelevantSentences: 1, threshold: 0.3, skip: 60 });
     });
   });
+
+  describe('when edit button is clicked', () => {
+    it('should edit all documents that match the search filters', () => {
+      jest.spyOn(actions, 'editSearchEntities').mockImplementation(() => {});
+      const component = render();
+      component.find('.edit-semantic-search').first().simulate('click');
+      expect(actions.editSearchEntities).toHaveBeenCalledWith('id', { minRelevantSentences: 1, threshold: 0.3 });
+    });
+  });
 });

@@ -1,16 +1,19 @@
 import Immutable from 'immutable';
 import api from '../../SemanticSearchAPI';
 
+import { actions as basicActions } from 'app/BasicReducer';
 import * as actions from '../actions';
 
 describe('Semantic Search actions', () => {
   let dispatch;
   beforeEach(() => {
     jest.spyOn(api, 'getAllSearches').mockResolvedValue([{ _id: 'search1' }, { _id: 'search2' }]);
+    jest.spyOn(api, 'getSearch');
     dispatch = jest.fn();
   });
   afterEach(() => {
     api.getAllSearches.mockReset();
+    api.getSearch.mockReset();
   });
   async function expectFetchSearchesToHaveBeenDispatched(dispatchMock) {
     const fetchSearchesAction = dispatch.mock.calls[0][0];
@@ -147,6 +150,98 @@ describe('Semantic Search actions', () => {
       const action = actions.addSearchResults(newDocs);
       action(dispatch, getState);
       expect(dispatch.mock.calls).toMatchSnapshot();
+    });
+  });
+
+  describe('getSearch', () => {
+    let state;
+    let getState;
+    let args;
+    let search;
+    beforeEach(() => {
+      args = { threshold: 0.4 };
+      search = { _id: 'searchId' };
+      state = {
+        semanticSearch: {
+          selectedDocument: null
+        }
+      };
+    });
+    const makeMocks = () => {
+      getState = jest.fn().mockReturnValue(state);
+      jest.spyOn(api, 'getSearch').mockResolvedValue(search);
+    };
+    it('should fetch search and set current semantic search', async () => {
+      makeMocks();
+      const action = actions.getSearch('searchId', args);
+      await action(dispatch, getState);
+      expect(api.getSearch).toHaveBeenCalledWith('searchId', args);
+      expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/search', search));
+    });
+    it('should update selected document if its among search results', async () => {
+      const updatedDoc = {
+        sharedId: 'doc1',
+        semanticSearch: {}
+      };
+      search = {
+        _id: 'searchId',
+        results: [
+          updatedDoc,
+          { sharedId: 'otherDoc' }
+        ]
+      };
+      state = {
+        semanticSearch: {
+          selectedDocument: Immutable.fromJS({
+            sharedId: 'doc1'
+          })
+        }
+      };
+      makeMocks();
+      const action = actions.getSearch('searchId', args);
+      await action(dispatch, getState);
+      expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/selectedDocument', updatedDoc));
+    });
+  });
+
+  describe('getMoreSearchResults', () => {
+    it('should fetch search and add to current results', async () => {
+      const results = [
+        { sharedId: 'doc1' },
+        { sharedId: 'doc2' }
+      ];
+      const args = { skip: 60 };
+      jest.spyOn(api, 'getSearch').mockResolvedValue({
+        searchId: 'searchId',
+        results
+      });
+      const action = actions.getMoreSearchResults('searchId', args);
+      await action(dispatch);
+      expect(api.getSearch).toHaveBeenCalledWith('searchId', args);
+      expect(dispatch).toHaveBeenCalledWith(basicActions.concatIn('semanticSearch/search', ['results'], results));
+    });
+  });
+
+  describe('setEditSearchEntities', () => {
+    it('should fetch documents matching search filters and set them for multi edit', async () => {
+      const args = { threshold: 0.4, minRelevantSentences: 5 };
+      const results = [{ searchId: 'doc1', template: 'tpl1' }];
+      jest.spyOn(api, 'getEntitiesMatchingFilters').mockResolvedValue(results);
+      const action = actions.editSearchEntities('searchId', args);
+      await action(dispatch);
+      expect(api.getEntitiesMatchingFilters).toHaveBeenCalledWith('searchId', args);
+      const setEditFn = dispatch.mock.calls[dispatch.mock.calls.length - 1][0];
+      setEditFn(dispatch);
+      expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/multiedit', results));
+    });
+  });
+
+  describe('editSearchEntities', () => {
+    it('should set search entities for multi edit', () => {
+      const entities = [{ searchId: 'doc1' }];
+      const action = actions.setEditSearchEntities(entities);
+      action(dispatch);
+      expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/multiedit', entities));
     });
   });
 });

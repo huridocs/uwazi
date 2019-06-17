@@ -10,6 +10,7 @@ describe('SemanticSearchAPI', () => {
   const resumedResponse = { _id: 'searchId', status: 'resumed' };
   const deletedResponse = { _id: 'deleted' };
   const singleResponse = { _id: 'searchId' };
+  const resultListResponse = [{ sharedId: 'id1', template: 'tpl1'}];
   const searchListResponse = [{ _id: 'search1' }, { _id: 'search2' }];
   const okResponse = { ok: true };
   beforeEach(() => {
@@ -17,6 +18,7 @@ describe('SemanticSearchAPI', () => {
     backend.restore();
     backend
     .get(`${APIURL}semantic-search/${searchId}`, { body: JSON.stringify(singleResponse) })
+    .get(`${APIURL}semantic-search/${searchId}/list?minRelevantSentences=5&threshold=0.5`, { body: JSON.stringify(resultListResponse) })
     .get(`${APIURL}semantic-search`, { body: JSON.stringify(searchListResponse) })
     .delete(`${APIURL}semantic-search/${searchId}`, { body: JSON.stringify(deletedResponse) })
     .post(`${APIURL}semantic-search/${searchId}/stop`, { body: JSON.stringify(stoppedResponse) })
@@ -102,6 +104,17 @@ describe('SemanticSearchAPI', () => {
       semanticSearchAPI.registerForUpdates()
       .then((response) => {
         expect(response).toEqual(okResponse);
+        done();
+      })
+      .catch(done.fail);
+    });
+  });
+
+  describe('getEntitiesMatchingFilters', () => {
+    it('should request list of all results matching filters', (done) => {
+      semanticSearchAPI.getEntitiesMatchingFilters(searchId, { minRelevantSentences: 5, threshold: 0.5 })
+      .then((response) => {
+        expect(response).toEqual(resultListResponse);
         done();
       })
       .catch(done.fail);
