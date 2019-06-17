@@ -8,7 +8,7 @@ import DatePicker from '../DatePicker';
 describe('DatePicker', () => {
   let component;
   let props;
-  const date = moment.utc('2016-07-28T00:00:00+00:00');
+  const date = moment('2016-07-28T00:00:00+00:00');
 
   beforeEach(() => {
     props = {
@@ -24,14 +24,14 @@ describe('DatePicker', () => {
   it('should render a DatePickerComponent with the date passed', () => {
     render();
     const input = component.find(DatePickerComponent);
-    expect(input.props().selected.toString()).toEqual(date.toString());
+    expect(input.props().selected.toUTCString()).toEqual(date.toDate().toUTCString());
   });
 
   describe('onChange', () => {
-    it('should return the value in timestamp', () => {
+    fit('should return the value in timestamp', () => {
       render();
       const input = component.find(DatePickerComponent);
-      input.simulate('change', date);
+      input.simulate('change', date.toDate());
       expect(props.onChange).toHaveBeenCalledWith(1469664000);
     });
 
@@ -49,7 +49,7 @@ describe('DatePicker', () => {
         props.endOfDay = true;
         render();
         const input = component.find(DatePickerComponent);
-        input.simulate('change', date);
+        input.simulate('change', date.toDate());
         expect(props.onChange).toHaveBeenCalledWith(1469750399);
       });
     });
@@ -59,11 +59,11 @@ describe('DatePicker', () => {
         render();
         const input = component.find(DatePickerComponent);
 
-        const twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00').tz('Europe/Madrid');
+        const twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00').tz('Europe/Madrid').toDate();
         input.simulate('change', twoHoursFromUtc);
         expect(props.onChange).toHaveBeenCalledWith(1469664000);
 
-        const twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00').tz('Europe/Madrid');
+        const twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00').tz('Europe/Madrid').toDate();
         input.simulate('change', twoHoursAfterUtc);
         expect(props.onChange).toHaveBeenCalledWith(1469664000);
       });
