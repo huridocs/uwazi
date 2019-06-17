@@ -6,7 +6,7 @@ import page from 'app/Pages/reducers/reducer';
 import { reducer as notificationsReducer } from 'app/Notifications';
 
 import thesauri from 'app/Thesauris/reducers/reducer';
-import activitylog from 'app/activitylog/reducer';
+import activitylog from 'app/Activitylog/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
