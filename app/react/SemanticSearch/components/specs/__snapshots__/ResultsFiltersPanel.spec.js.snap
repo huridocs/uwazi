@@ -66,27 +66,35 @@ exports[`ResultsFiltersPanel render should render a result 1`] = `
     <div
       className="semantic-search-help"
     >
-      <p>
-        <Connect(Translate)
-          translationKey="Semantic search overview"
-        >
-          Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. .
-        </Connect(Translate)>
-      </p>
-      <p>
-        <Connect(Translate)
-          translationKey="Semantic search threshold help"
-        >
-          The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.
-        </Connect(Translate)>
-      </p>
-      <p>
-        <Connect(Translate)
-          translationKey="Semantic search minimum sentences help"
-        >
-          Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.
-        </Connect(Translate)>
-      </p>
+      <div
+        className="alert alert-info alert-vertical"
+      >
+        <Connect(Icon)
+          icon="info-circle"
+          size="2x"
+        />
+        <p>
+          <Connect(Translate)
+            translationKey="Semantic search overview"
+          >
+            Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. .
+          </Connect(Translate)>
+        </p>
+        <p>
+          <Connect(Translate)
+            translationKey="Semantic search threshold help"
+          >
+            The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.
+          </Connect(Translate)>
+        </p>
+        <p>
+          <Connect(Translate)
+            translationKey="Semantic search minimum sentences help"
+          >
+            Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.
+          </Connect(Translate)>
+        </p>
+      </div>
     </div>
   </div>
 </SidePanel>
