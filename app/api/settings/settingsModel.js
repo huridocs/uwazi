@@ -34,6 +34,7 @@ const settingsSchema = new mongoose.Schema({
   dateFormat: String,
   custom: mongoose.Schema.Types.Mixed,
   sync: mongoose.Schema.Types.Mixed,
+  evidencesVault: mongoose.Schema.Types.Mixed,
   customCSS: String
 });
 

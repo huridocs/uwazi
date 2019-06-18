@@ -7,7 +7,7 @@ import asyncFs from 'api/utils/async-fs';
 
 import configPaths from '../../config/paths';
 
-const createTestingZip = (filesToZip, fileName) =>
+const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
   new Promise((resolve, reject) => {
     const zipfile = new yazl.ZipFile();
 
@@ -17,7 +17,7 @@ const createTestingZip = (filesToZip, fileName) =>
 
     zipfile.end();
     zipfile.outputStream
-    .pipe(fs.createWriteStream(path.join(__dirname, `/zipData/${fileName}`)))
+    .pipe(fs.createWriteStream(path.join(directory, `/zipData/${fileName}`)))
     .on('close', resolve)
     .on('error', reject);
   });
