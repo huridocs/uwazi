@@ -244,8 +244,8 @@ const mainSearch = (query, language, user) => {
     }
     return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
     .then(processResponse)
-    .catch(() => {
-      errorLog.error(createError('Query error', 400));
+    .catch((e) => {
+      throw createError(e.message, 400);
     });
   });
 };
@@ -424,7 +424,7 @@ const search = {
       if (res.items) {
         res.items.forEach((f) => {
           if (f.index.error) {
-            throw createError(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
+            errorLog.error(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
           }
         });
       }
