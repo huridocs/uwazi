@@ -28,7 +28,7 @@ describe('updateNotifier', () => {
     let updates;
     beforeEach(() => {
       jest.spyOn(semanticSearch, 'getDocumentResultsByIds').mockResolvedValue(['doc1Res', 'doc2Res']);
-      updates = { updatedSearch: { _id: 'search' }, processedDocuments: ['res1', 'res2'] };;
+      updates = { updatedSearch: { _id: 'search' }, processedDocuments: ['res1', 'res2'] };
     });
 
     const makeRequest = (id, sockets) => ({
