@@ -72,11 +72,13 @@ const getInheritedMarkers = (template, entity, templates, color) => {
       if (inheritedGeolocationPropNames.includes(property) && entity.metadata[property]) {
         const { label, content: context } = inheritedGeolocationProps.find(p => p.name === property);
         entity.metadata[property].forEach((relatedProperty) => {
-          relatedProperty.inherit_geolocation.forEach((point) => {
-            const { lat, lon } = point;
-            const properties = { entity, color, info: point.label, inherited: true, inheritedEntity: relatedProperty.entity, context };
-            markers.push({ properties, latitude: lat, longitude: lon, label });
-          });
+          if (relatedProperty.inherit_geolocation) { // conditional is a quick hack to prevent app crash
+            relatedProperty.inherit_geolocation.forEach((point) => {
+              const { lat, lon } = point;
+              const properties = { entity, color, info: point.label, inherited: true, inheritedEntity: relatedProperty.entity, context };
+              markers.push({ properties, latitude: lat, longitude: lon, label });
+            });
+          }
         });
       }
     });
