@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DocumentResultsPanel should render DocumentSidePanel with the current semantic search document 1`] = `
+<Connect(DocumentSidePanel)
+  DocumentForm={[Function]}
+  EntityForm={[Function]}
+  closePanel={[Function]}
+  deleteDocument={[Function]}
+  deleteEntity={[Function]}
+  doc={
+    Immutable.Map {
+      "_id": "sharedId",
+    }
+  }
+  docBeingEdited={false}
+  formDirty={false}
+  formPath="library.sidepanel.metadata"
+  getDocumentReferences={[Function]}
+  loadInReduxForm={[Function]}
+  open={true}
+  readOnly={true}
+  references={Array []}
+  resetForm={[Function]}
+  saveDocument={[Function]}
+  searchSnippets={[Function]}
+  searchTerm="search term"
+  showModal={[Function]}
+  showTab={[Function]}
+  store={
+    Object {
+      "dispatch": [MockFunction],
+      "getState": [MockFunction] {
+        "calls": Array [
+          Array [],
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "isThrow": false,
+            "value": Object {
+              "library": Object {
+                "search": Object {
+                  "searchTerm": "search term",
+                },
+                "sidepanel": Object {
+                  "metadata": Array [],
+                  "metadataForm": Object {
+                    "$form": Object {
+                      "pristine": true,
+                    },
+                  },
+                  "references": Array [],
+                  "tab": "tab",
+                },
+              },
+              "semanticSearch": Object {
+                "selectedDocument": Immutable.Map {
+                  "_id": "sharedId",
+                },
+              },
+              "templates": Array [],
+            },
+          },
+          Object {
+            "isThrow": false,
+            "value": Object {
+              "library": Object {
+                "search": Object {
+                  "searchTerm": "search term",
+                },
+                "sidepanel": Object {
+                  "metadata": Array [],
+                  "metadataForm": Object {
+                    "$form": Object {
+                      "pristine": true,
+                    },
+                  },
+                  "references": Array [],
+                  "tab": "tab",
+                },
+              },
+              "semanticSearch": Object {
+                "selectedDocument": Immutable.Map {
+                  "_id": "sharedId",
+                },
+              },
+              "templates": Array [],
+            },
+          },
+        ],
+      },
+      "subscribe": [MockFunction] {
+        "calls": Array [
+          Array [
+            [Function],
+          ],
+        ],
+        "results": Array [
+          Object {
+            "isThrow": false,
+            "value": undefined,
+          },
+        ],
+      },
+    }
+  }
+  storeKey="library"
+  storeSubscription={
+    Subscription {
+      "listeners": Object {
+        "clear": [Function],
+        "get": [Function],
+        "notify": [Function],
+        "subscribe": [Function],
+      },
+      "onStateChange": [Function],
+      "parentSub": undefined,
+      "store": Object {
+        "dispatch": [MockFunction],
+        "getState": [MockFunction] {
+          "calls": Array [
+            Array [],
+            Array [],
+          ],
+          "results": Array [
+            Object {
+              "isThrow": false,
+              "value": Object {
+                "library": Object {
+                  "search": Object {
+                    "searchTerm": "search term",
+                  },
+                  "sidepanel": Object {
+                    "metadata": Array [],
+                    "metadataForm": Object {
+                      "$form": Object {
+                        "pristine": true,
+                      },
+                    },
+                    "references": Array [],
+                    "tab": "tab",
+                  },
+                },
+                "semanticSearch": Object {
+                  "selectedDocument": Immutable.Map {
+                    "_id": "sharedId",
+                  },
+                },
+                "templates": Array [],
+              },
+            },
+            Object {
+              "isThrow": false,
+              "value": Object {
+                "library": Object {
+                  "search": Object {
+                    "searchTerm": "search term",
+                  },
+                  "sidepanel": Object {
+                    "metadata": Array [],
+                    "metadataForm": Object {
+                      "$form": Object {
+                        "pristine": true,
+                      },
+                    },
+                    "references": Array [],
+                    "tab": "tab",
+                  },
+                },
+                "semanticSearch": Object {
+                  "selectedDocument": Immutable.Map {
+                    "_id": "sharedId",
+                  },
+                },
+                "templates": Array [],
+              },
+            },
+          ],
+        },
+        "subscribe": [MockFunction] {
+          "calls": Array [
+            Array [
+              [Function],
+            ],
+          ],
+          "results": Array [
+            Object {
+              "isThrow": false,
+              "value": undefined,
+            },
+          ],
+        },
+      },
+      "unsubscribe": undefined,
+    }
+  }
+  tab="tab"
+  templates={Array []}
+/>
+`;
