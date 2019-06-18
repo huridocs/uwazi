@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProgressBar should render progress bar as value percentage of max 1`] = `
+<div
+  className="uw-progress-bar--container"
+>
+  <div
+    className="uw-progress-bar"
+  >
+    <div
+      className="uw-progress-bar--progress"
+      style={
+        Object {
+          "width": "80%",
+        }
+      }
+    />
+  </div>
+  <div
+    className="uw-progress-bar--counter"
+  >
+    200
+    /
+    250
+  </div>
+</div>
+`;
