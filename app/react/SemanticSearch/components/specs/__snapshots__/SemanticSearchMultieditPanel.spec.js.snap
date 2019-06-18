@@ -21,30 +21,103 @@ Array [
 ]
 `;
 
-exports[`SemanticSearchMultieditPanel save should apply changes to entities and refetch the search 1`] = `
-Array [
-  Array [
-    Immutable.List [
-      Immutable.Map {
-        "searchId": "doc1",
-        "template": "tpl1",
-      },
-      Immutable.Map {
-        "searchId": "doc2",
-        "template": "tpl1",
-      },
-      Immutable.Map {
-        "searchId": "doc3",
-        "template": "tpl3",
-      },
-    ],
-    Object {
-      "metadata": Object {
-        "changedField": "val2",
-      },
-    },
-  ],
-]
+exports[`SemanticSearchMultieditPanel open should not open side panel if there are no multi edit entities 1`] = `
+<SidePanel
+  className="multi-edit"
+  open={false}
+>
+  <div
+    className="sidepanel-header"
+  >
+    <button
+      className="closeSidepanel close-modal"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+    </button>
+  </div>
+  <div
+    className="sidepanel-body"
+  >
+    <React.Fragment>
+      <div
+        className="alert alert-warning"
+      >
+        <Connect(Icon)
+          icon="exclamation-triangle"
+          size="2x"
+        />
+        <p>
+          Warning: you are editing multiple files. Fields marked with a 
+          <Connect(Icon)
+            icon="exclamation-triangle"
+          />
+           will be updated with the same value.
+        </p>
+      </div>
+      <Connect(MetadataForm)
+        changeTemplate={[Function]}
+        id="multiEdit"
+        model="semanticSearch.multipleEdit"
+        multipleEdition={true}
+        onSubmit={[Function]}
+        template={null}
+        thesauris={
+          Immutable.List [
+            Immutable.Map {
+              "_id": "t1",
+              "name": "T1",
+              "values": Immutable.List [
+                Immutable.Map {
+                  "_id": "v1",
+                  "id": "v1",
+                  "label": "V1",
+                },
+              ],
+            },
+          ]
+        }
+      />
+    </React.Fragment>
+  </div>
+  <div
+    className="sidepanel-footer"
+  >
+    <React.Fragment>
+      <button
+        className="cancel-edit-metadata btn btn-primary"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="times"
+        />
+        <span
+          className="btn-label"
+        >
+          Cancel
+        </span>
+      </button>
+      <button
+        className="btn btn-success"
+        form="multiEdit"
+        type="submit"
+      >
+        <Connect(Icon)
+          icon="save"
+        />
+        <span
+          className="btn-label"
+        >
+          Save
+        </span>
+      </button>
+    </React.Fragment>
+  </div>
+</SidePanel>
 `;
 
 exports[`SemanticSearchMultieditPanel should render multi edit form for semantic search multi edit documents 1`] = `

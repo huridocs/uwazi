@@ -24,7 +24,7 @@ describe('SemanticSearchMultieditPanel', () => {
         multiedit: Immutable.fromJS([
           { searchId: 'doc1', template: 'tpl1' },
           { searchId: 'doc2', template: 'tpl1' },
-          { searchId: 'doc3', template: 'tpl3' },
+          { searchId: 'doc3', template: 'tpl2' },
         ]),
         multipleEditForm: {
           metadata: {
@@ -83,20 +83,58 @@ describe('SemanticSearchMultieditPanel', () => {
   });
 
   describe('save', () => {
-    it('should apply changes to entities and refetch the search', async () => {
-      const component = render();
-      const formValues = {
+    let formValues;
+    let instance;
+    let component;
+    beforeEach(() => {
+      formValues = {
         metadata: {
           unchangedField: 'val1',
           changedField: 'val2'
         }
       };
-      const instance = component.instance();
+      component = render();
+      instance = component.instance();
       spyOn(instance, 'close');
-      await component.instance().save(formValues);
-      expect(metadataActions.multipleUpdate.mock.calls).toMatchSnapshot();
+    });
+
+    it('should apply changes to entities and re-fetch the search', async () => {
+      instance.save(formValues);
+      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
+        state.semanticSearch.multiedit,
+        { metadata: { changedField: 'val2' } }
+      );
       expect(searchActions.getSearch).toHaveBeenCalledWith('searchId');
       expect(instance.close).toHaveBeenCalled();
+    });
+    it('should update entities icon if icon changed', () => {
+      formValues.icon = 'icon';
+      state.semanticSearch.multipleEditForm.icon = {
+        pristine: false
+      };
+      instance.save(formValues);
+      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
+        state.semanticSearch.multiedit,
+        { metadata: { changedField: 'val2' }, icon: 'icon' }
+      );
+    });
+  });
+
+  describe('close', () => {
+    it('should reset form and set entities to an empty list', () => {
+      const component = render();
+      const instance = component.instance();
+      instance.close();
+      expect(metadataActions.resetReduxForm).toHaveBeenCalledWith(props.formKey);
+      expect(searchActions.setEditSearchEntities).toHaveBeenCalledWith([]);
+    });
+  });
+
+  describe('open', () => {
+    it('should not open side panel if there are no multi edit entities', () => {
+      state.semanticSearch.multiedit = Immutable.fromJS([]);
+      const component = render();
+      expect(component).toMatchSnapshot();
     });
   });
 });
