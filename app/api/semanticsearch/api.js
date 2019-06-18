@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch';
+import 'isomorphic-fetch';
 import SEMANTIC_SEARCH_URL from 'api/config/semanticsearch';
 
 const semanticSearchAPI = {
