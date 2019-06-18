@@ -25,7 +25,7 @@ export class UpdateNotifier {
       sockets.emit('semanticSearchUpdated', { updatedSearch, docs });
     });
     closedSessions.forEach(id => this.deleteRequest(id));
-    Promise.all(ps);
+    return Promise.all(ps);
   }
 }
 

@@ -2,6 +2,7 @@ import semanticSearch from '../semanticSearch';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import semanticRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
+import updateNotifier from '../updateNotifier';
 
 describe('search routes', () => {
   let routes;
@@ -136,6 +137,20 @@ describe('search routes', () => {
       .then((response) => {
         expect(response).toEqual(result);
         expect(semanticSearch.resumeSearch).toHaveBeenCalledWith('s1');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('POST /api/semantic-search/notify-updates', () => {
+    it('should register user session for receiving updates', (done) => {
+      jest.spyOn(updateNotifier, 'addRequest').mockReturnValueOnce();
+      const req = {};
+      routes.post('/api/semantic-search/notify-updates', req)
+      .then((response) => {
+        expect(response).toEqual({ ok: true });
+        expect(updateNotifier.addRequest).toHaveBeenCalledWith(req);
         done();
       })
       .catch(catchErrors(done));
