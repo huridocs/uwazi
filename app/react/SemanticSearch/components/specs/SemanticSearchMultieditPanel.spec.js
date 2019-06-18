@@ -2,7 +2,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 
-import multiReducer from 'app/MultiReducer';
+import multiReducer from 'app/Multireducer';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import * as searchActions from 'app/SemanticSearch/actions/actions';
 import { mapStateToProps, mapDispatchToProps, SemanticSearchMultieditPanel } from '../SemanticSearchMultieditPanel';
