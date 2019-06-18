@@ -99,7 +99,7 @@ describe('SemanticSearchMultieditPanel', () => {
     });
 
     it('should apply changes to entities and re-fetch the search', async () => {
-      instance.save(formValues);
+      await instance.save(formValues);
       expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
         state.semanticSearch.multiedit,
         { metadata: { changedField: 'val2' } }
@@ -107,15 +107,29 @@ describe('SemanticSearchMultieditPanel', () => {
       expect(searchActions.getSearch).toHaveBeenCalledWith('searchId');
       expect(instance.close).toHaveBeenCalled();
     });
-    it('should update entities icon if icon changed', () => {
+    it('should update entities icon if icon changed', async () => {
       formValues.icon = 'icon';
       state.semanticSearch.multipleEditForm.icon = {
         pristine: false
       };
-      instance.save(formValues);
+      await instance.save(formValues);
       expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
         state.semanticSearch.multiedit,
         { metadata: { changedField: 'val2' }, icon: 'icon' }
+      );
+    });
+    it('should set template if common template found', async () => {
+      state = {
+        ...state,
+      };
+      state.semanticSearch.multiedit =
+        state.semanticSearch.multiedit.map(item => item.set('template', 'tpl1'));
+      instance = render().instance();
+      spyOn(instance, 'close');
+      await instance.save(formValues);
+      expect(metadataActions.multipleUpdate).toHaveBeenCalledWith(
+        state.semanticSearch.multiedit,
+        { metadata: { changedField: 'val2' }, template: 'tpl1' }
       );
     });
   });
