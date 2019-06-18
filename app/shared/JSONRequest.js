@@ -1,5 +1,6 @@
 import 'isomorphic-fetch';
 import superagent from 'superagent';
+import { URLSearchParams } from 'url';
 
 import rison from 'rison';
 
@@ -65,6 +66,10 @@ const _fetch = (url, data, method, _headers) => {
 
   if (method === 'POST' || method === 'PUT') {
     body = JSON.stringify(data);
+  }
+
+  if (URLSearchParams && data instanceof URLSearchParams) {
+    body = data;
   }
 
   return fetch(url + params, {

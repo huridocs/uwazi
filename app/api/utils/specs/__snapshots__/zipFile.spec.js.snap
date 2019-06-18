@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ImportFile findReadStream should return a readable stream for matched file 1`] = `
+exports[`zipFile findReadStream should return a readable stream for matched file 1`] = `
 "undefinedTitle , file ,
 
 file1, 1.pdf,
