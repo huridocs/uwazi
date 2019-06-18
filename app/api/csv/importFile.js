@@ -2,18 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { Readable } from 'stream';
 
-import { generateFileName } from 'api/utils/files';
+import { generateFileName, fileFromReadStream } from 'api/utils/files';
+import zipFile from 'api/utils/zipFile';
 
-import zipFile from './zipFile';
 import configPaths from '../config/paths';
-
-const createFile = async (fileStream, fileName) =>
-  new Promise((resolve, reject) => {
-    fileStream
-    .pipe(fs.createWriteStream(path.join(configPaths.uploadDocumentsPath, `/${fileName}`)))
-    .on('close', resolve)
-    .on('error', reject);
-  });
 
 const csvOrFileName = fileName =>
   (entry) => {
@@ -39,7 +31,7 @@ const importFile = filePath => ({
   async extractFile(fileName) {
     const generatedName = generateFileName({ originalname: fileName });
 
-    await createFile(await this.readStream(fileName), generatedName);
+    await fileFromReadStream(generatedName, await this.readStream(fileName));
 
     return {
       destination: configPaths.uploadDocumentsPath,

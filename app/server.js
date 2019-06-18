@@ -23,6 +23,9 @@ import translations from './api/i18n/translations.js';
 import uwaziMessage from '../message';
 import { workerManager as semanticSearchManager } from './api/semanticsearch';
 import syncWorker from './api/sync/syncWorker';
+import repeater from './api/utils/Repeater';
+import vaultSync from './api/evidences_vault';
+import settings from './api/settings';
 
 mongoose.Promise = Promise;
 
@@ -95,12 +98,22 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
 
   semanticSearchManager.start();
 
-  http.listen(port, bindAddress, () => {
+  http.listen(port, bindAddress, async () => {
     syncWorker.start();
+
+    const { evidencesVault } = await settings.get();
+    if (evidencesVault && evidencesVault.token && evidencesVault.template) {
+      console.info('==> 📥 evidences vault config detected, started sync ....');
+      repeater.start(
+        () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
+        10000
+      );
+    }
+
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');
-      console.info('webpack is watching...');
+      console.info('==> 📦 webpack is watching...');
       console.info(uwaziMessage);
     }
   });

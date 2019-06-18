@@ -39,6 +39,7 @@ const settingsSchema = new mongoose.Schema({
   features: featuresSchema,
   custom: mongoose.Schema.Types.Mixed,
   sync: mongoose.Schema.Types.Mixed,
+  evidencesVault: mongoose.Schema.Types.Mixed,
   customCSS: String
 });
 
