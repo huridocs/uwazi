@@ -101,15 +101,6 @@ describe('I18NMenu', () => {
     });
   });
 
-  describe('when switching language', () => {
-    it('should save the locale in to a coockie', () => {
-      render();
-      const links = component.find('a');
-      links.first().simulate('click');
-      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', { expires: 3650 });
-    });
-  });
-
   describe('when there is only one language', () => {
     it('should only render the inline translation button', () => {
       props.languages = Immutable.fromJS([{ key: 'en', label: 'English', default: true }]);

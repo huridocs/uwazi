@@ -19,11 +19,6 @@ export class I18NMenu extends Component {
     utils.saveLocale(locale);
   }
 
-  static changeLanguage(locale, url) {
-    I18NMenu.saveCookie(locale);
-    I18NMenu.reload(url);
-  }
-
   constructor(props, context) {
     super(props, context);
     this.state = { open: false };
@@ -59,13 +54,7 @@ export class I18NMenu extends Component {
           const url = `/${lang.key}${path}${path.match('document') ? '' : this.props.location.search}`;
           return (
             <li className={`menuNav-item${locale === lang.key ? ' is-active' : ''}`} key={lang.key}>
-              <a
-                className="menuNav-btn btn btn-default"
-                href={url}
-                onClick={() => {
-                  I18NMenu.changeLanguage(lang.key, `/${lang.key}${path}${path.match('document') ? '' : this.props.location.search}`);
-                }}
-              >
+              <a className="menuNav-btn btn btn-default" href={url}>
                 {lang.key}
               </a>
             </li>
