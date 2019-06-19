@@ -5,8 +5,6 @@ import * as actions from 'app/Viewer/actions/uiActions';
 import scroller from 'app/Viewer/utils/Scroller';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-import { events } from 'app/utils';
-
 describe('Viewer uiActions', () => {
   describe('closePanel()', () => {
     it('should return a CLOSE_PANEL with panel passed', () => {
