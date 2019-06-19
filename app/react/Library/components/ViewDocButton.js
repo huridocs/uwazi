@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Map } from 'immutable';
 import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
-import { activateReference } from 'app/Viewer/actions/uiActions';
+import { actions } from 'app/BasicReducer';
 
 export class ViewDocButton extends Component {
   constructor(props) {
@@ -15,18 +15,23 @@ export class ViewDocButton extends Component {
 
   onClick(e) {
     e.stopPropagation();
-    const { targetReference } = this.props;
+    const { targetReference, openReferencesTab } = this.props;
     if (targetReference) {
-      this.props.activateReference(targetReference.toJS());
+      openReferencesTab();
     }
   }
 
   render() {
-    const { sharedId, processed, searchTerm, file } = this.props;
+    const { sharedId, processed, searchTerm, file, targetReference } = this.props;
     const isEntity = !file;
     const type = isEntity ? 'entity' : 'document';
+    const referenceQueryParams = targetReference ?
+      `ref=${targetReference.get('_id')}&refStart=${targetReference.getIn(['range', 'start'])}` +
+      `&refEnd=${targetReference.getIn(['range', 'end'])}` : '';
 
-    const documentViewUrl = searchTerm ? `/${type}/${sharedId}?searchTerm=${searchTerm}` : `/${type}/${sharedId}`;
+    const documentViewUrl = searchTerm ? `/${type}/${sharedId}?searchTerm=${searchTerm}&${referenceQueryParams}` :
+      `/${type}/${sharedId}?${referenceQueryParams}`;
+
     if (!processed && !isEntity) {
       return false;
     }
@@ -51,7 +56,7 @@ ViewDocButton.propTypes = {
   processed: PropTypes.bool,
   searchTerm: PropTypes.string,
   targetReference: PropTypes.instanceOf(Map),
-  activateReference: PropTypes.func.isRequired
+  openReferencesTab: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps(state, props) {
@@ -61,7 +66,9 @@ export function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ activateReference }, dispatch);
+  return bindActionCreators({
+    openReferencesTab: () => _dispatch => _dispatch(actions.set('viewer.sidepanel.tab', 'references'))
+  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewDocButton);
