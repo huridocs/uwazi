@@ -6,6 +6,20 @@ import { Map } from 'immutable';
 import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
+import url from 'url';
+
+function getDocumentUrlQuery(searchTerm, targetReference) {
+  const query = {};
+  if (searchTerm) {
+    query.searchTerm = searchTerm;
+  }
+  if (targetReference) {
+    query.ref = targetReference.get('_id');
+    query.refStart = targetReference.getIn(['range', 'start']);
+    query.refEnd = targetReference.getIn(['range', 'end']);
+  }
+  return query;
+}
 
 export class ViewDocButton extends Component {
   constructor(props) {
@@ -25,12 +39,13 @@ export class ViewDocButton extends Component {
     const { sharedId, processed, searchTerm, file, targetReference } = this.props;
     const isEntity = !file;
     const type = isEntity ? 'entity' : 'document';
-    const referenceQueryParams = targetReference ?
-      `ref=${targetReference.get('_id')}&refStart=${targetReference.getIn(['range', 'start'])}` +
-      `&refEnd=${targetReference.getIn(['range', 'end'])}` : '';
 
-    const documentViewUrl = searchTerm ? `/${type}/${sharedId}?searchTerm=${searchTerm}&${referenceQueryParams}` :
-      `/${type}/${sharedId}?${referenceQueryParams}`;
+    const pathname = `/${type}/${sharedId}`;
+    const query = getDocumentUrlQuery(searchTerm, targetReference);
+    const documentViewUrl = url.format({
+      pathname,
+      query
+    });
 
     if (!processed && !isEntity) {
       return false;
@@ -65,7 +80,7 @@ export function mapStateToProps(state, props) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+export function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     openReferencesTab: () => _dispatch => _dispatch(actions.set('viewer.sidepanel.tab', 'references'))
   }, dispatch);

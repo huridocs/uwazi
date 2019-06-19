@@ -1,9 +1,10 @@
 import React from 'react';
 import { fromJS } from 'immutable';
-
 import { shallow } from 'enzyme';
 
-import { ViewDocButton } from '../ViewDocButton';
+import { actions } from 'app/BasicReducer';
+
+import { ViewDocButton, mapDispatchToProps } from '../ViewDocButton';
 
 describe('ViewDocButton', () => {
   let props;
@@ -14,7 +15,7 @@ describe('ViewDocButton', () => {
       format: 'format',
       sharedId: '123',
       searchTerm: '',
-      activateReference: jest.fn()
+      openReferencesTab: jest.fn()
     };
   });
 
@@ -32,12 +33,33 @@ describe('ViewDocButton', () => {
     expect(component).toMatchSnapshot();
   });
   describe('when targetReference is provided', () => {
-    it('should call activateReference when clicked', () => {
+    it('should render view button with references id, start and end in the url query', () => {
+      props.targetReference = fromJS({ _id: 'ref1', range: { start: 200, end: 300 } });
+      render();
+      expect(component).toMatchSnapshot();
+
+      props.searchTerm = 'something';
+      render();
+      expect(component).toMatchSnapshot();
+    });
+    it('should call openReferencesTab when clicked', () => {
       const event = { stopPropagation: jest.fn() };
       props.targetReference = fromJS({ range: { start: 200, end: 300 } });
       render();
       component.simulate('click', event);
-      expect(props.activateReference).toHaveBeenCalledWith(props.targetReference.toJS());
+      expect(props.openReferencesTab).toHaveBeenCalled();
+    });
+  });
+
+  describe('mapDispatchToProps', () => {
+    describe('openReferencesTab', () => {
+      it('should set the sidepanel tab to references', () => {
+        const innerDispatch = jest.fn();
+        const dispatch = jest.fn(fn => fn(innerDispatch));
+        const mappedProps = mapDispatchToProps(dispatch);
+        mappedProps.openReferencesTab();
+        expect(innerDispatch).toHaveBeenCalledWith(actions.set('viewer.sidepanel.tab', 'references'));
+      });
     });
   });
 });
