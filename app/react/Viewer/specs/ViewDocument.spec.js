@@ -1,4 +1,5 @@
 import React from 'react';
+import { fromJS } from 'immutable';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
 
@@ -107,6 +108,20 @@ describe('ViewDocument', () => {
       uiActions.scrollToPage.calls.reset();
       instance.onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
+    });
+    it('should activate text reference if query parameters have reference properties', () => {
+      spyOn(uiActions, 'activateReference');
+      props.location = { query: { raw: 'false', ref: 'refId', refStart: '200', refEnd: '300' }, pathname: 'pathname' };
+      const pdfInfo = { 1: { chars: 100 } };
+      const doc = fromJS({
+        pdfInfo
+      });
+      render();
+      instance.onDocumentReady(doc);
+      expect(uiActions.activateReference).toHaveBeenCalledWith({
+        _id: 'refId',
+        range: { start: 200, end: 300 }
+      }, pdfInfo);
     });
     it('should emit documentLoaded event', () => {
       spyOn(uiActions, 'scrollToPage');
