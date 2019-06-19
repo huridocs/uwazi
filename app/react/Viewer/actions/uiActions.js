@@ -142,17 +142,12 @@ export function activateReference(reference, docInfo, tab) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch({ type: types.ACTIVE_REFERENCE, reference: reference._id });
     dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
-    events.removeAllListeners('documentLoaded');
-    if (docInfo) {
+    setTimeout(() => {
       scrollTo(reference, docInfo);
-      return;
-    }
-    events.on('documentLoaded', () => {
-      scrollTo(reference, getState().documentViewer.doc.get('pdfInfo').toJS());
     });
   };
 }

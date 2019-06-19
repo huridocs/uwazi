@@ -11,7 +11,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
-import { scrollToPage } from './actions/uiActions';
+import { scrollToPage, activateReference } from './actions/uiActions';
 
 import { requestViewerState, setViewerState } from './actions/routeActions';
 
@@ -84,10 +84,25 @@ class ViewDocument extends RouteHandler {
     browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`);
   }
 
-  onDocumentReady() {
+  onDocumentReady(doc) {
     events.emit('documentLoaded');
-    if (this.props.location.query.raw !== 'true' && this.props.location.query.page) {
+    if (this.props.location.query.raw === 'true') {
+      return;
+    }
+    if (this.props.location.query.page) {
       scrollToPage(this.props.location.query.page, 0);
+      return;
+    }
+    const { ref, refStart, refEnd } = this.props.location.query;
+    if (ref && refStart && refEnd) {
+      const reference = {
+        _id: ref,
+        range: {
+          start: Number(refStart),
+          end: Number(refEnd)
+        }
+      };
+      this.context.store.dispatch(activateReference(reference, doc.get('pdfInfo').toJS()));
     }
   }
 
