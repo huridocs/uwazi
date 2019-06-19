@@ -15,6 +15,7 @@ describe('I18NUtils', () => {
   });
 
   describe('getLocale', () => {
+    /* MISSING: what happens if languages [] (private instances?) */
     it('should return default locale', () => {
       expect(utils.getLocale(null, languages)).toBe('es');
     });
