@@ -94,7 +94,7 @@ class App extends Component {
             </button>
             <h1 className="logotype"><SiteName/></h1>
             {this.renderTools()}
-            <Menu language={this.context.language} location={this.props.location} onClick={this.toggleMenu} className={navClass} />
+            <Menu location={this.props.location} onClick={this.toggleMenu} className={navClass} />
           </header>
           <div className="app-content container-fluid">
             <Confirm {...this.state.confirmOptions}/>
@@ -130,7 +130,6 @@ App.childContextTypes = {
 App.contextTypes = {
   getUser: PropTypes.func,
   router: PropTypes.object,
-  language: PropTypes.string,
 };
 
 export default App;

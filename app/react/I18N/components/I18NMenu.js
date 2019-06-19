@@ -8,35 +8,15 @@ import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import { actions } from 'app/I18N';
 
-import utils from '../utils';
-
-export class I18NMenu extends Component {
+class I18NMenu extends Component {
   static reload(url) {
     window.location.href = url;
   }
 
-  static saveCookie(locale) {
-    utils.saveLocale(locale);
-  }
-
-  constructor(props, context) {
-    super(props, context);
-    this.state = { open: false };
-  }
-
-  toggle() {
-    this.setState({ open: !this.state.open });
-  }
-
   render() {
-    const languages = this.props.languages.toJS();
-    let locale = this.props.language;
+    const { languages, locale, location, i18nmode, toggleInlineEdit } = this.props;
 
-    if (!locale || this.props.params.lang) {
-      locale = utils.getLocale(this.props.params.lang, languages);
-    }
-
-    let path = this.props.location.pathname;
+    let path = location.pathname;
     const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
     path = path.replace(regexp, '/');
 
@@ -44,19 +24,19 @@ export class I18NMenu extends Component {
       <ul className="menuNav-I18NMenu">
         <NeedAuthorization roles={['admin', 'editor']}>
           <button
-            className={this.props.i18nmode ? 'inlineEdit menuNav-btn btn btn-default active' : 'menuNav-btn btn btn-default'}
-            onClick={this.props.toggleInlineEdit}
+            className={`menuNav-btn btn btn-default${i18nmode ? ' inlineEdit active' : ''}`}
+            type="button"
+            onClick={toggleInlineEdit}
           >
             <Icon icon="language" size="lg" />
           </button>
         </NeedAuthorization>
-        {languages.length > 1 && languages.map((lang) => {
-          const url = `/${lang.key}${path}${path.match('document') ? '' : this.props.location.search}`;
+        {languages.count() > 1 && languages.map((lang) => {
+          const key = lang.get('key');
+          const url = `/${key}${path}${path.match('document') ? '' : location.search}`;
           return (
-            <li className={`menuNav-item${locale === lang.key ? ' is-active' : ''}`} key={lang.key}>
-              <a className="menuNav-btn btn btn-default" href={url}>
-                {lang.key}
-              </a>
+            <li className={`menuNav-item${locale === key ? ' is-active' : ''}`} key={key}>
+              <a className="menuNav-btn btn btn-default" href={url}>{key}</a>
             </li>
           );
         })}
@@ -66,8 +46,7 @@ export class I18NMenu extends Component {
 }
 
 I18NMenu.defaultProps = {
-  params: {},
-  language: null,
+  locale: null,
 };
 
 I18NMenu.propTypes = {
@@ -75,20 +54,14 @@ I18NMenu.propTypes = {
   languages: PropTypes.instanceOf(Object).isRequired,
   toggleInlineEdit: PropTypes.func.isRequired,
   i18nmode: PropTypes.bool.isRequired,
-  language: PropTypes.string,
-  params: PropTypes.shape({
-    lang: PropTypes.string
-  })
-};
-
-I18NMenu.contextTypes = {
-  router: PropTypes.object
+  locale: PropTypes.string,
 };
 
 export function mapStateToProps(state) {
   return {
     languages: state.settings.collection.get('languages'),
-    i18nmode: state.inlineEdit.get('inlineEdit')
+    i18nmode: state.inlineEdit.get('inlineEdit'),
+    locale: state.locale,
   };
 }
 
