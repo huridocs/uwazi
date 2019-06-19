@@ -14,6 +14,7 @@ export default (app) => {
       contactEmail: Joi.string().allow(''),
       home_page: Joi.string().allow(''),
       private: Joi.boolean(),
+      cookiepolicy: Joi.boolean(),
       mailerConfig: Joi.string().allow(''),
       analyticsTrackingId: Joi.string().allow(''),
       matomoConfig: Joi.string().allow(''),

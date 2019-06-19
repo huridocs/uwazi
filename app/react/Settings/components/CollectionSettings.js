@@ -10,7 +10,7 @@ import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { RadioButtons } from 'app/Forms';
-import { t } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 export class CollectionSettings extends Component {
@@ -105,6 +105,13 @@ export class CollectionSettings extends Component {
     this.props.setSettings(settings);
   }
 
+  changeCookiepolicy(e) {
+    const cookiepolicy = e.target.checked;
+    this.setState({ cookiepolicy });
+    const settings = Object.assign(this.props.settings, { cookiepolicy });
+    this.props.setSettings(settings);
+  }
+
   changeDateFormatSeparator(dateSeparator) {
     const selectedFormatPosition = this.dateFormatSeparatorOptions().reduce((position, separator) => {
       const dateFormatOptions = this.dateFormatOptions(separator.value);
@@ -189,7 +196,7 @@ export class CollectionSettings extends Component {
                     value="library"
                     checked={!this.state.customLandingpage}
                   />
-                  {t('System', 'Library')}
+                  <Translate>Library</Translate>
                 </label>
               </div>
               <div className="radio">
@@ -201,7 +208,7 @@ export class CollectionSettings extends Component {
                     value="custom"
                     checked={this.state.customLandingpage}
                   />
-                  {t('System', 'Custom page')}
+                  <Translate>Custom page</Translate>
                 </label>
               </div>
               <div className="input-group">
@@ -287,6 +294,19 @@ export class CollectionSettings extends Component {
                 This setting takes precedence over all other mailer configuration.<br />
                 If left blank, then the configuration file in /api/config/mailer.js will be used.
               </div>
+            </div>
+            <span className="form-group-label" >{t('System', 'Show Cookie policy')}</span>
+            <div className="checkbox">
+              <label htmlFor="cookiepolice">
+                <input
+                  name="cookiepolice"
+                  id="cookiepolice"
+                  onChange={this.changeCookiepolicy.bind(this)}
+                  value={this.state.cookiepolicy}
+                  type="checkbox"
+                />
+                <Translate>This option will show a notification about the use of cookies in your instance.</Translate>
+              </label>
             </div>
             <h2>{t('System', 'Advanced customizations')}</h2>
             <div>
