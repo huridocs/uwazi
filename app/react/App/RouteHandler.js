@@ -3,9 +3,22 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { I18NUtils } from 'app/I18N';
-import { actions } from 'app/BasicReducer';
 import JSONUtils from 'shared/JSONUtils';
 import api from 'app/utils/api';
+
+const getLocale = ({ store }) => {
+  if (store && store.getState) {
+    return store.getState().locale;
+  }
+  /* ??? When does this happen? */
+  return null;
+};
+
+const setLocale = (locale) => {
+  moment.locale(locale);
+  api.locale(locale);
+  I18NUtils.saveLocale(locale);
+};
 
 class RouteHandler extends Component {
   static requestState() {
@@ -17,41 +30,15 @@ class RouteHandler extends Component {
 
   static renderTools() {}
 
-  isRenderedFromServer() {
+  isRenderedFromServer() { //eslint-disable-line
     const result = RouteHandler.renderedFromServer;
     RouteHandler.renderedFromServer = false;
     return result;
   }
 
-  setLocale(locale) {
-    if (locale) {
-      moment.locale(locale);
-      api.locale(locale);
-      this.setStateLocale(locale);
-    }
-  }
-
-  getLocale(props) {
-    if (this.context.store && this.context.store.getState) {
-      const { languages } = this.context.store.getState().settings.collection.toJS();
-      return I18NUtils.getLocale(props.params.lang, languages);
-    }
-
-    return null;
-  }
-
-  setStateLocale(locale) {
-    this.context.store.dispatch(actions.set('locale', locale));
-    I18NUtils.saveLocale(locale);
-  }
-
   constructor(props, context) {
     super(props, context);
-
-    //test ?
-    const locale = this.getLocale(props);
-    this.setLocale(locale);
-    //test ?
+    setLocale(getLocale(context));
     if (!this.isRenderedFromServer() && this.setReduxState) {
       this.getClientState(this.props);
     }
@@ -64,8 +51,10 @@ class RouteHandler extends Component {
     }
 
     let state = {};
-    if (this.context.store && this.context.store.getState) {
-      state = this.context.store.getState();
+
+    const { store } = this.context;
+    if (store && store.getState) {
+      state = store.getState();
     }
 
     this.constructor.requestState(props.params, query, state)
@@ -74,22 +63,22 @@ class RouteHandler extends Component {
     });
   }
 
-  urlHasChanged(props) {
-    const { params = {}, routes = [] } = props;
-    const sameParams = Object.keys(params).reduce((memo, key) => memo && props.params[key] === this.props.params[key], true);
-    const sameAmountOfparams = Object.keys(params).length === Object.keys(this.props.params).length;
-    const currentPath = this.props.routes.reduce((path, r) => path + r.path, '');
-    const newPath = routes.reduce((path, r) => path + r.path, '');
+  urlHasChanged(nextProps) {
+    const { params: nextParams = {}, routes: nextRoutes = [] } = nextProps;
+    const { params, routes } = this.props;
+
+    const sameParams = Object.keys(nextParams).reduce((memo, key) => memo && nextProps.params[key] === params[key], true);
+    const sameAmountOfparams = Object.keys(nextParams).length === Object.keys(params).length;
+    const currentPath = routes.reduce((path, r) => path + r.path, '');
+    const newPath = nextRoutes.reduce((path, r) => path + r.path, '');
     const samePath = currentPath === newPath;
     return !sameParams || !sameAmountOfparams || !samePath;
   }
 
-  componentWillReceiveProps(props) {
-    if (this.urlHasChanged(props)) {
+  componentWillReceiveProps(nextProps) {
+    if (this.urlHasChanged(nextProps)) {
       this.emptyState();
-      const locale = this.getLocale(props);
-      this.setLocale(locale);
-      this.getClientState(props);
+      this.getClientState(nextProps);
     }
   }
 
