@@ -98,30 +98,6 @@ describe('Viewer uiActions', () => {
         done();
       });
     });
-
-    describe('when docInfo is not provided', () => {
-      it('should get current doc pdfInfo from state and scroll to it on documentLoaded event', (done) => {
-        window.document.querySelector.and.returnValue(null);
-        const getState = jest.fn().mockReturnValue({
-          documentViewer: {
-            doc: Immutable.fromJS({
-              pdfInfo: {
-                1: { chars: 50 },
-                2: { chars: 300 }
-              }
-            })
-          }
-        });
-        const action = actions.activateReference({ _id: 'id', range: { start: 100, end: 200, text: 'test' } });
-        action(dispatch, getState);
-        events.emit('documentLoaded');
-        events.emit('referenceRendered', { ids: ['id'] });
-        setTimeout(() => {
-          expect(scroller.to).toHaveBeenCalledWith('.document-viewer div#page-2', '.document-viewer', { duration: 0, dividerOffset: 1 });
-          done();
-        });
-      });
-    });
   });
 
   describe('selectReference()', () => {
