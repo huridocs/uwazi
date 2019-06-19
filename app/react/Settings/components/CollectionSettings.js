@@ -9,132 +9,75 @@ import { Link } from 'react-router';
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { RadioButtons } from 'app/Forms';
+import { RadioButtons } from 'app/ReactReduxForms';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { LocalForm, Control } from 'react-redux-form';
 
 export class CollectionSettings extends Component {
-  constructor(props, context) {
-    super(props, context);
-    const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
-    this.state = {
-      siteName: props.settings.site_name || '',
-      homePage: props.settings.home_page || '',
-      mailerConfig: props.settings.mailerConfig || '',
-      analyticsTrackingId: props.settings.analyticsTrackingId || '',
-      matomoConfig: props.settings.matomoConfig || '',
-      private: props.settings.private || false,
-      customLandingpage: !!props.settings.home_page,
-      dateFormat: props.settings.dateFormat,
-      dateSeparator
-    };
-  }
-
-  dateFormatSeparatorOptions() {
+  static dateFormatSeparatorOptions() {
     return [
       { label: '/', value: '/' },
       { label: '-', value: '-' }
     ];
   }
 
-  dateFormatOptions(separator) {
+  static landingPageOptions() {
     return [
-      { label: 'Year, Month, Day', value: `YYYY${separator}MM${separator}DD` },
-      { label: 'Day, Month, Year', value: `DD${separator}MM${separator}YYYY` },
-      { label: 'Month, Day, Year', value: `MM${separator}DD${separator}YYYY` }
+      { label: 'Library', value: false },
+      { label: 'Custom Page', value: true }
     ];
   }
 
-  renderDateFormatLabel(option) {
-    return <span>{option.label} <code>{moment().format(option.value)}</code></span>;
+  static dateFormatOptions(separator) {
+    return [
+      { label: 'Year, Month, Day', value: 0, separator },
+      { label: 'Day, Month, Year', value: 1, separator },
+      { label: 'Month, Day, Year', value: 2, separator }
+    ];
   }
 
-  changeLandingPage(e) {
-    const customLandingpage = e.target.value === 'custom';
-    this.setState({ customLandingpage, homePage: '' });
-    const settings = Object.assign(this.props.settings, { home_page: '' }); // eslint-disable-line camelcase
-    this.props.setSettings(settings);
+  static getDateFormatValue(format, separator) {
+    const formatOptions = [
+      `YYYY${separator}MM${separator}DD`,
+      `DD${separator}MM${separator}YYYY`,
+      `MM${separator}DD${separator}YYYY`
+    ];
+
+    return formatOptions.indexOf(format);
   }
 
-  changeName(e) {
-    this.setState({ siteName: e.target.value });
-    const settings = Object.assign(this.props.settings, { site_name: e.target.value }); // eslint-disable-line camelcase
-    this.props.setSettings(settings);
+  static getDateFormat(value, separator) {
+    const formatOptions = [
+      `YYYY${separator}MM${separator}DD`,
+      `DD${separator}MM${separator}YYYY`,
+      `MM${separator}DD${separator}YYYY`
+    ];
+
+    return formatOptions[value];
   }
 
-  changeMailerConfig(e) {
-    this.setState({ mailerConfig: e.target.value });
-    const settings = Object.assign(this.props.settings, { mailerConfig: e.target.value });
-    this.props.setSettings(settings);
+  static renderDateFormatLabel(option) {
+    const { separator, label, value } = option;
+    return <span>{label} <code>{moment().format(CollectionSettings.getDateFormat(value, separator))}</code></span>;
   }
 
-  changeContactEmail(e) {
-    this.setState({ contactEmail: e.target.value });
-    const settings = Object.assign(this.props.settings, { contactEmail: e.target.value });
-    this.props.setSettings(settings);
+  constructor(props, context) {
+    super(props, context);
+    const { settings } = this.props;
+    const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
+    const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
+    const customLandingpage = Boolean(props.settings.home_page);
+    this.state = Object.assign({}, settings, { dateSeparator, customLandingpage, dateFormat });
+    this.updateSettings = this.updateSettings.bind(this);
   }
 
-  changeAnalyticsTrackingId(e) {
-    this.setState({ analyticsTrackingId: e.target.value });
-    const settings = Object.assign(this.props.settings, { analyticsTrackingId: e.target.value });
-    this.props.setSettings(settings);
-  }
+  updateSettings(values) {
+    const settings = Object.assign({}, values);
+    delete settings.customLandingpage;
+    delete settings.dateSeparator;
+    settings.dateFormat = CollectionSettings.getDateFormat(values.dateFormat, values.dateSeparator);
 
-  changeMatomoConfig(e) {
-    this.setState({ matomoConfig: e.target.value });
-    const settings = Object.assign(this.props.settings, { matomoConfig: e.target.value });
-    this.props.setSettings(settings);
-  }
-
-  changePrivate() {
-    const privateInstance = !this.state.private;
-    this.setState({ private: privateInstance });
-    const settings = Object.assign(this.props.settings, { private: privateInstance });
-    this.props.setSettings(settings);
-  }
-
-  changeHomePage(e) {
-    this.setState({ homePage: e.target.value });
-    const settings = Object.assign(this.props.settings, { home_page: e.target.value }); // eslint-disable-line camelcase
-    this.props.setSettings(settings);
-  }
-
-  changeDateFormat(dateFormat) {
-    this.setState({ dateFormat });
-    const settings = Object.assign(this.props.settings, { dateFormat });
-    this.props.setSettings(settings);
-  }
-
-  changeCookiepolicy(e) {
-    const cookiepolicy = e.target.checked;
-    this.setState({ cookiepolicy });
-    const settings = Object.assign(this.props.settings, { cookiepolicy });
-    this.props.setSettings(settings);
-  }
-
-  changeDateFormatSeparator(dateSeparator) {
-    const selectedFormatPosition = this.dateFormatSeparatorOptions().reduce((position, separator) => {
-      const dateFormatOptions = this.dateFormatOptions(separator.value);
-      const foundFormat = dateFormatOptions.find(s => s.value === this.state.dateFormat);
-      return foundFormat ? dateFormatOptions.indexOf(foundFormat) : position;
-    }, null);
-
-    const dateFormat = this.dateFormatOptions(dateSeparator)[selectedFormatPosition] ?
-      this.dateFormatOptions(dateSeparator)[selectedFormatPosition].value : '';
-
-    this.setState({ dateSeparator, dateFormat });
-    const settings = Object.assign(this.props.settings, { dateFormat });
-    this.props.setSettings(settings);
-  }
-
-  updateSettings(e) {
-    e.preventDefault();
-    const settings = Object.assign({}, this.props.settings);
-    settings.home_page = this.state.homePage; // eslint-disable-line camelcase
-    settings.site_name = this.state.siteName; // eslint-disable-line camelcase
-    settings.mailerConfig = this.state.mailerConfig;
-    settings.analyticsTrackingId = this.state.analyticsTrackingId;
-    settings.private = this.state.private;
     SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated', null, false), 'success');
@@ -144,82 +87,52 @@ export class CollectionSettings extends Component {
 
   render() {
     const hostname = isClient ? window.location.origin : '';
-
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection')}</div>
         <div className="panel-body">
-          <form onSubmit={this.updateSettings.bind(this)}>
+          <LocalForm onSubmit={this.updateSettings} initialState={this.state} onChange={values => this.setState(values)}>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
-              <input onChange={this.changeName.bind(this)} value={this.state.siteName} type="text" className="form-control"/>
+              <Control.text id="collection_name" model=".site_name" className="form-control"/>
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collection_name">{t('System', 'Private instance')}</label>
+              <span className="form-group-label">{t('System', 'Private instance')}</span>
               <div className="checkbox">
                 <label>
-                  <input
-                    onChange={this.changePrivate.bind(this)}
-                    name="private"
-                    type="checkbox"
-                    checked={this.state.private}
-                  />
+                  <Control.checkbox id="collection_name" model=".private"/>
                   {t('System', 'check as private instance')}
                 </label>
               </div>
             </div>
             <div className="form-group">
-              <label className="form-group-label">{t('System', 'Date format')}</label>
+              <span className="form-group-label">{t('System', 'Date format')}</span>
               <div>{t('System', 'Separator')}</div>
               <RadioButtons
-                options={this.dateFormatSeparatorOptions()}
-                value={this.state.dateSeparator}
-                onChange={this.changeDateFormatSeparator.bind(this)}
+                options={CollectionSettings.dateFormatSeparatorOptions()}
+                model=".dateSeparator"
               />
               <div>{t('System', 'Order')}</div>
               <RadioButtons
-                options={this.dateFormatOptions(this.state.dateSeparator)}
-                value={this.state.dateFormat}
-                onChange={this.changeDateFormat.bind(this)}
-                renderLabel={this.renderDateFormatLabel}
+                options={CollectionSettings.dateFormatOptions(this.state.dateSeparator)}
+                model=".dateFormat"
+                renderLabel={CollectionSettings.renderDateFormatLabel}
               />
             </div>
             <h2>{t('System', 'Advanced settings')}</h2>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collection_name">{t('System', 'Landing page')}</label>
-              <div className="radio">
-                <label>
-                  <input
-                    onChange={this.changeLandingPage.bind(this)}
-                    name="landingPage"
-                    type="radio"
-                    value="library"
-                    checked={!this.state.customLandingpage}
-                  />
-                  <Translate>Library</Translate>
-                </label>
-              </div>
-              <div className="radio">
-                <label>
-                  <input
-                    onChange={this.changeLandingPage.bind(this)}
-                    name="landingPage"
-                    type="radio"
-                    value="custom"
-                    checked={this.state.customLandingpage}
-                  />
-                  <Translate>Custom page</Translate>
-                </label>
-              </div>
+              <span className="form-group-label">{t('System', 'Landing page')}</span>
+              <RadioButtons
+                options={CollectionSettings.landingPageOptions()}
+                model=".customLandingpage"
+              />
               <div className="input-group">
                 <span disabled={!this.state.customLandingpage} className="input-group-addon">
                   {hostname}
                 </span>
-                <input
+                <Control.text
                   disabled={!this.state.customLandingpage}
-                  onChange={this.changeHomePage.bind(this)}
-                  value={this.state.homePage}
-                  type="text"
+                  model=".homePage"
                   className="form-control"
                 />
               </div>
@@ -239,22 +152,16 @@ export class CollectionSettings extends Component {
               </div>
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Google Analytics ID')}</label>
-              <input
-                name="analyticsTrackingId"
-                onChange={this.changeAnalyticsTrackingId.bind(this)}
-                value={this.state.analyticsTrackingId}
-                type="text"
+              <label className="form-group-label" htmlFor="analyticsTrackingId">{t('System', 'Google Analytics ID')}</label>
+              <Control.text
+                model=".analyticsTrackingId"
                 className="form-control"
               />
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Matomo configuration')}</label>
-              <textarea
-                name="collectionMatomoConfig"
-                onChange={this.changeMatomoConfig.bind(this)}
-                value={this.state.matomoConfig}
-                type="text"
+              <label className="form-group-label" htmlFor="matomoConfig">{t('System', 'Matomo configuration')}</label>
+              <Control.textarea
+                model=".matomoConfig"
                 className="form-control"
                 rows="5"
               />
@@ -267,22 +174,16 @@ export class CollectionSettings extends Component {
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionMailerConfig">{t('System', 'Mailer configuration')}</label>
-              <textarea
-                name="collectionMailerConfig"
-                onChange={this.changeMailerConfig.bind(this)}
-                value={this.state.mailerConfig}
-                type="text"
+              <Control.textarea
+                model=".mailerConfig"
                 className="form-control"
                 rows="5"
               />
             </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
-              <input
-                name="collectionContactEmail"
-                onChange={this.changeContactEmail.bind(this)}
-                value={this.state.contactEmail}
-                type="text"
+              <Control.text
+                model=".contactEmail"
                 className="form-control"
               />
             </div>
@@ -297,12 +198,10 @@ export class CollectionSettings extends Component {
             </div>
             <span className="form-group-label" >{t('System', 'Show Cookie policy')}</span>
             <div className="checkbox">
-              <label htmlFor="cookiepolice">
-                <input
-                  name="cookiepolice"
-                  id="cookiepolice"
-                  onChange={this.changeCookiepolicy.bind(this)}
-                  value={this.state.cookiepolicy}
+              <label htmlFor="cookiepolicy">
+                <Control.checkbox
+                  model=".cookiepolicy"
+                  id="cookiepolicy"
                   type="checkbox"
                 />
                 <Translate>This option will show a notification about the use of cookies in your instance.</Translate>
@@ -332,7 +231,7 @@ export class CollectionSettings extends Component {
                 <span className="btn-label">{t('System', 'Save')}</span>
               </button>
             </div>
-          </form>
+          </LocalForm>
         </div>
       </div>
     );
@@ -340,9 +239,9 @@ export class CollectionSettings extends Component {
 }
 
 CollectionSettings.propTypes = {
-  settings: PropTypes.object,
-  setSettings: PropTypes.func,
-  notify: PropTypes.func
+  settings: PropTypes.object.isRequired,
+  setSettings: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired
 };
 
 export function mapStateToProps(state) {
