@@ -12,40 +12,42 @@ describe('I18NUtils', () => {
       { key: 'es', default: true },
       { key: 'pt' },
     ];
-
-    spyOn(Cookie, 'set');
   });
 
-  const expectLanguage = (operation, language) => {
-    expect(operation).toBe(language);
-    expect(Cookie.set).toHaveBeenCalledWith('locale', language, { expires: 365 * 10 });
-  };
-
-  describe('If Client', () => {
-    beforeEach(() => {
-      appUtils.isClient = true;
+  describe('getLocale', () => {
+    it('should return default locale', () => {
+      expect(utils.getLocale(null, languages)).toBe('es');
     });
 
-    describe('getLocale', () => {
-      it('should return default locale and set cookie', () => {
-        expectLanguage(utils.getLocale(null, languages), 'es');
-      });
+    it('should return previously set-in-cookie language', () => {
+      expect(utils.getLocale(null, languages, { locale: 'en' })).toBe('en');
+    });
 
-      it('should return previously set-in-cookie language and set cookie', () => {
-        spyOn(Cookie, 'get').and.callFake(property => property === 'locale' ? 'en' : null);
-        expectLanguage(utils.getLocale(null, languages), 'en');
-      });
+    it('should return default if previously set-in-cookie language is not valid', () => {
+      expect(utils.getLocale(null, languages, { locale: 'md' })).toBe('es');
+    });
 
-      it('should return url-set-language and set cookie', () => {
-        expectLanguage(utils.getLocale('pt', languages), 'pt');
-      });
+    it('should return url-set-language', () => {
+      expect(utils.getLocale('pt', languages)).toBe('pt');
+    });
 
-      it('should return default / cookie language if URL language is not valid', () => {
-        expectLanguage(utils.getLocale('ar', languages), 'es');
+    it('should return default / cookie language if URL language is not valid', () => {
+      expect(utils.getLocale('ar', languages)).toBe('es');
+      expect(utils.getLocale('ar', languages, { locale: 'en' })).toBe('en');
+    });
+  });
 
-        spyOn(Cookie, 'get').and.callFake(property => property === 'locale' ? 'en' : null);
-        expectLanguage(utils.getLocale('ar', languages), 'en');
-      });
+  describe('saveLocale', () => {
+    beforeEach(() => {
+      appUtils.isClient = true;
+      spyOn(Cookie, 'set');
+    });
+
+    it('should set the cookie locale', () => {
+      utils.saveLocale('tr');
+      expect(Cookie.set).toHaveBeenCalledWith('locale', 'tr', { expires: 365 * 10 });
+      utils.saveLocale('es');
+      expect(Cookie.set).toHaveBeenCalledWith('locale', 'es', { expires: 365 * 10 });
     });
   });
 });

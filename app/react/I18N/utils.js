@@ -1,30 +1,17 @@
 import * as Cookie from 'tiny-cookie';
-import { isClient } from 'app/utils';
 
-const getURLLocale = (locale, languages = []) => languages.find(l => l.key === locale) ? locale : null;
-
-const getCookieLocale = () => {
-  if (isClient && Cookie.get('locale')) {
-    return Cookie.get('locale');
-  }
-
-  return null;
-  // return I18NUtils.getLocaleIfExists(cookie.locale, languages);
-};
-
+const languageInLanguages = (languages, locale) => Boolean(languages.find(l => l.key === locale));
+const getURLLocale = (locale, languages = []) => languageInLanguages(languages, locale) ? locale : null;
+const getCookieLocale = (cookie, languages) => cookie.locale && languageInLanguages(languages, cookie.locale) ? cookie.locale : null;
 const getDefaultLocale = languages => (languages.find(language => language.default) || {}).key;
 
 const I18NUtils = {
-  getLocale(urlLanguage, languages = [], cookie = {}) {
-    const newLanguage = getURLLocale(urlLanguage, languages) || getCookieLocale(cookie) || getDefaultLocale(languages);
-    this.saveLocale(newLanguage);
-    return newLanguage;
+  getLocale(urlLanguage, languages, cookie = {}) {
+    return getURLLocale(urlLanguage, languages) || getCookieLocale(cookie, languages) || getDefaultLocale(languages);
   },
 
   saveLocale: (locale) => {
-    if (isClient) {
-      Cookie.set('locale', locale, { expires: 365 * 10 });
-    }
+    Cookie.set('locale', locale, { expires: 365 * 10 });
   }
 };
 
