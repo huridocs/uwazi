@@ -1,5 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import errorLog from 'api/log/errorLog';
 import { index as elasticIndex } from 'api/config/elasticIndexes';
 import { search, elastic } from 'api/search';
 import db from 'api/utils/testing_db';
@@ -93,18 +94,14 @@ describe('search', () => {
     });
 
     describe('when there is an indexation error', () => {
-      it('should throw an error with the id of the document and the error message', async () => {
+      it('should log the error with the id of the document and the error message', async () => {
         spyOn(elastic, 'bulk')
         .and.returnValue(Promise.resolve({ items: [{ index: { _id: '_id1', error: 'something terrible happened' } }] }));
-
+        spyOn(errorLog, 'error');
         const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
-        let error;
-        try {
-          await search.bulkIndex(toIndexDocs, 'index');
-        } catch (e) {
-          error = e;
-        }
-        expect(error).toEqual({ code: 500, message: 'ERROR Failed to index document _id1: "something terrible happened"' });
+        await search.bulkIndex(toIndexDocs, 'index');
+
+        expect(errorLog.error).toHaveBeenCalledWith('ERROR Failed to index document _id1: "something terrible happened"');
       });
     });
   });
