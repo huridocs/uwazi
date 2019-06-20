@@ -78,6 +78,10 @@ export class CollectionSettings extends Component {
     delete settings.dateSeparator;
     settings.dateFormat = CollectionSettings.getDateFormat(values.dateFormat, values.dateSeparator);
 
+    if (!values.customLandingpage) {
+      settings.home_page = '';
+    }
+
     SettingsAPI.save(settings)
     .then((result) => {
       this.props.notify(t('System', 'Settings updated', null, false), 'success');
@@ -91,7 +95,7 @@ export class CollectionSettings extends Component {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection')}</div>
         <div className="panel-body">
-          <LocalForm onSubmit={this.updateSettings} initialState={this.state} onChange={values => this.setState(values)}>
+          <LocalForm id="collectionSettingsForm" onSubmit={this.updateSettings} initialState={this.state} onChange={values => this.setState(values)}>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collection_name">{t('System', 'Name')}</label>
               <Control.text id="collection_name" model=".site_name" className="form-control"/>
@@ -132,7 +136,7 @@ export class CollectionSettings extends Component {
                 </span>
                 <Control.text
                   disabled={!this.state.customLandingpage}
-                  model=".homePage"
+                  model=".home_page"
                   className="form-control"
                 />
               </div>
@@ -198,40 +202,39 @@ export class CollectionSettings extends Component {
             </div>
             <span className="form-group-label" >{t('System', 'Show Cookie policy')}</span>
             <div className="checkbox">
-              <label htmlFor="cookiepolicy">
+              <label>
                 <Control.checkbox
                   model=".cookiepolicy"
-                  id="cookiepolicy"
                   type="checkbox"
                 />
                 <Translate>This option will show a notification about the use of cookies in your instance.</Translate>
               </label>
             </div>
-            <h2>{t('System', 'Advanced customizations')}</h2>
-            <div>
-              <Link
-                to="/settings/customisation"
-                href="/settings/customisation"
-                className="btn btn-default"
-              >
-                {t('System', 'Custom Styles')}
-              </Link>
-              &nbsp;
-              <Link
-                to="/settings/custom-uploads"
-                href="/settings/custom-uploads"
-                className="btn btn-default"
-              >
-                {t('System', 'Custom Uploads')}
-              </Link>
-            </div>
-            <div className="settings-footer">
-              <button type="submit" className="btn btn-success">
-                <Icon icon="save" />
-                <span className="btn-label">{t('System', 'Save')}</span>
-              </button>
-            </div>
           </LocalForm>
+          <h2>{t('System', 'Advanced customizations')}</h2>
+          <div>
+            <Link
+              to="/settings/customisation"
+              href="/settings/customisation"
+              className="btn btn-default"
+            >
+              {t('System', 'Custom Styles')}
+            </Link>
+            &nbsp;
+            <Link
+              to="/settings/custom-uploads"
+              href="/settings/custom-uploads"
+              className="btn btn-default"
+            >
+              {t('System', 'Custom Uploads')}
+            </Link>
+          </div>
+          <div className="settings-footer">
+            <button type="submit" form="collectionSettingsForm" className="btn btn-success">
+              <Icon icon="save" />
+              <span className="btn-label">{t('System', 'Save')}</span>
+            </button>
+          </div>
         </div>
       </div>
     );

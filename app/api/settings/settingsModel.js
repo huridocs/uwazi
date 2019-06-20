@@ -25,6 +25,7 @@ const settingsSchema = new mongoose.Schema({
   contactEmail: String,
   home_page: String,
   private: Boolean,
+  cookiepolicy: Boolean,
   languages: [languagesSchema],
   links: [linksSchema],
   filters: [filtersSchema],

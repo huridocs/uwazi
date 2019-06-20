@@ -54,7 +54,6 @@ RadioButtons.defaultProps = {
 
 RadioButtons.propTypes = {
   onChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
   value: PropTypes.any.isRequired,
   optionsValue: PropTypes.string,

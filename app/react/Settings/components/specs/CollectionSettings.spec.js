@@ -24,17 +24,17 @@ describe('CollectionSettings', () => {
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
     });
 
-    it('should sanitize the form data', () => {
+    fit('should sanitize the form data', () => {
       const values = {
         _id: 'id',
         _rev: 'rev',
         site_name: 'Uwazi',
-        home_page: '',
+        home_page: 'I should be removed',
         mailerConfig: 'config',
         analyticsTrackingId: 'X-123-Y',
         dateFormat: 2,
         dateSeparator: '/',
-        customLandingpage: true,
+        customLandingpage: false,
         matomoConfig: 'matomo',
         private: false
       };
