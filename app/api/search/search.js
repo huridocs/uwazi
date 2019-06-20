@@ -1,3 +1,4 @@
+import errorLog from 'api/log/errorLog';
 import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
 import { detect as detectLanguage } from 'shared/languages';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
@@ -243,8 +244,8 @@ const mainSearch = (query, language, user) => {
     }
     return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
     .then(processResponse)
-    .catch(() => {
-      throw createError('Query error', 400);
+    .catch((e) => {
+      throw createError(e.message, 400);
     });
   });
 };
@@ -397,7 +398,6 @@ const search = {
       body.push(action);
       body.push(_doc);
 
-
       if (doc.fullText) {
         const fullText = Object.values(doc.fullText).join('\f');
 
@@ -424,7 +424,7 @@ const search = {
       if (res.items) {
         res.items.forEach((f) => {
           if (f.index.error) {
-            console.log(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
+            errorLog.error(`ERROR Failed to index document ${f.index._id}: ${JSON.stringify(f.index.error, null, ' ')}`);
           }
         });
       }
