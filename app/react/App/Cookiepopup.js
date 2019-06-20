@@ -10,7 +10,7 @@ import { Notification } from 'app/Notifications/components/Notification';
 export class Cookiepopup extends Component {
   constructor(props) {
     super(props);
-    this.state = { cookieExists: isClient && Boolean(Cookie.get('cookiepolicy')) };
+    this.state = { cookieExists: !isClient || (isClient && Boolean(Cookie.get('cookiepolicy'))) };
     this.close = this.close.bind(this);
   }
 
@@ -23,7 +23,7 @@ export class Cookiepopup extends Component {
     const { cookiepolicy } = this.props;
     const { cookieExists } = this.state;
     if (!cookiepolicy || cookieExists) {
-      return false;
+      return (<div className="alert-wrapper" />);
     }
 
     const message = (<Translate>This site uses cookies.</Translate>);
