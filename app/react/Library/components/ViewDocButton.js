@@ -15,8 +15,6 @@ function getDocumentUrlQuery(searchTerm, targetReference) {
   }
   if (targetReference) {
     query.ref = targetReference.get('_id');
-    query.refStart = targetReference.getIn(['range', 'start']);
-    query.refEnd = targetReference.getIn(['range', 'end']);
   }
   return query;
 }

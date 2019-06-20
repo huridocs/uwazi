@@ -33,7 +33,7 @@ describe('ViewDocButton', () => {
     expect(component).toMatchSnapshot();
   });
   describe('when targetReference is provided', () => {
-    it('should render view button with references id, start and end in the url query', () => {
+    it('should render view button with reference id in the url query', () => {
       props.targetReference = fromJS({ _id: 'ref1', range: { start: 200, end: 300 } });
       render();
       expect(component).toMatchSnapshot();

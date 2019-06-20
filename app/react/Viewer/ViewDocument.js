@@ -92,16 +92,10 @@ class ViewDocument extends RouteHandler {
     if (this.props.location.query.page) {
       scrollToPage(this.props.location.query.page, 0);
     }
-    const { ref, refStart, refEnd } = this.props.location.query;
-    if (ref && refStart && refEnd) {
-      const reference = {
-        _id: ref,
-        range: {
-          start: Number(refStart),
-          end: Number(refEnd)
-        }
-      };
-      this.context.store.dispatch(activateReference(reference, doc.get('pdfInfo').toJS()));
+    const { ref } = this.props.location.query;
+    if (ref) {
+      const reference = doc.get('relationships').find(r => r.get('_id') === ref);
+      this.context.store.dispatch(activateReference(reference.toJS(), doc.get('pdfInfo').toJS()));
     }
   }
 

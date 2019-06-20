@@ -109,19 +109,21 @@ describe('ViewDocument', () => {
       instance.onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
     });
-    it('should activate text reference if query parameters have reference properties', () => {
+    it('should activate text reference if query parameters have reference id', () => {
       spyOn(uiActions, 'activateReference');
-      props.location = { query: { raw: 'false', ref: 'refId', refStart: '200', refEnd: '300' }, pathname: 'pathname' };
+      props.location = { query: { raw: 'false', ref: 'refId' }, pathname: 'pathname' };
       const pdfInfo = { 1: { chars: 100 } };
+      const reference = { _id: 'refId', range: { start: 200, end: 300 }, text: 'test' };
       const doc = fromJS({
-        pdfInfo
+        pdfInfo,
+        relationships: [
+          { _id: 'otherRef' },
+          reference
+        ]
       });
       render();
       instance.onDocumentReady(doc);
-      expect(uiActions.activateReference).toHaveBeenCalledWith({
-        _id: 'refId',
-        range: { start: 200, end: 300 }
-      }, pdfInfo);
+      expect(uiActions.activateReference).toHaveBeenCalledWith(reference, pdfInfo);
     });
     it('should emit documentLoaded event', () => {
       spyOn(uiActions, 'scrollToPage');
