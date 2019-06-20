@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Doc when target reference is specified should pass the target reference to the ViewDocButton 1`] = `
+<Connect(Item)
+  active={false}
+  additionalText="passedAdditionalText"
+  buttons={
+    <div>
+      <Connect(ViewDocButton)
+        processed={true}
+        sharedId="id"
+        storeKey="library"
+        targetReference={
+          Immutable.Map {
+            "range": Immutable.Map {
+              "start": 100,
+              "end": 200,
+            },
+          }
+        }
+      />
+    </div>
+  }
+  deleteConnection={[Function]}
+  doc={
+    Immutable.Map {
+      "_id": "idOne",
+      "template": "templateId",
+      "creationDate": 1234,
+      "type": "document",
+      "sharedId": "id",
+      "processed": true,
+      "connections": Immutable.List [
+        Immutable.Map {
+          "sourceType": "metadata",
+        },
+        Immutable.Map {
+          "_id": "c1",
+          "sourceType": "other",
+          "nonRelevant": true,
+        },
+      ],
+    }
+  }
+  itemHeader={
+    <div>
+      <div
+        className="item-connection"
+      >
+        <div>
+          <Connect(Icon)
+            icon="exchange-alt"
+          />
+          <span>
+            
+          </span>
+        </div>
+        <Connect(NeedAuthorization)
+          roles={
+            Array [
+              "admin",
+              "editor",
+            ]
+          }
+        >
+          <ShowIf
+            if={false}
+          >
+            <button
+              className="btn btn-default btn-hover-danger btn-xs"
+              onClick={[Function]}
+            >
+              <Connect(Icon)
+                icon="trash-alt"
+              />
+            </button>
+          </ShowIf>
+        </Connect(NeedAuthorization)>
+      </div>
+      <div
+        className="item-connection"
+      >
+        <div>
+          <Connect(Icon)
+            icon="exchange-alt"
+          />
+          <span>
+            
+          </span>
+        </div>
+        <Connect(NeedAuthorization)
+          roles={
+            Array [
+              "admin",
+              "editor",
+            ]
+          }
+        >
+          <ShowIf
+            if={true}
+          >
+            <button
+              className="btn btn-default btn-hover-danger btn-xs"
+              onClick={[Function]}
+            >
+              <Connect(Icon)
+                icon="trash-alt"
+              />
+            </button>
+          </ShowIf>
+        </Connect(NeedAuthorization)>
+      </div>
+    </div>
+  }
+  labels={
+    <Connect(UploadEntityStatus)
+      doc={
+        Immutable.Map {
+          "_id": "idOne",
+          "template": "templateId",
+          "creationDate": 1234,
+          "type": "document",
+          "sharedId": "id",
+          "processed": true,
+          "connections": Immutable.List [
+            Immutable.Map {
+              "sourceType": "metadata",
+            },
+            Immutable.Map {
+              "_id": "c1",
+              "sourceType": "other",
+              "nonRelevant": true,
+            },
+          ],
+        }
+      }
+    />
+  }
+  onClick={[Function]}
+  searchParams={
+    Object {
+      "sort": "sortProperty",
+    }
+  }
+/>
+`;

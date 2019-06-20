@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RelationshipsGraphEdit when relationship is text range reference should render the Doc with the target reference 1`] = `
+<React.Fragment>
+  <div
+    className="leftRelationshipType "
+    key="leftRelationshipType"
+  >
+    <div
+      className="rw-dropdown-list rw-widget"
+    >
+      <div
+        className="rw-widget-input rw-widget-picker rw-widget-container no-edit"
+      >
+        <div
+          className="rw-input rw-dropdown-list-input no-edit"
+        >
+          Friend
+        </div>
+      </div>
+    </div>
+    <div
+      className="leftDocument "
+    >
+      <Connect(Doc)
+        className="item-collapsed"
+        doc={
+          Immutable.Map {
+            "sharedId": "sharedId1",
+          }
+        }
+        onClick={[Function]}
+        searchParams={
+          Object {
+            "order": "desc",
+            "sort": "creationDate",
+            "treatAs": "number",
+          }
+        }
+        targetReference={
+          Immutable.Map {
+            "entity": "sharedId1",
+            "hub": 1,
+            "template": "123",
+            "entityData": Immutable.Map {
+              "sharedId": "sharedId1",
+            },
+            "range": Immutable.Map {
+              "start": 100,
+              "end": 200,
+            },
+          }
+        }
+      />
+    </div>
+    <Connect(HubRelationshipMetadata)
+      relationship={
+        Immutable.Map {
+          "entity": "sharedId1",
+          "hub": 1,
+          "template": "123",
+          "entityData": Immutable.Map {
+            "sharedId": "sharedId1",
+          },
+          "range": Immutable.Map {
+            "start": 100,
+            "end": 200,
+          },
+        }
+      }
+    />
+  </div>
+  <div
+    className="hubRelationship"
+    key="figure"
+  >
+    <figure />
+  </div>
+</React.Fragment>
+`;

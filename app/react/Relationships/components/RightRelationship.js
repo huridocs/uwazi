@@ -130,6 +130,7 @@ export class RightRelationship extends Component {
                       doc={relationship.get('entityData')}
                       searchParams={search}
                       onClick={this.onClick}
+                      targetReference={relationship.get('range') ? relationship : null}
                     />
                     <HubRelationshipMetadata relationship={relationship} />
                   </div>

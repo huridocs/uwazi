@@ -4,14 +4,14 @@ import { actions as formActions } from 'react-redux-form';
 import React from 'react';
 
 import { actions } from 'app/BasicReducer';
-import { isClient } from 'app/utils';
+import { isClient, events } from 'app/utils';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import { toUrlParams } from 'shared/JSONRequest';
 import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
-import { scrollToPage } from './actions/uiActions';
+import { scrollToPage, activateReference } from './actions/uiActions';
 
 import { requestViewerState, setViewerState } from './actions/routeActions';
 
@@ -84,9 +84,18 @@ class ViewDocument extends RouteHandler {
     browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`);
   }
 
-  onDocumentReady() {
-    if (this.props.location.query.raw !== 'true' && this.props.location.query.page) {
+  onDocumentReady(doc) {
+    events.emit('documentLoaded');
+    if (this.props.location.query.raw === 'true') {
+      return;
+    }
+    if (this.props.location.query.page) {
       scrollToPage(this.props.location.query.page, 0);
+    }
+    const { ref } = this.props.location.query;
+    if (ref) {
+      const reference = doc.get('relationships').find(r => r.get('_id') === ref);
+      this.context.store.dispatch(activateReference(reference.toJS(), doc.get('pdfInfo').toJS()));
     }
   }
 
