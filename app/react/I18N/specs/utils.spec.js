@@ -15,7 +15,6 @@ describe('I18NUtils', () => {
   });
 
   describe('getLocale', () => {
-    /* MISSING: what happens if languages [] (private instances?) */
     it('should return default locale', () => {
       expect(utils.getLocale(null, languages)).toBe('es');
     });
@@ -40,15 +39,21 @@ describe('I18NUtils', () => {
 
   describe('saveLocale', () => {
     beforeEach(() => {
-      appUtils.isClient = true;
       spyOn(Cookie, 'set');
     });
 
     it('should set the cookie locale', () => {
+      appUtils.isClient = true;
       utils.saveLocale('tr');
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'tr', { expires: 365 * 10 });
       utils.saveLocale('es');
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'es', { expires: 365 * 10 });
+    });
+
+    it('should not attempt to save cookie on server', () => {
+      appUtils.isClient = false;
+      utils.saveLocale('tr');
+      expect(Cookie.set).not.toHaveBeenCalled();
     });
   });
 });
