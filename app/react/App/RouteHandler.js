@@ -6,13 +6,7 @@ import { I18NUtils } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import api from 'app/utils/api';
 
-const getLocale = ({ store }) => {
-  if (store && store.getState) {
-    return store.getState().locale;
-  }
-  /* ??? When does this happen? */
-  return null;
-};
+const getLocale = ({ store }) => store.getState().locale;
 
 const setLocale = (locale) => {
   moment.locale(locale);
