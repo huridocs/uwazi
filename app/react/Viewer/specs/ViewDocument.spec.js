@@ -27,12 +27,10 @@ describe('ViewDocument', () => {
 
   beforeEach(() => {
     const dispatch = jasmine.createSpy('dispatch');
-    context = { store: { getState: () => ({}), dispatch: dispatch.and.callFake((action) => {
-      if (typeof action === 'function') {
-        return action(dispatch);
-      }
-      return action;
-    }) } };
+    context = { store: {
+      getState: () => ({}),
+      dispatch: dispatch.and.callFake(action => (typeof action === 'function') ? action(dispatch) : action),
+    } };
     props = { location: { query: {} }, routes: [] };
 
     render();
