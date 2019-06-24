@@ -8,7 +8,8 @@ describe('NewRelationType', () => {
   let component;
 
   beforeEach(() => {
-    component = shallow(<NewRelationType />);
+    const context = { store: { getState: () => ({}) } };
+    component = shallow(<NewRelationType />, { context });
   });
 
   it('should render a RelationTypeForm', () => {

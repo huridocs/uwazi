@@ -15,7 +15,7 @@ describe('UnlockAccount', () => {
       params: { username: 'username', code: 'code' }
     };
 
-    context = { router: { location: '' } };
+    context = { store: { getState: () => ({}) }, router: { location: '' } };
   });
 
   const renderComponent = () => shallow(<UnlockAccount {...props} />, { context });

@@ -22,7 +22,7 @@ describe('Library', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     dispatchCallsOrder = [];
-    context = { store: { dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
       dispatchCallsOrder.push(action.type);
     }) } };
 

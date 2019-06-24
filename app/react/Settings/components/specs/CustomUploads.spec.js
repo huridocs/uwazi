@@ -23,7 +23,7 @@ describe('CustomUploads', () => {
   });
 
   const render = () => {
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<CustomUploads {...props}/>, { context });
     instance = component.instance();
   };

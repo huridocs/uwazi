@@ -16,7 +16,7 @@ describe('ResetPassword', () => {
       params: { key: 'asd' }
     };
 
-    context = { router: { location: '' } };
+    context = { store: { getState: () => ({}) }, router: { location: '' } };
 
     component = shallow(<ResetPassword {...props} />, { context });
   });
@@ -29,7 +29,7 @@ describe('ResetPassword', () => {
 
   describe('When creating an account', () => {
     it('should render an additional information box', () => {
-      context = { router: { location: { search: '?createAccount=true' } } };
+      context.router = { location: { search: '?createAccount=true' } };
       component = shallow(<ResetPassword {...props} />, { context });
       expect(component.find('.alert.alert-info').length).toBe(1);
     });

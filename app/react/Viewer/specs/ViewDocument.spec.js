@@ -27,7 +27,7 @@ describe('ViewDocument', () => {
 
   beforeEach(() => {
     const dispatch = jasmine.createSpy('dispatch');
-    context = { store: { dispatch: dispatch.and.callFake((action) => {
+    context = { store: { getState: () => ({}), dispatch: dispatch.and.callFake((action) => {
       if (typeof action === 'function') {
         return action(dispatch);
       }

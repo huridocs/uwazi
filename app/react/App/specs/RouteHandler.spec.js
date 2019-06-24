@@ -130,22 +130,10 @@ describe('RouteHandler', () => {
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });
-
-    /* ENSURE THAT THIS IS WORKING AS EXPECTED ON PRIVATE INSTANCES!!!! */
-    // describe('when the locale isn\'t available at all', () => {
-    //   it('should not set locale (login on private instances)', () => {
-    //     Cookie.remove('locale');
-    //     state.settings.collection = Immutable.fromJS({});
-    //     context.store.dispatch.calls.reset();
-    //     instance.componentWillReceiveProps({ location: { pathname: '/templates/2452345', query: '' }, params: { id: '1' } });
-    //     expect(context.store.dispatch).not.toHaveBeenCalledWith({ type: 'locale/SET', value: 'en' });
-    //     expect(context.store.dispatch).not.toHaveBeenCalledWith({ type: 'locale/SET', value: undefined });
-    //   });
-    // });
   });
 
   it('should have a default setReduxState method', () => {
-    component = shallow(<RouteHandler/>);
+    component = shallow(<RouteHandler/>, { context });
     expect(component.instance().setReduxState).toBeDefined();
   });
 });
