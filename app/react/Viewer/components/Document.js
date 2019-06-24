@@ -21,6 +21,7 @@ export class Document extends Component {
     this.pages = { 1: 0 };
     this.previousMostVisible = props.page;
     this.pdfLoaded = this.pdfLoaded.bind(this);
+    this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
   componentWillMount() {
@@ -47,6 +48,10 @@ export class Document extends Component {
 
   onTextSelected() {
     this.props.setSelection(this.text.getSelection());
+  }
+
+  onDocumentReady() {
+    this.props.onDocumentReady(this.props.doc);
   }
 
   handleOver() {}
@@ -117,7 +122,7 @@ export class Document extends Component {
             <ShowIf if={!!doc._id && !!doc.pdfInfo}>
               <PDF
                 onPageChange={this.props.onPageChange}
-                onPDFReady={this.props.onDocumentReady}
+                onPDFReady={this.onDocumentReady}
                 pdfInfo={this.props.doc.get('pdfInfo')}
                 onLoad={this.pdfLoaded}
                 file={`${APIURL}documents/download?_id=${doc._id}`}

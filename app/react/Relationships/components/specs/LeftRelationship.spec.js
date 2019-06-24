@@ -81,4 +81,13 @@ describe('RelationshipsGraphEdit', () => {
       });
     });
   });
+
+  describe('when relationship is text range reference', () => {
+    it('should render the Doc with the target reference', () => {
+      hub.leftRelationship.range = { start: 100, end: 200 };
+      props.hub = fromJS(hub);
+      render();
+      expect(component).toMatchSnapshot();
+    });
+  });
 });

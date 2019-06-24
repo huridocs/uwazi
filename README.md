@@ -52,6 +52,14 @@ $ cd uwazi
 $ yarn install
 ```
 
+There may be an issue with pngquant not running correctly.  If you encounter this issue, you are probably missing library **libpng-dev**.  Please run:
+
+```
+$ sudo rm -rf node_modules
+$ sudo apt-get install libpng-dev
+$ yarn install
+```
+
 # Production
 
 ### Production Build
