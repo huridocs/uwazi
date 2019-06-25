@@ -210,7 +210,7 @@ describe('relationships', () => {
 
     it('should first save and then delete to prevent sidefects of hub sanitizing', async () => {
       const data = {
-        save: [{ entity: 'new relationship entity', hub: hub11 }],
+        save: [{ entity: 'entity3', hub: hub11 }],
         delete: [{ _id: connectionID6 }]
       };
 
@@ -236,6 +236,22 @@ describe('relationships', () => {
       it('should call entities to update the metadata', async () => {
         await relationships.save({ entity: 'entity3', hub: hub1 }, 'en');
         expect(entities.updateMetdataFromRelationships).toHaveBeenCalledWith(['entity1', 'entity2', 'entity3'], 'en');
+      });
+    });
+
+    describe('when creating relationships to non existent entities', () => {
+      it('should not create them', async () => {
+        const relations = await relationships.save([{ entity: 'non existent' }, { entity: 'entity3' }, { entity: 'doc4' }], 'en');
+        expect(relations.length).toBe(2);
+
+        const [entity3Connection, doc4Connection] = relations;
+        expect(entity3Connection.entity).toBe('entity3');
+        expect(doc4Connection.entity).toBe('doc4');
+      });
+
+      it('should not throw an error on 0 length relations', async () => {
+        const relations = await relationships.save([{ entity: 'non existent' }], 'en');
+        expect(relations.length).toBe(0);
       });
     });
 
