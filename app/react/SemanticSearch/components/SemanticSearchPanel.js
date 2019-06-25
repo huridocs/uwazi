@@ -6,9 +6,8 @@ import socket from 'app/socket';
 import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
 
-import { hideSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import SidePanel from 'app/Layout/SidePanel';
-import { fetchSearches, submitNewSearch, registerForUpdates, updateSearch } from '../actions/actions';
+import { fetchSearches, submitNewSearch, registerForUpdates, updateSearch, hideSemanticSearch } from '../actions/actions';
 
 import SearchList from './SearchList';
 
