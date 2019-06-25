@@ -9,14 +9,15 @@ import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';
 
 import { Item } from 'app/Layout';
-import { is } from 'immutable';
+import { is, Map } from 'immutable';
 
 export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
-    return Boolean(!is(this.props.doc, nextProps.doc)) ||
-           Boolean(this.props.active !== nextProps.active) ||
-           Boolean(this.props.additionalText !== nextProps.additionalText) ||
-           Boolean(this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort);
+    return !is(this.props.doc, nextProps.doc) ||
+           !is(this.props.targetReference, nextProps.targetReference) ||
+           this.props.additionalText !== nextProps.additionalText ||
+           this.props.active !== nextProps.active ||
+           this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
   }
 
   onClick(e) {
@@ -58,7 +59,7 @@ export class Doc extends Component {
   }
 
   render() {
-    const { className, additionalText } = this.props;
+    const { className, additionalText, targetReference } = this.props;
     const doc = this.props.doc.toJS();
     const { sharedId, file, processed } = doc;
 
@@ -67,7 +68,17 @@ export class Doc extends Component {
       itemConnections = this.getConnections(doc.connections);
     }
 
-    const buttons = (<div><ViewDocButton file={file} sharedId={sharedId} processed={processed} storeKey={this.props.storeKey}/></div>);
+    const buttons = (
+      <div>
+        <ViewDocButton
+          file={file}
+          sharedId={sharedId}
+          processed={processed}
+          storeKey={this.props.storeKey}
+          targetReference={targetReference}
+        />
+      </div>
+    );
 
     return (
       <Item
@@ -87,6 +98,10 @@ export class Doc extends Component {
   }
 }
 
+Doc.defaultProps = {
+  targetReference: null
+};
+
 Doc.propTypes = {
   doc: PropTypes.object,
   searchParams: PropTypes.object,
@@ -98,6 +113,7 @@ Doc.propTypes = {
   className: PropTypes.string,
   additionalText: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   storeKey: PropTypes.string,
+  targetReference: PropTypes.instanceOf(Map)
 };
 
 Doc.contextTypes = {

@@ -134,7 +134,7 @@ export function scrollTo(reference, docInfo, element = 'a') {
 export function selectSnippet(page, snippet) {
   scrollToPage(page);
   setTimeout(() => { scrollTomark(); }, 500);
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch({ type: types.SELECT_SNIPPET, snippet });
   };
 }
@@ -143,11 +143,10 @@ export function activateReference(reference, docInfo, tab) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch({ type: types.ACTIVE_REFERENCE, reference: reference._id });
     dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
-
     setTimeout(() => {
       scrollTo(reference, docInfo);
     });
@@ -155,7 +154,7 @@ export function activateReference(reference, docInfo, tab) {
 }
 
 export function scrollToActive(reference, docInfo, tab, doScroll) {
-  return function (dispatch) {
+  return (dispatch) => {
     if (doScroll) {
       dispatch(goToActive(false));
       dispatch(activateReference(reference, docInfo, tab));
@@ -165,7 +164,7 @@ export function scrollToActive(reference, docInfo, tab, doScroll) {
 
 
 export function selectReference(reference, docInfo) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(activateReference(reference, docInfo));
     dispatch(setTargetSelection(reference.range));
   };

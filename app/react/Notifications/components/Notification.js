@@ -11,7 +11,7 @@ export class Notification extends Component {
   }
 
   render() {
-    const type = this.props.type || 'success';
+    const { type, message } = this.props;
     const cssClass = `alert alert-${type}`;
     let icon = 'check';
     if (type === 'warning' || type === 'danger') {
@@ -21,17 +21,25 @@ export class Notification extends Component {
     return (
       <div className={cssClass} onClick={this.close.bind(this)}>
         <Icon icon={icon} />
-        <span>{this.props.message}</span>
+        <span>{message}</span>
+        <Icon icon="times" />
       </div>
     );
   }
 }
 
+Notification.defaultProps = {
+  type: 'success'
+};
+
 Notification.propTypes = {
   type: PropTypes.string,
-  id: PropTypes.string,
-  message: PropTypes.string,
-  removeNotification: PropTypes.func
+  id: PropTypes.string.isRequired,
+  message: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.node,
+  ]).isRequired,
+  removeNotification: PropTypes.func.isRequired
 };
 
 function mapDispatchToProps(dispatch) {
