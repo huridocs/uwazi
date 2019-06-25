@@ -72,7 +72,8 @@ export class SemanticSearchMultieditPanel extends Component {
   }
 
   cancel() {
-    this.context.confirm({
+    const { confirm } = this.context;
+    confirm({
       accept: () => {
         this.close();
       },

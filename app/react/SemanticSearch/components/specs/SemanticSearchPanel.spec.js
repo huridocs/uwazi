@@ -111,6 +111,6 @@ describe('SemanticSearchPanel', () => {
       const component = render();
       component.instance().close();
       expect(actions.hideSemanticSearch).toHaveBeenCalled();
-    })
-  })
+    });
+  });
 });

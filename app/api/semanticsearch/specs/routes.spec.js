@@ -1,5 +1,5 @@
-import semanticSearch from '../semanticSearch';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import semanticSearch from '../semanticSearch';
 import semanticRoutes from '../routes.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import updateNotifier from '../updateNotifier';

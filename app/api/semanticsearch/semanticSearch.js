@@ -1,6 +1,7 @@
 import { promisify } from 'util';
 import async from 'async';
 import { Types } from 'mongoose';
+import date from 'api/utils/date.js';
 import { search } from '../search';
 import model from './model';
 import resultsModel from './resultsModel';
@@ -8,8 +9,6 @@ import api from './api';
 import documentsModel from '../documents';
 import workers from './workerManager';
 import { createError } from '../utils';
-
-import date from 'api/utils/date.js';
 
 export const PENDING = 'pending';
 export const COMPLETED = 'completed';

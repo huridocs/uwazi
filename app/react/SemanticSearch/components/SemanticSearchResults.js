@@ -66,11 +66,15 @@ export class SemanticSearchResults extends Component {
     this.props.getMoreSearchResults(searchId, args);
   }
 
+  multiEdit() {
+    const { editSearchEntities: edit, filters, searchId } = this.props;
+    edit(searchId, filters);
+  }
+
   renderAditionalText(doc) {
     const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);
     const aboveThreshold = doc.getIn(['semanticSearch', 'numRelevant']);
     const percentage = doc.getIn(['semanticSearch', 'relevantRate']) * 100;
-
 
     return (
       <div className="item-metadata">
@@ -80,11 +84,6 @@ export class SemanticSearchResults extends Component {
         </div>
       </div>
     );
-  }
-
-  multiEdit() {
-    const { editSearchEntities: edit, filters, searchId } = this.props;
-    edit(searchId, filters);
   }
 
   render() {
@@ -150,14 +149,15 @@ export class SemanticSearchResults extends Component {
 
 SemanticSearchResults.defaultProps = {
   searchTerm: '',
-  items: Immutable.fromJS([])
+  items: Immutable.fromJS([]),
+  query: { searchTerm: '' }
 };
 
 
 SemanticSearchResults.propTypes = {
-  searchId: PropTypes.string,
+  searchId: PropTypes.string.isRequired,
   totalCount: PropTypes.number.isRequired,
-  items: PropTypes.object,
+  items: PropTypes.instanceOf(Immutable.List),
   isEmpty: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string,
   selectSemanticSearchDocument: PropTypes.func.isRequired,
@@ -165,8 +165,13 @@ SemanticSearchResults.propTypes = {
   editSearchEntities: PropTypes.func.isRequired,
   getSearch: PropTypes.func.isRequired,
   getMoreSearchResults: PropTypes.func.isRequired,
-  filters: PropTypes.object,
-  query: PropTypes.object
+  filters: PropTypes.shape({
+    minRelevantSentences: PropTypes.number,
+    threshold: PropTypes.number
+  }).isRequired,
+  query: PropTypes.shape({
+    searchTerm: PropTypes.string
+  })
 };
 
 export const mapStateToProps = (state) => {

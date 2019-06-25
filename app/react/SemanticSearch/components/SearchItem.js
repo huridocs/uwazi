@@ -32,6 +32,7 @@ export class SearchItem extends Component {
     return (
       <div className="buttons">
         <button
+          type="button"
           className="btn btn-danger delete-search btn-xs"
           onClick={this.delete}
         >
@@ -39,6 +40,7 @@ export class SearchItem extends Component {
         </button>
         { ['inProgress', 'pending'].includes(status) && (
           <button
+            type="button"
             className="btn btn-warning stop-search btn-xs"
             onClick={() => onStopClicked(search._id)}
           >
@@ -47,6 +49,7 @@ export class SearchItem extends Component {
         )}
         { status === 'stopped' && (
           <button
+            type="button"
             className="btn btn-success resume-search btn-xs"
             onClick={() => onResumeClicked(search._id)}
           >

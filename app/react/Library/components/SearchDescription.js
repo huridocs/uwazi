@@ -40,7 +40,7 @@ SearchDescription.defaultProps = {
 SearchDescription.propTypes = {
   query: PropTypes.shape({ filters: PropTypes.object, types: PropTypes.array }),
   searchTerm: PropTypes.string.isRequired,
-  properties: PropTypes.array.isRequired
+  properties: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export function mapStateToProps({ thesauris, templates, relationTypes }, { query }) {

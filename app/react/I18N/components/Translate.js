@@ -23,9 +23,6 @@ export class Translate extends Component {
   }
 
   render() {
-    if (typeof this.props.text !== 'string') {
-      console.log(this.props.text);
-    }
     return <span onClick={this.onClick} className={this.props.i18nmode ? 'translation active' : 'translation'}>{this.props.text}</span>;
   }
 }
@@ -39,7 +36,6 @@ Translate.propTypes = {
   text: PropTypes.string.isRequired,
   translationKey: PropTypes.string.isRequired,
   context: PropTypes.string,
-  children: PropTypes.string.isRequired,
   edit: PropTypes.func.isRequired,
   i18nmode: PropTypes.bool
 };

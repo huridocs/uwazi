@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { List } from 'immutable';
 import socket from 'app/socket';
 import { Icon, } from 'UI';
 import ShowIf from 'app/App/ShowIf';
@@ -50,7 +51,7 @@ export class SemanticSearchSidePanel extends Component {
     const { open } = this.props;
     return (
       <SidePanel open={open} className="metadata-sidepanel semantic-search">
-        <button className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
+        <button type="button" className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
           <Icon icon="times" />
         </button>
         <div className="sidepanel-body">
@@ -64,9 +65,7 @@ export class SemanticSearchSidePanel extends Component {
 }
 
 SemanticSearchSidePanel.propTypes = {
-  currentFilters: PropTypes.object.isRequired,
-  currentTypes: PropTypes.object.isRequired,
-  searches: PropTypes.object.isRequired,
+  searches: PropTypes.instanceOf(List).isRequired,
   hideSemanticSearch: PropTypes.func.isRequired,
   fetchSearches: PropTypes.func.isRequired,
   registerForUpdates: PropTypes.func.isRequired,
@@ -74,10 +73,8 @@ SemanticSearchSidePanel.propTypes = {
   open: PropTypes.bool.isRequired
 };
 
-export function mapStateToProps(state, props) {
+export function mapStateToProps(state) {
   return {
-    currentFilters: state[props.storeKey].search.filters,
-    currentTypes: state[props.storeKey].filters.get('documentTypes'),
     searches: state.semanticSearch.searches,
     search: state.semanticSearch.search,
     open: state.semanticSearch.showSemanticSearchPanel

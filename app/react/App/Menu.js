@@ -113,6 +113,7 @@ export class Menu extends Component {
 
 Menu.defaultProps = {
   semanticSearch: false,
+  showSemanticSearch: () => {}
 };
 
 Menu.propTypes = {

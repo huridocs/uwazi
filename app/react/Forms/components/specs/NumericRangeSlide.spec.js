@@ -13,7 +13,9 @@ describe('NumericRangeSlide', () => {
       value: 0.5,
       min: 0,
       max: 1,
-      step: 0.1
+      step: 0.1,
+      minLabel: 'Min',
+      maxLabel: 'Max'
     };
   });
 
@@ -30,5 +32,12 @@ describe('NumericRangeSlide', () => {
     render();
     component.find('input').first().simulate('change', { target: { value: '0.6' } });
     expect(props.onChange).toHaveBeenCalledWith(0.6);
+  });
+
+  it('should accept components as min and max labels', () => {
+    props.minLabel = <b>Min</b>;
+    props.maxLabel = <b>Max</b>;
+    render();
+    expect(component).toMatchSnapshot();
   });
 });

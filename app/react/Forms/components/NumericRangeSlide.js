@@ -93,6 +93,6 @@ NumericRangeSlide.propTypes = {
   delay: PropTypes.number,
   max: PropTypes.number,
   prefix: PropTypes.string,
-  minLabel: PropTypes.any,
-  maxLabel: PropTypes.any
+  minLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  maxLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };

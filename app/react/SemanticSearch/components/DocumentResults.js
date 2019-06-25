@@ -95,7 +95,7 @@ export class DocumentResults extends Component {
 }
 
 DocumentResults.propTypes = {
-  doc: PropTypes.object.isRequired,
+  doc: PropTypes.shape({ sharedId: PropTypes.string }).isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
 };
