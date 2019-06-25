@@ -14,7 +14,7 @@ exports[`Cookiepopup when the cookiepolicy is active and the cookie not exists s
     id="cookiepolicy"
     message={
       <Connect(Translate)>
-        This site uses cookies.
+        To bring you a better experience, this site uses cookies.
       </Connect(Translate)>
     }
     removeNotification={[Function]}
