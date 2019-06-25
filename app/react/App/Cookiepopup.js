@@ -26,7 +26,7 @@ export class Cookiepopup extends Component {
       return (<div className="alert-wrapper" />);
     }
 
-    const message = (<Translate>This site uses cookies.</Translate>);
+    const message = (<Translate>To bring you a better experience, this site uses cookies.</Translate>);
     return (
       <div className="alert-wrapper">
         <Notification id="cookiepolicy" removeNotification={this.close} message={message}/>
