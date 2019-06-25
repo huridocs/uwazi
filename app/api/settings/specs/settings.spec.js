@@ -6,7 +6,7 @@ import fixtures from './fixtures.js';
 
 describe('settings', () => {
   beforeEach((done) => {
-    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
+    spyOn(translations, 'updateContext').and.callThrough();
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -39,9 +39,14 @@ describe('settings', () => {
       .catch(catchErrors(done));
     });
 
-    describe('when has links', () => {
-      it('should create a translation context for the links', (done) => {
-        const config = { site_name: 'My collection', links: [{ title: 'Page one' }] };
+    describe('when there are Links', () => {
+      let config;
+
+      beforeEach(() => {
+        config = { site_name: 'My collection', links: [{ title: 'Page one' }] };
+      });
+
+      it('should create a translation context for the passed links', (done) => {
         settings.save(config)
         .then(() => {
           expect(translations.updateContext).toHaveBeenCalledWith('Menu', 'Menu', {}, [], { 'Page one': 'Page one' }, 'Uwazi UI');
@@ -52,7 +57,7 @@ describe('settings', () => {
 
       describe('updating the links', () => {
         it('should update the translation context for the links', (done) => {
-          let config = { site_name: 'My collection', links: [{ title: 'Page one' }, { title: 'Page two' }] };
+          config.links.push({ title: 'Page two' });
           settings.save(config)
           .then((savedConfig) => {
             config = { site_name: 'My collection', links: [{ title: 'Page 1', _id: savedConfig.links[0]._id }, { title: 'Page three' }] };
@@ -103,8 +108,6 @@ describe('settings', () => {
         })
         .then(() => {
           expect(translations.updateContext)
-          .toHaveBeenCalledWith('Menu', 'Menu', {}, [], {}, 'Uwazi UI');
-          expect(translations.updateContext)
           .toHaveBeenCalledWith(
             'Filters',
             'Filters', { Documents: 'Important Documents' },
@@ -115,6 +118,14 @@ describe('settings', () => {
           done();
         })
         .catch(catchErrors(done));
+      });
+    });
+
+    describe('when no links or filters are present', () => {
+      it('should not update contexts translations', async () => {
+        await settings.save({ css: 'something that does not have links' });
+        await translations.get();
+        expect(translations.updateContext).not.toHaveBeenCalled();
       });
     });
   });
