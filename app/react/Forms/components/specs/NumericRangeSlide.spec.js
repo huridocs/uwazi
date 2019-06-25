@@ -21,11 +21,14 @@ describe('NumericRangeSlide', () => {
     component = shallow(<NumericRangeSlide {...props}/>);
   };
 
-  describe('when a date is selected', () => {
-    it('should triger onChange events', () => {
-      render();
-      component.find('input').first().simulate('change', { target: { value: '0.6' } });
-      expect(props.onChange).toHaveBeenCalledWith(0.6);
-    });
+  it('should render range input component', () => {
+    render();
+    expect(component).toMatchSnapshot();
+  });
+
+  it('should trigger onChange events', () => {
+    render();
+    component.find('input').first().simulate('change', { target: { value: '0.6' } });
+    expect(props.onChange).toHaveBeenCalledWith(0.6);
   });
 });

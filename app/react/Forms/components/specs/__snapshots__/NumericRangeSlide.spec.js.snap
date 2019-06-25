@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NumericRangeSlide should render range input component 1`] = `
+<React.Fragment>
+  <div
+    className="NumericRangeSlide"
+  >
+    <input
+      list="-tickmarks"
+      max={1}
+      min={0}
+      onChange={[Function]}
+      step={0.1}
+      type="range"
+      value={0.5}
+    />
+    <div
+      className="NumericRangeSlide-range-labels"
+    >
+      <span />
+      <span />
+    </div>
+  </div>
+  <datalist
+    id="-tickmarks"
+  >
+    <option
+      value={0}
+    />
+    <option
+      key="0"
+      value="0.00"
+    />
+    <option
+      key="0.1"
+      value="0.10"
+    />
+    <option
+      key="0.2"
+      value="0.20"
+    />
+    <option
+      key="0.30000000000000004"
+      value="0.30"
+    />
+    <option
+      key="0.4"
+      value="0.40"
+    />
+    <option
+      key="0.5"
+      value="0.50"
+    />
+    <option
+      key="0.6"
+      value="0.60"
+    />
+    <option
+      key="0.7"
+      value="0.70"
+    />
+    <option
+      key="0.7999999999999999"
+      value="0.80"
+    />
+    <option
+      key="0.8999999999999999"
+      value="0.90"
+    />
+    <option
+      key="0.9999999999999999"
+      value="1.00"
+    />
+    <option
+      value={1}
+    />
+  </datalist>
+</React.Fragment>
+`;
