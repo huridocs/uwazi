@@ -22,6 +22,7 @@ export class Notification extends Component {
       <div className={cssClass} onClick={this.close.bind(this)}>
         <Icon icon={icon} />
         <span>{message}</span>
+        <Icon icon="times" />
       </div>
     );
   }
