@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Cookiepopup when the cookie already exists should not render a notification 1`] = `
+<div
+  className="alert-wrapper"
+/>
+`;
+
+exports[`Cookiepopup when the cookiepolicy is active and the cookie not exists should render a notification 1`] = `
+<div
+  className="alert-wrapper"
+>
+  <Notification
+    id="cookiepolicy"
+    message={
+      <Connect(Translate)>
+        To bring you a better experience, this site uses cookies.
+      </Connect(Translate)>
+    }
+    removeNotification={[Function]}
+    type="success"
+  />
+</div>
+`;
+
+exports[`Cookiepopup when the cookiepolicy is disabled should not render a notification 1`] = `
+<div
+  className="alert-wrapper"
+/>
+`;

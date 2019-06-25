@@ -15,14 +15,12 @@ export default class RadioButtons extends Component {
       return this.props.renderLabel(opt);
     }
 
-    const optionsLabel = this.props.optionsLabel || 'label';
+    const { optionsLabel } = this.props;
     return opt[optionsLabel];
   }
 
   render() {
-    let { optionsValue, prefix, options } = this.props;
-    optionsValue = optionsValue || 'value';
-    prefix = prefix || '';
+    const { optionsValue, prefix, options } = this.props;
 
     return (
       <div>
@@ -47,12 +45,17 @@ export default class RadioButtons extends Component {
   }
 }
 
+RadioButtons.defaultProps = {
+  optionsLabel: 'label',
+  optionsValue: 'value',
+  prefix: '',
+  renderLabel: undefined,
+};
+
 RadioButtons.propTypes = {
-  onChange: PropTypes.func,
-  label: PropTypes.string,
-  options: PropTypes.array,
-  value: PropTypes.string,
-  placeholder: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  options: PropTypes.array.isRequired,
+  value: PropTypes.any.isRequired,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
   prefix: PropTypes.string,
