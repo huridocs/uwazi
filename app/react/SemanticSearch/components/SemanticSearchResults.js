@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import Helmet from 'react-helmet';
-import socket from 'app/socket';
 import { RowList } from 'app/Layout/Lists';
 import Doc from 'app/Library/components/Doc';
 import * as semanticSearchActions from 'app/SemanticSearch/actions/actions';
@@ -53,17 +52,6 @@ export class SemanticSearchResults extends Component {
     if (filters.minRelevantSentences !== prevProps.filters.minRelevantSentences ||
       filters.threshold !== prevProps.filters.threshold) {
       this.props.getSearch(searchId, filters);
-    }
-  }
-
-  componentWillUnmount() {
-    socket.removeListener('semanticSearchUpdated', this.onSearchUpdated);
-  }
-
-  onSearchUpdated({ updatedSearch, docs }) {
-    const { searchId } = this.props;
-    if (updatedSearch._id === searchId) {
-      this.props.addSearchResults(docs);
     }
   }
 
@@ -150,12 +138,13 @@ export class SemanticSearchResults extends Component {
 SemanticSearchResults.defaultProps = {
   searchTerm: '',
   items: Immutable.fromJS([]),
-  query: { searchTerm: '' }
+  query: { searchTerm: '' },
+  searchId: '',
 };
 
 
 SemanticSearchResults.propTypes = {
-  searchId: PropTypes.string.isRequired,
+  searchId: PropTypes.string,
   totalCount: PropTypes.number.isRequired,
   items: PropTypes.instanceOf(Immutable.List),
   isEmpty: PropTypes.bool.isRequired,
@@ -181,6 +170,7 @@ export const mapStateToProps = (state) => {
   const filters = state.semanticSearch.resultsFilters;
   const isEmpty = search.size === 0;
   const { _id, query } = search.toJS();
+
   return {
     searchId: _id,
     query: query || { searchTerm: '' },
