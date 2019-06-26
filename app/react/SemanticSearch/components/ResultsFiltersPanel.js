@@ -93,7 +93,9 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
 
 ResultsFiltersPanel.propTypes = {
   open: PropTypes.bool.isRequired,
-  filtersValues: PropTypes.object.isRequired,
+  filtersValues: PropTypes.shape({
+    threshold: PropTypes.number
+  }).isRequired,
 };
 
 function mapStateToProps({ semanticSearch }) {

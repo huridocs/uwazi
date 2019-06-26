@@ -9,12 +9,7 @@ import api from './api';
 import documentsModel from '../documents';
 import workers from './workerManager';
 import { createError } from '../utils';
-
-export const PENDING = 'pending';
-export const COMPLETED = 'completed';
-export const PROCESSING = 'processing';
-export const IN_PROGRESS = 'inProgress';
-export const STOPPED = 'stopped';
+import { PENDING, COMPLETED, PROCESSING, IN_PROGRESS, STOPPED } from './statuses';
 
 const SEARCH_BATCH_SIZE = 5;
 

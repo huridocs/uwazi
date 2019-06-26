@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import Worker from './worker';
-import { IN_PROGRESS, PENDING } from './semanticSearch';
+import { IN_PROGRESS, PENDING } from './statuses';
 import searchModel from './model';
 
 const NUM_WORKERS = 3;

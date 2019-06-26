@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import async from 'async';
-import search, { COMPLETED, STOPPED } from './semanticSearch';
+import search, { COMPLETED, STOPPED } from './statuses';
 
 class Worker extends EventEmitter {
   constructor(searchId, batchSize = 1) {

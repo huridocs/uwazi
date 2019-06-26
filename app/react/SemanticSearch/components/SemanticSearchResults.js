@@ -15,6 +15,21 @@ import { Icon } from 'UI';
 import ResultsSidePanel from './ResultsSidePanel';
 import SemanticSearchMultieditPanel from './SemanticSearchMultieditPanel';
 
+function renderAditionalText(doc) {
+  const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);
+  const aboveThreshold = doc.getIn(['semanticSearch', 'numRelevant']);
+  const percentage = doc.getIn(['semanticSearch', 'relevantRate']) * 100;
+
+  return (
+    <div className="item-metadata">
+      <div className="metadata-type-text">
+        <div><Translate>Sentences above threshold</Translate></div>
+        <div>{aboveThreshold} out of {resultsSize} ({percentage.toFixed(2)}%)</div>
+      </div>
+    </div>
+  );
+}
+
 export class SemanticSearchResults extends Component {
   constructor(props) {
     super(props);
@@ -71,21 +86,6 @@ export class SemanticSearchResults extends Component {
     edit(searchId, filters);
   }
 
-  renderAditionalText(doc) {
-    const resultsSize = doc.getIn(['semanticSearch', 'totalResults']);
-    const aboveThreshold = doc.getIn(['semanticSearch', 'numRelevant']);
-    const percentage = doc.getIn(['semanticSearch', 'relevantRate']) * 100;
-
-    return (
-      <div className="item-metadata">
-        <div className="metadata-type-text">
-          <div><Translate>Sentences above threshold</Translate></div>
-          <div>{aboveThreshold} out of {resultsSize} ({percentage.toFixed(2)}%)</div>
-        </div>
-      </div>
-    );
-  }
-
   render() {
     const { items, isEmpty, searchTerm, totalCount, query, searchId } = this.props;
     return (
@@ -124,7 +124,7 @@ export class SemanticSearchResults extends Component {
                     doc={doc}
                     key={doc.get('sharedId')}
                     onClick={this.onClick}
-                    additionalText={this.renderAditionalText(doc)}
+                    additionalText={renderAditionalText(doc)}
                   />
                   ))}
               </RowList>
