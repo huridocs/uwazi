@@ -21,6 +21,7 @@ exports[`SearchItem should render search details with link to results page  1`] 
       <button
         className="btn btn-danger delete-search btn-xs"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="trash-alt"
@@ -54,6 +55,7 @@ exports[`SearchItem when search status is inProgress should render in-progress i
       <button
         className="btn btn-danger delete-search btn-xs"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="trash-alt"
@@ -63,6 +65,7 @@ exports[`SearchItem when search status is inProgress should render in-progress i
       <button
         className="btn btn-warning stop-search btn-xs"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="stop"
@@ -101,6 +104,7 @@ exports[`SearchItem when search status is stopped should render progress bar and
       <button
         className="btn btn-danger delete-search btn-xs"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="trash-alt"
@@ -110,6 +114,7 @@ exports[`SearchItem when search status is stopped should render progress bar and
       <button
         className="btn btn-success resume-search btn-xs"
         onClick={[Function]}
+        type="button"
       >
         <Connect(Icon)
           icon="play"
