@@ -2,10 +2,10 @@ import db from 'api/utils/testing_db';
 import date from 'api/utils/date.js';
 import workers from '../workerManager';
 import semanticSearch from '../semanticSearch';
-import { search } from '../../search';
 import model from '../model';
 import resultsModel from '../resultsModel';
 import api from '../api';
+import * as helpers from '../helpers';
 
 import fixtures, { search1Id, search2Id, search3Id, searchIdForFilters, doc1Id, docWithoutTextId } from './fixtures';
 import { createError } from '../../utils';
@@ -21,6 +21,7 @@ describe('semanticSearch', () => {
   describe('create', () => {
     beforeEach(() => {
       jest.spyOn(workers, 'notifyNewSearch').mockImplementation(() => {});
+      jest.spyOn(helpers, 'getSearchDocuments');
     });
     afterEach(() => {
       workers.notifyNewSearch.mockClear();
@@ -31,33 +32,13 @@ describe('semanticSearch', () => {
       const created = await semanticSearch.create(args, 'en', 'user');
       const savedSearch = await model.getById(created._id);
       delete savedSearch._id;
+      expect(helpers.getSearchDocuments).toHaveBeenCalledWith(args, 'en', 'user');
       expect(savedSearch).toMatchSnapshot();
     });
     it('should send the search to the workers', async () => {
       const args = { searchTerm: 'Test term', documents: ['doc1', 'doc2'] };
       const created = await semanticSearch.create(args, 'en', 'user');
       expect(workers.notifyNewSearch).toHaveBeenCalledWith(created._id);
-    });
-    describe('when query is provided instead of documents list', () => {
-      it('should fetch the documents using search with a 9999 result limit and empty searchTerm', async () => {
-        jest.spyOn(search, 'search').mockResolvedValue({
-          rows: [
-            { sharedId: 'docA', file: {} },
-            { sharedId: 'entity1' },
-            { sharedId: 'docB', file: {} },
-            { sharedId: 'anotherEntity' }
-          ]
-        });
-        const query = { filters: {} };
-        const args = { searchTerm: 'term', query };
-        const created = await semanticSearch.create(args, 'en', 'user');
-        const expectedQuery = { ...query, searchTerm: '', limit: 9999 };
-        expect(search.search).toHaveBeenCalledWith(expectedQuery, 'en', 'user');
-        expect(created.documents).toEqual([
-          { sharedId: 'docA', status: 'pending' },
-          { sharedId: 'docB', status: 'pending' }
-        ]);
-      });
     });
   });
 
