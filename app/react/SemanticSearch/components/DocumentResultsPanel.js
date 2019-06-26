@@ -16,7 +16,7 @@ import EntityForm from 'app/Library/containers/EntityForm';
 import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
 import { unselectSemanticSearchDocument } from '../actions/actions';
 
-const mapStateToProps = ({ semanticSearch, library, templates }) => ({
+export const mapStateToProps = ({ semanticSearch, library, templates }) => ({
     open: !semanticSearch.selectedDocument.isEmpty(),
     doc: semanticSearch.selectedDocument,
     references: library.sidepanel.references,
@@ -32,7 +32,7 @@ const mapStateToProps = ({ semanticSearch, library, templates }) => ({
     storeKey: 'library'
 });
 
-function mapDispatchToProps(dispatch, props) {
+export function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     getDocumentReferences,
