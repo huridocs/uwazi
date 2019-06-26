@@ -2,7 +2,6 @@ import { promisify } from 'util';
 import async from 'async';
 import { Types } from 'mongoose';
 import date from 'api/utils/date.js';
-import { search } from '../search';
 import model from './model';
 import resultsModel from './resultsModel';
 import api from './api';
@@ -10,43 +9,11 @@ import documentsModel from '../documents';
 import workers from './workerManager';
 import { createError } from '../utils';
 import { PENDING, COMPLETED, PROCESSING, IN_PROGRESS, STOPPED } from './statuses';
+import { getSearchDocuments, removePageAnnotations, updateSearchDocumentStatus, setSearchDocumentResults } from './helpers';
 
 const SEARCH_BATCH_SIZE = 5;
 
 const eachLimitAsync = promisify(async.eachLimit);
-
-const getSearchDocuments = async ({ documents, query }, language, user) => {
-  if (documents && documents.length) {
-    return documents;
-  }
-  const _query = { ...query, limit: 9999, searchTerm: '' };
-  const res = await search.search(_query, language, user);
-  return res.rows.filter(doc => doc.file).map(doc => doc.sharedId);
-};
-
-const updateSearchDocumentStatus = async (searchId, sharedId, status) => model.db.findOneAndUpdate({
-  _id: searchId,
-  'documents.sharedId': sharedId
-}, {
-  $set: { 'documents.$.status': status }
-}, { new: true, lean: true });
-
-const setSearchDocumentResults = async (searchId, sharedId, results) => {
-  const averageScore = results.reduce((total, curr) => total + curr.score, 0) / results.length;
-  const docResults = await resultsModel.db.findOneAndUpdate({
-    sharedId,
-    searchId
-  }, {
-    sharedId,
-    searchId,
-    averageScore,
-    results: results.sort((r1, r2) => r2.score - r1.score),
-    status: COMPLETED
-  }, { upsert: true, new: true });
-  return docResults;
-};
-
-const removePageAnnotations = text => text.replace(/\[\[\d+\]\]/g, '');
 
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
@@ -68,15 +35,8 @@ const processDocument = async (searchId, searchTerm, sharedId, language) => {
   return savedResults;
 };
 
-const updateSearchStatus = (searchId, status) => model.save({
-  _id: searchId,
-  status
-});
-
-const getAllDocumentResults = async searchId => resultsModel.get({ searchId });
-
 const processSearchLimit = async (searchId, docLimit) => {
-  const searchObject = await updateSearchStatus(searchId, IN_PROGRESS);
+  const searchObject = await model.save({ _id: searchId, status: IN_PROGRESS });
   const { language, searchTerm } = searchObject;
   const docs = searchObject.documents
   .filter(doc => doc.status !== COMPLETED);
@@ -89,7 +49,10 @@ const processSearchLimit = async (searchId, docLimit) => {
   if (isNotDone) {
     return { updatedSearch, processedDocuments: docsToSearch.map(d => d.sharedId) };
   }
-  return { updatedSearch: await updateSearchStatus(searchId, COMPLETED), processedDocuments: docsToSearch.map(d => d.sharedId) };
+  return {
+    updatedSearch: await model.save({ _id: searchId, status: COMPLETED }),
+    processedDocuments: docsToSearch.map(d => d.sharedId)
+  };
 };
 
 const create = async (args, language, user) => {
@@ -252,6 +215,7 @@ const resumeSearch = async (searchId) => {
   return model.getById(searchId);
 };
 
+const getAllDocumentResults = async searchId => resultsModel.get({ searchId });
 const getAllSearches = () => model.get().sort('-creationDate');
 const getInProgress = async () => model.get({ status: IN_PROGRESS }).sort('-creationDate');
 const getPending = async () => model.get({ status: PENDING }).sort('-creationDate');
