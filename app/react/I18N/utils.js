@@ -1,32 +1,15 @@
 import * as Cookie from 'tiny-cookie';
 import { isClient } from 'app/utils';
 
+const languageInLanguages = (languages, locale) => Boolean(languages.find(l => l.key === locale));
+const getURLLocale = (locale, languages = []) => languageInLanguages(languages, locale) ? locale : null;
+const getCookieLocale = (cookie, languages) => cookie.locale && languageInLanguages(languages, cookie.locale) ? cookie.locale : null;
+const getDefaultLocale = languages => (languages.find(language => language.default) || {}).key;
+
 const I18NUtils = {
-  getLocaleIfExists: (locale, languages = []) => {
-    if (!locale) {
-      return null;
-    }
-
-    if (languages.find(l => l.key === locale)) {
-      return locale;
-    }
-
-    return I18NUtils.getDefaultLocale(languages);
+  getLocale(urlLanguage, languages, cookie = {}) {
+    return getURLLocale(urlLanguage, languages) || getCookieLocale(cookie, languages) || getDefaultLocale(languages);
   },
-
-  getCoockieLocale: (cookie = {}, languages) => {
-    if (isClient && Cookie.get('locale')) {
-      return I18NUtils.getLocaleIfExists(Cookie.get('locale'), languages);
-    }
-
-    return I18NUtils.getLocaleIfExists(cookie.locale, languages);
-  },
-
-  getDefaultLocale: languages => (languages.find(language => language.default) || {}).key,
-
-  getLocale: (urlLanguage, languages = [], cookie = {}) => I18NUtils.getLocaleIfExists(urlLanguage, languages) ||
-  I18NUtils.getCoockieLocale(cookie, languages) ||
-  I18NUtils.getDefaultLocale(languages),
 
   saveLocale: (locale) => {
     if (isClient) {

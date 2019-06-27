@@ -22,9 +22,10 @@ describe('Library', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     dispatchCallsOrder = [];
-    context = { store: { dispatch: jasmine.createSpy('dispatch').and.callFake((action) => {
-      dispatchCallsOrder.push(action.type);
-    }) } };
+    context = { store: {
+      getState: () => ({}),
+      dispatch: jasmine.createSpy('dispatch').and.callFake((action) => { dispatchCallsOrder.push(action.type); }),
+    } };
 
     component = shallow(<Library {...props}/>, { context });
     instance = component.instance();

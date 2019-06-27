@@ -12,7 +12,7 @@ describe('LibraryMap', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     const props = { location: { query: { q: '(a:1)' } } };
-    const context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
     component = shallow(<LibraryMap {...props}/>, { context });
     instance = component.instance();

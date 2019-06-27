@@ -43,7 +43,7 @@ describe('EntityView', () => {
 
     describe('componentWillUnmount()', () => {
       it('should unset the state', () => {
-        const context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+        const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
         const component = shallow(<EntityView params={{ entityId: 123 }} />, { context });
         component.instance().componentWillUnmount();
         expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'entityView/entity/UNSET' });
@@ -57,7 +57,7 @@ describe('EntityView', () => {
       });
 
       it('should set the redux state', () => {
-        const context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+        const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
         const component = shallow(<EntityView params={{ entityId: 123 }} />, { context });
         const state = {
           relationTypes: 'relationTypes',

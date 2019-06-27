@@ -31,7 +31,7 @@ describe('PageView', () => {
     });
 
     RouteHandler.renderedFromServer = true;
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<PageView />, { context });
     instance = component.instance();
   });

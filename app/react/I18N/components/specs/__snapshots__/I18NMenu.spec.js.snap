@@ -15,6 +15,7 @@ exports[`I18NMenu when there is only one language should only render the inline 
     <button
       className="menuNav-btn btn btn-default"
       onClick={[Function]}
+      type="button"
     >
       <Connect(Icon)
         icon="language"
