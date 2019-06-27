@@ -53,7 +53,7 @@ const nestedMatcherIsAggregationProperty = (nestedMatcher, nestedPropPath) => !n
   !nestedMatcher.nested.query.bool.must_not[0].exists ||
   !nestedMatcher.nested.query.bool.must[0].exists.field[nestedPropPath];
 
-const nestedAggregation = (property, should, readOnlyFilters, path, missing = true) => {
+const nestedAggregation = (property, should, readOnlyFilters, path, missing = false) => {
   const nestedPath = path || `metadata.${property.name}`;
   const agg = {
     nested: {
