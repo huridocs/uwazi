@@ -10,7 +10,8 @@ describe('Login', () => {
   let props;
 
   const render = () => {
-    component = shallow(<Login {...props}/>);
+    const context = { store: { getState: () => ({}) } };
+    component = shallow(<Login {...props}/>, { context });
     instance = component.instance();
   };
 

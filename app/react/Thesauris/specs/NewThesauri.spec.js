@@ -12,7 +12,7 @@ describe('NewThesauri', () => {
   const thesauris = [{ name: 'Countries', values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }] }];
 
   beforeEach(() => {
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     spyOn(api, 'get').and.returnValue(Promise.resolve(thesauris));
     component = shallow(<NewThesauri />, { context });
     instance = component.instance();

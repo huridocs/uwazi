@@ -47,6 +47,8 @@ export class LeftRelationship extends Component {
 
   renderRelationship() {
     const { parentEntity, hub, search, editing, relationTypes, index } = this.props;
+    const relationship = hub.get('leftRelationship');
+    const targetReference = relationship.get('range') ? relationship : null;
     return (
       <div key="leftRelationshipType" className={`leftRelationshipType ${hub.get('deleted') ? 'deleted' : ''}`}>
         {!editing && hub.getIn(['leftRelationship', 'template']) &&
@@ -80,6 +82,7 @@ export class LeftRelationship extends Component {
             doc={parentEntity}
             searchParams={search}
             onClick={this.onClick}
+            targetReference={targetReference}
           />
         </div>
         <HubRelationshipMetadata relationship={hub.get('leftRelationship')} />

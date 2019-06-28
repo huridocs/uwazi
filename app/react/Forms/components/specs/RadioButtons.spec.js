@@ -46,7 +46,8 @@ describe('RadioButtons', () => {
         value: '',
         options: [{ name: 'Option1', id: 'option1' }, { name: 'Option2', id: 'option2' }],
         optionsValue: 'id',
-        optionsLabel: 'name'
+        optionsLabel: 'name',
+        onChange: () => {}
       };
       component = shallow(<RadioButtons {...props}/>);
     });

@@ -32,7 +32,7 @@ export default {
     saveDocumentButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveEntityButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
     saveConnectionButton: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.settings-footer > button',
-    saveCollectionButton: '#app > div.content > div > div > div.settings-content > div > div.panel-body > form > div.settings-footer > button',
+    saveCollectionButton: '#app > div.content > div > div > div.settings-content > div > div.panel-body > div.settings-footer > button',
     dictionaryNameForm: '#thesauriName',
     connectionNameForm: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',
     entityNameForm: '#app > div.content > div > div > div.settings-content > div > div > div.panel-body > div > main > div > form > div.metadataTemplate-heading > div > div > input',

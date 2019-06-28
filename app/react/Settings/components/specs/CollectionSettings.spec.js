@@ -2,6 +2,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
+import { LocalForm } from 'react-redux-form';
 import { CollectionSettings } from '../CollectionSettings';
 import SettingsAPI from '../../SettingsAPI';
 
@@ -11,7 +12,7 @@ describe('CollectionSettings', () => {
 
   beforeEach(() => {
     props = {
-      settings: { _id: 'id', links: ['123'] },
+      settings: { _id: 'id' },
       notify: jasmine.createSpy('notify'),
       setSettings: jasmine.createSpy('setSettings')
     };
@@ -23,28 +24,34 @@ describe('CollectionSettings', () => {
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
     });
 
-    it('should save the settings with defaults', () => {
-      component.find('form').simulate('submit', { preventDefault: () => {} });
-      const expectedSettings = { home_page: '', site_name: '', mailerConfig: '', analyticsTrackingId: '', private: false };
-      expect(SettingsAPI.save)
-      .toHaveBeenCalledWith(Object.assign(expectedSettings, props.settings));
-    });
-
-    it('should save the updated settings', () => {
-      props.settings = {
+    fit('should sanitize the form data', () => {
+      const values = {
         _id: 'id',
         _rev: 'rev',
         site_name: 'Uwazi',
-        home_page: '123',
-        mailerConfig: 'some config',
-        links: ['123'],
+        home_page: 'I should be removed',
+        mailerConfig: 'config',
         analyticsTrackingId: 'X-123-Y',
+        dateFormat: 2,
+        dateSeparator: '/',
+        customLandingpage: false,
         matomoConfig: 'matomo',
-        private: 'X-123-Y'
+        private: false
       };
       component = shallow(<CollectionSettings {...props} />);
-      component.find('form').simulate('submit', { preventDefault: () => {} });
-      expect(SettingsAPI.save).toHaveBeenCalledWith(props.settings);
+      component.find(LocalForm).simulate('submit', values);
+      const expectedData = {
+        _id: 'id',
+        _rev: 'rev',
+        analyticsTrackingId: 'X-123-Y',
+        dateFormat: 'MM/DD/YYYY',
+        home_page: '',
+        mailerConfig: 'config',
+        matomoConfig: 'matomo',
+        private: false,
+        site_name: 'Uwazi'
+      };
+      expect(SettingsAPI.save).toHaveBeenCalledWith(expectedData);
     });
   });
 });

@@ -78,6 +78,16 @@ describe('RelationshipsGraphEdit', () => {
     });
   });
 
+  describe('when relationships have text references with ranges', () => {
+    it('should render the Docs with the target text reference', () => {
+      hub.rightRelationships[0].relationships[0].range = { start: 100, end: 200 };
+      hub.rightRelationships[1].relationships[1].range = { start: 50, end: 120 };
+      props.hub = fromJS(hub);
+      render();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
   describe('while editing', () => {
     beforeEach(() => {
       props.hubActions = fromJS({ editing: true });

@@ -24,7 +24,7 @@ describe('EditTemplate', () => {
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<EditTemplate {...props} />, { context });
     instance = component.instance();
     mockID();

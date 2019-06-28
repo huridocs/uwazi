@@ -18,7 +18,7 @@ describe('NewTemplate', () => {
   const relationTypes = [{ name: 'Friend' }, { name: 'Family' }];
 
   beforeEach(() => {
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     spyOn(templatesAPI, 'get').and.returnValue(templates);
     spyOn(thesaurisAPI, 'get').and.returnValue(thesauris);
     spyOn(relationTypesAPI, 'get').and.returnValue(relationTypes);

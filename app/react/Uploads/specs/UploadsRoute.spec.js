@@ -26,7 +26,7 @@ describe('UploadsRoute', () => {
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<UploadsRoute {...props} templates={globalResources.templates}/>, { context });
     instance = component.instance();
 

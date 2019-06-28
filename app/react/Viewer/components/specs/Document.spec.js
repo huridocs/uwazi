@@ -3,6 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import Text from 'app/Viewer/utils/Text';
+import PDF from 'app/PDF';
 import { Document } from 'app/Viewer/components/Document.js';
 
 describe('Document', () => {
@@ -18,6 +19,7 @@ describe('Document', () => {
       unsetSelection: jasmine.createSpy('unsetSelection'),
       onClick: jasmine.createSpy('onClick'),
       doc: Immutable.fromJS({ _id: 'documentId', pdfInfo: { test: 'pdfInfo' } }),
+      onDocumentReady: jasmine.createSpy('onDocumentReady'),
       selectedSnippet: Immutable.fromJS({}),
       docHTML: Immutable.fromJS({
         pages: ['page1', 'page2', 'page3'],
@@ -101,6 +103,15 @@ describe('Document', () => {
           expect(props.onClick).toHaveBeenCalled();
         });
       });
+    });
+  });
+
+  describe('when PDF is ready', () => {
+    it('should call the onDocumentReady prop with the doc as argument', () => {
+      render();
+      const pdf = component.find(PDF).first();
+      pdf.simulate('PDFReady');
+      expect(props.onDocumentReady).toHaveBeenCalledWith(props.doc);
     });
   });
 

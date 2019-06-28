@@ -13,7 +13,7 @@ describe('Users', () => {
   beforeEach(() => {
     users = [{ _id: 1, name: 'Batman' }];
     spyOn(UsersAPI, 'list').and.returnValue(Promise.resolve(users));
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<Users />, { context });
     instance = component.instance();
   });

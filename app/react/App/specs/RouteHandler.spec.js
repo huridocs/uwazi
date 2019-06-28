@@ -1,12 +1,16 @@
+/* eslint-disable max-statements */
 import React from 'react';
-import RouteHandler from 'app/App/RouteHandler';
 import backend from 'fetch-mock';
 import 'jasmine-immutablejs-matchers';
 import { shallow } from 'enzyme';
-import * as Cookie from 'tiny-cookie';
 import Immutable from 'immutable';
+import moment from 'moment';
 
-import { APIURL } from '../../config.js';
+import api from 'app/utils/api';
+import { I18NUtils } from 'app/I18N';
+
+import RouteHandler from '../RouteHandler';
+import config from '../../config.js';
 
 class TestController extends RouteHandler {
   static requestState(params) {
@@ -36,16 +40,20 @@ describe('RouteHandler', () => {
   const context = { store: { getState: () => state, dispatch: jasmine.createSpy('dispatch') } };
 
   beforeEach(() => {
+    spyOn(api, 'locale');
+    spyOn(I18NUtils, 'saveLocale');
+
     state = {
       settings: { collection: Immutable.fromJS({ languages }) },
       user: Immutable.fromJS({}),
       templates: 'templates',
-      thesauris: 'thesauris'
+      thesauris: 'thesauris',
+      locale: 'de',
     };
 
     backend.restore();
     backend
-    .get(`${APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
+    .get(`${config.APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
     delete window.__initialData__;
 
     spyOn(TestController, 'requestState').and.callThrough();
@@ -70,12 +78,19 @@ describe('RouteHandler', () => {
   });
 
   describe('on instance', () => {
-    it('should request for initialState and setReduxState, with the state', (done) => {
-      setTimeout(() => {
-        expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query, state);
-        expect(instance.setReduxStateCalledWith).toEqual({ initialData: '123' });
-        done();
-      });
+    beforeEach((done) => {
+      setTimeout(() => { done(); });
+    });
+
+    it('should request for initialState and setReduxState, with the state', () => {
+      expect(TestController.requestState).toHaveBeenCalledWith(routeParams, location.query, state);
+      expect(instance.setReduxStateCalledWith).toEqual({ initialData: '123' });
+    });
+
+    it('should set the locales of the different stores and services', () => {
+      expect(moment.locale()).toBe('de');
+      expect(api.locale).toHaveBeenCalledWith('de');
+      expect(I18NUtils.saveLocale).toHaveBeenCalledWith('de');
     });
   });
 
@@ -115,46 +130,10 @@ describe('RouteHandler', () => {
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });
-
-    describe('when handling a specific language url', () => {
-      it('should set the state.locale to the url language', () => {
-        instance.componentWillReceiveProps({ location: { pathname: '/es/templates/2452345', query: '' }, params: { id: '1', lang: 'es' } });
-        expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'locale/SET', value: 'es' });
-      });
-    });
-
-    describe('when the locale isn\'t at the url', () => {
-      describe('on client side', () => {
-        it('should set the state.locale to the coockie language', () => {
-          spyOn(Cookie, 'get').and.returnValue('es');
-          instance.componentWillReceiveProps({ location: { pathname: '/templates/2452345', query: '' }, params: { id: '1' } });
-          expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'locale/SET', value: 'es' });
-        });
-      });
-    });
-
-    describe('when the locale isn\'t at the url nor the cookie', () => {
-      it('should set the state.locale to the default language', () => {
-        Cookie.remove('locale');
-        instance.componentWillReceiveProps({ location: { pathname: '/templates/2452345', query: '' }, params: { id: '1' } });
-        expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'locale/SET', value: 'en' });
-      });
-    });
-
-    describe('when the locale isn\'t available at all', () => {
-      it('should not set locale (login on private instances)', () => {
-        Cookie.remove('locale');
-        state.settings.collection = Immutable.fromJS({});
-        context.store.dispatch.calls.reset();
-        instance.componentWillReceiveProps({ location: { pathname: '/templates/2452345', query: '' }, params: { id: '1' } });
-        expect(context.store.dispatch).not.toHaveBeenCalledWith({ type: 'locale/SET', value: 'en' });
-        expect(context.store.dispatch).not.toHaveBeenCalledWith({ type: 'locale/SET', value: undefined });
-      });
-    });
   });
 
   it('should have a default setReduxState method', () => {
-    component = shallow(<RouteHandler/>);
+    component = shallow(<RouteHandler/>, { context });
     expect(component.instance().setReduxState).toBeDefined();
   });
 });
