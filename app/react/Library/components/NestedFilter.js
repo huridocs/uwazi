@@ -1,37 +1,41 @@
 import { Field } from 'react-redux-form';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 
 import { NestedMultiselect } from 'app/ReactReduxForms';
 
-const NestedFilter = ({ onChange, model, label, property, aggregations }) => (
-  <ul className="search__filter is-active">
-    <li>
-      <label>{label}</label>
-      <div className="nested-strict">
-        <Field model={`${model}.strict`}>
-          <input
-            id={`${model}strict`}
-            type="checkbox"
+export class NestedFilter extends Component {
+  render() {
+    const { onChange, model, label, property, aggregations } = this.props;
+    return (
+      <ul className="search__filter is-active">
+        <li>
+          <label>{label}</label>
+          <div className="nested-strict">
+            <Field model={`${model}.strict`}>
+              <input
+                id={`${model}strict`}
+                type="checkbox"
+                onChange={onChange}
+              />
+            </Field>
+            <label htmlFor={`${model}strict`}>
+              <span>&nbsp;Strict mode</span>
+            </label>
+          </div>
+        </li>
+        <li className="wide">
+          <NestedMultiselect
+            aggregations={aggregations}
+            property={property}
             onChange={onChange}
           />
-        </Field>
-        <label htmlFor={`${model}strict`}>
-          <span>&nbsp;Strict mode</span>
-        </label>
-      </div>
-    </li>
-    <li className="wide">
-      <NestedMultiselect
-        aggregations={aggregations}
-        property={property}
-        onChange={onChange}
-      />
-    </li>
-  </ul>
-
-);
+        </li>
+      </ul>
+    );
+  }
+}
 
 NestedFilter.defaultProps = {
   onChange: () => {},
