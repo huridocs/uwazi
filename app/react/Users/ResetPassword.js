@@ -9,17 +9,13 @@ import { Icon } from 'UI';
 
 import auth from 'app/Auth';
 
-export class ResetPassword extends RouteHandler {
+class ResetPassword extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.state = { error: false, password: '', repeatPassword: '' };
     this.submit = this.submit.bind(this);
     this.passwordChange = this.passwordChange.bind(this);
     this.repeatPasswordChange = this.repeatPasswordChange.bind(this);
-  }
-
-  static requestState() {
-    return Promise.resolve({});
   }
 
   passwordChange(e) {
@@ -102,10 +98,6 @@ ResetPassword.propTypes = {
   params: PropTypes.shape({
     key: PropTypes.string
   }),
-};
-
-ResetPassword.contextTypes = {
-  router: PropTypes.object
 };
 
 function mapDispatchToProps(dispatch) {
