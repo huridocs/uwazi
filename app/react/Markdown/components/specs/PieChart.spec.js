@@ -3,6 +3,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
+import { Pie, Tooltip } from 'recharts';
+
 import { mapStateToProps, PieChartComponent } from '../PieChart.js';
 import markdownDatasets from '../../markdownDatasets';
 
@@ -38,6 +40,24 @@ describe('BarChart Markdown component', () => {
     expect(component).toMatchSnapshot();
   });
 
+  describe('when passing maxCategories', () => {
+    it('should render the number of categories passed and aggregate the rest as "others"', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id6', filtered: { doc_count: 57 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.maxCategories = '2';
+      const component = shallow(<PieChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+  });
+
   it('should render a placeholder when data is undefined', () => {
     let undefinedValue;
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(undefinedValue);
@@ -46,5 +66,21 @@ describe('BarChart Markdown component', () => {
 
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop2: 'propValue' });
     expect(component).toMatchSnapshot();
+  });
+
+  describe('when prop show label', () => {
+    it('should use pieChartLabel', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id1', filtered: { doc_count: 25 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.showLabel = 'true';
+
+      const component = shallow(<PieChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+      expect(component.find(Pie).props().label).toMatchSnapshot();
+      expect(component.find(Pie).props().labelLine).toBe(true);
+      expect(component.find(Tooltip).length).toBe(0);
+    });
   });
 });
