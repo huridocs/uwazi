@@ -46,7 +46,7 @@ export class CustomUploads extends RouteHandler {
           >
             <div className="upload-box_wrapper">
               <Icon icon="upload" />
-              <button className="upload-box_link">Browse files to upload</button>
+              <button className="upload-box_link" type="button">Browse files to upload</button>
               <span> or drop your files here.</span>
             </div>
             {this.props.progress && <div className="uploading"><Icon icon="spinner" spin /> Uploading ...</div>}
@@ -71,11 +71,6 @@ export class CustomUploads extends RouteHandler {
 
 CustomUploads.defaultProps = {
   progress: false
-};
-
-CustomUploads.contextTypes = {
-  confirm: PropTypes.func,
-  store: PropTypes.object
 };
 
 CustomUploads.propTypes = {

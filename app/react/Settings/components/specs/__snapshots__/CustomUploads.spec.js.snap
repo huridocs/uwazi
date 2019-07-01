@@ -31,6 +31,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
         />
         <button
           className="upload-box_link"
+          type="button"
         >
           Browse files to upload
         </button>
@@ -128,6 +129,7 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
         />
         <button
           className="upload-box_link"
+          type="button"
         >
           Browse files to upload
         </button>
