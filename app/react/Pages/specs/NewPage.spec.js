@@ -7,7 +7,7 @@ describe('NewPage', () => {
   let component;
 
   beforeEach(() => {
-    const context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<NewPage />, { context });
   });
 

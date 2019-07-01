@@ -104,7 +104,7 @@ export class Menu extends Component {
               }
             })()}
           </ul>
-          <I18NMenu language={this.props.language} />
+          <I18NMenu />
         </li>
       </ul>
     );
@@ -124,7 +124,6 @@ Menu.propTypes = {
   uploadsSearch: PropTypes.object,
   uploadsFilters: PropTypes.object,
   className: PropTypes.string,
-  language: PropTypes.string,
   onClick: PropTypes.func,
   showSemanticSearch: PropTypes.func,
   semanticSearch: PropTypes.bool,

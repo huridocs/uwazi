@@ -11,7 +11,7 @@ describe('Pages', () => {
   const pages = [{ _id: 1, name: 'Page 1' }];
 
   beforeEach(() => {
-    context = { store: { dispatch: jasmine.createSpy('dispatch') } };
+    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
     spyOn(PagesAPI, 'list').and.returnValue(Promise.resolve(pages));
     component = shallow(<Pages />, { context });

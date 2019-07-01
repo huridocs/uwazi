@@ -81,104 +81,102 @@ function handleRoute(res, renderProps, req) {
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
   function renderPage(initialData, isRedux) {
-    const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux, req.language);
+    const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux, initialData.locale);
     res.status(200).send(wholeHtml);
   }
 
-  if (routeProps.requestState) {
-    if (req.cookies) {
-      api.cookie(`connect.sid=${req.cookies['connect.sid']}`);
-    }
+  routeProps.requestState = routeProps.requestState || Promise.resolve({});
 
-    RouteHandler.renderedFromServer = true;
-    let query;
-    if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
-      query = JSONUtils.parseNested(renderProps.location.query);
-    }
-
-    let locale;
-    return settingsApi.get()
-    .then((settings) => {
-      const { languages } = settings;
-      const urlLanguage = renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
-      locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
-      api.locale(locale);
-
-      return settings;
-    })
-    .then((settingsData) => {
-      if (settingsData.private && !req.user) {
-        return Promise.all([
-          Promise.resolve({ json: {} }),
-          Promise.resolve({ json: { languages: [], private: settingsData.private } }),
-          translationsApi.get().then(onlySystemTranslations),
-          Promise.resolve({ json: { rows: [] } }),
-          Promise.resolve({ json: { rows: [] } }),
-          Promise.resolve({ json: { rows: [] } })
-        ]);
-      }
-
-      return Promise.all([
-        api.get('user'),
-        api.get('settings'),
-        api.get('translations'),
-        api.get('templates'),
-        api.get('thesauris'),
-        api.get('relationTypes')
-      ]);
-    })
-    .then(([user, settings, translations, templates, thesauris, relationTypes]) => {
-      const globalResources = {
-        user: user.json,
-        settings: { collection: settings.json },
-        translations: translations.json.rows,
-        templates: templates.json.rows,
-        thesauris: thesauris.json.rows,
-        relationTypes: relationTypes.json.rows
-      };
-
-      globalResources.settings.collection.links = globalResources.settings.collection.links || [];
-
-      return Promise.all([routeProps.requestState(renderProps.params, query, {
-        templates: Immutable(globalResources.templates),
-        thesauris: Immutable(globalResources.thesauris),
-        relationTypes: Immutable(globalResources.relationTypes)
-      }), globalResources]);
-    })
-    .catch((error) => {
-      if (error.status === 401) {
-        res.redirect(302, '/login');
-        return Promise.reject(error);
-      }
-
-      if (error.status === 404) {
-        res.redirect(404, '/404');
-        return Promise.reject(error);
-      }
-
-      if (error.status === 500) {
-        respondError(res, error);
-        return Promise.reject(error);
-      }
-
-      return Promise.reject(error);
-    })
-    .then(([initialData, globalResources]) => {
-      renderPage({
-        ...initialData,
-        locale,
-        user: globalResources.user,
-        settings: globalResources.settings,
-        translations: globalResources.translations,
-        templates: globalResources.templates,
-        thesauris: globalResources.thesauris,
-        relationTypes: globalResources.relationTypes,
-      }, true);
-    })
-    .catch(e => handleError(e, { req }));
+  if (req.cookies) {
+    api.cookie(`connect.sid=${req.cookies['connect.sid']}`);
   }
 
-  return renderPage();
+  RouteHandler.renderedFromServer = true;
+  let query;
+  if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
+    query = JSONUtils.parseNested(renderProps.location.query);
+  }
+
+  let locale;
+  return settingsApi.get()
+  .then((settings) => {
+    const { languages } = settings;
+    const urlLanguage = renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
+    locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
+    api.locale(locale);
+
+    return settings;
+  })
+  .then((settingsData) => {
+    if (settingsData.private && !req.user) {
+      return Promise.all([
+        Promise.resolve({ json: {} }),
+        Promise.resolve({ json: { languages: [], private: settingsData.private } }),
+        translationsApi.get().then(onlySystemTranslations),
+        Promise.resolve({ json: { rows: [] } }),
+        Promise.resolve({ json: { rows: [] } }),
+        Promise.resolve({ json: { rows: [] } })
+      ]);
+    }
+
+    return Promise.all([
+      api.get('user'),
+      api.get('settings'),
+      api.get('translations'),
+      api.get('templates'),
+      api.get('thesauris'),
+      api.get('relationTypes')
+    ]);
+  })
+  .then(([user, settings, translations, templates, thesauris, relationTypes]) => {
+    const globalResources = {
+      user: user.json,
+      settings: { collection: settings.json },
+      translations: translations.json.rows,
+      templates: templates.json.rows,
+      thesauris: thesauris.json.rows,
+      relationTypes: relationTypes.json.rows
+    };
+
+    globalResources.settings.collection.links = globalResources.settings.collection.links || [];
+
+    return Promise.all([routeProps.requestState(renderProps.params, query, {
+      templates: Immutable(globalResources.templates),
+      thesauris: Immutable(globalResources.thesauris),
+      relationTypes: Immutable(globalResources.relationTypes)
+    }), globalResources]);
+  })
+  .catch((error) => {
+    if (error.status === 401) {
+      res.redirect(302, '/login');
+      return Promise.reject(error);
+    }
+
+    if (error.status === 404) {
+      res.redirect(404, '/404');
+      return Promise.reject(error);
+    }
+
+    if (error.status === 500) {
+      respondError(res, error);
+      return Promise.reject(error);
+    }
+
+    return Promise.reject(error);
+  })
+  .then(([initialData, globalResources]) => {
+    renderPage({
+      ...initialData,
+      locale,
+      user: globalResources.user,
+      settings: globalResources.settings,
+      translations: globalResources.translations,
+      templates: globalResources.templates,
+      thesauris: globalResources.thesauris,
+      relationTypes: globalResources.relationTypes,
+    }, true);
+  })
+  .catch(e => handleError(e, { req }));
 }
 
 const allowedRoute = (user = {}, url) => {

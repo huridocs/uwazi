@@ -229,7 +229,16 @@ export default {
       throw createError('Language cant be undefined');
     }
 
-    const relationships = !Array.isArray(_relationships) ? [_relationships] : _relationships;
+    const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
+
+    const existingEntities = (await entities.get({ sharedId: { $in: rel.map(r => r.entity) }, language }))
+    .map(r => r.sharedId);
+
+    const relationships = rel.filter(r => existingEntities.includes(r.entity));
+
+    if (relationships.length === 0) {
+      return [];
+    }
 
     if (relationships.length === 1 && !relationships[0].hub) {
       throw createError('Single relationships must have a hub');

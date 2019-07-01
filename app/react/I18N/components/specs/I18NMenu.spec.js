@@ -1,19 +1,19 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import * as Cookie from 'tiny-cookie';
-import { I18NMenu } from '../I18NMenu';
+
+import I18NMenu from '../I18NMenu';
 
 describe('I18NMenu', () => {
   let component;
   let props;
 
   beforeEach(() => {
-    spyOn(Cookie, 'set');
     const languages = [
       { key: 'en', label: 'English', default: true },
       { key: 'es', label: 'Español' }
     ];
+
     props = {
       languages: Immutable.fromJS(languages),
       toggleInlineEdit: jasmine.createSpy('toggleInlineEdit'),
@@ -22,14 +22,12 @@ describe('I18NMenu', () => {
         pathname: '/templates/2452345',
         search: '?query=weneedmoreclerics'
       },
-      params: {
-        lang: 'es'
-      }
+      locale: 'es',
     };
   });
 
   const render = () => {
-    component = shallow(<I18NMenu {...props} />);
+    component = shallow(<I18NMenu.WrappedComponent {...props} />);
     spyOn(I18NMenu, 'reload');
   };
 
@@ -43,9 +41,9 @@ describe('I18NMenu', () => {
     expect(links.last().props().href).toBe('/es/documents');
   });
 
-  describe('when there is NO language in the url', () => {
+  describe('when there is NO locale', () => {
     beforeEach(() => {
-      props.params = {};
+      props.locale = null;
     });
 
     it('should render links for each language', () => {
@@ -98,15 +96,6 @@ describe('I18NMenu', () => {
       expect(links.length).toBe(2);
       expect(links.first().props().href).toBe('/en/');
       expect(links.last().props().href).toBe('/es/');
-    });
-  });
-
-  describe('when switching language', () => {
-    it('should save the locale in to a coockie', () => {
-      render();
-      const links = component.find('a');
-      links.first().simulate('click');
-      expect(Cookie.set).toHaveBeenCalledWith('locale', 'en', { expires: 3650 });
     });
   });
 

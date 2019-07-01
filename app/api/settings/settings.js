@@ -2,63 +2,52 @@ import translations from 'api/i18n/translations';
 
 import model from './settingsModel';
 
-function saveLinksTranslations(newLinks = [], currentLinks = []) {
-  const updatedTitles = {};
-  const deletedLinks = [];
+const getUpdatesAndDeletes = (newValues, currentValues, matchProperty, propertyName) => {
+  const updatedValues = {};
+  const deletedValues = [];
 
-  currentLinks.forEach((link) => {
-    const matchLink = newLinks.find(l => link._id.equals(l._id));
-    if (matchLink && matchLink.title !== link.title) {
-      updatedTitles[link.title] = matchLink.title;
+  currentValues.forEach((value) => {
+    const matchValue = newValues.find(v => v[matchProperty] && v[matchProperty].toString() === value[matchProperty].toString());
+    if (matchValue && matchValue[propertyName] !== value[propertyName]) {
+      updatedValues[value[propertyName]] = matchValue[propertyName];
     }
-    if (!matchLink) {
-      deletedLinks.push(link.title);
+    if (!matchValue) {
+      deletedValues.push(value[propertyName]);
     }
   });
 
-  const values = newLinks.reduce((result, link) => {
-    result[link.title] = link.title;
-    return result;
-  }, {});
+  const values = newValues.reduce((result, value) => Object.assign({}, result, { [value[propertyName]]: value[propertyName] }), {});
 
-  return translations.updateContext('Menu', 'Menu', updatedTitles, deletedLinks, values, 'Uwazi UI');
+  return { updatedValues, deletedValues, values };
+};
+
+function saveLinksTranslations(newLinks, currentLinks = []) {
+  if (!newLinks) { return Promise.resolve(); }
+
+  const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(newLinks, currentLinks, '_id', 'title');
+  return translations.updateContext('Menu', 'Menu', updatedValues, deletedValues, values, 'Uwazi UI');
 }
 
-function saveFiltersTranslations(_newFilters = [], _currentFilters = []) {
+function saveFiltersTranslations(_newFilters, _currentFilters = []) {
+  if (!_newFilters) { return Promise.resolve(); }
+
   const newFilters = _newFilters.filter(item => item.items);
   const currentFilters = _currentFilters.filter(item => item.items);
 
-  const updatedNames = {};
-  const deletedFilters = [];
-
-  currentFilters.forEach((filter) => {
-    const matchFilter = newFilters.find(l => l.id === filter.id);
-    if (matchFilter && matchFilter.name !== filter.name) {
-      updatedNames[filter.name] = matchFilter.name;
-    }
-    if (!matchFilter) {
-      deletedFilters.push(filter.name);
-    }
-  });
-
-  const values = newFilters.reduce((result, filter) => {
-    result[filter.name] = filter.name;
-    return result;
-  }, {});
-
-  return translations.updateContext('Filters', 'Filters', updatedNames, deletedFilters, values, 'Uwazi UI');
+  const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(newFilters, currentFilters, 'id', 'name');
+  return translations.updateContext('Filters', 'Filters', updatedValues, deletedValues, values, 'Uwazi UI');
 }
 
 function removeTemplate(filters, templateId) {
-  const filterTemplate = _filter => _filter.id !== templateId;
+  const filterTemplate = filter => filter.id !== templateId;
   return filters
   .filter(filterTemplate)
   .map((_filter) => {
-    if (_filter.items) {
-      _filter.items = removeTemplate(_filter.items, templateId);
+    const filter = _filter;
+    if (filter.items) {
+      filter.items = removeTemplate(filter.items, templateId);
     }
-
-    return _filter;
+    return filter;
   });
 }
 
@@ -67,14 +56,11 @@ export default {
     return model.get().then(settings => settings[0] || {});
   },
 
-  save(settings) {
-    return this.get()
-    .then(currentSettings => saveLinksTranslations(settings.links, currentSettings.links)
-    .then(() => saveFiltersTranslations(settings.filters, currentSettings.filters))
-    .then(() => {
-      settings._id = currentSettings._id;
-      return model.save(settings);
-    }));
+  async save(settings) {
+    const currentSettings = await this.get();
+    await saveLinksTranslations(settings.links, currentSettings.links);
+    await saveFiltersTranslations(settings.filters, currentSettings.filters);
+    return model.save(Object.assign({}, settings, { _id: currentSettings._id }));
   },
 
   setDefaultLanguage(key) {
@@ -106,15 +92,14 @@ export default {
     });
   },
 
-  removeTemplateFromFilters(templateId) {
-    return this.get()
-    .then((settings) => {
-      if (!settings.filters) {
-        return;
-      }
+  async removeTemplateFromFilters(templateId) {
+    const settings = await this.get();
 
-      settings.filters = removeTemplate(settings.filters, templateId);
-      return this.save(settings);
-    });
+    if (!settings.filters) {
+      return Promise.resolve();
+    }
+
+    settings.filters = removeTemplate(settings.filters, templateId);
+    return this.save(settings);
   }
 };
