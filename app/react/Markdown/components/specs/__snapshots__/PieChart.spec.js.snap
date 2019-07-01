@@ -67,13 +67,13 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         endAngle={360}
         fill="#8884d8"
         hide={false}
-        innerRadius={0}
+        innerRadius="0"
         isAnimationActive={true}
         labelLine={false}
         legendType="rect"
         minAngle={0}
         nameKey="label"
-        outerRadius={105}
+        outerRadius="105"
         paddingAngle={0}
         startAngle={0}
         stroke="#fff"

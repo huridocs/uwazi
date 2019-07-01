@@ -28,7 +28,7 @@ const formatData = (data, property, context, thesauris) => {
 };
 
 export const PieChartComponent = (props) => {
-  const { property, data, classname, context, colors, thesauris } = props;
+  const { outerRadius, innerRadius, property, data, classname, context, colors, thesauris } = props;
   let output = <Loader/>;
 
   if (data) {
@@ -36,13 +36,14 @@ export const PieChartComponent = (props) => {
     const sliceColors = colors.split(',');
     output = (
       <ResponsiveContainer width="100%" height={222}>
-        <PieChart width={222} height={222} >
+        <PieChart width={222} height={222}>
           <Pie
             data={formattedData}
             dataKey="results"
             nameKey="label"
             labelLine={false}
-            outerRadius={105}
+            innerRadius={innerRadius}
+            outerRadius={outerRadius}
             fill="#8884d8"
           >
             {
@@ -60,6 +61,8 @@ export const PieChartComponent = (props) => {
 
 PieChartComponent.defaultProps = {
   context: 'System',
+  innerRadius: '0',
+  outerRadius: '105',
   classname: '',
   colors: '#ffcc00,#ffd633,#ffe066,#ffeb99,#fff5cc',
   data: null,
@@ -67,6 +70,8 @@ PieChartComponent.defaultProps = {
 
 PieChartComponent.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
+  innerRadius: PropTypes.string,
+  outerRadius: PropTypes.string,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
   classname: PropTypes.string,
