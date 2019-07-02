@@ -6,6 +6,17 @@ import Immutable from 'immutable';
 import { mapStateToProps, BarChartComponent } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
 
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Bar,
+  Tooltip
+} from 'recharts';
+
+
 describe('BarChart Markdown component', () => {
   const state = {
     thesauris: Immutable.fromJS([{
@@ -31,6 +42,21 @@ describe('BarChart Markdown component', () => {
 
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
     expect(component).toMatchSnapshot();
+  });
+
+  describe('when layout is vertical', () => {
+    it('should render axis properly', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id1', filtered: { doc_count: 25 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.layout = 'vertical';
+      const component = shallow(<BarChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(component.find(YAxis)).toMatchSnapshot();
+      expect(component.find(XAxis)).toMatchSnapshot();
+    });
   });
 
   it('should render a placeholder when data is undefined', () => {
