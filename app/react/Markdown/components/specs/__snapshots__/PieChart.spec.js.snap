@@ -8,7 +8,7 @@ exports[`BarChart Markdown component should render a placeholder when data is un
 </div>
 `;
 
-exports[`BarChart Markdown component should render the data passed by mapStateToProps 1`] = `
+exports[`BarChart Markdown component should render the data passed by mapStateToProps and ignore "0" values 1`] = `
 <div
   className="PieChart custom-class"
 >

@@ -16,6 +16,7 @@ const formatData = (data, property, context, thesauris) => {
 
   return data.toJS()
   .filter(i => i.key !== 'missing')
+  .filter(i => i.filtered && i.filtered.doc_count !== 0)
   .map((item) => {
     const label = options.find(o => o.id === item.key);
     if (!label) {

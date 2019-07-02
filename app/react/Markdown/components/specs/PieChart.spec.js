@@ -14,16 +14,21 @@ describe('BarChart Markdown component', () => {
         { id: 'id1', label: 'label1' },
         { id: 'id2', label: 'label2' },
         { id: 'id3', label: 'label3' },
+        { id: 'id6', label: 'label6' },
+        { id: 'id7', label: 'label7' },
+        { id: 'id8', label: 'label8' },
       ]
     }]),
   };
 
-  it('should render the data passed by mapStateToProps', () => {
+  it('should render the data passed by mapStateToProps and ignore "0" values', () => {
     spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
       { key: 'id1', filtered: { doc_count: 25 } },
       { key: 'id2', filtered: { doc_count: 33 } },
       { key: 'missing', filtered: { doc_count: 45 } },
       { key: 'id3', filtered: { doc_count: 13 } },
+      { key: 'id6', filtered: { doc_count: 0 } },
+      { key: 'id8', },
     ]));
 
     const props = mapStateToProps(state, { prop1: 'propValue' });
