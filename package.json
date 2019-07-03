@@ -46,7 +46,9 @@
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
-    "eslint": "./node_modules/.bin/eslint app --quiet"
+    "eslint": "./node_modules/.bin/eslint app --quiet",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
@@ -156,7 +158,8 @@
     "world-countries": "2.0.0",
     "wrap-range-text": "^1.0.1",
     "yauzl": "^2.10.0",
-    "yazl": "^2.5.1"
+    "yazl": "^2.5.1",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "assets-webpack-plugin": "3.9.7",
@@ -210,5 +213,6 @@
     "webpack-dev-middleware": "3.6.0",
     "webpack-hot-middleware": "^2.21.0",
     "yargs": "^13.2.2"
-  }
+  },
+  "snyk": true
 }
