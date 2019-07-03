@@ -1,5 +1,4 @@
 import { actions as formActions } from 'react-redux-form';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import templatesAPI from 'app/Templates/TemplatesAPI';
@@ -30,7 +29,3 @@ export default class NewTemplate extends RouteHandler {
     return <TemplateCreator />;
   }
 }
-
-NewTemplate.contextTypes = {
-  store: PropTypes.object.isRequired
-};
