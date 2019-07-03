@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import PageCreator from 'app/Pages/components/PageCreator';
 import RouteHandler from 'app/App/RouteHandler';
@@ -8,7 +7,3 @@ export default class NewPage extends RouteHandler {
     return <PageCreator />;
   }
 }
-
-NewPage.contextTypes = {
-  store: PropTypes.object.isRequired
-};

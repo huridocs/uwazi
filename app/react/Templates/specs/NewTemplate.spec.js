@@ -2,12 +2,12 @@ import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 import { shallow } from 'enzyme';
 
-import NewTemplate from 'app/Templates/NewTemplate';
-import TemplateCreator from 'app/Templates/components/TemplateCreator';
-
-import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
+
+import NewTemplate from '../NewTemplate';
+import templatesAPI from '../TemplatesAPI';
+import TemplateCreator from '../components/TemplateCreator';
 
 describe('NewTemplate', () => {
   let component;

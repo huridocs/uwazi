@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { browserHistory } from 'react-router';
 
-import { ResetPassword } from '../ResetPassword';
+import ResetPassword from '../ResetPassword';
 
 describe('ResetPassword', () => {
   let component;
@@ -18,7 +18,7 @@ describe('ResetPassword', () => {
 
     context = { store: { getState: () => ({}) }, router: { location: '' } };
 
-    component = shallow(<ResetPassword {...props} />, { context });
+    component = shallow(<ResetPassword.WrappedComponent {...props} />, { context });
   });
 
   describe('When not creating an account', () => {
@@ -30,7 +30,7 @@ describe('ResetPassword', () => {
   describe('When creating an account', () => {
     it('should render an additional information box', () => {
       context.router = { location: { search: '?createAccount=true' } };
-      component = shallow(<ResetPassword {...props} />, { context });
+      component = shallow(<ResetPassword.WrappedComponent {...props} />, { context });
       expect(component.find('.alert.alert-info').length).toBe(1);
     });
   });

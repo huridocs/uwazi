@@ -85,8 +85,6 @@ function handleRoute(res, renderProps, req) {
     res.status(200).send(wholeHtml);
   }
 
-  routeProps.requestState = routeProps.requestState || Promise.resolve({});
-
   if (req.cookies) {
     api.cookie(`connect.sid=${req.cookies['connect.sid']}`);
   }
