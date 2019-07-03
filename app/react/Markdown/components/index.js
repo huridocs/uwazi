@@ -2,16 +2,6 @@ import { Link } from 'react-router';
 
 import { Icon } from 'UI';
 
-import {
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Bar,
-  Tooltip
-} from 'recharts';
-
-import * as Recharts from 'recharts';
 import BarChart from './BarChart';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
@@ -48,7 +38,4 @@ export default {
   Map,
   Link,
   EntityInfo,
-
-  CartesianGrid,
-  Tooltip,
 };

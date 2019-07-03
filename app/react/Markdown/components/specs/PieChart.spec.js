@@ -30,7 +30,7 @@ describe('BarChart Markdown component', () => {
       { key: 'missing', filtered: { doc_count: 45 } },
       { key: 'id3', filtered: { doc_count: 13 } },
       { key: 'id6', filtered: { doc_count: 0 } },
-      { key: 'id8', },
+      { key: 'id8', filtered: { doc_count: 0 } },
     ]));
 
     const props = mapStateToProps(state, { prop1: 'propValue' });
@@ -43,14 +43,29 @@ describe('BarChart Markdown component', () => {
   describe('when passing maxCategories', () => {
     it('should render the number of categories passed and aggregate the rest as "others"', () => {
       spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
-        { key: 'id1', filtered: { doc_count: 25 } },
-        { key: 'id2', filtered: { doc_count: 33 } },
-        { key: 'id3', filtered: { doc_count: 13 } },
         { key: 'id6', filtered: { doc_count: 57 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id8', filtered: { doc_count: 2 } },
       ]));
 
       const props = mapStateToProps(state, { prop1: 'propValue' });
       props.maxCategories = '2';
+      const component = shallow(<PieChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should not render others when sum is 0', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id6', filtered: { doc_count: 57 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.maxCategories = '3';
       const component = shallow(<PieChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
 
       expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });

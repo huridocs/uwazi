@@ -5,28 +5,10 @@ import Immutable from 'immutable';
 import rison from 'rison';
 import queryString from 'query-string';
 
-import { t } from 'app/I18N';
-import { populateOptions } from 'app/Library/helpers/libraryFilters';
 import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
 import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
-
-const formatData = (data, property, context, thesauris) => {
-  const { options } = populateOptions([{ content: context }], thesauris.toJS())[0];
-
-  return data.toJS()
-  .filter(i => i.key !== 'missing')
-  .map((item) => {
-    const label = options.find(o => o.id === item.key);
-    if (!label) {
-      return null;
-    }
-
-    return { key: item.key, label: t(context, label.label, null, false), results: item.filtered.doc_count };
-  })
-  .filter(i => !!i);
-};
 
 export const ListChartComponent = (props) => {
   const { property, data, classname, context, colors, thesauris } = props;
@@ -35,7 +17,7 @@ export const ListChartComponent = (props) => {
   let output = <Loader/>;
 
   if (data) {
-    const formattedData = arrayUtils.sortValues(formatData(data, property, context, thesauris));
+    const formattedData = arrayUtils.sortValues(arrayUtils.formatDataForChart(data, property, thesauris, { context }));
     let query = { filters: {} };
 
     if (props.baseUrl) {
@@ -59,7 +41,7 @@ export const ListChartComponent = (props) => {
           query.filters[property] = { values: [item.key] };
 
           return (
-            <li key={item.key}>
+            <li key={item.id}>
               {props.baseUrl && <MarkdownLink url={`/library/?q=${rison.encode(query)}`} classname="list-link">{Content}</MarkdownLink>}
               {!props.baseUrl && Content}
             </li>

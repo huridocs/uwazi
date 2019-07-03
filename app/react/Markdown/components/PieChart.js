@@ -5,45 +5,10 @@ import Immutable from 'immutable';
 
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
-import { t } from 'app/I18N';
-import { populateOptions } from 'app/Library/helpers/libraryFilters';
 import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
 import PieChartLabel from './PieChartLabel';
 import markdownDatasets from '../markdownDatasets';
-
-const formatData = (data, property, context, thesauris, maxCategories) => {
-  const { options } = populateOptions([{ content: context }], thesauris.toJS())[0];
-
-  const relevant = data.toJS()
-  .filter(i => i.key !== 'missing')
-  .filter(i => i.filtered && i.filtered.doc_count !== 0);
-
-  let categories = relevant.sort((a, b) => b.filtered.doc_count - a.filtered.doc_count);
-
-  if (Number(maxCategories)) {
-    categories = relevant.slice(0, Number(maxCategories));
-    categories[categories.length] = relevant.slice(Number(maxCategories)).reduce((memo, category) => {
-      memo.filtered.doc_count += category.filtered.doc_count;
-      return memo;
-    }, { key: 'others', filtered: { doc_count: 0 } });
-  }
-
-  return categories.map((item) => {
-    if (item.key === 'others') {
-      return { label: 'others', results: item.filtered.doc_count };
-    }
-
-    const label = options.find(o => o.id === item.key);
-    if (!label) {
-      return null;
-    }
-
-    return { label: t(context, label.label, null, false), results: item.filtered.doc_count };
-  })
-  .filter(i => !!i);
-};
-
 
 export const PieChartComponent = (props) => {
   const {
@@ -62,7 +27,9 @@ export const PieChartComponent = (props) => {
   let output = <Loader/>;
 
   if (data) {
-    const formattedData = arrayUtils.sortValues(formatData(data, property, context, thesauris, maxCategories));
+    const formattedData = arrayUtils.sortValues(
+      arrayUtils.formatDataForChart(data, property, thesauris, { context, filterZero: true, maxCategories })
+    );
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
     output = (

@@ -2,19 +2,10 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import { XAxis, YAxis, } from 'recharts';
 
 import { mapStateToProps, BarChartComponent } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
-
-import {
-  ResponsiveContainer,
-  BarChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Bar,
-  Tooltip
-} from 'recharts';
 
 
 describe('BarChart Markdown component', () => {
@@ -25,6 +16,7 @@ describe('BarChart Markdown component', () => {
         { id: 'id1', label: 'label1' },
         { id: 'id2', label: 'label2' },
         { id: 'id3', label: 'label3' },
+        { id: 'id4', label: 'label4' },
       ]
     }]),
   };
@@ -35,6 +27,7 @@ describe('BarChart Markdown component', () => {
       { key: 'id2', filtered: { doc_count: 33 } },
       { key: 'missing', filtered: { doc_count: 45 } },
       { key: 'id3', filtered: { doc_count: 13 } },
+      { key: 'id4', filtered: { doc_count: 0 } },
     ]));
 
     const props = mapStateToProps(state, { prop1: 'propValue' });

@@ -19,13 +19,7 @@ const PieChartLabel = (props) => {
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text
-      x={x}
-      y={y}
-      fill="#8884d8"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-    >
+    <text x={x} y={y} fill="#8884d8" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" >
       {data[index].label} ({value})
     </text>
   );

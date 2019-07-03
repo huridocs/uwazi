@@ -23,16 +23,24 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
       data={
         Array [
           Object {
+            "id": "id2",
             "label": "label2",
             "results": 33,
           },
           Object {
+            "id": "id1",
             "label": "label1",
             "results": 25,
           },
           Object {
+            "id": "id3",
             "label": "label3",
             "results": 13,
+          },
+          Object {
+            "id": "id4",
+            "label": "label4",
+            "results": 0,
           },
         ]
       }
