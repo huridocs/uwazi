@@ -10,13 +10,13 @@ const toSafeName = rawEntity =>
   );
 
 const notTranslated = languages => key =>
-  !key.match(new RegExp(`__${languages.join('|')}`));
+  !key.match(new RegExp(`__(${languages.join('|')})$`));
 
 const languagesTranslated = (row, availableLanguages, currentLanguage) =>
   availableLanguages
   .filter(languageCode =>
     Object.keys(row)
-    .filter(key => key.match(new RegExp(`__${languageCode}`)))
+    .filter(key => key.match(new RegExp(`__${languageCode}$`)))
     .map(key => row[key])
     .join('')
     .trim()
@@ -39,7 +39,7 @@ const extractEntity = (row, availableLanguages, currentLanguage) => {
     currentLanguage
   ).map(languageCode =>
     Object.keys(safeNamed)
-    .filter(key => key.match(new RegExp(`__${languageCode}`)))
+    .filter(key => key.match(new RegExp(`__${languageCode}$`)))
     .reduce(
       (entity, key) => {
         entity[key.split(`__${languageCode}`)[0]] = safeNamed[key]; //eslint-disable-line no-param-reassign
