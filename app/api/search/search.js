@@ -1,4 +1,5 @@
 import errorLog from 'api/log/errorLog';
+import date from 'api/utils/date';
 import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
 import { detect as detectLanguage } from 'shared/languages';
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
@@ -18,6 +19,7 @@ function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
     const property = properties.find(p => p.name === propertyName);
     let { type } = property;
+    const value = filters[property.name];
     if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
       type = 'range';
     }
@@ -27,7 +29,12 @@ function processFiltes(filters, properties) {
     if (property.type === 'multidaterange' || property.type === 'daterange') {
       type = 'nestedrange';
     }
-    return Object.assign(property, { value: filters[property.name], type });
+
+    if (['multidaterange', 'daterange', 'date', 'multidate'].includes(property.type)) {
+      value.from = date.descriptionToTimestamp(value.from);
+      value.to = date.descriptionToTimestamp(value.to);
+    }
+    return Object.assign(property, { value, type });
   });
 }
 
