@@ -23,16 +23,24 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
       data={
         Array [
           Object {
+            "id": "id2",
             "label": "label2",
             "results": 33,
           },
           Object {
+            "id": "id1",
             "label": "label1",
             "results": 25,
           },
           Object {
+            "id": "id3",
             "label": "label3",
             "results": 13,
+          },
+          Object {
+            "id": "id4",
+            "label": "label4",
+            "results": 0,
           },
         ]
       }
@@ -40,10 +48,10 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
       layout="horizontal"
       margin={
         Object {
-          "bottom": 0,
-          "left": 0,
-          "right": 30,
-          "top": 0,
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
         }
       }
       reverseStackOrder={false}
@@ -168,4 +176,66 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
     </BarChart>
   </ResponsiveContainer>
 </div>
+`;
+
+exports[`BarChart Markdown component when layout is vertical should render axis properly 1`] = `
+<YAxis
+  allowDataOverflow={false}
+  allowDecimals={true}
+  allowDuplicatedCategory={true}
+  dataKey="label"
+  domain={
+    Array [
+      0,
+      "auto",
+    ]
+  }
+  height={0}
+  hide={false}
+  mirror={false}
+  orientation="left"
+  padding={
+    Object {
+      "bottom": 0,
+      "top": 0,
+    }
+  }
+  reversed={false}
+  scale="auto"
+  tickCount={5}
+  type="category"
+  width={200}
+  yAxisId={0}
+/>
+`;
+
+exports[`BarChart Markdown component when layout is vertical should render axis properly 2`] = `
+<XAxis
+  allowDataOverflow={false}
+  allowDecimals={true}
+  allowDuplicatedCategory={true}
+  dataKey="results"
+  domain={
+    Array [
+      0,
+      "auto",
+    ]
+  }
+  height={30}
+  hide={false}
+  mirror={false}
+  orientation="bottom"
+  padding={
+    Object {
+      "left": 0,
+      "right": 0,
+    }
+  }
+  reversed={false}
+  scale="auto"
+  tickCount={5}
+  type="number"
+  width={0}
+  xAxisId={0}
+/>
 `;
