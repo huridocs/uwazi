@@ -9,7 +9,7 @@ import { FormGroup } from 'app/ReactReduxForms';
 import { Select as SimpleSelect } from 'app/Forms';
 import { filterBaseProperties } from 'app/Entities/utils/filterBaseProperties';
 import { notify } from 'app/Notifications';
-import { I18NLink, t } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import Immutable from 'immutable';
@@ -81,6 +81,8 @@ export class MetadataForm extends Component {
       return <div />;
     }
 
+    const titleLabel = template.get('commonProperties').find(p => p.get('name') === 'title').get('label');
+
     return (
       <Form
         id="metadataForm"
@@ -92,7 +94,7 @@ export class MetadataForm extends Component {
 
         <FormGroup model=".title">
           <ul className="search__filter">
-            <li><label>{t('System', 'Title')} <span className="required">*</span></label></li>
+            <li><label><Translate context={template.get('_id')}>{titleLabel}</Translate> <span className="required">*</span></label></li>
             <li className="wide">
               <Field model=".title">
                 <textarea className="form-control"/>

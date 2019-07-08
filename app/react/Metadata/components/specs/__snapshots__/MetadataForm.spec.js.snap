@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MetadataForm should display custom title label 1`] = `
+<Connect(Form)
+  id="metadataForm"
+  model="metadata"
+  onSubmit={[Function]}
+  onSubmitFailed={[Function]}
+  validators={
+    Object {
+      "title": Object {
+        "required": [Function],
+      },
+    }
+  }
+>
+  <Connect(FormGroup)
+    model=".title"
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label>
+          <Connect(Translate)
+            context="template4"
+          >
+            Name
+          </Connect(Translate)>
+           
+          <span
+            className="required"
+          >
+            *
+          </span>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <Modeled(Connect(Field))
+          model=".title"
+        >
+          <textarea
+            className="form-control"
+          />
+        </Modeled(Connect(Field))>
+      </li>
+      <Connect(Component)
+        model="metadata"
+      />
+    </ul>
+  </Connect(FormGroup)>
+  <Connect(FormGroup)>
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label>
+          Type
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <Select
+          className="form-control"
+          onChange={[Function]}
+          options={
+            Array [
+              Object {
+                "label": "template1",
+                "value": "templateId",
+              },
+            ]
+          }
+          optionsLabel="label"
+          optionsValue="value"
+          placeholder="Select..."
+          required={false}
+          sort={false}
+          value="template4"
+        />
+      </li>
+    </ul>
+  </Connect(FormGroup)>
+  <Connect(MetadataFormFields)
+    model="metadata"
+    template={
+      Immutable.Map {
+        "name": "template4",
+        "_id": "template4",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Name",
+          },
+        ],
+        "properties": Immutable.List [],
+      }
+    }
+    thesauris={
+      Immutable.List [
+        Immutable.Map {
+          "_id": 2,
+          "name": "thesauri",
+          "values": Immutable.List [
+            Immutable.Map {
+              "label": "option1",
+              "id": "1",
+            },
+          ],
+        },
+      ]
+    }
+  />
+</Connect(Form)>
+`;
