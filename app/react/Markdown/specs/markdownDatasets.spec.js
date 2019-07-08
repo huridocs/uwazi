@@ -97,10 +97,8 @@ describe('markdownDatasets', () => {
   describe('getAggregations', () => {
     const dataset = {
       aggregations: {
-        all: {
-          property1: {
-            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }]
-          },
+        all: { property1: {
+            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }] },
           property2: {
             buckets: [{ key: 'id5', filtered: { doc_count: 5 } }, { key: 'id6', filtered: { doc_count: 7 } }]
           }
@@ -142,9 +140,7 @@ describe('markdownDatasets', () => {
       ]));
 
       aggregations = markdownDatasets.getAggregations(state, { property: 'property4', dataset: 'another_dataset' });
-      expect(aggregations).toEqual(Immutable.fromJS([
-        { key: 'id36', filtered: { doc_count: 36 } }
-      ]));
+      expect(aggregations).toEqual(Immutable.fromJS([{ key: 'id36', filtered: { doc_count: 36 } }]));
     });
 
     it('should return null when dataset do not exists', () => {
@@ -163,6 +159,7 @@ describe('markdownDatasets', () => {
               { key: 'id2', filtered: { doc_count: 25 } },
               { key: 'id3', filtered: { doc_count: 5.6 } },
               { key: 'id4', filtered: { doc_count: 7.8 } },
+              { key: 'id5', filtered: { doc_count: 0 } },
             ]
           },
           property1: {
@@ -196,6 +193,17 @@ describe('markdownDatasets', () => {
 
     const expectAggregation = options => expect(markdownDatasets.getAggregation(state, options));
 
+    describe('when uniqueValues', () => {
+      it('should return a count of all buckets of the property filtering zeros out', () => {
+        expectAggregation({ property: '_types', uniqueValues: 'true' }).toBe(4);
+      });
+
+      it('should return null when dataset do not exists', () => {
+        const aggregation = markdownDatasets.getAggregation(state, { uniqueValues: 'true', dataset: 'non_existent_dataset' });
+        expect(aggregation).toBeUndefined();
+      });
+    });
+
     it('should get the aggregation for the type/property and value', () => {
       expectAggregation({ property: '_types', value: 'id2' }).toBe(25);
       expectAggregation({ property: 'property1', value: 'id3' }).toBe(5);
@@ -226,9 +234,7 @@ describe('markdownDatasets', () => {
     };
 
     const state = {
-      page: {
-        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
-      }
+      page: { datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 }) }
     };
 
     it('should get the value for the property', () => {

@@ -3,42 +3,56 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 
-import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip } from 'recharts';
+import {
+  ResponsiveContainer,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Bar,
+  Tooltip
+} from 'recharts';
 
-import { t } from 'app/I18N';
-import { populateOptions } from 'app/Library/helpers/libraryFilters';
 import Loader from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
 import markdownDatasets from '../markdownDatasets';
 
-const formatData = (data, property, context, thesauris) => {
-  const { options } = populateOptions([{ content: context }], thesauris.toJS())[0];
+//eslint-disable-next-line
+const X = ({ layout }) => {
+  if (layout === 'vertical') {
+    return <XAxis type="number" dataKey="results" />;
+  }
+  return <XAxis dataKey="label" label="" />;
+};
 
-  return data.toJS()
-  .filter(i => i.key !== 'missing')
-  .map((item) => {
-    const label = options.find(o => o.id === item.key);
-    if (!label) {
-      return null;
-    }
-
-    return { label: t(context, label.label, null, false), results: item.filtered.doc_count };
-  })
-  .filter(i => !!i);
+//eslint-disable-next-line
+const Y = ({ layout }) => {
+  if (layout === 'vertical') {
+    return <YAxis width={200} type="category" dataKey="label" />;
+  }
+  return <YAxis />;
 };
 
 export const BarChartComponent = (props) => {
-  const { property, data, classname, context, thesauris } = props;
-  let output = <Loader/>;
+  const { maxCategories, layout, property, data, classname, context, thesauris } = props;
+  let output = <Loader />;
 
   if (data) {
-    const formattedData = arrayUtils.sortValues(formatData(data, property, context, thesauris));
+    const formattedData = arrayUtils.sortValues(
+      arrayUtils.formatDataForChart(data, property, thesauris, { context, maxCategories })
+    );
+
     output = (
       <ResponsiveContainer height={320}>
-        <BarChart height={300} data={formattedData} margin={{ top: 0, right: 30, left: 0, bottom: 0 }}>
-          <XAxis dataKey="label" label="" />
-          <YAxis/>
-          <CartesianGrid strokeDasharray="2 4"/>
+        <BarChart
+          height={300}
+          data={formattedData}
+          layout={layout}
+        >
+          {X({ layout })}
+          {Y({ layout })}
+
+          <CartesianGrid strokeDasharray="2 4" />
           <Tooltip />
           <Bar dataKey="results" fill="rgb(30, 28, 138)" stackId="unique" />
         </BarChart>
@@ -51,8 +65,10 @@ export const BarChartComponent = (props) => {
 
 BarChartComponent.defaultProps = {
   context: 'System',
+  layout: 'horizontal',
+  maxCategories: '0',
   classname: '',
-  data: null,
+  data: null
 };
 
 BarChartComponent.propTypes = {
@@ -60,12 +76,14 @@ BarChartComponent.propTypes = {
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
   classname: PropTypes.string,
-  data: PropTypes.instanceOf(Immutable.List),
+  layout: PropTypes.string,
+  maxCategories: PropTypes.string,
+  data: PropTypes.instanceOf(Immutable.List)
 };
 
 export const mapStateToProps = (state, props) => ({
   data: markdownDatasets.getAggregations(state, props),
-  thesauris: state.thesauris,
+  thesauris: state.thesauris
 });
 
 export default connect(mapStateToProps)(BarChartComponent);

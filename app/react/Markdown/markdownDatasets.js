@@ -88,10 +88,18 @@ export default {
 
   getAggregations,
 
-  getAggregation(state, { property, value, dataset = 'default' }) {
-    const values = value ? value.split(',') : [''];
+  getAggregation(state, { uniqueValues, property, value, dataset = 'default' }) {
     const aggregations = getAggregations(state, { property, dataset });
-    return aggregations ? addValues(aggregations, values) : undefinedValue;
+    if (!aggregations) {
+      return undefinedValue;
+    }
+
+    if (uniqueValues) {
+      return aggregations.filter(a => a.getIn(['filtered', 'doc_count']) !== 0).size;
+    }
+
+    const values = value ? value.split(',') : [''];
+    return addValues(aggregations, values);
   },
 
   getMetadataValue(state, { property, dataset = 'default' }) {

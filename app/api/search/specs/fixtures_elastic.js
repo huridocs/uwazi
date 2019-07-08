@@ -22,11 +22,7 @@ export default {
       template: template1,
       language: 'en',
       title: 'Batman finishes en',
-      fullText: {
-        1: 'english[[12]]',
-        2: 'document[[2]]',
-        3: 'english[[123]]',
-      },
+      fullText: { 1: 'english[[12]]', 2: 'document[[2]]', 3: 'english[[123]]' },
       published: true,
       user: userId
     },
@@ -157,6 +153,10 @@ export default {
       _id: template1,
       properties: [
         { name: 'status_relationship_filter', type: 'relationshipfilter', relationType },
+        { name: 'date', type: 'date', filter: true },
+        { name: 'multidate', type: 'multidate', filter: true },
+        { name: 'daterange', type: 'daterange', filter: true },
+        { name: 'multidaterange', type: 'multidaterange', filter: true },
       ]
     },
     { _id: template2, properties: [] },
