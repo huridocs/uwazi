@@ -12,7 +12,7 @@ describe('FormConfigCommon', () => {
     props = {
       type: 'text',
       index: -1,
-      data: { commonProperties: [{ label: '' }, { label: '' }] },
+      data: { commonProperties: [{ label: '', name: 'title' }, { label: '', name: 'creationDate' }] },
       formState: {
         'commonProperties.0.label': { valid: true, dirty: false, errors: {} },
         $form: {
@@ -29,6 +29,13 @@ describe('FormConfigCommon', () => {
     component = shallow(<FormConfigCommon {...props}/>);
     const formFields = component.find(Field);
     expect(formFields.getElements()[0].props.model).toBe('template.data.commonProperties[1].prioritySorting');
+  });
+  it('should render name field if property name is title', () => {
+    props.index = -2;
+    component = shallow(<FormConfigCommon {...props}/>);
+    const formFields = component.find(Field);
+    expect(formFields.getElements()[0].props.model).toBe('template.data.commonProperties[0].label');
+    expect(formFields.getElements()[1].props.model).toBe('template.data.commonProperties[0].prioritySorting');
   });
 
   describe('validation', () => {

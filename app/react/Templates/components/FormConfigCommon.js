@@ -9,13 +9,24 @@ export class FormConfigCommon extends Component {
   render() {
     const { index } = this.props;
     const baseZeroIndex = index + this.props.data.commonProperties.length;
+    const property = this.props.data.commonProperties[baseZeroIndex];
 
     return (
-      <Field model={`template.data.commonProperties[${baseZeroIndex}].prioritySorting`}>
-        <input id={`prioritySorting${this.props.index}`} type="checkbox" />
-        &nbsp;
-        <PrioritySortingLabel htmlFor={`prioritySorting${this.props.index}`} />
-      </Field>
+      <div>
+        {property.name === 'title' && (
+          <div className="form-group">
+            <label htmlFor={`label${index}`}>Name</label>
+            <Field model={`template.data.commonProperties[${baseZeroIndex}].label`}>
+              <input id={`label${index}`} className="form-control" />
+            </Field>
+          </div>
+        )}
+        <Field model={`template.data.commonProperties[${baseZeroIndex}].prioritySorting`}>
+          <input id={`prioritySorting${this.props.index}`} type="checkbox" />
+          &nbsp;
+          <PrioritySortingLabel htmlFor={`prioritySorting${this.props.index}`} />
+        </Field>
+      </div>
     );
   }
 }
