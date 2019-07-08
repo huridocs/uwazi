@@ -11,13 +11,18 @@ import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';
 
 export const ListChartComponent = (props) => {
-  const { property, data, classname, context, colors, thesauris } = props;
+  const { excludeZero, property, data, classname, context, colors, thesauris } = props;
   const sliceColors = colors.split(',');
 
   let output = <Loader/>;
 
   if (data) {
-    const formattedData = arrayUtils.sortValues(arrayUtils.formatDataForChart(data, property, thesauris, { context }));
+    const formattedData = arrayUtils.sortValues(
+      arrayUtils.formatDataForChart(data, property, thesauris, {
+        excludeZero: Boolean(excludeZero),
+        context
+      })
+    );
     let query = { filters: {} };
 
     if (props.baseUrl) {
@@ -38,7 +43,7 @@ export const ListChartComponent = (props) => {
             </div>
           );
 
-          query.filters[property] = { values: [item.key] };
+          query.filters[property] = { values: [item.id] };
 
           return (
             <li key={item.id}>
@@ -56,6 +61,7 @@ export const ListChartComponent = (props) => {
 
 ListChartComponent.defaultProps = {
   context: 'System',
+  excludeZero: false,
   classname: '',
   colors: '#ffcc00,#ffd633,#ffe066,#ffeb99,#fff5cc',
   data: null,
@@ -70,6 +76,10 @@ ListChartComponent.propTypes = {
   colors: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
   baseUrl: PropTypes.string,
+  excludeZero: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool
+  ]),
 };
 
 export const mapStateToProps = (state, props) => ({
