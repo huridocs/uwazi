@@ -23,7 +23,9 @@ const checkDuplicated = template => model.get()
 
 const addTemplateTranslation = (template) => {
   const values = {};
+  const titleProperty = template.commonProperties.find(p => p.name === 'title');
   values[template.name] = template.name;
+  values[titleProperty.label] = titleProperty.label;
   template.properties.forEach((property) => {
     values[property.label] = property.label;
   });
@@ -34,7 +36,7 @@ const addTemplateTranslation = (template) => {
 const updateTranslation = (currentTemplate, template) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties;
-
+  const titleProperty = template.commonProperties.find(p => p.name === 'title');
   const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
@@ -46,6 +48,7 @@ const updateTranslation = (currentTemplate, template) => {
   }, {});
 
   context[template.name] = template.name;
+  context[titleProperty.label] = titleProperty.label;
 
   return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, 'Entity');
 };
