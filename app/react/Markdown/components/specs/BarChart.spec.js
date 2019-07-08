@@ -2,9 +2,11 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import { XAxis, YAxis, } from 'recharts';
 
 import { mapStateToProps, BarChartComponent } from '../BarChart.js';
 import markdownDatasets from '../../markdownDatasets';
+
 
 describe('BarChart Markdown component', () => {
   const state = {
@@ -14,6 +16,7 @@ describe('BarChart Markdown component', () => {
         { id: 'id1', label: 'label1' },
         { id: 'id2', label: 'label2' },
         { id: 'id3', label: 'label3' },
+        { id: 'id4', label: 'label4' },
       ]
     }]),
   };
@@ -24,6 +27,7 @@ describe('BarChart Markdown component', () => {
       { key: 'id2', filtered: { doc_count: 33 } },
       { key: 'missing', filtered: { doc_count: 45 } },
       { key: 'id3', filtered: { doc_count: 13 } },
+      { key: 'id4', filtered: { doc_count: 0 } },
     ]));
 
     const props = mapStateToProps(state, { prop1: 'propValue' });
@@ -31,6 +35,21 @@ describe('BarChart Markdown component', () => {
 
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
     expect(component).toMatchSnapshot();
+  });
+
+  describe('when layout is vertical', () => {
+    it('should render axis properly', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id1', filtered: { doc_count: 25 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.layout = 'vertical';
+      const component = shallow(<BarChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(component.find(YAxis)).toMatchSnapshot();
+      expect(component.find(XAxis)).toMatchSnapshot();
+    });
   });
 
   it('should render a placeholder when data is undefined', () => {

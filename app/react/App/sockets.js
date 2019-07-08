@@ -18,9 +18,9 @@ socket.on('disconnect', (reason) => {
 });
 
 socket.on('reconnect', () => {
+  clearTimeout(disconnectTimeoutMessage);
   if (disconnectNotifyId) {
     store.dispatch(removeNotification(disconnectNotifyId));
-    clearTimeout(disconnectTimeoutMessage);
     disconnectNotifyId = store.dispatch(notify('Connected to server', 'success'));
     disconnectNotifyId = null;
   }
