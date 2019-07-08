@@ -28,6 +28,18 @@ describe('sockets', () => {
       expect(store.dispatch.calls.allArgs()[5][0].notification.message).toEqual('Connected to server');
       jasmine.clock().uninstall();
     });
+
+    describe('when reconnect happens just after disconnect event', () => {
+      it('should clearTimeout and not dispatch disconnect message', () => {
+        jasmine.clock().install();
+
+        socket._callbacks.$disconnect[0]('transport close');
+        socket._callbacks.$reconnect[0]();
+        jasmine.clock().tick(8000);
+
+        expect(store.dispatch).toHaveBeenCalledTimes(0);
+      });
+    });
   });
 
   describe('templateChange', () => {
