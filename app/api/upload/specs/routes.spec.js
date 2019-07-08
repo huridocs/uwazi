@@ -8,7 +8,6 @@ import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
-import backend from 'fetch-mock';
 import request from 'supertest';
 import express from 'express';
 
