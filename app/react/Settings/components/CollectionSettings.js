@@ -184,13 +184,6 @@ export class CollectionSettings extends Component {
                 rows="5"
               />
             </div>
-            <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
-              <Control.text
-                model=".contactEmail"
-                className="form-control"
-              />
-            </div>
             <div className="alert alert-info">
               <Icon icon="envelope" size="2x" />
               <div className="force-ltr">
@@ -198,6 +191,25 @@ export class CollectionSettings extends Component {
                 as explained in <a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a><br />
                 This setting takes precedence over all other mailer configuration.<br />
                 If left blank, then the configuration file in /api/config/mailer.js will be used.
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
+              <Control.text
+                model=".contactEmail"
+                className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Public Form destination')}</label>
+              <Control.text
+                model=".publicFormDestination"
+                className="form-control"
+              />
+            </div>
+            <div className="alert alert-info">
+              <div className="force-ltr">
+                You can configure the URL of a different Uwazi to receive the submits from your Public Form
               </div>
             </div>
             <span className="form-group-label" >{t('System', 'Show Cookie policy')}</span>

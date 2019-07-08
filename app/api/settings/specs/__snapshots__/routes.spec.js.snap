@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`relationtypes routes GET should have a validation schema 1`] = `undefined`;
+
 exports[`relationtypes routes POST should have a validation schema 1`] = `
 Object {
   "children": Object {
@@ -224,6 +226,12 @@ Object {
         "",
       ],
       "type": "string",
+    },
+    "publicFormDestination": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
     },
     "site_name": Object {
       "type": "string",

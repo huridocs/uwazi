@@ -8,6 +8,9 @@ import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
+import backend from 'fetch-mock';
+import request from 'supertest';
+import express from 'express';
 
 import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -413,6 +416,35 @@ describe('upload routes', () => {
       expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(true);
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))).toBe(true);
+    });
+  });
+
+  describe('/remotepublic', () => {
+    let app;
+    let remoteApp;
+    beforeEach(() => {
+      app = express();
+      app.use((_req, res, next) => {
+        _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' };
+        next();
+      });
+      uploadRoutes(app);
+    });
+
+    it('should return the captcha and store its value in session', (done) => {
+      remoteApp = express();
+      remoteApp.post('/api/public', (_req, res) => {
+        expect(_req.headers.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
+        res.json('ok');
+      });
+
+      remoteApp.listen(54321, async () => {
+        await request(app)
+        .post('/api/remotepublic')
+        .send({ title: 'Title' })
+        .expect(200);
+        done();
+      });
     });
   });
 

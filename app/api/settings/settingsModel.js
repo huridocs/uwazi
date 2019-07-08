@@ -23,6 +23,7 @@ const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
   contactEmail: String,
+  publicFormDestination: { type: String, select: false },
   home_page: String,
   private: Boolean,
   cookiepolicy: Boolean,

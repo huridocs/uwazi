@@ -70,12 +70,12 @@ class PublicForm extends Component {
 
   handleSubmit(_values) {
     const values = { ..._values };
-    const { submit, template } = this.props;
+    const { submit, template, remote } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
 
-    this.setState({ submiting: true });
-    submit(values).then(() => {
+    // this.setState({ submiting: true });
+    submit(values, remote).then(() => {
       this.resetForm();
       this.setState({ submiting: false });
       this.refreshCaptcha();
@@ -85,12 +85,13 @@ class PublicForm extends Component {
   }
 
   renderCaptcha() {
+    const { remote } = this.props;
     return (
       <FormGroup key="captcha" model=".captcha">
         <ul className="search__filter">
           <li><label><Translate>Captcha</Translate><span className="required">*</span></label></li>
           <li className="wide">
-            <Captcha refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
+            <Captcha remote={remote} refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
           </li>
         </ul>
       </FormGroup>
@@ -126,6 +127,7 @@ class PublicForm extends Component {
 PublicForm.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
+  remote: PropTypes.bool.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
@@ -135,6 +137,7 @@ export const mapStateToProps = (state, props) => ({
     template: state.templates.find(template => template.get('_id') === props.template),
     thesauris: state.thesauris,
     file: props.file !== undefined,
+    remote: props.remote !== undefined,
     attachments: props.attachments !== undefined,
 });
 

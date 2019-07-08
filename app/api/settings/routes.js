@@ -16,6 +16,7 @@ export default (app) => {
       private: Joi.boolean(),
       cookiepolicy: Joi.boolean(),
       mailerConfig: Joi.string().allow(''),
+      publicFormDestination: Joi.string().allow(''),
       analyticsTrackingId: Joi.string().allow(''),
       matomoConfig: Joi.string().allow(''),
       dateFormat: Joi.string().allow(''),
@@ -55,7 +56,8 @@ export default (app) => {
   );
 
   app.get('/api/settings', (req, res, next) => {
-    settings.get()
+    const adminUser = Boolean(req.user && req.user.role === 'admin');
+    settings.get(adminUser)
     .then(response => res.json(response))
     .catch(next);
   });

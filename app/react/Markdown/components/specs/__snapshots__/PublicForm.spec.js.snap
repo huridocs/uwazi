@@ -92,6 +92,7 @@ exports[`PublicForm should render a form 1`] = `
           <Captcha
             model=".captcha"
             refresh={[Function]}
+            remote={false}
           />
         </li>
       </ul>
@@ -243,6 +244,7 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
           <Captcha
             model=".captcha"
             refresh={[Function]}
+            remote={false}
           />
         </li>
       </ul>

@@ -7,7 +7,11 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
   <div
     className="panel-heading"
   >
-    Custom Uploads
+    <Connect(Translate)
+      context="System"
+    >
+      Custom Uploads
+    </Connect(Translate)>
   </div>
   <div
     className="panel-body custom-uploads"
@@ -105,7 +109,11 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
   <div
     className="panel-heading"
   >
-    Custom Uploads
+    <Connect(Translate)
+      context="System"
+    >
+      Custom Uploads
+    </Connect(Translate)>
   </div>
   <div
     className="panel-body custom-uploads"

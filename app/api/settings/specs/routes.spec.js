@@ -12,6 +12,10 @@ describe('relationtypes routes', () => {
   });
 
   describe('GET', () => {
+    it('should have a validation schema', () => {
+      expect(routes.get.validation('/api/settings')).toMatchSnapshot();
+    });
+
     it('should respond with settings', (done) => {
       spyOn(settings, 'get').and.returnValue(mockRequest);
       routes.get('/api/settings')

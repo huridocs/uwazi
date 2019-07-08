@@ -93,9 +93,10 @@ export function upload(docId, file, endpoint = 'upload') {
   });
 }
 
-export function publicSubmit(data) {
+export function publicSubmit(data, remote = false) {
   return dispatch => new Promise((resolve, reject) => {
-    const request = superagent.post(`${APIURL}public`)
+    const url = remote ? `${APIURL}remotepublic` : `${APIURL}public`;
+    const request = superagent.post(url)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
     .field('captcha', data.captcha);

@@ -11,6 +11,8 @@ import { saveSchema } from 'api/entities/endpointSchema';
 import { generateFileName } from 'api/utils/files';
 import fs from 'fs';
 import path from 'path';
+import proxy from 'express-http-proxy';
+import settings from 'api/settings';
 import configPaths from '../config/paths';
 import { validateRequest, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -39,6 +41,7 @@ const storeFile = (file, cb) => {
   });
 };
 
+/*eslint-disable max-statements*/
 export default (app) => {
   const upload = multer({ storage });
 
@@ -87,13 +90,13 @@ export default (app) => {
       const entity = req.body;
       entity.attachments = [];
       if (req.files.length) {
-        req.files.forEach((file) => {
+        req.files.forEach(async (file) => {
           if (file.fieldname.includes('attachment')) {
-            storeFile(file, _file => entity.attachments.push(_file));
+            await storeFile(file, _file => entity.attachments.push(_file));
           }
         });
       }
-      const newEntity = await entities.save(entity, { user: req.user, language: req.language });
+      const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
         storeFile(file, async (_file) => {
@@ -104,7 +107,26 @@ export default (app) => {
         });
       }
       res.json(newEntity);
-    });
+    }
+  );
+
+  app.post(
+    '/api/remotepublic',
+    async (req, res, next) => {
+      const { publicFormDestination } = await settings.get(true);
+      proxy(publicFormDestination, {
+        limit: '20mb',
+        proxyReqPathResolver() {
+          return '/api/public';
+        },
+        proxyReqOptDecorator(proxyReqOpts, srcReq) {
+          proxyReqOpts.headers.Cookie = srcReq.session.remotecookie;
+          return proxyReqOpts;
+        }
+      })(req, res, next);
+    }
+
+  );
 
   app.post(
     '/api/import',

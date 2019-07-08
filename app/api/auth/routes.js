@@ -6,6 +6,8 @@ import passport from 'passport';
 import session from 'express-session';
 import uniqueID from 'shared/uniqueID';
 import svgCaptcha from 'svg-captcha';
+import settings from 'api/settings';
+import urljoin from 'url-join';
 
 import { validateRequest } from '../utils';
 
@@ -65,8 +67,15 @@ export default (app) => {
   app.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.createMathExpr({ mathMin: 1, mathMax: 19, mathOperator: '+' });
     req.session.captcha = captcha.text;
-
     res.type('svg');
-    res.status(200).send(captcha.data);
+    res.send(captcha.data);
+  });
+
+  app.get('/remotecaptcha', async (req, res) => {
+    const _settings = await settings.get(true);
+    const remoteResponse = await fetch(urljoin(_settings.publicFormDestination, '/captcha'));
+    req.session.remotecookie = remoteResponse.headers._headers['set-cookie'][0];
+    res.type('svg');
+    remoteResponse.body.pipe(res);
   });
 };

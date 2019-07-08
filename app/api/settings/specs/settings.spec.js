@@ -143,6 +143,16 @@ describe('settings', () => {
         });
       });
     });
+
+    it('should not return private values', async () => {
+      const values = await settings.get();
+      expect(values.publicFormDestination).not.toBeDefined();
+    });
+
+    it('should return private values if asked for', async () => {
+      const values = await settings.get(true);
+      expect(values.publicFormDestination).toBeDefined();
+    });
   });
 
   describe('setDefaultLanguage()', () => {

@@ -22,7 +22,8 @@ describe('PublicForm', () => {
       thesauris: Immutable.fromJS([]),
       file: false,
       attachments: false,
-      submit
+      submit,
+      remote: false,
     };
     const mappedProps = { ...props, ...customProps };
     component = shallow(<PublicForm.WrappedComponent {...mappedProps}/>);
@@ -44,7 +45,7 @@ describe('PublicForm', () => {
   it('should submit the values', () => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test', template: '123' });
+    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test', template: '123' }, false);
   });
 
   it('should refresh the captcha and clear the form after submit', (done) => {
