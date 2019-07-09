@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import api from 'app/utils/api';
 
 import { mockID } from 'shared/uniqueID.js';
-import documents from 'app/Documents';
+import { documentsApi } from 'app/Documents';
 import { APIURL } from 'app/config.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import { actions as formActions } from 'react-redux-form';
@@ -165,7 +165,7 @@ describe('documentActions', () => {
 
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', (done) => {
-        spyOn(documents.api, 'save').and.returnValue(Promise.resolve({ sharedId: 'responseId' }));
+        spyOn(documentsApi, 'save').and.returnValue(Promise.resolve({ sharedId: 'responseId' }));
         const doc = { name: 'doc', fullText: 'fullText' };
         spyOn(relationshipActions, 'reloadRelationships').and.returnValue({ type: 'reloadRelationships' });
 
@@ -180,7 +180,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.saveDocument(doc))
         .then(() => {
-          expect(documents.api.save).toHaveBeenCalledWith({ name: 'doc' });
+          expect(documentsApi.save).toHaveBeenCalledWith({ name: 'doc' });
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -215,7 +215,7 @@ describe('documentActions', () => {
 
     describe('saveToc', () => {
       it('should save the document with the new toc and dispatch a notification on success', (done) => {
-        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
         spyOn(relationshipActions, 'reloadRelationships').and.returnValue({ type: 'reloadRelationships' });
         const doc = { name: 'doc', _id: 'id', _rev: 'rev', sharedId: 'sharedId', file: { fileName: '123.pdf' } };
         const toc = [
@@ -240,7 +240,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.saveToc(toc))
         .then(() => {
-          expect(documents.api.save).toHaveBeenCalledWith({ _id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: { fileName: '123.pdf' } });
+          expect(documentsApi.save).toHaveBeenCalledWith({ _id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: { fileName: '123.pdf' } });
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -250,7 +250,7 @@ describe('documentActions', () => {
 
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', (done) => {
-        spyOn(documents.api, 'delete').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
@@ -263,7 +263,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.deleteDocument(doc))
         .then(() => {
-          expect(documents.api.delete).toHaveBeenCalledWith(doc);
+          expect(documentsApi.delete).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

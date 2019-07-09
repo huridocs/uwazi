@@ -2,15 +2,13 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
 
-// If this is moved, there is probably a circular reference that makes tests fail
-import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import SidePanel from 'app/Layout/SidePanel';
 import Connections from 'app/Viewer/components/ConnectionsList';
 import { Tabs } from 'react-tabs-redux';
-
-
 import * as viewerModule from 'app/Viewer';
+
+import { DocumentSidePanel, mapStateToProps } from '../DocumentSidePanel';
 
 describe('DocumentSidePanel', () => {
   let component;

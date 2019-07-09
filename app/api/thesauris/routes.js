@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import multer from 'multer';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import thesauris from './thesauris';
 import storageConfig from '../upload/storageConfig';
@@ -16,7 +16,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.alternatives(
+    validation.validateRequest(Joi.alternatives(
       Joi.object().keys({
         _id: Joi.string(),
         __v: Joi.number(),
@@ -52,7 +52,7 @@ export default (app) => {
   );
 
   app.get('/api/thesauris',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string()
     }), 'query'),
     (req, res, next) => {
@@ -67,7 +67,7 @@ export default (app) => {
   );
 
   app.get('/api/dictionaries',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string()
     }), 'query'),
     (req, res, next) => {
@@ -83,7 +83,7 @@ export default (app) => {
 
   app.delete('/api/thesauris',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string().required(),
       _rev: Joi.any()
     }).required(), 'query'),

@@ -9,7 +9,7 @@ import rison from 'rison';
 import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
-import documents from 'app/Documents';
+import { documentsApi } from 'app/Documents';
 import { api } from 'app/Entities';
 import { browserHistory } from 'react-router';
 
@@ -247,7 +247,7 @@ describe('libraryActions', () => {
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', (done) => {
         mockID();
-        spyOn(documents.api, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
         spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
         const doc = { name: 'doc' };
 
@@ -262,7 +262,7 @@ describe('libraryActions', () => {
 
         store.dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
         .then(() => {
-          expect(documents.api.save).toHaveBeenCalledWith(doc);
+          expect(documentsApi.save).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -295,7 +295,7 @@ describe('libraryActions', () => {
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', (done) => {
         mockID();
-        spyOn(documents.api, 'delete').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
@@ -307,7 +307,7 @@ describe('libraryActions', () => {
 
         store.dispatch(actions.deleteDocument(doc))
         .then(() => {
-          expect(documents.api.delete).toHaveBeenCalledWith(doc);
+          expect(documentsApi.delete).toHaveBeenCalledWith(doc);
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

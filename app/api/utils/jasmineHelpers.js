@@ -14,14 +14,15 @@ const matchers = {
         let status;
         const req = {};
         const next = () => {};
-        const res = { status: code => status = code, json: () => {} };
-        const authMiddleware = routeResult.middlewares[0];
-        authMiddleware(req, res, next);
+        const res = { status: (code) => { status = code; }, json: () => {} };
+
+        routeResult.middlewares[0](req, res, next);
+
         const result = { pass: status === 401 };
         if (result.pass) {
-          result.message = 'route is authorized';
+          result.message = () => 'route is authorized';
         } else {
-          result.message = 'Route is not authorized ! (Auth middleware should be the first one)';
+          result.message = () => 'Route is not authorized ! (Auth middleware should be the first one)';
         }
         return result;
       }

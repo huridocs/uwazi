@@ -1,6 +1,6 @@
 import path from 'path';
 import { mockID } from 'shared/uniqueID';
-import pathsConfig from '../../config/paths';
+import paths from '../../config/paths';
 import storageConfig from '../storageConfig';
 
 describe('storageConfig', () => {
@@ -21,13 +21,13 @@ describe('storageConfig', () => {
     it('should return custom uploads path if url path contains customisation', (done) => {
       req.route.path = '/api/customisation/upload';
       testDestination((e, dest) => {
-        expect(path.normalize(dest)).toBe(path.normalize(pathsConfig.customUploadsPath));
+        expect(path.normalize(dest)).toBe(path.normalize(paths.customUploads));
         done();
       });
     });
     it('should return uploaded documents path if url not a customisation path', (done) => {
       testDestination((e, dest) => {
-        expect(path.normalize(dest)).toBe(path.normalize(pathsConfig.uploadDocumentsPath));
+        expect(path.normalize(dest)).toBe(path.normalize(paths.uploadedDocuments));
         done();
       });
     });

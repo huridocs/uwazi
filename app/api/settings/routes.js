@@ -1,12 +1,12 @@
 import Joi from 'joi';
 import settings from 'api/settings/settings';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
   app.post('/api/settings',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId(),
       __v: Joi.number(),
       project: Joi.string(),

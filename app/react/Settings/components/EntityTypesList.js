@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { deleteTemplate, checkTemplateCanBeDeleted, setAsDefault } from 'app/Templates/actions/templatesActions';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import { notificationActions } from 'app/Notifications';
 import Tip from '../../Layout/Tip';
 
 export class EntityTypesList extends Component {
@@ -108,7 +108,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ notify, deleteTemplate, checkTemplateCanBeDeleted, setAsDefault }, dispatch);
+  return bindActionCreators({ ...notificationActions, deleteTemplate, checkTemplateCanBeDeleted, setAsDefault }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityTypesList);

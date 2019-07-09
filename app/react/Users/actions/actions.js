@@ -1,5 +1,5 @@
 import { actions as basicActions } from 'app/BasicReducer';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import UsersAPI from '../UsersAPI';
 
 export function deleteUser(user) {
@@ -7,7 +7,7 @@ export function deleteUser(user) {
     return UsersAPI.delete(user)
     .then(() => {
       dispatch(basicActions.remove('users', user));
-      dispatch(notify('Deleted successfully.', 'success'));
+      dispatch(notificationActions.notify('Deleted successfully.', 'success'));
     }).catch(() => Promise.resolve());
   };
 }
@@ -17,7 +17,7 @@ export function saveUser(user) {
     return UsersAPI.save(user)
     .then(() => {
       dispatch(basicActions.push('users', user));
-      dispatch(notify('Saved successfully.', 'success'));
+      dispatch(notificationActions.notify('Saved successfully.', 'success'));
     }).catch(() => Promise.resolve());
   };
 }
@@ -27,7 +27,7 @@ export function newUser(user) {
     return UsersAPI.new(user)
     .then(() => {
       dispatch(basicActions.push('users', user));
-      dispatch(notify('Created successfully.', 'success'));
+      dispatch(notificationActions.notify('Created successfully.', 'success'));
     }).catch(() => Promise.resolve());
   };
 }

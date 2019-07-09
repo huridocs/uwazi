@@ -6,7 +6,7 @@ import { t } from 'app/I18N';
 import { parseWithAggregations } from 'app/Library/helpers/libraryFilters';
 
 import LibraryChart from './LibraryChart';
-import { sortValues } from '../utils/arrayUtils';
+import arrayUtils from '../utils/arrayUtils';
 
 function translateOptions(_property) {
   const property = _property;
@@ -20,7 +20,7 @@ function translateOptions(_property) {
 
 function sortFields(_field) {
   const field = _field;
-  field.options = sortValues(field.options);
+  field.options = arrayUtils.sortValues(field.options);
   return field;
 }
 

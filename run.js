@@ -1,4 +1,4 @@
-require('babel-core/register')();
+require('@babel/register');
 const fs = require('fs');
 if (process.argv[2]) {
   const script = process.argv[2];

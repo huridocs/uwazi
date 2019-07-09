@@ -2,7 +2,7 @@ import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 
 import { actions as basicActions } from 'app/BasicReducer';
-import * as Notifications from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
 
 import * as actions from '../pageActions';
@@ -17,7 +17,7 @@ describe('Page actions', () => {
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
     spyOn(basicActions, 'remove').and.returnValue('PAGE REMOVED');
-    spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
+    spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
     spyOn(browserHistory, 'push');
   });
 
@@ -55,7 +55,7 @@ describe('Page actions', () => {
       });
 
       it('should notify saved successfully', () => {
-        expect(Notifications.notify).toHaveBeenCalledWith('Saved successfully.', 'success');
+        expect(notificationActions.notify).toHaveBeenCalledWith('Saved successfully.', 'success');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
       });
 

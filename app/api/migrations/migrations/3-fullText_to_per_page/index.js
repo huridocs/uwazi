@@ -1,4 +1,4 @@
-import { uploadDocumentsPath } from 'api/config/paths';
+import paths from 'api/config/paths';
 import PDF from 'api/upload/PDF';
 import fs from 'fs';
 import path from 'path';
@@ -32,7 +32,7 @@ export default {
           return;
         }
 
-        if (!fs.existsSync(path.join(uploadDocumentsPath, entity.file.filename))) {
+        if (!fs.existsSync(path.join(paths.uploadedDocuments, entity.file.filename))) {
           process.stdout.write(`processed -> ${index}\r`);
           index += 1;
           if (index - 1 === totalDocuments) {
@@ -42,7 +42,7 @@ export default {
           return;
         }
 
-        new PDF({ filename: path.join(uploadDocumentsPath, entity.file.filename) }).extractText()
+        new PDF({ filename: path.join(paths.uploadedDocuments, entity.file.filename) }).extractText()
         .then((conversion) => {
           db.collection('entities').findOneAndUpdate(entity, { $set: { ...conversion } }, () => {
             process.stdout.write(`processed -> ${index}\r`);

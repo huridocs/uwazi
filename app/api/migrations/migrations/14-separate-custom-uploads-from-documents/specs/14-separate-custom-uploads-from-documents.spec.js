@@ -12,14 +12,14 @@ describe('migration separate-custom-uploads-from-documents', () => {
 
   beforeEach((done) => {
     spyOn(process.stdout, 'write');
-    originalDocumentsPath = paths.uploadDocumentsPath;
-    originalUploadsPath = paths.customUploadsPath;
+    originalDocumentsPath = paths.uploadedDocuments;
+    originalUploadsPath = paths.customUploads;
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
   afterEach((done) => {
-    paths.uploadDocumentsPath = originalDocumentsPath;
-    paths.customUploadsPath = originalUploadsPath;
+    paths.uploadedDocuments = originalDocumentsPath;
+    paths.customUploads = originalUploadsPath;
     done();
   });
 
@@ -35,14 +35,14 @@ describe('migration separate-custom-uploads-from-documents', () => {
     let files;
     beforeEach(async () => {
       files = ['file1.txt', 'file2.txt', 'file3.txt'];
-      paths.uploadDocumentsPath = `${__dirname}/uploaded_documents/`;
-      paths.customUploadsPath = `${__dirname}/custom_uploads/`;
+      paths.uploadedDocuments = `${__dirname}/uploaded_documents/`;
+      paths.customUploads = `${__dirname}/custom_uploads/`;
     });
     afterEach(async () => {
       await Promise.all(
         files.map(async (f) => {
           try {
-            await fs.unlink(path.join(paths.customUploadsPath, f));
+            await fs.unlink(path.join(paths.customUploads, f));
           // eslint-disable-next-line
           } catch (e) {}
         })
@@ -50,16 +50,16 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     const initFiles = async () =>
       Promise.all(
-        files.map(f => fs.writeFile(path.join(paths.uploadDocumentsPath, f), `contents for file ${f}`))
+        files.map(f => fs.writeFile(path.join(paths.uploadedDocuments, f), `contents for file ${f}`))
       );
     it('should move all uploads from uploaded documents folder to custom uploads folder', async () => {
       await initFiles();
       await migration.up(testingDB.mongodb);
       const filesExistInOldPath = await Promise.all(
-        files.map(f => fs.exists(path.join(paths.uploadDocumentsPath, f)))
+        files.map(f => fs.exists(path.join(paths.uploadedDocuments, f)))
       );
       const filesExistInNewPath = await Promise.all(
-        files.map(f => fs.exists(path.join(paths.customUploadsPath, f)))
+        files.map(f => fs.exists(path.join(paths.customUploads, f)))
       );
       expect(filesExistInOldPath).toEqual([false, false, false]);
       expect(filesExistInNewPath).toEqual([true, true, true]);
