@@ -1,4 +1,4 @@
-import { validateDuplicatedLabel, validateDuplicatedRelationship, validateRequiredInheritproperty } from '../ValidateTemplate';
+import getValidator, { validateDuplicatedLabel, validateDuplicatedRelationship, validateRequiredInheritproperty } from '../ValidateTemplate';
 
 describe('ValidateTemplate', () => {
   let template;
@@ -96,6 +96,60 @@ describe('ValidateTemplate', () => {
     it('should not pass validation when a property is check as inherit but has no inherit property selected', () => {
       const prop = { localID: 'local1', label: 'Label0', type: 'relationship', inherit: true, relationType: '1', content: '1' };
       expect(validateRequiredInheritproperty(prop, template)).toBe(false);
+    });
+  });
+
+  describe('validator', () => {
+    let templates;
+    let properties;
+    let commonProperties;
+    let id;
+    let validator;
+
+    beforeEach(() => {
+      id = 'tpl';
+      templates = [];
+      properties = [];
+      commonProperties = [
+        { localID: 't', name: 'title', label: 'Title' },
+        { localID: 'cd', name: 'creationDate', label: 'Date added' }
+      ];
+      template = {
+        commonProperties: [
+          { localID: 't', name: 'title', label: 'Title' },
+          { localID: 'cd', name: 'creationDate', label: 'Date added' }
+        ],
+        properties: [
+          { localID: '1', name: 'f1', label: 'F1' }
+        ]
+      };
+    });
+
+    const makeValidator = () => {
+      validator = getValidator(properties, commonProperties, templates, id);
+      return validator;
+    };
+
+    describe('title field', () => {
+      function validateTitleLabel(rule) {
+        return validator[''][`commonProperties.0.label.${rule}`](template);
+      }
+      it('should validate label required rule', () => {
+        makeValidator();
+        template.commonProperties[0].label = '';
+        expect(validateTitleLabel('required')).toBeFalsy();
+        template.commonProperties[0].label = '  ';
+        expect(validateTitleLabel('required')).toBeFalsy();
+        template.commonProperties[0].label = 'Name';
+        expect(validateTitleLabel('required')).toBeTruthy();
+      });
+
+      it('should validate label duplicated rule', () => {
+        makeValidator();
+        expect(validateTitleLabel('duplicated')).toBeTruthy();
+        template.properties[0].label = 'Title';
+        expect(validateTitleLabel('duplicated')).toBeFalsy();
+      });
     });
   });
 });

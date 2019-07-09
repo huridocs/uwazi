@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { FormConfigCommon } from 'app/Templates/components/FormConfigCommon';
-import { Field } from 'react-redux-form';
+import { Field, Form } from 'react-redux-form';
 
 describe('FormConfigCommon', () => {
   let component;
@@ -17,13 +17,18 @@ describe('FormConfigCommon', () => {
         'commonProperties.0.label': { valid: true, dirty: false, errors: {} },
         $form: {
           errors: {
-            'properties.0.label.required': false,
-            'properties.0.label.duplicated': false
+            'commonProperties.0.label.required': false,
+            'commonProperties.0.label.duplicated': false
           }
         }
       }
     };
   });
+
+  const render = () => {
+    component = shallow(<FormConfigCommon {...props}/>);
+    return component;
+  };
 
   it('should render Fields with the correct datas and corrected index', () => {
     component = shallow(<FormConfigCommon {...props}/>);
@@ -39,9 +44,22 @@ describe('FormConfigCommon', () => {
   });
 
   describe('validation', () => {
+    beforeEach(() => {
+      props.index = -2;
+    });
     it('should render the label without errors', () => {
       component = shallow(<FormConfigCommon {...props}/>);
       expect(component.find('.has-error').length).toBe(0);
+    });
+    it('should render the label with required error', () => {
+      props.formState.$form.errors['commonProperties.0.label.required'] = true;
+      render();
+      expect(component.find('.has-error').length).toBe(1);
+    });
+    it('should render the label with duplicated error', () => {
+      props.formState.$form.errors['commonProperties.0.label.duplicated'] = true;
+      render();
+      expect(component.find('.has-error').length).toBe(1);
     });
   });
 });
