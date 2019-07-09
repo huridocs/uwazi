@@ -7,9 +7,9 @@ import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
   render() {
-    const { index } = this.props;
-    const baseZeroIndex = index + this.props.data.commonProperties.length;
-    const property = this.props.data.commonProperties[baseZeroIndex];
+    const { index, data } = this.props;
+    const baseZeroIndex = index + data.commonProperties.length;
+    const property = data.commonProperties[baseZeroIndex];
 
     return (
       <div>
@@ -22,9 +22,9 @@ export class FormConfigCommon extends Component {
           </div>
         )}
         <Field model={`template.data.commonProperties[${baseZeroIndex}].prioritySorting`}>
-          <input id={`prioritySorting${this.props.index}`} type="checkbox" />
+          <input id={`prioritySorting${index}`} type="checkbox" />
           &nbsp;
-          <PrioritySortingLabel htmlFor={`prioritySorting${this.props.index}`} />
+          <PrioritySortingLabel htmlFor={`prioritySorting${index}`} />
         </Field>
       </div>
     );

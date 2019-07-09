@@ -110,6 +110,24 @@ describe('templates', () => {
       });
     });
 
+    it('should validate properties not having the same label as the title', (done) => {
+      const newTemplate = {
+        name: 'created_template',
+        commonProperties: [{ name: 'title', label: 'Name' }],
+        properties: [
+          { label: 'Label1' },
+          { label: 'name' }
+        ]
+      };
+
+      templates.save(newTemplate)
+      .then(() => done.fail('properties have conflicting label with the title, should throw error'))
+      .catch((err) => {
+        expect(err).toEqual({ code: 400, message: 'duplicated_labels: name' });
+        done();
+      });
+    });
+
     it('should validate properties not having repeated relationship fields', (done) => {
       const newTemplate = {
         name: 'created_template',
