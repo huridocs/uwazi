@@ -30,6 +30,26 @@ export function validateRequiredInheritproperty(prop) {
   return !prop || !prop.inherit || Boolean(prop.inheritProperty);
 }
 
+function getLabelRequiredValidator(propertiesArrayKey, propIndex) {
+  return (template) => {
+    if (!template[propertiesArrayKey][propIndex]) {
+      return true;
+    }
+    const { label } = template[propertiesArrayKey][propIndex];
+    return label && label.trim() !== '';
+  };
+}
+
+function getLabelDuplicatedValidator(propertiesArrayKey, propIndex) {
+  return (template) => {
+    if (!template[propertiesArrayKey][propIndex]) {
+      return true;
+    }
+    const prop = template[propertiesArrayKey][propIndex];
+    return validateDuplicatedLabel(prop, template);
+  };
+}
+
 export default function (properties, commonProperties, templates, id) {
   const validator = {
     '': {},
@@ -38,39 +58,13 @@ export default function (properties, commonProperties, templates, id) {
 
   const titleIndex = commonProperties.findIndex(p => p.name === 'title');
   if (titleIndex >= 0) {
-    validator[''][`commonProperties.${titleIndex}.label.required`] = (template) => {
-      if (!template.commonProperties[titleIndex]) {
-        return true;
-      }
-      const { label } = template.commonProperties[titleIndex];
-      return label && label.trim() !== '';
-    };
-
-    validator[''][`commonProperties.${titleIndex}.label.duplicated`] = (template) => {
-      if (!template.commonProperties[titleIndex]) {
-        return true;
-      }
-      const prop = template.commonProperties[titleIndex];
-      return validateDuplicatedLabel(prop, template);
-    };
+    validator[''][`commonProperties.${titleIndex}.label.required`] = getLabelRequiredValidator('commonProperties', titleIndex);
+    validator[''][`commonProperties.${titleIndex}.label.duplicated`] = getLabelDuplicatedValidator('commonProperties', titleIndex);
   }
 
   properties.forEach((property, index) => {
-    validator[''][`properties.${index}.label.required`] = (template) => {
-      if (!template.properties[index]) {
-        return true;
-      }
-      const { label } = template.properties[index];
-      return label && label.trim() !== '';
-    };
-
-    validator[''][`properties.${index}.label.duplicated`] = (template) => {
-      if (!template.properties[index]) {
-        return true;
-      }
-      const prop = template.properties[index];
-      return validateDuplicatedLabel(prop, template);
-    };
+    validator[''][`properties.${index}.label.required`] = getLabelRequiredValidator('properties', index);
+    validator[''][`properties.${index}.label.duplicated`] = getLabelDuplicatedValidator('properties', index);
 
     validator[''][`properties.${index}.content.required`] = (template) => {
       if (!template.properties[index] || template.properties[index].type !== 'select' || template.properties[index].type !== 'multiselect') {

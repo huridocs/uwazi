@@ -52,8 +52,8 @@ export class FormConfigCommon extends Component {
 }
 
 FormConfigCommon.propTypes = {
-  data: PropTypes.object,
-  formState: PropTypes.object,
+  data: PropTypes.shape({ commonProperties: PropTypes.array }).isRequired,
+  formState: PropTypes.shape({ $form: PropTypes.object }).isRequired,
   index: PropTypes.number
 };
 

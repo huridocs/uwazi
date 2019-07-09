@@ -19,6 +19,22 @@ import Icons from './Icons';
 
 
 export class MetadataProperty extends Component {
+  isLabelDuplicated() {
+    const { index, template, formState } = this.props;
+    const commonPropIndex = index + template.commonProperties.length;
+    return Boolean(formState.$form.errors[`properties.${index}.label.duplicated`]) ||
+      Boolean(formState.$form.errors[`commonProperties.${commonPropIndex}.label.duplicated`]);
+  }
+
+  isErrorOnThisField(error) {
+    const { index, isCommonProperty, template } = this.props;
+    const commonPropIndex = index + template.commonProperties.length;
+    const [errorRoot, errorIndex] = error.split('.');
+    return errorRoot === 'commonProperties' ?
+      errorIndex === commonPropIndex.toString() && isCommonProperty :
+      errorIndex === index.toString() && !isCommonProperty;
+  }
+
   renderForm() {
     const { type, index } = this.props;
     let defaultInput = <FormConfigInput type={type} index={index} />;
@@ -52,22 +68,6 @@ export class MetadataProperty extends Component {
       defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false}/>;
     }
     return defaultInput;
-  }
-
-  isLabelDuplicated() {
-    const { index, template, formState } = this.props;
-    const commonPropIndex = index + template.commonProperties.length;
-    return Boolean(formState.$form.errors[`properties.${index}.label.duplicated`]) ||
-      Boolean(formState.$form.errors[`commonProperties.${commonPropIndex}.label.duplicated`]);
-  }
-
-  isErrorOnThisField(error) {
-    const { index, isCommonProperty, template } = this.props;
-    const commonPropIndex = index + template.commonProperties.length;
-    const [errorRoot, errorIndex] = error.split('.');
-    return errorRoot === 'commonProperties' ?
-      errorIndex === commonPropIndex.toString() && isCommonProperty :
-      errorIndex === index.toString() && !isCommonProperty;
   }
 
   render() {
@@ -166,7 +166,9 @@ MetadataProperty.propTypes = {
   uiState: PropTypes.object,
   editProperty: PropTypes.func,
   formState: PropTypes.object,
-  template: PropTypes.object
+  template: PropTypes.shape({
+    properties: PropTypes.array, commonProperties: PropTypes.array
+  }).isRequired
 };
 
 
