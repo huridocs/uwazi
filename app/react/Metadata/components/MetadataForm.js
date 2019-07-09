@@ -81,7 +81,9 @@ export class MetadataForm extends Component {
       return <div />;
     }
 
-    const titleLabel = template.get('commonProperties').find(p => p.get('name') === 'title').get('label');
+    const titleLabel = template.get('commonProperties') ?
+      template.get('commonProperties').find(p => p.get('name') === 'title').get('label') :
+      'Title';
 
     return (
       <Form
