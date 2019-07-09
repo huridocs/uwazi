@@ -437,11 +437,12 @@ describe('upload routes', () => {
         res.json('ok');
       });
 
-      remoteApp.listen(54321, async () => {
+      const remoteServer = remoteApp.listen(54321, async () => {
         await request(app)
         .post('/api/remotepublic')
         .send({ title: 'Title' })
         .expect(200);
+        remoteServer.close();
         done();
       });
     });

@@ -4220,6 +4220,7 @@ expect@^23.5.0:
 express-http-proxy@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/express-http-proxy/-/express-http-proxy-1.5.1.tgz#cbf45695c759693c9c5f946117462d25b57e77a8"
+  integrity sha512-k1RdysZWZ8wdPnsLa4iyrrYyUFih/sYKkn6WfkU/q5A8eUdh3l+oXhrRuQmEYEsZmiexVvpiOCkogl03jYfcbg==
   dependencies:
     debug "^3.0.1"
     es6-promise "^4.1.1"
