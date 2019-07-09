@@ -28,7 +28,7 @@ export const PieChartComponent = (props) => {
 
   if (data) {
     const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, { context, filterZero: true, maxCategories })
+      arrayUtils.formatDataForChart(data, property, thesauris, { context, excludeZero: true, maxCategories })
     );
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
