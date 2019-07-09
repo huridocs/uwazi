@@ -29,12 +29,12 @@ function formatPayload(data) {
   }));
 }
 
-const formatDataForChart = (data, property, thesauris, { context, filterZero, maxCategories }) => {
+const formatDataForChart = (data, property, thesauris, { context, excludeZero, maxCategories }) => {
   const { options } = populateOptions([{ content: context }], thesauris.toJS())[0];
 
   let relevant = data.toJS().filter(i => i.key !== 'missing');
 
-  if (filterZero) {
+  if (excludeZero) {
     relevant = relevant.filter(i => i.filtered.doc_count !== 0);
   }
 

@@ -34,12 +34,16 @@ const Y = ({ layout }) => {
 };
 
 export const BarChartComponent = (props) => {
-  const { maxCategories, layout, property, data, classname, context, thesauris } = props;
+  const { excludeZero, maxCategories, layout, property, data, classname, context, thesauris } = props;
   let output = <Loader />;
 
   if (data) {
     const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, { context, maxCategories })
+      arrayUtils.formatDataForChart(data, property, thesauris, {
+        excludeZero: Boolean(excludeZero),
+        context,
+        maxCategories
+      })
     );
 
     output = (
@@ -65,6 +69,7 @@ export const BarChartComponent = (props) => {
 
 BarChartComponent.defaultProps = {
   context: 'System',
+  excludeZero: false,
   layout: 'horizontal',
   maxCategories: '0',
   classname: '',
@@ -75,6 +80,10 @@ BarChartComponent.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
+  excludeZero: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool
+  ]),
   classname: PropTypes.string,
   layout: PropTypes.string,
   maxCategories: PropTypes.string,
