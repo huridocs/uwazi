@@ -18,7 +18,8 @@ class Captcha extends Component {
   }
 
   refresh() {
-    const url = this.props.remote ? 'remotecaptcha' : 'captcha';
+    const { remote } = this.props;
+    const url = remote ? 'remotecaptcha' : 'captcha';
     this.setState({ captchaUrl: `/${url}?v=${Math.random() * 1000}` });
   }
 

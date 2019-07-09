@@ -120,8 +120,9 @@ export default (app) => {
           return '/api/public';
         },
         proxyReqOptDecorator(proxyReqOpts, srcReq) {
-          proxyReqOpts.headers.Cookie = srcReq.session.remotecookie;
-          return proxyReqOpts;
+          const options = Object.assign({}, proxyReqOpts);
+          options.headers.Cookie = srcReq.session.remotecookie;
+          return options;
         }
       })(req, res, next);
     }
