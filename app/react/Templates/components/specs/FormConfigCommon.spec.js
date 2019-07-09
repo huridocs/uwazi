@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { FormConfigCommon } from 'app/Templates/components/FormConfigCommon';
-import { Field, Form } from 'react-redux-form';
+import { Field } from 'react-redux-form';
 
 describe('FormConfigCommon', () => {
   let component;
