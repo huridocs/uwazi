@@ -57,7 +57,7 @@ class PublicForm extends Component {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.validators = Object.assign({ captcha: { required: val => val && val.length } }, validator.generate(props.template.toJS()));
-    this.state = { submiting: false, values: {} };
+    this.state = { submiting: false };
   }
 
   attachDispatch(dispatch) {
@@ -74,11 +74,13 @@ class PublicForm extends Component {
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
 
-    this.setState({ submiting: true, values: _values });
-    submit(values, remote).then(() => {
-      this.resetForm();
-      this.setState({ submiting: false });
-      this.refreshCaptcha();
+    submit(values, remote).then((uploadCompletePromise) => {
+      this.setState({ submiting: true });
+      return uploadCompletePromise.promise.then(() => {
+        this.setState({ submiting: false });
+        this.resetForm();
+        this.refreshCaptcha();
+      });
     }).catch(() => {
       this.setState({ submiting: false });
     });
@@ -100,7 +102,7 @@ class PublicForm extends Component {
 
   render() {
     const { template, thesauris, file, attachments } = this.props;
-    const { submiting, values } = this.state;
+    const { submiting } = this.state;
     if (submiting) {
       return PublicForm.renderSubmitState();
     }
@@ -111,7 +113,6 @@ class PublicForm extends Component {
           model="publicform"
           getDispatch={dispatch => this.attachDispatch(dispatch)}
           onSubmit={this.handleSubmit}
-          initialState={values}
         >
           {PublicForm.renderTitle()}
           <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />

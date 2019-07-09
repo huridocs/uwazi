@@ -12,7 +12,7 @@ describe('PublicForm', () => {
   let request;
 
   beforeEach(() => {
-    request = Promise.resolve('ok');
+    request = Promise.resolve({ promise: Promise.resolve('ok') });
     submit = jasmine.createSpy('submit').and.returnValue(request);
   });
 
@@ -51,10 +51,12 @@ describe('PublicForm', () => {
   it('should refresh the captcha and clear the form after submit', (done) => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    request.then(() => {
-      expect(instance.formDispatch).toHaveBeenCalledWith({ model: 'publicform', type: 'rrf/reset' });
-      expect(instance.refreshCaptcha).toHaveBeenCalled();
-      done();
+    request.then((uploadCompletePromise) => {
+      uploadCompletePromise.promise.then(() => {
+        expect(instance.formDispatch).toHaveBeenCalledWith({ model: 'publicform', type: 'rrf/reset' });
+        expect(instance.refreshCaptcha).toHaveBeenCalled();
+        done();
+      });
     });
   });
 });

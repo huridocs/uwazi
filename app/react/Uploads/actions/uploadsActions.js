@@ -113,14 +113,19 @@ export function publicSubmit(data, remote = false) {
         delete data.attachments;
       });
     }
-
     request.field('entity', JSON.stringify(data));
-
+    let completionResolve;
+    const uploadCompletePromise = new Promise((_resolve) => {
+      completionResolve = _resolve;
+    });
     request
+    .on('progress', () => {
+      resolve({ promise: uploadCompletePromise });
+    })
     .on('response', (response) => {
       if (response.status === 200) {
         dispatch(notify('Success', 'success'));
-        resolve(response);
+        completionResolve(response);
         return;
       }
 
