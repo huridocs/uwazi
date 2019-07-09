@@ -58,7 +58,7 @@ export class MetadataTemplate extends Component {
           onSubmit={this.onSubmit}
           onSubmitFailed={this.onSubmitFailed}
           className="metadataTemplate"
-          validators={validator(this.props.properties, this.props.templates.toJS(), this.props._id)}
+          validators={validator(this.props.properties, commonProperties, this.props.templates.toJS(), this.props._id)}
         >
           <div className="metadataTemplate-heading">
             <FormGroup model=".name">

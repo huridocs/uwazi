@@ -5,8 +5,10 @@ function validateName(templates, id) {
   };
 }
 
-export function validateDuplicatedLabel(property, properties) {
-  return properties.reduce((validity, prop) => {
+export function validateDuplicatedLabel(property, { properties, commonProperties }) {
+  const titleProperty = commonProperties.find(p => p.name === 'title');
+  const allProperties = [titleProperty, ...properties];
+  return allProperties.reduce((validity, prop) => {
     const sameProperty = (prop._id || prop.localID) === (property._id || property.localID);
     const differentLabel = prop.label.trim().toLowerCase() !== property.label.trim().toLowerCase();
 
@@ -28,11 +30,30 @@ export function validateRequiredInheritproperty(prop) {
   return !prop || !prop.inherit || Boolean(prop.inheritProperty);
 }
 
-export default function (properties, templates, id) {
+export default function (properties, commonProperties, templates, id) {
   const validator = {
     '': {},
     name: validateName(templates, id)
   };
+
+  const titleIndex = commonProperties.findIndex(p => p.name === 'title');
+  if (titleIndex >= 0) {
+    validator[''][`commonProperties.${titleIndex}.label.required`] = (template) => {
+      if (!template.commonProperties[titleIndex]) {
+        return true;
+      }
+      const { label } = template.commonProperties[titleIndex];
+      return label && label.trim() !== '';
+    };
+
+    validator[''][`commonProperties.${titleIndex}.label.duplicated`] = (template) => {
+      if (!template.commonProperties[titleIndex]) {
+        return true;
+      }
+      const prop = template.commonProperties[titleIndex];
+      return validateDuplicatedLabel(prop, template);
+    };
+  }
 
   properties.forEach((property, index) => {
     validator[''][`properties.${index}.label.required`] = (template) => {
@@ -48,7 +69,7 @@ export default function (properties, templates, id) {
         return true;
       }
       const prop = template.properties[index];
-      return validateDuplicatedLabel(prop, template.properties);
+      return validateDuplicatedLabel(prop, template);
     };
 
     validator[''][`properties.${index}.content.required`] = (template) => {
