@@ -37,12 +37,11 @@ describe('thesauris', () => {
       expect(dictionaties[4].type).toBe('template');
     });
 
-    it('should return all thesauris including unpublished documents if user', async () => {
-      const dictionaties = await thesauris.get(null, 'es', 'user');
+    it('should return only published documents for as options for template thesauri', async () => {
+      const dictionaties = await thesauris.get(null, 'es');
       expect(dictionaties.length).toBe(6);
       expect(dictionaties[4].values).toEqual([
-        { id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' },
-        { id: 'other', label: 'unpublished entity', type: 'entity' }
+        { id: 'sharedId', label: 'spanish entity', icon: 'Icon', type: 'entity' }
       ]);
     });
 

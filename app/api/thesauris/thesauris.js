@@ -105,8 +105,8 @@ export default {
     });
   },
 
-  templateToThesauri(template, language, user) {
-    const onlyPublished = !user;
+  templateToThesauri(template, language) {
+    const onlyPublished = true;
     return entities.getByTemplate(template._id, language, onlyPublished)
     .then((response) => {
       template.values = response.map(entity => ({
@@ -124,7 +124,7 @@ export default {
     return model.getById(id);
   },
 
-  get(thesauriId, language, user) {
+  get(thesauriId, language) {
     let query;
     if (thesauriId) {
       query = { _id: thesauriId };
@@ -135,7 +135,7 @@ export default {
     ])
     .then(([dictionaries, allTemplates]) => {
       const processTemplates = Promise.all(allTemplates.map(
-        result => this.templateToThesauri(result, language, user)
+        result => this.templateToThesauri(result, language)
         .then(templateTransformedInThesauri => templateTransformedInThesauri))
       );
 
