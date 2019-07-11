@@ -39,6 +39,14 @@ describe('FormConfigRelationship', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('should list own template as a possible relationship target', () => {
+    templates.push({ _id: 4, name: 'Own template', type: 'template', properties: [] });
+    props.data._id = 4;
+    props.templates = Immutable.fromJS(templates);
+    component = shallow(<FormConfigRelationship {...props}/>);
+    expect(component).toMatchSnapshot();
+  });
+
   describe('when the fields are invalid and dirty or the form is submited', () => {
     it('should render the label with errors', () => {
       props.formState.$form.errors['properties.0.label.required'] = true;

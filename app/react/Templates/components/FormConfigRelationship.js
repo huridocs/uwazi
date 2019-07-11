@@ -19,7 +19,7 @@ export class FormConfigRelationship extends Component {
     const { index, data, formState, type, templates, relationTypes } = this.props;
     const property = data.properties[index];
 
-    const options = templates.toJS().filter(template => template._id !== data._id);
+    const options = templates.toJS();//.filter(template => template._id !== data._id);
     const labelError = formState.$form.errors[`properties.${index}.label.required`] || formState.$form.errors[`properties.${index}.label.duplicated`];
     const relationTypeError = formState.$form.errors[`properties.${index}.relationType.required`] && formState.$form.submitFailed;
     const inheritPropertyError = formState.$form.errors[`properties.${index}.inheritProperty.required`] && formState.$form.submitFailed;

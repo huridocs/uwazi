@@ -1,5 +1,106 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`FormConfigRelationship should list own template as a possible relationship target 1`] = `
+<div>
+  <div
+    className="form-group"
+  >
+    <label
+      htmlFor="label"
+    >
+      <Connect(Translate)>
+        Label
+      </Connect(Translate)>
+    </label>
+    <Modeled(Connect(Field))
+      model="template.data.properties[0].label"
+    >
+      <input
+        className="form-control"
+        id="label"
+      />
+    </Modeled(Connect(Field))>
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      <Connect(Translate)>
+        Relationship
+      </Connect(Translate)>
+      <span
+        className="required"
+      >
+        *
+      </span>
+    </label>
+    <Select
+      model="template.data.properties[0].relationType"
+      options={
+        Array [
+          Object {
+            "_id": 1,
+            "name": "relationType1",
+          },
+          Object {
+            "_id": 2,
+            "name": "relationType2",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      validators={
+        Object {
+          "required": [Function],
+        }
+      }
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label>
+      <Connect(Translate)>
+        Entities
+      </Connect(Translate)>
+    </label>
+    <Select
+      model="template.data.properties[0].content"
+      options={
+        Array [
+          Object {
+            "_id": 3,
+            "name": "Judge",
+            "properties": Array [],
+            "type": "template",
+          },
+          Object {
+            "_id": 4,
+            "name": "Own template",
+            "properties": Array [],
+            "type": "template",
+          },
+        ]
+      }
+      optionsLabel="name"
+      optionsValue="_id"
+      placeholder="Any entity or document"
+    />
+  </div>
+  <PropertyConfigOptions
+    canBeFilter={true}
+    index={0}
+    property={
+      Object {
+        "filter": false,
+      }
+    }
+    type="relationship"
+  />
+</div>
+`;
+
 exports[`FormConfigRelationship should render fields with the correct datas 1`] = `
 <div>
   <div
