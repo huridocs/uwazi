@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`List should render the items in data using the given html 1`] = `
+<React.Fragment>
+  <[object Object]
+    key="0"
+    value="Batman"
+  >
+    <span>
+      Name: 
+      <Context />
+    </span>
+  </[object Object]>
+  <[object Object]
+    key="1"
+    value="Spiderman"
+  >
+    <span>
+      Name: 
+      <Context />
+    </span>
+  </[object Object]>
+</React.Fragment>
+`;

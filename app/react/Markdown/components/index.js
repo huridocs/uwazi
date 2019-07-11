@@ -6,6 +6,8 @@ import BarChart from './BarChart';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
 import ItemList from './ItemList';
+import List from './List';
+import Context from './Context';
 import Slideshow from './Slideshow';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
@@ -22,6 +24,7 @@ import EntityInfo from './EntityInfo';
 export default {
   MarkdownMedia,
   ContactForm,
+  Context,
   ItemList,
   Slideshow,
   MarkdownLink,
@@ -32,6 +35,7 @@ export default {
   BarChart,
   PieChart,
   ListChart,
+  List,
   GaugeChart,
   Value,
   Icon,

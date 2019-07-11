@@ -92,7 +92,6 @@ export default (_markdown, callback, withHtml = false) => {
       if (node.name && node.name.toLowerCase() === 'dataset') {
         return false;
       }
-
       const isCustomComponentPlaceholder = node.name === 'placeholder' &&
         node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
 
