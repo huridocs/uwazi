@@ -100,24 +100,19 @@ export function publicSubmit(data, remote = false) {
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
     .field('captcha', data.captcha);
-    delete data.captcha;
 
     if (data.file) {
       request.attach('file', data.file);
-      delete data.file;
     }
 
     if (data.attachments) {
       data.attachments.forEach((attachment, index) => {
         request.attach(`attachments[${index}]`, attachment);
-        delete data.attachments;
       });
     }
-    request.field('entity', JSON.stringify(data));
+    request.field('entity', JSON.stringify(Object.assign({}, { title: data.title, template: data.template, metadata: data.metadata })));
     let completionResolve;
-    const uploadCompletePromise = new Promise((_resolve) => {
-      completionResolve = _resolve;
-    });
+    const uploadCompletePromise = new Promise((_resolve) => { completionResolve = _resolve; });
     request
     .on('progress', () => {
       resolve({ promise: uploadCompletePromise });
@@ -130,12 +125,8 @@ export function publicSubmit(data, remote = false) {
       }
 
       reject(response);
-      if (response.status === 403) {
-        dispatch(notify('Captcha error', 'danger'));
-        return;
-      }
-
-      dispatch(notify('An error has ocurred', 'danger'));
+      const message = response.status === 403 ? 'Captcha error' : 'An error has ocurred';
+      dispatch(notify(message, 'danger'));
     })
     .end();
   });

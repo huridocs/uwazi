@@ -424,7 +424,7 @@ describe('upload routes', () => {
     beforeEach(() => {
       app = express();
       app.use((_req, res, next) => {
-        _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' };
+        _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' }; //eslint-disable-line
         next();
       });
       uploadRoutes(app);
