@@ -150,6 +150,7 @@ describe('uploadsActions', () => {
         const formData = {
           title: 'test',
           metadata: { prop: 'value' },
+          template: '123',
           captcha: 23,
           file,
           attachments: [file, file]
@@ -157,7 +158,7 @@ describe('uploadsActions', () => {
         store.dispatch(actions.publicSubmit(formData))
         .then(() => {
           delete formData.captcha;
-          expect(mockUpload.field).toHaveBeenCalledWith('entity', JSON.stringify(formData));
+          expect(mockUpload.field).toHaveBeenCalledWith('entity', JSON.stringify({ title: 'test', template: '123', metadata: { prop: 'value' } }));
           expect(mockUpload.field).toHaveBeenCalledWith('captcha', 23);
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
