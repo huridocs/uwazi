@@ -49,7 +49,7 @@ const csv = (readStream, stopOnError = false) => ({
       thesauriValues: values.map(v => ({ label: v[languageLabel] })),
 
       thesauriTranslations: Object.keys(languagesToTranslate).reduce((translations, lang) => {
-        translations[lang] = values.map(t => ({
+        translations[lang] = values.map(t => ({ // eslint-disable-line no-param-reassign
           key: t[languageLabel],
           value: t[languagesToTranslate[lang]],
         }));
