@@ -5,10 +5,12 @@ import { bindActionCreators } from 'redux';
 
 import { t, actions } from 'app/I18N';
 import { Icon } from 'UI';
-import { languages as elasticLanguages } from '../../../shared/languagesList.js';
+import {
+  languages as elasticLanguages,
+  allLanguages as languagesList
+} from 'shared/languagesList.js';
 import Warning from '../../Layout/Warning';
 import Tip from '../../Layout/Tip';
-import languagesList from '../utils/languagesList';
 
 export class Languages extends Component {
   static defaultLanguage() {

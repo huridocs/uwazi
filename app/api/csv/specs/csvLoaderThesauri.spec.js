@@ -68,20 +68,4 @@ describe('csvLoader thesauri', () => {
       expect(french['value 3']).toBe('valeur 3');
     });
   });
-
-  // describe('on error', () => {
-  //   it('should stop processing on the first error', async () => {
-  //     const testingLoader = new CSVLoader();
-
-  //     await db.clearAllAndLoad(fixtures);
-  //     spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
-
-  //     try {
-  //       await testingLoader.load(csvFile, template1Id);
-  //       fail('should fail');
-  //     } catch (e) {
-  //       expect(e).toEqual(new Error('error-title1'));
-  //     }
-  //   });
-  // });
 });
