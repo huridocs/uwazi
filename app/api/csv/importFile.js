@@ -13,7 +13,7 @@ const csvOrFileName = fileName =>
       return fileName === entry.fileName;
     }
 
-    return path.extname(entry.fileName) === '.csv';
+    return entry.fileName === 'import.csv';
   };
 
 const importFile = filePath => ({

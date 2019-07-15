@@ -6,7 +6,7 @@ import { createTestingZip } from './helpers';
 describe('importFile', () => {
   beforeAll(async () => {
     await createTestingZip([
-      path.join(__dirname, '/zipData/test.csv'),
+      path.join(__dirname, '/zipData/import.csv'),
       path.join(__dirname, '/zipData/file1.txt'),
     ], 'ImportFile.zip');
   });
