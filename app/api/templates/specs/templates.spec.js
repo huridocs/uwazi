@@ -7,7 +7,7 @@ import entities from 'api/entities/entities.js';
 import templates from 'api/templates/templates.js';
 import translations from 'api/i18n/translations';
 
-import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents } from './fixtures.js';
+import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents, swapTemplate } from './fixtures.js';
 
 
 describe('templates', () => {
@@ -86,6 +86,24 @@ describe('templates', () => {
       .then(() => done.fail('properties have repeated names, should have failed with an error'))
       .catch((error) => {
         expect(error).toEqual({ code: 400, message: 'duplicated_labels: label 1, label 2' });
+        done();
+      });
+    });
+
+    it('should not allow changing names to existing ones (swap)', (done) => {
+      const changedTemplate = {
+        _id: swapTemplate,
+        name: 'swap names template',
+        properties: [
+          { id: '1', type: 'text', name: 'text', label: 'Select' },
+          { id: '2', type: 'select', name: 'select', label: 'Text' }
+        ]
+      };
+
+      templates.save(changedTemplate)
+      .then(() => done.fail('properties have swaped names, should have failed with an error'))
+      .catch((error) => {
+        expect(error).toEqual({ code: 400, message: "Properties can't swap names: text" });
         done();
       });
     });

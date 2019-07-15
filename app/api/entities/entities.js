@@ -302,9 +302,7 @@ export default {
   },
 
   updateMetadataProperties(template, currentTemplate, language) {
-    const actions = {};
-    actions.$rename = {};
-    actions.$unset = {};
+    const actions = { $rename: {}, $unset: {} };
     template.properties = generateNamesAndIds(template.properties); //eslint-disable-line
     template.properties.forEach((property) => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
