@@ -10,6 +10,8 @@ import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
 import settings from '../settings/settings';
 
+const MAX_FAILED_LOGIN_ATTEMPTS = 6;
+
 const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
 const conformRecoverText = (options, _settings, domain, key, user) => {
@@ -146,7 +148,7 @@ export default {
     if (!oldPasswordValidated && !passwordValidated) {
       const updatedUser = await model.db.findOneAndUpdate({ _id: user._id },
           { $inc: { failedLogins: 1 } }, { new: true, fields: '+failedLogins' });
-      if (updatedUser.failedLogins >= 3) {
+      if (updatedUser.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
         const accountUnlockCode = generateUnlockCode();
         const lockedUser = await model.db.findOneAndUpdate({ _id: user._id }, { $set: { accountLocked: true, accountUnlockCode } },
           { new: true, fields: '+accountUnlockCode' });
