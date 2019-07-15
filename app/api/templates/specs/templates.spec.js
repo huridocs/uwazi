@@ -96,6 +96,7 @@ describe('templates', () => {
       const changedTemplate = {
         _id: swapTemplate,
         name: 'swap names template',
+        commonProperties: [{ name: 'title', label: 'Title' }],
         properties: [
           { id: '1', type: 'text', name: 'text', label: 'Select' },
           { id: '2', type: 'select', name: 'select', label: 'Text' }
