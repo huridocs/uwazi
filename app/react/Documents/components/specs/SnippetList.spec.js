@@ -42,7 +42,7 @@ describe('SnippetList', () => {
       }),
       template: Immutable.fromJS({
         _id: 'template',
-        commonProperties: [{ name: 'title', label: 'Title'}],
+        commonProperties: [{ name: 'title', label: 'Title' }],
         properties: [
           {
             name: 'summary',
