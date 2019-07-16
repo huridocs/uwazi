@@ -8,7 +8,8 @@ import SafeHTML from 'app/utils/SafeHTML';
 
 function getFieldLabel(field, template) {
   if (field === 'title') {
-    return t('System', 'Title');
+    const titleField = template.get('commonProperties').find(p => p.get('name') === 'title');
+    return t(template.get('_id'), titleField.get('label'));
   }
   if (field.startsWith('metadata.') && template) {
     const name = field.split('.')[1];
