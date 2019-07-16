@@ -20,10 +20,10 @@ Array [
 exports[`Repeat should render the items in data using the given html 1`] = `
 Array [
   <span>
-    Name: Batman
+    Name: -
   </span>,
   <span>
-    Name: Spiderman
+    Name: -
   </span>,
 ]
 `;

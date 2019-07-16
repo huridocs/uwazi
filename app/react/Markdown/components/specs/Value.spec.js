@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { shallow, render } from 'enzyme';
 
-import { shallow } from 'enzyme';
-
+import PagesContext from '../Context';
 import { mapStateToProps, ValueComponent } from '../Value.js';
 import markdownDatasets from '../../markdownDatasets';
 
@@ -10,19 +11,46 @@ let undefinedValue;
 describe('Value', () => {
   it('should render the value passed by mapStateToProps', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue('some metadata value');
-    const props = mapStateToProps('state', { prop1: 'propValue' });
+    const props = mapStateToProps('state', { property: 'propValue' });
     const component = shallow(<ValueComponent {...props}/>);
 
-    expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', { prop1: 'propValue' });
+    expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', { property: 'propValue' });
     expect(component).toMatchSnapshot();
   });
 
   it('should render a placeholder when value is "null"', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(undefinedValue);
-    const props = mapStateToProps('state', { prop2: 'propValue2' });
+    const props = mapStateToProps('state', { property: 'propValue2' });
     const component = shallow(<ValueComponent {...props}/>);
 
-    expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', { prop2: 'propValue2' });
+    expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', { property: 'propValue2' });
     expect(component).toMatchSnapshot();
+  });
+
+  describe('when using the context', () => {
+    const DummyComponent = p => (<span>my name is {p.myvalue}</span>);
+    it('should render the value in the context path', () => {
+      const rendered = render(
+        <span>
+          <PagesContext.Provider value={{ name: 'Bruce Wayne' }}>
+            <ValueComponent path="name" />
+          </PagesContext.Provider>
+        </span>
+      );
+      expect(rendered).toMatchSnapshot();
+    });
+
+    it('should pass the  value if has children', () => {
+      const rendered = render(
+        <span>
+          <PagesContext.Provider value={{ name: 'Bruce Wayne' }}>
+            <ValueComponent propkey="myvalue" path="name">
+              <DummyComponent/>
+            </ValueComponent>
+          </PagesContext.Provider>
+        </span>
+      );
+      expect(rendered).toMatchSnapshot();
+    });
   });
 });

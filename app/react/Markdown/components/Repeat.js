@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { List } from 'immutable';
-import { PagesContext } from './Context';
+import PagesContext from './Context';
 
 class Repeat extends Component {
   renderChildren() {
@@ -24,8 +24,6 @@ class Repeat extends Component {
 }
 
 Repeat.defaultProps = {
-  // data: ['Batman', 'Robin'],
-  // data: [{ age: 23, name: 'Robin' }, { age: 28, name: 'Batman' }],
   data: []
 };
 

@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { render } from 'enzyme';
 
+import { createStore } from 'redux';
 import Repeat from '../Repeat';
-import Context from '../Context';
+import Value from '../Value';
 
 describe('Repeat', () => {
   let props;
+  const store = createStore(() => ({}));
   class DummyComponent extends Component {
     render() {
       const { myvalue } = this.props;
@@ -23,7 +25,7 @@ describe('Repeat', () => {
   it('should render the items in data using the given html', () => {
     const component = render(
       <Repeat {...props}>
-        <span>Name: <Context/></span>
+        <span>Name: <Value store={store}/></span>
       </Repeat>
     );
     expect(component).toMatchSnapshot();
@@ -35,8 +37,8 @@ describe('Repeat', () => {
     };
     const component = render(
       <Repeat {...props}>
-        <span>Name: <Context path="title"/></span>
-        <span>Age: <Context path="metadata.age"/></span>
+        <span>Name: <Value store={store} path="title"/></span>
+        <span>Age: <Value store={store} path="metadata.age"/></span>
       </Repeat>
     );
     expect(component).toMatchSnapshot();

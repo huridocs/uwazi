@@ -1,18 +1,23 @@
 import { connectAdvanced } from 'react-redux';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import PagesContext from './Context';
 
 class Connect extends Component {
   static objectPath(path, object) {
     return path.split('.').reduce((o, key) => o.toJS ? o.get(key) : o[key], object);
   }
 
+  static renderChildren(children, props) {
+    return Array.isArray(children) ? children.map((child, index) => React.cloneElement(child, { ...props, index })) :
+      React.cloneElement(children, props);
+  }
+
   render() {
     const { children } = this.props;
     const props = Object.assign({}, this.props);
     delete props.children;
-    return Array.isArray(children) ? children.map((child, index) => React.cloneElement(child, { ...props, index })) :
-      React.cloneElement(children, props);
+    return (<PagesContext.Provider value={props}>{Connect.renderChildren(children, props)}</PagesContext.Provider>);
   }
 }
 

@@ -9,6 +9,7 @@ import ItemList from './ItemList';
 import Repeat from './Repeat';
 import Context from './Context';
 import Connect from './Connect';
+import ConnectDataset from './ConnectDataset';
 import Slideshow from './Slideshow';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
@@ -27,6 +28,7 @@ export default {
   ContactForm,
   Context,
   Connect,
+  ConnectDataset,
   ItemList,
   Slideshow,
   MarkdownLink,

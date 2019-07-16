@@ -4,6 +4,7 @@ import rison from 'rison';
 import Big from 'big.js';
 
 import searchApi from 'app/Search/SearchAPI';
+import api from 'app/utils/api';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 
 let undefinedValue;
@@ -38,6 +39,9 @@ const parseDatasets = (markdown) => {
         if (name === 'dataset') {
           result[attribs.name || 'default'] = conformValues(attribs);
         }
+        if (name === 'query') {
+          result[attribs.name || 'default'] = { url: attribs.url, query: true };
+        }
       }
   }, { decodeEntities: true });
 
@@ -49,6 +53,9 @@ const requestDatasets = datasets => Promise.all(
   Object.keys(datasets)
   .map(
     (name) => {
+      if (datasets[name].query) {
+        return api.get(datasets[name].url).then(data => ({ data, name }));
+      }
       const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
       const params = datasets[name].entity ? datasets[name].entity : datasets[name];
       const postAction = datasets[name].entity ? d => d[0] : d => d;
