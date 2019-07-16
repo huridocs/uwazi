@@ -1,3 +1,4 @@
+import Immutable from 'immutable';
 import { t } from 'app/i18N';
 import getFieldLabel from '../getFieldLabel';
 
@@ -55,5 +56,15 @@ describe('getFieldLabel', () => {
       template = undefined;
       expect(runGetLabel()).toEqual('metadata.prop2');
     });
+  });
+
+  it('should work when template is an Immutable instance', () => {
+    template = Immutable.fromJS(template);
+    field = 'title';
+    expect(runGetLabel()).toEqual('Name');
+    field = 'metadata.prop1';
+    expect(runGetLabel()).toEqual('Prop 1');
+    field = 'nonexistent';
+    expect(runGetLabel()).toEqual('nonexistent');
   });
 });
