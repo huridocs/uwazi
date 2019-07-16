@@ -74,7 +74,6 @@ class PublicForm extends Component {
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
 
-    console.log('submit!');
     submit(values, remote).then((uploadCompletePromise) => {
       this.setState({ submiting: true });
       return uploadCompletePromise.promise.then(() => {
@@ -82,11 +81,9 @@ class PublicForm extends Component {
         this.resetForm();
         this.refreshCaptcha();
       }).catch(() => {
-        console.log('catch 1');
         this.setState({ submiting: false });
       });
     }).catch(() => {
-      console.log('catch 1');
       this.setState({ submiting: false });
     });
   }
