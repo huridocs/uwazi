@@ -142,7 +142,7 @@ describe('Users', () => {
       expect(user).toMatchSnapshot();
     });
     it('should reset failedLogins counter when login is successful', async () => {
-      testUser.failedLogins = 2;
+      testUser.failedLogins = 5;
       await createUserAndTestLogin('someuser1', 'password');
       const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
       expect(user.failedLogins).toBeFalsy();
@@ -171,8 +171,8 @@ describe('Users', () => {
         expect(user.failedLogins).toEqual(2);
       }
     });
-    it('should lock account after third failed login attempt and generate unlock code', async () => {
-      testUser.failedLogins = 2;
+    it('should lock account after sixth failed login attempt and generate unlock code', async () => {
+      testUser.failedLogins = 5;
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
@@ -185,7 +185,7 @@ describe('Users', () => {
       }
     });
     it('after locking account, it should send user and email with the unlock link', async () => {
-      testUser.failedLogins = 2;
+      testUser.failedLogins = 5;
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
