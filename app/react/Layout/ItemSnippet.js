@@ -8,7 +8,8 @@ import t from '../I18N/t';
 
 function getFieldLabel(field, template) {
   if (field === 'title') {
-    return t('System', 'Title');
+    const titleField = template.get('commonProperties').find(p => p.get('name') === 'title');
+    return t('System', titleField.get('label'));
   }
   if (field.startsWith('metadata.')) {
     const name = field.split('.')[1];
