@@ -11,7 +11,7 @@ describe('markdownDatasets', () => {
     beforeEach(() => {
       spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true }, params)));
       spyOn(entitiesApi, 'get').and.callFake(_id => Promise.resolve([{ isEntity: true, _id }]));
-      spyOn(api, 'get').and.callFake(url => Promise.resolve({ url }));
+      spyOn(api, 'get').and.callFake(url => Promise.resolve({ json: { url } }));
     });
 
     it('should not fetch anything if no datasets defined', async () => {

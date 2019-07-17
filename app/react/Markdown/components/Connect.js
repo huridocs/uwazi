@@ -2,6 +2,7 @@ import { connectAdvanced } from 'react-redux';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PagesContext from './Context';
+import { objectPath } from '../utils';
 
 class Connect extends Component {
   static objectPath(path, object) {
@@ -29,7 +30,8 @@ export const mapStateToProps = (state, props) => Object.keys(props).reduce((mapp
   if (propName === 'children') {
     return Object.assign(mappedProps, { children: props.children });
   }
-  const value = props[propName].split('.').reduce((o, key) => o.toJS ? o.get(key) : o[key], state);
+
+  const value = objectPath(props[propName], state);
   return Object.assign(mappedProps, { [propName]: value });
 }, {});
 

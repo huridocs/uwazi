@@ -4,15 +4,12 @@ import PropTypes from 'prop-types';
 
 import markdownDatasets from '../markdownDatasets';
 import PagesContext from './Context';
+import { objectPath } from '../utils';
 
 export class ValueComponent extends Component {
-  static objectPath(path, object) {
-    return path.split('.').reduce((o, key) => o.toJS ? o.get(key) : o[key], object);
-  }
-
   renderChildren(_value) {
     const { children, propkey, path } = this.props;
-    const value = path ? ValueComponent.objectPath(path, _value) : _value;
+    const value = path ? objectPath(path, _value) : _value;
     const child = Array.isArray(children) ? children[0] : children;
     if (!child) {
       return value;

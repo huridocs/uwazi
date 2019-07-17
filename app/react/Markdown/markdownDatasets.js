@@ -54,7 +54,7 @@ const requestDatasets = datasets => Promise.all(
   .map(
     (name) => {
       if (datasets[name].query) {
-        return api.get(datasets[name].url).then(data => ({ data, name }));
+        return api.get(datasets[name].url).then(data => ({ data: data.json, name }));
       }
       const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
       const params = datasets[name].entity ? datasets[name].entity : datasets[name];
