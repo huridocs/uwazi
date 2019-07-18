@@ -1,4 +1,5 @@
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
+import { createError } from 'api/utils';
 import entities from 'api/entities/entities';
 import templates from 'api/templates/templates';
 import translations from 'api/i18n/translations';
@@ -18,18 +19,16 @@ const autoincrementValuesId = (thesauri) => {
   return thesauri;
 };
 
-const checkDuplicated = thesauri => model.get()
-.then((thesauris) => {
-  const duplicated = thesauris.find((entry) => {
-    const sameEntity = entry._id.equals(thesauri._id);
-    const sameName = entry.name.trim().toLowerCase() === thesauri.name.trim().toLowerCase();
-    return sameName && !sameEntity;
+const checkDuplicated = async (thesauri) => {
+  const [duplicated] = await model.get({
+    _id: { $ne: thesauri._id },
+    name: new RegExp(thesauri.name || null, 'i')
   });
 
   if (duplicated) {
-    return Promise.reject('duplicated_entry');
+    throw createError(`duplicated_entry ${thesauri.name}`, 400);
   }
-});
+};
 
 function thesauriToTranslatioNContext(thesauri) {
   return thesauri.values.reduce((ctx, prop) => {

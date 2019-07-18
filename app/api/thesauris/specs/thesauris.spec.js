@@ -241,8 +241,8 @@ describe('thesauris', () => {
         const data = { name: 'dictionary' };
         thesauris.save(data)
         .then(catchErrors(done))
-        .catch((response) => {
-          expect(response).toBe('duplicated_entry');
+        .catch((error) => {
+          expect(error).toBeDefined();
           done();
         });
       });

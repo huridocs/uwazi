@@ -29,7 +29,8 @@ describe('csvLoader thesauri', () => {
                    value 2, valor 2, valeur 2, 2               ,
                    value 3, valor 3, valeur 3, 3               ,`;
 
-      const { _id } = await thesauris.save({ name: 'thesauri2Id' });
+      const { _id } = await thesauris.save({ name: 'thesauri2Id', values: [{ label: 'existing_value' }] });
+
       thesauriId = _id;
       await loader.loadThesauri(stream(csv), _id, { language: 'en' });
     });
@@ -41,7 +42,7 @@ describe('csvLoader thesauri', () => {
 
     it('should set thesauri values using the language passed', async () => {
       const thesauri = await thesauris.getById(thesauriId);
-      expect(thesauri.values.map(v => v.label)).toEqual(['value 1', 'value 2', 'value 3']);
+      expect(thesauri.values.map(v => v.label)).toEqual(['existing_value', 'value 1', 'value 2', 'value 3']);
     });
 
     it('should translate thesauri values to english', async () => {
