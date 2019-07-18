@@ -1,6 +1,7 @@
 import CSVLoader from 'api/csv';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import users from 'api/users/users';
+import { prettifyError } from 'api/utils/handleError';
 
 const { template, importThesauri, username, language, file, stop } = require('yargs') // eslint-disable-line
 .option('template', {
@@ -9,7 +10,7 @@ const { template, importThesauri, username, language, file, stop } = require('ya
 })
 .option('importThesauri', {
   alias: 'T',
-  describe: 'flag to imprt a thesauri csv instead of entities',
+  describe: 'flag to import a thesauri csv instead of entities',
   type: 'boolean',
   default: false,
 })
@@ -47,12 +48,16 @@ if (importThesauri) {
     disconnect();
   })
   .catch((e) => {
-    disconnect();
+    const error = prettifyError(e);
     process.stdout.write('\n\n');
     process.stdout.write('There was an error and importation stoped !!\n');
-    process.stdout.write(e.message);
-    process.stdout.write(e.stack);
+    process.stdout.write(error.message);
+    process.stdout.write('\n');
+    if (error.validations) {
+      process.stdout.write(JSON.stringify(error.validations, null, ' '));
+    }
     process.stdout.write('\n\n');
+    disconnect();
   });
 } else {
   let loaded = 0;
