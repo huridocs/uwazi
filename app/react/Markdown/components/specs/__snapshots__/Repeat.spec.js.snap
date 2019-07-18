@@ -18,12 +18,12 @@ Array [
 `;
 
 exports[`Repeat should render the items in data using the given html 1`] = `
-Array [
-  <span>
-    Name: -
-  </span>,
-  <span>
-    Name: -
-  </span>,
-]
+<ul>
+  <li>
+    Name: Batman
+  </li>
+  <li>
+    Name: Spiderman
+  </li>
+</ul>
 `;

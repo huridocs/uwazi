@@ -19,8 +19,8 @@ export class ValueComponent extends Component {
   }
 
   render() {
-    const { path, value } = this.props;
-    return path ? (<PagesContext.Consumer>{val => this.renderChildren(val)}</PagesContext.Consumer>) : this.renderChildren(value);
+    const { property, value } = this.props;
+    return property ? this.renderChildren(value) : (<PagesContext.Consumer>{val => this.renderChildren(val)}</PagesContext.Consumer>);
   }
 }
 
@@ -39,6 +39,7 @@ ValueComponent.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   propkey: PropTypes.string,
   path: PropTypes.string,
+  property: PropTypes.string,
 };
 
 export const mapStateToProps = (state, props) => props.property ? { value: markdownDatasets.getMetadataValue(state, props) } : {};
