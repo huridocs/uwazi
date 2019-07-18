@@ -7,6 +7,8 @@ import geolocation from './typeParsers/geolocation.js';
 import multiselect from './typeParsers/multiselect.js';
 import select from './typeParsers/select.js';
 
+const escapeRegExpCharacters = string => string.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
 export default {
   geolocation,
 
@@ -50,7 +52,7 @@ export default {
     .filter(emptyString)
     .filter(unique);
 
-    const current = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${v}\\s?`, 'i')) } });
+    const current = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${escapeRegExpCharacters(v)}\\s?`, 'i')) } });
     const newValues = values.filter(v => !current.map(c => c.title.trim()).includes(v));
 
     await newValues.reduce(
@@ -69,7 +71,7 @@ export default {
       Promise.resolve([])
     );
 
-    const toRelateEntities = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${v}\\s?`, 'i')) } });
+    const toRelateEntities = await entities.get({ title: { $in: values.map(v => new RegExp(`\\s?${escapeRegExpCharacters(v)}\\s?`, 'i')) } });
     return toRelateEntities.map(e => e.sharedId).filter((id, index, ids) => ids.indexOf(id) === index);
   },
 };

@@ -89,20 +89,20 @@ describe('csvLoader typeParsers', () => {
     beforeAll(async () => {
       spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
 
-      await model.save({ title: '   value1  ', template: templateToRelateId, sharedId: '123', language: 'en' });
-      await model.save({ title: '   value1  ', template: templateToRelateId, sharedId: '123', language: 'es' });
+      await model.save({ title: '   valu(e)1  ', template: templateToRelateId, sharedId: '123', language: 'en' });
+      await model.save({ title: '   valu(e)1  ', template: templateToRelateId, sharedId: '123', language: 'es' });
       value1 = await typeParsers.relationship(
-        { relationship_prop: 'value1|value3| value3' },
+        { relationship_prop: 'valu(e)1|value3| value3' },
         templateProp
       );
 
       value2 = await typeParsers.relationship(
-        { relationship_prop: 'value1| value2' },
+        { relationship_prop: 'valu(e)1| value2' },
         templateProp
       );
 
       value3 = await typeParsers.relationship(
-        { relationship_prop: 'value1|value2' },
+        { relationship_prop: 'valu(e)1|value2' },
         templateProp
       );
 
@@ -120,7 +120,7 @@ describe('csvLoader typeParsers', () => {
     });
 
     it('should create entities and return the ids', async () => {
-      expect(entitiesRelated[0].title).toBe('   value1  ');
+      expect(entitiesRelated[0].title).toBe('   valu(e)1  ');
       expect(entitiesRelated[1].title).toBe('value3');
       expect(entitiesRelated[2].title).toBe('value2');
 
