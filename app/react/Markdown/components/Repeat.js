@@ -8,11 +8,14 @@ class Repeat extends Component {
     const { path, children } = this.props;
     return (
       <PagesContext.Consumer>
-        {data => objectPath(path, data).map((item, index) => (
-          <PagesContext.Provider value={item} key={index}>
-            {children}
-          </PagesContext.Provider>
-            ))}
+        {(value) => {
+          const data = objectPath(path, value) || [];
+          return data.map((item, index) => (
+            <PagesContext.Provider value={item} key={index}>
+              {children}
+            </PagesContext.Provider>
+            ));
+        }}
       </PagesContext.Consumer>
     );
   }
