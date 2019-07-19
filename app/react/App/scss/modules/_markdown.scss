@@ -160,6 +160,11 @@
 }
 
 .video-container.compact > div:first-child {
+  /*
+    use aspect-ratio box technique to make
+    video player scale seamlessly and responsively
+    https://css-tricks.com/aspect-ratio-boxes/
+  */
   height: 0;
   padding-bottom: 0;
   position: relative;
