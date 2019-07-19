@@ -47,8 +47,10 @@ class MarkdownMedia extends Component {
       <div className={`video-container ${compact ? 'compact' : ''}`}>
         <div>
           <ReactPlayer
+            className="react-player"
             ref={(ref) => { this.player = ref; }}
             width="100%"
+            height="100%"
             url={config.url}
             controls
           />
