@@ -29,25 +29,11 @@ describe('Value', () => {
   });
 
   describe('when using the context', () => {
-    const DummyComponent = p => (<span>my name is {p.myvalue}</span>);
     it('should render the value in the context path', () => {
       const rendered = render(
         <span>
           <PagesContext.Provider value={{ name: 'Bruce Wayne' }}>
             <ValueComponent path="name" />
-          </PagesContext.Provider>
-        </span>
-      );
-      expect(rendered).toMatchSnapshot();
-    });
-
-    it('should pass the  value if has children', () => {
-      const rendered = render(
-        <span>
-          <PagesContext.Provider value={{ name: 'Bruce Wayne' }}>
-            <ValueComponent propkey="myvalue" path="name">
-              <DummyComponent/>
-            </ValueComponent>
           </PagesContext.Provider>
         </span>
       );

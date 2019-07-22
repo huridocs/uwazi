@@ -8,14 +8,8 @@ import { objectPath } from '../utils';
 
 export class ValueComponent extends Component {
   renderChildren(_value) {
-    const { children, propkey, path } = this.props;
-    const value = path ? objectPath(path, _value) : _value;
-    const child = Array.isArray(children) ? children[0] : children;
-    if (!child) {
-      return value;
-    }
-    const props = { [propkey]: value };
-    return React.cloneElement(child, props);
+    const { path } = this.props;
+    return path ? objectPath(path, _value) : _value;
   }
 
   render() {
@@ -26,9 +20,8 @@ export class ValueComponent extends Component {
 
 ValueComponent.defaultProps = {
   value: '-',
-  children: '',
-  propkey: 'data',
   path: '',
+  property: ''
 };
 
 ValueComponent.propTypes = {
@@ -36,8 +29,6 @@ ValueComponent.propTypes = {
     PropTypes.number,
     PropTypes.string,
   ]),
-  children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  propkey: PropTypes.string,
   path: PropTypes.string,
   property: PropTypes.string,
 };
