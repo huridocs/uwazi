@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EntityLink should generate a link based on the entity sharedId and if it has file or not 1`] = `
+<Connect(I18NLink)
+  to="/entity/abc"
+>
+  I want this as the link content
+</Connect(I18NLink)>
+`;
+
+exports[`EntityLink should generate a link to the document viewer when it has file 1`] = `
+<Connect(I18NLink)
+  to="/document/abc"
+>
+  I want this as the link content
+</Connect(I18NLink)>
+`;

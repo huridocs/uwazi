@@ -5,6 +5,7 @@ import { Icon } from 'UI';
 import BarChart from './BarChart';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
+import EntityLink from './EntityLink';
 import ItemList from './ItemList';
 import Repeat from './Repeat';
 import Context from './Context';
@@ -29,6 +30,7 @@ export default {
   Context,
   Connect,
   ConnectDataset,
+  EntityLink,
   ItemList,
   Slideshow,
   MarkdownLink,

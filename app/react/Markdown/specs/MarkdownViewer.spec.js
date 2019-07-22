@@ -176,11 +176,12 @@ describe('MarkdownViewer', () => {
       expect(component).toMatchSnapshot();
     });
 
-    it('should remove Dataset tags', () => {
+    it('should remove Dataset and Query tags', () => {
       props.html = true;
       props.markdown = '' +
         'test\n\n' +
         '<Dataset />\n' +
+        '<Query />\n' +
         '<SearchBox/>\n' +
         '<Dataset name="test" />\n' +
         '<div>test</div>';
