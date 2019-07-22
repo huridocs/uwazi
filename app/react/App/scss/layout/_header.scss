@@ -57,6 +57,9 @@ header {
     @media(min-width: 1024px) {
       display: none;
     }
+    @media print {
+      display: none;
+    }
   }
 }
 
@@ -93,6 +96,10 @@ header {
     justify-content: space-between;
     align-items: center;
     height: $header-height;
+  }
+
+  @media print {
+    display: none;
   }
 
   ul {
