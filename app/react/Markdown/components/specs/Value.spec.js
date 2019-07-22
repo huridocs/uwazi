@@ -10,8 +10,9 @@ let undefinedValue;
 describe('Value', () => {
   it('should render the value passed by mapStateToProps', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue('some metadata value');
-    const props = mapStateToProps('state', { property: 'propValue' });
-    const component = shallow(<ValueComponent {...props}/>);
+    const props = { property: 'propValue' };
+    const mappedProps = mapStateToProps('state', props);
+    const component = shallow(<ValueComponent {...Object.assign({}, props, mappedProps)}/>);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', { property: 'propValue' });
     expect(component).toMatchSnapshot();
@@ -19,8 +20,9 @@ describe('Value', () => {
 
   it('should render a placeholder when value is "null"', () => {
     spyOn(markdownDatasets, 'getMetadataValue').and.returnValue(undefinedValue);
-    const props = mapStateToProps('state', { property: 'propValue2' });
-    const component = shallow(<ValueComponent {...props}/>);
+    const props = { property: 'propValue2' };
+    const mappedProps = mapStateToProps('state', props);
+    const component = shallow(<ValueComponent {...Object.assign({}, props, mappedProps)}/>);
 
     expect(markdownDatasets.getMetadataValue).toHaveBeenCalledWith('state', { property: 'propValue2' });
     expect(component).toMatchSnapshot();
