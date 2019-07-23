@@ -6,28 +6,61 @@ import { connect } from 'react-redux';
 import PrioritySortingLabel from './PrioritySortingLabel';
 
 export class FormConfigCommon extends Component {
-  render() {
-    const { index } = this.props;
-    const baseZeroIndex = index + this.props.data.commonProperties.length;
+  getZeroIndex() {
+    const { index, data } = this.props;
+    const baseZeroIndex = index + data.commonProperties.length;
+    return baseZeroIndex;
+  }
+
+  renderTitleField() {
+    const { index, formState } = this.props;
+    let labelClass = 'form-group';
+    const labelKey = `commonProperties.${this.getZeroIndex()}.label`;
+    const requiredLabel = formState.$form.errors[`${labelKey}.required`];
+    const duplicatedLabel = formState.$form.errors[`${labelKey}.duplicated`];
+    if (requiredLabel || duplicatedLabel) {
+      labelClass += ' has-error';
+    }
 
     return (
-      <Field model={`template.data.commonProperties[${baseZeroIndex}].prioritySorting`}>
-        <input id={`prioritySorting${this.props.index}`} type="checkbox" />
-        &nbsp;
-        <PrioritySortingLabel htmlFor={`prioritySorting${this.props.index}`} />
-      </Field>
+      <div className={labelClass}>
+        <label htmlFor={`label${index}`}>Name</label>
+        <Field model={`template.data.commonProperties[${this.getZeroIndex()}].label`}>
+          <input id={`label${index}`} className="form-control" />
+        </Field>
+      </div>
+    );
+  }
+
+  render() {
+    const { index, data } = this.props;
+    const property = data.commonProperties[this.getZeroIndex()];
+
+    return (
+      <div>
+        {property.name === 'title' && (
+          this.renderTitleField()
+        )}
+        <Field model={`template.data.commonProperties[${this.getZeroIndex()}].prioritySorting`}>
+          <input id={`prioritySorting${index}`} type="checkbox" />
+          &nbsp;
+          <PrioritySortingLabel htmlFor={`prioritySorting${index}`} />
+        </Field>
+      </div>
     );
   }
 }
 
 FormConfigCommon.propTypes = {
-  data: PropTypes.object,
+  data: PropTypes.shape({ commonProperties: PropTypes.array }).isRequired,
+  formState: PropTypes.shape({ $form: PropTypes.object }).isRequired,
   index: PropTypes.number
 };
 
 export function mapStateToProps({ template }) {
   return {
-    data: template.data
+    data: template.data,
+    formState: template.formState
   };
 }
 

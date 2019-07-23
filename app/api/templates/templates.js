@@ -21,31 +21,31 @@ const checkDuplicated = template => model.get()
   }
 });
 
-const addTemplateTranslation = (template) => {
-  const values = {};
-  values[template.name] = template.name;
-  template.properties.forEach((property) => {
-    values[property.label] = property.label;
-  });
+const createTranslationContext = (template) => {
+  const titleProperty = template.commonProperties.find(p => p.name === 'title');
+  const context = template.properties.reduce((ctx, prop) => {
+    ctx[prop.label] = prop.label;
+    return ctx;
+  }, {});
+  context[template.name] = template.name;
+  context[titleProperty.label] = titleProperty.label;
+  return context;
+};
 
-  return translations.addContext(template._id, template.name, values, 'Entity');
+const addTemplateTranslation = (template) => {
+  const context = createTranslationContext(template);
+  return translations.addContext(template._id, template.name, context, 'Entity');
 };
 
 const updateTranslation = (currentTemplate, template) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties;
-
   const updatedLabels = getUpdatedNames(currentProperties, newProperties, 'label');
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
   const deletedPropertiesByLabel = getDeletedProperties(currentProperties, newProperties, 'label');
-  const context = template.properties.reduce((ctx, prop) => {
-    ctx[prop.label] = prop.label;
-    return ctx;
-  }, {});
-
-  context[template.name] = template.name;
+  const context = createTranslationContext(template);
 
   return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, 'Entity');
 };

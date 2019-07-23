@@ -1,9 +1,11 @@
 import validate from 'validate.js';
 import createError from 'api/utils/Error';
 
-validate.validators.duplicatedLabels = (properties) => {
+validate.validators.duplicatedLabels = (properties, options, key, template) => {
   const labels = {};
-  properties.forEach((property) => {
+  const titleProperty = template.commonProperties.find(p => p.name === 'title');
+  const allProperties = [titleProperty, ...properties];
+  allProperties.forEach((property) => {
     labels[property.label.toLowerCase()] = (labels[property.label.toLowerCase()] || 0) + 1;
   });
 
