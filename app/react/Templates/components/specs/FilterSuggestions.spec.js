@@ -29,6 +29,7 @@ describe('FilterSuggestions', () => {
         name: 'Template 3',
         properties: [
           { label: 'date ', type: 'date', filter: true },
+          { label: 'filterFalse', type: 'text', filter: true },
           { label: 'Keywords', type: 'text', filter: true }
         ] }
     ];
@@ -98,8 +99,7 @@ describe('FilterSuggestions', () => {
     it('should now show the preoperty with same name', () => {
       renderComponent('filterFalse', 'text');
       const suggestion = component.find('tbody > tr').at(1);
-      expect(suggestion.text().trim())
-      .toBe('');
+      expect(suggestion.text().trim()).toBe('Template 3 Text');
     });
   });
 });
