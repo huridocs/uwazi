@@ -23,7 +23,6 @@ export class I18NLink extends Component {
 
   render() {
     const props = objectWithoutKeys(this.props, ['dispatch', 'onClick']);
-    console.log(props.to);
     return <Link onClick={this.onClick} {...props} />;
   }
 }
