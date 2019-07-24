@@ -89,10 +89,9 @@ export default (_markdown, callback, withHtml = false) => {
     },
 
     processNode: (node, children, index) => {
-      if (node.name && node.name.toLowerCase() === 'dataset') {
+      if (node.name && (node.name.toLowerCase() === 'dataset' || node.name.toLowerCase() === 'query')) {
         return false;
       }
-
       const isCustomComponentPlaceholder = node.name === 'placeholder' &&
         node.children && node.children[0] && node.children[0].data && node.children[0].data.match(customComponentMatcher);
 

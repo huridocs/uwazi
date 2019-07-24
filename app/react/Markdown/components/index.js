@@ -5,7 +5,11 @@ import { Icon } from 'UI';
 import BarChart from './BarChart';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
+import EntityLink from './EntityLink';
 import ItemList from './ItemList';
+import Repeat from './Repeat';
+import Context from './Context';
+import Connect from './Connect';
 import Slideshow from './Slideshow';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
@@ -22,6 +26,9 @@ import EntityInfo from './EntityInfo';
 export default {
   MarkdownMedia,
   ContactForm,
+  Context,
+  Connect,
+  EntityLink,
   ItemList,
   Slideshow,
   MarkdownLink,
@@ -32,6 +39,7 @@ export default {
   BarChart,
   PieChart,
   ListChart,
+  Repeat,
   GaugeChart,
   Value,
   Icon,

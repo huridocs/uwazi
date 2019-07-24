@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Repeat should handle nested values in objects 1`] = `
+Array [
+  <span>
+    Name: Batman
+  </span>,
+  <span>
+    Age: 42
+  </span>,
+  <span>
+    Name: Robin
+  </span>,
+  <span>
+    Age: 24
+  </span>,
+]
+`;
+
+exports[`Repeat should render the items in data using the given html 1`] = `
+<ul>
+  <li>
+    Name: Batman
+  </li>
+  <li>
+    Name: Spiderman
+  </li>
+</ul>
+`;
