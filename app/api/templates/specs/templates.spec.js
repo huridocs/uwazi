@@ -6,6 +6,7 @@ import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import templates from 'api/templates/templates.js';
 import translations from 'api/i18n/translations';
+import model from '../templatesModel.js';
 
 import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents, swapTemplate } from './fixtures.js';
 
@@ -336,6 +337,14 @@ describe('templates', () => {
   });
 
   describe('delete', () => {
+    it('should delete properties of other templates using this template as select/relationship', async () => {
+      spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
+      await templates.delete({ _id: templateToBeDeleted });
+      const templatesWithPropertiesRelated = await model.count({ 'properties.content': templateToBeDeleted });
+
+      expect(templatesWithPropertiesRelated).toBe(0);
+    });
+
     it('should delete a template when no document is using it', (done) => {
       spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
       return templates.delete({ _id: templateToBeDeleted })
