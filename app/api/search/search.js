@@ -294,18 +294,26 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language) => Promise.all(
-  Object.keys(toFetchByTemplate).map(t => entities.get(
-    { language, sharedId: { $in: toFetchByTemplate[t].entities } },
-    { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
-  ))
-);
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
+  return Promise.all(
+    Object.keys(toFetchByTemplate).map((t) => {
+      const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
+      if (!user) {
+        query.published = true;
+      }
+      return entities.get(
+        query,
+        { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
+      );
+    })
+  );
+};
 
-const getInheritedEntities = async (results, language) => {
+const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
   const templatesInheritedProperties = determineInheritedProperties(templates);
   const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
-  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language);
+  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language, user);
 
   const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
     const memo = _memo;
@@ -350,7 +358,7 @@ const search = {
     let results = await mainSearch({ ...query, geolocation: true }, language, user);
 
     if (results.rows.length) {
-      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language);
+      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language, user);
       results = processGeolocationResults(results, templatesInheritedProperties, inheritedEntities);
     }
 

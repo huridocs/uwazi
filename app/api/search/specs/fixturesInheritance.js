@@ -106,6 +106,18 @@ export default {
     },
     {
       _id: db.id(),
+      sharedId: 'entityPrivate01',
+      template: template2,
+      language: 'en',
+      title: 'Country A en',
+      metadata: {
+        country_geolocation: [{ lat: 24, lon: 8, label: '' }]
+      },
+      published: false,
+      user: userId
+    },
+    {
+      _id: db.id(),
       sharedId: 'entity07',
       template: template3,
       language: 'en',
@@ -129,6 +141,19 @@ export default {
       metadata: {
         text: 'Text content',
         inhertied_home: ['entity02', 'noExiste']
+      },
+      published: true,
+      user: userId
+    },
+    {
+      _id: db.id(),
+      sharedId: 'entity_isLinkedToPrivateEntity',
+      template: template3,
+      language: 'en',
+      title: 'Inheriting private country',
+      metadata: {
+        text: 'Text content',
+        inhertied_country: ['entityPrivate01']
       },
       published: true,
       user: userId
