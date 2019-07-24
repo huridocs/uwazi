@@ -3,20 +3,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import SafeHTML from 'app/utils/SafeHTML';
+import getFieldLabel from 'app/Templates/utils/getFieldLabel';
 
 import t from '../I18N/t';
-
-function getFieldLabel(field, template) {
-  if (field === 'title') {
-    return t('System', 'Title');
-  }
-  if (field.startsWith('metadata.')) {
-    const name = field.split('.')[1];
-    const label = template.get('properties').find(p => p.get('name') === name).get('label');
-    return t(template.get('_id'), label);
-  }
-  return field;
-}
 
 export const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
   let content;

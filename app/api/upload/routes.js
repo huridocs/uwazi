@@ -134,7 +134,10 @@ export default (app) => {
       loader.load(req.files[0].path, req.body.template, { language: req.language, user: req.user })
       .then(() => {
         req.getCurrentSessionSockets().emit('IMPORT_CSV_END');
-      }).catch(() => {});
+      })
+      .catch((e) => {
+        req.getCurrentSessionSockets().emit('IMPORT_CSV_ERROR', handleError(e));
+      });
 
       res.json('ok');
     }

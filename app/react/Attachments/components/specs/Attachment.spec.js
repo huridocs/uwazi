@@ -55,7 +55,7 @@ describe('Attachment', () => {
       render();
 
       expect(component.find(AttachmentForm).length).toBe(1);
-      expect(component.find('.item').at(0).text()).not.toContain('Human name 1');
+      expect(component.find('.attachment-name').at(0).text()).not.toContain('Human name 1');
 
       const submit = component.find(AttachmentForm).props().onSubmit;
       submit();

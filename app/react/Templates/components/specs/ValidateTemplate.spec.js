@@ -1,85 +1,155 @@
-import { validateDuplicatedLabel, validateDuplicatedRelationship, validateRequiredInheritproperty } from '../ValidateTemplate';
+import getValidator, { validateDuplicatedLabel, validateDuplicatedRelationship, validateRequiredInheritproperty } from '../ValidateTemplate';
 
 describe('ValidateTemplate', () => {
-  let properties;
+  let template;
   describe('validateDuplicatedLabel', () => {
     beforeEach(() => {
-      properties = [
-        { _id: '1', localID: 'local0', label: 'Label1' },
-        { localID: 'local1', label: 'Label2 ' }
-      ];
+      template = {
+        commonProperties: [
+          { _id: 't', localID: 'title', name: 'title', label: 'Title' }
+        ],
+        properties: [
+          { _id: '1', localID: 'local0', label: 'Label1' },
+          { localID: 'local1', label: 'Label2 ' }
+        ]
+      };
     });
 
     it('should return false if prop has same label', () => {
       let prop = { label: 'label1 ' };
-      expect(validateDuplicatedLabel(prop, properties)).toBe(false);
+      expect(validateDuplicatedLabel(prop, template)).toBe(false);
       prop = { _id: '2', label: 'label1 ' };
-      expect(validateDuplicatedLabel(prop, properties)).toBe(false);
+      expect(validateDuplicatedLabel(prop, template)).toBe(false);
     });
 
     it('should return true if same prop', () => {
       const prop = { _id: '1', label: 'label1 ' };
-      expect(validateDuplicatedLabel(prop, properties)).toBe(true);
+      expect(validateDuplicatedLabel(prop, template)).toBe(true);
+    });
+
+    describe('when prop label is same as title', () => {
+      it('should return false if prop is not title', () => {
+        const prop = { _id: '2', label: 'Title' };
+        expect(validateDuplicatedLabel(prop, template)).toBe(false);
+      });
+      it('should return true if prop is', () => {
+        const prop = { _id: 't', label: 'Title' };
+        expect(validateDuplicatedLabel(prop, template)).toBe(true);
+      });
     });
 
     describe('when prop is a new property', () => {
       it('should return false on repeated label', () => {
         const prop = { label: 'label2' };
-        expect(validateDuplicatedLabel(prop, properties)).toBe(false);
+        expect(validateDuplicatedLabel(prop, template)).toBe(false);
       });
 
       it('should return true when its the same property', () => {
         const prop = { localID: 'local1', label: 'label2' };
-        expect(validateDuplicatedLabel(prop, properties)).toBe(true);
+        expect(validateDuplicatedLabel(prop, template)).toBe(true);
       });
     });
   });
   describe('validate duplicated relationship', () => {
     beforeEach(() => {
-      properties = [
+      template = [
         { localID: 'local0', label: 'Label0', type: 'relationship', relationType: '1', content: '1' },
       ];
     });
 
     it('should not allow 2 relationships that are equaly configured', () => {
       const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '1' };
-      properties.push(prop);
-      expect(validateDuplicatedRelationship(prop, properties)).toBe(false);
+      template.push(prop);
+      expect(validateDuplicatedRelationship(prop, template)).toBe(false);
     });
 
     it('should not allow 2 relationships with same relationType and one with any template configured', () => {
       const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '' };
-      properties.push(prop);
-      expect(validateDuplicatedRelationship(prop, properties)).toBe(false);
+      template.push(prop);
+      expect(validateDuplicatedRelationship(prop, template)).toBe(false);
     });
 
     it('should allow 2 relationships with diferent relationType configured', () => {
       const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '2', content: '1' };
-      properties.push(prop);
-      expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
+      template.push(prop);
+      expect(validateDuplicatedRelationship(prop, template)).toBe(true);
     });
 
     it('should allow 2 relationships with same relationType  but different content configured', () => {
       const prop = { localID: 'local1', label: 'Label1', type: 'relationship', relationType: '1', content: '2' };
-      properties.push(prop);
-      expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
+      template.push(prop);
+      expect(validateDuplicatedRelationship(prop, template)).toBe(true);
     });
 
     it('should allow new added relationship properties', () => {
-      properties = [
+      template = [
         { localID: 'local0', label: 'Label1', type: 'text' },
         { localID: 'local1', label: 'Label0', type: 'relationship', relationType: '1', content: '1' }
       ];
       const prop = { localID: 'local2', label: 'Label1', type: 'relationship' };
-      properties.push(prop);
-      expect(validateDuplicatedRelationship(prop, properties)).toBe(true);
+      template.push(prop);
+      expect(validateDuplicatedRelationship(prop, template)).toBe(true);
     });
   });
 
   describe('validate required inherit property', () => {
     it('should not pass validation when a property is check as inherit but has no inherit property selected', () => {
       const prop = { localID: 'local1', label: 'Label0', type: 'relationship', inherit: true, relationType: '1', content: '1' };
-      expect(validateRequiredInheritproperty(prop, properties)).toBe(false);
+      expect(validateRequiredInheritproperty(prop, template)).toBe(false);
+    });
+  });
+
+  describe('validator', () => {
+    let templates;
+    let properties;
+    let commonProperties;
+    let id;
+    let validator;
+
+    beforeEach(() => {
+      id = 'tpl';
+      templates = [];
+      properties = [];
+      commonProperties = [
+        { localID: 't', name: 'title', label: 'Title' },
+        { localID: 'cd', name: 'creationDate', label: 'Date added' }
+      ];
+      template = {
+        commonProperties: [
+          { localID: 't', name: 'title', label: 'Title' },
+          { localID: 'cd', name: 'creationDate', label: 'Date added' }
+        ],
+        properties: [
+          { localID: '1', name: 'f1', label: 'F1' }
+        ]
+      };
+    });
+
+    const makeValidator = () => {
+      validator = getValidator(properties, commonProperties, templates, id);
+      return validator;
+    };
+
+    describe('title field', () => {
+      function validateTitleLabel(rule) {
+        return validator[''][`commonProperties.0.label.${rule}`](template);
+      }
+      it('should validate label required rule', () => {
+        makeValidator();
+        template.commonProperties[0].label = '';
+        expect(validateTitleLabel('required')).toBeFalsy();
+        template.commonProperties[0].label = '  ';
+        expect(validateTitleLabel('required')).toBeFalsy();
+        template.commonProperties[0].label = 'Name';
+        expect(validateTitleLabel('required')).toBeTruthy();
+      });
+
+      it('should validate label duplicated rule', () => {
+        makeValidator();
+        expect(validateTitleLabel('duplicated')).toBeTruthy();
+        template.properties[0].label = 'Title';
+        expect(validateTitleLabel('duplicated')).toBeFalsy();
+      });
     });
   });
 });
