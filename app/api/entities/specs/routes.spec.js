@@ -206,6 +206,37 @@ describe('entities', () => {
         .catch(catchErrors(done));
       });
     });
+
+    describe('when the document has unpublished relationships and the user is unauthenticated', () => {
+      it('should remove private relationships from response', async () => {
+        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([
+          {
+            sharedId: 'e1',
+            published: true,
+            relationships: [
+              { entityData: { sharedId: 'e1', published: true } },
+              { entityData: { sharedId: 'e2', published: false } },
+              { entityData: { sharedId: 'e3', published: true } }
+            ]
+          }
+        ]));
+
+        const req = {
+          query: { _id: 'sharedId' },
+          language: 'lang'
+        };
+
+        const { rows: [result] } = await routes.get('/api/entities', req);
+        expect(result).toEqual({
+          sharedId: 'e1',
+          published: true,
+          relationships: [
+            { entityData: { sharedId: 'e1', published: true } },
+            { entityData: { sharedId: 'e3', published: true } }
+          ]
+        });
+      });
+    });
   });
 
   // describe('/api/entities/get_raw_page', () => {
