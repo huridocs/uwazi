@@ -294,8 +294,8 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
-  return Promise.all(
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
+  Promise.all(
     Object.keys(toFetchByTemplate).map((t) => {
       const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
       if (!user) {
@@ -307,7 +307,6 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
       );
     })
   );
-};
 
 const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
