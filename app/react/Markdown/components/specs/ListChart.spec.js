@@ -42,4 +42,21 @@ describe('ListChart Markdown component', () => {
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
     expect(component).toMatchSnapshot();
   });
+  describe('when excludeZero', () => {
+    it('should render without zero values', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'missing', filtered: { doc_count: 45 } },
+        { key: 'id3', filtered: { doc_count: 0 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.excludeZero = 'true';
+      const component = shallow(<ListChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+  });
 });

@@ -30,7 +30,7 @@ describe('csvLoader languages', () => {
     await settings.save({ languages: [...languages, { key: 'es' }] });
 
     await createTestingZip([
-      path.join(__dirname, 'testLanguages.csv'),
+      path.join(__dirname, 'zipData/languages/import.csv'),
       path.join(__dirname, '/zipData/1.pdf'),
       path.join(__dirname, '/zipData/2.pdf'),
     ], 'testLanguages.zip');

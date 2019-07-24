@@ -26,6 +26,7 @@ describe('csvLoader zip file', () => {
     await db.clearAllAndLoad(fixtures);
     await createTestingZip([
       path.join(__dirname, '/zipData/test.csv'),
+      path.join(__dirname, '/zipData/import.csv'),
       path.join(__dirname, '/zipData/1.pdf'),
       path.join(__dirname, '/zipData/2.pdf'),
       path.join(__dirname, '/zipData/3.pdf'),

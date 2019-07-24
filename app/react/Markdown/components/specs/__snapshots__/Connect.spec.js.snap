@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Connect should expose the values in the context 1`] = `
+<span>
+  Calcetines
+</span>
+`;
+
+exports[`Connect should pass a value in the store to the child component  1`] = `
+<span>
+  Calcetines
+</span>
+`;
+
+exports[`Connect should pass a value in the store to the child component even whith immutables 1`] = `
+<span>
+  Zapatilla
+</span>
+`;

@@ -35,7 +35,7 @@ exports[`MarkdownViewer render should not render html by default 1`] = `
 </div>
 `;
 
-exports[`MarkdownViewer render should remove Dataset tags 1`] = `
+exports[`MarkdownViewer render should remove Dataset and Query tags 1`] = `
 <div
   className="markdown-viewer"
 >
@@ -48,9 +48,11 @@ exports[`MarkdownViewer render should remove Dataset tags 1`] = `
 
   
 
+  
+
   <SearchBox
     classname=""
-    key="4"
+    key="6"
     placeholder=""
   />
   
@@ -58,7 +60,7 @@ exports[`MarkdownViewer render should remove Dataset tags 1`] = `
   
 
   <div
-    key="8"
+    key="10"
   >
     test
   </div>

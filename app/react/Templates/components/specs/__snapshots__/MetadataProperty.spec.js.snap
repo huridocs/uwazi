@@ -1,5 +1,62 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MetadataProperty commonProperty title field error should render duplicated error on title field 1`] = `
+<li>
+  <div
+    className="list-group-item"
+  >
+    <span
+      className="property-name"
+    >
+      <Connect(Icon)
+        fixedWidth={true}
+        icon="lock"
+      />
+      <Connect(Icon)
+        fixedWidth={true}
+        icon="font"
+      />
+       
+      Title
+    </span>
+    <div
+      className="list-group-item-actions"
+    >
+      <span
+        className="validation-error"
+      >
+        <Connect(Icon)
+          icon="exclamation-triangle"
+        />
+         Duplicated label
+      </span>
+      <button
+        className="btn btn-default btn-xs property-edit"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="pencil-alt"
+        />
+         Edit
+      </button>
+    </div>
+  </div>
+  <ShowIf
+    if={false}
+  >
+    <div
+      className="propery-form"
+    >
+      <Connect(FormConfigCommon)
+        index={-2}
+        type="propertyType"
+      />
+    </div>
+  </ShowIf>
+</li>
+`;
+
 exports[`MetadataProperty simple component when type is custom type errors should render duplicated label error 1`] = `
 <li>
   <div

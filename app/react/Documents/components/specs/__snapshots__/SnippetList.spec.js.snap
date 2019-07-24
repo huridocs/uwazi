@@ -19,6 +19,12 @@ exports[`SnippetList should render metadata snippets and document content snippe
     template={
       Immutable.Map {
         "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
         "properties": Immutable.List [
           Immutable.Map {
             "name": "summary",
@@ -43,6 +49,12 @@ exports[`SnippetList should render metadata snippets and document content snippe
     template={
       Immutable.Map {
         "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
         "properties": Immutable.List [
           Immutable.Map {
             "name": "summary",
@@ -135,6 +147,12 @@ exports[`SnippetList should render only metadata snippets if there are no docume
     template={
       Immutable.Map {
         "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
         "properties": Immutable.List [
           Immutable.Map {
             "name": "summary",
@@ -159,6 +177,12 @@ exports[`SnippetList should render only metadata snippets if there are no docume
     template={
       Immutable.Map {
         "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
         "properties": Immutable.List [
           Immutable.Map {
             "name": "summary",

@@ -40,7 +40,7 @@ describe('upload routes', () => {
 
   const deleteAllFiles = (cb) => {
     const directory = `${__dirname}/uploads/`;
-    const dontDeleteFiles = ['eng.pdf', 'spn.pdf', 'importcsv.csv', 'f2082bf51b6ef839690485d7153e847a.pdf'];
+    const dontDeleteFiles = ['import.zip', 'eng.pdf', 'spn.pdf', 'importcsv.csv', 'f2082bf51b6ef839690485d7153e847a.pdf'];
     fs.readdir(directory, (err, files) => {
       if (err) throw err;
 
@@ -353,6 +353,19 @@ describe('upload routes', () => {
       });
 
       routes.post('/api/import', req);
+    });
+
+    describe('on error', () => {
+      it('should emit the error', (done) => {
+        file.path = `${__dirname}/uploads/import.zip`;
+        iosocket.emit.and.callFake((eventName, data) => {
+          if (eventName === 'IMPORT_CSV_ERROR') {
+            expect(data.code).toBe(500);
+            done();
+          }
+        });
+        routes.post('/api/import', req);
+      });
     });
   });
 

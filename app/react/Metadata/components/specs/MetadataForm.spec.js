@@ -24,9 +24,9 @@ describe('MetadataForm', () => {
     ];
 
     templates = Immutable.fromJS([
-      { name: 'template1', _id: 'templateId', properties: fieldsTemplate },
-      { name: 'template2', _id: '2', properties: [{ name: 'field3' }], isEntity: false },
-      { name: 'template3', _id: '3', properties: [{ name: 'field4' }], isEntity: true }
+      { name: 'template1', _id: 'templateId', properties: fieldsTemplate, commonProperties: [{ name: 'title', label: 'Title' }] },
+      { name: 'template2', _id: '2', properties: [{ name: 'field3' }], commonProperties: [{ name: 'title', label: 'Title' }], isEntity: false },
+      { name: 'template3', _id: '3', properties: [{ name: 'field4' }], commonProperties: [{ name: 'title', label: 'Title' }], isEntity: true }
     ]);
 
     props = {
@@ -55,6 +55,19 @@ describe('MetadataForm', () => {
     render();
     const form = component.find(Form);
     expect(form.props().model).toEqual('metadata');
+  });
+
+  it('should display custom title label', () => {
+    props.template = Immutable.fromJS({
+      name: 'template4',
+      _id: 'template4',
+      commonProperties: [
+        { name: 'title', label: 'Name' }
+      ],
+      properties: []
+    });
+    render();
+    expect(component).toMatchSnapshot();
   });
 
   it('should render MetadataFormFields passing thesauris state and template', () => {

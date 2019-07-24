@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 
 import searchApi from 'app/Search/SearchAPI';
 import entitiesApi from 'app/Entities/EntitiesAPI';
+import api from 'app/utils/api';
 
 import markdownDatasets from '../markdownDatasets';
 
@@ -10,6 +11,7 @@ describe('markdownDatasets', () => {
     beforeEach(() => {
       spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true }, params)));
       spyOn(entitiesApi, 'get').and.callFake(_id => Promise.resolve([{ isEntity: true, _id }]));
+      spyOn(api, 'get').and.callFake(url => Promise.resolve({ json: { url } }));
     });
 
     it('should not fetch anything if no datasets defined', async () => {
@@ -66,6 +68,20 @@ describe('markdownDatasets', () => {
         dataset1: { key: 'value2', limit: 0, isSearch: true },
         dataset2: { key: 'value', limit: 0, geolocation: true, isSearch: true },
         dataset3: { allAggregations: true, limit: 0, geolocation: true, isSearch: true },
+      });
+    });
+
+    it('should allow query to anything', async () => {
+      const markdown = `
+      <div>
+        <Query url="users?_id=23234324" name="customQuery"/>
+      </div>
+      `;
+
+      const datasets = await markdownDatasets.fetch(markdown);
+
+      expect(datasets).toEqual({
+        customQuery: { url: 'users?_id=23234324' }
       });
     });
   });

@@ -5,20 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { t, I18NLink } from 'app/I18N';
 import SafeHTML from 'app/utils/SafeHTML';
-
-function getFieldLabel(field, template) {
-  if (field === 'title') {
-    return t('System', 'Title');
-  }
-  if (field.startsWith('metadata.') && template) {
-    const name = field.split('.')[1];
-    const property = template.get('properties').find(p => p.get('name') === name);
-    if (property) {
-      return t(template.get('_id'), property.get('label'));
-    }
-  }
-  return field;
-}
+import getFieldLabel from 'app/Templates/utils/getFieldLabel';
 
 export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm }) => (
   <React.Fragment>

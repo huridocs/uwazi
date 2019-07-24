@@ -6,12 +6,13 @@ import React, { Component } from 'react';
 
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
+import { Context } from 'app/Markdown/components';
 
 import Script from './Script';
 
 export class PageViewer extends Component {
   render() {
-    const { page, itemLists } = this.props;
+    const { page, itemLists, datasets } = this.props;
     const lists = itemLists.toJS();
     const originalText = page.getIn(['metadata', 'content']) || '';
     const scriptCode = page.getIn(['metadata', 'script']) || '';
@@ -21,7 +22,9 @@ export class PageViewer extends Component {
         <Helmet title={page.get('title') ? page.get('title') : 'Page'} />
         <main className="page-viewer document-viewer">
           <div className="main-wrapper">
-            <MarkdownViewer html markdown={originalText} lists={lists}/>
+            <Context.Provider value={datasets}>
+              <MarkdownViewer html markdown={originalText} lists={lists}/>
+            </Context.Provider>
             <Footer/>
           </div>
         </main>
@@ -33,16 +36,19 @@ export class PageViewer extends Component {
 
 PageViewer.defaultProps = {
   page: Immutable.fromJS({}),
-  itemLists: Immutable.fromJS({})
+  itemLists: Immutable.fromJS([]),
+  datasets: Immutable.fromJS({})
 };
 
 PageViewer.propTypes = {
   page: PropTypes.instanceOf(Immutable.Map),
-  itemLists: PropTypes.instanceOf(Immutable.List)
+  itemLists: PropTypes.instanceOf(Immutable.List),
+  datasets: PropTypes.instanceOf(Immutable.Map),
 };
 
 const mapStateToProps = ({ page }) => ({
     page: page.pageView,
+    datasets: page.datasets,
     itemLists: page.itemLists
 });
 

@@ -38,7 +38,10 @@ function sourceTargetTestContext(Target, Source, actions) {
           isDragging: false,
           uiState: Immutable.fromJS({}),
           templates: Immutable.fromJS([]),
-          formState: { fields: [], $form: { errors: {} } }
+          formState: { fields: [], $form: { errors: {} } },
+          template: {
+            commonProperties: [{ name: 'title', label: 'Title' }]
+          }
         };
         const sourceProps = {
           label: 'source',
@@ -49,7 +52,10 @@ function sourceTargetTestContext(Target, Source, actions) {
           isDragging: false,
           uiState: Immutable.fromJS({}),
           templates: Immutable.fromJS([]),
-          formState: { fields: [], $form: { errors: {} } }
+          formState: { fields: [], $form: { errors: {} } },
+          template: {
+            commonProperties: [{ name: 'title', label: 'Title' }]
+          }
         };
         return (
           <div>
@@ -81,10 +87,28 @@ describe('MetadataProperty', () => {
         index: 1,
         localID: 'id',
         formState: { fields: [], $form: { errors: {} } },
+        template: {
+          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }]
+        },
         editProperty,
         uiState: Immutable.fromJS({ editingProperty: '' }),
         templates: Immutable.fromJS([])
       };
+    });
+
+    const render = () => {
+      component = shallow(<MetadataProperty {...props}/>);
+      return component;
+    };
+
+    describe('title field error', () => {
+      it('should render duplicated error on title field', () => {
+        props.index = -2;
+        props.label = 'Title';
+        props.formState.$form.errors['commonProperties.0.label.duplicated'] = true;
+        render();
+        expect(component).toMatchSnapshot();
+      });
     });
 
     describe('ui actions', () => {
@@ -123,6 +147,9 @@ describe('MetadataProperty', () => {
         index: 1,
         localID: 'id',
         formState: { fields: [], $form: { errors: {} } },
+        template: {
+          commonProperties: [{ name: 'title', label: 'Title' }, { name: 'creationDate' }]
+        },
         removeProperty,
         editProperty,
         uiState: Immutable.fromJS({ editingProperty: '' }),
@@ -222,7 +249,11 @@ describe('MetadataProperty', () => {
 
     function renderComponent(ComponentToRender, props) {
       let result;
-      const templateData = { name: '', properties: [{ label: '', type: 'text' }, { label: '', type: 'text' }, { label: '', type: 'text' }] };
+      const templateData = {
+        name: '',
+        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [{ label: '', type: 'text' }, { label: '', type: 'text' }, { label: '', type: 'text' }]
+      };
       store = createStore(() => ({
           template: {
             data: templateData,
@@ -245,7 +276,11 @@ describe('MetadataProperty', () => {
           index: 0,
           localID: 'id',
           uiState: Immutable.fromJS({}),
-          formState: { fields: [], $form: { errors: {} } } });
+          formState: { fields: [], $form: { errors: {} } },
+          template: {
+            commonProperties: [{ name: 'title', label: 'Title' }]
+          }
+        },);
         backend = component.getManager().getBackend();
         monitor = component.getManager().getMonitor();
       });
