@@ -809,36 +809,80 @@ describe('entities', () => {
     });
 
     describe('when entity is being used as thesauri', () => {
-      it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
-        entities.delete('shared')
-        .then(() => {
-          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
-          expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
-          expect(documentsToIndex[2].metadata.select).toBe('');
-          expect(documentsToIndex[3].metadata.select2).toBe('');
-          done();
-        })
-        .catch(catchErrors(done));
+      it('should delete the entity id on all entities using it from select/multiselect values', async () => {
+        const entitiesToReindex = await entities.get({
+          $or: [
+            { 'metadata.select': 'shared' },
+            { 'metadata.select2': 'shared' },
+            { 'metadata.multiselect': 'shared' },
+            { 'metadata.multiselect2': 'shared' },
+          ]
+        });
+
+        spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+
+        await entities.delete('shared');
+
+        expect(entities.indexEntities).toHaveBeenCalledWith(
+          {
+            _id: {
+              $in: expect.arrayContaining(entitiesToReindex.map(e => e._id.toString()))
+            },
+          },
+          null,
+          1000,
+        );
+
+        const entitiesWithContentDeleted = await entities.get({
+          $or: [
+            { 'metadata.select': 'shared' },
+            { 'metadata.select2': 'shared' },
+            { 'metadata.multiselect': 'shared' },
+            { 'metadata.multiselect2': 'shared' },
+          ]
+        });
+        expect(entitiesWithContentDeleted.length).toBe(0);
       });
 
       describe('when there is no multiselects but there is selects', () => {
         it('should only delete selects and not throw an error', async () => {
+          spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+          const entitiesToReindex = await entities.get({ 'metadata.select': 'shared10' });
           await entities.delete('shared10');
-          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].metadata.select).toBe('');
+
+          expect(entities.indexEntities).toHaveBeenCalledWith(
+            {
+              _id: {
+                $in: expect.arrayContaining(entitiesToReindex.map(e => e._id.toString()))
+              },
+            },
+            null,
+            1000,
+          );
+
+          const entitiesWithContentDeleted = await entities.get({ 'metadata.select': 'shared10' });
+          expect(entitiesWithContentDeleted.length).toBe(0);
         });
       });
 
       describe('when there is no selects but there is multiselects', () => {
-        it('should only delete multiselects and not throw an error', (done) => {
-          entities.delete('multiselect')
-          .then(() => {
-            const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-            expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
-            done();
-          })
-          .catch(catchErrors(done));
+        it('should only delete multiselects and not throw an error', async () => {
+          spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+          await entities.delete('multiselect');
+          const entitiesToReindex = await entities.get({ 'metadata.multiselect': 'multiselect' });
+
+          expect(entities.indexEntities).toHaveBeenCalledWith(
+            {
+              _id: {
+                $in: expect.arrayContaining(entitiesToReindex.map(e => e._id.toString()))
+              },
+            },
+            null,
+            1000,
+          );
+
+          const entitiesWithContentDeleted = await entities.get({ 'metadata.multiselect': 'multiselect' });
+          expect(entitiesWithContentDeleted.length).toBe(0);
         });
       });
     });
