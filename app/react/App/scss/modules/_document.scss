@@ -2,8 +2,9 @@
   width: 100%;
   height: calc(100% - 50px);
   padding: 15px 15px 0;
-  overflow-y: auto;
   transition: all 500ms;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 
     @media(min-width: 1024px) {
       &.with-panel,
