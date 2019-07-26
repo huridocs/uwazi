@@ -204,6 +204,12 @@ export default {
       },
       published: true,
       user: userId
+    },
+    {
+      _id: db.id(),
+      template: template5,
+      sharedId: 'entityWithoutMetadata',
+      title: 'Entity without metadata'
     }
   ],
   templates: [
@@ -318,5 +324,6 @@ export default {
 };
 
 export const ids = {
-  template3
+  template3,
+  template5
 };

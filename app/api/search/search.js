@@ -326,7 +326,7 @@ const getInheritedEntities = async (results, language, user) => {
 };
 
 const entityHasGeolocation = entity =>
-  !!Object.keys(entity.metadata).find((field) => {
+  entity.metadata && !!Object.keys(entity.metadata).find((field) => {
     if (/_geolocation/.test(field) && entity.metadata[field].length) {
       return true;
     }

@@ -42,4 +42,13 @@ describe('search.searchGeolocations', () => {
     expect(results.rows.length).toBe(2);
     expect(results.totalRows).toBe(2);
   });
+
+  it('should return empty results if there are no templates with geolocation fields', async () => {
+    const tplWithoutGeolocation = inheritanceFixtures.templates.find(t => t._id === ids.template5);
+    await db.mongodb.collection('templates').drop();
+    await db.mongodb.collection('templates').insert(tplWithoutGeolocation);
+    const results = await search.searchGeolocations({ order: 'asc', sort: 'sharedId' }, 'en', user);
+    expect(results.rows.length).toBe(0);
+    expect(results.totalRows).toBe(0);
+  });
 });
