@@ -243,17 +243,6 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_work": Array [
-        Object {
-          "entity": "entity06",
-          "inherit_geolocation": Array [],
-        },
-      ],
-    },
-    "sharedId": "entity10",
-  },
-  Object {
-    "metadata": Object {
       "inhertied_country": Array [
         Object {
           "entity": "entityPrivate01",
@@ -270,18 +259,4 @@ Array [
     "sharedId": "entity_isLinkedToPrivateEntity",
   },
 ]
-`;
-
-exports[`search.searchGeolocations should not fetch unpublished inherited metadata if request is not authenticated 1`] = `
-Object {
-  "metadata": Object {
-    "inhertied_country": Array [
-      Object {
-        "entity": "entityPrivate01",
-        "inherit_geolocation": Array [],
-      },
-    ],
-  },
-  "sharedId": "entity_isLinkedToPrivateEntity",
-}
 `;

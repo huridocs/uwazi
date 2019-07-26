@@ -38,6 +38,8 @@ describe('search.searchGeolocations', () => {
     const results = await search.searchGeolocations({ types: [ids.template3], order: 'asc', sort: 'sharedId' }, 'en');
     const cleaned = cleanResults(results);
     const entity = cleaned.find(e => e.sharedId === 'entity_isLinkedToPrivateEntity');
-    expect(entity).toMatchSnapshot();
+    expect(entity).toBeFalsy();
+    expect(results.rows.length).toBe(2);
+    expect(results.totalRows).toBe(2);
   });
 });

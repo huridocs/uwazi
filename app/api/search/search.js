@@ -325,11 +325,24 @@ const getInheritedEntities = async (results, language, user) => {
   return { templatesInheritedProperties, inheritedEntities };
 };
 
+const entityHasGeolocation = entity =>
+  !!Object.keys(entity.metadata).find((field) => {
+    if (/_geolocation/.test(field) && entity.metadata[field].length) {
+      return true;
+    }
+    if (Array.isArray(entity.metadata[field])) {
+      return !!entity.metadata[field].find(f => f.inherit_geolocation && f.inherit_geolocation.length);
+    }
+    return false;
+  });
+
 const processGeolocationResults = (_results, templatesInheritedProperties, inheritedEntities) => {
   const results = _results;
+  const processedRows = [];
   const affectedTemplates = Object.keys(templatesInheritedProperties);
 
-  results.rows.forEach((row, rowIndex) => {
+  results.rows.forEach((_row) => {
+    const row = _row;
     if (affectedTemplates.includes(row.template)) {
       Object.keys(row.metadata).forEach((property) => {
         if (templatesInheritedProperties[row.template][property]) {
@@ -337,7 +350,7 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
             const targetProperty = templatesInheritedProperties[row.template][property].target.name;
             const inherited = inheritedEntities[entity] ? inheritedEntities[entity] : { metadata: {} };
             inherited.metadata = inherited.metadata || {};
-            results.rows[rowIndex].metadata[property][index] = {
+            row.metadata[property][index] = {
               entity,
               inherit_geolocation: inherited.metadata[targetProperty] || [],
             };
@@ -345,8 +358,13 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
         }
       });
     }
+    if (entityHasGeolocation(row)) {
+      processedRows.push(row);
+    }
   });
 
+  results.rows = processedRows;
+  results.totalRows = processedRows.length;
   return results;
 };
 
