@@ -6,6 +6,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
 >
   <div>
     <ReactPlayer
+      className="react-player"
       config={
         Object {
           "dailymotion": Object {
@@ -146,6 +147,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
 >
   <div>
     <ReactPlayer
+      className="react-player"
       config={
         Object {
           "dailymotion": Object {
@@ -214,7 +216,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
         }
       }
       controls={true}
-      height="360px"
+      height="100%"
       light={false}
       loop={false}
       muted={false}

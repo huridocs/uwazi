@@ -43,13 +43,18 @@ class MarkdownMedia extends Component {
   render() {
     const config = propsToConfig(this.props);
     const { compact } = this.props;
+    const dimensions = { width: '100%' };
+    if (compact) {
+      dimensions.height = '100%';
+    }
     return (
       <div className={`video-container ${compact ? 'compact' : ''}`}>
         <div>
           <ReactPlayer
+            className="react-player"
             ref={(ref) => { this.player = ref; }}
-            width="100%"
             url={config.url}
+            {...dimensions}
             controls
           />
         </div>

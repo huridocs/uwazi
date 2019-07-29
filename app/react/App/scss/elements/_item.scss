@@ -11,6 +11,10 @@
     margin-bottom: 15px;
     //width: calc(33.33% - 15px);
   }
+
+  @media print {
+    display: block !important;
+  }
 }
 
 .item {

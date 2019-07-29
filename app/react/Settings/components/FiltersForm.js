@@ -28,6 +28,16 @@ export class FiltersForm extends Component {
   }
 
   activesChange(items) {
+    items.forEach((item) => {
+      // eslint-disable-next-line
+      item.items = item.items.filter((subitem) => {
+        if (subitem.items) {
+          items.push(subitem);
+          return false;
+        }
+        return true;
+      });
+    });
     this.setState({ activeFilters: items });
   }
 

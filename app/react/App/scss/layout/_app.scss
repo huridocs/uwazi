@@ -19,9 +19,13 @@ body {
   }
 }
 
+
 @media print {
   a[href]:after {
     content: none;
+  }
+  * { 
+    overflow: visible !important;
   }
 }
 
