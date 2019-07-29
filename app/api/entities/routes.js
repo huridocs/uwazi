@@ -79,6 +79,10 @@ export default (app) => {
           res.json({});
           return;
         }
+        if (!req.user && _entities[0].relationships) {
+          const entity = _entities[0];
+          entity.relationships = entity.relationships.filter(rel => rel.entityData.published);
+        }
         res.json({ rows: _entities });
       })
       .catch(next);

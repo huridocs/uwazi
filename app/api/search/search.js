@@ -294,18 +294,25 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language) => Promise.all(
-  Object.keys(toFetchByTemplate).map(t => entities.get(
-    { language, sharedId: { $in: toFetchByTemplate[t].entities } },
-    { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
-  ))
-);
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
+  Promise.all(
+    Object.keys(toFetchByTemplate).map((t) => {
+      const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
+      if (!user) {
+        query.published = true;
+      }
+      return entities.get(
+        query,
+        { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
+      );
+    })
+  );
 
-const getInheritedEntities = async (results, language) => {
+const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
   const templatesInheritedProperties = determineInheritedProperties(templates);
   const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
-  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language);
+  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language, user);
 
   const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
     const memo = _memo;
@@ -318,11 +325,24 @@ const getInheritedEntities = async (results, language) => {
   return { templatesInheritedProperties, inheritedEntities };
 };
 
+const entityHasGeolocation = entity =>
+  entity.metadata && !!Object.keys(entity.metadata).find((field) => {
+    if (/_geolocation/.test(field) && entity.metadata[field].length) {
+      return true;
+    }
+    if (Array.isArray(entity.metadata[field])) {
+      return !!entity.metadata[field].find(f => f.inherit_geolocation && f.inherit_geolocation.length);
+    }
+    return false;
+  });
+
 const processGeolocationResults = (_results, templatesInheritedProperties, inheritedEntities) => {
   const results = _results;
+  const processedRows = [];
   const affectedTemplates = Object.keys(templatesInheritedProperties);
 
-  results.rows.forEach((row, rowIndex) => {
+  results.rows.forEach((_row) => {
+    const row = _row;
     if (affectedTemplates.includes(row.template)) {
       Object.keys(row.metadata).forEach((property) => {
         if (templatesInheritedProperties[row.template][property]) {
@@ -330,7 +350,7 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
             const targetProperty = templatesInheritedProperties[row.template][property].target.name;
             const inherited = inheritedEntities[entity] ? inheritedEntities[entity] : { metadata: {} };
             inherited.metadata = inherited.metadata || {};
-            results.rows[rowIndex].metadata[property][index] = {
+            row.metadata[property][index] = {
               entity,
               inherit_geolocation: inherited.metadata[targetProperty] || [],
             };
@@ -338,8 +358,13 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
         }
       });
     }
+    if (entityHasGeolocation(row)) {
+      processedRows.push(row);
+    }
   });
 
+  results.rows = processedRows;
+  results.totalRows = processedRows.length;
   return results;
 };
 
@@ -350,7 +375,7 @@ const search = {
     let results = await mainSearch({ ...query, geolocation: true }, language, user);
 
     if (results.rows.length) {
-      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language);
+      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language, user);
       results = processGeolocationResults(results, templatesInheritedProperties, inheritedEntities);
     }
 
