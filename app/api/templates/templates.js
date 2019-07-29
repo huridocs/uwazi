@@ -21,16 +21,13 @@ const checkDuplicated = template => model.get()
   }
 });
 
-const removeUnexistentIdFromProps = async (unexistentId) => {
+const removePropsWithUnexistentId = async (unexistentId) => {
   const relatedTemplates = await model.get({ 'properties.content': unexistentId });
   await Promise.all(
     relatedTemplates.map(t =>
       model.save({
         ...t,
-        properties: t.properties.map(prop => ({
-          ...prop,
-          content: prop.content === unexistentId ? '' : prop.content
-        }))
+        properties: t.properties.filter(prop => prop.content !== unexistentId)
       })
     )
   );
@@ -149,7 +146,7 @@ export default {
       return Promise.reject({ key: 'documents_using_template', value: count });
     }
     await translations.deleteContext(template._id);
-    await removeUnexistentIdFromProps(template._id);
+    await removePropsWithUnexistentId(template._id);
     await model.delete(template._id);
 
     return template;

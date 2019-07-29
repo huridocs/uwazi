@@ -43,6 +43,16 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title' }]
     },
     {
+      _id: db.id(),
+      name: 'thesauri template 3',
+      properties: [
+        { type: templateTypes.text, label: 'text' },
+        { type: templateTypes.text, label: 'text2' },
+        { type: templateTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title' }]
+    },
+    {
       _id: templateWithContents,
       name: 'content template',
       commonProperties: [{ name: 'title', label: 'Title' }],
