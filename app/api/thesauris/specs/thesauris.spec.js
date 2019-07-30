@@ -236,14 +236,66 @@ describe('thesauris', () => {
       });
     });
 
-    describe('when trying to save a duplicated thesauri', () => {
-      it('should return an error', (done) => {
-        const data = { name: 'dictionary' };
-        thesauris.save(data)
-        .then(catchErrors(done))
-        .catch((response) => {
-          expect(response).toBe('duplicated_entry');
-          done();
+    describe('validation', () => {
+      describe('when trying to save a duplicated thesauri', () => {
+        it('should return an error', async () => {
+          const data = { name: 'dictionary' };
+
+          let error;
+          try {
+            await thesauris.save(data);
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error).toBeDefined();
+        });
+
+        it('should not fail when name is contained as substring on another thesauri name', async () => {
+          const data = { name: 'ary' };
+
+          const thesauri = await thesauris.save(data);
+          expect(thesauri.name).toBe('ary');
+        });
+      });
+
+      describe('when passing a blank value', () => {
+        it('should return an error', async () => {
+          const data = {
+            name: 'thesauri_with_blank_value',
+            values: [
+              {
+                label: ''
+              }
+            ]
+          };
+
+          let error;
+          try {
+            await thesauris.save(data);
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error).toBeDefined();
+        });
+      });
+
+      describe('when trying to save a thesauri with duplicated values', () => {
+        it('should return an error', async () => {
+          const data = {
+            name: 'dictionary4',
+            values: [{ label: 'value1' }, { label: 'value1' }]
+          };
+
+          let error;
+          try {
+            await thesauris.save(data);
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error).toBeDefined();
         });
       });
     });

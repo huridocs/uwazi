@@ -3,23 +3,31 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import laguagesList from 'app/Settings/utils/languagesList';
+import { allLanguages as languagesList } from 'shared/languagesList.js';
 
 const Icon = ({ locale, directionAware, ...ownProps }) => {
-  const languageData = laguagesList.find(l => l.key === locale);
-  return <FontAwesomeIcon {...ownProps} flip={languageData && languageData.rtl ? 'horizontal' : null} />;
+  const languageData = languagesList.find(l => l.key === locale);
+  return (
+    <FontAwesomeIcon
+      {...ownProps}
+      flip={languageData && languageData.rtl ? 'horizontal' : null}
+    />
+  );
 };
 
 Icon.defaultProps = {
   locale: '',
-  directionAware: false,
+  directionAware: false
 };
 
 Icon.propTypes = {
   locale: PropTypes.string,
-  directionAware: PropTypes.bool,
+  directionAware: PropTypes.bool
 };
 
 export const mapStateToProps = ({ locale }) => ({ locale });
 
-export default connect(mapStateToProps, () => ({}))(Icon);
+export default connect(
+  mapStateToProps,
+  () => ({})
+)(Icon);

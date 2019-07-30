@@ -4,6 +4,7 @@ import { templateUtils } from 'api/templates';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();
+const thesauri2Id = db.id();
 const templateToRelateId = db.id();
 
 export default {
@@ -50,7 +51,7 @@ export default {
         label: ' value4 ',
         id: db.id().toString(),
       }],
-    }
+    },
   ],
 
   settings: [
@@ -61,11 +62,20 @@ export default {
         { key: 'en', label: 'English', default: true },
       ]
     }
+  ],
+
+  translations: [
+    {
+      _id: db.id(),
+      locale: 'en',
+      contexts: [],
+    }
   ]
 };
 
 export {
   template1Id,
   thesauri1Id,
+  thesauri2Id,
   templateToRelateId
 };
