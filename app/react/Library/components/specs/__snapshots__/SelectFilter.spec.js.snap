@@ -20,6 +20,7 @@ exports[`SelectFilter should render a text filter field with a label and passing
       }
       optionsValue="id"
       prefix=""
+      sort={true}
     />
   </li>
 </ul>
@@ -50,6 +51,7 @@ exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1
       }
       optionsValue="id"
       prefix="prefix"
+      sort={true}
     />
   </li>
 </ul>

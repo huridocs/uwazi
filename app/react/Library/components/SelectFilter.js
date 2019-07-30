@@ -16,6 +16,7 @@ const SelectFilter = ({ onChange, model, label, options, prefix, showBoolSwitch 
         options={options}
         optionsValue="id"
         onChange={onChange}
+        sort
       />
     </li>
   </ul>
