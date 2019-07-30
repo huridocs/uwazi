@@ -1,6 +1,5 @@
 import api from 'app/Templates/TemplatesAPI';
 import documentsAPI from 'app/Documents/DocumentsAPI';
-import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { actions } from 'app/BasicReducer';
 
 export function deleteTemplate(template) {
@@ -11,9 +10,9 @@ export function deleteTemplate(template) {
 }
 
 export function checkTemplateCanBeDeleted(template) {
-  return () => Promise.all([documentsAPI.countByTemplate(template._id), TemplatesAPI.countByThesauri(template)])
-  .then(([usedForDocuments, usedAsThesauri]) => {
-    if (usedForDocuments || usedAsThesauri) {
+  return () => documentsAPI.countByTemplate(template._id)
+  .then((usedForDocuments) => {
+    if (usedForDocuments) {
       return Promise.reject();
     }
     return Promise.resolve();

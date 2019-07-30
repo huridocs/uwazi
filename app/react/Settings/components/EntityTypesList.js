@@ -26,7 +26,8 @@ export class EntityTypesList extends Component {
           this.props.deleteTemplate(template);
         },
         title: `Confirm delete document type: ${template.name}`,
-        message: 'Are you sure you want to delete this document type?'
+        message: `Are you sure you want to delete this document type?
+        This will delete the template and all relationship properties from other templates pointing to this one.`
       });
     })
     .catch(() => {
@@ -34,7 +35,7 @@ export class EntityTypesList extends Component {
         accept: () => {},
         noCancel: true,
         title: `Can not delete document type: ${template.name}`,
-        message: 'This document type has associated documents or is used in another template and cannot be deleted.'
+        message: 'This document type has associated documents'
       });
     });
   }
