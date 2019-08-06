@@ -1,7 +1,9 @@
+import superagent from 'superagent';
 import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import ID from 'shared/uniqueID';
 import * as types from 'app/Thesauris/actions/actionTypes';
+import { APIURL } from 'app/config';
 import api from 'app/Thesauris/ThesaurisAPI';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { advancedSort } from 'app/utils/advancedSort';
@@ -12,6 +14,27 @@ export function saveThesauri(thesauri) {
     dispatch({ type: types.THESAURI_SAVED });
     notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
     dispatch(formActions.change('thesauri.data', _thesauri));
+  });
+}
+
+export function importThesauri(thesId, file) {
+  return dispatch => new Promise((resolve) => {
+    superagent.post(`${APIURL}import/thesauris`)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .field('thesaurus', thesId)
+    .attach('file', file, file.name)
+    .on('response', (response) => {
+      const data = JSON.parse(response.text);
+      if (response.status === 200) {
+        notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
+        dispatch(formActions.change('thesauri.data', data));
+      } else {
+        notifications.notify(t('System', data.error, null, false), 'danger')(dispatch);
+      }
+      resolve();
+    })
+    .end();
   });
 }
 

@@ -8,7 +8,7 @@ import { BackButton } from 'app/Layout';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { Icon } from 'UI';
 import { notEmpty } from 'app/Metadata/helpers/validator';
-import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues } from 'app/Thesauris/actions/thesauriActions';
+import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues, importThesauri } from 'app/Thesauris/actions/thesauriActions';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import ShowIf from 'app/App/ShowIf';
 
@@ -31,6 +31,9 @@ export class ThesauriForm extends Component {
     this.save = this.save.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.onImportClicked = this.onImportClicked.bind(this);
+    this.onImportFilesSelected = this.onImportFilesSelected.bind(this);
+    this.fileInputRef = null;
   }
 
   componentWillMount() {
@@ -72,6 +75,18 @@ export class ThesauriForm extends Component {
 
   onChange(values, groupIndex) {
     this.props.updateValues(values, groupIndex);
+  }
+
+  onImportClicked() {
+    this.fileInputRef.click();
+  }
+
+  onImportFilesSelected() {
+    console.log('HERE');
+    const file = this.fileInputRef.files[0];
+    if (file) {
+      this.props.importThesauri(this.props.thesauri._id, file);
+    }
   }
 
   save(thesauri) {
@@ -150,6 +165,10 @@ export class ThesauriForm extends Component {
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
+              <button type="button" className="btn btn-primary import-template" onClick={this.onImportClicked}>
+                <Icon icon="upload"/>
+                <span className="btn-label">Import</span>
+              </button>
               <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save"/>
                 <span className="btn-label">Save</span>
@@ -157,6 +176,13 @@ export class ThesauriForm extends Component {
             </div>
           </div>
         </Form>
+        <input
+          ref={(ref) => { this.fileInputRef = ref; }}
+          type="file"
+          accept="text/csv"
+          style={{ display: 'none' }}
+          onChange={this.onImportFilesSelected}
+        />
       </div>
     );
   }
@@ -175,6 +201,7 @@ ThesauriForm.propTypes = {
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
   updateValues: PropTypes.func.isRequired,
+  importThesauri: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
   state: PropTypes.object.isRequired,
@@ -192,6 +219,7 @@ export function mapStateToProps(state) {
 function bindActions(dispatch) {
   return bindActionCreators({
     saveThesauri,
+    importThesauri,
     addValue,
     addGroup,
     sortValues,

@@ -59,8 +59,7 @@ export default class CSVLoader extends EventEmitter {
     const { thesauriValues, thesauriTranslations } = await csv(await file.readStream()).toThesauri(language, availableLanguages);
 
     const thesauri = await thesauris.getById(thesauriId);
-
-    await thesauris.save({ ...thesauri, values: [...thesauri.values, ...thesauriValues] });
+    const saved = await thesauris.save({ ...thesauri, values: [...thesauri.values, ...thesauriValues] });
 
     await Object.keys(thesauriTranslations).reduce(async (prev, lang) => {
       await prev;
@@ -78,5 +77,6 @@ export default class CSVLoader extends EventEmitter {
         ]
       });
     }, Promise.resolve());
+    return saved;
   }
 }
