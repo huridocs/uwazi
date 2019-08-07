@@ -102,6 +102,7 @@ Array [
     }
     prefix="selectFilter"
     showBoolSwitch={false}
+    sort={false}
   />,
   <SelectFilter
     label="multiselectLabel"
@@ -116,6 +117,7 @@ Array [
     }
     prefix="multiselectFilter"
     showBoolSwitch={true}
+    sort={false}
   />,
   <SelectFilter
     label="relationshipLabel"
@@ -130,6 +132,7 @@ Array [
     }
     prefix="relationshipFilter"
     showBoolSwitch={true}
+    sort={true}
   />,
 ]
 `;
