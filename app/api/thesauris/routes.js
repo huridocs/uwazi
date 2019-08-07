@@ -31,7 +31,8 @@ export default (app) => {
       }).required(),
       Joi.object().keys({
         thesauri: Joi.string().required()
-      }).required()).required()),
+      }).required()
+    ).required()),
 
     async (req, res, next) => {
       try {

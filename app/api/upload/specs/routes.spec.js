@@ -8,9 +8,8 @@ import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
-import thesauri from 'api/thesauris/thesauris';
 
-import fixtures, { entityId, entityEnId, templateId, thesaurusId } from './fixtures.js';
+import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';

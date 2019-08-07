@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { mapStateToProps, ThesauriForm } from 'app/Thesauris/components/ThesauriForm.js';
