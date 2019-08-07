@@ -1,7 +1,9 @@
 import configureMockStore from 'redux-mock-store';
 import backend from 'fetch-mock';
+import superagent from 'superagent';
 import { APIURL } from 'app/config.js';
 import { mockID } from 'shared/uniqueID';
+import api from 'app/Thesauris/ThesaurisAPI';
 import thunk from 'redux-thunk';
 import { actions as formActions } from 'react-redux-form';
 
@@ -45,6 +47,47 @@ describe('thesaurisActions', () => {
       .catch(done.fail);
 
       expect(JSON.parse(backend.lastOptions(`${APIURL}thesauris`).body)).toEqual(thesauri);
+    });
+  });
+
+  describe('importThesauri', () => {
+    const mockSuperAgent = (url = `${APIURL}import/thesauris`) => {
+      const mockUpload = superagent.post(url);
+      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+      spyOn(superagent, 'post').and.returnValue(mockUpload);
+      return mockUpload;
+    };
+    it('should save thesaurus, import csv data and notify', (done) => {
+      const thesaurus = { _id: 'foo', name: 'Bar', values: [] };
+      const store = mockStore({});
+      const mockUpload = mockSuperAgent();
+      const file = {
+        name: 'filename.csv'
+      };
+
+      const resp = { _id: 'foo', name: 'Bar', values: [{ label: 'val' }] };
+      backend.restore();
+      backend.post(`${APIURL}thesauris`, { body: JSON.stringify(thesaurus) });
+
+      const expectedActions = [
+        { type: types.THESAURI_SAVED },
+        { type: notificationsTypes.NOTIFY, notification: { message: 'Data imported', type: 'success', id: 'unique_id' } },
+        { type: 'rrf/change', model: 'thesauri.data', value: resp, silent: false, multi: false, external: true }
+      ];
+
+      store.dispatch(actions.importThesauri(thesaurus, file))
+      .then(() => {
+        expect(superagent.post).toHaveBeenCalledWith(`${APIURL}import/thesauris`);
+        expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+        expect(mockUpload.field).toHaveBeenCalledWith('thesauri', thesaurus._id);
+        expect(store.getActions()).toEqual(expectedActions);
+        expect(JSON.parse(backend.lastOptions(`${APIURL}thesauris`).body)).toEqual(thesaurus);
+        done();
+      });
+
+      setTimeout(() =>
+        mockUpload.emit('response', { text: JSON.stringify(resp), status: 200 }), 0);
     });
   });
 

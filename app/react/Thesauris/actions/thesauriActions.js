@@ -18,8 +18,10 @@ export function saveThesauri(thesauri) {
 }
 
 export function importThesauri(thesauri, file) {
-  return dispatch => api.save(thesauri).then(savedThes =>
-    new Promise((resolve) => {
+  return async (dispatch) => {
+    const savedThes = await api.save(thesauri);
+    dispatch({ type: types.THESAURI_SAVED });
+    return new Promise((resolve) => {
       superagent.post(`${APIURL}import/thesauris`)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
@@ -36,8 +38,8 @@ export function importThesauri(thesauri, file) {
         resolve();
       })
       .end();
-    })
-  );
+    });
+  };
 }
 
 export function sortValues() {
