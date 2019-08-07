@@ -53,74 +53,99 @@ Object {
 
 exports[`thesauris routes POST should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "__v": Object {
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "name": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "values": Object {
-      "flags": Object {
-        "presence": "required",
-        "sparse": false,
-      },
-      "items": Array [
-        Object {
-          "children": Object {
-            "_id": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "id": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "label": Object {
-              "flags": Object {
-                "presence": "required",
-              },
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "values": Object {
-              "flags": Object {
-                "sparse": false,
-              },
-              "type": "array",
-            },
-          },
-          "type": "object",
+  "alternatives": Array [
+    Object {
+      "children": Object {
+        "__v": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
         },
-      ],
-      "type": "array",
+        "_id": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+        "name": Object {
+          "flags": Object {
+            "presence": "required",
+          },
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+        "values": Object {
+          "flags": Object {
+            "presence": "required",
+            "sparse": false,
+          },
+          "items": Array [
+            Object {
+              "children": Object {
+                "_id": Object {
+                  "invalids": Array [
+                    "",
+                  ],
+                  "type": "string",
+                },
+                "id": Object {
+                  "invalids": Array [
+                    "",
+                  ],
+                  "type": "string",
+                },
+                "label": Object {
+                  "flags": Object {
+                    "presence": "required",
+                  },
+                  "invalids": Array [
+                    "",
+                  ],
+                  "type": "string",
+                },
+                "values": Object {
+                  "flags": Object {
+                    "sparse": false,
+                  },
+                  "type": "array",
+                },
+              },
+              "type": "object",
+            },
+          ],
+          "type": "array",
+        },
+      },
+      "flags": Object {
+        "presence": "required",
+      },
+      "type": "object",
     },
-  },
+    Object {
+      "children": Object {
+        "thesauri": Object {
+          "flags": Object {
+            "presence": "required",
+          },
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      },
+      "flags": Object {
+        "presence": "required",
+      },
+      "type": "object",
+    },
+  ],
   "flags": Object {
     "presence": "required",
   },
-  "type": "object",
+  "type": "alternatives",
 }
 `;

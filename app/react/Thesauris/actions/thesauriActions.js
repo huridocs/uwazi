@@ -18,28 +18,25 @@ export function saveThesauri(thesauri) {
 }
 
 export function importThesauri(thesauri, file) {
-  return async (dispatch) => {
-    const savedThes = await api.save(thesauri);
-    dispatch({ type: types.THESAURI_SAVED });
-    return new Promise((resolve) => {
-      superagent.post(`${APIURL}import/thesauris`)
-      .set('Accept', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .field('thesauri', savedThes._id)
-      .attach('file', file, file.name)
-      .on('response', (response) => {
-        const data = JSON.parse(response.text);
-        if (response.status === 200) {
-          notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
-          dispatch(formActions.change('thesauri.data', data));
-        } else {
-          notifications.notify(t('System', data.error, null, false), 'danger')(dispatch);
-        }
-        resolve();
-      })
-      .end();
-    });
-  };
+  return dispatch => new Promise(resolve =>
+    superagent.post(`${APIURL}thesauris`)
+    .set('Accept', 'application/json')
+    .set('X-Requested-With', 'XMLHttpRequest')
+    .field('thesauri', JSON.stringify(thesauri))
+    .attach('file', file, file.name)
+    .on('response', (response) => {
+      const data = JSON.parse(response.text);
+      if (response.status === 200) {
+        dispatch({ type: types.THESAURI_SAVED });
+        notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
+        dispatch(formActions.change('thesauri.data', data));
+      } else {
+        notifications.notify(t('System', data.error, null, false), 'danger')(dispatch);
+      }
+      resolve();
+    })
+    .end()
+  );
 }
 
 export function sortValues() {

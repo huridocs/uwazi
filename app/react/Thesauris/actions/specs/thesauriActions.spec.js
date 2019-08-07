@@ -3,7 +3,6 @@ import backend from 'fetch-mock';
 import superagent from 'superagent';
 import { APIURL } from 'app/config.js';
 import { mockID } from 'shared/uniqueID';
-import api from 'app/Thesauris/ThesaurisAPI';
 import thunk from 'redux-thunk';
 import { actions as formActions } from 'react-redux-form';
 
@@ -51,7 +50,7 @@ describe('thesaurisActions', () => {
   });
 
   describe('importThesauri', () => {
-    const mockSuperAgent = (url = `${APIURL}import/thesauris`) => {
+    const mockSuperAgent = (url = `${APIURL}thesauris`) => {
       const mockUpload = superagent.post(url);
       spyOn(mockUpload, 'field').and.returnValue(mockUpload);
       spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
@@ -67,8 +66,6 @@ describe('thesaurisActions', () => {
       };
 
       const resp = { _id: 'foo', name: 'Bar', values: [{ label: 'val' }] };
-      backend.restore();
-      backend.post(`${APIURL}thesauris`, { body: JSON.stringify(thesaurus) });
 
       const expectedActions = [
         { type: types.THESAURI_SAVED },
@@ -78,16 +75,34 @@ describe('thesaurisActions', () => {
 
       store.dispatch(actions.importThesauri(thesaurus, file))
       .then(() => {
-        expect(superagent.post).toHaveBeenCalledWith(`${APIURL}import/thesauris`);
+        expect(superagent.post).toHaveBeenCalledWith(`${APIURL}thesauris`);
         expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
-        expect(mockUpload.field).toHaveBeenCalledWith('thesauri', thesaurus._id);
+        expect(mockUpload.field).toHaveBeenCalledWith('thesauri', JSON.stringify(thesaurus));
         expect(store.getActions()).toEqual(expectedActions);
-        expect(JSON.parse(backend.lastOptions(`${APIURL}thesauris`).body)).toEqual(thesaurus);
         done();
       });
 
-      setTimeout(() =>
-        mockUpload.emit('response', { text: JSON.stringify(resp), status: 200 }), 0);
+      mockUpload.emit('response', { text: JSON.stringify(resp), status: 200 });
+    });
+
+    it('should notify error if error is returned', (done) => {
+      const thesaurus = {};
+      const file = {};
+      const store = mockStore({});
+      const mockUpload = mockSuperAgent();
+
+      const expectedActions = [
+        { type: notificationsTypes.NOTIFY, notification: { message: 'some error', type: 'danger', id: 'unique_id' } },
+      ];
+
+      store.dispatch(actions.importThesauri(thesaurus, file))
+      .then(() => {
+        expect(superagent.post).toHaveBeenCalledWith(`${APIURL}thesauris`);
+        expect(store.getActions()).toEqual(expectedActions);
+        done();
+      });
+
+      mockUpload.emit('response', { text: JSON.stringify({ error: 'some error' }), status: 400 });
     });
   });
 
