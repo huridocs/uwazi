@@ -14,7 +14,7 @@ import ShowIf from 'app/App/ShowIf';
 
 import ThesauriFormItem from './ThesauriFormItem';
 
-function sanitizeThesaurus(thesaurus) {
+function sanitizeThesauri(thesaurus) {
   const sanitizedThesauri = Object.assign({}, thesaurus);
   sanitizedThesauri.values = sanitizedThesauri.values
   .filter(value => value.label)
@@ -48,7 +48,7 @@ export class ThesauriForm extends Component {
     this.onChange = this.onChange.bind(this);
     this.onImportClicked = this.onImportClicked.bind(this);
     this.import = this.import.bind(this);
-    this.fileInputRef = null;
+    this.fileInputRef = React.createRef();
   }
 
   componentWillMount() {
@@ -93,19 +93,19 @@ export class ThesauriForm extends Component {
   }
 
   onImportClicked() {
-    this.fileInputRef.click();
+    this.fileInputRef.current.click();
   }
 
   import() {
-    const file = this.fileInputRef.files[0];
-    const thes = sanitizeThesaurus(this.props.thesauri);
+    const file = this.fileInputRef.current.files[0];
+    const thes = sanitizeThesauri(this.props.thesauri);
     if (file) {
       this.props.importThesauri(thes, file);
     }
   }
 
   save(thesauri) {
-    const sanitizedThesauri = sanitizeThesaurus(thesauri);
+    const sanitizedThesauri = sanitizeThesauri(thesauri);
     this.props.saveThesauri(sanitizedThesauri);
   }
 
@@ -182,7 +182,7 @@ export class ThesauriForm extends Component {
           </div>
         </Form>
         <input
-          ref={(ref) => { this.fileInputRef = ref; }}
+          ref={this.fileInputRef}
           type="file"
           accept="text/csv"
           style={{ display: 'none' }}

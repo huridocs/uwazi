@@ -1,5 +1,5 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import Immutable from 'immutable';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { mapStateToProps, ThesauriForm } from 'app/Thesauris/components/ThesauriForm.js';
@@ -22,6 +22,7 @@ describe('ThesauriForm', () => {
       setInitial: jasmine.createSpy('setInitial'),
       thesauris: Immutable.fromJS([{ name: 'Countries' }]),
       saveThesauri: jasmine.createSpy('saveThesauri'),
+      importThesauri: jasmine.createSpy('saveThesauri'),
       addValue: jasmine.createSpy('addValue'),
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
@@ -77,6 +78,33 @@ describe('ThesauriForm', () => {
         values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 }]
       };
       expect(props.saveThesauri).toHaveBeenCalledWith(sanitizedThesauri);
+    });
+  });
+
+  describe('import', () => {
+    it('should open file dialog when import button is clicked', () => {
+      render();
+      instance.fileInputRef.current = { click: jest.fn() };
+      component.find('.import-template').first().simulate('click');
+      expect(instance.fileInputRef.current.click).toHaveBeenCalled();
+    });
+
+    it('should import thesauri when file is selected', () => {
+      render();
+      const file = { name: 'file.csv' };
+      instance.fileInputRef.current = {
+        files: [file]
+      };
+      component.find('input[type="file"]').first().simulate('change');
+      expect(props.importThesauri).toHaveBeenCalledWith(props.thesauri, file);
+    });
+    it('should not import thesauri if no file was selected', () => {
+      render();
+      instance.fileInputRef.current = {
+        files: []
+      };
+      component.find('input[type="file"]').first().simulate('change');
+      expect(props.importThesauri).not.toHaveBeenCalled();
     });
   });
 

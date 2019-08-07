@@ -121,6 +121,20 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
           </span>
         </a>
         <button
+          className="btn btn-primary import-template"
+          onClick={[Function]}
+          type="button"
+        >
+          <Connect(Icon)
+            icon="upload"
+          />
+          <span
+            className="btn-label"
+          >
+            Import
+          </span>
+        </button>
+        <button
           className="btn btn-success save-template"
           type="submit"
         >
@@ -136,6 +150,16 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
       </div>
     </div>
   </Connect(Form)>
+  <input
+    accept="text/csv"
+    onChange={[Function]}
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+    type="file"
+  />
 </div>
 `;
 
