@@ -7,10 +7,11 @@ import { APIURL } from 'app/config';
 import api from 'app/Thesauris/ThesaurisAPI';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { advancedSort } from 'app/utils/advancedSort';
+import { RequestParams } from 'app/utils/RequestParams';
 
 
 export function saveThesauri(thesauri) {
-  return dispatch => api.save(thesauri).then((_thesauri) => {
+  return dispatch => api.save(new RequestParams(thesauri)).then((_thesauri) => {
     dispatch({ type: types.THESAURI_SAVED });
     notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
     dispatch(formActions.change('thesauri.data', _thesauri));

@@ -5,7 +5,6 @@ import { shallow } from 'enzyme';
 import { APIURL } from 'app/config.js';
 import EditRelationType from 'app/RelationTypes/EditRelationType';
 import RouteHandler from 'app/App/RouteHandler';
-import * as relationTypesActions from 'app/RelationTypes/actions/relationTypesActions';
 import TemplateCreator from '../../Templates/components/TemplateCreator';
 
 describe('EditRelationType', () => {
@@ -31,23 +30,10 @@ describe('EditRelationType', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request the relationTypes using the param relationTypeId', (done) => {
-      EditRelationType.requestState({ relationTypeId: 'relationTypeId' })
-      .then((state) => {
-        expect(state).toEqual({ relationType: { name: 'Against', properties: [] } });
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
-  describe('setReduxState()', () => {
-    it('should call setTemplates with templates passed', () => {
-      spyOn(relationTypesActions, 'editRelationType').and.returnValue('RELATION_TYPE_LOADED');
-      component.instance().setReduxState({ relationType });
-
-      expect(relationTypesActions.editRelationType).toHaveBeenCalledWith(relationType);
-      expect(context.store.dispatch).toHaveBeenCalledWith('RELATION_TYPE_LOADED');
+    it('should request the relationTypes using the param relationTypeId', async () => {
+      const request = { data: { _id: 'relationTypeId' } };
+      const actions = await EditRelationType.requestState(request);
+      expect(actions).toMatchSnapshot();
     });
   });
 });

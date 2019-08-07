@@ -14,7 +14,7 @@ import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
 
-function prepareLists(page) {
+function prepareLists(page, requestParams) {
   const listsData = pageItemLists.generate(page.metadata.content);
 
   listsData.searchs = Promise.all(listsData.params.map((params, index) => {
@@ -30,26 +30,28 @@ function prepareLists(page) {
     }
 
     query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
-    return api.search(query);
+    // return api.search({ data: query, headers: requestParams.headers });
+    return api.search(requestParams.set(query));
   }));
 
   return listsData;
 }
 
 export class PageView extends RouteHandler {
-  static requestState({ pageId }) {
-    return PagesAPI.get(pageId)
-    .then((page) => {
-      const listsData = prepareLists(page);
-      const dataSets = markdownDatasets.fetch(page.metadata.content);
-      return Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
-    })
-    .then(([pageView, searchParams, searchOptions, datasets, listSearchs]) => {
-      const itemLists = searchParams.map((params, index) => ({ params, items: listSearchs[index].rows, options: searchOptions[index] }));
-      return {
-        page: { pageView, itemLists, datasets },
-      };
-    });
+  static async requestState(requestParams) {
+    const [page] = await PagesAPI.get(requestParams);
+    const listsData = prepareLists(page, requestParams);
+    const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.headers);
+
+    const [pageView, searchParams, searchOptions, datasets, listSearchs] =
+      await Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
+
+    const itemLists = searchParams.map((p, index) => ({ params: p, items: listSearchs[index].rows, options: searchOptions[index] }));
+    return [
+      actions.set('page/pageView', pageView),
+      actions.set('page/itemLists', itemLists),
+      actions.set('page/datasets', datasets),
+    ];
   }
 
   closeSidePanel() {

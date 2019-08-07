@@ -9,20 +9,19 @@ import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import RouteHandler from 'app/App/RouteHandler';
 
 export default class NewTemplate extends RouteHandler {
-  static requestState() {
-    return Promise.all([
-      thesaurisAPI.get(),
-      templatesAPI.get(),
-      relationTypesAPI.get()
-    ])
-    .then(([thesauris, templates, relationTypes]) => ({ thesauris, templates, relationTypes }));
-  }
+  static async requestState(requestParams) {
+    const [thesauris, templates, relationTypes] = await Promise.all([
+      thesaurisAPI.get(requestParams.onlyHeaders()),
+      templatesAPI.get(requestParams.onlyHeaders()),
+      relationTypesAPI.get(requestParams.onlyHeaders())
+    ]);
 
-  setReduxState({ thesauris, templates, relationTypes }) {
-    this.context.store.dispatch(formActions.reset('template.data'));
-    this.context.store.dispatch(actions.set('thesauris', thesauris));
-    this.context.store.dispatch(actions.set('templates', templates));
-    this.context.store.dispatch(actions.set('relationTypes', relationTypes));
+    return [
+      formActions.reset('template.data'),
+      actions.set('thesauris', thesauris),
+      actions.set('templates', templates),
+      actions.set('relationTypes', relationTypes),
+    ];
   }
 
   render() {

@@ -4,39 +4,36 @@ import { notificationActions } from 'app/Notifications';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { fromJS as Immutable } from 'immutable';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as uiActions from 'app/Entities/actions/uiActions';
 
-export function search(params) {
-  const { entityId, sort, filters } = params;
+export function search(requestParams) {
+  const { sharedId, sort, filters } = requestParams.data;
+  const searchTerm = requestParams.data.search && requestParams.data.search.searchTerm ? requestParams.data.search.searchTerm.value : '';
 
-  const searchTerm = params.search && params.search.searchTerm ? params.search.searchTerm.value : '';
-
-  let options = Immutable(sort);
+  let options = { sharedId, ...sort };
   if (filters) {
-    options = filters.merge(sort).merge({ searchTerm });
+    options = { sharedId, ...sort, ...filters.toJS(), searchTerm };
   }
-
-  return referencesAPI.search(entityId, options.toJS());
+  return referencesAPI.search(requestParams.onlyHeaders().add(options));
 }
 
 export function searchReferences() {
-  return function (dispatch, getState) {
+  return async (dispatch, getState) => {
     const relationshipsList = getState().relationships.list;
-    return search(relationshipsList)
-    .then((results) => {
-      dispatch(actions.set('relationships/list/searchResults', results));
-      dispatch(uiActions.showTab('connections'));
-    });
+    const results = await search(new RequestParams(relationshipsList));
+    dispatch(actions.set('relationships/list/searchResults', results));
+    dispatch(uiActions.showTab('connections'));
   };
 }
 
 export function connectionsChanged() {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const relationshipsList = getState().relationships.list;
-    const { entityId } = relationshipsList;
+    const { sharedId } = relationshipsList;
 
-    return referencesAPI.getGroupedByConnection(entityId)
+    return referencesAPI.getGroupedByConnection(new RequestParams({ sharedId }))
     .then((connectionsGroups) => {
       const filteredTemplates = connectionsGroups.reduce((templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())), []);
 
@@ -56,17 +53,15 @@ export function connectionsChanged() {
 }
 
 export function deleteConnection(connection) {
-  return function (dispatch, getState) {
-    return referencesAPI.delete(connection)
-    .then(() => {
-      dispatch(notificationActions.notify('Connection deleted', 'success'));
-      return connectionsChanged()(dispatch, getState);
-    });
+  return async (dispatch, getState) => {
+    await referencesAPI.delete(new RequestParams({ _id: connection._id }));
+    dispatch(notificationActions.notify('Connection deleted', 'success'));
+    return connectionsChanged()(dispatch, getState);
   };
 }
 
 export function loadAllReferences() {
-  return function (dispatch, getState) {
+  return async (dispatch, getState) => {
     const relationshipsList = getState().relationships.list;
     dispatch(actions.set('relationships/list/filters', relationshipsList.filters.set('limit', 9999)));
     return searchReferences()(dispatch, getState);

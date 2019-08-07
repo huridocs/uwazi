@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`search routes GET /api/semantic-search/:searchId should have a validation schema 1`] = `
+exports[`search routes GET /api/semantic-search should have a validation schema 1`] = `
 Object {
   "children": Object {
     "limit": Object {
@@ -28,6 +28,12 @@ Object {
         },
       ],
       "type": "number",
+    },
+    "searchId": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
     },
     "skip": Object {
       "invalids": Array [
@@ -60,7 +66,7 @@ Object {
 }
 `;
 
-exports[`search routes GET /api/semantic-search/:searchId/list should have a validation schema 1`] = `
+exports[`search routes GET /api/semantic-search/list should have a validation schema 1`] = `
 Object {
   "children": Object {
     "minRelevantSentences": Object {
@@ -78,6 +84,12 @@ Object {
         },
       ],
       "type": "number",
+    },
+    "searchId": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
     },
     "threshold": Object {
       "flags": Object {

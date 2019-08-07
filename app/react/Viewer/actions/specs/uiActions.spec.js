@@ -88,6 +88,11 @@ describe('Viewer uiActions', () => {
       expect(dispatch).toHaveBeenCalledWith({ type: 'viewer.sidepanel.tab/SET', value: 'references' });
     });
 
+    it('should goToActive on delayActivation', () => {
+      actions.activateReference({ _id: 'id' }, {}, [], true)(dispatch);
+      expect(dispatch).toHaveBeenCalledWith(actions.goToActive());
+    });
+
     it('should scroll to the elements', (done) => {
       actions.activateReference({ _id: 'id' }, {})(dispatch);
       setTimeout(() => {

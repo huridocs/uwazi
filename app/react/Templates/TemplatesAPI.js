@@ -1,33 +1,29 @@
 import api from 'app/utils/api';
 
 export default {
-  get(id) {
-    let url = 'templates';
-    if (id) {
-      url += `?_id=${id}`;
-    }
-
-    return api.get(url)
+  get(request) {
+    const url = 'templates';
+    return api.get(url, request)
     .then(response => response.json.rows);
   },
 
-  save(template) {
-    return api.post('templates', template)
+  save(request) {
+    return api.post('templates', request)
     .then(response => response.json);
   },
 
-  setAsDefault(template) {
-    return api.post('templates/setasdefault', { _id: template._id })
+  setAsDefault(request) {
+    return api.post('templates/setasdefault', request)
     .then(response => response.json);
   },
 
-  countByThesauri(thesauri) {
-    return api.get('templates/count_by_thesauri', { _id: thesauri._id })
+  countByThesauri(request) {
+    return api.get('templates/count_by_thesauri', request)
     .then(response => response.json);
   },
 
-  delete(template) {
-    return api.delete('templates', { _id: template._id })
+  delete(request) {
+    return api.delete('templates', request)
     .then(response => response.json);
   }
 };

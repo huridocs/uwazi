@@ -6,33 +6,20 @@ import { Pages } from '../Pages';
 
 describe('Pages', () => {
   let component;
-  let instance;
   let context;
   const pages = [{ _id: 1, name: 'Page 1' }];
 
   beforeEach(() => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
-    spyOn(PagesAPI, 'list').and.returnValue(Promise.resolve(pages));
+    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(pages));
     component = shallow(<Pages />, { context });
-
-    instance = component.instance();
   });
 
   describe('requestState', () => {
-    it('should get the current user, and metadata', (done) => {
-      Pages.requestState()
-      .then((state) => {
-        expect(state.pages).toEqual(pages);
-        done();
-      });
-    });
-  });
-
-  describe('setReduxState', () => {
-    it('should set pages in state', () => {
-      instance.setReduxState({ pages: 'pages' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'pages/SET', value: 'pages' });
+    it('should get the current user, and metadata', async () => {
+      const actions = await Pages.requestState();
+      expect(actions).toMatchSnapshot();
     });
   });
 

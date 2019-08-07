@@ -12,6 +12,7 @@ import api from 'app/utils/api';
 import settingsModel from 'api/settings';
 import fs from 'fs';
 
+import { RequestParams } from 'app/utils/RequestParams';
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
@@ -23,11 +24,19 @@ import handleError from '../api/utils/handleError';
 
 let assets = {};
 
-function renderComponentWithRoot(Component, componentProps, initialData, user, isRedux = false, language) {
+function renderComponentWithRoot(actions = [], componentProps, data, user, isRedux = false, language) {
   let initialStore = createStore({});
 
+  let initialData = data;
+  const Component = RouterContext;
   if (isRedux) {
     initialStore = createStore(initialData);
+    if (actions.forEach) {
+      actions.forEach((action) => {
+        initialStore.dispatch(action);
+      });
+    }
+    initialData = initialStore.getState();
   }
   // to prevent warnings on some client libs that use window global var
   global.window = {};
@@ -80,13 +89,9 @@ function onlySystemTranslations(AllTranslations) {
 function handleRoute(res, renderProps, req) {
   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
 
-  function renderPage(initialData, isRedux) {
-    const wholeHtml = renderComponentWithRoot(RouterContext, renderProps, initialData, req.user, isRedux, initialData.locale);
+  function renderPage(actions, initialData, isRedux) {
+    const wholeHtml = renderComponentWithRoot(actions, renderProps, initialData, req.user, isRedux, initialData.locale);
     res.status(200).send(wholeHtml);
-  }
-
-  if (req.cookies) {
-    api.cookie(`connect.sid=${req.cookies['connect.sid']}`);
   }
 
   RouteHandler.renderedFromServer = true;
@@ -101,7 +106,7 @@ function handleRoute(res, renderProps, req) {
     const { languages } = settings;
     const urlLanguage = renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
     locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
-    api.locale(locale);
+    // api.locale(locale);
 
     return settings;
   })
@@ -117,13 +122,19 @@ function handleRoute(res, renderProps, req) {
       ]);
     }
 
+    const headers = {
+      'Content-language': locale,
+      Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+    };
+
+    const requestParams = new RequestParams({}, headers);
     return Promise.all([
-      api.get('user'),
-      api.get('settings'),
-      api.get('translations'),
-      api.get('templates'),
-      api.get('thesauris'),
-      api.get('relationTypes')
+      api.get('user', requestParams),
+      api.get('settings', requestParams),
+      api.get('translations', requestParams),
+      api.get('templates', requestParams),
+      api.get('thesauris', requestParams),
+      api.get('relationTypes', requestParams)
     ]);
   })
   .then(([user, settings, translations, templates, thesauris, relationTypes]) => {
@@ -138,11 +149,23 @@ function handleRoute(res, renderProps, req) {
 
     globalResources.settings.collection.links = globalResources.settings.collection.links || [];
 
-    return Promise.all([routeProps.requestState(renderProps.params, query, {
-      templates: Immutable(globalResources.templates),
-      thesauris: Immutable(globalResources.thesauris),
-      relationTypes: Immutable(globalResources.relationTypes)
-    }), globalResources]);
+    const { lang, ...params } = renderProps.params;
+    const headers = {
+      'Content-language': locale,
+      Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+    };
+
+    const requestParams = new RequestParams({ ...query, ...params }, headers);
+
+    return Promise.all([routeProps.requestState(
+      requestParams,
+      {
+        templates: Immutable(globalResources.templates),
+        thesauris: Immutable(globalResources.thesauris),
+        relationTypes: Immutable(globalResources.relationTypes)
+      },
+    ),
+      globalResources]);
   })
   .catch((error) => {
     if (error.status === 401) {
@@ -163,8 +186,7 @@ function handleRoute(res, renderProps, req) {
     return Promise.reject(error);
   })
   .then(([initialData, globalResources]) => {
-    renderPage({
-      ...initialData,
+    renderPage(initialData, {
       locale,
       user: globalResources.user,
       settings: globalResources.settings,

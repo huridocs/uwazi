@@ -11,6 +11,7 @@ import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { isClient } from 'app/utils';
 import { actions as relationshipActions } from 'app/Relationships';
+import { RequestParams } from 'app/utils/RequestParams';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
 import { PDFUtils } from '../../PDF';
@@ -43,7 +44,7 @@ export function saveDocument(doc) {
     }
   });
 
-  return dispatch => documentsApi.save(updateDoc)
+  return dispatch => documentsApi.save(new RequestParams(updateDoc))
   .then((updatedDoc) => {
     dispatch(notificationActions.notify('Document updated', 'success'));
     dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
@@ -63,7 +64,7 @@ export function saveToc(toc) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch => documentsApi.delete(doc)
+  return dispatch => documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }))
   .then(() => {
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
@@ -72,8 +73,8 @@ export function deleteDocument(doc) {
   });
 }
 
-export function getDocument(id) {
-  return api.get(`entities?_id=${id}`)
+export function getDocument(requestParams) {
+  return api.get('entities', requestParams)
   .then((response) => {
     const doc = response.json.rows[0];
     if (!isClient) {
@@ -85,16 +86,16 @@ export function getDocument(id) {
     return PDFUtils.extractPDFInfo(`${APIURL}documents/download?_id=${doc._id}`)
     .then((pdfInfo) => {
       const { _id, sharedId } = doc;
-      return api.post('documents/pdfInfo', { _id, sharedId, pdfInfo })
+      return api.post('documents/pdfInfo', new RequestParams({ _id, sharedId, pdfInfo }))
       .then(res => res.json);
     });
   });
 }
 
-export function loadTargetDocument(id) {
+export function loadTargetDocument(sharedId) {
   return dispatch => Promise.all([
-      getDocument(id),
-      referencesAPI.get(id)
+      getDocument(new RequestParams({ sharedId })),
+      referencesAPI.get(new RequestParams({ sharedId }))
   ])
   .then(([targetDoc, references]) => {
     dispatch(actions.set('viewer/targetDoc', targetDoc));

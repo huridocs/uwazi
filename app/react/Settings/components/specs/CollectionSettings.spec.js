@@ -1,4 +1,5 @@
 import React from 'react';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { shallow } from 'enzyme';
 
@@ -24,7 +25,7 @@ describe('CollectionSettings', () => {
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
     });
 
-    fit('should sanitize the form data', () => {
+    it('should sanitize the form data', () => {
       const values = {
         _id: 'id',
         _rev: 'rev',
@@ -51,7 +52,7 @@ describe('CollectionSettings', () => {
         private: false,
         site_name: 'Uwazi'
       };
-      expect(SettingsAPI.save).toHaveBeenCalledWith(expectedData);
+      expect(SettingsAPI.save).toHaveBeenCalledWith(new RequestParams(expectedData));
     });
   });
 });

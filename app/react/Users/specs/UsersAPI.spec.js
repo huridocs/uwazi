@@ -2,7 +2,6 @@ import users from 'app/Users/UsersAPI';
 import api from 'app/utils/api';
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 
 describe('UsersAPI', () => {
   beforeEach(() => {
@@ -25,13 +24,10 @@ describe('UsersAPI', () => {
       };
     });
 
-    it('should post to users', (done) => {
-      users.save(user)
-      .then((response) => {
-        expect(response).toEqual('ok');
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should post to users', async () => {
+      const request = { data: user };
+      const response = await users.save(request);
+      expect(response).toEqual('ok');
     });
   });
 
@@ -45,51 +41,37 @@ describe('UsersAPI', () => {
       };
     });
 
-    it('should post to users/new', (done) => {
-      users.new(user)
-      .then((response) => {
-        expect(response).toEqual('ok new');
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should post to users/new', async () => {
+      const request = { data: user };
+      const response = await users.new(request);
+      expect(response).toEqual('ok new');
     });
   });
 
   describe('currentUser()', () => {
-    it('should request the logged in user', (done) => {
-      users.currentUser()
-      .then((response) => {
-        expect(response).toEqual({ name: 'doe' });
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should request the logged in user', async () => {
+      const response = await users.currentUser();
+      expect(response).toEqual({ name: 'doe' });
     });
   });
 
-  describe('list()', () => {
-    it('should get all the users', (done) => {
+  describe('get()', () => {
+    it('should get all the users', async () => {
       spyOn(api, 'get').and.returnValue(Promise.resolve({ json: ['users'] }));
-      users.list()
-      .then((response) => {
-        expect(api.get).toHaveBeenCalledWith('users');
-        expect(response).toEqual(['users']);
-        done();
-      })
-      .catch(catchErrors(done));
+      const request = {};
+      const response = await users.get(request);
+      expect(api.get).toHaveBeenCalledWith('users', request);
+      expect(response).toEqual(['users']);
     });
   });
 
   describe('delete()', () => {
-    it('should delete the user', (done) => {
+    it('should delete the user', async () => {
       const user = { _id: '1234' };
       spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
-      users.delete(user)
-      .then((response) => {
-        expect(api.delete).toHaveBeenCalledWith('users', user);
-        expect(response).toEqual('ok');
-        done();
-      })
-      .catch(catchErrors(done));
+      const response = await users.delete(user);
+      expect(api.delete).toHaveBeenCalledWith('users', user);
+      expect(response).toEqual('ok');
     });
   });
 });

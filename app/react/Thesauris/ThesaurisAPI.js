@@ -1,33 +1,25 @@
 import api from 'app/utils/api';
 
 export default {
-  get(id) {
-    let url = 'thesauris';
-    if (id) {
-      url += `?_id=${id}`;
-    }
-
-    return api.get(url)
+  get(requestParams) {
+    const url = 'thesauris';
+    return api.get(url, requestParams)
     .then(response => response.json.rows);
   },
 
-  getDictionaries(id) {
-    let url = 'dictionaries';
-    if (id) {
-      url += `?_id=${id}`;
-    }
-
-    return api.get(url)
+  getDictionaries(requestParams) {
+    const url = 'dictionaries';
+    return api.get(url, requestParams)
     .then(response => response.json.rows);
   },
 
-  save(thesauri) {
-    return api.post('thesauris', thesauri)
+  save(requestParams) {
+    return api.post('thesauris', requestParams)
     .then(response => response.json);
   },
 
-  delete(thesauri) {
-    return api.delete('thesauris', { _id: thesauri._id })
+  delete(requestParams) {
+    return api.delete('thesauris', requestParams)
     .then(response => response.json);
   }
 };

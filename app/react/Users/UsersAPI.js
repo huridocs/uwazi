@@ -1,33 +1,33 @@
 import api from 'app/utils/api';
 
 export default {
-  save(user) {
-    return api.post('users', user)
+  save(requestParams) {
+    return api.post('users', requestParams)
     .then(response => response.json);
   },
 
-  new(user) {
-    return api.post('users/new', user)
+  new(requestParams) {
+    return api.post('users/new', requestParams)
     .then(response => response.json);
   },
 
-  currentUser() {
-    return api.get('user')
+  currentUser(requestParams) {
+    return api.get('user', requestParams)
     .then(response => response.json);
   },
 
-  list() {
-    return api.get('users')
+  get(requestParams) {
+    return api.get('users', requestParams)
     .then(response => response.json);
   },
 
-  getById(_id) {
-    return api.get('users', { _id })
+  getById(requestParams) {
+    return api.get('users', requestParams)
     .then(response => response.json[0]);
   },
 
-  delete(user) {
-    return api.delete('users', user)
+  delete(requestParams) {
+    return api.delete('users', requestParams)
     .then(response => response.json);
   }
 };

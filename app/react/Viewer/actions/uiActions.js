@@ -139,17 +139,22 @@ export function selectSnippet(page, snippet) {
   };
 }
 
-export function activateReference(reference, docInfo, tab) {
+export function activateReference(reference, docInfo, tab, delayActivation = false) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
   return (dispatch) => {
     dispatch({ type: types.ACTIVE_REFERENCE, reference: reference._id });
+    if (delayActivation) {
+      dispatch(goToActive());
+    }
     dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
-    setTimeout(() => {
-      scrollTo(reference, docInfo);
-    });
+    if (!delayActivation) {
+      setTimeout(() => {
+        scrollTo(reference, docInfo);
+      });
+    }
   };
 }
 

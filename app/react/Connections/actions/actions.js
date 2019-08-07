@@ -2,6 +2,7 @@ import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/utils/api';
 import debounce from 'app/utils/debounce';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -9,9 +10,9 @@ import * as uiActions from './uiActions';
 export function immidiateSearch(dispatch, searchTerm, connectionType) {
   dispatch(uiActions.searching());
 
-  const query = { searchTerm, fields: ['title'] };
+  const requestParams = new RequestParams({ searchTerm, fields: ['title'] });
 
-  return api.get('search', query)
+  return api.get('search', requestParams)
   .then((response) => {
     let results = response.json.rows;
     if (connectionType === 'targetRanged') {
@@ -73,7 +74,7 @@ export function saveConnection(connection, callback = () => {}) {
       save: [[sourceRelationship, targetRelationship]]
     };
 
-    return api.post('relationships/bulk', apiCall)
+    return api.post('relationships/bulk', new RequestParams(apiCall))
     .then((response) => {
       dispatch({ type: types.CONNECTION_CREATED });
       callback(response.json);

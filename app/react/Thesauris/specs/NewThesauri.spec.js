@@ -7,7 +7,6 @@ import api from 'app/Thesauris/ThesaurisAPI';
 
 describe('NewThesauri', () => {
   let component;
-  let instance;
   let context;
   const thesauris = [{ name: 'Countries', values: [{ id: '1', label: 'label1' }, { id: '2', label: 'label2' }] }];
 
@@ -15,7 +14,6 @@ describe('NewThesauri', () => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     spyOn(api, 'get').and.returnValue(Promise.resolve(thesauris));
     component = shallow(<NewThesauri />, { context });
-    instance = component.instance();
   });
 
   it('should render a ThesauriForm with new=true', () => {
@@ -24,20 +22,9 @@ describe('NewThesauri', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request the thesauris', (done) => {
-      NewThesauri.requestState()
-      .then((state) => {
-        expect(state).toEqual({ thesauris });
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
-  describe('setReduxState()', () => {
-    it('should call setTemplates with templates passed', () => {
-      instance.setReduxState({ thesauris });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'thesauris/SET', value: thesauris });
+    it('should request the thesauris', async () => {
+      const actions = await NewThesauri.requestState();
+      expect(actions).toMatchSnapshot();
     });
   });
 });

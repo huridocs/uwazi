@@ -9,6 +9,7 @@ import ViewDocument from 'app/Viewer/ViewDocument';
 import Viewer from 'app/Viewer/components/Viewer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import * as utils from 'app/utils';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
@@ -78,17 +79,18 @@ describe('ViewDocument', () => {
 
   describe('static requestState', () => {
     it('should call on requestViewerState', () => {
-      const query = { raw: 'true', page: 4 };
-      ViewDocument.requestState({ documentId: 'documentId', lang: 'es' }, query, 'globalResources');
-
-      expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'documentId', lang: 'es', raw: true, page: 4 }, 'globalResources');
+      const requestParams = new RequestParams({ documentId: 'documentId', lang: 'es', page: 4, raw: 'true' });
+      ViewDocument.requestState(requestParams, 'globalResources');
+      expect(routeActions.requestViewerState)
+      .toHaveBeenCalledWith(new RequestParams({ documentId: 'documentId', lang: 'es', raw: true, page: 4 }), 'globalResources');
     });
 
     it('should modify raw to true if is server side rendered', () => {
       utils.isClient = false;
-      const query = { raw: 'false' };
-      ViewDocument.requestState({ documentId: 'documentId', lang: 'es' }, query, 'globalResources');
-      expect(routeActions.requestViewerState).toHaveBeenCalledWith({ documentId: 'documentId', lang: 'es', raw: true }, 'globalResources');
+      const requestParams = new RequestParams({ documentId: 'documentId', lang: 'es', raw: 'false' });
+      ViewDocument.requestState(requestParams, 'globalResources');
+      expect(routeActions.requestViewerState)
+      .toHaveBeenCalledWith(new RequestParams({ documentId: 'documentId', lang: 'es', raw: true }), 'globalResources');
     });
   });
 
@@ -107,6 +109,7 @@ describe('ViewDocument', () => {
       instance.onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
     });
+
     it('should activate text reference if query parameters have reference id', () => {
       spyOn(uiActions, 'activateReference');
       props.location = { query: { raw: 'false', ref: 'refId' }, pathname: 'pathname' };
@@ -123,6 +126,7 @@ describe('ViewDocument', () => {
       instance.onDocumentReady(doc);
       expect(uiActions.activateReference).toHaveBeenCalledWith(reference, pdfInfo);
     });
+
     it('should emit documentLoaded event', () => {
       spyOn(uiActions, 'scrollToPage');
       spyOn(utils.events, 'emit');
@@ -162,29 +166,30 @@ describe('ViewDocument', () => {
   });
 
   describe('componentWillReceiveProps', () => {
-    it('should load raw page when page/raw changes and raw is true', (done) => {
+    const setProps = (newProps) => {
+      entitiesAPI.getRawPage.calls.reset();
+      component.setProps(newProps);
+      component.update();
+    };
+
+    beforeEach(() => {
       props.location = { query: { raw: 'true', anotherProp: 'test', page: 15 }, pathname: 'pathname' };
-      props.params = { documentId: 'documentId' };
+      props.params = { sharedId: 'documentId' };
       spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
       render();
+    });
 
-      entitiesAPI.getRawPage.calls.reset();
-      component.setProps({ location: { query: { page: 15, raw: 'true' } } });
-      component.update();
+    it('should load raw page when page/raw changes and raw is true', async () => {
+      setProps({ location: { query: { page: 15, raw: 'true' } } });
+      expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
+
+      setProps({ location: { query: { page: 16, raw: 'false' } } });
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
 
       entitiesAPI.getRawPage.calls.reset();
-      component.setProps({ location: { query: { page: 16, raw: 'false' } } });
-      component.update();
-      expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-
-      entitiesAPI.getRawPage.calls.reset();
-      instance.componentWillReceiveProps({ params: { documentId: 'documentId' }, location: { query: { page: 17, raw: 'true' } } })
-      .then(() => {
-        expect(context.store.dispatch).toHaveBeenCalledWith(actions.set('viewer/rawText', 'raw text'));
-        expect(entitiesAPI.getRawPage).toHaveBeenCalledWith('documentId', 17);
-        done();
-      });
+      await instance.componentWillReceiveProps({ params: { sharedId: 'documentId' }, location: { query: { page: 17, raw: 'true' } } });
+      expect(context.store.dispatch).toHaveBeenCalledWith(actions.set('viewer/rawText', 'raw text'));
+      expect(entitiesAPI.getRawPage).toHaveBeenCalledWith(new RequestParams({ sharedId: 'documentId', pageNumber: 17 }));
     });
   });
 
@@ -201,14 +206,6 @@ describe('ViewDocument', () => {
       component.update();
       instance.changeBrowserHistoryPage(16);
       expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
-    });
-  });
-
-  describe('setReduxState()', () => {
-    it('should dispatch setViewerState', () => {
-      instance.setReduxState('state');
-      expect(routeActions.setViewerState).toHaveBeenCalledWith('state');
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'setViewerState' });
     });
   });
 

@@ -25,6 +25,18 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import socket from '../socket';
 
 
+const setReduxState = state =>
+  (_dispatch) => {
+    const dispatch = wrapDispatch(_dispatch, 'uploads');
+    dispatch(setDocuments(state.uploads.documents));
+    dispatch(actions.set('aggregations', state.uploads.aggregations));
+    dispatch(formActions.load('uploads.search', state.uploads.search));
+    dispatch({ type: 'SET_LIBRARY_FILTERS',
+      documentTypes: state.uploads.filters.documentTypes,
+      libraryFilters: state.uploads.filters.properties }
+    );
+  };
+
 export default class Uploads extends RouteHandler {
   constructor(props, context) {
     super(props, context);
@@ -44,41 +56,31 @@ export default class Uploads extends RouteHandler {
     return nextProps.location.query.q !== this.props.location.query.q;
   }
 
-  static requestState(params, _query = {}, globalResources) {
+  static async requestState(requestParams, globalResources) {
     const defaultSearch = prioritySortingCriteria.get({ templates: globalResources.templates });
-    const query = rison.decode(_query.q || '()');
+    const query = rison.decode(requestParams.data.q || '()');
     query.order = query.order || defaultSearch.order;
     query.sort = query.sort || defaultSearch.sort;
     query.unpublished = true;
 
-    return api.search(query)
-    .then((documents) => {
-      const filterState = libraryHelpers.URLQueryToState(
-        query,
-        globalResources.templates.toJS(),
-        globalResources.thesauris.toJS(),
-        globalResources.relationTypes.toJS()
-      );
-      return {
+    const documents = await api.search(requestParams.set(query));
+    const filterState = libraryHelpers.URLQueryToState(
+      query,
+      globalResources.templates.toJS(),
+      globalResources.thesauris.toJS(),
+      globalResources.relationTypes.toJS()
+    );
+
+    return [
+      setReduxState({
         uploads: {
           documents,
           filters: { documentTypes: query.types || [], properties: filterState.properties },
           aggregations: documents.aggregations,
           search: filterState.search
         }
-      };
-    });
-  }
-
-  setReduxState(state) {
-    const dispatch = wrapDispatch(this.context.store.dispatch, 'uploads');
-    dispatch(setDocuments(state.uploads.documents));
-    dispatch(actions.set('aggregations', state.uploads.aggregations));
-    dispatch(formActions.load('uploads.search', state.uploads.search));
-    dispatch({ type: 'SET_LIBRARY_FILTERS',
-                                documentTypes: state.uploads.filters.documentTypes,
-                                libraryFilters: state.uploads.filters.properties }
-    );
+      })
+    ];
   }
 
   refreshSearch() {

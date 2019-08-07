@@ -15,7 +15,7 @@ export function mapStateToProps({ relationships }) {
     documents,
     connections: {
       totalRows: documents.get('rows')
-      .filter(r => r.get('sharedId') !== relationships.list.entityId)
+      .filter(r => r.get('sharedId') !== relationships.list.sharedId)
       .reduce((total, r) => total + r.get('connections').size, 0)
     },
     filters: Immutable({ documentTypes: [] }),

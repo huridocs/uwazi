@@ -5,6 +5,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mockID } from 'shared/uniqueID.js';
 import { actions as formActions } from 'react-redux-form';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as actions from '../actions';
 import * as types from '../actionTypes';
@@ -84,7 +85,8 @@ describe('Attachments actions', () => {
         { type: 'NOTIFY', notification: { message: 'Attachment renamed', type: 'success', id: 'unique_id' } }
       ];
 
-      expect(api.post).toHaveBeenCalledWith('attachments/rename', { entityId: 'id', _id: 'fid', originalname: 'originalname', language: 'spa' });
+      const expectedParams = new RequestParams({ entityId: 'id', _id: 'fid', originalname: 'originalname', language: 'spa' });
+      expect(api.post).toHaveBeenCalledWith('attachments/rename', expectedParams);
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
@@ -95,9 +97,9 @@ describe('Attachments actions', () => {
       mockID();
       const dispatch = jasmine.createSpy('dispatch');
       actions.deleteAttachment('id', { _id: 'attachmentId', filename: 'filename' }, 'storeKey')(dispatch).then(() => {
-        expect(api.delete).toHaveBeenCalledWith('attachments/delete', {
+        expect(api.delete).toHaveBeenCalledWith('attachments/delete', new RequestParams({
           attachmentId: 'attachmentId'
-        });
+        }));
         expect(dispatch).toHaveBeenCalledWith({
           type: types.ATTACHMENT_DELETED,
           entity: 'id',
