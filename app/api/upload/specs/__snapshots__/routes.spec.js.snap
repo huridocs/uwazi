@@ -27,26 +27,6 @@ Array [
 ]
 `;
 
-exports[`upload routes POST /api/import/thesauris should validate request 1`] = `
-Object {
-  "children": Object {
-    "thesauri": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-  },
-  "flags": Object {
-    "presence": "required",
-  },
-  "type": "object",
-}
-`;
-
 exports[`upload routes POST/customisation/upload should save the upload and return it 1`] = `
 Object {
   "__v": 0,

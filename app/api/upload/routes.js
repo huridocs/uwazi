@@ -143,25 +143,6 @@ export default (app) => {
     }
   );
 
-  app.post(
-    '/api/import/thesauris',
-
-    needsAuthorization(['admin']),
-
-    upload.any(),
-
-    validateRequest(Joi.object({
-      thesauri: Joi.string().required()
-    }).required()),
-
-    (req, res, next) => {
-      const loader = new CSVLoader();
-      loader.loadThesauri(req.files[0].path, req.body.thesauri, { language: req.language, user: req.user })
-      .then(data => res.json(data))
-      .catch(next);
-    }
-  );
-
   app.post('/api/customisation/upload', needsAuthorization(['admin', 'editor']), upload.any(), (req, res, next) => {
     uploads.save(req.files[0])
     .then((saved) => {
