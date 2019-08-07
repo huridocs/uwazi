@@ -14,6 +14,21 @@ import ShowIf from 'app/App/ShowIf';
 
 import ThesauriFormItem from './ThesauriFormItem';
 
+function sanitizeThesaurus(thesaurus) {
+  const sanitizedThesauri = Object.assign({}, thesaurus);
+  sanitizedThesauri.values = sanitizedThesauri.values
+  .filter(value => value.label)
+  .filter(value => !value.values || value.values.length)
+  .map((value) => {
+    const _value = Object.assign({}, value);
+    if (_value.values) {
+      _value.values = _value.values.filter(_v => _v.label);
+    }
+    return _value;
+  });
+  return sanitizedThesauri;
+}
+
 export class ThesauriForm extends Component {
   static validation(thesauris, id) {
     return {
@@ -32,7 +47,7 @@ export class ThesauriForm extends Component {
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onImportClicked = this.onImportClicked.bind(this);
-    this.onImportFilesSelected = this.onImportFilesSelected.bind(this);
+    this.import = this.import.bind(this);
     this.fileInputRef = null;
   }
 
@@ -81,26 +96,16 @@ export class ThesauriForm extends Component {
     this.fileInputRef.click();
   }
 
-  onImportFilesSelected() {
-    console.log('HERE');
+  import() {
     const file = this.fileInputRef.files[0];
+    const thes = sanitizeThesaurus(this.props.thesauri);
     if (file) {
-      this.props.importThesauri(this.props.thesauri._id, file);
+      this.props.importThesauri(thes, file);
     }
   }
 
   save(thesauri) {
-    const sanitizedThesauri = Object.assign({}, thesauri);
-    sanitizedThesauri.values = sanitizedThesauri.values
-    .filter(value => value.label)
-    .filter(value => !value.values || value.values.length)
-    .map((value) => {
-      const _value = Object.assign({}, value);
-      if (_value.values) {
-        _value.values = _value.values.filter(_v => _v.label);
-      }
-      return _value;
-    });
+    const sanitizedThesauri = sanitizeThesaurus(thesauri);
     this.props.saveThesauri(sanitizedThesauri);
   }
 
@@ -181,7 +186,7 @@ export class ThesauriForm extends Component {
           type="file"
           accept="text/csv"
           style={{ display: 'none' }}
-          onChange={this.onImportFilesSelected}
+          onChange={this.import}
         />
       </div>
     );
