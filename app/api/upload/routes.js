@@ -151,12 +151,12 @@ export default (app) => {
     upload.any(),
 
     validateRequest(Joi.object({
-      thesaurus: Joi.string().required()
+      thesauri: Joi.string().required()
     }).required()),
 
     (req, res, next) => {
       const loader = new CSVLoader();
-      loader.loadThesauri(req.files[0].path, req.body.thesaurus, { language: req.language, user: req.user })
+      loader.loadThesauri(req.files[0].path, req.body.thesauri, { language: req.language, user: req.user })
       .then(data => res.json(data))
       .catch(next);
     }

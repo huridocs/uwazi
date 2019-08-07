@@ -4,6 +4,7 @@ const entityId = db.id();
 const entityEnId = db.id();
 const uploadId = db.id();
 const templateId = db.id();
+const thesaurusId = db.id();
 
 export default {
   entities: [
@@ -20,6 +21,9 @@ export default {
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }] }
   ],
+  dictionaries: [
+    { _id: thesaurusId, name: 'thes', values: [] }
+  ]
 };
 
 export {
@@ -27,4 +31,5 @@ export {
   entityEnId,
   uploadId,
   templateId,
+  thesaurusId
 };

@@ -8,13 +8,15 @@ import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
 import search from 'api/search/search';
+import thesauri from 'api/thesauris/thesauris';
 
-import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
+import fixtures, { entityId, entityEnId, templateId, thesaurusId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
 import pathsConfig from '../../config/paths';
+
 
 const writeFile = promisify(fs.writeFile);
 const fileExists = promisify(fs.stat);
@@ -40,7 +42,7 @@ describe('upload routes', () => {
 
   const deleteAllFiles = (cb) => {
     const directory = `${__dirname}/uploads/`;
-    const dontDeleteFiles = ['import.zip', 'eng.pdf', 'spn.pdf', 'importcsv.csv', 'f2082bf51b6ef839690485d7153e847a.pdf'];
+    const dontDeleteFiles = ['import.zip', 'eng.pdf', 'spn.pdf', 'importcsv.csv', 'import_thesauri.csv', 'f2082bf51b6ef839690485d7153e847a.pdf'];
     fs.readdir(directory, (err, files) => {
       if (err) throw err;
 
@@ -366,6 +368,39 @@ describe('upload routes', () => {
         });
         routes.post('/api/import', req);
       });
+    });
+  });
+
+  describe('POST /api/import/thesauris', () => {
+    beforeEach(() => {
+      file = {
+        fieldname: 'file',
+        originalname: 'import_thesauri.csv',
+        encoding: '7bit',
+        mimetype: 'application/octet-stream',
+        destination: `${__dirname}/uploads/`,
+        filename: 'import_thesauri.csv',
+        path: `${__dirname}/uploads/import_thesauri.csv`,
+        size: 112
+      };
+      req = {
+        language: 'es',
+        user: 'admin',
+        headers: {},
+        body: { thesauri: thesaurusId.toString() },
+        files: [file]
+      };
+    });
+
+    it('should import csv file to thesaurus', async () => {
+      await routes.post('/api/import/thesauris', req);
+      const thes = await thesauri.getById(thesaurusId);
+      expect(thes.values.some(v => v.label === 'Value 1')).toBe(true);
+      expect(thes.values.some(v => v.label === 'Value 2')).toBe(true);
+    });
+
+    it('should validate request', () => {
+      expect(routes.post.validation('/api/import/thesauris')).toMatchSnapshot();
     });
   });
 

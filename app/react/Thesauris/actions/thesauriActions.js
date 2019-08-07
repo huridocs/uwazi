@@ -17,13 +17,13 @@ export function saveThesauri(thesauri) {
   });
 }
 
-export function importThesauri(thesaurus, file) {
-  return dispatch => api.save(thesaurus).then(savedThes =>
+export function importThesauri(thesauri, file) {
+  return dispatch => api.save(thesauri).then(savedThes =>
     new Promise((resolve) => {
       superagent.post(`${APIURL}import/thesauris`)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field('thesaurus', savedThes._id)
+      .field('thesauri', savedThes._id)
       .attach('file', file, file.name)
       .on('response', (response) => {
         const data = JSON.parse(response.text);

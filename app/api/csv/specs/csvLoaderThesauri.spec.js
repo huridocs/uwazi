@@ -13,6 +13,7 @@ describe('csvLoader thesauri', () => {
   afterAll(async () => db.disconnect());
 
   let thesauriId;
+  let result;
   describe('load thesauri', () => {
     beforeAll(async () => {
       await db.clearAllAndLoad(fixtures);
@@ -34,7 +35,7 @@ describe('csvLoader thesauri', () => {
 
 
       thesauriId = _id;
-      await loader.loadThesauri(stream(csv), _id, { language: 'en' });
+      result = await loader.loadThesauri(stream(csv), _id, { language: 'en' });
     });
 
     const getTranslation = async lang =>
@@ -45,6 +46,11 @@ describe('csvLoader thesauri', () => {
     it('should set thesauri values using the language passed and ignore blank values', async () => {
       const thesauri = await thesauris.getById(thesauriId);
       expect(thesauri.values.map(v => v.label)).toEqual(['existing value', 'value 1', 'value 2', 'value 3']);
+    });
+
+    it('should return the updated thesaurus', async () => {
+      const thesaurus = await thesauris.getById(thesauriId);
+      expect(thesaurus).toEqual(result);
     });
 
     it('should translate thesauri values to english', async () => {
