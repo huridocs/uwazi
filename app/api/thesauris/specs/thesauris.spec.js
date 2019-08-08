@@ -257,6 +257,24 @@ describe('thesauris', () => {
           const thesauri = await thesauris.save(data);
           expect(thesauri.name).toBe('ary');
         });
+
+        it('should fail if the name is blank', async () => {
+          let data = { values: [{ label: 'test' }] };
+          try {
+            await thesauris.save(data);
+            fail('should throw error');
+          } catch (e) {
+            expect(e).toBeDefined();
+          }
+
+          data = { name: '', values: [{ label: 'test' }] };
+          try {
+            await thesauris.save(data);
+            fail('should throw error');
+          } catch (e) {
+            expect(e).toBeDefined();
+          }
+        });
       });
 
       describe('when passing a blank value', () => {
