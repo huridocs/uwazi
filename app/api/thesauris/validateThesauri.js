@@ -22,10 +22,12 @@ ajv.addKeyword('uniqueName', {
 
 const schema = {
   $async: true,
+  required: ['name'],
   properties: {
     name: {
       type: 'string',
-      uniqueName: ''
+      uniqueName: '',
+      minLength: 1
     },
     values: {
       type: 'array',

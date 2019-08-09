@@ -8,11 +8,26 @@ import { BackButton } from 'app/Layout';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { Icon } from 'UI';
 import { notEmpty } from 'app/Metadata/helpers/validator';
-import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues } from 'app/Thesauris/actions/thesauriActions';
+import { saveThesauri, addValue, removeValue, addGroup, sortValues, updateValues, importThesauri } from 'app/Thesauris/actions/thesauriActions';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import ShowIf from 'app/App/ShowIf';
 
 import ThesauriFormItem from './ThesauriFormItem';
+
+function sanitizeThesauri(thesaurus) {
+  const sanitizedThesauri = Object.assign({}, thesaurus);
+  sanitizedThesauri.values = sanitizedThesauri.values
+  .filter(value => value.label)
+  .filter(value => !value.values || value.values.length)
+  .map((value) => {
+    const _value = Object.assign({}, value);
+    if (_value.values) {
+      _value.values = _value.values.filter(_v => _v.label);
+    }
+    return _value;
+  });
+  return sanitizedThesauri;
+}
 
 export class ThesauriForm extends Component {
   static validation(thesauris, id) {
@@ -31,6 +46,10 @@ export class ThesauriForm extends Component {
     this.save = this.save.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.onImportClicked = this.onImportClicked.bind(this);
+    this.import = this.import.bind(this);
+    this.fileInputRef = React.createRef();
+    this.fileFormRef = React.createRef();
   }
 
   componentWillMount() {
@@ -74,18 +93,21 @@ export class ThesauriForm extends Component {
     this.props.updateValues(values, groupIndex);
   }
 
+  onImportClicked() {
+    this.fileInputRef.current.click();
+  }
+
+  import() {
+    const file = this.fileInputRef.current.files[0];
+    this.fileFormRef.current.reset();
+    const thes = sanitizeThesauri(this.props.thesauri);
+    if (file) {
+      this.props.importThesauri(thes, file);
+    }
+  }
+
   save(thesauri) {
-    const sanitizedThesauri = Object.assign({}, thesauri);
-    sanitizedThesauri.values = sanitizedThesauri.values
-    .filter(value => value.label)
-    .filter(value => !value.values || value.values.length)
-    .map((value) => {
-      const _value = Object.assign({}, value);
-      if (_value.values) {
-        _value.values = _value.values.filter(_v => _v.label);
-      }
-      return _value;
-    });
+    const sanitizedThesauri = sanitizeThesauri(thesauri);
     this.props.saveThesauri(sanitizedThesauri);
   }
 
@@ -150,6 +172,10 @@ export class ThesauriForm extends Component {
                 <Icon icon="sort-alpha-down" />
                 <span className="btn-label">Sort</span>
               </a>
+              <button type="button" className="btn btn-primary import-template" onClick={this.onImportClicked}>
+                <Icon icon="upload"/>
+                <span className="btn-label">Import</span>
+              </button>
               <button type="submit" className="btn btn-success save-template">
                 <Icon icon="save"/>
                 <span className="btn-label">Save</span>
@@ -157,6 +183,15 @@ export class ThesauriForm extends Component {
             </div>
           </div>
         </Form>
+        <form ref={this.fileFormRef} style={{ display: 'none' }}>
+          <input
+            ref={this.fileInputRef}
+            type="file"
+            accept="text/csv"
+            style={{ display: 'none' }}
+            onChange={this.import}
+          />
+        </form>
       </div>
     );
   }
@@ -175,6 +210,7 @@ ThesauriForm.propTypes = {
   sortValues: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
   updateValues: PropTypes.func.isRequired,
+  importThesauri: PropTypes.func.isRequired,
   thesauris: PropTypes.object.isRequired,
   thesauri: PropTypes.object.isRequired,
   state: PropTypes.object.isRequired,
@@ -192,6 +228,7 @@ export function mapStateToProps(state) {
 function bindActions(dispatch) {
   return bindActionCreators({
     saveThesauri,
+    importThesauri,
     addValue,
     addGroup,
     sortValues,
