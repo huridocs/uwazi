@@ -49,6 +49,7 @@ export class ThesauriForm extends Component {
     this.onImportClicked = this.onImportClicked.bind(this);
     this.import = this.import.bind(this);
     this.fileInputRef = React.createRef();
+    this.fileFormRef = React.createRef();
   }
 
   componentWillMount() {
@@ -98,6 +99,7 @@ export class ThesauriForm extends Component {
 
   import() {
     const file = this.fileInputRef.current.files[0];
+    this.fileFormRef.current.reset();
     const thes = sanitizeThesauri(this.props.thesauri);
     if (file) {
       this.props.importThesauri(thes, file);
@@ -181,13 +183,15 @@ export class ThesauriForm extends Component {
             </div>
           </div>
         </Form>
-        <input
-          ref={this.fileInputRef}
-          type="file"
-          accept="text/csv"
-          style={{ display: 'none' }}
-          onChange={this.import}
-        />
+        <form ref={this.fileFormRef} style={{ display: 'none' }}>
+          <input
+            ref={this.fileInputRef}
+            type="file"
+            accept="text/csv"
+            style={{ display: 'none' }}
+            onChange={this.import}
+          />
+        </form>
       </div>
     );
   }

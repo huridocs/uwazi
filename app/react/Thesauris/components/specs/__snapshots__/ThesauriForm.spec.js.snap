@@ -150,16 +150,24 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
       </div>
     </div>
   </Connect(Form)>
-  <input
-    accept="text/csv"
-    onChange={[Function]}
+  <form
     style={
       Object {
         "display": "none",
       }
     }
-    type="file"
-  />
+  >
+    <input
+      accept="text/csv"
+      onChange={[Function]}
+      style={
+        Object {
+          "display": "none",
+        }
+      }
+      type="file"
+    />
+  </form>
 </div>
 `;
 
