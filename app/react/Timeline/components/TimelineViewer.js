@@ -14,9 +14,12 @@ import { Icon } from 'UI';
 
 import moment from 'moment';
 
-import { caseTemplate, matterTemplate, renderableTemplates } from '../utils/timelineFixedData';
+import { caseTemplate, matterTemplate, renderableTemplates, datePropertyOverrides } from '../utils/timelineFixedData';
 
 const desiredTemplates = Object.keys(renderableTemplates).map(t => renderableTemplates[t]);
+const dateProperties = Object.keys(renderableTemplates).reduce((memo, t) => (
+  Object.assign(memo, { [renderableTemplates[t]]: datePropertyOverrides[t] || 'fecha' })
+), {});
 
 export class TimelineViewer extends Component {
   getTemplateType(itemTemplate) {
@@ -79,8 +82,8 @@ export class TimelineViewer extends Component {
     });
 
     reference.additionalData.className = this.getTemplateType(reference.data.template);
-    reference.additionalData.date = reference.data.metadata.fecha;
-    reference.timestamp = reference.data.metadata.fecha;
+    reference.additionalData.date = reference.data.metadata[dateProperties[reference.data.template]];
+    reference.timestamp = reference.data.metadata[dateProperties[reference.data.template]];
   }
 
   getDates(entity, origin) {
@@ -173,9 +176,9 @@ export class TimelineViewer extends Component {
     const years = {};
     references.forEach((reference) => {
       const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
-      const hasDate = reference.data.metadata.fecha !== null;
+      const hasDate = reference.data.metadata[dateProperties[reference.data.template]] !== null;
       if (isDesiredTemplate && hasDate) {
-        this.assignDataToYear(years, reference.data.metadata.fecha, reference);
+        this.assignDataToYear(years, reference.data.metadata[dateProperties[reference.data.template]], reference);
         this.assignAdditionalData(reference);
       }
     });
