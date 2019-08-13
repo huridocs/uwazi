@@ -395,7 +395,6 @@ describe('upload routes', () => {
           language: 'es',
           headers: {},
           body: { title: 'public submit' },
-          user: {},
           files: [file, attachment],
           io: {},
           getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
