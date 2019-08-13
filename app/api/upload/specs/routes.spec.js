@@ -7,6 +7,7 @@ import documents from 'api/documents';
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
+import settingsModel from 'api/settings/settingsModel';
 import search from 'api/search/search';
 import request from 'supertest';
 import express from 'express';
@@ -36,8 +37,7 @@ describe('upload routes', () => {
         }
       });
     });
-    routes[method](url, reqObject);
-    return promise;
+    return Promise.all([promise, routes[method](url, reqObject)]);
   };
 
   const deleteAllFiles = (cb) => {
@@ -395,7 +395,7 @@ describe('upload routes', () => {
         req = {
           language: 'es',
           headers: {},
-          body: { title: 'public submit' },
+          body: { title: 'public submit', template: templateId.toString() },
           user: {},
           files: [file, attachment],
           io: {},
@@ -415,6 +415,34 @@ describe('upload routes', () => {
       expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(true);
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))).toBe(true);
+    });
+
+    it('should not create entity if settings has no allowedRemoteTemplates option', async () => {
+      const [settingsObject] = await settingsModel.get();
+      delete settingsObject.allowedRemoteTemplates;
+      await settingsModel.db.replaceOne({}, settingsObject);
+      try {
+        await routes.post('/api/public', req);
+        fail('should return error');
+      } catch (e) {
+        expect(e.message).toMatch(/unauthorized template/i);
+        expect(e.code).toBe(400);
+      }
+      const res = await entities.get({ title: 'public submit' });
+      expect(res.length).toBe(0);
+    });
+
+    it('should not create entity if template is not whitelisted in allowedRemoteTemplates setting', async () => {
+      req.body.template = 'unknownTemplate';
+      try {
+        await routes.post('/api/public', req);
+        fail('should return error');
+      } catch (e) {
+        expect(e.message).toMatch(/unauthorized template/i);
+        expect(e.code).toBe(400);
+      }
+      const res = await entities.get({ title: 'public submit' });
+      expect(res.length).toBe(0);
     });
   });
 

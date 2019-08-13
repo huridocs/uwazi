@@ -14,7 +14,7 @@ import path from 'path';
 import proxy from 'express-http-proxy';
 import settings from 'api/settings';
 import configPaths from '../config/paths';
-import { validateRequest, handleError } from '../utils';
+import { validateRequest, handleError, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
 import uploads from './uploads';
@@ -86,8 +86,14 @@ export default (app) => {
     captchaAuthorization(),
     (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
     validateRequest(saveSchema),
-    async (req, res) => {
+    async (req, res, next) => {
       const entity = req.body;
+      const { allowedRemoteTemplates } = await settings.get(true);
+      if (!allowedRemoteTemplates || !allowedRemoteTemplates.includes(entity.template)) {
+        next(createError('Unauthorized template', 400));
+        return;
+      }
+
       entity.attachments = [];
       if (req.files.length) {
         req.files.forEach(async (file) => {
