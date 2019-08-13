@@ -6,9 +6,11 @@ import React, { Component } from 'react';
 
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
-import { Context } from 'app/Markdown/components';
+import MDComponents from 'app/Markdown/components';
 
 import Script from './Script';
+
+const { Context } = MDComponents;
 
 export class PageViewer extends Component {
   render() {

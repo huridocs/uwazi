@@ -5,7 +5,7 @@ import { Form, Field } from 'react-redux-form';
 
 import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
-import { FormGroup, Select as SimpleSelect } from '../../../Forms';
+import { Select as SimpleSelect } from '../../../Forms';
 import entitiesUtils from '../../../Entities/utils/filterBaseProperties';
 
 
@@ -89,10 +89,7 @@ describe('MetadataForm', () => {
 
   it('should render title field as a textarea', () => {
     render();
-    const title = component.find('textarea').closest(Field);
-    const titleGroup = component.find(FormGroup).at(0);
-    expect(title.props().model).toEqual('.title');
-    expect(titleGroup.props().model).toEqual('.title');
+    expect(component.find(Field)).toMatchSnapshot();
   });
 
   describe('on template change', () => {

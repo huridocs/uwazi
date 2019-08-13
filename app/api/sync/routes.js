@@ -6,11 +6,11 @@ import path from 'path';
 import search from 'api/search/search';
 
 import { needsAuthorization } from '../auth';
-import { uploadDocumentsPath } from '../config/paths';
+import paths from '../config/paths';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, path.normalize(`${uploadDocumentsPath}/`));
+    cb(null, path.normalize(`${paths.uploadedDocuments}/`));
   },
   filename(req, file, cb) {
     cb(null, file.originalname);

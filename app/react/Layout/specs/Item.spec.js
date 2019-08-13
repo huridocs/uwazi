@@ -1,7 +1,7 @@
 import { fromJS as Immutable } from 'immutable';
 import React from 'react';
 
-import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { shallow } from 'enzyme';
 
 import { FormatMetadata } from '../../Metadata';
@@ -46,7 +46,7 @@ describe('Item', () => {
 
   it('should have default props values assigned', () => {
     render();
-    expect(component.instance().props.search).toEqual(prioritySortingCriteria());
+    expect(component.instance().props.search).toEqual(prioritySortingCriteria.get());
   });
 
   it('should extend RowList.Item and append active, type and classNames correctly', () => {

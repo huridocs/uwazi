@@ -1,6 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
-import { notify, removeNotification } from 'app/Notifications/actions/notificationsActions';
+import { notificationActions } from 'app/Notifications';
 import { store } from '../store';
 import socket from '../socket';
 
@@ -9,10 +9,10 @@ let disconnectTimeoutMessage;
 socket.on('disconnect', (reason) => {
   if (reason === 'transport close') {
     if (disconnectNotifyId) {
-      store.dispatch(removeNotification(disconnectNotifyId));
+      store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
     }
     disconnectTimeoutMessage = setTimeout(() => {
-      disconnectNotifyId = store.dispatch(notify('Lost connection to the server, your changes may be lost', 'danger', false));
+      disconnectNotifyId = store.dispatch(notificationActions.notify('Lost connection to the server, your changes may be lost', 'danger', false));
     }, 8000);
   }
 });
@@ -20,8 +20,8 @@ socket.on('disconnect', (reason) => {
 socket.on('reconnect', () => {
   clearTimeout(disconnectTimeoutMessage);
   if (disconnectNotifyId) {
-    store.dispatch(removeNotification(disconnectNotifyId));
-    disconnectNotifyId = store.dispatch(notify('Connected to server', 'success'));
+    store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
+    disconnectNotifyId = store.dispatch(notificationActions.notify('Connected to server', 'success'));
     disconnectNotifyId = null;
   }
 });

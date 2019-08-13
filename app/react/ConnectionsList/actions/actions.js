@@ -1,10 +1,9 @@
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import { notify } from 'app/Notifications';
-
+import { notificationActions } from 'app/Notifications';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { fromJS as Immutable } from 'immutable';
-import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 import * as uiActions from 'app/Entities/actions/uiActions';
 
@@ -41,7 +40,11 @@ export function connectionsChanged() {
     .then((connectionsGroups) => {
       const filteredTemplates = connectionsGroups.reduce((templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())), []);
 
-      const sortOptions = prioritySortingCriteria({ currentCriteria: relationshipsList.sort, filteredTemplates, templates: getState().templates });
+      const sortOptions = prioritySortingCriteria.get({
+        currentCriteria: relationshipsList.sort,
+        filteredTemplates,
+        templates: getState().templates
+      });
       return Promise.all([connectionsGroups, sortOptions]);
     })
     .then(([connectionsGroups, sort]) => {
@@ -56,7 +59,7 @@ export function deleteConnection(connection) {
   return function (dispatch, getState) {
     return referencesAPI.delete(connection)
     .then(() => {
-      dispatch(notify('Connection deleted', 'success'));
+      dispatch(notificationActions.notify('Connection deleted', 'success'));
       return connectionsChanged()(dispatch, getState);
     });
   };

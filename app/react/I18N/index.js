@@ -3,7 +3,7 @@ import I18NLink from './components/I18NLink';
 import I18N from './components/I18N';
 import Translate from './components/Translate';
 import TranslateForm from './components/TranslateForm';
-import t, { missingTranslations } from './t';
+import t from './t';
 import I18NUtils from './utils';
 import I18NApi from './I18NApi';
 import * as actions from './actions/I18NActions';
@@ -17,6 +17,5 @@ export {
   TranslateForm,
   t,
   I18NApi,
-  actions,
-  missingTranslations
+  actions
 };

@@ -22,14 +22,14 @@ function deleteFiles(files) {
 }
 
 const deleteUploadedFile = filename =>
-  deleteFile(path.join(configPaths.uploadDocumentsPath, filename));
+  deleteFile(path.join(configPaths.uploadedDocuments, filename));
 
 const generateFileName = file =>
   Date.now() + ID() + path.extname(file.originalname);
 
 const fileFromReadStream = (fileName, readStream) =>
   new Promise((resolve, reject) => {
-    const filePath = path.join(configPaths.uploadDocumentsPath, fileName);
+    const filePath = path.join(configPaths.uploadedDocuments, fileName);
     const writeStream = fs.createWriteStream(filePath);
     readStream.pipe(writeStream)
     .on('finish', () => resolve(filePath))
@@ -46,7 +46,7 @@ const streamToString = (stream) => {
 };
 
 const getFileContent = (fileName) => {
-  const filePath = path.join(configPaths.uploadDocumentsPath, fileName);
+  const filePath = path.join(configPaths.uploadedDocuments, fileName);
   return asyncFS.readFile(filePath, 'utf8');
 };
 

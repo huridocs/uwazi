@@ -1,7 +1,7 @@
 import superagent from 'superagent';
 
 import { actions as basicActions } from 'app/BasicReducer';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import { selectSingleDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
@@ -118,18 +118,18 @@ export function publicSubmit(data) {
     request
     .on('response', (response) => {
       if (response.status === 200) {
-        dispatch(notify('Success', 'success'));
+        dispatch(notificationActions.notify('Success', 'success'));
         resolve(response);
         return;
       }
 
       reject(response);
       if (response.status === 403) {
-        dispatch(notify('Captcha error', 'danger'));
+        dispatch(notificationActions.notify('Captcha error', 'danger'));
         return;
       }
 
-      dispatch(notify('An error has ocurred', 'danger'));
+      dispatch(notificationActions.notify('An error has ocurred', 'danger'));
     })
     .end();
   });
@@ -178,7 +178,7 @@ export function documentProcessError(sharedId) {
 export function publishEntity(entity) {
   return dispatch => api.post('entities', { ...entity, published: true })
   .then((response) => {
-    dispatch(notify('Entity published', 'success'));
+    dispatch(notificationActions.notify('Entity published', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
     dispatch(basicActions.set('entityView/entity', response.json));
     dispatch(unselectAllDocuments());
@@ -188,7 +188,7 @@ export function publishEntity(entity) {
 export function publishDocument(doc) {
   return dispatch => api.post('documents', { ...doc, published: true })
   .then((response) => {
-    dispatch(notify('Document published', 'success'));
+    dispatch(notificationActions.notify('Document published', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc });
     dispatch(basicActions.set('viewer/doc', response.json));
     dispatch(unselectAllDocuments());
@@ -198,7 +198,7 @@ export function publishDocument(doc) {
 export function unpublishEntity(entity) {
   return dispatch => api.post('entities', { ...entity, published: false })
   .then((response) => {
-    dispatch(notify('Entity unpublished', 'success'));
+    dispatch(notificationActions.notify('Entity unpublished', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
     dispatch(basicActions.set('entityView/entity', response.json));
     dispatch(unselectAllDocuments());
@@ -208,7 +208,7 @@ export function unpublishEntity(entity) {
 export function unpublishDocument(doc) {
   return dispatch => api.post('documents', { ...doc, published: false })
   .then((response) => {
-    dispatch(notify('Document unpublished', 'success'));
+    dispatch(notificationActions.notify('Document unpublished', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc });
     dispatch(basicActions.set('viewer/doc', response.json));
     dispatch(unselectAllDocuments());

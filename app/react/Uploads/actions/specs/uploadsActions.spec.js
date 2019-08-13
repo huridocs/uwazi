@@ -1,4 +1,3 @@
-import { File } from 'babel-core';
 import superagent from 'superagent';
 import thunk from 'redux-thunk';
 
@@ -17,7 +16,6 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 const getMockFile = () => {
-  // needed to work with firefox/chrome and phantomjs
   let file = { name: 'filename' };
   const isChrome = typeof File === 'function';
   if (isChrome) {

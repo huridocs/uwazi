@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 import { Server } from 'http';
 import path from 'path';
 
-import { customUploadsPath } from './api/config/paths';
+import paths from './api/config/paths';
 import apiRoutes from './api/api';
 import authRoutes from './api/auth/routes';
 import dbConfig from './api/config/database';
@@ -59,9 +59,9 @@ authRoutes(app);
 
 app.use(privateInstanceMiddleware);
 app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
-app.use('/assets', express.static(customUploadsPath));
+app.use('/assets', express.static(paths.customUploads));
 // retained for backwards compatibility
-app.use('/uploaded_documents', express.static(customUploadsPath));
+app.use('/uploaded_documents', express.static(paths.customUploads));
 
 
 apiRoutes(app, http);

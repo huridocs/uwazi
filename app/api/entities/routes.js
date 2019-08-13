@@ -4,7 +4,7 @@ import entities from './entities';
 import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import { saveSchema, metadataSchema, iconSchema } from './endpointSchema';
 
 Joi.objectId = objectId(Joi);
@@ -13,7 +13,7 @@ export default (app) => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(saveSchema),
+    validation.validateRequest(saveSchema),
     (req, res, next) => entities.save(req.body, { user: req.user, language: req.language })
     .then((response) => {
       res.json(response);
@@ -29,7 +29,7 @@ export default (app) => {
   app.post(
     '/api/entities/multipleupdate',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       ids: Joi.array().items(Joi.string()).required(),
       values: Joi.object().keys({
         metadata: metadataSchema,
@@ -46,7 +46,7 @@ export default (app) => {
 
   app.get(
     '/api/entities/count_by_template',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       templateId: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => entities.countByTemplate(req.query.templateId)
@@ -56,7 +56,7 @@ export default (app) => {
 
   app.get(
     '/api/entities/get_raw_page',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       sharedId: Joi.string().required(),
       pageNumber: Joi.number().required()
     }).required(), 'query'),
@@ -66,7 +66,7 @@ export default (app) => {
   );
 
   app.get('/api/entities',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string().required(),
       omitRelationships: Joi.any()
     }).required(), 'query'),
@@ -90,7 +90,7 @@ export default (app) => {
 
   app.delete('/api/entities',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       sharedId: Joi.string().required()
     }).required(), 'query'),
     (req, res, next) => {
@@ -101,7 +101,7 @@ export default (app) => {
 
   app.post('/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       sharedIds: Joi.array().items(Joi.string()).required()
     }).required(), 'body'),
     (req, res, next) => {

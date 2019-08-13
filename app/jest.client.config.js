@@ -5,7 +5,7 @@ module.exports = {
     '**/react/**/specs/*spec.js?(x)'
   ],
   testPathIgnorePatterns: [],
-  setupTestFrameworkScriptFile: '<rootDir>/setUpJestClient.js',
+  setupFilesAfterEnv: ['<rootDir>/setUpJestClient.js'],
   moduleNameMapper: {
     '\\.(css|scss)$': 'identity-obj-proxy'
   },

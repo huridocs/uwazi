@@ -11,21 +11,21 @@ export default (app, server) => {
   //module routes
   //require('./auth/routes.js')(app);
 
-  require('./socketio/middleware.js')(server, app);
-  require('./relationships/routes.js')(app);
-  require('./users/routes.js')(app);
-  require('./templates/routes.js')(app);
-  require('./search/routes.js')(app);
-  require('./thesauris/routes.js')(app);
-  require('./relationtypes/routes.js')(app);
-  require('./documents/routes.js')(app);
-  require('./contact/routes.js')(app);
-  require('./entities/routes.js')(app);
-  require('./pages/routes.js')(app);
-  require('./upload/routes.js')(app);
-  require('./settings/routes.js')(app);
-  require('./i18n/routes.js')(app);
-  require('./attachments/routes.js')(app);
-  require('./sync/routes.js')(app);
-  require('./swagger/swaggerconfig.js')(app);
+  require('./socketio/middleware.js').default(server, app);
+  require('./relationships/routes.js').default(app);
+  require('./users/routes.js').default(app);
+  require('./templates/routes.js').default(app);
+  require('./search/routes.js').default(app);
+  require('./thesauris/routes.js').default(app);
+  require('./relationtypes/routes.js').default(app);
+  require('./documents/routes.js').default(app);
+  require('./contact/routes.js').default(app);
+  require('./entities/routes.js').default(app);
+  require('./pages/routes.js').default(app);
+  require('./upload/routes.js').default(app);
+  require('./settings/routes.js').default(app);
+  require('./i18n/routes.js').default(app);
+  require('./attachments/routes.js').default(app);
+  require('./sync/routes.js').default(app);
+  require('./swagger/swaggerconfig.js').default(app);
 };

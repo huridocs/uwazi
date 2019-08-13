@@ -1,7 +1,7 @@
 import { fromJS as Immutable } from 'immutable';
 import { actions as formActions } from 'react-redux-form';
 
-import * as Notifications from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';
 
@@ -31,7 +31,7 @@ describe('ConnectionsList actions', () => {
     spyOn(referencesAPI, 'delete').and.returnValue(Promise.resolve());
     spyOn(referencesAPI, 'getGroupedByConnection').and.returnValue(Promise.resolve(groupedConnections));
     spyOn(prioritySortingCriteria, 'get').and.returnValue(Promise.resolve('prioritySorting'));
-    spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
+    spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
     spyOn(formActions, 'merge').and.callFake((scope, sort) => `merge: ${scope} with: ${sort}`);
     spyOn(formActions, 'change').and.callFake((scope, sort) => `change: ${scope} with: ${sort || 'empty'}`);
   });
@@ -120,7 +120,7 @@ describe('ConnectionsList actions', () => {
       actions.deleteConnection('data')(dispatch, getState)
       .then(() => {
         expect(referencesAPI.delete).toHaveBeenCalledWith('data');
-        expect(Notifications.notify).toHaveBeenCalledWith('Connection deleted', 'success');
+        expect(notificationActions.notify).toHaveBeenCalledWith('Connection deleted', 'success');
         expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/connectionsGroups/SET', value: groupedConnections });
         expect(dispatch).toHaveBeenCalledWith('merge: relationships/list.sort with: prioritySorting');
         expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });

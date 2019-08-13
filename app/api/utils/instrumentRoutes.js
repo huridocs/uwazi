@@ -1,4 +1,4 @@
-import * as utils from 'api/utils';
+import { validation } from 'api/utils';
 
 const createSpy = (key, resolve) => jasmine.createSpy(key).and.callFake((...args) => {
   resolve(`${key}:${args.join(',')}`);
@@ -45,9 +45,9 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
 
   if (args) {
     result.middlewares = args.slice(1, -1).filter(arg => !arg.isJoi);
-    const validation = args.slice(1, -1).find(arg => arg.isJoi);
-    if (validation) {
-      result.validation = validation.describe();
+    const joiValidation = args.slice(1, -1).find(arg => arg.isJoi);
+    if (joiValidation) {
+      result.validation = joiValidation.describe();
     }
   }
 
@@ -56,10 +56,10 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
 
 export default (route, io) => {
   const app = jasmine.createSpyObj('app', ['get', 'post', 'delete', 'use']);
-  const originalValidateRequest = utils.validateRequest;
-  spyOn(utils, 'validateRequest').and.callFake(schema => schema);
+  const originalValidateRequest = validation.validateRequest;
+  spyOn(validation, 'validateRequest').and.callFake(schema => schema);
   route(app, io);
-  utils.validateRequest = originalValidateRequest;
+  validation.validateRequest = originalValidateRequest;
 
   const get = (routePath, req, res = {}, next) => executeRoute('get', routePath, req, res, next, app);
   const _get = (routePath, req, res = {}, next) => executeRoute('get', routePath, req, res, next, app, false);

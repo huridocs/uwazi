@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import ShowIf from 'app/App/ShowIf';
 import { Field, Control } from 'react-redux-form';
 import { t } from 'app/I18N';
-import advancedSortUtil from 'app/utils/advancedSort';
+import { advancedSort } from 'app/utils/advancedSort';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import { store } from 'app/store';
 import { Icon } from 'UI';
@@ -43,7 +43,7 @@ export default class NestedMultiselect extends Component {
     }
     options = options
     .map(item => ({ label: item.key, value: item.key, results: item.filtered.total.filtered.doc_count })).filter(option => option.results);
-    return advancedSortUtil.advancedSort(options, { property: 'value', treatAs: 'dottedList', listTypes: [Number, Number, String] });
+    return advancedSort(options, { property: 'value', treatAs: 'dottedList', listTypes: [Number, Number, String] });
   }
 
   resetFilter() {
