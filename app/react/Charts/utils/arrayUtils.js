@@ -29,7 +29,7 @@ function formatPayload(data) {
   }));
 }
 
-const formatDataForChart = (data, property, thesauris, { context, excludeZero, maxCategories }) => {
+const formatDataForChart = (data, property, thesauris, { context, excludeZero, maxCategories, aggregateOthers = false }) => {
   const { options } = populateOptions([{ content: context }], thesauris.toJS())[0];
 
   let relevant = data.toJS().filter(i => i.key !== 'missing');
@@ -47,7 +47,7 @@ const formatDataForChart = (data, property, thesauris, { context, excludeZero, m
       // eslint-disable-next-line
       memo.filtered.doc_count += category.filtered.doc_count;
       return memo;
-    }, { others: true, key: 'others', filtered: { doc_count: 0 } });
+    }, { others: aggregateOthers, key: 'others', filtered: { doc_count: 0 } });
   }
 
   return categories.map((item) => {
