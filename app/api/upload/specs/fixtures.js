@@ -22,7 +22,7 @@ export default {
       _id: db.id(),
       languages: [{ key: 'es', default: true }],
       publicFormDestination: 'http://localhost:54321',
-      allowedRemoteTemplates: [templateId.toString()]
+      allowedPublicTemplates: [templateId.toString()]
     }
   ],
 };

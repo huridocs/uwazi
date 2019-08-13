@@ -88,8 +88,8 @@ export default (app) => {
     validateRequest(saveSchema),
     async (req, res, next) => {
       const entity = req.body;
-      const { allowedRemoteTemplates } = await settings.get(true);
-      if (!allowedRemoteTemplates || !allowedRemoteTemplates.includes(entity.template)) {
+      const { allowedPublicTemplates } = await settings.get(true);
+      if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
         next(createError('Unauthorized template', 400));
         return;
       }

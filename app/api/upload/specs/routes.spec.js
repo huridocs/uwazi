@@ -417,9 +417,9 @@ describe('upload routes', () => {
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))).toBe(true);
     });
 
-    it('should not create entity if settings has no allowedRemoteTemplates option', async () => {
+    it('should not create entity if settings has no allowedPublicTemplates option', async () => {
       const [settingsObject] = await settingsModel.get();
-      delete settingsObject.allowedRemoteTemplates;
+      delete settingsObject.allowedPublicTemplates;
       await settingsModel.db.replaceOne({}, settingsObject);
       try {
         await routes.post('/api/public', req);
@@ -432,7 +432,7 @@ describe('upload routes', () => {
       expect(res.length).toBe(0);
     });
 
-    it('should not create entity if template is not whitelisted in allowedRemoteTemplates setting', async () => {
+    it('should not create entity if template is not whitelisted in allowedPublicTemplates setting', async () => {
       req.body.template = 'unknownTemplate';
       try {
         await routes.post('/api/public', req);
