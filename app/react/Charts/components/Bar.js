@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip, Rectangle, Legend } from 'recharts';
 
-import { formatPayload } from '../utils/arrayUtils';
+import arrayUtils from '../utils/arrayUtils';
 
 import colorScheme from '../utils/colorScheme';
 
@@ -78,7 +78,7 @@ export class RechartsBar extends Component {
           <CartesianGrid strokeDasharray="2 4"/>
           <Tooltip content={<ExtendedTooltip parentData={this.state.fullData} chartLabel={this.props.chartLabel} />}/>
           <Bar dataKey="value" fill="#D24040" shape={<ColoredBar />} />
-          <Legend payload={formatPayload(this.state.fullData)} />
+          <Legend payload={arrayUtils.formatPayload(this.state.fullData)} />
         </BarChart>
       </ResponsiveContainer>
     );

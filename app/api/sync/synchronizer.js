@@ -4,7 +4,7 @@ import util from 'util';
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { uploadDocumentsPath } from 'api/config/paths';
+import paths from 'api/config/paths';
 
 import syncsModel from './syncsModel';
 
@@ -12,7 +12,7 @@ const oneSecond = 1000;
 const readFile = util.promisify(fs.readFile);
 
 const uploadFile = async (url, filename) => {
-  const filepath = path.join(uploadDocumentsPath, filename);
+  const filepath = path.join(paths.uploadedDocuments, filename);
   const file = await readFile(filepath);
   return request.uploadFile(urljoin(url, 'api/sync/upload'), filename, file);
 };

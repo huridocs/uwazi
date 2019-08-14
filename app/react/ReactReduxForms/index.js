@@ -19,9 +19,10 @@ const RadioButtons = props => <Control.select component={forms.RadioButtons} {..
 const Switcher = props => <Control.select component={forms.Switcher} {...props}/>;
 const Geolocation = props => <Control component={forms.Geolocation} {...props}/>;
 const LinkField = props => <Control component={forms.LinkField} {...props}/>;
-const { NestedMultiselect, FormGroup } = forms;
+const NestedMultiselect = props => <forms.NestedMultiselect {...props} />;
+const FormGroup = props => <forms.FormGroup {...props} />;
 
-export default {
+export {
   Select,
   FormGroup,
   DatePicker,

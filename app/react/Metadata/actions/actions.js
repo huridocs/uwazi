@@ -4,7 +4,7 @@ import superagent from 'superagent';
 import { APIURL } from 'app/config.js';
 import { advancedSort } from 'app/utils/advancedSort';
 import { api } from 'app/Entities';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import emptyTemplate from '../helpers/defaultTemplate';
@@ -127,7 +127,7 @@ export function multipleUpdate(_entities, values) {
     const updatedEntitiesIds = updatedEntities.map(entity => entity.sharedId);
     return api.multipleUpdate(updatedEntitiesIds, values)
     .then(() => {
-      dispatch(notify('Update success', 'success'));
+      dispatch(notificationActions.notify('Update success', 'success'));
       if (values.published !== undefined) {
         dispatch(unselectAllDocuments());
         dispatch(removeDocuments(updatedEntities));

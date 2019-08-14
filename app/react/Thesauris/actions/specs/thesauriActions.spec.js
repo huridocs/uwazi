@@ -1,5 +1,6 @@
 import configureMockStore from 'redux-mock-store';
 import backend from 'fetch-mock';
+import superagent from 'superagent';
 import { APIURL } from 'app/config.js';
 import { mockID } from 'shared/uniqueID';
 import thunk from 'redux-thunk';
@@ -18,6 +19,7 @@ describe('thesaurisActions', () => {
 
   beforeEach(() => {
     mockID();
+
     dispatch = jasmine.createSpy('dispatch');
     getState = jasmine.createSpy('getState').and.returnValue({ thesauri: { data: { values: [{ label: 'something' }, { label: '' }] } } });
     backend.restore();
@@ -45,6 +47,63 @@ describe('thesaurisActions', () => {
       .catch(done.fail);
 
       expect(JSON.parse(backend.lastOptions(`${APIURL}thesauris`).body)).toEqual(thesauri);
+    });
+  });
+
+  describe('importThesauri', () => {
+    const mockSuperAgent = (url = `${APIURL}thesauris`) => {
+      const mockUpload = superagent.post(url);
+      spyOn(mockUpload, 'field').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+      spyOn(superagent, 'post').and.returnValue(mockUpload);
+      return mockUpload;
+    };
+    it('should save thesaurus, import csv data and notify', (done) => {
+      const thesaurus = { _id: 'foo', name: 'Bar', values: [] };
+      const store = mockStore({});
+      const mockUpload = mockSuperAgent();
+      const file = {
+        name: 'filename.csv'
+      };
+
+      const resp = { _id: 'foo', name: 'Bar', values: [{ label: 'val' }] };
+
+      const expectedActions = [
+        { type: types.THESAURI_SAVED },
+        { type: notificationsTypes.NOTIFY, notification: { message: 'Data imported', type: 'success', id: 'unique_id' } },
+        { type: 'rrf/change', model: 'thesauri.data', value: resp, silent: false, multi: false, external: true }
+      ];
+
+      store.dispatch(actions.importThesauri(thesaurus, file))
+      .then(() => {
+        expect(superagent.post).toHaveBeenCalledWith(`${APIURL}thesauris`);
+        expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+        expect(mockUpload.field).toHaveBeenCalledWith('thesauri', JSON.stringify(thesaurus));
+        expect(store.getActions()).toEqual(expectedActions);
+        done();
+      });
+
+      mockUpload.emit('response', { text: JSON.stringify(resp), status: 200 });
+    });
+
+    it('should notify error if error is returned', (done) => {
+      const thesaurus = {};
+      const file = {};
+      const store = mockStore({});
+      const mockUpload = mockSuperAgent();
+
+      const expectedActions = [
+        { type: notificationsTypes.NOTIFY, notification: { message: 'some error', type: 'danger', id: 'unique_id' } },
+      ];
+
+      store.dispatch(actions.importThesauri(thesaurus, file))
+      .then(() => {
+        expect(superagent.post).toHaveBeenCalledWith(`${APIURL}thesauris`);
+        expect(store.getActions()).toEqual(expectedActions);
+        done();
+      });
+
+      mockUpload.emit('response', { text: JSON.stringify({ error: 'some error' }), status: 400 });
     });
   });
 

@@ -1,12 +1,12 @@
 import Joi from 'joi';
 import relationtypes from 'api/relationtypes/relationtypes';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
   app.post('/api/relationtypes',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId(),
       __v: Joi.number(),
       name: Joi.string(),
@@ -36,7 +36,7 @@ export default (app) => {
   );
 
   app.get('/api/relationtypes',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId()
     }), 'query'),
     (req, res, next) => {
@@ -54,7 +54,7 @@ export default (app) => {
 
   app.delete('/api/relationtypes',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => {

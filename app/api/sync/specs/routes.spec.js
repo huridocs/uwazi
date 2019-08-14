@@ -1,18 +1,11 @@
 import 'api/utils/jasmineHelpers';
 
-import express from 'express';
-
 import { models } from 'api/odm';
 import entities from 'api/entities';
-import requestAPI from 'supertest';
 import search from 'api/search/search';
-import path from 'path';
-import fs from 'fs';
-import * as auth from 'api/auth';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import syncRoutes from '../routes.js';
-import pathsConfig from '../../config/paths';
 
 describe('sync', () => {
   let routes;
@@ -26,6 +19,7 @@ describe('sync', () => {
   };
 
   beforeEach(async () => {
+    jest.mock('../../auth');
     routes = instrumentRoutes(syncRoutes);
     models.model1 = {
       save: jasmine.createSpy('model1.save'),
@@ -108,28 +102,6 @@ describe('sync', () => {
     describe('sync/upload', () => {
       it('should need authorization', () => {
         expect(routes._post('/api/sync/upload', {})).toNeedAuthorization();
-      });
-
-      it('should place document without changing name on /uploads', async () => {
-        pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
-        spyOn(auth, 'needsAuthorization').and.callFake(() => (_req, _res, next) => {
-          next();
-        });
-        try {
-          fs.unlinkSync(path.join(pathsConfig.uploadDocumentsPath, 'test.txt'));
-        } catch (e) {
-          //
-        }
-        const app = express();
-        syncRoutes(app);
-
-        await requestAPI(app)
-        .post('/api/sync/upload')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .attach('file', path.join(__dirname, 'test.txt'));
-
-        const properlyUploaded = fs.existsSync(path.join(pathsConfig.uploadDocumentsPath, 'test.txt'));
-        expect(properlyUploaded).toBeTruthy();
       });
     });
   });

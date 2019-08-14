@@ -6,7 +6,7 @@ import { I18NLink, t } from 'app/I18N';
 import { deleteThesauri, checkThesauriCanBeDeleted } from 'app/Thesauris/actions/thesaurisActions';
 import { Icon } from 'UI';
 
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import { notificationActions } from 'app/Notifications';
 
 import sortThesauri from '../utils/sortThesauri';
 
@@ -80,7 +80,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ notify, deleteThesauri, checkThesauriCanBeDeleted }, dispatch);
+  return bindActionCreators({ notify: notificationActions.notify, deleteThesauri, checkThesauriCanBeDeleted }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ThesaurisList);

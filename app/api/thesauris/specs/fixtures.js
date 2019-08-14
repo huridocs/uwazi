@@ -51,7 +51,10 @@ export default {
     { _id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'english entity', language: 'en', template: db.id(entityTemplateId), icon: 'Icon' },
     { _id: db.id(), sharedId: 'sharedId', type: 'entity', title: 'spanish entity', language: 'es', template: db.id(entityTemplateId), icon: 'Icon', published: true },
     { _id: db.id(), sharedId: 'other', type: 'entity', title: 'unpublished entity', language: 'es', template: db.id(entityTemplateId), published: false },
-  ]
+  ],
+  settings: [
+    { _id: db.id(), languages: [{ key: 'es', default: true }] }
+  ],
 };
 
 export {

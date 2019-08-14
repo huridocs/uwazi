@@ -10,7 +10,7 @@ import api from 'app/utils/api';
 import { I18NUtils } from 'app/I18N';
 
 import RouteHandler from '../RouteHandler';
-import config from '../../config.js';
+import { APIURL } from '../../config.js';
 
 class TestController extends RouteHandler {
   static requestState(params) {
@@ -53,7 +53,7 @@ describe('RouteHandler', () => {
 
     backend.restore();
     backend
-    .get(`${config.APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
+    .get(`${APIURL}templates`, { body: JSON.stringify({ rows: [] }) });
     delete window.__initialData__;
 
     spyOn(TestController, 'requestState').and.callThrough();

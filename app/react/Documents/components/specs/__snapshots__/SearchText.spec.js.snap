@@ -33,7 +33,7 @@ exports[`SearchText blankState when there is search term should render a no matc
 `;
 
 exports[`SearchText should render SnippetList and pass down same props to it 1`] = `
-<Connect(Component)
+<Connect(SnippetList)
   doc={
     Immutable.Map {
       "_id": "id",

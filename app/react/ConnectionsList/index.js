@@ -4,7 +4,7 @@ import ConnectionsGroups from './components/ConnectionsGroups';
 import ConnectionsList from './components/ConnectionsList';
 import * as actions from './actions/actions';
 
-export default {
+export {
   reducer,
   ResetSearch,
   ConnectionsGroups,

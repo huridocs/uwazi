@@ -4,7 +4,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
 <ul
   className="snippet-list"
 >
-  <Component
+  <MetadataFieldSnippets
     documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
@@ -34,7 +34,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
       }
     }
   />
-  <Component
+  <MetadataFieldSnippets
     documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
@@ -64,7 +64,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
       }
     }
   />
-  <Component
+  <DocumentContentSnippets
     documentSnippets={
       Immutable.List [
         Immutable.Map {
@@ -98,7 +98,7 @@ exports[`SnippetList should render only document snippets if there are no metada
 <ul
   className="snippet-list"
 >
-  <Component
+  <DocumentContentSnippets
     documentSnippets={
       Immutable.List [
         Immutable.Map {
@@ -132,7 +132,7 @@ exports[`SnippetList should render only metadata snippets if there are no docume
 <ul
   className="snippet-list"
 >
-  <Component
+  <MetadataFieldSnippets
     documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
@@ -162,7 +162,7 @@ exports[`SnippetList should render only metadata snippets if there are no docume
       }
     }
   />
-  <Component
+  <MetadataFieldSnippets
     documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {

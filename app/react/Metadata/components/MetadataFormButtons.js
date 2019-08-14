@@ -9,7 +9,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { publish, unpublish } from 'app/Uploads/actions/uploadsActions';
-import { filterBaseProperties } from 'app/Entities/utils/filterBaseProperties';
+import entitiesUtils from 'app/Entities/utils/filterBaseProperties';
 
 import * as actions from '../actions/actions';
 
@@ -35,7 +35,7 @@ export class MetadataFormButtons extends Component {
       e.stopPropagation();
       this.context.confirm({
         accept: () => {
-          this.props.publish(filterBaseProperties(data));
+          this.props.publish(entitiesUtils.filterBaseProperties(data));
         },
         title: 'Confirm',
         message: 'Are you sure you want to publish this entity?',
@@ -46,7 +46,7 @@ export class MetadataFormButtons extends Component {
       e.stopPropagation();
       this.context.confirm({
         accept: () => {
-          this.props.unpublish(filterBaseProperties(data));
+          this.props.unpublish(entitiesUtils.filterBaseProperties(data));
         },
         title: 'Confirm',
         message: 'Are you sure you want to unpublish this entity?',

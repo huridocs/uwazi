@@ -21,6 +21,18 @@ const checkDuplicated = template => model.get()
   }
 });
 
+const removePropsWithUnexistentId = async (unexistentId) => {
+  const relatedTemplates = await model.get({ 'properties.content': unexistentId });
+  await Promise.all(
+    relatedTemplates.map(t =>
+      model.save({
+        ...t,
+        properties: t.properties.filter(prop => prop.content !== unexistentId)
+      })
+    )
+  );
+};
+
 const createTranslationContext = (template) => {
   const titleProperty = template.commonProperties.find(p => p.name === 'title');
   const context = template.properties.reduce((ctx, prop) => {
@@ -128,16 +140,16 @@ export default {
     return model.getById(templateId);
   },
 
-  delete(template) {
-    return this.countByTemplate(template._id)
-    .then((count) => {
-      if (count > 0) {
-        return Promise.reject({ key: 'documents_using_template', value: count });
-      }
-      return translations.deleteContext(template._id);
-    })
-    .then(() => model.delete(template._id))
-    .then(() => template);
+  async delete(template) {
+    const count = await this.countByTemplate(template._id);
+    if (count > 0) {
+      return Promise.reject({ key: 'documents_using_template', value: count });
+    }
+    await translations.deleteContext(template._id);
+    await removePropsWithUnexistentId(template._id);
+    await model.delete(template._id);
+
+    return template;
   },
 
   countByTemplate(template) {

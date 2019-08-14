@@ -20,22 +20,22 @@ describe('Attachments Routes', () => {
 
   beforeEach(async () => {
     spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
-    originalAttachmentsPath = paths.attachmentsPath;
+    originalAttachmentsPath = paths.attachments;
     routes = instrumentRoutes(attachmentsRoutes);
 
     await db.clearAllAndLoad(fixtures);
   });
 
   afterEach(() => {
-    paths.attachmentsPath = originalAttachmentsPath;
+    paths.attachments = originalAttachmentsPath;
   });
 
   afterAll(async () => db.disconnect());
 
   describe('/attachment/file', () => {
     it('should send the requested existing file', async () => {
-      paths.attachmentsPath = `${__dirname}/uploads/`;
-      const expected = `sendFile:${paths.attachmentsPath}mockfile.doc`;
+      paths.attachments = `${__dirname}/uploads/`;
+      const expected = `sendFile:${paths.attachments}mockfile.doc`;
       await testRouteResponse('/api/attachment/:file', { params: { file: 'mockfile.doc' } }, expected);
     });
 
@@ -62,11 +62,11 @@ describe('Attachments Routes', () => {
     it('should download the document with the title as file name (replacing extension with file ext)', async () => {
       const req = { query: { _id: entityId, file: 'match.doc' } };
       const res = {};
-      paths.attachmentsPath = `${__dirname}/uploads`;
+      paths.attachments = `${__dirname}/uploads`;
 
       await routes.get('/api/attachments/download', req, res);
       expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
-      paths.attachmentsPath = `${__dirname}/uploads/`;
+      paths.attachments = `${__dirname}/uploads/`;
       await routes.get('/api/attachments/download', req, res);
       expect(res.download).toHaveBeenCalledWith(`${__dirname}/uploads/${req.query.file}`, 'common name 2.doc');
     });
@@ -75,7 +75,7 @@ describe('Attachments Routes', () => {
       const nonExistentId = db.id();
       const req = { query: { _id: nonExistentId, file: 'match.doc' } };
       const res = {};
-      paths.attachmentsPath = `${__dirname}/uploads`;
+      paths.attachments = `${__dirname}/uploads`;
 
       await expect404Error(req, res);
     });
@@ -83,7 +83,7 @@ describe('Attachments Routes', () => {
     it('should fail when attachment does not exist', async () => {
       const req = { query: { _id: entityId, file: 'nonExisting.doc' } };
       const res = {};
-      paths.attachmentsPath = `${__dirname}/uploads`;
+      paths.attachments = `${__dirname}/uploads`;
 
       await expect404Error(req, res);
     });

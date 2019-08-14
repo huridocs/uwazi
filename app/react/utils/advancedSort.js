@@ -50,40 +50,42 @@ const compare = (baseA, baseB, options) => {
 
 const evalIfHasProperty = (data, property) => typeof data === 'object' && data !== null && Object.keys(data).indexOf(property) !== -1;
 
-export default {
-  advancedSort: (array, options = {}) => {
-    options.order = options.order || 'asc';
-    const sortedArray = copyArray(array);
+const advancedSort = (array, options = {}) => {
+  options.order = options.order || 'asc';
+  const sortedArray = copyArray(array);
 
-    if (options.property) {
-      sortedArray.sort((baseA, baseB) => {
-        let a;
-        let b;
+  if (options.property) {
+    sortedArray.sort((baseA, baseB) => {
+      let a;
+      let b;
 
-        if (!Array.isArray(options.property)) {
-          a = baseA[options.property];
-          b = baseB[options.property];
-        }
+      if (!Array.isArray(options.property)) {
+        a = baseA[options.property];
+        b = baseB[options.property];
+      }
 
-        if (Array.isArray(options.property)) {
-          a = options.property.reduce((memo, property) => evalIfHasProperty(memo, property) ? memo[property] : null, baseA);
-          b = options.property.reduce((memo, property) => evalIfHasProperty(memo, property) ? memo[property] : null, baseB);
-        }
+      if (Array.isArray(options.property)) {
+        a = options.property.reduce((memo, property) => evalIfHasProperty(memo, property) ? memo[property] : null, baseA);
+        b = options.property.reduce((memo, property) => evalIfHasProperty(memo, property) ? memo[property] : null, baseB);
+      }
 
-        if (!a) {
-          return 1;
-        }
-        if (!b) {
-          return -1;
-        }
-        return compare(a, b, options);
-      });
-    }
-
-    if (!options.property) {
-      sortedArray.sort((a, b) => compare(a, b, options));
-    }
-
-    return sortedArray;
+      if (!a) {
+        return 1;
+      }
+      if (!b) {
+        return -1;
+      }
+      return compare(a, b, options);
+    });
   }
+
+  if (!options.property) {
+    sortedArray.sort((a, b) => compare(a, b, options));
+  }
+
+  return sortedArray;
+};
+
+export {
+  advancedSort
 };

@@ -7,7 +7,7 @@ import migration from '../index.js';
 describe('migration fullText_to_per_page', () => {
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
-    paths.uploadDocumentsPath = __dirname;
+    paths.uploadedDocuments = __dirname;
     await testingDB.clearAllAndLoad(fixtures);
   });
 

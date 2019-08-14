@@ -80,4 +80,40 @@ describe('BarChart Markdown component', () => {
     expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop2: 'propValue' });
     expect(component).toMatchSnapshot();
   });
+
+  describe('when passing maxCategories', () => {
+    it('should only render the number of categories passed', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id4', filtered: { doc_count: 0 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.maxCategories = '2';
+      const component = shallow(<BarChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+
+    it('should render others when passing aggregateOthers', () => {
+      spyOn(markdownDatasets, 'getAggregations').and.returnValue(Immutable.fromJS([
+        { key: 'id6', filtered: { doc_count: 57 } },
+        { key: 'id2', filtered: { doc_count: 33 } },
+        { key: 'id1', filtered: { doc_count: 25 } },
+        { key: 'id3', filtered: { doc_count: 13 } },
+        { key: 'id8', filtered: { doc_count: 2 } },
+      ]));
+
+      const props = mapStateToProps(state, { prop1: 'propValue' });
+      props.maxCategories = '2';
+      props.aggregateOthers = 'true';
+      const component = shallow(<BarChartComponent {...props} property="prop1" classname="custom-class" context="tContext" />);
+
+      expect(markdownDatasets.getAggregations).toHaveBeenCalledWith(state, { prop1: 'propValue' });
+      expect(component).toMatchSnapshot();
+    });
+  });
 });

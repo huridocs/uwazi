@@ -36,7 +36,7 @@ const importFile = filePath => ({
     await fileFromReadStream(generatedName, await this.readStream(fileName));
 
     return {
-      destination: configPaths.uploadDocumentsPath,
+      destination: configPaths.uploadedDocuments,
       originalname: fileName,
       filename: generatedName,
     };

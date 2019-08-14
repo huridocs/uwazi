@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
-import { highlightSearch, selectSnippet } from 'app/Viewer/actions/uiActions';
+import { selectSnippet } from 'app/Viewer/actions/uiActions';
 import { browserHistory } from 'react-router';
 import { Icon } from 'UI';
 import SearchTips from 'app/Library/components/SearchTips';
@@ -21,12 +21,18 @@ export class SearchText extends Component {
 
   componentDidMount() {
     if (this.props.storeKey === 'documentViewer') {
-      this.searchSnippets(this.props.searchTerm, this.props.doc.get('sharedId'));
+      this.searchSnippets(
+        this.props.searchTerm,
+        this.props.doc.get('sharedId')
+      );
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.searchTerm !== this.props.searchTerm || nextProps.doc.get('sharedId') !== this.props.doc.get('sharedId')) {
+    if (
+      nextProps.searchTerm !== this.props.searchTerm ||
+      nextProps.doc.get('sharedId') !== this.props.doc.get('sharedId')
+    ) {
       this.searchSnippets(nextProps.searchTerm, nextProps.doc.get('sharedId'));
     }
   }
@@ -41,7 +47,9 @@ export class SearchText extends Component {
     if (sharedId) {
       this.props.searchSnippets(searchTerm, sharedId, this.props.storeKey);
       if (this.formDispatch) {
-        this.formDispatch(formActions.change('searchText.searchTerm', searchTerm));
+        this.formDispatch(
+          formActions.change('searchText.searchTerm', searchTerm)
+        );
       }
     }
   }
@@ -53,13 +61,16 @@ export class SearchText extends Component {
 
     browserHistory.push(path + toUrlParams(query));
 
-    return this.props.searchSnippets(value.searchTerm, this.props.doc.get('sharedId'), this.props.storeKey);
+    return this.props.searchSnippets(
+      value.searchTerm,
+      this.props.doc.get('sharedId'),
+      this.props.storeKey
+    );
   }
 
   render() {
     const { doc, snippets } = this.props;
-    const documentViewUrl = doc.get('file') ?
-      `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
+    const documentViewUrl = doc.get('file') ? `/document/${doc.get('sharedId')}` : `/entity/${doc.get('sharedId')}`;
     return (
       <div>
         <LocalForm
@@ -69,42 +80,46 @@ export class SearchText extends Component {
           autoComplete="off"
         >
           {this.props.storeKey === 'documentViewer' && (
-          <div className="search-box">
-            <div className="input-group">
-              <Field model=".searchTerm">
-                <Icon icon="search" />
-                <input
-                  type="text"
-                  placeholder={t('System', 'Search', null, false)}
-                  className="form-control"
-                  autoComplete="off"
-                />
-                <Icon icon="times" onClick={this.resetSearch}/>
-              </Field>
+            <div className="search-box">
+              <div className="input-group">
+                <Field model=".searchTerm">
+                  <Icon icon="search" />
+                  <input
+                    type="text"
+                    placeholder={t('System', 'Search', null, false)}
+                    className="form-control"
+                    autoComplete="off"
+                  />
+                  <Icon icon="times" onClick={this.resetSearch} />
+                </Field>
+              </div>
+              <SearchTips />
             </div>
-            <SearchTips />
-          </div>
-)}
+          )}
         </LocalForm>
 
         {!snippets.get('count') && (
-        <div className="blank-state">
-          <Icon icon="search" />
-          <h4>{t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}</h4>
-          <p>{t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}</p>
-        </div>
-)}
-        {doc.size ?
-          (
-            <SnippetList
-              doc={this.props.doc}
-              snippets={snippets}
-              selectSnippet={this.props.selectSnippet}
-              searchTerm={this.props.searchTerm}
-              documentViewUrl={documentViewUrl}
-            />
-) : ''
-        }
+          <div className="blank-state">
+            <Icon icon="search" />
+            <h4>
+              {t('System', !this.props.searchTerm ? 'Search text' : 'No text match')}
+            </h4>
+            <p>
+              {t('System', !this.props.searchTerm ? 'Search text description' : 'No text match description')}
+            </p>
+          </div>
+        )}
+        {doc.size ? (
+          <SnippetList
+            doc={this.props.doc}
+            snippets={snippets}
+            selectSnippet={this.props.selectSnippet}
+            searchTerm={this.props.searchTerm}
+            documentViewUrl={documentViewUrl}
+          />
+        ) : (
+          ''
+        )}
       </div>
     );
   }
@@ -118,8 +133,7 @@ SearchText.propTypes = {
   searchTerm: PropTypes.string,
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
-  selectSnippet: PropTypes.func.isRequired,
-  highlightSearch: PropTypes.func
+  selectSnippet: PropTypes.func.isRequired
 };
 
 SearchText.defaultProps = {
@@ -133,8 +147,7 @@ SearchText.defaultProps = {
 
 function mapStateToProps(state, props) {
   return {
-    snippets: state[props.storeKey].sidepanel.snippets,
-    highlightSearch
+    snippets: state[props.storeKey].sidepanel.snippets
   };
 }
 
@@ -142,4 +155,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchText);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchText);

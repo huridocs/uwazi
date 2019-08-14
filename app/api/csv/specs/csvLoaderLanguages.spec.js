@@ -38,7 +38,7 @@ describe('csvLoader languages', () => {
     spyOn(fileUtils, 'generateFileName').and.callFake(
       file => `generated${file.originalname}`
     );
-    configPaths.uploadDocumentsPath = path.join(__dirname, '/');
+    configPaths.uploadedDocuments = path.join(__dirname, '/');
     await loader.load(csv, template1Id, { language: 'en' });
 
     imported = await entities.get();
@@ -46,14 +46,14 @@ describe('csvLoader languages', () => {
 
   afterAll(async () => {
     await fileUtils.deleteFiles([
-      path.join(configPaths.uploadDocumentsPath, 'generated1.pdf'),
-      path.join(configPaths.uploadDocumentsPath, 'generated2.pdf'),
-      path.join(configPaths.uploadDocumentsPath, `${imported[0]._id.toString()}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[1]._id.toString()}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[2]._id.toString()}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[3]._id.toString()}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[4]._id.toString()}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[5]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, 'generated1.pdf'),
+      path.join(configPaths.uploadedDocuments, 'generated2.pdf'),
+      path.join(configPaths.uploadedDocuments, `${imported[0]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[1]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[2]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[3]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[4]._id.toString()}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[5]._id.toString()}.jpg`),
     ]);
 
     await removeTestingZip();

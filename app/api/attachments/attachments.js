@@ -3,10 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import relationships from 'api/relationships';
 
-import configPaths from '../config/paths';
+import paths from '../config/paths';
 
 const deleteFile = fileName => new Promise((resolve) => {
-  const filePath = path.join(configPaths.attachmentsPath, fileName);
+  const filePath = path.join(paths.attachments, fileName);
   fs.unlink(filePath, () => {
     resolve(filePath);
   });

@@ -14,7 +14,8 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../routes.js';
 import errorLog from '../../log/errorLog';
 import uploads from '../uploads.js';
-import pathsConfig from '../../config/paths';
+import paths from '../../config/paths';
+
 
 const writeFile = promisify(fs.writeFile);
 const fileExists = promisify(fs.stat);
@@ -230,7 +231,7 @@ describe('upload routes', () => {
     });
 
     it('should not remove old document when assigned to other entities', async () => {
-      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      paths.uploadedDocuments = `${__dirname}/uploads/`;
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
       await Promise.all([
@@ -242,7 +243,7 @@ describe('upload routes', () => {
     });
 
     it('should remove old document on reupload', async () => {
-      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      paths.uploadedDocuments = `${__dirname}/uploads/`;
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
 
@@ -257,7 +258,7 @@ describe('upload routes', () => {
 
     it('should upload too all entities when none has file', async () => {
       spyOn(Date, 'now').and.returnValue(1100);
-      pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+      paths.uploadedDocuments = `${__dirname}/uploads/`;
       req.body.document = sharedId;
       await writeFile(`${__dirname}/uploads/test`, 'data');
       await entitiesModel.save({ _id: entityId, file: null });
@@ -373,7 +374,7 @@ describe('upload routes', () => {
     beforeEach((done) => {
       deleteAllFiles(() => {
         spyOn(Date, 'now').and.returnValue(1000);
-        pathsConfig.uploadDocumentsPath = `${__dirname}/uploads/`;
+        paths.uploadedDocuments = `${__dirname}/uploads/`;
         const buffer = fs.readFileSync(`${__dirname}/12345.test.pdf`);
         file = {
           fieldname: 'file',

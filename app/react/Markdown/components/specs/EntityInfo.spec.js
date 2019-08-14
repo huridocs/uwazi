@@ -1,17 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import * as libraryActions from 'app/Library/actions/libraryActions';
 import EntityInfo, { mapDispatchToProps } from '../EntityInfo.js';
 
 describe('EntityInfo', () => {
   let props;
   let component;
-  const dispatch = {};
-
-  beforeEach(() => {
-    spyOn(libraryActions, 'getAndSelectDocument');
-  });
+  let actions;
+  const dispatch = () => {};
 
   const render = (customProps) => {
     props = {
@@ -19,7 +15,9 @@ describe('EntityInfo', () => {
       classname: 'passed classnames',
       children: [<span key="1">multiple</span>, <b key="2">children</b>]
     };
-    const mappedProps = { ...props, ...customProps, ...mapDispatchToProps(dispatch) };
+    actions = mapDispatchToProps(dispatch);
+    spyOn(actions, 'getAndSelectDocument');
+    const mappedProps = { ...props, ...customProps, ...actions };
     component = shallow(<EntityInfo.WrappedComponent {...mappedProps}/>);
   };
 
@@ -36,6 +34,6 @@ describe('EntityInfo', () => {
   it('should get and select the entity', () => {
     render();
     component.simulate('click');
-    expect(libraryActions.getAndSelectDocument).toHaveBeenCalledWith('sharedId');
+    expect(actions.getAndSelectDocument).toHaveBeenCalledWith('sharedId');
   });
 });

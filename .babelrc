@@ -1,30 +1,27 @@
 {
-  "presets": [["env", {
-      "targets": {
-        "node": "current"
-      }
-    }], "react"],
-  "retainLines": "true",
+  "presets": [["@babel/preset-env", {
+    "targets": {
+      "node": "current"
+    }
+  }], "@babel/preset-react"],
+  "retainLines": true,
   "env": {
     "production": {
       "plugins": [
-        "transform-react-inline-elements",
-        "transform-react-remove-prop-types",
-        "transform-react-constant-elements",
+        "babel-plugin-transform-react-remove-prop-types",
+        "@babel/plugin-transform-react-inline-elements"
       ]
     }
   },
   "plugins": [
-    "transform-object-rest-spread",
-    "transform-es2015-typeof-symbol",
-    "transform-class-properties",
-    "add-module-exports",
-    ['module-resolver', {
-      alias: {
-        app: './app/react',
-        shared: './app/shared',
-        api: './app/api',
-        UI: './app/react/UI'
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-typeof-symbol",
+    ["module-resolver", {
+      "alias": {
+        "app": "./app/react",
+        "shared": "./app/shared",
+        "api": "./app/api",
+        "UI": "./app/react/UI"
       }
     }]
   ]

@@ -1,6 +1,6 @@
 import * as types from 'app/Viewer/actions/actionTypes';
 import referencesAPI from 'app/Viewer/referencesAPI';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import { actions } from 'app/BasicReducer';
 
 import { actions as connectionsActions } from 'app/Connections';
@@ -62,7 +62,7 @@ export function deleteReference(reference) {
     .then(() => {
       dispatch(reloadRelationships(getState().relationships.list.entityId));
       dispatch({ type: types.REMOVE_REFERENCE, reference });
-      dispatch(notify('Connection deleted', 'success'));
+      dispatch(notificationActions.notify('Connection deleted', 'success'));
     });
   };
 }

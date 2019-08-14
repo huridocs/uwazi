@@ -1,14 +1,14 @@
 import Joi from 'joi';
 import entities from 'api/entities';
 import search from './search';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 const parseQueryProperty = (query, property) => query[property] ? JSON.parse(query[property]) : query[property];
 
 export default (app) => {
   app.get('/api/search/count_by_template',
-  validateRequest(Joi.object().keys({
+  validation.validateRequest(Joi.object().keys({
     templateId: Joi.string().required()
   }).required(), 'query'),
   (req, res, next) => entities.countByTemplate(req.query.templateId)
@@ -17,7 +17,7 @@ export default (app) => {
 
   app.get('/api/search',
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       filters: Joi.string(),
       types: Joi.string(),
       _types: Joi.string(),
@@ -50,7 +50,7 @@ export default (app) => {
   );
 
   app.get('/api/search_snippets',
-  validateRequest(Joi.object().keys({
+  validation.validateRequest(Joi.object().keys({
     searchTerm: Joi.string().allow(''),
     id: Joi.string()
   }), 'query'),

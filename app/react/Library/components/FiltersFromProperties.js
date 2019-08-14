@@ -46,6 +46,7 @@ export const FiltersFromProperties = ({ onChange, properties, translationContext
             options={translatedOptions(property)}
             prefix={property.name}
             showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
+            sort={property.type === 'relationship'}
           />
 );
       }

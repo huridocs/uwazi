@@ -1,14 +1,14 @@
 import Joi from 'joi';
 
 import settings from 'api/settings';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
 
 export default (app) => {
   app.post('/api/templates',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string(),
       __v: Joi.number(),
       name: Joi.string().required(),
@@ -67,7 +67,7 @@ export default (app) => {
 
   app.post('/api/templates/setasdefault',
   needsAuthorization(),
-  validateRequest(Joi.object().keys({
+  validation.validateRequest(Joi.object().keys({
     _id: Joi.string().required()
   })),
   (req, res, next) => {
@@ -90,7 +90,7 @@ export default (app) => {
 
   app.delete('/api/templates',
   needsAuthorization(),
-  validateRequest(Joi.object({
+  validation.validateRequest(Joi.object({
     _id: Joi.string().required()
   }).required(), 'query'),
     (req, res, next) => {
@@ -108,7 +108,7 @@ export default (app) => {
 
   app.get('/api/templates/count_by_thesauri',
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string().required()
     }).required(), 'query'),
 

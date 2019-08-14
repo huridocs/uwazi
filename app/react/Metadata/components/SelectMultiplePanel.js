@@ -6,7 +6,7 @@ import { Form } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
 import ShowIf from 'app/App/ShowIf';
-import { comonProperties } from 'shared/comonProperties';
+import comonPropertiesUtil from 'shared/comonProperties';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import validator from 'app/Metadata/helpers/validator';
 import { Select as SimpleSelect, FormGroup } from 'app/Forms';
@@ -19,6 +19,8 @@ import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
 import MetadataFormFields from './MetadataFormFields';
+
+const { comonProperties } = comonPropertiesUtil;
 
 const sortedTemplates = createSelector(
   s => s.templates,

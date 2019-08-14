@@ -16,7 +16,7 @@ describe('vaultSync', () => {
 
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    configPaths.uploadDocumentsPath = path.join(__dirname, 'uploads');
+    configPaths.uploadedDocuments = path.join(__dirname, 'uploads');
     spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
   });
 
@@ -24,8 +24,8 @@ describe('vaultSync', () => {
     await deleteFile(path.join(__dirname, '/zips/package1.zip'));
     await deleteFile(path.join(__dirname, '/zips/package2.zip'));
     await deleteFile(path.join(__dirname, '/zips/package3.zip'));
-    const files = (await asyncFS.readdir(configPaths.uploadDocumentsPath))
-    .filter(f => f !== 'index.html').map(f => path.join(configPaths.uploadDocumentsPath, f));
+    const files = (await asyncFS.readdir(configPaths.uploadedDocuments))
+    .filter(f => f !== 'index.html').map(f => path.join(configPaths.uploadedDocuments, f));
 
     await deleteFiles(files);
   });

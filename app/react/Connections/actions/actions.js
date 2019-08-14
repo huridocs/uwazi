@@ -1,5 +1,5 @@
 import { actions } from 'app/BasicReducer';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import api from 'app/utils/api';
 import debounce from 'app/utils/debounce';
 
@@ -77,7 +77,7 @@ export function saveConnection(connection, callback = () => {}) {
     .then((response) => {
       dispatch({ type: types.CONNECTION_CREATED });
       callback(response.json);
-      dispatch(notify('saved successfully !', 'success'));
+      dispatch(notificationActions.notify('saved successfully !', 'success'));
     });
   };
 }

@@ -16,7 +16,7 @@ const getMigrations = migrationsDir => new Promise((resolve) => {
   migrationsModel.get({}, null, { limit: 1, sort: { delta: -1 } })
   .then(([lastMigration]) => {
     fs.readdir(migrationsDir, (err, files) => {
-      let migrations = files.map(migration => require(path.join(migrationsDir, migration)));
+      let migrations = files.map(migration => require(path.join(migrationsDir, migration)).default);
       migrations = sortByDelta(migrations);
       if (lastMigration) {
         migrations = migrations.map(m => m.delta > lastMigration.delta ? m : null).filter(m => m);

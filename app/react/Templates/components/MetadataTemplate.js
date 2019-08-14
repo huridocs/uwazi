@@ -8,7 +8,7 @@ import { actions as formActions, Field, Form, Control } from 'react-redux-form';
 import { FormGroup } from 'app/Forms';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import { COLORS } from 'app/utils/colors';
 
 import { inserted, addProperty } from 'app/Templates/actions/templateActions';
@@ -171,7 +171,7 @@ export const mapStateToProps = ({ template, templates, relationTypes }, props) =
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ inserted, addProperty, setErrors: formActions.setErrors, notify }, dispatch);
+  return bindActionCreators({ inserted, addProperty, setErrors: formActions.setErrors, notify: notificationActions.notify }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);

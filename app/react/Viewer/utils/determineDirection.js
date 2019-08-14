@@ -1,5 +1,6 @@
-import francLanguages from 'shared/languagesList';
-import languagesList from '../../Settings/utils/languagesList';
+import francLanguages, {
+  allLanguages as languagesList
+} from 'shared/languagesList.js';
 
 export default ({ language }) => {
   const languageKey = francLanguages(language, 'ISO639_1');

@@ -7,7 +7,7 @@ import session from 'express-session';
 import uniqueID from 'shared/uniqueID';
 import svgCaptcha from 'svg-captcha';
 
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 
 import './passport_conf.js';
 
@@ -30,7 +30,7 @@ export default (app) => {
   app.post(
     '/api/login',
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       username: Joi.string().required(),
       password: Joi.string().required(),
     }).required()),
