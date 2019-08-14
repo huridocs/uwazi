@@ -105,25 +105,24 @@ class PublicForm extends Component {
   render() {
     const { template, thesauris, file, attachments } = this.props;
     const { submiting } = this.state;
-    if (submiting) {
-      return PublicForm.renderSubmitState();
-    }
     return (
-      <div className="public-form">
-        <LocalForm
-          validators={this.validators}
-          model="publicform"
-          getDispatch={dispatch => this.attachDispatch(dispatch)}
-          onSubmit={this.handleSubmit}
-        >
-          {PublicForm.renderTitle()}
-          <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
-          {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
-          {attachments ? PublicForm.renderFileField('attachments', { multiple: 'multiple' }) : false}
-          {this.renderCaptcha()}
-          <input type="submit" className="btn btn-success" value="Submit"/>
-        </LocalForm>
-      </div>
+      <LocalForm
+        validators={this.validators}
+        model="publicform"
+        getDispatch={dispatch => this.attachDispatch(dispatch)}
+        onSubmit={this.handleSubmit}
+      >
+        {submiting ? PublicForm.renderSubmitState() : (
+          <div className="public-form">
+            {PublicForm.renderTitle()}
+            <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
+            {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
+            {attachments ? PublicForm.renderFileField('attachments', { multiple: 'multiple' }) : false}
+            {this.renderCaptcha()}
+            <input type="submit" className="btn btn-success" value="Submit"/>
+          </div>
+        )}
+      </LocalForm>
     );
   }
 }

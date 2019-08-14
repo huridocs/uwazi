@@ -124,8 +124,8 @@ export function publicSubmit(data, remote = false) {
         return;
       }
       if (response.status === 403) {
-        dispatch(notify('Captcha error', 'danger'));
-        completionResolve(response);
+        dispatch(notify(response.body.error, 'danger'));
+        completionReject(response);
         return;
       }
       completionReject(response);
