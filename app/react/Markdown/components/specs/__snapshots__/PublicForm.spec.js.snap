@@ -1,24 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PublicForm should render a form 1`] = `
-<div
-  className="public-form"
->
-  <LocalForm
-    getDispatch={[Function]}
-    initialState={Object {}}
-    model="publicform"
-    onSubmit={[Function]}
-    validators={
-      Object {
-        "captcha": Object {
-          "required": [Function],
-        },
-        "title": Object {
-          "required": [Function],
-        },
-      }
+<LocalForm
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="publicform"
+  onSubmit={[Function]}
+  validators={
+    Object {
+      "captcha": Object {
+        "required": [Function],
+      },
+      "title": Object {
+        "required": [Function],
+      },
     }
+  }
+>
+  <div
+    className="public-form"
   >
     <Connect(FormGroup)
       key="title"
@@ -102,29 +102,29 @@ exports[`PublicForm should render a form 1`] = `
       type="submit"
       value="Submit"
     />
-  </LocalForm>
-</div>
+  </div>
+</LocalForm>
 `;
 
 exports[`PublicForm should render a form with file and attachments 1`] = `
-<div
-  className="public-form"
->
-  <LocalForm
-    getDispatch={[Function]}
-    initialState={Object {}}
-    model="publicform"
-    onSubmit={[Function]}
-    validators={
-      Object {
-        "captcha": Object {
-          "required": [Function],
-        },
-        "title": Object {
-          "required": [Function],
-        },
-      }
+<LocalForm
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="publicform"
+  onSubmit={[Function]}
+  validators={
+    Object {
+      "captcha": Object {
+        "required": [Function],
+      },
+      "title": Object {
+        "required": [Function],
+      },
     }
+  }
+>
+  <div
+    className="public-form"
   >
     <Connect(FormGroup)
       key="title"
@@ -254,6 +254,6 @@ exports[`PublicForm should render a form with file and attachments 1`] = `
       type="submit"
       value="Submit"
     />
-  </LocalForm>
-</div>
+  </div>
+</LocalForm>
 `;

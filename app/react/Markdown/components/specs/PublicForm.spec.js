@@ -59,4 +59,22 @@ describe('PublicForm', () => {
       });
     });
   });
+
+  it('should refresh captcha and NOT clear the form on submission error', (done) => {
+    request = new Promise((resolve) => {
+      resolve({ promise: Promise.reject() });
+    });
+    submit = jasmine.createSpy('submit').and.returnValue(request);
+    render();
+    component.find(LocalForm).simulate('submit', { title: 'test' });
+    request.then((uploadCompletePromise) => {
+      uploadCompletePromise.promise
+      .then(() => fail('should throw error'))
+      .catch(() => {
+        expect(instance.formDispatch).not.toHaveBeenCalledWith();
+        expect(instance.refreshCaptcha).toHaveBeenCalled();
+        done();
+      });
+    });
+  });
 });
