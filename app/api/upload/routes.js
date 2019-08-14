@@ -93,7 +93,7 @@ export default (app) => {
           }
         });
       }
-      const newEntity = await entities.save(entity, { user: req.user, language: req.language });
+      const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
         storeFile(file, async (_file) => {
