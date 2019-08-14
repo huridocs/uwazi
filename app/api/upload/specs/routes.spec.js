@@ -425,8 +425,8 @@ describe('upload routes', () => {
         await routes.post('/api/public', req);
         fail('should return error');
       } catch (e) {
-        expect(e.message).toMatch(/unauthorized template/i);
-        expect(e.code).toBe(400);
+        expect(e.message).toMatch(/unauthorized public template/i);
+        expect(e.code).toBe(403);
       }
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);
@@ -438,8 +438,8 @@ describe('upload routes', () => {
         await routes.post('/api/public', req);
         fail('should return error');
       } catch (e) {
-        expect(e.message).toMatch(/unauthorized template/i);
-        expect(e.code).toBe(400);
+        expect(e.message).toMatch(/unauthorized public template/i);
+        expect(e.code).toBe(403);
       }
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);

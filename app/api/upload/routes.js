@@ -90,7 +90,7 @@ export default (app) => {
       const entity = req.body;
       const { allowedPublicTemplates } = await settings.get(true);
       if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
-        next(createError('Unauthorized template', 400));
+        next(createError('Unauthorized public template', 403));
         return;
       }
 
