@@ -26,7 +26,7 @@ export default class Select extends Component {
                   return <option key={ky} value={opt[optionsValue]}>{opt[optionsLabel]}</option>;
                 })}
               </optgroup>
-);
+            );
           }
           return <option key={key} value={option[optionsValue]}>{option[optionsLabel]}</option>;
         })}

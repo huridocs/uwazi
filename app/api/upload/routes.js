@@ -12,7 +12,7 @@ import { generateFileName } from 'api/utils/files';
 import fs from 'fs';
 import path from 'path';
 import configPaths from '../config/paths';
-import { validateRequest, handleError } from '../utils';
+import { validation, handleError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
 import uploads from './uploads';
@@ -29,7 +29,7 @@ const getDocuments = (sharedId, allLanguages, language) =>
 
 const storeFile = (file, cb) => {
   const filename = generateFileName(file);
-  const destination = configPaths.uploadDocumentsPath;
+  const destination = configPaths.uploadedDocuments;
   const pathToFile = path.join(destination, filename);
   fs.appendFile(pathToFile, file.buffer, (err) => {
     if (err) {
@@ -70,7 +70,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       document: Joi.string().required()
     }).required()),
 
@@ -82,7 +82,7 @@ export default (app) => {
     multer().any(),
     captchaAuthorization(),
     (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
-    validateRequest(saveSchema),
+    validation.validateRequest(saveSchema),
     async (req, res) => {
       const entity = req.body;
       entity.attachments = [];
@@ -93,7 +93,7 @@ export default (app) => {
           }
         });
       }
-      const newEntity = await entities.save(entity, { user: req.user, language: req.language });
+      const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
         storeFile(file, async (_file) => {
@@ -113,7 +113,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       template: Joi.string().required()
     }).required()),
 
@@ -164,7 +164,7 @@ export default (app) => {
 
     needsAuthorization(['admin', 'editor']),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       _id: Joi.string().required()
     }).required(), 'query'),
 
@@ -184,7 +184,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       document: Joi.string().required()
     }).required()),
 

@@ -6,5 +6,5 @@ module.exports = {
     '**/shared/**/specs/*spec.js?(x)'
   ],
   testEnvironment: 'node',
-  setupTestFrameworkScriptFile: '<rootDir>/setUpJestServer.js'
+  setupFilesAfterEnv: ['<rootDir>/setUpJestServer.js']
 };

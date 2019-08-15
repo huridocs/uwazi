@@ -1,7 +1,7 @@
 import Icon from './Icon/Icon';
 import ProgressBar from './ProgressBar/ProgressBar';
 
-export default {
+export {
   Icon,
   ProgressBar
 };

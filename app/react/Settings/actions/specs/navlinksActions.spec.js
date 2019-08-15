@@ -2,7 +2,9 @@ import { actions as formActions } from 'react-redux-form';
 
 import { actions as basicActions } from 'app/BasicReducer';
 import { mockID } from 'shared/uniqueID';
-import * as Notifications from 'app/Notifications';
+
+import { notificationActions } from 'app/Notifications';
+
 import api from 'app/Settings/SettingsAPI';
 import * as uiActions from 'app/Settings/actions/uiActions';
 
@@ -21,7 +23,7 @@ describe('Settings/Navlinks actions', () => {
     spyOn(formActions, 'move').and.returnValue('ITEMS REORDERED');
     spyOn(formActions, 'remove').and.returnValue('ITEM REMOVED');
     spyOn(basicActions, 'set').and.returnValue('DATA SET');
-    spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
+    spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
 
   describe('loadLinks', () => {
@@ -88,7 +90,7 @@ describe('Settings/Navlinks actions', () => {
       });
 
       it('should notify saved successfully', () => {
-        expect(Notifications.notify).toHaveBeenCalledWith('Saved successfully.', 'success');
+        expect(notificationActions.notify).toHaveBeenCalledWith('Saved successfully.', 'success');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
       });
     });

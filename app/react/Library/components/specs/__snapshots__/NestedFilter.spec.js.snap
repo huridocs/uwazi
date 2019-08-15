@@ -44,7 +44,6 @@ exports[`NestedFilter should render a text filter field with a label and passing
           "name": "property",
         }
       }
-      value={Object {}}
     />
   </li>
 </ul>

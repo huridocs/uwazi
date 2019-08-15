@@ -5,7 +5,7 @@ import { multireducer } from 'app/Multireducer';
 import { isClient } from 'app/utils';
 
 import { modelReducer, formReducer } from 'react-redux-form';
-import manageAttachmentsReducer from 'app/Attachments/reducers/manageAttachmentsReducer';
+import { manageAttachmentsReducer } from 'app/Attachments';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import documents from './documentsReducer';
 import libraryUI from './uiReducer';

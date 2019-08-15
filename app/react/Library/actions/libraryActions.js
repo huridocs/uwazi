@@ -1,9 +1,9 @@
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
-import documents from 'app/Documents';
+import { documentsApi } from 'app/Documents';
 import { browserHistory } from 'react-router';
 import rison from 'rison';
 import referencesAPI from 'app/Viewer/referencesAPI';
@@ -227,9 +227,9 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
 }
 
 export function saveDocument(doc, formKey) {
-  return dispatch => documents.api.save(doc)
+  return dispatch => documentsApi.save(doc)
   .then((updatedDoc) => {
-    dispatch(notify('Document updated', 'success'));
+    dispatch(notificationActions.notify('Document updated', 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
     dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
@@ -251,7 +251,7 @@ export function multipleUpdate(entities, values) {
     const updatedEntitiesIds = updatedEntities.map(entity => entity.sharedId);
     return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
     .then(() => {
-      dispatch(notify('Update success', 'success'));
+      dispatch(notificationActions.notify('Update success', 'success'));
       dispatch(updateEntities(updatedEntities));
     });
   };
@@ -263,11 +263,11 @@ export function saveEntity(entity, formModel) {
     dispatch(formActions.reset(formModel));
     dispatch(unselectAllDocuments());
     if (entity._id) {
-      dispatch(notify('Entity updated', 'success'));
+      dispatch(notificationActions.notify('Entity updated', 'success'));
       dispatch(updateEntity(updatedDoc));
       dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
     } else {
-      dispatch(notify('Entity created', 'success'));
+      dispatch(notificationActions.notify('Entity created', 'success'));
       dispatch(elementCreated(updatedDoc));
     }
 
@@ -284,9 +284,9 @@ export function removeDocuments(docs) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch => documents.api.delete(doc)
+  return dispatch => documentsApi.delete(doc)
   .then(() => {
-    dispatch(notify('Document deleted', 'success'));
+    dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(unselectAllDocuments());
     dispatch(removeDocument(doc));
   });
@@ -295,7 +295,7 @@ export function deleteDocument(doc) {
 export function deleteEntity(entity) {
   return dispatch => entitiesAPI.delete(entity)
   .then(() => {
-    dispatch(notify('Entity deleted', 'success'));
+    dispatch(notificationActions.notify('Entity deleted', 'success'));
     dispatch(unselectDocument(entity._id));
     dispatch(removeDocument(entity));
   });

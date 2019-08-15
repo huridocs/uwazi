@@ -9,7 +9,7 @@ import db from 'api/utils/testing_db';
 import path from 'path';
 import documents from '../documents.js';
 import fixtures, { templateId } from './fixtures.js';
-import { uploadDocumentsPath } from '../../config/paths';
+import paths from '../../config/paths';
 
 
 describe('documents', () => {
@@ -89,9 +89,9 @@ describe('documents', () => {
 
   describe('delete', () => {
     beforeEach(() => {
-      fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'));
-      fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014cc1.pdf'));
-      fs.writeFileSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccc.pdf'));
+      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'));
+      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'));
+      fs.writeFileSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'));
     });
 
     it('should delete the document in the database', done => documents.delete('shared')
@@ -105,9 +105,9 @@ describe('documents', () => {
     it('should delete the original file', (done) => {
       documents.delete('shared')
       .then(() => {
-        expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
-        expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
-        expect(fs.existsSync(path.join(uploadDocumentsPath, '8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+        expect(fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
+        expect(fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
+        expect(fs.existsSync(path.join(paths.uploadedDocuments, '8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
         done();
       })
       .catch(catchErrors(done));

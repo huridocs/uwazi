@@ -19,12 +19,12 @@ export default {
   ],
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }] }
-  ],
+  ]
 };
 
 export {
   entityId,
   entityEnId,
   uploadId,
-  templateId,
+  templateId
 };

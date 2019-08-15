@@ -20,6 +20,7 @@ exports[`SelectFilter should render a text filter field with a label and passing
       }
       optionsValue="id"
       prefix=""
+      sort={false}
     />
   </li>
 </ul>
@@ -50,6 +51,33 @@ exports[`SelectFilter when showBoolSwitch should render the and/or bool switch 1
       }
       optionsValue="id"
       prefix="prefix"
+      sort={false}
+    />
+  </li>
+</ul>
+`;
+
+exports[`SelectFilter when sort prop is set to true should activate sorting in the MultiSelect 1`] = `
+<ul
+  className="search__filter is-active"
+>
+  <li>
+    label
+  </li>
+  <li
+    className="wide"
+  >
+    <MultiSelect
+      model="model.values"
+      onChange={[Function]}
+      options={
+        Array [
+          "options",
+        ]
+      }
+      optionsValue="id"
+      prefix=""
+      sort={true}
     />
   </li>
 </ul>

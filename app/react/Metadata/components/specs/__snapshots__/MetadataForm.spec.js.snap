@@ -14,7 +14,7 @@ exports[`MetadataForm should display custom title label 1`] = `
     }
   }
 >
-  <Connect(FormGroup)
+  <FormGroup
     model=".title"
   >
     <ul
@@ -46,12 +46,12 @@ exports[`MetadataForm should display custom title label 1`] = `
           />
         </Modeled(Connect(Field))>
       </li>
-      <Connect(Component)
+      <Connect(IconField)
         model="metadata"
       />
     </ul>
-  </Connect(FormGroup)>
-  <Connect(FormGroup)>
+  </FormGroup>
+  <FormGroup>
     <ul
       className="search__filter"
     >
@@ -83,7 +83,7 @@ exports[`MetadataForm should display custom title label 1`] = `
         />
       </li>
     </ul>
-  </Connect(FormGroup)>
+  </FormGroup>
   <Connect(MetadataFormFields)
     model="metadata"
     multipleEdition={false}
@@ -116,4 +116,14 @@ exports[`MetadataForm should display custom title label 1`] = `
     }
   />
 </Connect(Form)>
+`;
+
+exports[`MetadataForm should render title field as a textarea 1`] = `
+<Modeled(Connect(Field))
+  model=".title"
+>
+  <textarea
+    className="form-control"
+  />
+</Modeled(Connect(Field))>
 `;

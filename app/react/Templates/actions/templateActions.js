@@ -1,7 +1,7 @@
 import { actions as formActions } from 'react-redux-form';
 
 import * as types from 'app/Templates/actions/actionTypes';
-import { notify } from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
@@ -96,7 +96,7 @@ export function saveTemplate(data) {
       dispatch(actions.update('templates', response));
 
       dispatch(formActions.merge('template.data', response));
-      dispatch(notify('Saved successfully.', 'success'));
+      dispatch(notificationActions.notify('Saved successfully.', 'success'));
     })
     .catch(() => {
       dispatch({ type: types.TEMPLATE_SAVED, data });

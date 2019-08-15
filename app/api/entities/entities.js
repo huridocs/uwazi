@@ -7,7 +7,7 @@ import search from 'api/search/search';
 import templates from 'api/templates/templates';
 import path from 'path';
 import PDF from 'api/upload/PDF';
-import { uploadDocumentsPath } from 'api/config/paths';
+import paths from 'api/config/paths';
 
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
@@ -343,17 +343,17 @@ export default {
 
   deleteFiles(deletedDocs) {
     let filesToDelete = deletedDocs
-    .reduce((paths, doc) => {
+    .reduce((filePaths, doc) => {
       if (doc.file) {
-        paths.push(path.normalize(`${uploadDocumentsPath}/${doc.file.filename}`));
-        paths.push(path.normalize(`${uploadDocumentsPath}/${doc._id.toString()}.jpg`));
+        filePaths.push(path.normalize(`${paths.uploadedDocuments}/${doc.file.filename}`));
+        filePaths.push(path.normalize(`${paths.uploadedDocuments}/${doc._id.toString()}.jpg`));
       }
 
       if (doc.attachments) {
-        doc.attachments.forEach(file => paths.push(path.normalize(`${uploadDocumentsPath}/${file.filename}`)));
+        doc.attachments.forEach(file => filePaths.push(path.normalize(`${paths.uploadedDocuments}/${file.filename}`)));
       }
 
-      return paths;
+      return filePaths;
     }, []);
     filesToDelete = filesToDelete.filter((doc, index) => filesToDelete.indexOf(doc) === index);
     return deleteFiles(filesToDelete)
@@ -477,18 +477,18 @@ export default {
   },
 
   async createThumbnail(entity) {
-    const filePath = path.join(uploadDocumentsPath, entity.file.filename);
+    const filePath = path.join(paths.uploadedDocuments, entity.file.filename);
     return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
   },
 
   async deleteLanguageFiles(entity) {
     const filesToDelete = [];
-    filesToDelete.push(path.normalize(`${uploadDocumentsPath}/${entity._id.toString()}.jpg`));
+    filesToDelete.push(path.normalize(`${paths.uploadedDocuments}/${entity._id.toString()}.jpg`));
     const sibilings = await this.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } });
     if (entity.file) {
       const shouldUnlinkFile = sibilings.reduce((should, sibiling) => should && !(sibiling.file.filename === entity.file.filename), true);
       if (shouldUnlinkFile) {
-        filesToDelete.push(path.normalize(`${uploadDocumentsPath}/${entity.file.filename}`));
+        filesToDelete.push(path.normalize(`${paths.uploadedDocuments}/${entity.file.filename}`));
       }
     }
     if (entity.file) { return deleteFiles(filesToDelete); }

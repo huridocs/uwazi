@@ -3,14 +3,14 @@ import createReducer from 'app/BasicReducer';
 
 import template from 'app/Templates/reducers/reducer';
 import page from 'app/Pages/reducers/reducer';
-import { reducer as notificationsReducer } from 'app/Notifications';
+import notifications from 'app/Notifications/reducers/notificationsReducer';
 
 import thesauri from 'app/Thesauris/reducers/reducer';
 import documentViewer from 'app/Viewer/reducers/reducer';
 import entityView from 'app/Entities/reducers/reducer';
 import contextMenu from 'app/ContextMenu/reducers/contextMenuReducer';
 import connections from 'app/Connections/reducers/reducer';
-import relationships from 'app/Relationships';
+import relationships from 'app/Relationships/reducers/reducer';
 import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
 import { reducer as attachments } from 'app/Attachments';
 import semanticSearch from 'app/SemanticSearch/reducers/reducer';
@@ -29,7 +29,7 @@ import inlineEdit from 'app/I18N/inlineEditReducer';
 import { modelReducer, formReducer } from 'react-redux-form';
 
 export default combineReducers({
-  notifications: notificationsReducer,
+  notifications,
   library: library('library'),
   uploads: library('uploads'),
   progress,
@@ -59,7 +59,7 @@ export default combineReducers({
   contextMenu,
   connections,
   connectionsList: ConnectionsList,
-  relationships: relationships.reducer,
+  relationships,
   attachments,
   modals,
   user,

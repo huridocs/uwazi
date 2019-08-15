@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { FormatMetadata } from 'app/Metadata';
-import { get as prioritySortingCriteria } from 'app/utils/prioritySortingCriteria';
+import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 import { RowList, ItemFooter } from './Lists';
 import DocumentLanguage from './DocumentLanguage';
@@ -97,7 +97,7 @@ Item.propTypes = {
 };
 
 Item.defaultProps = {
-  search: prioritySortingCriteria(),
+  search: prioritySortingCriteria.get(),
   titleProperty: 'title'
 };
 

@@ -6,8 +6,8 @@ import * as connectionsTypes from 'app/Connections/actions/actionTypes';
 import { APIURL } from 'app/config.js';
 import { actions } from 'app/BasicReducer';
 import { actions as formActions } from 'react-redux-form';
-import documents from 'app/Documents';
-import { notify } from 'app/Notifications';
+import { documentsApi } from 'app/Documents';
+import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { isClient } from 'app/utils';
 import { actions as relationshipActions } from 'app/Relationships';
@@ -43,9 +43,9 @@ export function saveDocument(doc) {
     }
   });
 
-  return dispatch => documents.api.save(updateDoc)
+  return dispatch => documentsApi.save(updateDoc)
   .then((updatedDoc) => {
-    dispatch(notify('Document updated', 'success'));
+    dispatch(notificationActions.notify('Document updated', 'success'));
     dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
     dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
     dispatch(actions.set('viewer/doc', updatedDoc));
@@ -63,9 +63,9 @@ export function saveToc(toc) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch => documents.api.delete(doc)
+  return dispatch => documentsApi.delete(doc)
   .then(() => {
-    dispatch(notify('Document deleted', 'success'));
+    dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
     dispatch(unselectAllDocuments());

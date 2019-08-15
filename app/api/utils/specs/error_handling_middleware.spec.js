@@ -18,7 +18,7 @@ describe('Error handling middleware', () => {
     middleware(error, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'error' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'error', prettyMessage: '\nerror' });
     expect(next).toHaveBeenCalled();
   });
 
@@ -40,6 +40,7 @@ describe('Error handling middleware', () => {
     middleware(error, req, res, next);
     expect(errorLog.error).toHaveBeenCalledWith('\nerror');
   });
+
   it('should log the error query', () => {
     const error = { message: 'error', code: 500 };
     req.query = { param: 'value', param2: 'value2' };

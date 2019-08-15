@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { index as elasticIndex } from 'api/config/elasticIndexes';
+import elasticIndexes from 'api/config/elasticIndexes';
 import { search, documentQueryBuilder, elastic } from 'api/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
@@ -11,7 +11,7 @@ describe('search', () => {
   let result;
   const elasticTesting = instanceElasticTesting('search_index_test');
 
-  beforeAll((done) => {
+  beforeAll(async () => {
     result = elasticResult().withDocs(
     [
       { title: 'doc1',
@@ -31,10 +31,8 @@ describe('search', () => {
     ])
     .toObject();
 
-    db.clearAllAndLoad(elasticFixtures)
-    .then(() => elasticTesting.reindex())
-    .then(done)
-    .catch(catchErrors(done));
+    await db.clearAllAndLoad(elasticFixtures);
+    await elasticTesting.reindex();
   });
 
   afterAll((done) => {
@@ -42,15 +40,12 @@ describe('search', () => {
   });
 
   describe('getUploadsByUser', () => {
-    it('should request all unpublished entities or documents for the user', (done) => {
+    it('should request all unpublished entities or documents for the user', async () => {
       const user = { _id: ids.userId };
-      search.getUploadsByUser(user, 'en')
-      .then((response) => {
-        expect(response.length).toBe(1);
-        expect(response[0].title).toBe('metadata6');
-        done();
-      })
-      .catch(catchErrors(done));
+      const response = await search.getUploadsByUser(user, 'en');
+
+      expect(response.length).toBe(1);
+      expect(response[0].title).toBe('metadata6');
     });
   });
 
@@ -402,7 +397,7 @@ describe('search', () => {
           search.search({ types: [ids.templateMetadata2] }, 'en'),
           search.search({ types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en'),
           search.search({ filters: { multiselect1: { values: ['multiValue2'], and: false } },
-          types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en')
+            types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en')
         ])
         .then(([template1, template2, both, filtered]) => {
           const template1Aggs = template1.aggregations.all.multiselect1.buckets;
@@ -594,7 +589,7 @@ describe('search', () => {
         .language('es')
         .query();
 
-        expect(elastic.search).toHaveBeenCalledWith({ index: elasticIndex, body: expectedQuery });
+        expect(elastic.search).toHaveBeenCalledWith({ index: elasticIndexes.index, body: expectedQuery });
         done();
       });
     });
@@ -611,7 +606,7 @@ describe('search', () => {
         .language('es')
         .query();
 
-        expect(elastic.search).toHaveBeenCalledWith({ index: elasticIndex, body: expectedQuery });
+        expect(elastic.search).toHaveBeenCalledWith({ index: elasticIndexes.index, body: expectedQuery });
         done();
       });
     });

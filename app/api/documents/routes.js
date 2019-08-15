@@ -4,8 +4,8 @@ import sanitize from 'sanitize-filename';
 import { createError } from 'api/utils';
 import path from 'path';
 
-import { uploadDocumentsPath } from '../config/paths';
-import { validateRequest } from '../utils';
+import paths from '../config/paths';
+import { validation } from '../utils';
 import documents from './documents';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from '../templates';
@@ -15,7 +15,7 @@ import { endpointSchema } from '../entities';
 export default (app) => {
   app.post('/api/documents',
   needsAuthorization(['admin', 'editor']),
-  validateRequest(endpointSchema.saveSchema),
+  validation.validateRequest(endpointSchema.saveSchema),
   (req, res, next) => documents
   .save(req.body, { user: req.user, language: req.language })
   .then(doc => res.json(doc))
@@ -23,7 +23,7 @@ export default (app) => {
 
   app.post(
     '/api/documents/pdfInfo',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId(),
       sharedId: Joi.string(),
       pdfInfo: Joi.object().pattern(Joi.number(), Joi.object().keys({
@@ -36,7 +36,7 @@ export default (app) => {
 
   app.get(
     '/api/documents/count_by_template',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       templateId: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => templates.countByTemplate(req.query.templateId)
@@ -45,7 +45,7 @@ export default (app) => {
 
   app.get(
     '/api/documents',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string().required()
     }), 'query'),
     (req, res, next) => {
@@ -68,7 +68,7 @@ export default (app) => {
   app.delete(
     '/api/documents',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       sharedId: Joi.string().required(),
     }).required(), 'query'),
 
@@ -82,7 +82,7 @@ export default (app) => {
   app.get(
     '/api/documents/download',
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       _id: Joi.objectId().required(),
     }).required(), 'query'),
 
@@ -93,7 +93,7 @@ export default (app) => {
           throw createError('document does not exist', 404);
         }
         const basename = path.basename(response.file.originalname, path.extname(response.file.originalname));
-        res.download(path.join(uploadDocumentsPath, response.file.filename), sanitize(basename + path.extname(response.file.filename)));
+        res.download(path.join(paths.uploadedDocuments, response.file.filename), sanitize(basename + path.extname(response.file.filename)));
       })
       .catch(next);
     }

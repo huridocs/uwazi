@@ -1,7 +1,8 @@
 import React from 'react';
 import colorScheme from '../colorScheme';
+import arrayUtils from '../arrayUtils';
 
-import { sortValues, formatPayload } from '../arrayUtils';
+const { sortValues, formatPayload } = arrayUtils;
 
 describe('Array Utils', () => {
   describe('sortValues', () => {

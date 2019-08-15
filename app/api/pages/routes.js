@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { validateRequest } from 'api/utils';
+import { validation } from 'api/utils';
 
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
@@ -11,7 +11,7 @@ export default (app) => {
 
     needsAuthorization(),
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId(),
       __v: Joi.number(),
       sharedId: Joi.string(),
@@ -37,7 +37,7 @@ export default (app) => {
   app.get(
     '/api/pages',
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       sharedId: Joi.string(),
     }).required(), 'query'),
 
@@ -52,7 +52,7 @@ export default (app) => {
     '/api/pages',
     needsAuthorization(),
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       sharedId: Joi.string(),
     }).required(), 'query'),
 

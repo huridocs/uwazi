@@ -5,5 +5,5 @@ module.exports = {
     '**/nightmare/**/paths/*spec.js?(x)'
   ],
   testEnvironment: 'node',
-  setupTestFrameworkScriptFile: '<rootDir>/setUpJestE2E.js'
+  setupFilesAfterEnv: ['<rootDir>/setUpJestE2E.js']
 };

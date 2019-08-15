@@ -6,7 +6,7 @@ import configPaths from '../config/paths';
 const storageConfig = {
   destination(req, file, cb) {
     const dir = req.route.path.includes('customisation') ?
-      configPaths.customUploadsPath : configPaths.uploadDocumentsPath;
+      configPaths.customUploads : configPaths.uploadedDocuments;
     cb(null, path.normalize(`${dir}/`));
   },
   filename(req, file, cb) {

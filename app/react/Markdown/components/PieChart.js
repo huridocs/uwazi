@@ -27,8 +27,9 @@ export const PieChartComponent = (props) => {
   let output = <Loader/>;
 
   if (data) {
+    const aggregateOthers = props.aggregateOthers === 'true';
     const formattedData = arrayUtils.sortValues(
-      arrayUtils.formatDataForChart(data, property, thesauris, { context, excludeZero: true, maxCategories })
+      arrayUtils.formatDataForChart(data, property, thesauris, { context, excludeZero: true, maxCategories, aggregateOthers })
     );
     const sliceColors = colors.split(',');
     const shouldShowLabel = showLabel === 'true';
@@ -66,6 +67,7 @@ PieChartComponent.defaultProps = {
   colors: '#ffcc00,#ffd633,#ffe066,#ffeb99,#fff5cc',
   data: null,
   showLabel: 'false',
+  aggregateOthers: 'false',
   maxCategories: '0',
 };
 
@@ -74,6 +76,7 @@ PieChartComponent.propTypes = {
   innerRadius: PropTypes.string,
   outerRadius: PropTypes.string,
   maxCategories: PropTypes.string,
+  aggregateOthers: PropTypes.string,
   property: PropTypes.string.isRequired,
   context: PropTypes.string,
   classname: PropTypes.string,

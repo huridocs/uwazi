@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 
 import { NestedMultiselect } from 'app/ReactReduxForms';
 
-export class NestedFilter extends Component {
+class NestedFilter extends Component {
   render() {
     const { onChange, model, label, property, aggregations } = this.props;
     return (

@@ -11,10 +11,10 @@ export default {
       return false;
     }
 
-    const elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
-
-    return parent.offsetHeight + parent.scrollTop >= elementOffsetToParent + element.scrollHeight &&
-     parent.scrollTop <= elementOffsetToParent;
+    const elementBounds = element.getBoundingClientRect();
+    const parentBounds = parent.getBoundingClientRect();
+    return elementBounds.top < parentBounds.top && elementBounds.bottom > parentBounds.top ||
+      elementBounds.top > parentBounds.top && elementBounds.top < parentBounds.bottom;
   },
 
   to(selector, parentSelector, opt = {}) {
@@ -24,21 +24,28 @@ export default {
     }
     const element = this.getElement(selector);
     const parent = this.getElement(parentSelector);
-
     if (!parent || !element) {
       return;
     }
-    const elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
 
+    const scrollTop = this.getTargetScrollTop(element, parent, options);
+
+    this.animateScroll(parent, scrollTop, options);
+  },
+
+  getTargetScrollTop(element, parent, options) {
+    const elementOffsetToParent = element.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop;
     const parentVisibleScroll = parent.scrollHeight - parent.offsetHeight;
     const elementPositionInParent = parent.scrollHeight - elementOffsetToParent;
+    return parentVisibleScroll -
+      elementPositionInParent +
+      options.offset +
+      element.scrollHeight +
+      (parent.offsetHeight - element.offsetHeight) / options.dividerOffset;
+  },
 
-    const scrollTop = parentVisibleScroll -
-    elementPositionInParent +
-    options.offset +
-    element.scrollHeight +
-    (parent.offsetHeight - element.offsetHeight) / options.dividerOffset;
-
+  animateScroll(_parent, scrollTop, options) {
+    const parent = _parent;
     const start = Date.now();
     const timeout = window.setInterval(() => {
       const t = (Date.now() - start) / options.duration;
@@ -49,7 +56,6 @@ export default {
         window.clearInterval(timeout);
       }
     }, 25);
-
     return timeout;
   },
 

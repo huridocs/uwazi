@@ -38,11 +38,13 @@ export const BarChartComponent = (props) => {
   let output = <Loader />;
 
   if (data) {
+    const aggregateOthers = props.aggregateOthers === 'true';
     const formattedData = arrayUtils.sortValues(
       arrayUtils.formatDataForChart(data, property, thesauris, {
         excludeZero: Boolean(excludeZero),
         context,
-        maxCategories
+        maxCategories,
+        aggregateOthers
       })
     );
 
@@ -72,6 +74,7 @@ BarChartComponent.defaultProps = {
   excludeZero: false,
   layout: 'horizontal',
   maxCategories: '0',
+  aggregateOthers: 'false',
   classname: '',
   data: null
 };
@@ -87,6 +90,7 @@ BarChartComponent.propTypes = {
   classname: PropTypes.string,
   layout: PropTypes.string,
   maxCategories: PropTypes.string,
+  aggregateOthers: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List)
 };
 
