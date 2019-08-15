@@ -23,7 +23,7 @@ const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
   });
 
 const fileExists = async fileName =>
-  asyncFs.exists(path.join(configPaths.uploadDocumentsPath, fileName));
+  asyncFs.exists(path.join(configPaths.uploadedDocuments, fileName));
 
 const stream = string =>
   new Readable({

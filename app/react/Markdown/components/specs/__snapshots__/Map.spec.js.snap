@@ -32,7 +32,7 @@ exports[`Map Markdown component should render the data passed by mapStateToProps
 <div
   className="Map custom-class"
 >
-  <Connect(Component)
+  <Connect(MarkersComponent)
     entities={
       Immutable.List [
         "passed entities",

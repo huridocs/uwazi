@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import Immutable from 'immutable';
 
-import { formatMetadata } from '../../selectors';
+import metadataSelectors from '../../selectors';
 import formater from '../formater';
 import { doc, templates, thesauris, relationships } from './fixtures';
 
@@ -284,7 +284,7 @@ describe('metadata formater', () => {
     it('should use formater.prepareMetadata', () => {
       spyOn(formater, 'prepareMetadata').and.returnValue({ metadata: 'metadataFormated' });
       const state = { templates, thesauris };
-      const metadata = formatMetadata(state, doc, null, relationships);
+      const metadata = metadataSelectors.formatMetadata(state, doc, null, relationships);
       expect(metadata).toBe('metadataFormated');
       expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris, relationships);
     });
@@ -293,7 +293,7 @@ describe('metadata formater', () => {
       it('should use formater.prepareMetadataForCard', () => {
         spyOn(formater, 'prepareMetadataForCard').and.returnValue({ metadata: 'metadataFormated' });
         const state = { templates, thesauris };
-        const metadata = formatMetadata(state, doc, 'sortProperty', relationships);
+        const metadata = metadataSelectors.formatMetadata(state, doc, 'sortProperty', relationships);
         expect(metadata).toBe('metadataFormated');
         expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, thesauris, 'sortProperty');
       });

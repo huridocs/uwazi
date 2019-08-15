@@ -1,4 +1,4 @@
-import { filterBaseProperties } from '../filterBaseProperties';
+import util from '../filterBaseProperties';
 
 describe('filterBaseProperties', () => {
   it('should only retrun entity base data (omitting attachments, toc, etc.)', () => {
@@ -25,6 +25,6 @@ describe('filterBaseProperties', () => {
       icon: data.icon
     };
 
-    expect(filterBaseProperties(data)).toEqual(expectedData);
+    expect(util.filterBaseProperties(data)).toEqual(expectedData);
   });
 });

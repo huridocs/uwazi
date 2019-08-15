@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
 
-import laguagesList from '../Settings/utils/languagesList';
+import { allLanguages as languagesList } from 'shared/languagesList.js';
 
 const determineHotAssets = query => ({
   JS: [
@@ -72,7 +72,7 @@ class Root extends Component {
     const isHotReload = process.env.HOT;
     const { head, language, assets, reduxData, content } = this.props;
 
-    const languageData = laguagesList.find(l => l.key === language);
+    const languageData = languagesList.find(l => l.key === language);
     const query = (languageData && languageData.rtl) ? '?rtl=true' : '';
 
     const { JS, CSS } = isHotReload ? determineHotAssets(query) : determineAssets(assets, languageData);

@@ -14,7 +14,7 @@ describe('migration pdf_thumbnails', () => {
   beforeEach((done) => {
     spyOn(process.stdout, 'write');
     spyOn(errorLog, 'error');
-    paths.uploadDocumentsPath = __dirname;
+    paths.uploadedDocuments = __dirname;
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 

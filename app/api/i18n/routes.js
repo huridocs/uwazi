@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { validateRequest } from 'api/utils';
+import { validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
@@ -20,7 +20,7 @@ export default (app) => {
 
     needsAuthorization(),
 
-    validateRequest(Joi.object()
+    validation.validateRequest(Joi.object()
     .keys({
       _id: Joi.objectId(),
       __v: Joi.number(),
@@ -50,7 +50,7 @@ export default (app) => {
   app.post(
     '/api/translations/setasdeafult',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       key: Joi.string(),
     }).required()),
 
@@ -67,7 +67,7 @@ export default (app) => {
   app.post(
     '/api/translations/languages',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       key: Joi.string(),
       label: Joi.string(),
       rtl: Joi.boolean(),
@@ -92,7 +92,7 @@ export default (app) => {
   app.delete(
     '/api/translations/languages',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       key: Joi.string(),
     }).required()),
 

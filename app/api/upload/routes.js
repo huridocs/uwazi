@@ -14,7 +14,7 @@ import path from 'path';
 import proxy from 'express-http-proxy';
 import settings from 'api/settings';
 import configPaths from '../config/paths';
-import { validateRequest, handleError, createError } from '../utils';
+import { validation, handleError, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
 import uploads from './uploads';
@@ -31,7 +31,7 @@ const getDocuments = (sharedId, allLanguages, language) =>
 
 const storeFile = file => new Promise((resolve, reject) => {
   const filename = generateFileName(file);
-  const destination = configPaths.uploadDocumentsPath;
+  const destination = configPaths.uploadedDocuments;
   const pathToFile = path.join(destination, filename);
   fs.appendFile(pathToFile, file.buffer, (err) => {
     if (err) {
@@ -73,7 +73,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       document: Joi.string().required()
     }).required()),
 
@@ -85,7 +85,7 @@ export default (app) => {
     multer().any(),
     captchaAuthorization(),
     (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
-    validateRequest(saveSchema),
+    validation.validateRequest(saveSchema),
     async (req, res, next) => {
       const entity = req.body;
       const { allowedPublicTemplates } = await settings.get(true);
@@ -102,7 +102,6 @@ export default (app) => {
           .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
         );
       }
-
       const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
@@ -143,7 +142,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       template: Joi.string().required()
     }).required()),
 
@@ -194,7 +193,7 @@ export default (app) => {
 
     needsAuthorization(['admin', 'editor']),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       _id: Joi.string().required()
     }).required(), 'query'),
 
@@ -214,7 +213,7 @@ export default (app) => {
 
     upload.any(),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       document: Joi.string().required()
     }).required()),
 

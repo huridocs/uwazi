@@ -1,4 +1,4 @@
-import { findBucketsByCountry } from '../parsingUtils';
+import utils from '../parsingUtils';
 
 describe('Custom Hooks Parsing utils', () => {
   describe('findBucketsByCountry', () => {
@@ -20,8 +20,8 @@ describe('Custom Hooks Parsing utils', () => {
     });
 
     it('should find buckets that match country key', () => {
-      expect(findBucketsByCountry(set, 'country2', 'keyC')).toBe(set.aggregations.all.country2.buckets[1]);
-      expect(findBucketsByCountry(set, 'country1', 'keyA')).toBe(set.aggregations.all.country1.buckets[0]);
+      expect(utils.findBucketsByCountry(set, 'country2', 'keyC')).toBe(set.aggregations.all.country2.buckets[1]);
+      expect(utils.findBucketsByCountry(set, 'country1', 'keyA')).toBe(set.aggregations.all.country1.buckets[0]);
     });
   });
 });

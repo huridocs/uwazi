@@ -1,5 +1,5 @@
 import model from './updatelogsModel.js';
 
-export default {
+export {
   model
 };

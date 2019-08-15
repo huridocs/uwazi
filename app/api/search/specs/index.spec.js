@@ -1,13 +1,16 @@
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import errorLog from 'api/log/errorLog';
-import { index as elasticIndex } from 'api/config/elasticIndexes';
+import elasticIndexConfig from 'api/config/elasticIndexes';
 import { search, elastic } from 'api/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 
+
 describe('search', () => {
   const elasticTesting = instanceElasticTesting('search_index_test');
+  const elasticIndex = elasticIndexConfig.index;
+
   beforeAll((done) => {
     db.clearAllAndLoad({}).then(done);
   });

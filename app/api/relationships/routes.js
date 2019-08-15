@@ -1,12 +1,12 @@
 import Joi from 'joi';
 import relationships from './relationships.js';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 export default (app) => {
   app.post('/api/relationships/bulk',
     needsAuthorization(['admin', 'editor']),
-    // validateRequest(Joi.object().keys({
+    // validation.validateRequest(Joi.object().keys({
     //   save: Joi.array().items(
     //     Joi.array().items(
     //       Joi.object().keys({
@@ -42,7 +42,7 @@ export default (app) => {
 
   app.post('/api/references',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId(),
       __v: Joi.number(),
       entity: Joi.string(),
@@ -65,7 +65,7 @@ export default (app) => {
 
   app.delete('/api/references',
     needsAuthorization(['admin', 'editor']),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => {
@@ -91,7 +91,7 @@ export default (app) => {
   });
 
   app.get('/api/references/search/:id',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       filter: Joi.string().allow(''),
       limit: Joi.string().allow(''),
       sort: Joi.string().allow(''),
@@ -108,7 +108,7 @@ export default (app) => {
   );
 
   app.get('/api/references/count_by_relationtype',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       relationtypeId: Joi.objectId().required()
     }).required(), 'query'),
     (req, res, next) => {

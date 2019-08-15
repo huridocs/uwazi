@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { removeNotification } from 'app/Notifications';
 import { Icon } from 'UI';
+import { removeNotification } from '../actions/notificationsActions';
 
 export class Notification extends Component {
   close() {

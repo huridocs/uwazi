@@ -22,6 +22,7 @@ describe('ThesauriForm', () => {
       setInitial: jasmine.createSpy('setInitial'),
       thesauris: Immutable.fromJS([{ name: 'Countries' }]),
       saveThesauri: jasmine.createSpy('saveThesauri'),
+      importThesauri: jasmine.createSpy('saveThesauri'),
       addValue: jasmine.createSpy('addValue'),
       addGroup: jasmine.createSpy('addGroup'),
       sortValues: jasmine.createSpy('sortValues'),
@@ -77,6 +78,41 @@ describe('ThesauriForm', () => {
         values: [{ label: 'Heroes', values: [{ label: 'Batman' }, { label: 'Robin' }], id: 0 }]
       };
       expect(props.saveThesauri).toHaveBeenCalledWith(sanitizedThesauri);
+    });
+  });
+
+  describe('import', () => {
+    it('should open file dialog when import button is clicked', () => {
+      render();
+      instance.fileInputRef.current = { click: jest.fn() };
+      component.find('.import-template').first().simulate('click');
+      expect(instance.fileInputRef.current.click).toHaveBeenCalled();
+    });
+
+    it('should import thesauri when file is selected and reset file input', () => {
+      render();
+      const file = { name: 'file.csv' };
+      instance.fileInputRef.current = {
+        files: [file]
+      };
+      instance.fileFormRef.current = {
+        reset: jest.fn()
+      };
+      component.find('input[type="file"]').first().simulate('change');
+      expect(props.importThesauri).toHaveBeenCalledWith(props.thesauri, file);
+      expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
+    });
+    it('should not import thesauri if no file was selected', () => {
+      render();
+      instance.fileInputRef.current = {
+        files: []
+      };
+      instance.fileFormRef.current = {
+        reset: jest.fn()
+      };
+      component.find('input[type="file"]').first().simulate('change');
+      expect(props.importThesauri).not.toHaveBeenCalled();
+      expect(instance.fileFormRef.current.reset).toHaveBeenCalled();
     });
   });
 

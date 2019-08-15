@@ -1,26 +1,23 @@
-// export default {
-//   // Local data
-//   caseTemplate: '58ada34c299e826748545061',
-//   matterTemplate: '58ada34c299e826748545078',
+const caseTemplate = '58b2f3a35d59f31e1345b48a';
+const matterTemplate = '58b2f3a35d59f31e1345b4a4';
 
-//   renderableTemplates: {
-//     judgement: '58ada34c299e82674854508a',
-//     admissibilityReport: '58ada34c299e826748545054',
-//     orderOfThePresident: '58ada34c299e82674854505b',
-//     orderOfTheCourt: '58ada34c299e82674854504e'
-//   }
-// };
+const renderableTemplates = {
+  judgement: '58b2f3a35d59f31e1345b4ac',
+  admissibilityReport: '58b2f3a35d59f31e1345b479',
+  orderOfThePresident: '58b2f3a35d59f31e1345b482',
+  orderOfTheCourt: '58b2f3a35d59f31e1345b471',
+  letterOfSubmission: '59ee461f40f4a54920bd9b87',
+  meritsReport: '59ee427f40f4a54920bd9b67',
+  hearing: '5a68ba41e1525a0c66291e22'
+};
 
-export default {
-  caseTemplate: '58b2f3a35d59f31e1345b48a',
-  matterTemplate: '58b2f3a35d59f31e1345b4a4',
+const datePropertyOverrides = {
+  hearing: 'fecha_de_la_audiencia'
+};
 
-  renderableTemplates: {
-    judgement: '58b2f3a35d59f31e1345b4ac',
-    admissibilityReport: '58b2f3a35d59f31e1345b479',
-    orderOfThePresident: '58b2f3a35d59f31e1345b482',
-    orderOfTheCourt: '58b2f3a35d59f31e1345b471',
-    letterOfSubmission: '59ee461f40f4a54920bd9b87',
-    meritsReport: '59ee427f40f4a54920bd9b67'
-  }
+export {
+  caseTemplate,
+  matterTemplate,
+  renderableTemplates,
+  datePropertyOverrides,
 };

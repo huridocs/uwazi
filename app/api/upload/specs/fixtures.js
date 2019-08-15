@@ -31,5 +31,5 @@ export {
   entityId,
   entityEnId,
   uploadId,
-  templateId,
+  templateId
 };

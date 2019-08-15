@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, CartesianGrid, Bar, Tooltip, Legend } from 'recharts';
 
-import { formatPayload } from '../utils/arrayUtils';
+import arrayUtils from '../utils/arrayUtils';
 
 import ExtendedTooltip from './ExtendedTooltip';
 import ColoredBar from './ColoredBar';
@@ -19,7 +19,7 @@ const StackedDualBarChart = (props) => {
         <Tooltip content={<ExtendedTooltip parentData={data} chartLabel={chartLabel} />}/>
         <Bar dataKey="setAValue" fill="#D24040" shape={<ColoredBar />} stackId="unique" />
         <Bar dataKey="setBValue" fill="#D24040" shape={<ColoredBar color="light" />} stackId="unique" />
-        <Legend payload={formatPayload(data)} />
+        <Legend payload={arrayUtils.formatPayload(data)} />
       </BarChart>
     </ResponsiveContainer>
   );

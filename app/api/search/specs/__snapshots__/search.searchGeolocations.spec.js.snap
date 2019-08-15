@@ -72,6 +72,23 @@ Array [
     },
     "sharedId": "entity08",
   },
+  Object {
+    "metadata": Object {
+      "inhertied_country": Array [
+        Object {
+          "entity": "entityPrivate01",
+          "inherit_geolocation": Array [
+            Object {
+              "label": "",
+              "lat": 24,
+              "lon": 8,
+            },
+          ],
+        },
+      ],
+    },
+    "sharedId": "entity_isLinkedToPrivateEntity",
+  },
 ]
 `;
 
@@ -226,14 +243,20 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_work": Array [
+      "inhertied_country": Array [
         Object {
-          "entity": "entity06",
-          "inherit_geolocation": Array [],
+          "entity": "entityPrivate01",
+          "inherit_geolocation": Array [
+            Object {
+              "label": "",
+              "lat": 24,
+              "lon": 8,
+            },
+          ],
         },
       ],
     },
-    "sharedId": "entity10",
+    "sharedId": "entity_isLinkedToPrivateEntity",
   },
 ]
 `;

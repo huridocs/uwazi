@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import { notificationActions } from 'app/Notifications';
 import { RadioButtons } from 'app/ReactReduxForms';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
@@ -265,7 +265,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setSettings: actions.set.bind(null, 'settings/collection'), notify }, dispatch);
+  return bindActionCreators({ setSettings: actions.set.bind(null, 'settings/collection'), notify: notificationActions.notify }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CollectionSettings);

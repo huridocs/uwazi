@@ -53,7 +53,7 @@ import syncsModel from '../syncsModel';
 
 describe('syncWorker', () => {
   beforeEach(async () => {
-    paths.uploadDocumentsPath = __dirname;
+    paths.uploadedDocuments = __dirname;
     spyOn(request, 'uploadFile').and.returnValue(Promise.resolve());
     spyOn(errorLog, 'error');
     syncWorker.stopped = false;

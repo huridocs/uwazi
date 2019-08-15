@@ -1,7 +1,13 @@
-import { notify, removeNotification } from 'app/Notifications/actions/notificationsActions';
-import reducer from 'app/Notifications/reducers/notificationsReducer';
-import Notifications from 'app/Notifications/components/Notifications';
+import { notify, removeNotification } from './actions/notificationsActions';
+import Notifications from './components/Notifications';
 
-export { reducer, notify, removeNotification };
+const notificationActions = {
+  notify,
+  removeNotification
+};
+
+export {
+  notificationActions
+};
 
 export default Notifications;

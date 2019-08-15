@@ -13,33 +13,36 @@ function getGroupData(reference, groupedReferences, templates, relationTypes) {
   return groupData;
 }
 
-export default {
-  filterRelevantRelationships: (relationships, id, locale, user) => relationships.filter(
-    ref => Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user))
-  ),
+const filterRelevantRelationships = (relationships, id, locale, user) => relationships.filter(
+  ref => Boolean(ref.entity !== id && (ref.entityData && ref.entityData.published || user))
+);
 
-  groupRelationships: (relationships, templates, relationTypes) => {
-    const groupedReferences = [];
-    relationships.forEach((reference) => {
-      const groupData = getGroupData(reference, groupedReferences, templates, relationTypes);
-      let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.entityData.template.toString());
+const groupRelationships = (relationships, templates, relationTypes) => {
+  const groupedReferences = [];
+  relationships.forEach((reference) => {
+    const groupData = getGroupData(reference, groupedReferences, templates, relationTypes);
+    let groupDataTemplate = groupData.templates.find(template => template._id.toString() === reference.entityData.template.toString());
 
-      if (!groupDataTemplate) {
-        const referenceTemplate = templates.find(template => template._id.toString() === reference.entityData.template.toString());
-        groupDataTemplate = {
-          _id: reference.entityData.template.toString(),
-          label: referenceTemplate.name,
-          count: 0,
-          refs: []
-        };
+    if (!groupDataTemplate) {
+      const referenceTemplate = templates.find(template => template._id.toString() === reference.entityData.template.toString());
+      groupDataTemplate = {
+        _id: reference.entityData.template.toString(),
+        label: referenceTemplate.name,
+        count: 0,
+        refs: []
+      };
 
-        groupData.templates.push(groupDataTemplate);
-      }
+      groupData.templates.push(groupDataTemplate);
+    }
 
-      groupDataTemplate.refs.push(reference);
-      groupDataTemplate.count += 1;
-    });
+    groupDataTemplate.refs.push(reference);
+    groupDataTemplate.count += 1;
+  });
 
-    return groupedReferences;
-  }
+  return groupedReferences;
+};
+
+export {
+  filterRelevantRelationships,
+  groupRelationships
 };

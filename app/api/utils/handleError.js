@@ -1,12 +1,17 @@
 /* eslint-disable prefer-template */
 import debugLog from 'api/log/debugLog';
 import errorLog from 'api/log/errorLog';
+import Ajv from 'ajv';
 
 const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
   if (error instanceof Error) {
     result = { code: 500, message: error.stack };
+  }
+
+  if (error instanceof Ajv.ValidationError) {
+    result = { code: 422, message: error.message, validations: error.errors };
   }
 
   if (error.name === 'MongoError') {

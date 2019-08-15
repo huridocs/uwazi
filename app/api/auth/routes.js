@@ -9,7 +9,7 @@ import svgCaptcha from 'svg-captcha';
 import settings from 'api/settings';
 import urljoin from 'url-join';
 
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 
 import './passport_conf.js';
 
@@ -32,7 +32,7 @@ export default (app) => {
   app.post(
     '/api/login',
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       username: Joi.string().required(),
       password: Joi.string().required(),
     }).required()),

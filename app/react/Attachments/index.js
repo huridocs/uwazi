@@ -3,7 +3,7 @@ import UploadAttachment from './components/UploadAttachment';
 import manageAttachmentsReducer from './reducers/manageAttachmentsReducer';
 import reducer from './reducers/reducer';
 
-export default {
+export {
   AttachmentsList,
   UploadAttachment,
   manageAttachmentsReducer,

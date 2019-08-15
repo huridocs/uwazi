@@ -1,11 +1,15 @@
 import errorLog from 'api/log/errorLog';
 import date from 'api/utils/date';
-import { comonFilters, defaultFilters, allUniqueProperties, textFields } from 'shared/comonProperties';
-import { detect as detectLanguage } from 'shared/languages';
+
+import propertiesHelper from 'shared/comonProperties';
+
 import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
-import { index as elasticIndex } from 'api/config/elasticIndexes';
+import elasticIndexes from 'api/config/elasticIndexes';
+
+import languagesUtil from 'shared/languages';
 import languages from 'shared/languagesList';
+
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
 import relationtypes from 'api/relationtypes';
@@ -13,7 +17,6 @@ import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
-
 
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map((propertyName) => {
@@ -188,7 +191,10 @@ const mainSearch = (query, language, user) => {
     translations.get()
   ])
   .then(([templates, entitiesMatchedByTitle, dictionariesMatchByLabel, dictionaries, relationTypes, _translations]) => {
-    const textFieldsToSearch = query.fields || textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
+    const textFieldsToSearch = query.fields || propertiesHelper
+    .textFields(templates)
+    .map(prop => `metadata.${prop.name}`)
+    .concat(['title', 'fullText']);
     const documentsQuery = documentQueryBuilder()
     .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
     .filterByTemplate(query.types)
@@ -212,10 +218,10 @@ const mainSearch = (query, language, user) => {
     }
 
     const allTemplates = templates.map(t => t._id);
-    const allUniqueProps = allUniqueProperties(templates);
+    const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
     const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-    let properties = comonFilters(templates, relationTypes, filteringTypes);
-    properties = !query.types || !query.types.length ? defaultFilters(templates) : properties;
+    let properties = propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
+    properties = !query.types || !query.types.length ? propertiesHelper.defaultFilters(templates) : properties;
 
     if (query.sort) {
       const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
@@ -249,7 +255,7 @@ const mainSearch = (query, language, user) => {
     if (query.geolocation) {
       searchGeolocation(documentsQuery, filteringTypes, templates);
     }
-    return elastic.search({ index: elasticIndex, body: documentsQuery.query() })
+    return elastic.search({ index: elasticIndexes.index, body: documentsQuery.query() })
     .then(processResponse)
     .catch((e) => {
       throw createError(e.message, 400);
@@ -294,18 +300,25 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language) => Promise.all(
-  Object.keys(toFetchByTemplate).map(t => entities.get(
-    { language, sharedId: { $in: toFetchByTemplate[t].entities } },
-    { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
-  ))
-);
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
+  Promise.all(
+    Object.keys(toFetchByTemplate).map((t) => {
+      const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
+      if (!user) {
+        query.published = true;
+      }
+      return entities.get(
+        query,
+        { ...toFetchByTemplate[t].properties.reduce((memo, n) => Object.assign(memo, { [`metadata.${n}`]: 1 }), {}), sharedId: 1 }
+      );
+    })
+  );
 
-const getInheritedEntities = async (results, language) => {
+const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
   const templatesInheritedProperties = determineInheritedProperties(templates);
   const toFetchByTemplate = whatToFetchByTemplate(results, templatesInheritedProperties);
-  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language);
+  const inheritedEntitiesData = await getInheritedEntitiesData(toFetchByTemplate, language, user);
 
   const inheritedEntities = inheritedEntitiesData.reduce((_memo, templateEntities) => {
     const memo = _memo;
@@ -318,11 +331,24 @@ const getInheritedEntities = async (results, language) => {
   return { templatesInheritedProperties, inheritedEntities };
 };
 
+const entityHasGeolocation = entity =>
+  entity.metadata && !!Object.keys(entity.metadata).find((field) => {
+    if (/_geolocation/.test(field) && entity.metadata[field].length) {
+      return true;
+    }
+    if (Array.isArray(entity.metadata[field])) {
+      return !!entity.metadata[field].find(f => f.inherit_geolocation && f.inherit_geolocation.length);
+    }
+    return false;
+  });
+
 const processGeolocationResults = (_results, templatesInheritedProperties, inheritedEntities) => {
   const results = _results;
+  const processedRows = [];
   const affectedTemplates = Object.keys(templatesInheritedProperties);
 
-  results.rows.forEach((row, rowIndex) => {
+  results.rows.forEach((_row) => {
+    const row = _row;
     if (affectedTemplates.includes(row.template)) {
       Object.keys(row.metadata).forEach((property) => {
         if (templatesInheritedProperties[row.template][property]) {
@@ -330,7 +356,7 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
             const targetProperty = templatesInheritedProperties[row.template][property].target.name;
             const inherited = inheritedEntities[entity] ? inheritedEntities[entity] : { metadata: {} };
             inherited.metadata = inherited.metadata || {};
-            results.rows[rowIndex].metadata[property][index] = {
+            row.metadata[property][index] = {
               entity,
               inherit_geolocation: inherited.metadata[targetProperty] || [],
             };
@@ -338,8 +364,13 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
         }
       });
     }
+    if (entityHasGeolocation(row)) {
+      processedRows.push(row);
+    }
   });
 
+  results.rows = processedRows;
+  results.totalRows = processedRows.length;
   return results;
 };
 
@@ -350,7 +381,7 @@ const search = {
     let results = await mainSearch({ ...query, geolocation: true }, language, user);
 
     if (results.rows.length) {
-      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language);
+      const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(results, language, user);
       results = processGeolocationResults(results, templatesInheritedProperties, inheritedEntities);
     }
 
@@ -364,7 +395,7 @@ const search = {
   searchSnippets(searchTerm, sharedId, language) {
     return Promise.all([templatesModel.get()])
     .then(([templates]) => {
-      const searchFields = textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
+      const searchFields = propertiesHelper.textFields(templates).map(prop => `metadata.${prop.name}`).concat(['title', 'fullText']);
       const query = documentQueryBuilder()
       .fullTextSearch(searchTerm, searchFields, 9999)
       .includeUnpublished()
@@ -372,7 +403,7 @@ const search = {
       .language(language)
       .query();
 
-      return elastic.search({ index: elasticIndex, body: query })
+      return elastic.search({ index: elasticIndexes.index, body: query })
       .then((response) => {
         if (response.hits.hits.length === 0) {
           return {
@@ -397,7 +428,7 @@ const search = {
       delete doc.pdfInfo;
 
       let action = {};
-      action[_action] = { _index: elasticIndex, _type: type, _id: id };
+      action[_action] = { _index: elasticIndexes.index, _type: type, _id: id };
       if (_action === 'update') {
         _doc = { doc: _doc };
       }
@@ -409,13 +440,13 @@ const search = {
         const fullText = Object.values(doc.fullText).join('\f');
 
         action = {};
-        action[_action] = { _index: elasticIndex, _type: 'fullText', parent: id, _id: `${id}_fullText` };
+        action[_action] = { _index: elasticIndexes.index, _type: 'fullText', parent: id, _id: `${id}_fullText` };
         body.push(action);
 
         const fullTextQuery = {};
         let language;
         if (!doc.file || doc.file && !doc.file.language) {
-          language = detectLanguage(fullText);
+          language = languagesUtil.detect(fullText);
         }
         if (doc.file && doc.file.language) {
           language = languages(doc.file.language);
@@ -441,18 +472,18 @@ const search = {
 
   bulkDelete(docs) {
     const type = 'entity';
-    const body = docs.map(doc => ({ delete: { _index: elasticIndex, _type: type, _id: doc._id } }));
+    const body = docs.map(doc => ({ delete: { _index: elasticIndexes.index, _type: type, _id: doc._id } }));
     return elastic.bulk({ body });
   },
 
   delete(entity) {
     const id = entity._id.toString();
-    return elastic.delete({ index: elasticIndex, type: 'entity', id });
+    return elastic.delete({ index: elasticIndexes.index, type: 'entity', id });
   },
 
   deleteLanguage(language) {
     const query = { query: { match: { language } } };
-    return elastic.deleteByQuery({ index: elasticIndex, body: query });
+    return elastic.deleteByQuery({ index: elasticIndexes.index, body: query });
   }
 };
 

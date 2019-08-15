@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { validateRequest } from 'api/utils';
+import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import users from './users';
 
@@ -11,7 +11,7 @@ export default (app) => {
 
     needsAuthorization(['admin', 'editor']),
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.objectId().required(),
       __v: Joi.number(),
       username: Joi.string(),
@@ -28,7 +28,7 @@ export default (app) => {
 
   app.post('/api/users/new',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       username: Joi.string().required(),
       email: Joi.string().required(),
       password: Joi.string(),
@@ -42,7 +42,7 @@ export default (app) => {
 
   app.post(
     '/api/unlockaccount',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       username: Joi.string().required(),
       code: Joi.string().required()
     }).required()),
@@ -55,7 +55,7 @@ export default (app) => {
 
   app.post(
     '/api/recoverpassword',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       email: Joi.string().required(),
     }).required()),
     (req, res, next) => {
@@ -66,7 +66,7 @@ export default (app) => {
   );
 
   app.post('/api/resetpassword',
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       key: Joi.string().required(),
       password: Joi.string().required(),
     }).required()),
@@ -85,7 +85,7 @@ export default (app) => {
 
   app.delete('/api/users',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       _id: Joi.string().required()
     }).required(), 'query'),
     (req, res, next) => {

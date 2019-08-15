@@ -35,19 +35,19 @@ describe('csvLoader zip file', () => {
     spyOn(fileUtils, 'generateFileName').and.callFake(
       file => `generated${file.originalname}`
     );
-    configPaths.uploadDocumentsPath = path.join(__dirname, '/zipData/');
+    configPaths.uploadedDocuments = path.join(__dirname, '/zipData/');
     await loader.load(zip, template1Id);
     imported = await entities.get({}, '+fullText');
   });
 
   afterAll(async () => {
     await fileUtils.deleteFiles([
-      path.join(configPaths.uploadDocumentsPath, 'generated1.pdf'),
-      path.join(configPaths.uploadDocumentsPath, 'generated2.pdf'),
-      path.join(configPaths.uploadDocumentsPath, 'generated3.pdf'),
-      path.join(configPaths.uploadDocumentsPath, `${imported[0]._id}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[1]._id}.jpg`),
-      path.join(configPaths.uploadDocumentsPath, `${imported[2]._id}.jpg`),
+      path.join(configPaths.uploadedDocuments, 'generated1.pdf'),
+      path.join(configPaths.uploadedDocuments, 'generated2.pdf'),
+      path.join(configPaths.uploadedDocuments, 'generated3.pdf'),
+      path.join(configPaths.uploadedDocuments, `${imported[0]._id}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[1]._id}.jpg`),
+      path.join(configPaths.uploadedDocuments, `${imported[2]._id}.jpg`),
     ]);
     await removeTestingZip();
   });

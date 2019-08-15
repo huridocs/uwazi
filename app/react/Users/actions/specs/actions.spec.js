@@ -1,5 +1,5 @@
 import { actions as basicActions } from 'app/BasicReducer';
-import * as Notifications from 'app/Notifications';
+import { notificationActions } from 'app/Notifications';
 import api from 'app/Users/UsersAPI';
 import * as actions from '../actions';
 
@@ -12,7 +12,7 @@ describe('User actions', () => {
     spyOn(api, 'save').and.returnValue(Promise.resolve());
     spyOn(basicActions, 'remove').and.returnValue('USER REMOVED');
     spyOn(basicActions, 'push').and.returnValue('USER PUSHED');
-    spyOn(Notifications, 'notify').and.returnValue('NOTIFIED');
+    spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
 
   describe('deleteUser', () => {

@@ -2,8 +2,8 @@ import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/template
 import entities from 'api/entities/entities';
 import templates from 'api/templates/templates';
 import translations from 'api/i18n/translations';
-
 import model from './dictionariesModel';
+import { validateThesauri } from './validateThesauri';
 
 const autoincrementValuesId = (thesauri) => {
   thesauri.values = generateIds(thesauri.values);
@@ -17,19 +17,6 @@ const autoincrementValuesId = (thesauri) => {
   });
   return thesauri;
 };
-
-const checkDuplicated = thesauri => model.get()
-.then((thesauris) => {
-  const duplicated = thesauris.find((entry) => {
-    const sameEntity = entry._id.equals(thesauri._id);
-    const sameName = entry.name.trim().toLowerCase() === thesauri.name.trim().toLowerCase();
-    return sameName && !sameEntity;
-  });
-
-  if (duplicated) {
-    return Promise.reject('duplicated_entry');
-  }
-});
 
 function thesauriToTranslatioNContext(thesauri) {
   return thesauri.values.reduce((ctx, prop) => {
@@ -45,14 +32,14 @@ function thesauriToTranslatioNContext(thesauri) {
   }, {});
 }
 
-function _save(thesauri) {
+const create = async (thesauri) => {
   const context = thesauriToTranslatioNContext(thesauri);
   context[thesauri.name] = thesauri.name;
 
-  return model.save(thesauri)
-  .then(response => translations.addContext(response._id, thesauri.name, context, 'Dictionary')
-  .then(() => response));
-}
+  const created = await model.save(thesauri);
+  await translations.addContext(created._id, thesauri.name, context, 'Dictionary');
+  return created;
+};
 
 const updateTranslation = (current, thesauri) => {
   const currentProperties = current.values;
@@ -82,27 +69,25 @@ const removeDeletedOptionsFromEntities = (current, thesauri) => {
   );
 };
 
-function _update(thesauri) {
-  return model.getById(thesauri._id)
-  .then(currentThesauri => updateTranslation(currentThesauri, thesauri)
-  .then(() => removeDeletedOptionsFromEntities(currentThesauri, thesauri))
-  .then(() => model.save(thesauri)));
-}
+const update = async (thesauri) => {
+  const currentThesauri = await model.getById(thesauri._id);
+  await updateTranslation(currentThesauri, thesauri);
+  await removeDeletedOptionsFromEntities(currentThesauri, thesauri);
+  return model.save(thesauri);
+};
 
 export default {
-  save(thesauri) {
-    thesauri.type = 'thesauri';
-    thesauri.values = thesauri.values || [];
+  async save(t) {
+    const thesauri = { values: [], type: 'thesauri', ...t };
 
     autoincrementValuesId(thesauri);
 
-    return checkDuplicated(thesauri)
-    .then(() => {
-      if (thesauri._id) {
-        return _update(thesauri);
-      }
-      return _save(thesauri);
-    });
+    await validateThesauri(thesauri);
+
+    if (thesauri._id) {
+      return update(thesauri);
+    }
+    return create(thesauri);
   },
 
   templateToThesauri(template, language, user) {

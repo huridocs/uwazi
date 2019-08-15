@@ -9,14 +9,14 @@ import entities from 'api/entities';
 import fs from 'fs';
 import path from 'path';
 
-import { attachmentsPath } from '../config/paths';
+import paths from '../config/paths';
 import attachments from './attachments';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, attachmentsPath);
+    cb(null, paths.attachments);
   },
   filename(req, file, cb) {
     cb(null, Date.now() + ID() + path.extname(file.originalname));
@@ -57,7 +57,7 @@ export default (app) => {
   app.get(
     '/api/attachment/:file',
     (req, res) => {
-      const filePath = `${path.resolve(attachmentsPath)}/${path.basename(req.params.file)}`;
+      const filePath = `${path.resolve(paths.attachments)}/${path.basename(req.params.file)}`;
       fs.stat(filePath, (err) => {
         if (err) {
           return res.redirect('/public/no-preview.png');
@@ -68,7 +68,7 @@ export default (app) => {
 
   app.get('/api/attachments/download',
 
-  validateRequest(Joi.object({
+  validation.validateRequest(Joi.object({
     _id: Joi.objectId().required(),
     file: Joi.string().required()
   }).required(), 'query'),
@@ -84,7 +84,7 @@ export default (app) => {
         throw createError('file not found', 404);
       }
       const newName = path.basename(file.originalname, path.extname(file.originalname)) + path.extname(file.filename);
-      res.download(path.join(attachmentsPath, file.filename), sanitize(newName));
+      res.download(path.join(paths.attachments, file.filename), sanitize(newName));
     })
     .catch(next);
   });
@@ -93,7 +93,7 @@ export default (app) => {
     '/api/attachments/upload',
     needsAuthorization(['admin', 'editor']),
     upload.any(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       entityId: Joi.string().required(),
       allLanguages: Joi.boolean(),
     }).required()),
@@ -111,7 +111,7 @@ export default (app) => {
 
     needsAuthorization(['admin', 'editor']),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       _id: Joi.objectId().required(),
       entityId: Joi.string().required(),
       originalname: Joi.string().required(),
@@ -154,7 +154,7 @@ export default (app) => {
 
     needsAuthorization(['admin', 'editor']),
 
-    validateRequest(Joi.object({
+    validation.validateRequest(Joi.object({
       attachmentId: Joi.string().required(),
     }).required(), 'query'),
 
