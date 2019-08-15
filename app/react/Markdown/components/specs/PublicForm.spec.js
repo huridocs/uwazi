@@ -37,6 +37,11 @@ describe('PublicForm', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('should enable remote captcha', () => {
+    render({ remote: true });
+    expect(component).toMatchSnapshot();
+  });
+
   it('should render a form with file and attachments', () => {
     render({ file: true, attachments: true });
     expect(component).toMatchSnapshot();

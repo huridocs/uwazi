@@ -201,8 +201,9 @@ export class CollectionSettings extends Component {
               />
             </div>
             <div className="form-group">
-              <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Public Form destination')}</label>
+              <label className="form-group-label" htmlFor="collectionPublicFormDestination">{t('System', 'Public Form destination')}</label>
               <Control.text
+                id="collectionPublicFormDestination"
                 model=".publicFormDestination"
                 className="form-control"
               />
