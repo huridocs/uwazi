@@ -29,17 +29,17 @@ const getDocuments = (sharedId, allLanguages, language) =>
     ...(!allLanguages && { language })
   });
 
-const storeFile = (file, cb) => {
+const storeFile = file => new Promise((resolve, reject) => {
   const filename = generateFileName(file);
   const destination = configPaths.uploadDocumentsPath;
   const pathToFile = path.join(destination, filename);
   fs.appendFile(pathToFile, file.buffer, (err) => {
     if (err) {
-      throw err;
+      reject(err);
     }
-    cb(Object.assign(file, { filename, destination }));
+    resolve(Object.assign(file, { filename, destination }));
   });
-};
+});
 
 /*eslint-disable max-statements*/
 export default (app) => {
@@ -96,16 +96,17 @@ export default (app) => {
 
       entity.attachments = [];
       if (req.files.length) {
-        req.files.forEach(async (file) => {
-          if (file.fieldname.includes('attachment')) {
-            await storeFile(file, _file => entity.attachments.push(_file));
-          }
-        });
+        await Promise.all(
+          req.files
+          .filter(file => file.fieldname.includes('attachment'))
+          .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
+        );
       }
+
       const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
-        storeFile(file, async (_file) => {
+        storeFile(file).then(async (_file) => {
           const newEntities = await entities.getAllLanguages(newEntity.sharedId);
           await uploadFile(newEntities, _file).start();
           await entities.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
