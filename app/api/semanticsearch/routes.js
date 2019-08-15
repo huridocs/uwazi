@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import semanticSearch from './semanticSearch';
-import { validateRequest } from '../utils';
+import { validation } from '../utils';
 import handleError from '../utils/handleError';
 import needsAuthorization from '../auth/authMiddleware';
 import workers from './workerManager';
@@ -14,7 +14,7 @@ workers.on('searchError', (searchId, error) => {
 export default (app) => {
   app.post('/api/semantic-search',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       searchTerm: Joi.string().required(),
       documents: Joi.array().items(Joi.string()),
       query: Joi.object()
@@ -35,7 +35,7 @@ export default (app) => {
   );
   app.get('/api/semantic-search/:searchId',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       limit: Joi.number().min(0),
       skip: Joi.number().min(0),
       threshold: Joi.number().min(0),
@@ -55,7 +55,7 @@ export default (app) => {
   );
   app.get('/api/semantic-search/:searchId/list',
     needsAuthorization(),
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       threshold: Joi.number().min(0).required(),
       minRelevantSentences: Joi.number().min(0).required()
     }), 'query'),

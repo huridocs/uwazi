@@ -81,11 +81,15 @@ export class SearchBar extends Component {
   }
 }
 
+SearchBar.defaultProps = {
+  semanticSearchEnabled: false
+};
+
 SearchBar.propTypes = {
   searchDocuments: PropTypes.func.isRequired,
   semanticSearch: PropTypes.func.isRequired,
   change: PropTypes.func.isRequired,
-  semanticSearchEnabled: PropTypes.bool.isRequired,
+  semanticSearchEnabled: PropTypes.bool,
   search: PropTypes.object,
   storeKey: PropTypes.string.isRequired,
 };

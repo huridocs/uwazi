@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { t } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
-import ShowIf from 'app/App/ShowIf';
-import comonPropertiesUtil from 'shared/comonProperties';
 import * as metadataActions from 'app/Metadata/actions/actions';
 import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
@@ -16,8 +14,6 @@ import Immutable from 'immutable';
 import { Icon } from 'UI';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
-
-const { comonProperties } = comonPropertiesUtil;
 
 const sortedTemplates = createSelector(
   s => s.templates,
