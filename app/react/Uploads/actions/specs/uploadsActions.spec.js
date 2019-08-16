@@ -9,7 +9,6 @@ import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
-import { notificationActions } from 'app/Notifications';
 
 import api from '../../../utils/api';
 
