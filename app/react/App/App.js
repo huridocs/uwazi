@@ -25,7 +25,6 @@ loadIcons();
 class App extends Component {
   constructor(props, context) {
     super(props, context);
-
     // change fetch to use api and test it properly
     this.fetch = props.fetch || fetch;
     this.state = { showmenu: false, confirmOptions: {} };

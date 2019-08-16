@@ -20,6 +20,7 @@
 @import "elements/blank-state";
 @import "elements/geolocation";
 @import "elements/map";
+@import "elements/numeric-range-slide";
 
 @import "layout/app";
 @import "layout/header";
@@ -39,6 +40,7 @@
 @import "modules/entity";
 @import "modules/attachments";
 @import "modules/metadata-view";
+@import "modules/semantic-search";
 @import "modules/settings";
 @import "modules/settings-nav";
 @import "modules/settings-metadata";

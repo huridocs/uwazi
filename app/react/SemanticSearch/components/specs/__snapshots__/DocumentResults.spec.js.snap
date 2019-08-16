@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DocumentResults render should render result snippets above threshold 1`] = `
+<React.Fragment>
+  <div
+    className="view"
+  >
+    <div
+      className="item-info"
+    >
+      <div>
+        <Icon
+          className="item-icon item-icon-center"
+        />
+        <h1
+          className="item-name"
+        >
+          <Connect(DocumentLanguage)
+            doc={
+              Immutable.Map {
+                "semanticSearch": Immutable.Map {
+                  "results": Immutable.List [
+                    Immutable.Map {
+                      "score": 0.5,
+                      "text": "one",
+                    },
+                    Immutable.Map {
+                      "score": 0.2,
+                      "text": "two",
+                    },
+                  ],
+                  "relevantRate": 0.5,
+                  "numRelevant": 1,
+                  "totalResults": 2,
+                },
+                "avgScore": 0.4,
+              }
+            }
+          />
+        </h1>
+      </div>
+      <Connect(TemplateLabel) />
+    </div>
+    <dl
+      className="metadata-type-text"
+    >
+      <dt
+        className="item-header"
+      >
+        <Connect(Translate)>
+          Threshold
+        </Connect(Translate)>
+         
+        30.00
+         %
+      </dt>
+      <dd>
+        <Connect(Form)
+          model="semanticSearch.resultsFilters"
+        >
+          <NumericRangeSlide
+            delay={200}
+            max={1}
+            maxLabel="Precision"
+            min={0.3}
+            minLabel="Exploration"
+            model=".threshold"
+            step={0.01}
+          />
+        </Connect(Form)>
+      </dd>
+    </dl>
+    <dl
+      className="metadata-type-numeric"
+    >
+      <dt>
+        <Connect(Translate)>
+          Sentences above threshold
+        </Connect(Translate)>
+      </dt>
+      <dd>
+        1
+      </dd>
+    </dl>
+    <dl
+      className="metadata-type-numeric"
+    >
+      <dt>
+        <Connect(Translate)>
+          % of document above threshold
+        </Connect(Translate)>
+      </dt>
+      <dd>
+        50.00
+        %
+      </dd>
+    </dl>
+  </div>
+  <Connect(SnippetList)
+    doc={
+      Immutable.Map {
+        "semanticSearch": Immutable.Map {
+          "results": Immutable.List [
+            Immutable.Map {
+              "score": 0.5,
+              "text": "one",
+            },
+            Immutable.Map {
+              "score": 0.2,
+              "text": "two",
+            },
+          ],
+          "relevantRate": 0.5,
+          "numRelevant": 1,
+          "totalResults": 2,
+        },
+        "avgScore": 0.4,
+      }
+    }
+    documentViewUrl="/entity/undefined"
+    searchTerm=""
+    selectSnippet={[Function]}
+    snippets={
+      Immutable.Map {
+        "count": 1,
+        "metadata": Immutable.List [],
+        "fullText": Immutable.List [
+          Immutable.Map {
+            "score": 0.5,
+            "text": "one (50.00%)",
+          },
+        ],
+      }
+    }
+  />
+</React.Fragment>
+`;

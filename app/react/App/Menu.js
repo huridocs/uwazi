@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t } from 'app/I18N';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
+import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { Icon } from 'UI';
 
 export class Menu extends Component {
@@ -17,6 +20,22 @@ export class Menu extends Component {
   uploadsUrl() {
     const params = processFilters(this.props.uploadsSearch, this.props.uploadsFilters.toJS());
     return `/uploads/${encodeSearch(params)}`;
+  }
+
+  renderSemanticSearchButton() {
+    if (!this.props.semanticSearch) {
+      return false;
+    }
+    return (
+      <NeedAuthorization roles={['admin']}>
+        <li className="menuNav-item semantic-search">
+          <button type="button" onClick={this.props.showSemanticSearch} className="menuNav-btn btn btn-default">
+            <Icon icon="flask" />
+            <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+          </button>
+        </li>
+      </NeedAuthorization>
+    );
   }
 
   render() {
@@ -47,6 +66,7 @@ export class Menu extends Component {
         </li>
         <li className="menuActions">
           <ul className="menuNav-list">
+            {this.renderSemanticSearchButton()}
             <li className="menuNav-item">
               <I18NLink to={this.libraryUrl()} className="menuNav-btn btn btn-default">
                 <Icon icon="th" />
@@ -91,6 +111,11 @@ export class Menu extends Component {
   }
 }
 
+Menu.defaultProps = {
+  semanticSearch: false,
+  showSemanticSearch: () => {}
+};
+
 Menu.propTypes = {
   user: PropTypes.object,
   location: PropTypes.object,
@@ -100,10 +125,13 @@ Menu.propTypes = {
   uploadsFilters: PropTypes.object,
   className: PropTypes.string,
   onClick: PropTypes.func,
+  showSemanticSearch: PropTypes.func,
+  semanticSearch: PropTypes.bool,
   links: PropTypes.object
 };
 
 export function mapStateToProps({ user, settings, library, uploads }) {
+  const features = settings.collection.toJS().features || {};
   return {
     user,
     librarySearch: library.search,
@@ -111,8 +139,16 @@ export function mapStateToProps({ user, settings, library, uploads }) {
     uploadsSearch: uploads.search,
     uploadsFilters: uploads.filters,
     uploadsSelectedSorting: uploads.selectedSorting,
-    links: settings.collection.get('links')
+    links: settings.collection.get('links'),
+    semanticSearch: features.semanticSearch
   };
 }
 
-export default connect(mapStateToProps)(Menu);
+export function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    showSemanticSearch
+  }, wrapDispatch(dispatch, 'library'));
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

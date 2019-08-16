@@ -10,9 +10,10 @@ describe('SearchBar', () => {
   let props;
 
   beforeEach(() => {
-    props = jasmine.createSpyObj(['searchDocuments', 'change']);
+    props = jasmine.createSpyObj(['searchDocuments', 'change', 'semanticSearch']);
     props.search = { searchTerm: 'Find my document', sort: 'title', filters: { isBatman: true } };
     props.storeKey = 'library';
+    props.semanticSearchEnabled = true;
     component = shallow(<SearchBar {...props}/>);
   });
 
@@ -28,12 +29,14 @@ describe('SearchBar', () => {
       const store = {
         library: {
           ui: Immutable.fromJS({ filtersPanel: true }),
-          search: { searchTerm: 'search' }
-        }
+          search: { searchTerm: 'search' },
+          filters: Immutable.fromJS({ properties: [], documentTypes: [] }),
+        },
+        settings: { collection: Immutable.fromJS({ features: { semanticSearch: false } }) },
       };
 
       const state = mapStateToProps(store, { storeKey: 'library' });
-      expect(state).toEqual({ open: true, search: { searchTerm: 'search' } });
+      expect(state).toEqual({ search: { searchTerm: 'search', filters: {}, limit: undefined, types: [], }, semanticSearchEnabled: false });
     });
   });
 });

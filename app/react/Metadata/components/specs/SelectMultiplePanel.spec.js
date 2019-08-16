@@ -79,7 +79,7 @@ describe('SelectMultiplePanel', () => {
   describe('changeTemplate()', () => {
     it('should update the template in all the selectedEntities', () => {
       render();
-      component.find('.template-selector').simulate('change', { target: { value: '3' } });
+      instance.changeTemplate({}, '3');
       const expectedEntities = [{ title: 'A rude awakening', template: '3' }, { title: 'A falling star', template: '3' }];
       const entities = props.updateSelectedEntities.calls.mostRecent().args[0].toJS();
       expect(entities).toEqual(expectedEntities);

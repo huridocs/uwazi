@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchDescription should generate description based on property filters 1`] = `
+<span>
+  test
+   Prop 1: Prop 1 Val 1, Prop 2 Val 2 - Prop 2: Prop 2 Val 1
+</span>
+`;
+
+exports[`SearchDescription should only display search term if query is not provided 1`] = `
+<span>
+  test
+</span>
+`;

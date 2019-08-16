@@ -85,7 +85,7 @@ Item.propTypes = {
   active: PropTypes.bool,
   noMetadata: PropTypes.bool,
   additionalIcon: PropTypes.object,
-  additionalText: PropTypes.string,
+  additionalText: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   additionalMetadata: PropTypes.array,
   doc: PropTypes.object,
   itemHeader: PropTypes.object,

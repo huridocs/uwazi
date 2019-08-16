@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`libraryActions async action selectDocument when the doc has not semantic search but the active sidepanel tab is semantic search should reset the active sidepanel tab 1`] = `
+Array [
+  Object {
+    "type": "library.sidepanel.tab/SET",
+    "value": "",
+  },
+  Object {
+    "doc": Object {
+      "sharedId": "doc",
+    },
+    "type": "SELECT_DOCUMENT",
+  },
+]
+`;

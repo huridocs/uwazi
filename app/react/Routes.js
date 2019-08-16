@@ -47,6 +47,9 @@ import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
+
+import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
+
 import { trackPage } from 'app/App/GoogleAnalytics';
 import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
@@ -147,6 +150,7 @@ const routes = (
     <Route path="document/:documentId*" component={ViewDocument} onEnter={onEnter}/>
     <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
     <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>
+    <Route path="semanticsearch/:searchId" component={SemanticSearchResultsView} onEnter={onEnter}/>
     <Route path="404" component={NoMatch} />
   </Route>
 );

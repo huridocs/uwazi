@@ -13,10 +13,14 @@ export function notEmpty(val) {
 }
 
 export default {
-  generate(template) {
+  generate(template, noTitle = false) {
     const validationObject = {
       title: { required: notEmpty }
     };
+
+    if (noTitle) {
+      delete validationObject.title;
+    }
 
     template.properties.forEach((property) => {
       if (property.required) {
