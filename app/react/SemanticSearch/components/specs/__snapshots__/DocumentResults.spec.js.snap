@@ -96,7 +96,7 @@ exports[`DocumentResults render should render result snippets above threshold 1`
       </dd>
     </dl>
   </div>
-  <Connect(Component)
+  <Connect(SnippetList)
     doc={
       Immutable.Map {
         "semanticSearch": Immutable.Map {

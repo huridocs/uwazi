@@ -108,3 +108,14 @@ export function remove(namespace, value) {
     value
   };
 }
+
+export const actions = {
+  update,
+  updateIn,
+  set,
+  unset,
+  push,
+  concat,
+  concatIn,
+  remove
+};

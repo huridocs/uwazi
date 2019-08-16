@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import multiReducer from 'app/Multireducer';
 import { actions as basicActions } from 'app/BasicReducer';
-import * as actions from '../../actions/actions';
+import actions from '../../actions';
 
 import DocumentResultsPanel, { mapDispatchToProps, mapStateToProps } from '../DocumentResultsPanel';
 
@@ -18,7 +18,7 @@ describe('DocumentResultsPanel', () => {
       storeKey: 'library'
     };
     dispatch = jest.fn().mockImplementation(() => Promise.resolve());
-    jest.spyOn(multiReducer, 'wrapDispatch').mockReturnValue(dispatch);
+    spyOn(multiReducer, 'wrapDispatch').and.returnValue(dispatch);
     state = {
       templates: [],
       semanticSearch: {

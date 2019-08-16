@@ -36,7 +36,7 @@ exports[`DocumentResultsPanel should render DocumentSidePanel with the current s
         ],
         "results": Array [
           Object {
-            "isThrow": false,
+            "type": "return",
             "value": Object {
               "library": Object {
                 "search": Object {
@@ -62,7 +62,7 @@ exports[`DocumentResultsPanel should render DocumentSidePanel with the current s
             },
           },
           Object {
-            "isThrow": false,
+            "type": "return",
             "value": Object {
               "library": Object {
                 "search": Object {
@@ -97,7 +97,7 @@ exports[`DocumentResultsPanel should render DocumentSidePanel with the current s
         ],
         "results": Array [
           Object {
-            "isThrow": false,
+            "type": "return",
             "value": undefined,
           },
         ],
@@ -124,7 +124,7 @@ exports[`DocumentResultsPanel should render DocumentSidePanel with the current s
           ],
           "results": Array [
             Object {
-              "isThrow": false,
+              "type": "return",
               "value": Object {
                 "library": Object {
                   "search": Object {
@@ -150,7 +150,7 @@ exports[`DocumentResultsPanel should render DocumentSidePanel with the current s
               },
             },
             Object {
-              "isThrow": false,
+              "type": "return",
               "value": Object {
                 "library": Object {
                   "search": Object {
@@ -185,7 +185,7 @@ exports[`DocumentResultsPanel should render DocumentSidePanel with the current s
           ],
           "results": Array [
             Object {
-              "isThrow": false,
+              "type": "return",
               "value": undefined,
             },
           ],

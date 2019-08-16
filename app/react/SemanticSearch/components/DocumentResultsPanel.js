@@ -7,14 +7,14 @@ import { actions as actionCreators } from 'app/BasicReducer';
 import { actions } from 'app/Metadata';
 import { deleteDocument, searchSnippets } from 'app/Library/actions/libraryActions';
 import { deleteEntity } from 'app/Entities/actions/actions';
-import { wrapDispatch } from 'app/Multireducer';
+import multiReducer from 'app/Multireducer';
 import modals from 'app/Modals';
 
 import DocumentForm from 'app/Library/containers/DocumentForm';
 import EntityForm from 'app/Library/containers/EntityForm';
 
 import { getDocumentReferences, saveDocument } from 'app/Library/actions/libraryActions';
-import { unselectSemanticSearchDocument } from '../actions/actions';
+import semanticSearchActions from '../actions';
 
 export const mapStateToProps = ({ semanticSearch, library, templates }) => ({
     open: !semanticSearch.selectedDocument.isEmpty(),
@@ -36,7 +36,7 @@ export function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({
     loadInReduxForm: actions.loadInReduxForm,
     getDocumentReferences,
-    closePanel: unselectSemanticSearchDocument,
+    closePanel: semanticSearchActions.unselectSemanticSearchDocument,
     resetForm: () => (_dispatch) => {
       _dispatch(formActions.setInitial(`${props.storeKey}.sidepanel.metadata`));
       _dispatch(formActions.reset(`${props.storeKey}.sidepanel.metadata`));
@@ -47,7 +47,7 @@ export function mapDispatchToProps(dispatch, props) {
     deleteEntity,
     showModal: modals.actions.showModal,
     showTab: tab => actionCreators.set('library.sidepanel.tab', tab)
-  }, wrapDispatch(dispatch, props.storeKey));
+  }, multiReducer.wrapDispatch(dispatch, props.storeKey));
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentSidePanel);
