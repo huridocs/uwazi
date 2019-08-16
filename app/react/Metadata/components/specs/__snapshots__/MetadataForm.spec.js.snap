@@ -86,6 +86,7 @@ exports[`MetadataForm should display custom title label 1`] = `
   </FormGroup>
   <Connect(MetadataFormFields)
     model="metadata"
+    multipleEdition={false}
     template={
       Immutable.Map {
         "name": "template4",

@@ -9,6 +9,7 @@ describe('Translate', () => {
 
   beforeEach(() => {
     props = {
+      translationKey: 'Search',
       text: 'Buscar',
       edit: jasmine.createSpy('edit')
     };
@@ -73,6 +74,17 @@ describe('Translate', () => {
 
     it('should try to translate the children and pass it on text', () => {
       props = { children: 'Search', context: 'System' };
+      const state = {
+        locale: 'es',
+        inlineEdit: Immutable.fromJS({ inlineEdit: true }),
+        translations: Immutable.fromJS(translations)
+      };
+      expect(mapStateToProps(state, props).text).toBe('Buscar');
+      expect(mapStateToProps(state, props).i18nmode).toBe(true);
+    });
+
+    it('should allow overriding translation key', () => {
+      props = { children: 'Test', translationKey: 'Search', context: 'System' };
       const state = {
         locale: 'es',
         inlineEdit: Immutable.fromJS({ inlineEdit: true }),

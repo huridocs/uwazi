@@ -7,14 +7,13 @@ import api from 'app/RelationTypes/RelationTypesAPI';
 import TemplateCreator from '../Templates/components/TemplateCreator';
 
 export default class NewRelationType extends RouteHandler {
-  static requestState() {
-    return api.get()
-    .then(relationTypes => ({ relationTypes }));
-  }
+  static async requestState(requestParams) {
+    const relationTypes = await api.get(requestParams);
 
-  setReduxState({ relationTypes }) {
-    this.context.store.dispatch(actions.set('relationTypes', relationTypes));
-    this.context.store.dispatch(editRelationType({ name: '', properties: [] }));
+    return [
+      actions.set('relationTypes', relationTypes),
+      editRelationType({ name: '', properties: [] }),
+    ];
   }
 
   render() {

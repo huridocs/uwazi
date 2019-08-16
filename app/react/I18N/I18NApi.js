@@ -1,33 +1,33 @@
 import api from 'app/utils/api';
 
 export default {
-  get() {
-    return api.get('translations')
+  get(requestParams) {
+    return api.get('translations', requestParams)
     .then(response => response.json.rows);
   },
 
-  save(translation) {
-    return api.post('translations', translation)
+  save(requestParams) {
+    return api.post('translations', requestParams)
     .then(response => response.json);
   },
 
-  addEntry(context, key, value) {
-    return api.post('translations/addentry', { context, key, value })
+  addEntry(requestParams) {
+    return api.post('translations/addentry', requestParams)
     .then(response => response.json);
   },
 
-  addLanguage(language) {
-    return api.post('translations/languages', language)
+  addLanguage(requestParams) {
+    return api.post('translations/languages', requestParams)
     .then(response => response.json);
   },
 
-  deleteLanguage(key) {
-    return api.delete('translations/languages', { key })
+  deleteLanguage(requestParams) {
+    return api.delete('translations/languages', requestParams)
     .then(response => response.json);
   },
 
-  setDefaultLanguage(key) {
-    return api.post('translations/setasdeafult', { key })
+  setDefaultLanguage(requestParams) {
+    return api.post('translations/setasdeafult', requestParams)
     .then(response => response.json);
   }
 };

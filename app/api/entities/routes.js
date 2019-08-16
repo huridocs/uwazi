@@ -67,12 +67,12 @@ export default (app) => {
 
   app.get('/api/entities',
     validation.validateRequest(Joi.object().keys({
-      _id: Joi.string().required(),
+      sharedId: Joi.string().required(),
       omitRelationships: Joi.any()
     }).required(), 'query'),
     (req, res, next) => {
       const action = req.query.omitRelationships ? 'get' : 'getWithRelationships';
-      entities[action]({ sharedId: req.query._id, language: req.language })
+      entities[action]({ sharedId: req.query.sharedId, language: req.language })
       .then((_entities) => {
         if (!_entities.length || (!_entities[0].published && !req.user)) {
           res.status(404);

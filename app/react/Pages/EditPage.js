@@ -7,19 +7,15 @@ import PageCreator from 'app/Pages/components/PageCreator';
 import pagesAPI from './PagesAPI';
 
 export default class EditPage extends RouteHandler {
-  static requestState({ pageId }) {
-    return pagesAPI.get(pageId)
-    .then(page => ({
-        page: { data: page }
-    }));
+  static async requestState(requestParams) {
+    const [page] = await pagesAPI.get(requestParams);
+    return [
+      formActions.load('page.data', page),
+    ];
   }
 
   componentDidMount() {
     this.context.store.dispatch(formActions.reset('page.data'));
-  }
-
-  setReduxState({ page }) {
-    this.context.store.dispatch(formActions.load('page.data', page.data));
   }
 
   render() {

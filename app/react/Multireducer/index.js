@@ -5,3 +5,8 @@ export {
   multireducer,
   wrapDispatch
 };
+
+export default {
+  multireducer,
+  wrapDispatch
+};

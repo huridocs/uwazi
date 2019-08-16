@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import { isClient } from 'app/utils';
 import { Link } from 'react-router';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -82,7 +83,7 @@ export class CollectionSettings extends Component {
       settings.home_page = '';
     }
 
-    SettingsAPI.save(settings)
+    SettingsAPI.save(new RequestParams(settings))
     .then((result) => {
       this.props.notify(t('System', 'Settings updated', null, false), 'success');
       this.props.setSettings(result);

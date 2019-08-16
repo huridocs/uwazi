@@ -4,8 +4,8 @@ import rison from 'rison';
 
 import UploadsRoute from 'app/Uploads/UploadsRoute';
 import RouteHandler from 'app/App/RouteHandler';
-import * as actionTypes from 'app/Library/actions/actionTypes.js';
 import { fromJS as Immutable } from 'immutable';
+import { RequestParams } from 'app/utils/RequestParams';
 
 
 import searchAPI from 'app/Search/SearchAPI';
@@ -13,7 +13,6 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 
 describe('UploadsRoute', () => {
   const documents = [{ title: 'Something to publish' }, { title: 'My best recipes' }];
-  const aggregations = [{ 1: '23' }, { 2: '123' }];
   let component;
   let instance;
   let context;
@@ -34,10 +33,8 @@ describe('UploadsRoute', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request unpublished documents, templates and thesauris', (done) => {
+    it('should request unpublished documents, templates and thesauris', async () => {
       const query = { q: rison.encode({ filters: { something: 1 }, types: ['types'] }) };
-      let params;
-
       const expectedSearch = {
         sort: prioritySortingCriteria.get({ templates: Immutable(templates) }).sort,
         order: prioritySortingCriteria.get({ templates: Immutable(templates) }).order,
@@ -46,23 +43,11 @@ describe('UploadsRoute', () => {
         unpublished: true
       };
 
-      UploadsRoute.requestState(params, query, globalResources)
-      .then((state) => {
-        expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
-        expect(state.uploads.documents).toEqual(documents);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
+      const requestParams = new RequestParams(query);
 
-  describe('setReduxState()', () => {
-    beforeEach(() => {
-      instance.setReduxState({ uploads: { documents, filters: {}, aggregations } });
-    });
-
-    it('should call setDocuments with the documents', () => {
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: actionTypes.SET_DOCUMENTS, documents, __reducerKey: 'uploads' });
+      await UploadsRoute.requestState(requestParams, globalResources);
+      expect(searchAPI.search).toHaveBeenCalledWith(new RequestParams(expectedSearch));
+      // expect(state.uploads.documents).toEqual(documents);
     });
   });
 

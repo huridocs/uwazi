@@ -7,24 +7,24 @@ import { actions as connectionsListActions } from 'app/ConnectionsList';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';
 
-function requestState(entityId, state) {
-  return referencesAPI.getGroupedByConnection(entityId)
+function requestState(requestParams, state) {
+  return referencesAPI.getGroupedByConnection(requestParams)
   .then((connectionsGroups) => {
     const filteredTemplates = connectionsGroups.reduce((templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())), []);
 
     const sortOptions = prioritySortingCriteria.get({ currentCriteria: {}, filteredTemplates, templates: state.templates });
     const params = state.relationships ? state.relationships.list : {};
-    params.entityId = entityId;
     params.sort = params.sort || sortOptions;
     params.filters = fromJS({ limit: 10 });
-
-    return Promise.all([connectionsGroups, connectionsListActions.search(params), params.sort, params.filters]);
+    params.sharedId = requestParams.data.sharedId;
+    const newParams = requestParams.add(params);
+    return Promise.all([connectionsGroups, connectionsListActions.search(newParams), params.sort, params.filters]);
   });
 }
 
 function emptyState() {
   return (dispatch) => {
-    dispatch(actions.unset('relationships/list/entityId'));
+    dispatch(actions.unset('relationships/list/sharedId'));
     dispatch(actions.unset('relationships/list/entity'));
     dispatch(actions.unset('relationships/list/connectionsGroups'));
     dispatch(actions.unset('relationships/list/searchResults'));
@@ -38,7 +38,7 @@ function emptyState() {
 
 function setReduxState(state) {
   return (dispatch) => {
-    dispatch(actions.set('relationships/list/entityId', state.relationships.list.entityId));
+    dispatch(actions.set('relationships/list/sharedId', state.relationships.list.sharedId));
     dispatch(actions.set('relationships/list/entity', state.relationships.list.entity));
     dispatch(actions.set('relationships/list/connectionsGroups', state.relationships.list.connectionsGroups));
     dispatch(actions.set('relationships/list/searchResults', state.relationships.list.searchResults));

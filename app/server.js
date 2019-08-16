@@ -21,6 +21,7 @@ import serverRenderingRoutes from './react/server.js';
 import systemKeys from './api/i18n/systemKeys.js';
 import translations from './api/i18n/translations.js';
 import uwaziMessage from '../message';
+import { workerManager as semanticSearchManager } from './api/semanticsearch';
 import syncWorker from './api/sync/syncWorker';
 import repeater from './api/utils/Repeater';
 import vaultSync from './api/evidences_vault';
@@ -94,6 +95,8 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
   const port = ports[app.get('env')];
 
   const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
+
+  semanticSearchManager.start();
 
   http.listen(port, bindAddress, async () => {
     syncWorker.start();

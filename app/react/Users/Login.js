@@ -32,10 +32,6 @@ export class Login extends RouteHandler {
     return this.login(credentials);
   }
 
-  static requestState() {
-    return Promise.resolve({});
-  }
-
   recoverPassword(email) {
     this.setState({ recoverPassword: false, error: false });
     this.props.reset('login.form');

@@ -1,6 +1,7 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 import { mockID } from 'shared/uniqueID.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 
@@ -30,7 +31,8 @@ describe('Connections actions', () => {
     describe('immidiateSearch', () => {
       it('should search for connections', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(api.get).toHaveBeenCalledWith('search', { searchTerm: 'term', fields: ['title'] });
+        const expectedParams = new RequestParams({ searchTerm: 'term', fields: ['title'] });
+        expect(api.get).toHaveBeenCalledWith('search', expectedParams);
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_CONNECTIONS' });
       });
 
@@ -62,7 +64,7 @@ describe('Connections actions', () => {
 
         jasmine.clock().tick(400);
 
-        expect(api.get).toHaveBeenCalledWith('search', { searchTerm: 'term', fields: ['title'] });
+        expect(api.get).toHaveBeenCalledWith('search', new RequestParams({ searchTerm: 'term', fields: ['title'] }));
         jasmine.clock().uninstall();
       });
     });
@@ -71,7 +73,7 @@ describe('Connections actions', () => {
   describe('startNewConnection', () => {
     it('should perform an immediate empty search', () => {
       actions.startNewConnection('type', 'sourceId')(store.dispatch);
-      expect(api.get).toHaveBeenCalledWith('search', { searchTerm: '', fields: ['title'] });
+      expect(api.get).toHaveBeenCalledWith('search', new RequestParams({ searchTerm: '', fields: ['title'] }));
     });
 
     it('should restore default search term and open the panel', (done) => {
@@ -110,28 +112,28 @@ describe('Connections actions', () => {
     });
 
     it('should set the creating flag to true and attempt to save the connection (using the new hub format)', () => {
-      const expectedCall = { delete: [],
-save: [[
-        { entity: 'sourceId', template: null, range: { start: 397, end: 422, text: 'source text' } },
-        { entity: 'targetId', template: 'relationTypeId' }
-]] };
+      const expectedParams = new RequestParams({ delete: [],
+        save: [[
+          { entity: 'sourceId', template: null, range: { start: 397, end: 422, text: 'source text' } },
+          { entity: 'targetId', template: 'relationTypeId' }
+        ]] });
 
       actions.saveConnection(connection)(store.dispatch, getState);
       expect(store.getActions()).toEqual([{ type: 'CREATING_CONNECTION' }]);
-      expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedCall);
+      expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedParams);
     });
 
     it('should allow for targetted range connections (using the new hub format)', () => {
       connection.targetRange = { start: 79, end: 125, text: 'target text' };
 
-      const expectedCall = { delete: [],
-save: [[
-        { entity: 'sourceId', template: null, range: { start: 397, end: 422, text: 'source text' } },
-        { entity: 'targetId', template: 'relationTypeId', range: { start: 79, end: 125, text: 'target text' } }
-]] };
+      const expectedParams = new RequestParams({ delete: [],
+        save: [[
+          { entity: 'sourceId', template: null, range: { start: 397, end: 422, text: 'source text' } },
+          { entity: 'targetId', template: 'relationTypeId', range: { start: 79, end: 125, text: 'target text' } }
+        ]] });
 
       actions.saveConnection(connection)(store.dispatch, getState);
-      expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedCall);
+      expect(api.post).toHaveBeenCalledWith('relationships/bulk', expectedParams);
     });
 
     it('should broadcast CONNECTION_CREATED, execute the callback and broadcast success', (done) => {

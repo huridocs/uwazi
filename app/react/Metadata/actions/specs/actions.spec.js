@@ -7,6 +7,7 @@ import { APIURL } from 'app/config.js';
 import * as routeActions from 'app/Viewer/actions/routeActions';
 import { mockID } from 'shared/uniqueID.js';
 import { api } from 'app/Entities';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as types from '../actionTypes';
 import * as actions from '../actions';
@@ -36,7 +37,7 @@ describe('Metadata Actions', () => {
       };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
-      expect(api.get).toHaveBeenCalledWith('1');
+      expect(api.get).toHaveBeenCalledWith(new RequestParams({ sharedId: '1' }));
     });
 
     describe('When doc has no template', () => {
@@ -170,7 +171,9 @@ describe('Metadata Actions', () => {
       const store = mockStore({});
       store.dispatch(actions.multipleUpdate(entities, { template, metadata }))
       .then((docs) => {
-        expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], { template, metadata });
+        expect(api.multipleUpdate).toHaveBeenCalledWith(
+          new RequestParams({ ids: ['1', '2'], values: { template, metadata } })
+        );
         expect(docs[0].metadata).toEqual(metadata);
         expect(docs[0].template).toEqual('template');
         expect(docs[1].metadata).toEqual(metadata);

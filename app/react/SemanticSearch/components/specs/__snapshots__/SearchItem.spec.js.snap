@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchItem should render search details with link to results page  1`] = `
+<Connect(I18NLink)
+  className="semantic-search-list-item"
+  to="semanticsearch/id"
+>
+  <div
+    className="item-header"
+  >
+    <div
+      className="title"
+    >
+      <Connect(SearchDescription)
+        searchTerm="query"
+      />
+    </div>
+    <div
+      className="buttons"
+    >
+      <button
+        className="btn btn-danger delete-search btn-xs"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="trash-alt"
+          size="sm"
+        />
+      </button>
+    </div>
+  </div>
+  <div />
+</Connect(I18NLink)>
+`;
+
+exports[`SearchItem when search status is inProgress should render in-progress icon, progress bar and stop button 1`] = `
+<Connect(I18NLink)
+  className="semantic-search-list-item"
+  to="semanticsearch/id"
+>
+  <div
+    className="item-header"
+  >
+    <div
+      className="title"
+    >
+      <Connect(SearchDescription)
+        searchTerm="query"
+      />
+    </div>
+    <div
+      className="buttons"
+    >
+      <button
+        className="btn btn-danger delete-search btn-xs"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="trash-alt"
+          size="sm"
+        />
+      </button>
+      <button
+        className="btn btn-warning stop-search btn-xs"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="stop"
+          size="sm"
+        />
+      </button>
+    </div>
+  </div>
+  <div>
+    <ProgressBar
+      max={0}
+      value={0}
+    />
+  </div>
+</Connect(I18NLink)>
+`;
+
+exports[`SearchItem when search status is stopped should render progress bar and resume button 1`] = `
+<Connect(I18NLink)
+  className="semantic-search-list-item"
+  to="semanticsearch/id"
+>
+  <div
+    className="item-header"
+  >
+    <div
+      className="title"
+    >
+      <Connect(SearchDescription)
+        searchTerm="query"
+      />
+    </div>
+    <div
+      className="buttons"
+    >
+      <button
+        className="btn btn-danger delete-search btn-xs"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="trash-alt"
+          size="sm"
+        />
+      </button>
+      <button
+        className="btn btn-success resume-search btn-xs"
+        onClick={[Function]}
+        type="button"
+      >
+        <Connect(Icon)
+          icon="play"
+          size="sm"
+        />
+      </button>
+    </div>
+  </div>
+  <div>
+    <ProgressBar
+      max={0}
+      value={0}
+    />
+  </div>
+</Connect(I18NLink)>
+`;

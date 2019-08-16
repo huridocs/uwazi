@@ -2,13 +2,13 @@ import api from 'app/utils/api';
 import EntitiesApi from '../Entities/EntitiesAPI';
 
 export default {
-  get(id) {
-    return EntitiesApi.get(id);
+  get(requestParams) {
+    return EntitiesApi.get(requestParams);
   },
 
-  countByTemplate(templateId) {
-    const url = `documents/count_by_template?templateId=${templateId}`;
-    return api.get(url)
+  countByTemplate(requestParams) {
+    const url = 'documents/count_by_template';
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
 
@@ -18,31 +18,31 @@ export default {
     .then(response => response.json.rows);
   },
 
-  search(filters) {
+  search(requestParams) {
     const url = 'documents/search';
-    return api.get(url, filters)
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
 
-  getSuggestions(searchTerm) {
-    const url = `documents/match_title?searchTerm=${searchTerm || ''}`;
-    return api.get(url)
+  getSuggestions(requestParams) {
+    const url = 'documents/match_title';
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
 
-  list(keys) {
+  list(requestParams) {
     const url = 'documents/list';
-    return api.get(url, { keys })
+    return api.get(url, requestParams)
     .then(response => response.json.rows);
   },
 
-  save(doc) {
-    return api.post('documents', doc)
+  save(requestParams) {
+    return api.post('documents', requestParams)
     .then(response => response.json);
   },
 
-  delete(doc) {
-    return api.delete('documents', { sharedId: doc.sharedId })
+  delete(requestParams) {
+    return api.delete('documents', requestParams)
     .then(response => response.json);
   }
 };

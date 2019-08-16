@@ -24,7 +24,7 @@ export class ItemList extends Component {
 
     const toRenderItems = items.map((item, index) => {
       const ConnectedItem = connect(null, mapDispatchToProps)(Doc);
-      return <ConnectedItem key={index} doc={Immutable(item)} searchParams={searchParams}/>;
+      return <ConnectedItem key={index} doc={Immutable(item)} searchParams={searchParams} storeKey="library"/>;
     });
 
     let list = <RowList>{toRenderItems}</RowList>;

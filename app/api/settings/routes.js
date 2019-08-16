@@ -46,7 +46,10 @@ export default (app) => {
           title: Joi.string(),
           url: Joi.string()
         })
-      )
+      ),
+      features: Joi.object().keys({
+        semanticSearch: Joi.boolean()
+      })
     }).required()),
     (req, res, next) => {
       settings.save(req.body)

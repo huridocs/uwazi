@@ -1,16 +1,15 @@
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import { RequestParams } from 'app/utils/RequestParams';
 import pagesAPI from '../PagesAPI';
 
 describe('pagesAPI', () => {
   const singleResponse = [{ pages: 'single' }];
-  const listResponse = [{ pages: 'list' }];
 
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}pages?sharedId=documentId`, { body: JSON.stringify(singleResponse) })
-    .get(`${APIURL}pages/list`, { body: JSON.stringify({ rows: listResponse }) })
+    .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
     .post(`${APIURL}pages`, { body: JSON.stringify({ backednResponse: 'post' }) })
     .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backednResponse: 'delete' }) });
   });
@@ -18,50 +17,28 @@ describe('pagesAPI', () => {
   afterEach(() => backend.restore());
 
   describe('get()', () => {
-    it('should request for the page', (done) => {
-      pagesAPI.get('documentId')
-      .then((response) => {
-        expect(response).toEqual(singleResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request for the page', async () => {
+      const request = new RequestParams({ param: 'value' });
+      const response = await pagesAPI.get(request);
+      expect(response).toEqual([singleResponse]);
     });
   });
-
-  describe('list()', () => {
-    it('should request pages list', (done) => {
-      pagesAPI.list()
-      .then((response) => {
-        expect(response).toEqual(listResponse);
-        done();
-      })
-      .catch(done.fail);
-    });
-  });
-
 
   describe('save()', () => {
-    it('should post the document data to /pages', (done) => {
-      const data = { title: 'document name' };
-      pagesAPI.save(data)
-      .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}pages`).body)).toEqual(data);
-        expect(response).toEqual({ backednResponse: 'post' });
-        done();
-      })
-      .catch(done.fail);
+    it('should post the document data to /pages', async () => {
+      const request = new RequestParams({ title: 'document name' });
+      const response = await pagesAPI.save(request);
+      expect(JSON.parse(backend.lastOptions(`${APIURL}pages`).body)).toEqual({ title: 'document name' });
+      expect(response).toEqual({ backednResponse: 'post' });
     });
   });
 
   describe('delete()', () => {
-    it('should delete the document', (done) => {
-      const document = { sharedId: 'id' };
-      pagesAPI.delete(document)
-      .then((response) => {
-        expect(response).toEqual({ backednResponse: 'delete' });
-        done();
-      })
-      .catch(done.fail);
+    it('should delete the document', async () => {
+      const data = { sharedId: 'id' };
+      const request = new RequestParams(data);
+      const response = await pagesAPI.delete(request);
+      expect(response).toEqual({ backednResponse: 'delete' });
     });
   });
 });

@@ -75,7 +75,7 @@ export class MetadataForm extends Component {
   }
 
   render() {
-    const { model, template, templateOptions } = this.props;
+    const { model, template, templateOptions, id, multipleEdition } = this.props;
 
     if (!template) {
       return <div />;
@@ -87,40 +87,48 @@ export class MetadataForm extends Component {
 
     return (
       <Form
-        id="metadataForm"
+        id={id}
         model={model}
         onSubmit={this.onSubmit}
-        validators={validator.generate(template.toJS())}
+        validators={validator.generate(template.toJS(), multipleEdition)}
         onSubmitFailed={this.onSubmitFailed}
       >
-
-        <FormGroup model=".title">
-          <ul className="search__filter">
-            <li><label><Translate context={template.get('_id')}>{titleLabel}</Translate> <span className="required">*</span></label></li>
-            <li className="wide">
-              <Field model=".title">
-                <textarea className="form-control"/>
-              </Field>
-            </li>
-            <IconField model={model}/>
-          </ul>
-        </FormGroup>
+        {!multipleEdition && (
+          <FormGroup model=".title">
+            <ul className="search__filter">
+              <li><label><Translate context={template.get('_id')}>{titleLabel}</Translate> <span className="required">*</span></label></li>
+              <li className="wide">
+                <Field model=".title">
+                  <textarea className="form-control"/>
+                </Field>
+              </li>
+              <IconField model={model}/>
+            </ul>
+          </FormGroup>
+        )}
 
         {this.renderTemplateSelect(templateOptions, template)}
-        <MetadataFormFields thesauris={this.props.thesauris} model={model} template={template} />
+        <MetadataFormFields multipleEdition={multipleEdition} thesauris={this.props.thesauris} model={model} template={template} />
       </Form>
     );
   }
 }
 
+MetadataForm.defaultProps = {
+  id: 'metadataForm',
+  multipleEdition: false
+};
+
 MetadataForm.propTypes = {
   model: PropTypes.string.isRequired,
   template: PropTypes.object,
+  multipleEdition: PropTypes.bool,
   templateOptions: PropTypes.object,
   thesauris: PropTypes.object,
   changeTemplate: PropTypes.func,
   onSubmit: PropTypes.func,
   notify: PropTypes.func,
+  id: PropTypes.string,
 };
 
 function mapDispatchToProps(dispatch) {
@@ -128,7 +136,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 export const mapStateToProps = (state, ownProps) => ({
-  template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) || immutableDefaultTemplate,
+  template: ownProps.template ? ownProps.template : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) || immutableDefaultTemplate,
   templateOptions: selectTemplateOptions(state)
 });
 

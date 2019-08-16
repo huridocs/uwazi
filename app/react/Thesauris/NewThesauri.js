@@ -6,13 +6,11 @@ import { actions } from 'app/BasicReducer';
 import api from 'app/Thesauris/ThesaurisAPI';
 
 export default class NewThesauri extends RouteHandler {
-  static requestState() {
-    return api.get()
-    .then(thesauris => ({ thesauris }));
-  }
-
-  setReduxState({ thesauris }) {
-    this.context.store.dispatch(actions.set('thesauris', thesauris));
+  static async requestState(requestParams) {
+    const thesauris = await api.get(requestParams);
+    return [
+      actions.set('thesauris', thesauris),
+    ];
   }
 
   render() {

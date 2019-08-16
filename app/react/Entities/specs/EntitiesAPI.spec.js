@@ -1,6 +1,6 @@
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-
+import { RequestParams } from 'app/utils/RequestParams';
 import entitiesAPI from '../EntitiesAPI';
 
 describe('EntitiesAPI', () => {
@@ -15,7 +15,7 @@ describe('EntitiesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}entities`, { body: JSON.stringify({ rows: arrayResponse }) })
+    .get(`${APIURL}entities?param=1`, { body: JSON.stringify({ rows: arrayResponse }) })
     .get(`${APIURL}entities/search`, { body: JSON.stringify(searchResponse) })
     .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=2`, { body: JSON.stringify(page2Text) })
     .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=1`, { body: JSON.stringify(page1Text) })
@@ -34,149 +34,119 @@ describe('EntitiesAPI', () => {
   afterEach(() => backend.restore());
 
   describe('uploads', () => {
-    it('should request uploads', (done) => {
-      entitiesAPI.uploads()
-      .then((response) => {
-        expect(response).toEqual('uploads');
-        done();
-      })
-      .catch(done.fail);
+    it('should request uploads', async () => {
+      const response = await entitiesAPI.uploads();
+      expect(response).toEqual('uploads');
     });
   });
 
   describe('pageRawText', () => {
     it('should get page_raw_page and return the text', async () => {
-      const text = await entitiesAPI.getRawPage('sharedId', 2);
+      const request = new RequestParams({ sharedId: 'sharedId', pageNumber: 2 });
+      const text = await entitiesAPI.getRawPage(request);
       expect(text).toBe(page2Text.data);
     });
 
     it('should get page 1 by default', async () => {
-      const text = await entitiesAPI.getRawPage('sharedId');
+      const request = new RequestParams({ sharedId: 'sharedId' });
+      const text = await entitiesAPI.getRawPage(request);
       expect(text).toBe(page1Text.data);
     });
   });
 
   describe('get()', () => {
-    it('should request entities', (done) => {
-      entitiesAPI.get()
-      .then((response) => {
-        expect(response).toEqual(arrayResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request entities', async () => {
+      const request = new RequestParams({ param: '1' });
+      const response = await entitiesAPI.get(request);
+      expect(response).toEqual(arrayResponse);
     });
 
     describe('when passing an id', () => {
-      it('should request for the thesauri', (done) => {
-        entitiesAPI.get('documentId')
-        .then((response) => {
-          expect(response).toEqual(singleResponse);
-          done();
-        })
-        .catch(done.fail);
+      it('should request for the thesauri', async () => {
+        const request = new RequestParams({ _id: 'documentId' });
+        const response = await entitiesAPI.get(request);
+        expect(response).toEqual(singleResponse);
       });
     });
 
     describe('when passing params', () => {
       it('should add the params to the url', async () => {
-        const response = await entitiesAPI.get('documentId', { param1: '1' });
+        const request = new RequestParams({ param1: '1', _id: 'documentId' });
+        const response = await entitiesAPI.get(request);
         expect(response).toEqual(paramedResponse);
       });
     });
   });
 
   describe('getSuggestions()', () => {
-    it('should match_title ', (done) => {
-      entitiesAPI.getSuggestions('term')
-      .then((response) => {
-        expect(response).toEqual(searchResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should match_title ', async () => {
+      const request = new RequestParams({ searchTerm: 'term' });
+      const response = await entitiesAPI.getSuggestions(request);
+      expect(response).toEqual(searchResponse);
     });
   });
 
   describe('countByTemplate()', () => {
-    it('should count_by_template', (done) => {
-      entitiesAPI.countByTemplate('templateId')
-      .then((response) => {
-        expect(response).toEqual(1);
-        done();
-      })
-      .catch(done.fail);
+    it('should count_by_template', async () => {
+      const request = new RequestParams({ templateId: 'templateId' });
+      const response = await entitiesAPI.countByTemplate(request);
+      expect(response).toEqual(1);
     });
   });
 
   describe('search()', () => {
-    it('should search entities', (done) => {
-      entitiesAPI.search()
-      .then((response) => {
-        expect(response).toEqual(searchResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should search entities', async () => {
+      const response = await entitiesAPI.search();
+      expect(response).toEqual(searchResponse);
     });
 
     describe('when passing filters', () => {
-      it('should search for it', (done) => {
-        entitiesAPI.search({ searchTerm: 'Batman', joker: true })
-        .then((response) => {
-          expect(response).toEqual(filteredSearchResult);
-          done();
-        })
-        .catch(done.fail);
+      it('should search for it', async () => {
+        const request = new RequestParams({ searchTerm: 'Batman', joker: true });
+        const response = await entitiesAPI.search(request);
+        expect(response).toEqual(filteredSearchResult);
       });
     });
   });
 
   describe('save()', () => {
-    it('should post the document data to /entities', (done) => {
-      const data = { name: 'document name' };
-      entitiesAPI.save(data)
-      .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}entities`).body)).toEqual(data);
-        expect(response).toEqual({ backednResponse: 'test' });
-        done();
-      })
-      .catch(done.fail);
+    it('should post the document data to /entities', async () => {
+      const entity = { name: 'document name' };
+      const request = new RequestParams(entity);
+      const response = await entitiesAPI.save(request);
+      expect(JSON.parse(backend.lastOptions(`${APIURL}entities`).body)).toEqual(entity);
+      expect(response).toEqual({ backednResponse: 'test' });
     });
   });
 
   describe('multipleUpdate()', () => {
-    it('should post the ids and metadata to /entities/multipleupdate', (done) => {
+    it('should post the ids and metadata to /entities/multipleupdate', async () => {
       const values = { metadata: { text: 'document text' } };
       const ids = ['1', '2'];
-      entitiesAPI.multipleUpdate(ids, values)
-      .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}entities/multipleupdate`).body)).toEqual({ ids, values });
-        expect(response).toEqual({ backednResponse: 'test multiple' });
-        done();
-      })
-      .catch(done.fail);
+      const request = new RequestParams({ values, ids });
+      const response = await entitiesAPI.multipleUpdate(request);
+
+      expect(JSON.parse(backend.lastOptions(`${APIURL}entities/multipleupdate`).body)).toEqual({ ids, values });
+      expect(response).toEqual({ backednResponse: 'test multiple' });
     });
   });
 
   describe('delete()', () => {
-    it('should delete the document', (done) => {
-      const document = { sharedId: 'id', test: 'test' };
-      entitiesAPI.delete(document)
-      .then((response) => {
-        expect(response).toEqual({ backednResponse: 'testdelete' });
-        done();
-      })
-      .catch(done.fail);
+    it('should delete the document', async () => {
+      const data = { sharedId: 'id' };
+      const request = new RequestParams(data);
+      const response = await entitiesAPI.delete(request);
+
+      expect(response).toEqual({ backednResponse: 'testdelete' });
     });
   });
 
   describe('deleteMultiple()', () => {
-    it('should delete all the entities', (done) => {
+    it('should delete all the entities', async () => {
       const documents = [{ sharedId: 'id1' }, { sharedId: 'id2' }];
-      entitiesAPI.deleteMultiple(documents)
-      .then((response) => {
-        expect(response).toEqual({ backednResponse: 'testdeleteMultiple' });
-        done();
-      })
-      .catch(done.fail);
+      const response = await entitiesAPI.deleteMultiple(new RequestParams(documents));
+
+      expect(response).toEqual({ backednResponse: 'testdeleteMultiple' });
     });
   });
 });

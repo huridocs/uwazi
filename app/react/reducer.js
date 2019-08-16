@@ -13,6 +13,7 @@ import connections from 'app/Connections/reducers/reducer';
 import relationships from 'app/Relationships/reducers/reducer';
 import ConnectionsList from 'app/ConnectionsList/reducers/reducer';
 import { reducer as attachments } from 'app/Attachments';
+import semanticSearch from 'app/SemanticSearch/reducers/reducer';
 
 import library from 'app/Library/reducers/reducer';
 import modals from 'app/Modals/reducers/modalsReducer';
@@ -35,6 +36,7 @@ export default combineReducers({
   importEntities,
   locale,
   inlineEdit,
+  semanticSearch,
   inlineEditForm: formReducer('inlineEditModel', {}),
   inlineEditModel: modelReducer('inlineEditModel', {}),
   template,

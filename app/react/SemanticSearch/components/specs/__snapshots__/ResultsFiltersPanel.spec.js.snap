@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ResultsFiltersPanel render should render search filters and instructions 1`] = `
+<SidePanel
+  open={true}
+>
+  <div
+    className="sidepanel-body"
+  >
+    <div
+      className="sidepanel-title"
+    >
+      Fine tune
+    </div>
+    <Connect(Form)
+      model="semanticSearch.resultsFilters"
+    >
+      <div
+        className="view"
+      >
+        <dl
+          className="metadata-type-text"
+          key="Threshold"
+        >
+          <dt>
+            Threshold
+             
+            80.00%
+          </dt>
+          <dd>
+            <NumericRangeSlide
+              delay={200}
+              max={1}
+              maxLabel="Precision"
+              min={0.3}
+              minLabel="Exploration"
+              model=".threshold"
+              prefix="threshold"
+              step={0.01}
+            />
+          </dd>
+        </dl>
+        <dl
+          className="metadata-type-text"
+          key="Minimum relevant sentences per document"
+        >
+          <dt>
+            Minimum relevant sentences per document
+             
+          </dt>
+          <dd>
+            <NumericRangeSlide
+              delay={200}
+              max={50}
+              maxLabel=""
+              min={1}
+              minLabel=""
+              model=".minRelevantSentences"
+              prefix="minRelevantSentences"
+              step={1}
+            />
+          </dd>
+        </dl>
+      </div>
+    </Connect(Form)>
+    <div
+      className="semantic-search-help"
+    >
+      <div
+        className="alert alert-info alert-vertical"
+      >
+        <Connect(Icon)
+          icon="info-circle"
+          size="2x"
+        />
+        <p>
+          <Connect(Translate)
+            translationKey="Semantic search overview"
+          >
+            Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. .
+          </Connect(Translate)>
+        </p>
+        <p>
+          <Connect(Translate)
+            translationKey="Semantic search threshold help"
+          >
+            The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.
+          </Connect(Translate)>
+        </p>
+        <p>
+          <Connect(Translate)
+            translationKey="Semantic search minimum sentences help"
+          >
+            Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.
+          </Connect(Translate)>
+        </p>
+      </div>
+    </div>
+  </div>
+</SidePanel>
+`;

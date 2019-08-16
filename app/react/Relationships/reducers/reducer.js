@@ -12,7 +12,7 @@ export default combineReducers({
   hubs,
   hubActions,
   list: combineReducers({
-    entityId: createReducer('relationships/list/entityId', ''),
+    sharedId: createReducer('relationships/list/sharedId', ''),
     entity: createReducer('relationships/list/entity', {}),
     connectionsGroups: createReducer('relationships/list/connectionsGroups', []),
     searchResults: createReducer('relationships/list/searchResults', { totalRows: 0, rows: [] }),

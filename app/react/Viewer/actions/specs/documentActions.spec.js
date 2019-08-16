@@ -11,6 +11,7 @@ import { APIURL } from 'app/config.js';
 import * as notificationsTypes from 'app/Notifications/actions/actionTypes';
 import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from 'app/Relationships';
+import { RequestParams } from 'app/utils/RequestParams';
 import * as actions from '../documentActions';
 import * as types from '../actionTypes';
 import { PDFUtils } from '../../../PDF';
@@ -153,12 +154,12 @@ describe('documentActions', () => {
       backend.restore();
       backend
       .get(`${APIURL}documents/search?searchTerm=term&fields=%5B%22field%22%5D`, { body: JSON.stringify('documents') })
-      .get(`${APIURL}entities?_id=targetId`, { body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }) })
-      .get(`${APIURL}entities?_id=docWithPDFRdy`, { body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }) })
-      .get(`${APIURL}entities?_id=docWithPDFNotRdy`, {
+      .get(`${APIURL}entities?sharedId=targetId`, { body: JSON.stringify({ rows: [{ target: 'document', pdfInfo: 'test' }] }) })
+      .get(`${APIURL}entities?sharedId=docWithPDFRdy`, { body: JSON.stringify({ rows: [{ pdfInfo: 'processed pdf', _id: 'pdfReady' }] }) })
+      .get(`${APIURL}entities?sharedId=docWithPDFNotRdy`, {
         body: JSON.stringify({ rows: [{ _id: 'pdfNotReady', sharedId: 'shared', unwantedProp: 'unwanted', file: {} }] })
       })
-      .get(`${APIURL}references/by_document/targetId`, { body: JSON.stringify([{ connectedDocument: '1' }]) });
+      .get(`${APIURL}references/by_document?sharedId=targetId`, { body: JSON.stringify([{ connectedDocument: '1' }]) });
     });
 
     afterEach(() => backend.restore());
@@ -180,7 +181,7 @@ describe('documentActions', () => {
 
         store.dispatch(actions.saveDocument(doc))
         .then(() => {
-          expect(documentsApi.save).toHaveBeenCalledWith({ name: 'doc' });
+          expect(documentsApi.save).toHaveBeenCalledWith({ data: { name: 'doc' }, headers: {} });
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -189,26 +190,23 @@ describe('documentActions', () => {
     });
 
     describe('getDocument', () => {
-      it('should return the document requested', (done) => {
-        actions.getDocument('docWithPDFRdy')
-        .then((doc) => {
-          expect(doc.pdfInfo).toBe('processed pdf');
-          done();
-        });
+      it('should return the document requested', async () => {
+        const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
+        const doc = await actions.getDocument(requestParams);
+        expect(doc.pdfInfo).toBe('processed pdf');
       });
 
       describe('when the doc does not have the pdf processed', () => {
-        it('should process it and save it before it gets returned', (done) => {
+        it('should process it and save it before it gets returned', async () => {
           spyOn(PDFUtils, 'extractPDFInfo').and.returnValue(Promise.resolve('test'));
           const expected = { sharedId: 'shared', _id: 'pdfNotReady', pdfInfo: 'test' };
           spyOn(api, 'post').and.returnValue(Promise.resolve({ json: expected }));
-          actions.getDocument('docWithPDFNotRdy')
-          .then((doc) => {
-            expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}documents/download?_id=${expected._id}`);
-            expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', expected);
-            expect(expected).toBe(doc);
-            done();
-          });
+          const requestParams = new RequestParams({ sharedId: 'docWithPDFNotRdy' });
+
+          const doc = await actions.getDocument(requestParams);
+          expect(PDFUtils.extractPDFInfo).toHaveBeenCalledWith(`${APIURL}documents/download?_id=${expected._id}`);
+          expect(api.post).toHaveBeenCalledWith('documents/pdfInfo', { data: expected, headers: {} });
+          expect(expected).toBe(doc);
         });
       });
     });
@@ -240,7 +238,9 @@ describe('documentActions', () => {
 
         store.dispatch(actions.saveToc(toc))
         .then(() => {
-          expect(documentsApi.save).toHaveBeenCalledWith({ _id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: { fileName: '123.pdf' } });
+          expect(documentsApi.save).toHaveBeenCalledWith(
+            { data: { _id: 'id', _rev: 'rev', sharedId: 'sharedId', toc, file: { fileName: '123.pdf' } }, headers: {} }
+          );
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -251,19 +251,19 @@ describe('documentActions', () => {
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', (done) => {
         spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
-        const doc = { name: 'doc' };
+        const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
           { type: notificationsTypes.NOTIFY, notification: { message: 'Document deleted', type: 'success', id: 'unique_id' } },
           { type: types.RESET_DOCUMENT_VIEWER },
-          { type: 'REMOVE_DOCUMENT', doc: { name: 'doc' } },
+          { type: 'REMOVE_DOCUMENT', doc: { sharedId: 'sharedId', name: 'doc' } },
           { type: 'UNSELECT_ALL_DOCUMENTS' }
         ];
         const store = mockStore({});
 
         store.dispatch(actions.deleteDocument(doc))
         .then(() => {
-          expect(documentsApi.delete).toHaveBeenCalledWith(doc);
+          expect(documentsApi.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sharedId' }));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

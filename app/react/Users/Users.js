@@ -7,13 +7,11 @@ import UsersAPI from './UsersAPI';
 import UsersList from './components/UsersList';
 
 export class Users extends RouteHandler {
-  static requestState() {
-    return UsersAPI.list()
-    .then(users => ({ users }));
-  }
-
-  setReduxState(state) {
-    this.context.store.dispatch(actions.set('users', state.users));
+  static async requestState(requestParams) {
+    const users = await UsersAPI.get(requestParams);
+    return [
+      actions.set('users', users),
+    ];
   }
 
   render() {

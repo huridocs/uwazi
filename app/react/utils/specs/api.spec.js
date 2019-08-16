@@ -1,4 +1,5 @@
 import { browserHistory } from 'react-router';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { APIURL } from 'app/config';
 import { store } from 'app/store';
@@ -14,6 +15,7 @@ describe('api', () => {
     backend.restore();
     backend
     .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
+    .get(`${APIURL}test_get?key=value`, JSON.stringify({ method: 'GET' }))
     .post(`${APIURL}test_post`, JSON.stringify({ method: 'POST' }))
     .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
     .get(`${APIURL}unauthorised`, { status: 401, body: {} })
@@ -24,80 +26,63 @@ describe('api', () => {
   afterEach(() => backend.restore());
 
   describe('GET', () => {
-    it('should prefix url with config api url', (done) => {
-      api.get('test_get')
-      .then((response) => {
-        expect(response.json.method).toBe('GET');
-        done();
-      })
-      .catch(done.fail);
+    it('should prefix url with config api url', async () => {
+      const response = await api.get('test_get');
+      expect(response.json.method).toBe('GET');
     });
 
-    it('should start and end the loading bar', (done) => {
-      api.get('test_get')
-      .then(() => {
-        expect(loadingBar.done).toHaveBeenCalled();
-        done();
-      })
-      .catch(done.fail);
+    it('should start and end the loading bar', async () => {
+      await api.get('test_get');
+      expect(loadingBar.done).toHaveBeenCalled();
       expect(loadingBar.start).toHaveBeenCalled();
     });
 
-    describe('when authorizing', () => {
-      it('should send the authorization cookie in the headers', (done) => {
-        api.cookie('cookie');
-        api.get('test_get')
-        .then(() => {
-          const { headers } = backend.calls()[0][1];
-          expect(headers.Cookie).toBe('cookie');
+    it('should add headers and data as query string', async () => {
+      const requestParams = new RequestParams({ key: 'value' }, { header: 'value', header2: 'value2' });
+      await api.get('test_get', requestParams);
 
-          done();
-        })
-        .catch(done.fail);
-      });
+      expect(backend.calls()[0][1].headers.header).toBe('value');
+      expect(backend.calls()[0][1].headers.header2).toBe('value2');
     });
   });
 
   describe('POST', () => {
-    it('should prefix url with config api url', (done) => {
-      api.post('test_post', { data: 'post' })
-      .then((response) => {
-        expect(backend.calls()[0][1].body).toBe(JSON.stringify({ data: 'post' }));
-        expect(response.json.method).toBe('POST');
-        done();
-      })
-      .catch(done.fail);
+    it('should prefix url with config api url', async () => {
+      const requestParams = new RequestParams({ key: 'value' }, { header: 'value', header2: 'value2' });
+      const response = await api.post('test_post', requestParams);
+
+      expect(backend.calls()[0][1].body).toBe(JSON.stringify({ key: 'value' }));
+      expect(backend.calls()[0][1].headers.header).toBe('value');
+      expect(backend.calls()[0][1].headers.header2).toBe('value2');
+      expect(response.json.method).toBe('POST');
     });
 
-    it('should start and end the loading bar', (done) => {
-      api.post('test_post', { data: 'post' })
-      .then(() => {
-        expect(loadingBar.done).toHaveBeenCalled();
-        done();
-      })
-      .catch(done.fail);
+    it('should start and end the loading bar', async () => {
+      const promise = api.post('test_post', {});
       expect(loadingBar.start).toHaveBeenCalled();
+
+      await promise;
+      expect(loadingBar.done).toHaveBeenCalled();
     });
   });
 
   describe('DELETE', () => {
-    it('should prefix url with config api url', (done) => {
-      api.delete('test_delete', { data: 'delete' })
-      .then((response) => {
-        expect(response.json.method).toBe('DELETE');
-        done();
-      })
-      .catch(done.fail);
+    it('should prefix url with config api url', async () => {
+      const requestParams = new RequestParams({ data: 'delete' }, { header: 'value', header2: 'value2' });
+      const response = await api.delete('test_delete', requestParams);
+
+      expect(response.json.method).toBe('DELETE');
+      expect(backend.calls()[0][1].headers.header).toBe('value');
+      expect(backend.calls()[0][1].headers.header2).toBe('value2');
     });
 
-    it('should start and end the loading bar', (done) => {
-      api.delete('test_delete', { data: 'delete' })
-      .then(() => {
-        expect(loadingBar.done).toHaveBeenCalled();
-        done();
-      })
-      .catch(done.fail);
+    it('should start and end the loading bar', async () => {
+      const requestParams = new RequestParams({ data: 'delete' }, { header: 'value', header2: 'value2' });
+      const promise = api.delete('test_delete', requestParams);
       expect(loadingBar.start).toHaveBeenCalled();
+
+      await promise;
+      expect(loadingBar.done).toHaveBeenCalled();
     });
   });
 

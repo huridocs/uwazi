@@ -1,10 +1,8 @@
 .search-tips {
-  position: absolute;
-  right: .5em;
   font-size: 9px;
-  bottom: -1.6em;
   color: #2b56c1;
   border-bottom: 1px solid #c6d3f2;
   cursor: pointer;
   z-index: 1;
+  float: right;
 }

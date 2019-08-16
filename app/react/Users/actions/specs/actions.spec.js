@@ -1,6 +1,7 @@
 import { actions as basicActions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/Users/UsersAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 import * as actions from '../actions';
 
 describe('User actions', () => {
@@ -17,8 +18,8 @@ describe('User actions', () => {
 
   describe('deleteUser', () => {
     it('should delete the user', () => {
-      actions.deleteUser('data')(dispatch);
-      expect(api.delete).toHaveBeenCalledWith('data');
+      actions.deleteUser({ _id: '231' })(dispatch);
+      expect(api.delete).toHaveBeenCalledWith(new RequestParams({ _id: '231' }));
     });
 
     describe('upon success', () => {
@@ -42,7 +43,7 @@ describe('User actions', () => {
     const email = 'peter@parker.com';
     it('should save a new user', () => {
       actions.saveUser({ username, email })(dispatch);
-      expect(api.save).toHaveBeenCalledWith({ username, email });
+      expect(api.save).toHaveBeenCalledWith(new RequestParams({ username, email }));
     });
 
     describe('upon success', () => {

@@ -3,6 +3,7 @@ import { actions } from 'app/BasicReducer';
 import debounce from 'app/utils/debounce';
 import { notificationActions } from 'app/Notifications';
 import { referencesActions } from 'app/Viewer';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -71,8 +72,8 @@ export function moveEntities(index, rightRelationshipIndex) {
   return { type: types.MOVE_RELATIONSHIPS_ENTITY, index, rightRelationshipIndex };
 }
 
-export function reloadRelationships(parentEntityId) {
-  return (dispatch, getState) => routeUtils.requestState(parentEntityId, getState())
+export function reloadRelationships(sharedId) {
+  return (dispatch, getState) => routeUtils.requestState(new RequestParams({ sharedId }), getState())
   .then(([connectionsGroups, searchResults]) => {
     dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
     dispatch(actions.set('relationships/list/searchResults', searchResults));
@@ -82,7 +83,7 @@ export function reloadRelationships(parentEntityId) {
 export function saveRelationships() {
   return (dispatch, getState) => {
     dispatch({ type: types.SAVING_RELATIONSHIPS });
-    const parentEntityId = getState().relationships.list.entityId;
+    const parentEntityId = getState().relationships.list.sharedId;
     const hubs = getState().relationships.hubs.toJS();
 
     const apiCall = hubs.reduce((apiActions, hubData) => {
@@ -129,11 +130,11 @@ export function saveRelationships() {
       return apiActions;
     }, { save: [], delete: [] });
 
-    return api.post('relationships/bulk', apiCall)
+    return api.post('relationships/bulk', new RequestParams(apiCall))
     .then(response => Promise.all([
-        response,
-        api.get(`entities?_id=${parentEntityId}`).then(r => r.json.rows[0]),
-        reloadRelationships(parentEntityId)(dispatch, getState)
+      response,
+      api.get('entities', new RequestParams({ sharedId: parentEntityId })).then(r => r.json.rows[0]),
+      reloadRelationships(parentEntityId)(dispatch, getState)
     ]))
     .then(([response, parentEntity]) => {
       dispatch(actions.set('entityView/entity', parentEntity));
@@ -152,9 +153,9 @@ export function saveRelationships() {
 export function immidiateSearch(dispatch, searchTerm) {
   dispatch(uiActions.searching());
 
-  const query = { searchTerm, fields: ['title'], includeUnpublished: true };
+  const requestParams = new RequestParams({ searchTerm, fields: ['title'], includeUnpublished: true });
 
-  return api.get('search', query)
+  return api.get('search', requestParams)
   .then((response) => {
     const results = response.json.rows;
     dispatch(actions.set('relationships/searchResults', results));
