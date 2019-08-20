@@ -25,6 +25,10 @@ const processDocument = async (searchId, searchTerm, sharedId, language) => {
 
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
   const contents = await extractDocumentContent(doc);
+  if (!Object.keys(contents).length) {
+    return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
+  }
+
   const results = await api.processDocument({
     searchTerm,
     contents
