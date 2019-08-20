@@ -9,7 +9,7 @@ const resultSchema = new mongoose.Schema({
   results: [{
       text: String,
       score: Number,
-      page: Number
+      page: String
   }]
 });
 
