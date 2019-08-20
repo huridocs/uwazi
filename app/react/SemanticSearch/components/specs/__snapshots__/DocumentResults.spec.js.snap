@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DocumentResults render should render result snippets above threshold 1`] = `
+exports[`DocumentResults render should render results summary and snippets above threshold in SnippetsList 1`] = `
 <React.Fragment>
   <div
     className="view"
@@ -21,17 +21,29 @@ exports[`DocumentResults render should render result snippets above threshold 1`
                 "semanticSearch": Immutable.Map {
                   "results": Immutable.List [
                     Immutable.Map {
+                      "score": 0.6,
+                      "text": "bio two",
+                      "page": "bio",
+                    },
+                    Immutable.Map {
                       "score": 0.5,
-                      "text": "one",
+                      "text": "page one",
+                      "page": "1",
                     },
                     Immutable.Map {
                       "score": 0.2,
-                      "text": "two",
+                      "text": "page two",
+                      "page": "2",
+                    },
+                    Immutable.Map {
+                      "score": 0.1,
+                      "text": "bio one",
+                      "page": "bio",
                     },
                   ],
                   "relevantRate": 0.5,
-                  "numRelevant": 1,
-                  "totalResults": 2,
+                  "numRelevant": 2,
+                  "totalResults": 4,
                 },
                 "avgScore": 0.4,
               }
@@ -79,7 +91,7 @@ exports[`DocumentResults render should render result snippets above threshold 1`
         </Connect(Translate)>
       </dt>
       <dd>
-        1
+        2
       </dd>
     </dl>
     <dl
@@ -102,17 +114,29 @@ exports[`DocumentResults render should render result snippets above threshold 1`
         "semanticSearch": Immutable.Map {
           "results": Immutable.List [
             Immutable.Map {
+              "score": 0.6,
+              "text": "bio two",
+              "page": "bio",
+            },
+            Immutable.Map {
               "score": 0.5,
-              "text": "one",
+              "text": "page one",
+              "page": "1",
             },
             Immutable.Map {
               "score": 0.2,
-              "text": "two",
+              "text": "page two",
+              "page": "2",
+            },
+            Immutable.Map {
+              "score": 0.1,
+              "text": "bio one",
+              "page": "bio",
             },
           ],
           "relevantRate": 0.5,
-          "numRelevant": 1,
-          "totalResults": 2,
+          "numRelevant": 2,
+          "totalResults": 4,
         },
         "avgScore": 0.4,
       }
@@ -122,12 +146,19 @@ exports[`DocumentResults render should render result snippets above threshold 1`
     selectSnippet={[Function]}
     snippets={
       Immutable.Map {
-        "count": 1,
-        "metadata": Immutable.List [],
+        "count": 2,
+        "metadata": Immutable.List [
+          Immutable.Map {
+            "field": "Bio",
+            "texts": Immutable.List [
+              "bio two (60.00%)",
+            ],
+          },
+        ],
         "fullText": Immutable.List [
           Immutable.Map {
-            "score": 0.5,
-            "text": "one (50.00%)",
+            "page": 1,
+            "text": "page one (50.00%)",
           },
         ],
       }
