@@ -9,7 +9,9 @@ import semanticSearchAPI from './SemanticSearchAPI';
 
 export default class SemanticSearchResultsView extends RouteHandler {
   static requestState({ searchId }, query, state) {
-    return semanticSearchAPI.getSearch(searchId, state.semanticSearch.resultsFilters)
+    const filters = state.semanticSearch ?
+      state.semanticSearch.resultsFilters : { threshold: 0.4, minRelevantSentences: 5 };
+    return semanticSearchAPI.getSearch(searchId, filters)
     .then(search => ({ semanticSearch: { search } }));
   }
 
