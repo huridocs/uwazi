@@ -102,11 +102,11 @@ export class DocumentResults extends Component {
           </div>
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
-            <dt><Translate>Sentences above threshold</Translate></dt>
+            <dt><Translate>Number of sentences above threshold</Translate></dt>
             <dd>{ filteredResults.length }</dd>
           </dl>
           <dl className="metadata-type-numeric">
-            <dt><Translate>% of document above threshold</Translate></dt>
+            <dt><Translate>% of sentences above threshold</Translate></dt>
             <dd>{ (filteredResults.length / doc.semanticSearch.totalResults * 100).toFixed(2) }%</dd>
           </dl>
         </div>
@@ -116,11 +116,15 @@ export class DocumentResults extends Component {
   }
 }
 
+DocumentResults.defaultProps = {
+  template: undefined
+};
+
 DocumentResults.propTypes = {
   doc: PropTypes.shape({ sharedId: PropTypes.string }).isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
-  template: PropTypes.instanceOf(Immutable.Map).isRequired
+  template: PropTypes.instanceOf(Immutable.Map)
 };
 
 const mapStateToProps = ({ semanticSearch, templates }) => ({

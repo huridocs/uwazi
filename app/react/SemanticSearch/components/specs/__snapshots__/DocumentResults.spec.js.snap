@@ -87,7 +87,7 @@ exports[`DocumentResults render should render results summary and snippets above
     >
       <dt>
         <Connect(Translate)>
-          Sentences above threshold
+          Number of sentences above threshold
         </Connect(Translate)>
       </dt>
       <dd>
@@ -99,7 +99,7 @@ exports[`DocumentResults render should render results summary and snippets above
     >
       <dt>
         <Connect(Translate)>
-          % of document above threshold
+          % of sentences above threshold
         </Connect(Translate)>
       </dt>
       <dd>
@@ -149,7 +149,7 @@ exports[`DocumentResults render should render results summary and snippets above
         "count": 2,
         "metadata": Immutable.List [
           Immutable.Map {
-            "field": "Bio",
+            "field": "Biography",
             "texts": Immutable.List [
               "bio two (60.00%)",
             ],

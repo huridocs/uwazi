@@ -29,7 +29,7 @@ describe('DocumentResults', () => {
       template: Immutable.fromJS({
         commonProperties: [],
         properties: [
-          { name: 'bio', label: 'Bio' }
+          { name: 'bio', label: 'Biography' }
         ]
       })
     };
