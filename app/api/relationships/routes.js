@@ -75,23 +75,28 @@ export default (app) => {
     }
   );
 
-  app.get('/api/references/by_document/:id', (req, res, next) => {
-    const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
-    relationships.getByDocument(req.params.id, req.language, unpublished)
-    .then(response => res.json(response))
-    .catch(next);
-  });
+  app.get('/api/references/by_document/',
+    validation.validateRequest(Joi.object().keys({
+      sharedId: Joi.string().required()
+    }).required(), 'query'),
+    (req, res, next) => {
+      const unpublished = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
+      relationships.getByDocument(req.query.sharedId, req.language, unpublished)
+      .then(response => res.json(response))
+      .catch(next);
+    });
 
-  app.get('/api/references/group_by_connection/:id', (req, res, next) => {
-    relationships.getGroupsByConnection(req.params.id, req.language, { excludeRefs: true, user: req.user })
+  app.get('/api/references/group_by_connection/', (req, res, next) => {
+    relationships.getGroupsByConnection(req.query.sharedId, req.language, { excludeRefs: true, user: req.user })
     .then((response) => {
       res.json(response);
     })
     .catch(next);
   });
 
-  app.get('/api/references/search/:id',
+  app.get('/api/references/search/',
     validation.validateRequest(Joi.object().keys({
+      sharedId: Joi.string().allow(''),
       filter: Joi.string().allow(''),
       limit: Joi.string().allow(''),
       sort: Joi.string().allow(''),
@@ -101,7 +106,8 @@ export default (app) => {
     }), 'query'),
     (req, res, next) => {
       req.query.filter = JSON.parse(req.query.filter || '{}');
-      relationships.search(req.params.id, req.query, req.language, req.user)
+      const { sharedId, ...query } = req.query;
+      relationships.search(req.query.sharedId, query, req.language, req.user)
       .then(results => res.json(results))
       .catch(next);
     }

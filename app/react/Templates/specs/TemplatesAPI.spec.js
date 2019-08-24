@@ -1,6 +1,7 @@
 import templates from 'app/Templates/TemplatesAPI';
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import { RequestParams } from 'app/utils/RequestParams';
 
 describe('TemplatesAPI', () => {
   const mockResponse = [{ templates: 'array' }];
@@ -19,61 +20,42 @@ describe('TemplatesAPI', () => {
   afterEach(() => backend.restore());
 
   describe('get()', () => {
-    it('should request templates', (done) => {
-      templates.get()
-      .then((response) => {
-        expect(response).toEqual(mockResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request templates', async () => {
+      const response = await templates.get();
+      expect(response).toEqual(mockResponse);
     });
 
     describe('when passing an id', () => {
-      it('should request for the template', (done) => {
-        templates.get('templateId')
-        .then((response) => {
-          expect(response).toEqual(templateResponse);
-          done();
-        })
-        .catch(done.fail);
+      it('should request for the template', async () => {
+        const response = await templates.get(new RequestParams({ _id: 'templateId' }));
+        expect(response).toEqual(templateResponse);
       });
     });
   });
 
   describe('save()', () => {
-    it('should post the template data to /templates', (done) => {
-      const templateData = { name: 'template name', properties: [] };
-      templates.save(templateData)
-      .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}templates`).body)).toEqual(templateData);
-        expect(response).toEqual({ backednResponse: 'test' });
-        done();
-      })
-      .catch(done.fail);
+    it('should post the template data to /templates', async () => {
+      const data = { name: 'template name', properties: [] };
+      const response = await templates.save(new RequestParams(data));
+      expect(JSON.parse(backend.lastOptions(`${APIURL}templates`).body)).toEqual(data);
+      expect(response).toEqual({ backednResponse: 'test' });
     });
   });
 
   describe('delete()', () => {
-    it('should delete the template', (done) => {
-      const template = { _id: 'id' };
-      templates.delete(template)
-      .then((response) => {
-        expect(response).toEqual({ backednResponse: 'testdelete' });
-        done();
-      })
-      .catch(done.fail);
+    it('should delete the template', async () => {
+      const data = { _id: 'id' };
+      const response = await templates.delete(new RequestParams(data));
+      expect(response).toEqual({ backednResponse: 'testdelete' });
     });
   });
 
   describe('countByThesauri()', () => {
-    it('should request the templates using a specific thesauri', (done) => {
-      const thesauri = { _id: 'id' };
-      templates.countByThesauri(thesauri)
-      .then((response) => {
-        expect(response).toEqual({ total: 1 });
-        done();
-      })
-      .catch(done.fail);
+    it('should request the templates using a specific thesauri', async () => {
+      const data = { _id: 'id' };
+      const request = { data };
+      const response = await templates.countByThesauri(request);
+      expect(response).toEqual({ total: 1 });
     });
   });
 });

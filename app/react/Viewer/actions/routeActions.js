@@ -7,36 +7,6 @@ import * as relationships from 'app/Relationships/utils/routeUtils';
 import { setReferences } from './referencesActions';
 import entitiesAPI from '../../Entities/EntitiesAPI';
 
-export function requestViewerState({ documentId, raw, page }, globalResources) {
-  return Promise.all([
-    getDocument(documentId),
-    referencesAPI.get(documentId),
-    relationTypesAPI.get(),
-    relationships.requestState(documentId, globalResources.templates),
-    raw ? entitiesAPI.getRawPage(documentId, page) : ''
-  ])
-  .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => ({
-    documentViewer: {
-      doc,
-      references,
-      relationTypes,
-      rawText,
-    },
-    relationships: {
-      list: {
-        entityId: doc.sharedId,
-        entity: doc,
-        connectionsGroups,
-        searchResults,
-        sort,
-        filters: {},
-        view: 'graph'
-      }
-    },
-    relationTypes,
-  }));
-}
-
 export function setViewerState(state) {
   return (dispatch) => {
     const { documentViewer } = state;
@@ -47,4 +17,37 @@ export function setViewerState(state) {
     dispatch(setReferences(documentViewer.references));
     dispatch(relationships.setReduxState(state));
   };
+}
+
+export function requestViewerState(requestParams, globalResources) {
+  const { sharedId, raw, page } = requestParams.data;
+  return Promise.all([
+    getDocument(requestParams.set({ sharedId })),
+    referencesAPI.get(requestParams.set({ sharedId })),
+    relationTypesAPI.get(requestParams.onlyHeaders()),
+    relationships.requestState(requestParams.set({ sharedId }), globalResources.templates),
+    raw ? entitiesAPI.getRawPage(requestParams.set({ sharedId, pageNumber: page })) : ''
+  ])
+  .then(([doc, references, relationTypes, [connectionsGroups, searchResults, sort], rawText]) => [
+      setViewerState({
+        documentViewer: {
+          doc,
+          references,
+          relationTypes,
+          rawText,
+        },
+        relationships: {
+          list: {
+            sharedId: doc.sharedId,
+            entity: doc,
+            connectionsGroups,
+            searchResults,
+            sort,
+            filters: {},
+            view: 'graph'
+          }
+        },
+        relationTypes,
+      })
+  ]);
 }

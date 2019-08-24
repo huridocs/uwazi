@@ -1,4 +1,5 @@
 import { actions as formActions } from 'react-redux-form';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as types from 'app/Templates/actions/actionTypes';
 import { notificationActions } from 'app/Notifications';
@@ -90,7 +91,7 @@ export function saveTemplate(data) {
   const template = sanitize(data);
   return (dispatch) => {
     dispatch({ type: types.SAVING_TEMPLATE });
-    return api.save(template)
+    return api.save(new RequestParams(template))
     .then((response) => {
       dispatch({ type: types.TEMPLATE_SAVED, data: response });
       dispatch(actions.update('templates', response));

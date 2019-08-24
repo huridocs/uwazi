@@ -2,6 +2,7 @@ import UsersAPI from 'app/Users/UsersAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import { I18NApi } from 'app/I18N';
+import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from '../SettingsAPI';
 import { Settings } from '../Settings';
 
@@ -21,15 +22,9 @@ describe('Settings', () => {
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve(settings));
     });
 
-    it('should get the current user, and metadata', (done) => {
-      Settings.requestState()
-      .then((state) => {
-        expect(state.user).toEqual(user);
-        expect(state.dictionaries).toEqual(dictionaries);
-        expect(state.translations).toEqual(translations);
-        expect(state.settings.collection).toEqual(settings);
-        done();
-      });
+    it('should get the current user, and metadata', async () => {
+      const actions = await Settings.requestState(new RequestParams());
+      expect(actions).toMatchSnapshot();
     });
   });
 });

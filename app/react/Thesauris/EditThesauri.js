@@ -6,13 +6,12 @@ import { editThesauri } from 'app/Thesauris/actions/thesaurisActions';
 import api from 'app/Thesauris/ThesaurisAPI';
 
 export default class EditThesauri extends RouteHandler {
-  static requestState({ thesauriId }) {
-    return api.get(thesauriId)
-    .then(thesauris => ({ thesauri: { data: thesauris[0] } }));
-  }
+  static async requestState(requestParams) {
+    const thesauris = await api.get(requestParams);
 
-  setReduxState({ thesauri }) {
-    this.context.store.dispatch(editThesauri(thesauri.data));
+    return [
+      editThesauri(thesauris[0])
+    ];
   }
 
   render() {

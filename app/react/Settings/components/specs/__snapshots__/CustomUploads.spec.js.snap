@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CustomUploads requestState should get the uploads 1`] = `
+Array [
+  Object {
+    "type": "customUploads/SET",
+    "value": "uploads",
+  },
+]
+`;
+
 exports[`CustomUploads should render CustomUploads component with uploaded files 1`] = `
 <div
   className="panel panel-default"

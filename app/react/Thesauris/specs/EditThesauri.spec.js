@@ -30,13 +30,11 @@ describe('EditThesauri', () => {
   });
 
   describe('static requestState()', () => {
-    it('should request the thesauris using the param thesauriId', (done) => {
-      EditThesauri.requestState({ thesauriId: 'thesauriId' })
-      .then((state) => {
-        expect(state).toEqual({ thesauri: { data: thesauri } });
-        done();
-      })
-      .catch(done.fail);
+    it('should request the thesauris using the param thesauriId', async () => {
+      const request = { data: { _id: 'thesauriId' } };
+      const actions = await EditThesauri.requestState(request);
+
+      expect(actions).toMatchSnapshot();
     });
   });
 });

@@ -3,6 +3,8 @@ import { store } from 'app/store';
 import Immutable from 'immutable';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { actions as basicActions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
+
 import I18NApi from '../../I18NApi';
 import * as actions from '../I18NActions';
 
@@ -39,13 +41,12 @@ describe('I18NActions', () => {
   });
 
   describe('saveTranslations', () => {
-    it('should request the I18NApi to save each translation', (done) => {
-      spyOn(I18NApi, 'save').and.returnValue(Promise.resolve());
+    it('should request the I18NApi to save each translation', () => {
+      spyOn(I18NApi, 'save');
       const translation = [{ _id: 1 }, { _id: 2 }];
       actions.saveTranslations(translation)(dispatch);
-      expect(I18NApi.save).toHaveBeenCalledWith({ _id: 1 });
-      expect(I18NApi.save).toHaveBeenCalledWith({ _id: 2 });
-      done();
+      expect(I18NApi.save).toHaveBeenCalledWith(new RequestParams({ _id: 1 }));
+      expect(I18NApi.save).toHaveBeenCalledWith(new RequestParams({ _id: 2 }));
     });
   });
 
@@ -74,7 +75,7 @@ describe('I18NActions', () => {
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve({ collection: 'updated settings' }));
       spyOn(basicActions, 'set');
       actions.addLanguage({ label: 'Español', key: 'es' })(dispatch).then(() => {
-        expect(I18NApi.addLanguage).toHaveBeenCalledWith({ label: 'Español', key: 'es' });
+        expect(I18NApi.addLanguage).toHaveBeenCalledWith(new RequestParams({ label: 'Español', key: 'es' }));
         done();
       });
     });
@@ -86,7 +87,7 @@ describe('I18NActions', () => {
       spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve({ collection: 'updated settings' }));
       spyOn(basicActions, 'set');
       actions.deleteLanguage('es')(dispatch).then(() => {
-        expect(I18NApi.deleteLanguage).toHaveBeenCalledWith('es');
+        expect(I18NApi.deleteLanguage).toHaveBeenCalledWith(new RequestParams({ key: 'es' }));
         done();
       });
     });
@@ -96,7 +97,7 @@ describe('I18NActions', () => {
     it('should request the I18NApi to add a language', (done) => {
       spyOn(I18NApi, 'setDefaultLanguage').and.returnValue(Promise.resolve());
       actions.setDefaultLanguage('es')(dispatch).then(() => {
-        expect(I18NApi.setDefaultLanguage).toHaveBeenCalledWith('es');
+        expect(I18NApi.setDefaultLanguage).toHaveBeenCalledWith(new RequestParams({ key: 'es' }));
         done();
       });
     });

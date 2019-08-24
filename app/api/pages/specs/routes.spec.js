@@ -47,28 +47,11 @@ describe('Pages Routes', () => {
         query: { sharedId: '123' },
         language: 'es'
       };
-      spyOn(pages, 'getById').and.returnValue(Promise.resolve('page'));
+      spyOn(pages, 'get').and.returnValue(Promise.resolve('page'));
       routes.get('/api/pages', req)
       .then((response) => {
-        expect(pages.getById).toHaveBeenCalledWith('123', 'es');
+        expect(pages.get).toHaveBeenCalledWith({ sharedId: '123', language: 'es' });
         expect(response).toBe('page');
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
-
-  describe('/api/pages/list', () => {
-    it('return the list from pages passing the keys', (done) => {
-      const req = {
-        language: 'es'
-      };
-
-      spyOn(pages, 'get').and.returnValue(new Promise(resolve => resolve('document')));
-      routes.get('/api/pages/list', req)
-      .then((document) => {
-        expect(document).toEqual({ rows: 'document' });
-        expect(pages.get).toHaveBeenCalledWith({ language: 'es' });
         done();
       })
       .catch(catchErrors(done));

@@ -1,5 +1,6 @@
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config.js';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import semanticSearchAPI from '../SemanticSearchAPI';
 
@@ -17,12 +18,12 @@ describe('SemanticSearchAPI', () => {
     searchId = 'searchId';
     backend.restore();
     backend
-    .get(`${APIURL}semantic-search/${searchId}`, { body: JSON.stringify(singleResponse) })
-    .get(`${APIURL}semantic-search/${searchId}/list?minRelevantSentences=5&threshold=0.5`, { body: JSON.stringify(resultListResponse) })
+    .get(`${APIURL}semantic-search/?searchId=${searchId}`, { body: JSON.stringify(singleResponse) })
+    .get(`${APIURL}semantic-search/list?searchId=searchId&minRelevantSentences=5&threshold=0.5`, { body: JSON.stringify(resultListResponse) })
     .get(`${APIURL}semantic-search`, { body: JSON.stringify(searchListResponse) })
-    .delete(`${APIURL}semantic-search/${searchId}`, { body: JSON.stringify(deletedResponse) })
-    .post(`${APIURL}semantic-search/${searchId}/stop`, { body: JSON.stringify(stoppedResponse) })
-    .post(`${APIURL}semantic-search/${searchId}/resume`, { body: JSON.stringify(resumedResponse) })
+    .delete(`${APIURL}semantic-search/?searchId=${searchId}`, { body: JSON.stringify(deletedResponse) })
+    .post(`${APIURL}semantic-search/stop`, { body: JSON.stringify(stoppedResponse) })
+    .post(`${APIURL}semantic-search/resume`, { body: JSON.stringify(resumedResponse) })
     .post(`${APIURL}semantic-search`, { body: JSON.stringify(createdResponse) })
     .post(`${APIURL}semantic-search/notify-updates`, { body: JSON.stringify(okResponse) });
   });
@@ -32,92 +33,61 @@ describe('SemanticSearchAPI', () => {
   });
 
   describe('search', () => {
-    it('should post a new search', (done) => {
-      const args = { searchTerm: 'term' };
-      semanticSearchAPI.search(args)
-      .then((response) => {
-        expect(response).toEqual(createdResponse);
-        expect(JSON.parse(backend.lastOptions(`${APIURL}semantic-search`).body)).toEqual(args);
-        done();
-      })
-      .catch(done.fail);
+    it('should post a new search', async () => {
+      const requestParams = new RequestParams({ searchTerm: 'term' });
+      const response = await semanticSearchAPI.search(requestParams);
+      expect(response).toEqual(createdResponse);
+      expect(JSON.parse(backend.lastOptions(`${APIURL}semantic-search`).body)).toEqual(requestParams.data);
     });
   });
 
   describe('stop', () => {
-    it('should request stop', (done) => {
-      semanticSearchAPI.stopSearch(searchId)
-      .then((response) => {
-        expect(response).toEqual(stoppedResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request stop', async () => {
+      const response = await semanticSearchAPI.stopSearch(new RequestParams({ searchId }));
+      expect(response).toEqual(stoppedResponse);
     });
   });
 
   describe('resume', () => {
-    it('should request resume', (done) => {
-      semanticSearchAPI.resumeSearch(searchId)
-      .then((response) => {
-        expect(response).toEqual(resumedResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request resume', async () => {
+      const response = await semanticSearchAPI.resumeSearch(new RequestParams({ searchId }));
+      expect(response).toEqual(resumedResponse);
     });
   });
 
   describe('delete', () => {
-    it('should delete the search', (done) => {
-      semanticSearchAPI.deleteSearch(searchId)
-      .then((response) => {
-        expect(response).toEqual(deletedResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should delete the search', async () => {
+      const response = await semanticSearchAPI.deleteSearch(new RequestParams({ searchId }));
+      expect(response).toEqual(deletedResponse);
     });
   });
 
   describe('getSearch', () => {
-    it('should request the search', (done) => {
-      semanticSearchAPI.getSearch(searchId)
-      .then((response) => {
-        expect(response).toEqual(singleResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request the search', async () => {
+      const response = await semanticSearchAPI.getSearch(new RequestParams({ searchId }));
+      expect(response).toEqual(singleResponse);
     });
   });
 
   describe('getAllSearches', () => {
-    it('should request all searches', (done) => {
-      semanticSearchAPI.getAllSearches(searchId)
-      .then((response) => {
-        expect(response).toEqual(searchListResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request all searches', async () => {
+      const response = await semanticSearchAPI.getAllSearches();
+      expect(response).toEqual(searchListResponse);
     });
   });
 
   describe('registerForUpdates', () => {
-    it('should request update notifications', (done) => {
-      semanticSearchAPI.registerForUpdates()
-      .then((response) => {
-        expect(response).toEqual(okResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request update notifications', async () => {
+      const response = await semanticSearchAPI.registerForUpdates();
+      expect(response).toEqual(okResponse);
     });
   });
 
   describe('getEntitiesMatchingFilters', () => {
-    it('should request list of all results matching filters', (done) => {
-      semanticSearchAPI.getEntitiesMatchingFilters(searchId, { minRelevantSentences: 5, threshold: 0.5 })
-      .then((response) => {
-        expect(response).toEqual(resultListResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request list of all results matching filters', async () => {
+      const requestParams = new RequestParams({ searchId, minRelevantSentences: 5, threshold: 0.5 });
+      const response = await semanticSearchAPI.getEntitiesMatchingFilters(requestParams);
+      expect(response).toEqual(resultListResponse);
     });
   });
 });

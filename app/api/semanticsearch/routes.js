@@ -25,72 +25,88 @@ export default (app) => {
       .catch(next);
     }
   );
+
   app.get('/api/semantic-search',
     needsAuthorization(),
-    (req, res, next) => {
-      semanticSearch.getAllSearches()
-      .then(results => res.json(results))
-      .catch(next);
-    }
-  );
-  app.get('/api/semantic-search/:searchId',
-    needsAuthorization(),
     validation.validateRequest(Joi.object().keys({
+      searchId: Joi.string(),
       limit: Joi.number().min(0),
       skip: Joi.number().min(0),
       threshold: Joi.number().min(0),
       minRelevantSentences: Joi.number().min(0)
     }), 'query'),
     (req, res, next) => {
+      if (!req.query.searchId) {
+        return semanticSearch.getAllSearches()
+        .then(results => res.json(results))
+        .catch(next);
+      }
+
       const args = {
         limit: Number(req.query.limit || 30),
         skip: Number(req.query.skip || 0),
         threshold: Number(req.query.threshold || 0.4),
         minRelevantSentences: Number(req.query.minRelevantSentences || 5)
       };
-      semanticSearch.getSearch(req.params.searchId, args)
+      return semanticSearch.getSearch(req.query.searchId, args)
       .then(search => res.json(search))
       .catch(next);
     }
   );
-  app.get('/api/semantic-search/:searchId/list',
+
+  app.get('/api/semantic-search/list',
     needsAuthorization(),
     validation.validateRequest(Joi.object().keys({
+      searchId: Joi.string(),
       threshold: Joi.number().min(0).required(),
       minRelevantSentences: Joi.number().min(0).required()
     }), 'query'),
     (req, res, next) => {
+      const { searchId, ...query } = req.query;
       const args = {
-        ...req.query,
+        ...query,
         threshold: Number(req.query.threshold),
         minRelevantSentences: Number(req.query.minRelevantSentences)
       };
-      semanticSearch.listSearchResultsDocs(req.params.searchId, args)
+      semanticSearch.listSearchResultsDocs(searchId, args)
       .then(search => res.json(search))
       .catch(next);
     }
   );
-  app.delete('/api/semantic-search/:searchId',
+
+  app.delete('/api/semantic-search',
     needsAuthorization(),
+    validation.validateRequest(Joi.object().keys({
+      searchId: Joi.string(),
+    }), 'query'),
     (req, res, next) => {
-      semanticSearch.deleteSearch(req.params.searchId)
+      semanticSearch.deleteSearch(req.query.searchId)
       .then(search => res.json(search))
       .catch(next);
     });
-  app.post('/api/semantic-search/:searchId/stop',
+
+  app.post('/api/semantic-search/stop',
     needsAuthorization(),
+    validation.validateRequest(Joi.object().keys({
+      searchId: Joi.string(),
+    }), 'query'),
     (req, res, next) => {
-      semanticSearch.stopSearch(req.params.searchId)
+      semanticSearch.stopSearch(req.query.searchId)
       .then(search => res.json(search))
       .catch(next);
     });
-  app.post('/api/semantic-search/:searchId/resume',
+
+  app.post('/api/semantic-search/resume',
     needsAuthorization(),
+    validation.validateRequest(Joi.object().keys({
+      searchId: Joi.string(),
+    }), 'query'),
     (req, res, next) => {
-      semanticSearch.resumeSearch(req.params.searchId)
+      semanticSearch.resumeSearch(req.query.searchId)
       .then(search => res.json(search))
       .catch(next);
     });
+
   app.get('/api/semantic-search/by-document/:sharedId',
     needsAuthorization(),
     (req, res, next) => {
