@@ -11,46 +11,36 @@ import ID from 'shared/uniqueID';
 import templateCommonProperties from './utils/templateCommonProperties';
 
 const prepareTemplate = (template) => {
-  template.properties = template.properties.map((property) => {
-    property.localID = ID();
-    return property;
-  });
-
   const commonPropertiesExists = template.commonProperties && template.commonProperties.length;
-  template.commonProperties = commonPropertiesExists ? template.commonProperties : templateCommonProperties.get();
 
-  return template;
+  return {
+    ...template,
+    properties: template.properties.map(p => ({ ...p, localID: ID() })),
+    commonProperties: commonPropertiesExists ? template.commonProperties : templateCommonProperties.get()
+  };
 };
 
 export default class EditTemplate extends RouteHandler {
-  static requestState({ templateId }) {
-    return Promise.all([
-      templatesAPI.get(),
-      thesaurisAPI.get(),
-      relationTypesAPI.get()
-    ])
-    .then(([templates, thesauris, relationTypes]) => {
-      const template = Object.assign({}, templates.find(tmpl => tmpl._id === templateId));
-      return {
-        template: {
-          data: prepareTemplate(template)
-        },
-        thesauris,
-        templates,
-        relationTypes
-      };
-    });
+  static async requestState(requestParams) {
+    const { templateId } = requestParams.data;
+    const [templates, thesauris, relationTypes] = await Promise.all([
+      templatesAPI.get(requestParams.onlyHeaders()),
+      thesaurisAPI.get(requestParams.onlyHeaders()),
+      relationTypesAPI.get(requestParams.onlyHeaders())
+    ]);
+
+    const template = Object.assign({}, templates.find(tmpl => tmpl._id === templateId));
+
+    return [
+      formActions.load('template.data', prepareTemplate(template)),
+      actions.set('thesauris', thesauris),
+      actions.set('templates', templates),
+      actions.set('relationTypes', relationTypes),
+    ];
   }
 
   componentDidMount() {
     this.context.store.dispatch(formActions.reset('template.data'));
-  }
-
-  setReduxState({ template, thesauris, templates, relationTypes }) {
-    this.context.store.dispatch(formActions.load('template.data', template.data));
-    this.context.store.dispatch(actions.set('thesauris', thesauris));
-    this.context.store.dispatch(actions.set('templates', templates));
-    this.context.store.dispatch(actions.set('relationTypes', relationTypes));
   }
 
   render() {

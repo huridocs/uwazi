@@ -1,41 +1,38 @@
 import api from 'app/utils/api';
-import qs from 'query-string';
 
 export default {
-  search(args) {
+  search(requestParams) {
     const url = 'semantic-search';
-    return api.post(url, args)
+    return api.post(url, requestParams)
     .then(response => response.json);
   },
-  getAllSearches() {
+  getAllSearches(requestParams) {
     const url = 'semantic-search';
-    return api.get(url)
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
-  getEntitiesMatchingFilters(searchId, args) {
-    const query = args ? `?${qs.stringify(args)}` : '';
-    const url = `semantic-search/${searchId}/list${query}`;
-    return api.get(url).then(response => response.json);
+  getEntitiesMatchingFilters(requestParams) {
+    const url = 'semantic-search/list';
+    return api.get(url, requestParams).then(response => response.json);
   },
-  getSearch(searchId, args) {
-    const query = args ? `?${qs.stringify(args)}` : '';
-    const url = `semantic-search/${searchId}${query}`;
-    return api.get(url).then(response => response.json);
+  getSearch(requestParams) {
+    const url = 'semantic-search/';
+    return api.get(url, requestParams).then(response => response.json);
   },
-  deleteSearch(searchId) {
-    const url = `semantic-search/${searchId}`;
-    return api.delete(url).then(response => response.json);
+  deleteSearch(requestParams) {
+    const url = 'semantic-search/';
+    return api.delete(url, requestParams).then(response => response.json);
   },
-  stopSearch(searchId) {
-    const url = `semantic-search/${searchId}/stop`;
-    return api.post(url).then(response => response.json);
+  stopSearch(requestParams) {
+    const url = 'semantic-search/stop';
+    return api.post(url, requestParams).then(response => response.json);
   },
-  resumeSearch(searchId) {
-    const url = `semantic-search/${searchId}/resume`;
-    return api.post(url).then(response => response.json);
+  resumeSearch(requestParams) {
+    const url = 'semantic-search/resume';
+    return api.post(url, requestParams).then(response => response.json);
   },
-  registerForUpdates() {
+  registerForUpdates(requestParams) {
     const url = 'semantic-search/notify-updates';
-    return api.post(url).then(response => response.json);
+    return api.post(url, requestParams).then(response => response.json);
   }
 };

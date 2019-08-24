@@ -15,9 +15,11 @@ import { Icon } from 'UI';
 import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsActions';
 
 export class CustomUploads extends RouteHandler {
-  static requestState() {
-    return api.get('customisation/upload')
-    .then(customUploads => ({ customUploads: customUploads.json }));
+  static async requestState(requestParams) {
+    const customUploads = await api.get('customisation/upload', requestParams);
+    return [
+      actions.set('customUploads', customUploads.json)
+    ];
   }
 
   constructor(props, context) {
@@ -29,10 +31,6 @@ export class CustomUploads extends RouteHandler {
     files.forEach((file) => {
       this.props.upload(file);
     });
-  }
-
-  setReduxState(state) {
-    this.context.store.dispatch(actions.set('customUploads', state.customUploads));
   }
 
   render() {

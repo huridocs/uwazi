@@ -2,9 +2,9 @@ import api from 'app/utils/api';
 
 export default {
 
-  countByTemplate(templateId) {
-    const url = `search/count_by_template?templateId=${templateId}`;
-    return api.get(url)
+  countByTemplate(requestParams) {
+    const url = 'search/count_by_template';
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
 
@@ -14,27 +14,26 @@ export default {
     .then(response => response.json.rows);
   },
 
-  searchSnippets(searchTerm, sharedId) {
+  searchSnippets(requestParams) {
     const url = 'search_snippets';
-    return api.get(url, { searchTerm, id: sharedId })
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
 
-  search(filters) {
-    const url = 'search';
-    return api.get(url, filters)
+  search(requestParams) {
+    return api.get('search', requestParams)
     .then(response => response.json);
   },
 
-  getSuggestions(searchTerm) {
-    const url = `search/match_title?searchTerm=${searchTerm || ''}`;
-    return api.get(url)
+  getSuggestions(requestParams) {
+    const url = 'search/match_title';
+    return api.get(url, requestParams)
     .then(response => response.json);
   },
 
-  list(keys) {
+  list(requestParams) {
     const url = 'search/list';
-    return api.get(url, { keys })
+    return api.get(url, requestParams)
     .then(response => response.json.rows);
   }
 };

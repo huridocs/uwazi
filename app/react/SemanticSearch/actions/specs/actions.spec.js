@@ -1,7 +1,8 @@
 import Immutable from 'immutable';
 import { actions as basicActions } from 'app/BasicReducer';
-import api from '../../SemanticSearchAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 
+import api from '../../SemanticSearchAPI';
 import * as actions from '../actions';
 
 describe('Semantic Search actions', () => {
@@ -54,7 +55,8 @@ describe('Semantic Search actions', () => {
       const action = actions.submitNewSearch(args);
       await action(dispatch);
       expect(api.search).toHaveBeenCalledWith(
-        { searchTerm: 'search', query: { searchTerm: '', filters: { b: { values: ['c'] } } } });
+        new RequestParams({ searchTerm: 'search', query: { searchTerm: '', filters: { b: { values: ['c'] } } } })
+      );
       expectFetchSearchesToHaveBeenDispatched(dispatch);
     });
   });
@@ -81,7 +83,7 @@ describe('Semantic Search actions', () => {
       const searchId = 'search';
       const action = actions.deleteSearch(searchId);
       await action(dispatch);
-      expect(api.deleteSearch).toHaveBeenCalledWith(searchId);
+      expect(api.deleteSearch).toHaveBeenCalledWith(new RequestParams({ searchId }));
       expectFetchSearchesToHaveBeenDispatched(dispatch);
     });
   });
@@ -92,7 +94,7 @@ describe('Semantic Search actions', () => {
       const searchId = 'search';
       const action = actions.stopSearch(searchId);
       await action(dispatch);
-      expect(api.stopSearch).toHaveBeenCalledWith(searchId);
+      expect(api.stopSearch).toHaveBeenCalledWith(new RequestParams({ searchId }));
       expectFetchSearchesToHaveBeenDispatched(dispatch);
     });
   });
@@ -103,7 +105,7 @@ describe('Semantic Search actions', () => {
       const searchId = 'search';
       const action = actions.resumeSearch(searchId);
       await action(dispatch);
-      expect(api.resumeSearch).toHaveBeenCalledWith(searchId);
+      expect(api.resumeSearch).toHaveBeenCalledWith(new RequestParams({ searchId }));
       expectFetchSearchesToHaveBeenDispatched(dispatch);
     });
   });
@@ -175,7 +177,7 @@ describe('Semantic Search actions', () => {
       makeMocks();
       const action = actions.getSearch('searchId', args);
       await action(dispatch, getState);
-      expect(api.getSearch).toHaveBeenCalledWith('searchId', args);
+      expect(api.getSearch).toHaveBeenCalledWith(new RequestParams({ searchId: 'searchId', ...args }));
       expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/search', search));
     });
     it('should update selected document if its among search results', async () => {
@@ -206,37 +208,34 @@ describe('Semantic Search actions', () => {
 
   describe('getMoreSearchResults', () => {
     it('should fetch search and add to current results', async () => {
-      const results = [
-        { sharedId: 'doc1' },
-        { sharedId: 'doc2' }
-      ];
+      const results = [{ sharedId: 'doc1' }, { sharedId: 'doc2' }];
       const args = { skip: 60 };
-      jest.spyOn(api, 'getSearch').mockResolvedValue({
-        searchId: 'searchId',
-        results
-      });
+      jest.spyOn(api, 'getSearch').mockResolvedValue({ searchId: 'searchId', results });
       const action = actions.getMoreSearchResults('searchId', args);
+
       await action(dispatch);
-      expect(api.getSearch).toHaveBeenCalledWith('searchId', args);
+      expect(api.getSearch).toHaveBeenCalledWith(new RequestParams({ searchId: 'searchId', ...args }));
       expect(dispatch).toHaveBeenCalledWith(basicActions.concatIn('semanticSearch/search', ['results'], results));
     });
   });
 
-  describe('setEditSearchEntities', () => {
+  describe('editSearchEntities', () => {
     it('should fetch documents matching search filters and set them for multi edit', async () => {
       const args = { threshold: 0.4, minRelevantSentences: 5 };
       const results = [{ searchId: 'doc1', template: 'tpl1' }];
       jest.spyOn(api, 'getEntitiesMatchingFilters').mockResolvedValue(results);
       const action = actions.editSearchEntities('searchId', args);
       await action(dispatch);
-      expect(api.getEntitiesMatchingFilters).toHaveBeenCalledWith('searchId', args);
+      expect(api.getEntitiesMatchingFilters).toHaveBeenCalledWith(
+        new RequestParams({ searchId: 'searchId', ...args })
+      );
       const setEditFn = dispatch.mock.calls[dispatch.mock.calls.length - 1][0];
       setEditFn(dispatch);
       expect(dispatch).toHaveBeenCalledWith(basicActions.set('semanticSearch/multiedit', results));
     });
   });
 
-  describe('editSearchEntities', () => {
+  describe('setEditSearchEntities', () => {
     it('should set search entities for multi edit', () => {
       const entities = [{ searchId: 'doc1' }];
       const action = actions.setEditSearchEntities(entities);

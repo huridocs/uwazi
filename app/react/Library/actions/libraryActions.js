@@ -9,6 +9,7 @@ import rison from 'rison';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { api as entitiesAPI } from 'app/Entities';
 import { toUrlParams } from 'shared/JSONRequest';
+import { RequestParams } from 'app/utils/RequestParams';
 
 export function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -31,9 +32,9 @@ export function selectDocument(doc) {
   };
 }
 
-export function getAndSelectDocument(id) {
+export function getAndSelectDocument(sharedId) {
   return (dispatch) => {
-    entitiesAPI.get(id)
+    entitiesAPI.get(new RequestParams({ sharedId }))
     .then((entity) => {
       dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc: entity[0] });
     });
@@ -219,7 +220,7 @@ export function updateEntities(updatedDocs) {
 }
 
 export function searchSnippets(searchTerm, sharedId, storeKey) {
-  return dispatch => api.searchSnippets(searchTerm, sharedId)
+  return dispatch => api.searchSnippets(new RequestParams({ searchTerm, id: sharedId }))
   .then((snippets) => {
     dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
     return snippets;
@@ -227,7 +228,7 @@ export function searchSnippets(searchTerm, sharedId, storeKey) {
 }
 
 export function saveDocument(doc, formKey) {
-  return dispatch => documentsApi.save(doc)
+  return dispatch => documentsApi.save(new RequestParams(doc))
   .then((updatedDoc) => {
     dispatch(notificationActions.notify('Document updated', 'success'));
     dispatch(formActions.reset(formKey));
@@ -248,8 +249,8 @@ export function multipleUpdate(entities, values) {
       return entity;
     });
 
-    const updatedEntitiesIds = updatedEntities.map(entity => entity.sharedId);
-    return entitiesAPI.multipleUpdate(updatedEntitiesIds, values)
+    const ids = updatedEntities.map(entity => entity.sharedId);
+    return entitiesAPI.multipleUpdate(new RequestParams({ ids, values }))
     .then(() => {
       dispatch(notificationActions.notify('Update success', 'success'));
       dispatch(updateEntities(updatedEntities));
@@ -258,7 +259,7 @@ export function multipleUpdate(entities, values) {
 }
 
 export function saveEntity(entity, formModel) {
-  return dispatch => entitiesAPI.save(entity)
+  return dispatch => entitiesAPI.save(new RequestParams(entity))
   .then((updatedDoc) => {
     dispatch(formActions.reset(formModel));
     dispatch(unselectAllDocuments());
@@ -284,7 +285,7 @@ export function removeDocuments(docs) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch => documentsApi.delete(doc)
+  return dispatch => documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }))
   .then(() => {
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(unselectAllDocuments());
@@ -311,8 +312,8 @@ export function getSuggestions() {
   return { type: 'GET_SUGGESTIONS' };
 }
 
-export function getDocumentReferences(documentId, storeKey) {
-  return dispatch => referencesAPI.get(documentId)
+export function getDocumentReferences(sharedId, storeKey) {
+  return dispatch => referencesAPI.get(new RequestParams({ sharedId }))
   .then((references) => {
     dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
   });

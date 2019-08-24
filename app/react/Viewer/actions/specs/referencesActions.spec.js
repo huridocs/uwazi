@@ -37,7 +37,7 @@ describe('Viewer referencesActions', () => {
 
     describe('loadReferences', () => {
       beforeEach(() => {
-        spyOn(referencesAPI, 'get').and.callFake(docId => Promise.resolve(`${docId}References`));
+        spyOn(referencesAPI, 'get').and.callFake(requestParams => Promise.resolve(`${requestParams.data.sharedId}References`));
       });
 
       it('should fetch document references and dispatch SET_REFERENCES with result', (done) => {
@@ -59,7 +59,7 @@ describe('Viewer referencesActions', () => {
         store = mockStore({});
         getState = jasmine.createSpy('getState').and.returnValue({
           documentViewer: { referencedDocuments: Immutable.fromJS([{ _id: '1' }]) },
-          relationships: { list: { entityId: 'docId' } }
+          relationships: { list: { sharedId: 'docId' } }
         });
         references = [[
           { _id: 'addedReference1', reference: 'reference', sourceRange: { text: 'Text' } },
@@ -150,7 +150,7 @@ describe('Viewer referencesActions', () => {
         const store = mockStore({});
         const getState = jasmine.createSpy('getState').and.returnValue({
           documentViewer: { referencedDocuments: Immutable.fromJS([{ _id: '1' }]) },
-          relationships: { list: { entityId: 'docId' } }
+          relationships: { list: { sharedId: 'docId' } }
         });
 
         actions.deleteReference(reference)(store.dispatch, getState)

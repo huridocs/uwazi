@@ -5,6 +5,8 @@ import { APIURL } from 'app/config.js';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
+
 
 import * as types from './actionTypes';
 
@@ -28,7 +30,10 @@ export function uploadAttachment(entity, file, __reducerKey, options = {}) {
 }
 
 export function renameAttachment(entityId, form, __reducerKey, file) {
-  return dispatch => api.post('attachments/rename', { entityId, _id: file._id, originalname: file.originalname, language: file.language })
+  return dispatch => api.post(
+    'attachments/rename',
+    new RequestParams({ entityId, _id: file._id, originalname: file.originalname, language: file.language })
+  )
   .then((renamedFile) => {
     if (entityId === file._id) {
       dispatch({ type: types.UPDATE_DOCUMENT_FILE, entity: entityId, file: renamedFile.json, __reducerKey });
@@ -40,9 +45,9 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
 }
 
 export function deleteAttachment(entityId, attachment, __reducerKey) {
-  return dispatch => api.delete('attachments/delete', {
+  return dispatch => api.delete('attachments/delete', new RequestParams({
     attachmentId: attachment._id
-  })
+  }))
   .then((response) => {
     dispatch({ type: types.ATTACHMENT_DELETED, entity: entityId, file: attachment, __reducerKey });
     dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc: response.json, __reducerKey });

@@ -1,5 +1,6 @@
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import { RequestParams } from 'app/utils/RequestParams';
 import I18NApi from '../I18NApi';
 
 describe('I18NApi', () => {
@@ -33,10 +34,10 @@ describe('I18NApi', () => {
 
   describe('save()', () => {
     it('should post the document data to translations', (done) => {
-      const data = { locale: 'fr' };
-      I18NApi.save(data)
+      const requestParams = new RequestParams({ locale: 'fr' });
+      I18NApi.save(requestParams)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}translations`).body)).toEqual(data);
+        expect(JSON.parse(backend.lastOptions(`${APIURL}translations`).body)).toEqual({ locale: 'fr' });
         expect(response).toEqual(translation);
         done();
       })
@@ -46,10 +47,12 @@ describe('I18NApi', () => {
 
   describe('addEntry()', () => {
     it('should post the new entry translations', (done) => {
-      I18NApi.addEntry('System', 'search', 'Buscar')
+      const data = { context: 'System', key: 'search', value: 'Buscar' };
+      const requestParams = new RequestParams(data);
+      I18NApi.addEntry(requestParams)
       .then((response) => {
         expect(JSON.parse(backend.lastOptions(`${APIURL}translations/addentry`).body))
-        .toEqual({ context: 'System', key: 'search', value: 'Buscar' });
+        .toEqual(data);
 
         expect(response).toEqual('ok');
         done();
@@ -60,10 +63,12 @@ describe('I18NApi', () => {
 
   describe('addLanguage()', () => {
     it('should post the new language', (done) => {
-      I18NApi.addLanguage({ label: 'Klingon', key: 'kl' })
+      const data = { label: 'Klingon', key: 'kl' };
+      const requestParams = new RequestParams(data);
+      I18NApi.addLanguage(requestParams)
       .then((response) => {
         expect(JSON.parse(backend.lastOptions(`${APIURL}translations/languages`).body))
-        .toEqual({ label: 'Klingon', key: 'kl' });
+        .toEqual(data);
 
         expect(response).toEqual('ok');
         done();
@@ -74,7 +79,8 @@ describe('I18NApi', () => {
 
   describe('deleteLanguage()', () => {
     it('should delete languages', (done) => {
-      I18NApi.deleteLanguage('kl')
+      const requestParams = new RequestParams({ key: 'kl' });
+      I18NApi.deleteLanguage(requestParams)
       .then((response) => {
         expect(response).toEqual('ok');
         done();
@@ -85,7 +91,8 @@ describe('I18NApi', () => {
 
   describe('setDefaultLanguage()', () => {
     it('should post the default language', (done) => {
-      I18NApi.setDefaultLanguage('kl')
+      const requestParams = new RequestParams({ key: 'kl' });
+      I18NApi.setDefaultLanguage(requestParams)
       .then((response) => {
         expect(JSON.parse(backend.lastOptions(`${APIURL}translations/setasdeafult`).body))
         .toEqual({ key: 'kl' });

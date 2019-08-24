@@ -7,6 +7,7 @@ import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { RequestParams } from 'app/utils/RequestParams';
 import emptyTemplate from '../helpers/defaultTemplate';
 
 import * as types from './actionTypes';
@@ -42,7 +43,7 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
 
 export function loadInReduxForm(form, _entity, templates) {
   return (dispatch) => {
-    (_entity.sharedId ? api.get(_entity.sharedId) : Promise.resolve([_entity]))
+    (_entity.sharedId ? api.get(new RequestParams({ sharedId: _entity.sharedId })) : Promise.resolve([_entity]))
     .then(([entity]) => {
       const sortedTemplates = advancedSort(templates, { property: 'name' });
       const defaultTemplate = sortedTemplates.find(t => t.default);
@@ -96,7 +97,7 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('response', ({ body }) => {
       const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
-      api.get(docSharedId)
+      api.get(new RequestParams({ docSharedId }))
       .then(([doc]) => {
         dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
         dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
@@ -124,8 +125,8 @@ export function multipleUpdate(_entities, values) {
       return entity;
     });
 
-    const updatedEntitiesIds = updatedEntities.map(entity => entity.sharedId);
-    return api.multipleUpdate(updatedEntitiesIds, values)
+    const ids = updatedEntities.map(entity => entity.sharedId);
+    return api.multipleUpdate(new RequestParams({ ids, values }))
     .then(() => {
       dispatch(notificationActions.notify('Update success', 'success'));
       if (values.published !== undefined) {

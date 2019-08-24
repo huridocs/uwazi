@@ -2,6 +2,7 @@ import * as types from 'app/Viewer/actions/actionTypes';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { notificationActions } from 'app/Notifications';
 import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions as connectionsActions } from 'app/Connections';
 import { reloadRelationships } from 'app/Relationships/actions/actions';
@@ -14,17 +15,15 @@ export function setReferences(references) {
   };
 }
 
-export function loadReferences(documentId) {
-  return function (dispatch) {
-    return referencesAPI.get(documentId)
-    .then((references) => {
-      dispatch(setReferences(references));
-    });
-  };
+export function loadReferences(sharedId) {
+  return dispatch => referencesAPI.get(new RequestParams({ sharedId }))
+  .then((references) => {
+    dispatch(setReferences(references));
+  });
 }
 
 export function addReference(references, docInfo, delayActivation) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const tab = 'references';
 
     dispatch({ type: types.ADD_REFERENCE, reference: references[0][1] });
@@ -33,36 +32,28 @@ export function addReference(references, docInfo, delayActivation) {
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
-    dispatch(reloadRelationships(getState().relationships.list.entityId));
+    dispatch(reloadRelationships(getState().relationships.list.sharedId));
 
-    if (delayActivation) {
-      dispatch({ type: types.ACTIVE_REFERENCE, reference: references[0][0]._id });
-      dispatch(uiActions.goToActive());
-      dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
-      dispatch(actions.set('viewer.sidepanel.tab', tab));
-    } else {
-      dispatch(uiActions.activateReference(references[0][0], docInfo, tab));
-    }
+    dispatch(uiActions.activateReference(references[0][0], docInfo, tab, delayActivation));
   };
 }
 
 export function saveTargetRangedReference(connection, targetRange, onCreate) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     if (targetRange.text) {
       dispatch(actions.unset('viewer/targetDocReferences'));
-      connection.targetRange = targetRange;
-      return connectionsActions.saveConnection(connection, onCreate)(dispatch, getState);
+      return connectionsActions.saveConnection({ ...connection, targetRange }, onCreate)(dispatch, getState);
     }
+    return undefined;
   };
 }
 
 export function deleteReference(reference) {
-  return function (dispatch, getState) {
-    return referencesAPI.delete(reference.associatedRelationship)
-    .then(() => {
-      dispatch(reloadRelationships(getState().relationships.list.entityId));
-      dispatch({ type: types.REMOVE_REFERENCE, reference });
-      dispatch(notificationActions.notify('Connection deleted', 'success'));
-    });
-  };
+  const { _id } = reference.associatedRelationship;
+  return (dispatch, getState) => referencesAPI.delete(new RequestParams({ _id }))
+  .then(() => {
+    dispatch(reloadRelationships(getState().relationships.list.sharedId));
+    dispatch({ type: types.REMOVE_REFERENCE, reference });
+    dispatch(notificationActions.notify('Connection deleted', 'success'));
+  });
 }

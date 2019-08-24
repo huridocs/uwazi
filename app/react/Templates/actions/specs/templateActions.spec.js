@@ -1,6 +1,7 @@
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import thunk from 'redux-thunk';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { APIURL } from 'app/config.js';
 import { mockID } from 'shared/uniqueID';
@@ -129,10 +130,10 @@ describe('templateActions', () => {
           properties: [{ localID: '1', label: 'label', type: 'relationship', inherit: true, relationType: '1', content: '' }]
         };
         actions.saveTemplate(originalTemplateData)(() => {});
-        expect(api.save).toHaveBeenCalledWith({
+        expect(api.save).toHaveBeenCalledWith(new RequestParams({
           name: 'name',
           properties: [{ content: '', inherit: false, label: 'label', localID: '1', relationType: '1', type: 'relationship' }]
-        });
+        }));
       });
 
       it('should save the template and dispatch a TEMPLATE_SAVED action', (done) => {

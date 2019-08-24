@@ -1,6 +1,8 @@
 import { notificationActions } from 'app/Notifications';
 import api from 'app/Entities/EntitiesAPI';
 import { actions as relationshipActions } from 'app/Relationships';
+import { RequestParams } from 'app/utils/RequestParams';
+
 import * as actions from '../actions';
 
 describe('Entities actions', () => {
@@ -20,7 +22,7 @@ describe('Entities actions', () => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({ type: 'reloadRelationships' });
       actions.saveEntity('data')(dispatch)
       .then(() => {
-        expect(api.save).toHaveBeenCalledWith('data');
+        expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
         expect(notificationActions.notify).toHaveBeenCalledWith('Entity saved', 'success');
         expect(dispatch).toHaveBeenCalledWith({ type: 'entityView/entity/SET', value: { _id: 'newId', _rev: 'newRev', sharedId: 'sharedId' } });
         expect(dispatch).toHaveBeenCalledWith({ type: 'rrf/reset', model: 'entityView.entityForm' });
@@ -33,9 +35,9 @@ describe('Entities actions', () => {
 
   describe('deleteEntity', () => {
     it('should delete the entity and notify', (done) => {
-      actions.deleteEntity('data')(dispatch)
+      actions.deleteEntity({ sharedId: 'sharedId' })(dispatch)
       .then(() => {
-        expect(api.delete).toHaveBeenCalledWith('data');
+        expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sharedId' }));
         expect(notificationActions.notify).toHaveBeenCalledWith('Entity deleted', 'success');
         done();
       })
@@ -44,14 +46,10 @@ describe('Entities actions', () => {
   });
 
   describe('deleteEntities', () => {
-    it('should delete the entities and notify', (done) => {
-      actions.deleteEntities(['entity1', 'entity2'])(dispatch)
-      .then(() => {
-        expect(api.deleteMultiple).toHaveBeenCalledWith(['entity1', 'entity2']);
-        expect(notificationActions.notify).toHaveBeenCalledWith('Deletion success', 'success');
-        done();
-      })
-      .catch(done.fail);
+    it('should delete the entities and notify', async () => {
+      await actions.deleteEntities([{ sharedId: 'entity1' }, { sharedId: 'entity2' }])(dispatch);
+      expect(api.deleteMultiple).toHaveBeenCalledWith(new RequestParams({ sharedIds: ['entity1', 'entity2'] }));
+      expect(notificationActions.notify).toHaveBeenCalledWith('Deletion success', 'success');
     });
   });
 });

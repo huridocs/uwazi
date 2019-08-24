@@ -2,6 +2,7 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { fromJS as Immutable } from 'immutable';
 import { mockID } from 'shared/uniqueID.js';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import api from 'app/utils/api';
 import * as types from '../actionTypes';
@@ -109,9 +110,9 @@ describe('Relationships actions', () => {
       expect(store.getActions())
       .toEqual([
         { type: 'NOTIFY',
-notification: {
-          id: 'unique_id', message: 'a short title added to hub.  Save your work to make change permanent.', type: 'success'
-} },
+          notification: {
+            id: 'unique_id', message: 'a short title added to hub.  Save your work to make change permanent.', type: 'success'
+          } },
         { type: types.ADD_RELATIONSHIPS_ENTITY, index: 3, rightIndex: 7, entity }
       ]);
     });
@@ -136,7 +137,10 @@ notification: {
 
       actions.reloadRelationships('parentEntityId')(store.dispatch, getState)
       .then(() => {
-        expect(routeUtils.requestState).toHaveBeenCalledWith('parentEntityId', { templates });
+        expect(routeUtils.requestState).toHaveBeenCalledWith(
+          new RequestParams({ sharedId: 'parentEntityId' }),
+          { templates }
+        );
         expect(store.getActions()).toEqual([
           { type: 'relationships/list/connectionsGroups/SET', value: 'connectionsGroups' },
           { type: 'relationships/list/searchResults/SET', value: 'searchResults' }
@@ -154,7 +158,7 @@ notification: {
       return {
         relationships: {
           list: {
-            entityId: 'entityId',
+            sharedId: 'entityId',
             entity: 'fullEntity',
             searchResults: 'storeSearchResults'
           },
@@ -243,7 +247,7 @@ notification: {
     it('should post to relationship/bluk with empty actions if no changes made', (done) => {
       actions.saveRelationships()(store.dispatch, getState)
       .then(() => {
-        expect(api.post).toHaveBeenCalledWith('relationships/bulk', { save: [], delete: [] });
+        expect(api.post).toHaveBeenCalledWith('relationships/bulk', new RequestParams({ save: [], delete: [] }));
         done();
       });
     });
@@ -254,27 +258,27 @@ notification: {
         hubs = hubs.setIn([0, 'rightRelationships', 0, 'relationships', 2, 'deleted'], true);
         hubs = hubs.setIn([0, 'rightRelationships', 1, 'relationships', 1, 'deleted'], true);
         hubs = hubs.setIn([0, 'rightRelationships', 1, 'relationships'],
-                          hubs
-                          .getIn([0, 'rightRelationships', 1, 'relationships'])
-                          .push(Immutable({ entity: 'n7', template: '1' })));
+          hubs
+          .getIn([0, 'rightRelationships', 1, 'relationships'])
+          .push(Immutable({ entity: 'n7', template: '1' })));
 
         hubs = hubs.setIn([1, 'modified'], true);
         hubs = hubs.setIn([1, 'rightRelationships', 0, 'modified'], true);
         hubs = hubs.setIn([1, 'rightRelationships', 0, 'deleted'], true);
         hubs = hubs.setIn([1, 'rightRelationships', 0, 'relationships'],
-                          hubs
-                          .getIn([1, 'rightRelationships', 0, 'relationships'])
-                          .push(Immutable({ entity: 'n8', template: '1' })));
+          hubs
+          .getIn([1, 'rightRelationships', 0, 'relationships'])
+          .push(Immutable({ entity: 'n8', template: '1' })));
 
         hubs = hubs.setIn([2, 'deleted'], true);
         hubs = hubs.setIn([2, 'rightRelationships', 0, 'relationships'],
-                          hubs
-                          .getIn([2, 'rightRelationships', 0, 'relationships'])
-                          .push(Immutable({ entity: 'n9', template: '1', deleted: true })));
+          hubs
+          .getIn([2, 'rightRelationships', 0, 'relationships'])
+          .push(Immutable({ entity: 'n9', template: '1', deleted: true })));
         hubs = hubs.setIn([2, 'rightRelationships', 0, 'relationships'],
-                          hubs
-                          .getIn([2, 'rightRelationships', 0, 'relationships'])
-                          .push(Immutable({ entity: 'n10', template: '1' })));
+          hubs
+          .getIn([2, 'rightRelationships', 0, 'relationships'])
+          .push(Immutable({ entity: 'n10', template: '1' })));
 
         hubs = hubs.push({
           deleted: true,
@@ -320,12 +324,12 @@ notification: {
       it('should handle new hubs, taking into account deleted sections on new hubs', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].save).toContainEqual([
+          expect(api.post.calls.mostRecent().args[1].data.save).toContainEqual([
             { entity: 'entityId', keys: 'newLeftRelationship1', template: '1' },
             { keys: 'newRightRelationship1', entity: '1', template: '1' }
           ]);
 
-          expect(api.post.calls.mostRecent().args[1].save).toContainEqual([
+          expect(api.post.calls.mostRecent().args[1].data.save).toContainEqual([
             { entity: 'entityId', keys: 'newLeftRelationship2', template: '1' },
             { keys: 'newRightRelationship2', entity: '2', template: '1' },
             { keys: 'newRightRelationship4', entity: '4', template: '1' }
@@ -338,14 +342,14 @@ notification: {
       it('should handle modifications, taking into account new relationships on existing hubs and deleted relationships / sections', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].save)
+          expect(api.post.calls.mostRecent().args[1].data.save)
           .toContainEqual({ _id: 'originalRightRelationship1', entity: 'o1', hub: 'hub1', template: '1' });
-          expect(api.post.calls.mostRecent().args[1].save)
+          expect(api.post.calls.mostRecent().args[1].data.save)
           .toContainEqual({ _id: 'originalRightRelationship2', entity: 'o2', hub: 'hub1', template: '1' });
-          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({ entity: 'n7', hub: 'hub1', template: '1' });
-          expect(api.post.calls.mostRecent().args[1].save)
+          expect(api.post.calls.mostRecent().args[1].data.save).toContainEqual({ entity: 'n7', hub: 'hub1', template: '1' });
+          expect(api.post.calls.mostRecent().args[1].data.save)
           .toContainEqual({ entity: 'entityId', hub: 'hub2', _id: 'originalLeftRelationship2', template: '1' });
-          expect(api.post.calls.mostRecent().args[1].save).toContainEqual({ entity: 'n10', hub: 'hub3', template: '1' });
+          expect(api.post.calls.mostRecent().args[1].data.save).toContainEqual({ entity: 'n10', hub: 'hub3', template: '1' });
 
           done();
         });
@@ -354,12 +358,12 @@ notification: {
       it('should handle deletions, taking into account new hubs and relationships', (done) => {
         actions.saveRelationships()(store.dispatch, getState)
         .then(() => {
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({ _id: 'originalRightRelationship3', entity: 'o3' });
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({ _id: 'originalRightRelationship5', entity: 'o5' });
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({ _id: 'originalRightRelationship7', entity: 'o7' });
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({ _id: 'originalRightRelationship8', entity: 'o8' });
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({ _id: 'originalRightRelationship9', entity: 'o9' });
-          expect(api.post.calls.mostRecent().args[1].delete).toContainEqual({ _id: 'originalLeftRelationship3', entity: 'entityId' });
+          expect(api.post.calls.mostRecent().args[1].data.delete).toContainEqual({ _id: 'originalRightRelationship3', entity: 'o3' });
+          expect(api.post.calls.mostRecent().args[1].data.delete).toContainEqual({ _id: 'originalRightRelationship5', entity: 'o5' });
+          expect(api.post.calls.mostRecent().args[1].data.delete).toContainEqual({ _id: 'originalRightRelationship7', entity: 'o7' });
+          expect(api.post.calls.mostRecent().args[1].data.delete).toContainEqual({ _id: 'originalRightRelationship8', entity: 'o8' });
+          expect(api.post.calls.mostRecent().args[1].data.delete).toContainEqual({ _id: 'originalRightRelationship9', entity: 'o9' });
+          expect(api.post.calls.mostRecent().args[1].data.delete).toContainEqual({ _id: 'originalLeftRelationship3', entity: 'entityId' });
 
           done();
         });
@@ -393,8 +397,8 @@ notification: {
             { _id: 'originalLeftRelationship3', entity: 'entityId' }
           ];
 
-          expect(api.post.calls.mostRecent().args[1].save).toEqual(expectedSaves);
-          expect(api.post.calls.mostRecent().args[1].delete).toEqual(expectedDeletes);
+          expect(api.post.calls.mostRecent().args[1].data.save).toEqual(expectedSaves);
+          expect(api.post.calls.mostRecent().args[1].data.delete).toEqual(expectedDeletes);
           done();
         });
       });
@@ -412,7 +416,7 @@ notification: {
     describe('immidiateSearch', () => {
       it('should search for connectable entities', () => {
         actions.immidiateSearch(store.dispatch, 'term');
-        expect(api.get).toHaveBeenCalledWith('search', { searchTerm: 'term', fields: ['title'], includeUnpublished: true });
+        expect(api.get).toHaveBeenCalledWith('search', new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true }));
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_RELATIONSHIPS' });
       });
 
@@ -436,7 +440,7 @@ notification: {
 
         jasmine.clock().tick(400);
 
-        expect(api.get).toHaveBeenCalledWith('search', { searchTerm: 'term', fields: ['title'], includeUnpublished: true });
+        expect(api.get).toHaveBeenCalledWith('search', new RequestParams({ searchTerm: 'term', fields: ['title'], includeUnpublished: true }));
         jasmine.clock().uninstall();
       });
     });

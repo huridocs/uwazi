@@ -143,7 +143,7 @@ describe('entities', () => {
       const expectedEntity = [{ sharedId: 'sharedId', published: true }];
       spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
       const req = {
-        query: { _id: 'sharedId' },
+        query: { sharedId: 'sharedId' },
         language: 'lang'
       };
 
@@ -163,7 +163,7 @@ describe('entities', () => {
       spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
 
       const req = {
-        query: { _id: 'sharedId', omitRelationships: true },
+        query: { sharedId: 'sharedId', omitRelationships: true },
         language: 'lang'
       };
 
@@ -177,7 +177,7 @@ describe('entities', () => {
       it('should retunr a 404', (done) => {
         spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([]));
         const req = {
-          query: { _id: 'idontexist' },
+          query: { sharedId: 'idontexist' },
           language: 'en'
         };
 
@@ -194,7 +194,7 @@ describe('entities', () => {
       it('should return a 404', (done) => {
         spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([{ published: false }]));
         const req = {
-          query: { _id: 'unpublished' },
+          query: { sharedId: 'unpublished' },
           language: 'en'
         };
 
@@ -222,7 +222,7 @@ describe('entities', () => {
         ]));
 
         const req = {
-          query: { _id: 'sharedId' },
+          query: { sharedId: 'sharedId' },
           language: 'lang'
         };
 

@@ -1,5 +1,6 @@
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import { RequestParams } from 'app/utils/RequestParams';
 import documentsAPI from '../DocumentsAPI';
 
 describe('DocumentsAPI', () => {
@@ -49,7 +50,8 @@ describe('DocumentsAPI', () => {
 
     describe('when passing an id', () => {
       it('should request for the thesauri', (done) => {
-        documentsAPI.get('documentId')
+        const requestParams = new RequestParams({ _id: 'documentId' });
+        documentsAPI.get(requestParams)
         .then((response) => {
           expect(response).toEqual(singleResponse);
           done();
@@ -61,7 +63,8 @@ describe('DocumentsAPI', () => {
 
   describe('list()', () => {
     it('should request documents list', (done) => {
-      documentsAPI.list(['1', '2'])
+      const requestParams = new RequestParams({ keys: ['1', '2'] });
+      documentsAPI.list(requestParams)
       .then((response) => {
         expect(response).toEqual(listResponse);
         done();
@@ -72,7 +75,8 @@ describe('DocumentsAPI', () => {
 
   describe('getSuggestions()', () => {
     it('should match_title ', (done) => {
-      documentsAPI.getSuggestions('term')
+      const requestParams = new RequestParams({ searchTerm: 'term' });
+      documentsAPI.getSuggestions(requestParams)
       .then((response) => {
         expect(response).toEqual(searchResponse);
         done();
@@ -83,7 +87,8 @@ describe('DocumentsAPI', () => {
 
   describe('countByTemplate()', () => {
     it('should count_by_template', (done) => {
-      documentsAPI.countByTemplate('templateId')
+      const requestParams = new RequestParams({ templateId: 'templateId' });
+      documentsAPI.countByTemplate(requestParams)
       .then((response) => {
         expect(response).toEqual(1);
         done();
@@ -104,7 +109,8 @@ describe('DocumentsAPI', () => {
 
     describe('when passing filters', () => {
       it('should search for it', (done) => {
-        documentsAPI.search({ searchTerm: 'Batman', joker: true })
+        const requestParams = new RequestParams({ searchTerm: 'Batman', joker: true });
+        documentsAPI.search(requestParams)
         .then((response) => {
           expect(response).toEqual(filteredSearchResult);
           done();
@@ -116,10 +122,11 @@ describe('DocumentsAPI', () => {
 
   describe('save()', () => {
     it('should post the document data to /documents', (done) => {
-      const data = { name: 'document name' };
-      documentsAPI.save(data)
+      const doc = { name: 'document name' };
+      const requestParams = new RequestParams(doc);
+      documentsAPI.save(requestParams)
       .then((response) => {
-        expect(JSON.parse(backend.lastOptions(`${APIURL}documents`).body)).toEqual(data);
+        expect(JSON.parse(backend.lastOptions(`${APIURL}documents`).body)).toEqual(doc);
         expect(response).toEqual({ backednResponse: 'test' });
         done();
       })
@@ -129,8 +136,8 @@ describe('DocumentsAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      const document = { sharedId: 'shared', _id: 'id' };
-      documentsAPI.delete(document)
+      const requestParams = new RequestParams({ sharedId: 'shared' });
+      documentsAPI.delete(requestParams)
       .then((response) => {
         expect(response).toEqual({ backednResponse: 'testdelete' });
         done();

@@ -29,11 +29,6 @@ export default (app) => {
     .catch(next)
   );
 
-  app.get('/api/pages/list', (req, res, next) => pages.get({ language: req.language })
-  .then(response => res.json({ rows: response }))
-  .catch(next)
-  );
-
   app.get(
     '/api/pages',
 
@@ -42,7 +37,7 @@ export default (app) => {
     }).required(), 'query'),
 
     (req, res, next) => {
-      pages.getById(req.query.sharedId, req.language)
+      pages.get({ ...req.query, language: req.language })
       .then(res.json.bind(res))
       .catch(next);
     }

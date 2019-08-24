@@ -8,15 +8,14 @@ import ResultsViewer from './components/SemanticSearchResults';
 import semanticSearchAPI from './SemanticSearchAPI';
 
 export default class SemanticSearchResultsView extends RouteHandler {
-  static requestState({ searchId }, query, state) {
+  static async requestState(requestParams, state) {
     const filters = state.semanticSearch ?
       state.semanticSearch.resultsFilters : { threshold: 0.4, minRelevantSentences: 5 };
-    return semanticSearchAPI.getSearch(searchId, filters)
-    .then(search => ({ semanticSearch: { search } }));
-  }
-
-  setReduxState(state) {
-    this.context.store.dispatch(actions.set('semanticSearch/search', state.semanticSearch.search));
+    const args = requestParams.add(filters);
+    const search = await semanticSearchAPI.getSearch(args);
+    return [
+      actions.set('semanticSearch/search', search)
+    ];
   }
 
   static renderTools() {

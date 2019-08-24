@@ -6,32 +6,23 @@ import { Users } from '../Users';
 
 describe('Users', () => {
   let component;
-  let instance;
   let context;
   let users;
 
   beforeEach(() => {
     users = [{ _id: 1, name: 'Batman' }];
-    spyOn(UsersAPI, 'list').and.returnValue(Promise.resolve(users));
+    spyOn(UsersAPI, 'get').and.returnValue(Promise.resolve(users));
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<Users />, { context });
-    instance = component.instance();
   });
 
   describe('requestState', () => {
-    it('should get the current user, and metadata', (done) => {
-      Users.requestState()
-      .then((state) => {
-        expect(state.users).toEqual(users);
-        done();
-      });
-    });
-  });
+    it('should get the current user, and metadata', async () => {
+      const request = {};
+      const actions = await Users.requestState(request);
 
-  describe('setReduxState', () => {
-    it('should set users in state', () => {
-      instance.setReduxState({ users: 'users' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'users/SET', value: 'users' });
+      expect(actions).toMatchSnapshot();
+      expect(UsersAPI.get).toHaveBeenCalledWith(request);
     });
   });
 

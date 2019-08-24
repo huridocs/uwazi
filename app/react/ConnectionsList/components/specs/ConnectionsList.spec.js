@@ -12,7 +12,7 @@ describe('ConnectionsList', () => {
       state = {
         relationships: {
           list: {
-            entityId: 'id1',
+            sharedId: 'id1',
             searchResults: Immutable({ rows: [
               { sharedId: 'id2', connections: ['a', 'b'] },
               { sharedId: 'id1', connections: ['c'] },

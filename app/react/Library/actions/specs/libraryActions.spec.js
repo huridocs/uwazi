@@ -5,6 +5,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mockID } from 'shared/uniqueID.js';
 import rison from 'rison';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as actions from 'app/Library/actions/libraryActions';
 import * as types from 'app/Library/actions/actionTypes';
@@ -262,7 +263,7 @@ describe('libraryActions', () => {
 
         store.dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
         .then(() => {
-          expect(documentsApi.save).toHaveBeenCalledWith(doc);
+          expect(documentsApi.save).toHaveBeenCalledWith(new RequestParams(doc));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -284,7 +285,9 @@ describe('libraryActions', () => {
         const store = mockStore({});
         store.dispatch(actions.multipleUpdate(entities, { metadata }))
         .then(() => {
-          expect(api.multipleUpdate).toHaveBeenCalledWith(['1', '2'], { metadata });
+          expect(api.multipleUpdate).toHaveBeenCalledWith(
+            new RequestParams({ ids: ['1', '2'], values: { metadata } })
+          );
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -296,7 +299,7 @@ describe('libraryActions', () => {
       it('should delete the document and dispatch a notification on success', (done) => {
         mockID();
         spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
-        const doc = { name: 'doc' };
+        const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
           { type: notificationsTypes.NOTIFY, notification: { message: 'Document deleted', type: 'success', id: 'unique_id' } },
@@ -307,7 +310,7 @@ describe('libraryActions', () => {
 
         store.dispatch(actions.deleteDocument(doc))
         .then(() => {
-          expect(documentsApi.delete).toHaveBeenCalledWith(doc);
+          expect(documentsApi.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: doc.sharedId }));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -328,7 +331,9 @@ describe('libraryActions', () => {
         store.dispatch(actions.searchSnippets('query', 'sharedId', 'storeKey'))
         .then((snippets) => {
           expect(snippets).toBe('response');
-          expect(SearchApi.searchSnippets).toHaveBeenCalledWith('query', 'sharedId');
+          expect(SearchApi.searchSnippets).toHaveBeenCalledWith(
+            new RequestParams({ searchTerm: 'query', id: 'sharedId' })
+          );
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)
@@ -349,7 +354,7 @@ describe('libraryActions', () => {
 
         store.dispatch(actions.getDocumentReferences('id', 'library'))
         .then(() => {
-          expect(referencesAPI.get).toHaveBeenCalledWith('id');
+          expect(referencesAPI.get).toHaveBeenCalledWith(new RequestParams({ sharedId: 'id' }));
           expect(store.getActions()).toEqual(expectedActions);
         })
         .then(done)

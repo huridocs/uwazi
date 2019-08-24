@@ -1,5 +1,6 @@
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
+import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from '../SearchAPI';
 
 describe('SearchAPI', () => {
@@ -34,7 +35,8 @@ describe('SearchAPI', () => {
 
   describe('list()', () => {
     it('should request documents list', (done) => {
-      searchAPI.list(['1', '2'])
+      const requestParams = new RequestParams({ keys: ['1', '2'] });
+      searchAPI.list(requestParams)
       .then((response) => {
         expect(response).toEqual(listResponse);
         done();
@@ -45,7 +47,8 @@ describe('SearchAPI', () => {
 
   describe('getSuggestions()', () => {
     it('should match_title ', (done) => {
-      searchAPI.getSuggestions('term')
+      const requestParams = new RequestParams({ searchTerm: 'term' });
+      searchAPI.getSuggestions(requestParams)
       .then((response) => {
         expect(response).toEqual(searchResponse);
         done();
@@ -56,7 +59,8 @@ describe('SearchAPI', () => {
 
   describe('countByTemplate()', () => {
     it('should count_by_template', (done) => {
-      searchAPI.countByTemplate('templateId')
+      const requestParams = new RequestParams({ templateId: 'templateId' });
+      searchAPI.countByTemplate(requestParams)
       .then((response) => {
         expect(response).toEqual(1);
         done();
@@ -67,7 +71,8 @@ describe('SearchAPI', () => {
 
   describe('searchSnippets()', () => {
     it('should search snippets for a certain document', (done) => {
-      searchAPI.searchSnippets('term', 'id')
+      const requestParams = new RequestParams({ searchTerm: 'term', id: 'id' });
+      searchAPI.searchSnippets(requestParams)
       .then((response) => {
         expect(response).toEqual(searchResponse);
         done();
@@ -88,7 +93,8 @@ describe('SearchAPI', () => {
 
     describe('when passing filters', () => {
       it('should search for it', (done) => {
-        searchAPI.search({ searchTerm: 'Batman', joker: true })
+        const requestParams = new RequestParams({ searchTerm: 'Batman', joker: true });
+        searchAPI.search(requestParams)
         .then((response) => {
           expect(response).toEqual(filteredSearchResult);
           done();

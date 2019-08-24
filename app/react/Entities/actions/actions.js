@@ -1,4 +1,5 @@
 import { actions as formActions } from 'react-redux-form';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
@@ -8,7 +9,7 @@ import { actions as relationshipActions } from 'app/Relationships';
 import api from '../EntitiesAPI';
 
 export function saveEntity(entity) {
-  return dispatch => api.save(entity)
+  return dispatch => api.save(new RequestParams(entity))
   .then((response) => {
     dispatch(notificationActions.notify('Entity saved', 'success'));
     dispatch(formActions.reset('entityView.entityForm'));
@@ -18,7 +19,7 @@ export function saveEntity(entity) {
 }
 
 export function deleteEntity(entity) {
-  return dispatch => api.delete(entity)
+  return dispatch => api.delete(new RequestParams({ sharedId: entity.sharedId }))
   .then(() => {
     dispatch(notificationActions.notify('Entity deleted', 'success'));
     dispatch(removeDocument(entity));
@@ -27,7 +28,9 @@ export function deleteEntity(entity) {
 }
 
 export function deleteEntities(entities) {
-  return dispatch => api.deleteMultiple(entities)
+  return dispatch => api.deleteMultiple(
+    new RequestParams({ sharedIds: entities.map(e => e.sharedId) })
+  )
   .then(() => {
     dispatch(notificationActions.notify('Deletion success', 'success'));
     dispatch(unselectAllDocuments());

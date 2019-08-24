@@ -4,7 +4,6 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import { enterLibrary, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import requestState from 'app/Library/helpers/requestState';
-import setReduxState from 'app/Library/helpers/setReduxState';
 import SearchButton from 'app/Library/components/SearchButton';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
@@ -27,13 +26,13 @@ export default class Library extends RouteHandler {
     );
   }
 
-  static requestState(params, _query = {}, globalResources) {
-    return requestState(params, _query, globalResources);
+  static async requestState(requestParams, globalResources) {
+    return requestState(requestParams, globalResources);
   }
 
-  setReduxState(state) {
-    setReduxState(state, this.context);
-  }
+  // setReduxState(state) {
+  //   setReduxState(state, this.context);
+  // }
 
   urlHasChanged(nextProps) {
     return nextProps.location.query.q !== this.props.location.query.q;

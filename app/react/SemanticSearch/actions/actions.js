@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import { actions } from 'app/BasicReducer';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import api from '../SemanticSearchAPI';
 
@@ -17,7 +18,8 @@ export function setEditSearchEntities(entities = []) {
 }
 
 export function editSearchEntities(searchId, args) {
-  return dispatch => api.getEntitiesMatchingFilters(searchId, args)
+  const requestParams = new RequestParams({ searchId, ...args });
+  return dispatch => api.getEntitiesMatchingFilters(requestParams)
   .then((response) => {
     dispatch(setEditSearchEntities(response));
   });
@@ -52,7 +54,7 @@ export function submitNewSearch(args) {
   const query = Object.assign({}, args, { searchTerm: '' }, { filters: sanitizeSearchFilters(args.filters) });
   const search = Object.assign({ searchTerm, query });
 
-  return dispatch => api.search(search)
+  return dispatch => api.search(new RequestParams(search))
   .then(() => dispatch(fetchSearches()));
 }
 
@@ -69,21 +71,21 @@ export function hideSemanticSearch() {
 }
 
 export function deleteSearch(searchId) {
-  return dispatch => api.deleteSearch(searchId)
+  return dispatch => api.deleteSearch(new RequestParams({ searchId }))
   .then(() => {
     dispatch(fetchSearches());
   });
 }
 
 export function stopSearch(searchId) {
-  return dispatch => api.stopSearch(searchId)
+  return dispatch => api.stopSearch(new RequestParams({ searchId }))
   .then(() => {
     dispatch(fetchSearches());
   });
 }
 
 export function resumeSearch(searchId) {
-  return dispatch => api.resumeSearch(searchId)
+  return dispatch => api.resumeSearch(new RequestParams({ searchId }))
   .then(() => {
     dispatch(fetchSearches());
   });
@@ -112,7 +114,8 @@ export function addSearchResults(newDocs) {
 }
 
 export function getSearch(searchId, args) {
-  return (dispatch, getState) => api.getSearch(searchId, args)
+  const requestParams = new RequestParams({ searchId, ...args });
+  return (dispatch, getState) => api.getSearch(requestParams)
   .then((search) => {
     dispatch(actions.set('semanticSearch/search', search));
     const selectedDoc = getState().semanticSearch.selectedDocument;
@@ -126,7 +129,8 @@ export function getSearch(searchId, args) {
 }
 
 export function getMoreSearchResults(searchId, args) {
-  return dispatch => api.getSearch(searchId, args)
+  const requestParams = new RequestParams({ searchId, ...args });
+  return dispatch => api.getSearch(requestParams)
   .then(search =>
     dispatch(actions.concatIn('semanticSearch/search', ['results'], search.results))
   );
