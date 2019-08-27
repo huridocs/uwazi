@@ -16,6 +16,7 @@ export default [
 { key: 'Add/edit translations', label: 'Add/edit translations' },
 { key: 'Admin', label: 'Admin' },
 { key: 'Advanced settings', label: 'Advanced settings' },
+{ key: 'Allowed Public Templates', label: 'Allowed Public Templates' },
 { key: 'Apply properties to documents/entities', label: 'Apply properties to documents/entities' },
 { key: 'Attachments', label: 'Attachments' },
 { key: 'Attachments', label: 'Attachments' },
