@@ -1,8 +1,4 @@
-const textFilter = (filter, path = 'metadata') => {
-  const match = { match: {} };
-  match.match[`${path}.${filter.name}`] = filter.value;
-  return match;
-};
+const textFilter = (filter, path = 'metadata') => ({ term: { [`${path}.${filter.name}.raw`]: filter.value } });
 
 const rangeFilter = (filter, path = 'metadata') => {
   const match = { range: {} };
