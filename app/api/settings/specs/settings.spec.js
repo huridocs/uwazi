@@ -28,12 +28,14 @@ describe('settings', () => {
       .catch(catchErrors(done));
     });
 
-    it('should return the newly created document', (done) => {
+    it('should return the updated settings', (done) => {
       const config = { site_name: 'New settings' };
 
       settings.save(config)
       .then((createdDocument) => {
         expect(createdDocument.site_name).toBe(config.site_name);
+        expect(createdDocument.allowedPublicTemplates[0]).toBe('id1');
+        expect(createdDocument.allowedPublicTemplates[1]).toBe('id2');
         done();
       })
       .catch(catchErrors(done));

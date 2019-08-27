@@ -24,6 +24,20 @@ Object {
       ],
       "type": "string",
     },
+    "allowedPublicTemplates": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
     "analyticsTrackingId": Object {
       "type": "string",
       "valids": Array [

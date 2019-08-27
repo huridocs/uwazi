@@ -9,7 +9,8 @@ export default {
       languages: [
         { key: 'es', label: 'Español', default: true },
         { key: 'en', label: 'English' }
-      ]
+      ],
+      allowedPublicTemplates: ['id1', 'id2']
     }
   ]
 };

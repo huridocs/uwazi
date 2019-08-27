@@ -17,6 +17,9 @@ export default (app) => {
       cookiepolicy: Joi.boolean(),
       mailerConfig: Joi.string().allow(''),
       publicFormDestination: Joi.string().allow(''),
+      allowedPublicTemplates: Joi.array().items(
+        Joi.string()
+      ),
       analyticsTrackingId: Joi.string().allow(''),
       matomoConfig: Joi.string().allow(''),
       dateFormat: Joi.string().allow(''),
