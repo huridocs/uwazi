@@ -173,7 +173,7 @@ const mainSearch = (query, language, user) => {
   let searchEntitiesbyTitle = Promise.resolve([]);
   let searchDictionariesByTitle = Promise.resolve([]);
   if (query.searchTerm) {
-    searchEntitiesbyTitle = entities.get({ $text: { $search: query.searchTerm }, language });
+    searchEntitiesbyTitle = entities.get({ $text: { $search: query.searchTerm }, language }, 'sharedId', { limit: 5 });
     const regexp = `.*${query.searchTerm}.*`;
     searchDictionariesByTitle = dictionariesModel.db.aggregate([
       { $match: { 'values.label': { $regex: regexp, $options: 'i' } } },
