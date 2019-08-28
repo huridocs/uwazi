@@ -13,20 +13,39 @@ describe('CollectionSettings', () => {
 
   beforeEach(() => {
     props = {
-      settings: { _id: 'id' },
+      settings: {
+        _id: 'id',
+        dateFormat: 'DD-MM-YYYY',
+        allowedPublicTemplates: ['existingId1', 'existingId2']
+      },
       notify: jasmine.createSpy('notify'),
-      setSettings: jasmine.createSpy('setSettings')
+      setSettings: jasmine.createSpy('setSettings'),
     };
     component = shallow(<CollectionSettings {...props} />);
   });
 
-  describe('updateSettings', () => {
-    beforeEach(() => {
-      spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
+  describe('constructor', () => {
+    it('should assign the initial state correctly', () => {
+      expect(component.state().dateSeparator).toBe('-');
+      expect(component.state().dateFormat).toBe(1);
+      expect(component.state().customLandingpage).toBe(false);
+      expect(component.state().allowedPublicTemplatesString).toBe('existingId1,existingId2');
     });
 
-    it('should sanitize the form data', () => {
-      const values = {
+    it('should not fail on missing values', () => {
+      delete props.settings.allowedPublicTemplates;
+      component = shallow(<CollectionSettings {...props} />);
+      expect(component.state().allowedPublicTemplatesString).toBe('');
+    });
+  });
+
+  describe('updateSettings', () => {
+    let values;
+    let expectedData;
+
+    beforeEach(() => {
+      spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
+      values = {
         _id: 'id',
         _rev: 'rev',
         site_name: 'Uwazi',
@@ -37,11 +56,11 @@ describe('CollectionSettings', () => {
         dateSeparator: '/',
         customLandingpage: false,
         matomoConfig: 'matomo',
-        private: false
+        private: false,
+        allowedPublicTemplatesString: 'id1,id2'
       };
-      component = shallow(<CollectionSettings {...props} />);
-      component.find(LocalForm).simulate('submit', values);
-      const expectedData = {
+
+      expectedData = {
         _id: 'id',
         _rev: 'rev',
         analyticsTrackingId: 'X-123-Y',
@@ -50,8 +69,25 @@ describe('CollectionSettings', () => {
         mailerConfig: 'config',
         matomoConfig: 'matomo',
         private: false,
-        site_name: 'Uwazi'
+        site_name: 'Uwazi',
+        allowedPublicTemplates: ['id1', 'id2']
       };
+
+      component = shallow(<CollectionSettings {...props} />);
+      component.find(LocalForm).simulate('submit', values);
+    });
+
+    it('should sanitize the form data', () => {
+      expect(SettingsAPI.save).toHaveBeenCalledWith(new RequestParams(expectedData));
+    });
+
+    it('should parse empty allowedPublicTemplates values as empty array', () => {
+      values.allowedPublicTemplatesString = '';
+      expectedData.allowedPublicTemplates = [];
+
+      component = shallow(<CollectionSettings {...props} />);
+      component.find(LocalForm).simulate('submit', values);
+
       expect(SettingsAPI.save).toHaveBeenCalledWith(new RequestParams(expectedData));
     });
   });

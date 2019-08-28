@@ -24,6 +24,20 @@ Object {
       ],
       "type": "string",
     },
+    "allowedPublicTemplates": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
     "analyticsTrackingId": Object {
       "type": "string",
       "valids": Array [
@@ -241,6 +255,12 @@ Object {
         "",
       ],
       "type": "string",
+    },
+    "publicFormDestination": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
     },
     "site_name": Object {
       "type": "string",
