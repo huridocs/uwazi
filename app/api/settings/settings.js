@@ -52,8 +52,9 @@ function removeTemplate(filters, templateId) {
 }
 
 export default {
-  get() {
-    return model.get().then(settings => settings[0] || {});
+  get(selectPrivateValues = false) {
+    const select = selectPrivateValues ? '+publicFormDestination' : '';
+    return model.get(null, select).then(settings => settings[0] || {});
   },
 
   async save(settings) {

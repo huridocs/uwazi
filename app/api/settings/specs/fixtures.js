@@ -5,10 +5,12 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
+      publicFormDestination: 'secret.place.io',
       languages: [
         { key: 'es', label: 'Español', default: true },
         { key: 'en', label: 'English' }
-      ]
+      ],
+      allowedPublicTemplates: ['id1', 'id2']
     }
   ]
 };

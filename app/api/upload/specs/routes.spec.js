@@ -7,7 +7,10 @@ import documents from 'api/documents';
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import relationships from 'api/relationships';
+import settingsModel from 'api/settings/settingsModel';
 import search from 'api/search/search';
+import request from 'supertest';
+import express from 'express';
 
 import fixtures, { entityId, entityEnId, templateId } from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -35,8 +38,7 @@ describe('upload routes', () => {
         }
       });
     });
-    routes[method](url, reqObject);
-    return promise;
+    return Promise.all([promise, routes[method](url, reqObject)]);
   };
 
   const deleteAllFiles = (cb) => {
@@ -394,7 +396,7 @@ describe('upload routes', () => {
         req = {
           language: 'es',
           headers: {},
-          body: { title: 'public submit' },
+          body: { title: 'public submit', template: templateId.toString() },
           files: [file, attachment],
           io: {},
           getCurrentSessionSockets: () => ({ sockets: [iosocket], emit: iosocket.emit })
@@ -413,6 +415,64 @@ describe('upload routes', () => {
       expect(newEntity.attachments[0].originalname).toBe('attachment-01.pdf');
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.file.filename}`))).toBe(true);
       expect(fs.existsSync(path.resolve(`${__dirname}/uploads/${newEntity.attachments[0].filename}`))).toBe(true);
+    });
+
+    it('should not create entity if settings has no allowedPublicTemplates option', async () => {
+      const [settingsObject] = await settingsModel.get();
+      delete settingsObject.allowedPublicTemplates;
+      await settingsModel.db.replaceOne({}, settingsObject);
+      try {
+        await routes.post('/api/public', req);
+        fail('should return error');
+      } catch (e) {
+        expect(e.message).toMatch(/unauthorized public template/i);
+        expect(e.code).toBe(403);
+      }
+      const res = await entities.get({ title: 'public submit' });
+      expect(res.length).toBe(0);
+    });
+
+    it('should not create entity if template is not whitelisted in allowedPublicTemplates setting', async () => {
+      req.body.template = 'unknownTemplate';
+      try {
+        await routes.post('/api/public', req);
+        fail('should return error');
+      } catch (e) {
+        expect(e.message).toMatch(/unauthorized public template/i);
+        expect(e.code).toBe(403);
+      }
+      const res = await entities.get({ title: 'public submit' });
+      expect(res.length).toBe(0);
+    });
+  });
+
+  describe('/remotepublic', () => {
+    let app;
+    let remoteApp;
+    beforeEach(() => {
+      app = express();
+      app.use((_req, res, next) => {
+        _req.session = { remotecookie: 'connect.ssid: 12n32ndi23j4hsj;' }; //eslint-disable-line
+        next();
+      });
+      uploadRoutes(app);
+    });
+
+    it('should return the captcha and store its value in session', (done) => {
+      remoteApp = express();
+      remoteApp.post('/api/public', (_req, res) => {
+        expect(_req.headers.cookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
+        res.json('ok');
+      });
+
+      const remoteServer = remoteApp.listen(54321, async () => {
+        await request(app)
+        .post('/api/remotepublic')
+        .send({ title: 'Title' })
+        .expect(200);
+        remoteServer.close();
+        done();
+      });
     });
   });
 

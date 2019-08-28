@@ -1,7 +1,7 @@
-import settingsRoutes from 'api/settings/routes.js';
 import instrumentRoutes from 'api/utils/instrumentRoutes';
 import settings from 'api/settings/settings';
 import { catchErrors } from 'api/utils/jasmineHelpers';
+import settingsRoutes from '../routes.js';
 
 describe('relationtypes routes', () => {
   let routes;

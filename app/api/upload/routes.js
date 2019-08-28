@@ -11,8 +11,10 @@ import { saveSchema } from 'api/entities/endpointSchema';
 import { generateFileName } from 'api/utils/files';
 import fs from 'fs';
 import path from 'path';
+import proxy from 'express-http-proxy';
+import settings from 'api/settings';
 import configPaths from '../config/paths';
-import { validation, handleError } from '../utils';
+import { validation, handleError, createError } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import captchaAuthorization from '../auth/captchaMiddleware';
 import uploads from './uploads';
@@ -27,18 +29,19 @@ const getDocuments = (sharedId, allLanguages, language) =>
     ...(!allLanguages && { language })
   });
 
-const storeFile = (file, cb) => {
+const storeFile = file => new Promise((resolve, reject) => {
   const filename = generateFileName(file);
   const destination = configPaths.uploadedDocuments;
   const pathToFile = path.join(destination, filename);
   fs.appendFile(pathToFile, file.buffer, (err) => {
     if (err) {
-      throw err;
+      reject(err);
     }
-    cb(Object.assign(file, { filename, destination }));
+    resolve(Object.assign(file, { filename, destination }));
   });
-};
+});
 
+/*eslint-disable max-statements*/
 export default (app) => {
   const upload = multer({ storage });
 
@@ -83,20 +86,26 @@ export default (app) => {
     captchaAuthorization(),
     (req, res, next) => { req.body = JSON.parse(req.body.entity); return next(); },
     validation.validateRequest(saveSchema),
-    async (req, res) => {
+    async (req, res, next) => {
       const entity = req.body;
+      const { allowedPublicTemplates } = await settings.get(true);
+      if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
+        next(createError('Unauthorized public template', 403));
+        return;
+      }
+
       entity.attachments = [];
       if (req.files.length) {
-        req.files.forEach((file) => {
-          if (file.fieldname.includes('attachment')) {
-            storeFile(file, _file => entity.attachments.push(_file));
-          }
-        });
+        await Promise.all(
+          req.files
+          .filter(file => file.fieldname.includes('attachment'))
+          .map(file => storeFile(file).then(_file => entity.attachments.push(_file)))
+        );
       }
       const newEntity = await entities.save(entity, { user: {}, language: req.language });
       const file = req.files.find(_file => _file.fieldname.includes('file'));
       if (file) {
-        storeFile(file, async (_file) => {
+        storeFile(file).then(async (_file) => {
           const newEntities = await entities.getAllLanguages(newEntity.sharedId);
           await uploadFile(newEntities, _file).start();
           await entities.indexEntities({ sharedId: newEntity.sharedId }, '+fullText');
@@ -104,7 +113,27 @@ export default (app) => {
         });
       }
       res.json(newEntity);
-    });
+    }
+  );
+
+  app.post(
+    '/api/remotepublic',
+    async (req, res, next) => {
+      const { publicFormDestination } = await settings.get(true);
+      proxy(publicFormDestination, {
+        limit: '20mb',
+        proxyReqPathResolver() {
+          return '/api/public';
+        },
+        proxyReqOptDecorator(proxyReqOpts, srcReq) {
+          const options = Object.assign({}, proxyReqOpts);
+          options.headers.Cookie = srcReq.session.remotecookie;
+          return options;
+        }
+      })(req, res, next);
+    }
+
+  );
 
   app.post(
     '/api/import',

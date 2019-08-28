@@ -141,30 +141,81 @@ describe('uploadsActions', () => {
     });
 
     describe('publicSubmit', () => {
-      it('should send the form data and upload the files', (done) => {
-        const mockUpload = mockSuperAgent(`${APIURL}entities/public`);
-        const store = mockStore({});
-        const file = getMockFile();
+      let store;
+      let file;
+      let formData;
 
-        const formData = {
+      beforeEach(() => {
+        store = mockStore({});
+        file = getMockFile();
+
+        formData = {
           title: 'test',
           metadata: { prop: 'value' },
+          template: '123',
           captcha: 23,
           file,
           attachments: [file, file]
         };
+      });
+
+      it('should send the form data and upload the files', (done) => {
+        const mockUpload = mockSuperAgent(`${APIURL}public`);
         store.dispatch(actions.publicSubmit(formData))
         .then(() => {
           delete formData.captcha;
-          expect(mockUpload.field).toHaveBeenCalledWith('entity', JSON.stringify(formData));
+          expect(mockUpload.field).toHaveBeenCalledWith('entity', JSON.stringify({ title: 'test', template: '123', metadata: { prop: 'value' } }));
           expect(mockUpload.field).toHaveBeenCalledWith('captcha', 23);
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[1]', file);
+          expect(superagent.post).toHaveBeenCalledWith(`${APIURL}public`);
           done();
         });
 
         emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok', status: 200 });
+      });
+
+      it('should send data to remotepublic if remote is set to true', (done) => {
+        const mockUpload = mockSuperAgent(`${APIURL}remotepublic`);
+
+        store.dispatch(actions.publicSubmit(formData, true))
+        .then(() => {
+          expect(superagent.post).toHaveBeenCalledWith(`${APIURL}remotepublic`);
+          done();
+        });
+
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: 'ok', status: 200 });
+      });
+
+      it('should return promise that will be resolved after upload is complete', (done) => {
+        const mockUpload = mockSuperAgent(`${APIURL}public`);
+        jest.spyOn(store, 'dispatch');
+        store.dispatch(actions.publicSubmit(formData))
+        .then((progress) => {
+          progress.promise.then((res) => {
+            expect(res.status).toBe(200);
+            expect(res.body).toEqual({ ok: 1 });
+            done();
+          });
+        });
+
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ test: 'test' }), body: { ok: 1 }, status: 200 });
+      });
+
+      it('should return promise that rejects if upload completes with error status code', (done) => {
+        const mockUpload = mockSuperAgent(`${APIURL}public`);
+        jest.spyOn(store, 'dispatch');
+        store.dispatch(actions.publicSubmit(formData))
+        .then((progress) => {
+          progress.promise.catch((res) => {
+            expect(res.status).toBe(403);
+            expect(res.body).toEqual({ error: 'error' });
+            done();
+          });
+        });
+
+        emitProgressAndResponse(mockUpload, { text: JSON.stringify({ error: 'error' }), body: { error: 'error' }, status: 403 });
       });
     });
 

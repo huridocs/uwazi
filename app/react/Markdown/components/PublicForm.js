@@ -70,27 +70,34 @@ class PublicForm extends Component {
 
   handleSubmit(_values) {
     const values = { ..._values };
-    const { submit, template } = this.props;
+    const { submit, template, remote } = this.props;
     values.file = _values.file ? _values.file[0] : undefined;
     values.template = template.get('_id');
 
-    this.setState({ submiting: true });
-    submit(values).then(() => {
-      this.resetForm();
-      this.setState({ submiting: false });
-      this.refreshCaptcha();
+    submit(values, remote).then((uploadCompletePromise) => {
+      this.setState({ submiting: true });
+      return uploadCompletePromise.promise.then(() => {
+        this.setState({ submiting: false });
+        this.resetForm();
+        this.refreshCaptcha();
+      }).catch(() => {
+        this.setState({ submiting: false });
+        this.refreshCaptcha();
+      });
     }).catch(() => {
       this.setState({ submiting: false });
+      this.refreshCaptcha();
     });
   }
 
   renderCaptcha() {
+    const { remote } = this.props;
     return (
       <FormGroup key="captcha" model=".captcha">
         <ul className="search__filter">
           <li><label><Translate>Captcha</Translate><span className="required">*</span></label></li>
           <li className="wide">
-            <Captcha refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
+            <Captcha remote={remote} refresh={(refresh) => { this.refreshCaptcha = refresh; }} model=".captcha"/>
           </li>
         </ul>
       </FormGroup>
@@ -100,25 +107,24 @@ class PublicForm extends Component {
   render() {
     const { template, thesauris, file, attachments } = this.props;
     const { submiting } = this.state;
-    if (submiting) {
-      return PublicForm.renderSubmitState();
-    }
     return (
-      <div className="public-form">
-        <LocalForm
-          validators={this.validators}
-          model="publicform"
-          getDispatch={dispatch => this.attachDispatch(dispatch)}
-          onSubmit={this.handleSubmit}
-        >
-          {PublicForm.renderTitle()}
-          <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
-          {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
-          {attachments ? PublicForm.renderFileField('attachments', { multiple: 'multiple' }) : false}
-          {this.renderCaptcha()}
-          <input type="submit" className="btn btn-success" value="Submit"/>
-        </LocalForm>
-      </div>
+      <LocalForm
+        validators={this.validators}
+        model="publicform"
+        getDispatch={dispatch => this.attachDispatch(dispatch)}
+        onSubmit={this.handleSubmit}
+      >
+        {submiting ? PublicForm.renderSubmitState() : (
+          <div className="public-form">
+            {PublicForm.renderTitle()}
+            <MetadataFormFields thesauris={thesauris} model="publicform" template={template} />
+            {file ? PublicForm.renderFileField('file', { accept: '.pdf' }) : false}
+            {attachments ? PublicForm.renderFileField('attachments', { multiple: 'multiple' }) : false}
+            {this.renderCaptcha()}
+            <input type="submit" className="btn btn-success" value="Submit"/>
+          </div>
+        )}
+      </LocalForm>
     );
   }
 }
@@ -126,6 +132,7 @@ class PublicForm extends Component {
 PublicForm.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
+  remote: PropTypes.bool.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
@@ -135,6 +142,7 @@ export const mapStateToProps = (state, props) => ({
     template: state.templates.find(template => template.get('_id') === props.template),
     thesauris: state.thesauris,
     file: props.file !== undefined,
+    remote: props.remote !== undefined,
     attachments: props.attachments !== undefined,
 });
 

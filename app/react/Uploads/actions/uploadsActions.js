@@ -94,42 +94,42 @@ export function upload(docId, file, endpoint = 'upload') {
   });
 }
 
-export function publicSubmit(data) {
-  return dispatch => new Promise((resolve, reject) => {
-    const request = superagent.post(`${APIURL}public`)
+export function publicSubmit(data, remote = false) {
+  return dispatch => new Promise((resolve) => {
+    const request = superagent.post(remote ? `${APIURL}remotepublic` : `${APIURL}public`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
     .field('captcha', data.captcha);
-    delete data.captcha;
 
     if (data.file) {
       request.attach('file', data.file);
-      delete data.file;
     }
 
     if (data.attachments) {
       data.attachments.forEach((attachment, index) => {
         request.attach(`attachments[${index}]`, attachment);
-        delete data.attachments;
       });
     }
-
-    request.field('entity', JSON.stringify(data));
-
+    request.field('entity', JSON.stringify(Object.assign({}, { title: data.title, template: data.template, metadata: data.metadata })));
+    let completionResolve;
+    let completionReject;
+    const uploadCompletePromise = new Promise((_resolve, _reject) => { completionResolve = _resolve; completionReject = _reject; });
     request
+    .on('progress', () => {
+      resolve({ promise: uploadCompletePromise });
+    })
     .on('response', (response) => {
       if (response.status === 200) {
         dispatch(notificationActions.notify('Success', 'success'));
-        resolve(response);
+        completionResolve(response);
         return;
       }
-
-      reject(response);
       if (response.status === 403) {
-        dispatch(notificationActions.notify('Captcha error', 'danger'));
+        dispatch(notificationActions.notify(response.body.error, 'danger'));
+        completionReject(response);
         return;
       }
-
+      completionReject(response);
       dispatch(notificationActions.notify('An error has ocurred', 'danger'));
     })
     .end();
