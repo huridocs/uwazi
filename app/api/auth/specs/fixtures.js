@@ -9,5 +9,8 @@ export default {
   users: [
     { password: oldPassword, username: 'oldUser', email: 'old@email.com' },
     { password: newPassword, username: 'newUser', email: 'new@email.com' },
+  ],
+  settings: [
+    { publicFormDestination: 'http://secret.place.io' }
   ]
 };
