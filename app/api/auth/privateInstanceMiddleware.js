@@ -3,7 +3,7 @@ import settings from '../settings';
 const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/'];
 const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));
 
-const allowedApiCalls = ['/api/recoverpassword', '/api/resetpassword', '/api/unlockaccount'];
+const allowedApiCalls = ['/api/recoverpassword', '/api/resetpassword', '/api/unlockaccount', '/api/public'];
 const allowedApiMatch = new RegExp(allowedApiCalls.join('|'));
 
 const forbiddenRoutes = ['/api/', '/uploaded_documents/'];

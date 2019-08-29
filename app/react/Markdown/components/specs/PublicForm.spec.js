@@ -12,7 +12,7 @@ describe('PublicForm', () => {
   let request;
 
   beforeEach(() => {
-    request = Promise.resolve('ok');
+    request = Promise.resolve({ promise: Promise.resolve('ok') });
     submit = jasmine.createSpy('submit').and.returnValue(request);
   });
 
@@ -22,7 +22,8 @@ describe('PublicForm', () => {
       thesauris: Immutable.fromJS([]),
       file: false,
       attachments: false,
-      submit
+      submit,
+      remote: false,
     };
     const mappedProps = { ...props, ...customProps };
     component = shallow(<PublicForm.WrappedComponent {...mappedProps}/>);
@@ -36,6 +37,11 @@ describe('PublicForm', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('should enable remote captcha', () => {
+    render({ remote: true });
+    expect(component).toMatchSnapshot();
+  });
+
   it('should render a form with file and attachments', () => {
     render({ file: true, attachments: true });
     expect(component).toMatchSnapshot();
@@ -44,16 +50,36 @@ describe('PublicForm', () => {
   it('should submit the values', () => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test', template: '123' });
+    expect(props.submit).toHaveBeenCalledWith({ file: undefined, title: 'test', template: '123' }, false);
   });
 
   it('should refresh the captcha and clear the form after submit', (done) => {
     render();
     component.find(LocalForm).simulate('submit', { title: 'test' });
-    request.then(() => {
-      expect(instance.formDispatch).toHaveBeenCalledWith({ model: 'publicform', type: 'rrf/reset' });
-      expect(instance.refreshCaptcha).toHaveBeenCalled();
-      done();
+    request.then((uploadCompletePromise) => {
+      uploadCompletePromise.promise.then(() => {
+        expect(instance.formDispatch).toHaveBeenCalledWith({ model: 'publicform', type: 'rrf/reset' });
+        expect(instance.refreshCaptcha).toHaveBeenCalled();
+        done();
+      });
+    });
+  });
+
+  it('should refresh captcha and NOT clear the form on submission error', (done) => {
+    request = new Promise((resolve) => {
+      resolve({ promise: Promise.reject() });
+    });
+    submit = jasmine.createSpy('submit').and.returnValue(request);
+    render();
+    component.find(LocalForm).simulate('submit', { title: 'test' });
+    request.then((uploadCompletePromise) => {
+      uploadCompletePromise.promise
+      .then(() => fail('should throw error'))
+      .catch(() => {
+        expect(instance.formDispatch).not.toHaveBeenCalledWith();
+        expect(instance.refreshCaptcha).toHaveBeenCalled();
+        done();
+      });
     });
   });
 });
