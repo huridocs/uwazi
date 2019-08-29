@@ -1,6 +1,5 @@
 import db from 'api/utils/testing_db';
 import activitylog from '../activitylog';
-import model from '../activitylogModel';
 import fixtures from './fixtures';
 
 describe('activitylog', () => {
@@ -13,10 +12,10 @@ describe('activitylog', () => {
   });
 
   describe('save()', () => {
-    it('should save the entry', () => {
-      spyOn(model, 'save');
-      activitylog.save({ method: 'POST', url: '/api/entities' });
-      expect(model.save).toHaveBeenCalledWith({ method: 'POST', url: '/api/entities' });
+    it('should save the entry', async () => {
+      await activitylog.save({ method: 'DELETE', url: '/api/thesauri' });
+      const [log] = await activitylog.get({ url: '/api/thesauri' });
+      expect(log.method).toBe('DELETE');
     });
   });
 
@@ -35,7 +34,7 @@ describe('activitylog', () => {
     it('should filter by time', async () => {
       const entries = await activitylog.get({ time: { from: 1560856543, to: 1561029343 } });
       expect(entries.length).toBe(1);
-      expect(entries[0].method).toBe('GET');
+      expect(entries[0].method).toBe('PUT');
     });
 
     it('should filter by url', async () => {

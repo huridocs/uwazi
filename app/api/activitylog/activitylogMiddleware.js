@@ -1,7 +1,6 @@
 import activitylog from './activitylog';
 
 const ignorelist = [
-  'GET/api/activitylog',
   'POST/api/users',
   'POST/api/login'
 ];
@@ -10,7 +9,7 @@ export default (req, res, next) => {
   const { url, method, params, query, body, user = {} } = req;
   const baseurl = url.split('?').shift();
 
-  if (!ignorelist.includes(method + baseurl) && baseurl.includes('/api/')) {
+  if (method !== 'GET' && !ignorelist.includes(method + baseurl) && baseurl.includes('/api/')) {
     const time = Date.now();
     const entry = {
       url: baseurl,
