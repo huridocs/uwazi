@@ -5,24 +5,7 @@ import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
 import t from 'app/I18N/t';
 
-const getOption = (thesauri, id) => {
-  let option;
-  thesauri.get('values').forEach((value) => {
-    if (value.get('id') === id) {
-      option = value;
-    }
-
-    if (value.get('values')) {
-      value.get('values').forEach((subValue) => {
-        if (subValue.get('id') === id) {
-          option = subValue;
-        }
-      });
-    }
-  });
-
-  return option;
-};
+const getOption = (thesauri, id) => thesauri.get('values').get(id);
 
 const addSortedProperty = (templates, sortedProperty) => templates.reduce((_property, template) => {
   if (!template.get('properties')) {
