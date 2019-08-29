@@ -3,7 +3,7 @@ import instanceModel from 'api/odm';
 
 const pagesSchema = new mongoose.Schema({
   method: String,
-  time: Date,
+  time: Number,
   url: String,
   query: String,
   params: String,
