@@ -5,18 +5,21 @@ import backend from 'fetch-mock';
 import Activitylog from '../Activitylog.js';
 
 describe('Activitylog', () => {
-  let props;
   let component;
+  let context;
+  let props;
 
   beforeEach(() => {
+    context = { store: { getState: () => ({}) } };
+    backend.restore();
     backend
     .get(`${APIURL}activitylog`, { body: JSON.stringify([
-      { rul: '/api/entities' }
+      { url: '/api/entities' }
     ]) });
   });
 
   const render = () => {
-    component = shallow(<Activitylog {...props}/>);
+    component = shallow(<Activitylog {...props}/>, { context });
   };
 
   it('should render an ActivitylogForm and ActivitylogList', () => {
@@ -25,7 +28,7 @@ describe('Activitylog', () => {
   });
 
   it('should request the activitylog', async () => {
-    const state = await Activitylog.requestState();
-    expect(state).toEqual({ activitylog: [{ rul: '/api/entities' }] });
+    const actions = await Activitylog.requestState();
+    expect(actions).toMatchSnapshot();
   });
 });

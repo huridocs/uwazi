@@ -8,3 +8,16 @@ exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = 
   <Connect(ActivityLogList) />
 </div>
 `;
+
+exports[`Activitylog should request the activitylog 1`] = `
+Array [
+  Object {
+    "type": "activitylog/SET",
+    "value": Array [
+      Object {
+        "url": "/api/entities",
+      },
+    ],
+  },
+]
+`;

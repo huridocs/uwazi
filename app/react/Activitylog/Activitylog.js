@@ -8,13 +8,11 @@ import ActivitylogForm from './components/ActivitylogForm';
 import ActivitylogList from './components/ActivitylogList';
 
 export class ActivityLog extends RouteHandler {
-  static requestState() {
-    return api.get('activitylog')
-    .then(response => ({ activitylog: response.json }));
-  }
-
-  setReduxState(state) {
-    this.context.store.dispatch(actions.set('activitylog', state.activitylog));
+  static async requestState(requestParams) {
+    const logs = await api.get('activitylog', requestParams);
+    return [
+      actions.set('activitylog', logs.json)
+    ];
   }
 
   render() {
