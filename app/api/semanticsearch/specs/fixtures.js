@@ -4,8 +4,10 @@ const search1Id = db.id();
 const search2Id = db.id();
 const search3Id = db.id();
 const searchIdForFilters = db.id();
+const doc1ObjectId = db.id();
 const doc1Id = 'doc1';
 const docWithoutTextId = 'docWithoutText';
+const template1Id = db.id();
 
 export default {
   semanticsearches: [
@@ -49,11 +51,11 @@ export default {
   ],
   entities: [
     {
-      _id: db.id(), sharedId: doc1Id, language: 'en',
+      _id: doc1ObjectId, sharedId: doc1Id, language: 'en',
       fullText: { 1: 'page 1', 2: 'page 2' }
     },
     {
-      _id: db.id(), sharedId: docWithoutTextId, language: 'en'
+      _id: db.id(), sharedId: docWithoutTextId, language: 'en',
     },
     {
       _id: db.id(), sharedId: 'doc2', language: 'en',
@@ -105,6 +107,17 @@ export default {
       sharedId: '5',
       template: 't5',
       language: 'es'
+    }
+  ],
+  templates: [
+    {
+      _id: template1Id,
+      commonProperties: [],
+      properties: [
+        { name: 'description', type: 'markdown' },
+        { name: 'code', type: 'text' },
+        { name: 'bio', type: 'markdown' }
+      ]
     }
   ],
   semanticsearchresults: [
@@ -185,6 +198,8 @@ export {
   search2Id,
   search3Id,
   searchIdForFilters,
+  doc1ObjectId,
   doc1Id,
-  docWithoutTextId
+  docWithoutTextId,
+  template1Id
 };

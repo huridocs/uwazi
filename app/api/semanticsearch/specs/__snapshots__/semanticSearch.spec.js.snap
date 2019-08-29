@@ -153,12 +153,12 @@ Array [
 exports[`semanticSearch processDocument should save the results of the document sorted by score in descending order, and compute average score 1`] = `
 Array [
   Object {
-    "page": 2,
+    "page": "2",
     "score": 0.6,
     "text": "page 2",
   },
   Object {
-    "page": 1,
+    "page": "1",
     "score": 0.2,
     "text": "page 1",
   },

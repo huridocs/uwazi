@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -15,6 +16,28 @@ import { TemplateLabel, DocumentLanguage } from 'app/Layout';
 const findResultsAboveThreshold = (results, threshold) => {
   const boundingIndex = results.findIndex(({ score }) => score < threshold);
   return boundingIndex >= 0 ? results.slice(0, boundingIndex) : results;
+};
+
+const getSnippetsFromResults = (results, template) => {
+  const snippets = results.reduce((_memo, item) => {
+    const memo = _memo;
+    const text = `${item.text} (${(item.score * 100).toFixed(2)}%)`;
+    memo.count += 1;
+    if (isNaN(Number(item.page))) {
+      const field = template.get('properties').find(p => p.get('name') === item.page).get('label');
+      memo.metadata[field] = (memo.metadata[field] || []).concat([text]);
+      return memo;
+    }
+    memo.fullText.push({
+      page: Number(item.page),
+      text
+    });
+    return memo;
+  }, { count: 0, metadata: {}, fullText: [] });
+
+  snippets.metadata = Object.keys(snippets.metadata)
+  .map(field => ({ field, texts: snippets.metadata[field] }));
+  return snippets;
 };
 
 export class DocumentResults extends Component {
@@ -55,16 +78,15 @@ export class DocumentResults extends Component {
   }
 
   render() {
-    const { doc, threshold } = this.props;
+    const { doc, threshold, template } = this.props;
+
     if (!doc.semanticSearch) {
       return false;
     }
     const filteredResults = findResultsAboveThreshold(doc.semanticSearch.results, threshold);
-    const snippetsToRender = filteredResults.map(s => Object.assign(
-      {}, s, { text: `${s.text} (${(s.score * 100).toFixed(2)}%)` })
-    );
-    const snippets = Immutable.fromJS({ count: snippetsToRender.length, metadata: [], fullText: snippetsToRender });
+    const snippets = Immutable.fromJS(getSnippetsFromResults(filteredResults, template));
     const documentViewUrl = doc.file ? `/document/${doc.sharedId}` : `/entity/${doc.sharedId}`;
+
     return (
       <React.Fragment>
         <div className="view">
@@ -80,11 +102,11 @@ export class DocumentResults extends Component {
           </div>
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
-            <dt><Translate>Sentences above threshold</Translate></dt>
+            <dt><Translate>Number of sentences above threshold</Translate></dt>
             <dd>{ filteredResults.length }</dd>
           </dl>
           <dl className="metadata-type-numeric">
-            <dt><Translate>% of document above threshold</Translate></dt>
+            <dt><Translate>% of sentences above threshold</Translate></dt>
             <dd>{ (filteredResults.length / doc.semanticSearch.totalResults * 100).toFixed(2) }%</dd>
           </dl>
         </div>
@@ -94,14 +116,20 @@ export class DocumentResults extends Component {
   }
 }
 
+DocumentResults.defaultProps = {
+  template: undefined
+};
+
 DocumentResults.propTypes = {
   doc: PropTypes.shape({ sharedId: PropTypes.string }).isRequired,
   threshold: PropTypes.number.isRequired,
   selectSnippet: PropTypes.func.isRequired,
+  template: PropTypes.instanceOf(Immutable.Map)
 };
 
-const mapStateToProps = ({ semanticSearch }) => ({
-  threshold: semanticSearch.resultsFilters.threshold
+const mapStateToProps = ({ semanticSearch, templates }) => ({
+  threshold: semanticSearch.resultsFilters.threshold,
+  template: templates.find(tpl => tpl.get('_id') === semanticSearch.selectedDocument.get('template'))
 });
 
 

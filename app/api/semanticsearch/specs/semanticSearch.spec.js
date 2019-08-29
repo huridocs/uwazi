@@ -7,7 +7,7 @@ import resultsModel from '../resultsModel';
 import api from '../api';
 import * as helpers from '../helpers';
 
-import fixtures, { search1Id, search2Id, search3Id, searchIdForFilters, doc1Id, docWithoutTextId } from './fixtures';
+import fixtures, { search1Id, search2Id, search3Id, searchIdForFilters, doc1Id, doc1ObjectId, docWithoutTextId } from './fixtures';
 import { createError } from '../../utils';
 
 describe('semanticSearch', () => {
@@ -50,10 +50,23 @@ describe('semanticSearch', () => {
         { page: 2, text: 'page 2', score: 0.6 }
       ];
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);
+      jest.spyOn(helpers, 'extractDocumentContent').mockResolvedValue({
+        1: 'page 1',
+        2: 'page 2'
+      });
       api.processDocument.mockClear();
+    });
+    afterEach(() => {
+      helpers.extractDocumentContent.mockRestore();
     });
     it('should send document to semantic search api for processing', async () => {
       await semanticSearch.processDocument(search1Id, 'legal', doc1Id, 'en');
+      expect(helpers.extractDocumentContent).toHaveBeenCalledWith({
+        _id: doc1ObjectId,
+        sharedId: doc1Id,
+        fullText: { 1: 'page 1', 2: 'page 2' },
+        language: 'en'
+      });
       expect(api.processDocument).toHaveBeenCalledWith({
         searchTerm: 'legal',
         contents: {
@@ -78,8 +91,9 @@ describe('semanticSearch', () => {
         .map(({ page, text, score }) => ({ page, text, score }))
       ).toMatchSnapshot();
     });
-    describe('if document has no fullText', () => {
+    describe('if document has no fullText or rich text fields', () => {
       it('should mark as completed without processing', async () => {
+        jest.spyOn(helpers, 'extractDocumentContent').mockResolvedValue({});
         await semanticSearch.processDocument(search1Id, 'legal', docWithoutTextId, 'en');
         expect(api.processDocument).not.toHaveBeenCalled();
         const theSearch = await model.getById(search1Id);
@@ -93,8 +107,8 @@ describe('semanticSearch', () => {
 
   describe('processSearchLimit', () => {
     const expectedResults = [
-      { page: 1, text: 'page 1', score: 0.6 },
-      { page: 2, text: 'page 2', score: 0.2 }
+      { page: '1', text: 'page 1', score: 0.6 },
+      { page: '2', text: 'page 2', score: 0.2 }
     ];
     beforeEach(() => {
       jest.spyOn(api, 'processDocument').mockResolvedValue(expectedResults);

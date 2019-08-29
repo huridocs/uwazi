@@ -3,7 +3,7 @@ import { search } from '../../search';
 import * as helpers from '../helpers';
 import model from '../model';
 import resultsModel from '../resultsModel';
-import fixtures, { search2Id } from './fixtures';
+import fixtures, { search2Id, template1Id } from './fixtures';
 
 describe('semanticSearch helpers', () => {
   beforeEach((done) => {
@@ -60,7 +60,7 @@ describe('semanticSearch helpers', () => {
         );
       });
 
-      it('should return only document ids of documents with files', async () => {
+      it('should return documents from search results', async () => {
         jest.spyOn(search, 'search').mockResolvedValue({
           rows: [
             { sharedId: 'doc1', file: {} },
@@ -69,7 +69,7 @@ describe('semanticSearch helpers', () => {
           ]
         });
         const res = await getSearchDocs();
-        expect(res).toEqual(['doc1', 'doc3']);
+        expect(res).toEqual(['doc1', 'doc2', 'doc3']);
       });
     });
   });
@@ -86,7 +86,7 @@ describe('semanticSearch helpers', () => {
     const areResultsEqual = (a, b) => a.text === b.text && a.page === b.page && a.score === b.score;
 
     it('should set the results of the specified document sorted by higher score', async () => {
-      const results = [{ page: 10, text: 't1', score: 0.2 }, { page: 20, text: 't2', score: 0.6 }];
+      const results = [{ page: '10', text: 't1', score: 0.2 }, { page: '20', text: 't2', score: 0.6 }];
       const searchId = db.id();
       await helpers.setSearchDocumentResults(searchId, 'doc1', results);
       const res = await resultsModel.db.findOne({ searchId, sharedId: 'doc1' });
@@ -94,6 +94,70 @@ describe('semanticSearch helpers', () => {
       expect(areResultsEqual(res.results[1], results[0])).toBe(true);
       expect(res.averageScore).toBe(0.4);
       expect(res.status).toBe('completed');
+    });
+  });
+
+  describe('extractDocumentContent', () => {
+    let doc;
+    beforeEach(() => {
+      doc = {
+        template: template1Id,
+        fullText: { 1: 'page 1', 2: 'page 2' },
+        metadata: {
+          code: 'code',
+          description: 'a description',
+          bio: 'a bio'
+        }
+      };
+    });
+    it('should return content from fullText and rich text fields grouped by page or field name', async () => {
+      const contents = await helpers.extractDocumentContent(doc);
+      expect(contents).toEqual({
+        1: 'page 1',
+        2: 'page 2',
+        description: 'a description',
+        bio: 'a bio'
+      });
+    });
+
+    it('should strip page annotations from fullText content', async () => {
+      doc.fullText = { 1: '[[1]]page [[1]]1', 2: 'page[[2]] 2' };
+      const contents = await helpers.extractDocumentContent(doc);
+      expect(contents['1']).toEqual('page 1');
+      expect(contents['2']).toEqual('page 2');
+    });
+
+    it('should return metadata results when there is no full text', async () => {
+      delete doc.fullText;
+      const contents = await helpers.extractDocumentContent(doc);
+      expect(contents).toEqual({
+        description: 'a description',
+        bio: 'a bio'
+      });
+    });
+
+    it('should return full text results when there is no metadata', async () => {
+      delete doc.metadata;
+      let contents = await helpers.extractDocumentContent(doc);
+      expect(contents).toEqual({
+        1: 'page 1',
+        2: 'page 2',
+      });
+
+      doc.metadata = { code: 'code' };
+      contents = await helpers.extractDocumentContent(doc);
+      expect(contents).toEqual({
+        1: 'page 1',
+        2: 'page 2',
+      });
+    });
+
+    it('should return empty object if there is no full text or rich text fields', async () => {
+      delete doc.fullText;
+      delete doc.metadata;
+
+      const contents = await helpers.extractDocumentContent(doc);
+      expect(contents).toEqual({});
     });
   });
 });

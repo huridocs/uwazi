@@ -9,7 +9,12 @@ import documentsModel from '../documents';
 import workers from './workerManager';
 import { createError } from '../utils';
 import { PENDING, COMPLETED, PROCESSING, IN_PROGRESS, STOPPED } from './statuses';
-import { getSearchDocuments, removePageAnnotations, updateSearchDocumentStatus, setSearchDocumentResults } from './helpers';
+import {
+  getSearchDocuments,
+  updateSearchDocumentStatus,
+  setSearchDocumentResults,
+  extractDocumentContent
+} from './helpers';
 
 const SEARCH_BATCH_SIZE = 5;
 
@@ -17,18 +22,16 @@ const eachLimitAsync = promisify(async.eachLimit);
 
 const processDocument = async (searchId, searchTerm, sharedId, language) => {
   const [doc] = await documentsModel.get({ sharedId, language }, '+fullText');
-  const { fullText } = doc;
 
   await updateSearchDocumentStatus(searchId, sharedId, PROCESSING);
-  if (!fullText) {
+  const contents = await extractDocumentContent(doc);
+  if (!Object.keys(contents).length) {
     return updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
   }
-  Object.keys(fullText).forEach((page) => {
-    fullText[page] = removePageAnnotations(fullText[page]);
-  });
+
   const results = await api.processDocument({
     searchTerm,
-    contents: fullText
+    contents
   });
   const savedResults = await setSearchDocumentResults(searchId, sharedId, results);
   await updateSearchDocumentStatus(searchId, sharedId, COMPLETED);
