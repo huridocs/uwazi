@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { validateRequest } from 'api/utils';
+import { validation } from '../utils';
 
 import needsAuthorization from '../auth/authMiddleware';
 import activitylog from './activitylog';
@@ -11,7 +11,7 @@ export default (app) => {
 
     needsAuthorization(),
 
-    validateRequest(Joi.object().keys({
+    validation.validateRequest(Joi.object().keys({
       user: Joi.objectId(),
       username: Joi.string(),
       time: Joi.object().keys({

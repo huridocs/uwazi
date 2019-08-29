@@ -2,10 +2,47 @@
   overflow: auto;
 }
 
+.activity-log-list .table > thead > tr > th,
+.activity-log-list .table > tbody > tr > td {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.activity-log-list .table > tbody > tr.activitylog-beautified {
+  font-size: 105%;
+}
+
+.activity-log-list .table > tbody > tr.activitylog-raw {
+  font-size: 90%;
+}
+
 .activity-log-form {
   padding: 20px;
 }
 
 .tdbody, .tdquery {
   word-break: break-word;
+}
+
+.activitylog-description {
+  width: 100%;
+}
+
+.activity-log-list .table > tbody > tr > td.activitylog-time {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.activitylog-prefix::after {
+  content: ":";
+}
+
+.activitylog-name {
+  font-weight: bold;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.activitylog-extra {
+  color: #999;
 }

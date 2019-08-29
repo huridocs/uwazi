@@ -10,114 +10,119 @@ exports[`ActivitylogList should render a table with the activity log entries 1`]
     <thead>
       <tr>
         <th>
-          Method
-        </th>
-        <th>
-          Url
+          Action
         </th>
         <th>
           User
         </th>
-        <th>
-          Query
+        <th
+          className="activitylog-description"
+        >
+          Description
         </th>
-        <th>
-          Body
-        </th>
-        <th>
+        <th
+          className="activitylog-time"
+        >
           Time
         </th>
       </tr>
     </thead>
     <tbody>
       <tr
+        className="activitylog-beautified"
         key="1"
-      >
-        <td>
-          <span
-            className="badge btn-color-6"
-          >
-            POST
-          </span>
-        </td>
-        <td>
-          /api/entities
-        </td>
-        <td>
-          -
-        </td>
-        <td
-          className="tdquery"
-        >
-          {}
-        </td>
-        <td
-          className="tdbody"
-        >
-          {"title":"hey"}
-        </td>
-        <td>
-          06/17/2019 3:36:12 PM
-        </td>
-      </tr>
-      <tr
-        key="2"
       >
         <td>
           <span
             className="badge btn-color-9"
           >
-            GET
+            CREATE
           </span>
-        </td>
-        <td>
-          /api/entities
         </td>
         <td>
           -
         </td>
-        <td
-          className="tdquery"
-        >
-          {"_id": "123"}
-        </td>
-        <td
-          className="tdbody"
-        >
-          {}
-        </td>
         <td>
-          06/17/2019 3:36:12 PM
+          <span>
+            <span
+              className="activitylog-prefix"
+            >
+              created
+            </span>
+            <span
+              className="activitylog-name"
+            >
+              Name
+            </span>
+            <span
+              className="activitylog-extra"
+            >
+              extra info
+            </span>
+          </span>
+        </td>
+        <td
+          className="activitylog-time"
+        >
+          06/17/2019 8:36:12 AM
         </td>
       </tr>
       <tr
+        className="activitylog-raw"
+        key="2"
+      >
+        <td>
+          <span
+            className="badge btn-color-17"
+          >
+            RAW
+          </span>
+        </td>
+        <td>
+          -
+        </td>
+        <td>
+          <span
+            className="activitylog-extra"
+          >
+            GET
+             : 
+            /api/entities
+          </span>
+        </td>
+        <td
+          className="activitylog-time"
+        >
+          06/17/2019 8:36:12 AM
+        </td>
+      </tr>
+      <tr
+        className="activitylog-raw"
         key="3"
       >
         <td>
           <span
-            className="badge btn-color-2"
+            className="badge btn-color-17"
           >
-            DELETE
+            RAW
           </span>
-        </td>
-        <td>
-          /api/entities
         </td>
         <td>
           -
         </td>
-        <td
-          className="tdquery"
-        >
-          {}
-        </td>
-        <td
-          className="tdbody"
-        >
-          {"_id":"123"}
-        </td>
         <td>
-          06/17/2019 3:36:12 PM
+          <span
+            className="activitylog-extra"
+          >
+            DELETE
+             : 
+            /api/entities
+          </span>
+        </td>
+        <td
+          className="activitylog-time"
+        >
+          06/17/2019 8:36:12 AM
         </td>
       </tr>
     </tbody>

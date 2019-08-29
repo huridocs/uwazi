@@ -1,4 +1,5 @@
 import model from './activitylogModel';
+import { getSemanticData } from './activitylogParser';
 
 const prepareRegexpQueries = (query) => {
   const result = {};
@@ -41,7 +42,7 @@ export default {
     return model.save(entry);
   },
 
-  get(query = {}) {
+  async get(query = {}) {
     const mongoQuery = Object.assign(prepareRegexpQueries(query), timeQuery(query));
     if (query.method && query.method.length) {
       mongoQuery.method = { $in: query.method };
@@ -52,6 +53,14 @@ export default {
     }
 
     const pagination = { limit: parseInt(query.limit || 2000, 10), sort: { time: -1 } };
-    return model.get(mongoQuery, null, pagination);
+    const dbResults = await model.get(mongoQuery, null, pagination);
+
+    const semanticResults = await dbResults.reduce(async (prev, logEntry) => {
+      const results = await prev;
+      const semantic = await getSemanticData(logEntry);
+      return results.concat([{ ...logEntry, semantic }]);
+    }, Promise.resolve([]));
+
+    return semanticResults;
   }
 };
