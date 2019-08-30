@@ -83,6 +83,16 @@ export class Menu extends Component {
                 </I18NLink>
               </li>
             </NeedAuthorization>
+            <NeedAuthorization roles={['admin']}>
+              <li className="menuNav-item">
+                <I18NLink to="/activitylog" className="menuNav-btn btn btn-default">
+                  <span>
+                    <Icon icon="server" />
+                  </span>
+                  <span className="tab-link-tooltip">{t('System', 'Activity log')}</span>
+                </I18NLink>
+              </li>
+            </NeedAuthorization>
             <NeedAuthorization roles={['admin', 'editor']}>
               <li className="menuNav-item">
                 <I18NLink to="/settings/account" className="menuNav-btn btn btn-default">
@@ -102,6 +112,8 @@ export class Menu extends Component {
                   </li>
                 );
               }
+
+              return null;
             })()}
           </ul>
           <I18NMenu />

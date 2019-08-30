@@ -1,5 +1,6 @@
 export default [
 { key: 'Account', label: 'Account' },
+{ key: 'Activity log', label: 'Activity log' },
 { key: 'Add connection', label: 'Add connection' },
 { key: 'Add dictionary', label: 'Add dictionary' },
 { key: 'Add document type', label: 'Add document type' },
