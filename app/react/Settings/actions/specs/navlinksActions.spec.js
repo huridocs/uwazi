@@ -1,4 +1,5 @@
 import { actions as formActions } from 'react-redux-form';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions as basicActions } from 'app/BasicReducer';
 import { mockID } from 'shared/uniqueID';
@@ -61,7 +62,7 @@ describe('Settings/Navlinks actions', () => {
       actions.saveLinks('data')(dispatch);
       expect(dispatch.calls.count()).toBe(1);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_NAVLINKS' });
-      expect(api.save).toHaveBeenCalledWith('data');
+      expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
     });
 
     describe('on error', () => {

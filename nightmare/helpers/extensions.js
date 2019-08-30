@@ -423,3 +423,25 @@ Nightmare.action('pickToday', function (input, done) {
   .wait(elementToSelect => document.querySelector(elementToSelect).value, input)
   .then(() => { done(); });
 });
+
+Nightmare.action('clickLink', function (label, done) {
+  this.evaluate((nameToFind) => {
+    const links = document.querySelectorAll('a, button');
+    let found = false;
+    links.forEach((link) => {
+      if (found) {
+        return;
+      }
+      if (link.innerText.match(nameToFind)) {
+        found = link;
+      }
+    });
+
+    if (found) {
+      found.click();
+    } else {
+      throw new Error(`Link with label "${nameToFind}" NOT FOUND !`);
+    }
+  }, label)
+  .then(() => { done(); });
+});
