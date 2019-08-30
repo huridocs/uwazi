@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import { LocalForm, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Map } from 'immutable';
-import { MultiSelect, DateRange } from 'app/ReactReduxForms';
+import { DateRange } from 'app/ReactReduxForms';
 import { t } from 'app/I18N';
 import * as actions from '../actions/activitylogActions';
 
 class ActivitylogForm extends Component {
   constructor(props) {
     super(props);
-    this.state = { query: {}, noMore: false };
+    this.state = { query: {} };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.loadMore = this.loadMore.bind(this);
     this.methodOptions = [
