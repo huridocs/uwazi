@@ -7,14 +7,15 @@ describe('activitylog actions', () => {
     beforeEach(() => {
       backend
       .get(`${APIURL}activitylog?limit=2&url=entities`, {
-        body: JSON.stringify([{ url: '/api/entities' }])
+        body: JSON.stringify({ url: '/api/entities', rows: [{ some: 'results' }] })
       });
     });
 
     it('should search for entries with the given query', async () => {
       const dispatch = jasmine.createSpy('dispatch');
       await activitylogSearch({ limit: 2, url: 'entities' })(dispatch);
-      expect(dispatch).toHaveBeenCalledWith({ type: 'activitylog/SET', value: [{ url: '/api/entities' }] });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'activitylog/search/SET', value: { url: '/api/entities', rows: [{ some: 'results' }] } });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'activitylog/list/SET', value: [{ some: 'results' }] });
     });
   });
 });
