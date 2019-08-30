@@ -11,81 +11,21 @@ exports[`ActivitylogForm should render a form 1`] = `
       onSubmit={[Function]}
     >
       <div
-        className="form-group col-lg-4"
+        className="form-group col-sm-12 col-lg-4"
       >
         <label
-          htmlFor="limit"
+          htmlFor="find"
         >
-          Limit
+          Find
         </label>
         <DefaultConnectedControlText
           className="form-control"
-          id="limit"
-          model=".limit"
+          id="find"
+          model=".find"
         />
       </div>
       <div
-        className="form-group col-lg-4"
-      >
-        <label
-          htmlFor="url"
-        >
-          Url
-        </label>
-        <DefaultConnectedControlText
-          className="form-control"
-          id="url"
-          model=".url"
-        />
-      </div>
-      <div
-        className="form-group col-lg-4"
-      >
-        <label
-          htmlFor="url"
-        >
-          User
-        </label>
-        <DefaultConnectedControlText
-          className="form-control"
-          id="username"
-          model=".username"
-        />
-      </div>
-      <div
-        className="form-group col-lg-4"
-      >
-        <label
-          htmlFor="method"
-        >
-          Method
-        </label>
-        <MultiSelect
-          model=".method"
-          options={
-            Array [
-              Object {
-                "label": "POST",
-                "value": "POST",
-              },
-              Object {
-                "label": "GET",
-                "value": "GET",
-              },
-              Object {
-                "label": "PUT",
-                "value": "PUT",
-              },
-              Object {
-                "label": "DELETE",
-                "value": "DELETE",
-              },
-            ]
-          }
-        />
-      </div>
-      <div
-        className="form-group col-lg-4"
+        className="form-group col-sm-12 col-lg-8"
       >
         <label
           htmlFor="time"
@@ -101,39 +41,7 @@ exports[`ActivitylogForm should render a form 1`] = `
         />
       </div>
       <div
-        className="col-lg-4"
-      >
-        <div
-          className="form-group"
-        >
-          <label
-            htmlFor="url"
-          >
-            Query
-          </label>
-          <DefaultConnectedControlText
-            className="form-control"
-            id="query"
-            model=".query"
-          />
-        </div>
-        <div
-          className="form-group"
-        >
-          <label
-            htmlFor="url"
-          >
-            Body
-          </label>
-          <DefaultConnectedControlText
-            className="form-control"
-            id="body"
-            model=".body"
-          />
-        </div>
-      </div>
-      <div
-        className="col-lg-12"
+        className="form-group col-sm-12"
       >
         <input
           className="btn btn-success"

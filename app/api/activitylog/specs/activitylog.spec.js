@@ -78,6 +78,14 @@ describe('activitylog', () => {
       expect(entries.length).toBe(2);
     });
 
+    it('should allow a general find query of terms', async () => {
+      const { rows: entries } = await activitylog.get({ find: 'Hello' });
+      expect(entries.length).toBe(3);
+      expect(entries[0].time).toBe(8000);
+      expect(entries[1].time).toBe(6000);
+      expect(entries[2].time).toBe(5000);
+    });
+
     describe('Pagination', () => {
       const assessResults = (results, expected) => {
         expect(results.rows.length).toBe(expected.size);

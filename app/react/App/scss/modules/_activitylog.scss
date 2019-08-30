@@ -1,5 +1,6 @@
 .activity-log {
   overflow: auto;
+  margin-right: -15px;
 }
 
 .activity-log-list .table > thead > tr > th,
@@ -17,7 +18,40 @@
 }
 
 .activity-log-form {
-  padding: 20px;
+  & > form {
+    min-height: 60px;
+
+    .form-group {
+      min-height: 53px;
+    }
+  }
+
+  padding: 20px 0;
+}
+
+@media(min-width: 769px) {
+  .activity-log-form {
+    & > form {
+      .DatePicker__From,
+      .DatePicker__To {
+        margin: 0px;
+        width: 49%;
+        min-width: 320px;
+
+        .react-datepicker__input-container {
+          width: 100%;
+        }
+      }
+
+      .DatePicker__From {
+        margin-right: 1%;
+      }
+
+      .DatePicker__To {
+        margin-left: 1%;
+      }
+    }
+  }
 }
 
 .tdbody, .tdquery {

@@ -21,6 +21,14 @@ const prepareRegexpQueries = (query) => {
   return result;
 };
 
+const prepareQuery = (query) => {
+  if (!query.find) {
+    return prepareRegexpQueries(query);
+  }
+  const term = new RegExp(query.find);
+  return { $or: [{ method: term }, { url: term }, { query: term }, { body: term }, { params: term }, { username: term }] };
+};
+
 const timeQuery = ({ time = {} }) => {
   const sanitizedTime = Object.keys(time).reduce((memo, k) => time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo, {});
   if (!Object.keys(sanitizedTime).length) {
@@ -53,7 +61,7 @@ export default {
   },
 
   async get(query = {}) {
-    const mongoQuery = Object.assign(prepareRegexpQueries(query), timeQuery(query));
+    const mongoQuery = Object.assign(prepareQuery(query), timeQuery(query));
 
     if (query.method && query.method.length) {
       mongoQuery.method = { $in: query.method };

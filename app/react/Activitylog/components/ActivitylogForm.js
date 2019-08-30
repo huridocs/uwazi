@@ -51,37 +51,15 @@ class ActivitylogForm extends Component {
       <div>
         <div className="activity-log-form">
           <LocalForm onSubmit={this.handleSubmit} >
-            <div className="form-group col-lg-4">
-              <label htmlFor="limit">Limit</label>
-              <Control.text className="form-control" model=".limit" id="limit" />
+            <div className="form-group col-sm-12 col-lg-4">
+              <label htmlFor="find">Find</label>
+              <Control.text className="form-control" model=".find" id="find" />
             </div>
-            <div className="form-group col-lg-4">
-              <label htmlFor="url">Url</label>
-              <Control.text className="form-control" model=".url" id="url" />
-            </div>
-            <div className="form-group col-lg-4">
-              <label htmlFor="url">User</label>
-              <Control.text className="form-control" model=".username" id="username" />
-            </div>
-            <div className="form-group col-lg-4">
-              <label htmlFor="method">Method</label>
-              <MultiSelect model=".method" options={this.methodOptions} />
-            </div>
-            <div className="form-group col-lg-4">
+            <div className="form-group col-sm-12 col-lg-8">
               <label htmlFor="time">Time</label>
               <DateRange className="form-control" model=".time" id="time" showTimeSelect format="dd/MM/yyyy HH:mm"/>
             </div>
-            <div className="col-lg-4">
-              <div className="form-group">
-                <label htmlFor="url">Query</label>
-                <Control.text className="form-control" model=".query" id="query" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="url">Body</label>
-                <Control.text className="form-control" model=".body" id="body" />
-              </div>
-            </div>
-            <div className="col-lg-12"><input type="submit" className="btn btn-success" value="Search"/></div>
+            <div className="form-group col-sm-12"><input type="submit" className="btn btn-success" value="Search"/></div>
           </LocalForm>
         </div>
 
