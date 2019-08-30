@@ -16,6 +16,12 @@ const DescriptionWrapper = (props) => {
       <div className="expanded-content" style={{ display: expanded ? 'block' : 'none' }}>
         <table>
           <tbody>
+            {entry.getIn(['semantic', 'beautified']) && (
+              <tr>
+                <td>Route</td>
+                <td>{entry.get('method')} : {entry.get('url')}</td>
+              </tr>
+            )}
             <tr>
               <td>Query</td>
               <td className="tdquery">{entry.get('query')}</td>
