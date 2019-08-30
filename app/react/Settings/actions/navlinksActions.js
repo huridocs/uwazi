@@ -1,4 +1,5 @@
 import { actions as formActions } from 'react-redux-form';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions } from 'app/BasicReducer';
 import { editLink } from 'app/Settings/actions/uiActions';
@@ -31,7 +32,7 @@ export function removeLink(index) {
 export function saveLinks(data) {
   return (dispatch) => {
     dispatch({ type: types.SAVING_NAVLINKS });
-    return api.save(data)
+    return api.save(new RequestParams(data))
     .then((response) => {
       dispatch({ type: types.NAVLINKS_SAVED, data: response });
       dispatch(actions.set('settings/collection', response));
