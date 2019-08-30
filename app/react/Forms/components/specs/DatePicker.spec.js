@@ -28,7 +28,7 @@ describe('DatePicker', () => {
   });
 
   describe('onChange', () => {
-    fit('should return the value in timestamp', () => {
+    it('should return the value in timestamp', () => {
       render();
       const input = component.find(DatePickerComponent);
       input.simulate('change', date.toDate());
