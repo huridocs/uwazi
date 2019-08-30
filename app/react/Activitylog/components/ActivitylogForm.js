@@ -93,7 +93,9 @@ ActivitylogForm.propTypes = {
 
 export function mapStateToProps({ activitylog }) {
   const searchResults = activitylog.search;
-  const moreResultsAvailable = searchResults.size && (searchResults.get('page') * searchResults.get('pageSize')) < searchResults.get('totalRows');
+  const moreResultsAvailable = Boolean(
+    searchResults.size && (searchResults.get('page') * searchResults.get('pageSize')) < searchResults.get('totalRows')
+  );
   return { searchResults, moreResultsAvailable };
 }
 

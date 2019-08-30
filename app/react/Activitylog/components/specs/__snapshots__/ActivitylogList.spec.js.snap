@@ -28,105 +28,54 @@ exports[`ActivitylogList should render a table with the activity log entries and
       </tr>
     </thead>
     <tbody>
-      <tr
-        className="activitylog-beautified"
+      <ActivityLogRow
+        entry={
+          Immutable.Map {
+            "_id": 1,
+            "method": "POST",
+            "url": "/api/entities",
+            "body": "{\\"title\\":\\"hey\\"}",
+            "query": "{}",
+            "time": "2019-06-17T13:36:12.697Z",
+            "semantic": Immutable.Map {
+              "beautified": true,
+              "description": "created",
+              "name": "Name",
+              "action": "CREATE",
+              "extra": "extra info",
+            },
+          }
+        }
         key="1"
-      >
-        <td>
-          <span
-            className="badge btn-color-9"
-          >
-            CREATE
-          </span>
-        </td>
-        <td>
-          -
-        </td>
-        <td>
-          <span>
-            <span
-              className="activitylog-prefix"
-            >
-              created
-            </span>
-            <span
-              className="activitylog-name"
-            >
-               
-              Name
-            </span>
-            <span
-              className="activitylog-extra"
-            >
-               
-              extra info
-            </span>
-          </span>
-        </td>
-        <td
-          className="activitylog-time"
-        >
-          06/17/2019 8:36:12 AM
-        </td>
-      </tr>
-      <tr
-        className="activitylog-raw"
+      />
+      <ActivityLogRow
+        entry={
+          Immutable.Map {
+            "_id": 2,
+            "method": "GET",
+            "url": "/api/entities",
+            "body": "{}",
+            "query": "{\\"_id\\": \\"123\\"}",
+            "time": "2019-06-17T13:36:12.697Z",
+            "semantic": Immutable.Map {},
+          }
+        }
         key="2"
-      >
-        <td>
-          <span
-            className="badge btn-color-17"
-          >
-            RAW
-          </span>
-        </td>
-        <td>
-          -
-        </td>
-        <td>
-          <span
-            className="activitylog-extra"
-          >
-            GET
-             : 
-            /api/entities
-          </span>
-        </td>
-        <td
-          className="activitylog-time"
-        >
-          06/17/2019 8:36:12 AM
-        </td>
-      </tr>
-      <tr
-        className="activitylog-raw"
+      />
+      <ActivityLogRow
+        entry={
+          Immutable.Map {
+            "_id": 3,
+            "method": "DELETE",
+            "url": "/api/entities",
+            "body": "{\\"_id\\":\\"123\\"}",
+            "query": "{}",
+            "time": "2019-06-17T13:36:12.697Z",
+            "semantic": Immutable.Map {},
+          }
+        }
         key="3"
-      >
-        <td>
-          <span
-            className="badge btn-color-17"
-          >
-            RAW
-          </span>
-        </td>
-        <td>
-          -
-        </td>
-        <td>
-          <span
-            className="activitylog-extra"
-          >
-            DELETE
-             : 
-            /api/entities
-          </span>
-        </td>
-        <td
-          className="activitylog-time"
-        >
-          06/17/2019 8:36:12 AM
-        </td>
-      </tr>
+      />
     </tbody>
   </table>
 </div>
