@@ -48,7 +48,7 @@ const timeQuery = ({ time = {} }) => {
 };
 
 const getPagination = (query) => {
-  const limit = parseInt(query.limit || 30, 10);
+  const limit = parseInt(query.limit || 15, 10);
   const page = query.page ? parseInt(query.page, 10) - 1 : 0;
   const skip = page * limit;
 
