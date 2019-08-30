@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-
+import { List } from 'immutable';
 
 class ActivityLogList extends Component {
   static renderMethod(method) {
@@ -30,8 +30,8 @@ class ActivityLogList extends Component {
       description = (
         <span>
           <span className="activitylog-prefix">{semanticData.description}</span>
-          <span className="activitylog-name">{semanticData.name}</span>
-          <span className="activitylog-extra">{semanticData.extra}</span>
+          <span className="activitylog-name"> {semanticData.name}</span>
+          <span className="activitylog-extra"> {semanticData.extra}</span>
         </span>
       );
     }
@@ -47,7 +47,7 @@ class ActivityLogList extends Component {
   }
 
   render() {
-    const { activitylog } = this.props;
+    const { list } = this.props;
     return (
       <div className="activity-log-list">
         <table className="table">
@@ -60,7 +60,7 @@ class ActivityLogList extends Component {
             </tr>
           </thead>
           <tbody>
-            {activitylog.map(entry => ActivityLogList.renderEntry(entry))}
+            {list.map(entry => ActivityLogList.renderEntry(entry))}
           </tbody>
         </table>
       </div>
@@ -69,11 +69,11 @@ class ActivityLogList extends Component {
 }
 
 ActivityLogList.propTypes = {
-  activitylog: PropTypes.object.isRequired
+  list: PropTypes.instanceOf(List).isRequired,
 };
 
 export function mapStateToProps({ activitylog }) {
-  return { activitylog };
+  return { list: activitylog.list };
 }
 
 export default connect(mapStateToProps, null)(ActivityLogList);

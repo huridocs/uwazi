@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivitylogList should render a table with the activity log entries 1`] = `
+exports[`ActivitylogList should render a table with the activity log entries and more button 1`] = `
 <div
   className="activity-log-list"
 >
@@ -52,11 +52,13 @@ exports[`ActivitylogList should render a table with the activity log entries 1`]
             <span
               className="activitylog-name"
             >
+               
               Name
             </span>
             <span
               className="activitylog-extra"
             >
+               
               extra info
             </span>
           </span>

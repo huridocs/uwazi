@@ -11,15 +11,17 @@ export class ActivityLog extends RouteHandler {
   static async requestState(requestParams) {
     const logs = await api.get('activitylog', requestParams);
     return [
-      actions.set('activitylog', logs.json)
+      actions.set('activitylog/search', logs.json),
+      actions.set('activitylog/list', logs.json.rows),
     ];
   }
 
   render() {
     return (
       <div className="activity-log">
-        <ActivitylogForm />
-        <ActivitylogList />
+        <ActivitylogForm>
+          <ActivitylogList />
+        </ActivitylogForm>
       </div>
     );
   }

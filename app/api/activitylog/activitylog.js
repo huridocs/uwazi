@@ -3,9 +3,8 @@ import { getSemanticData } from './activitylogParser';
 
 const prepareRegexpQueries = (query) => {
   const result = {};
-  if (query.url) {
-    result.url = new RegExp(query.url);
-  }
+
+  result.url = query.url ? new RegExp(query.url) : { $ne: '/api/semantic-search/notify-updates' };
 
   if (query.query) {
     result.query = new RegExp(query.query);
@@ -18,23 +17,34 @@ const prepareRegexpQueries = (query) => {
   if (query.params) {
     result.params = new RegExp(query.params);
   }
+
   return result;
 };
 
-const timeQuery = (query) => {
-  if (!query.time) {
+const timeQuery = ({ time = {} }) => {
+  const sanitizedTime = Object.keys(time).reduce((memo, k) => time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo, {});
+  if (!Object.keys(sanitizedTime).length) {
     return {};
   }
 
   const result = { time: {} };
-  if (query.time.from) {
-    result.time.$gt = new Date(parseInt(query.time.from, 10) * 1000);
+  if (sanitizedTime.from) {
+    result.time.$gt = parseInt(sanitizedTime.from, 10) * 1000;
   }
 
-  if (query.time.to) {
-    result.time.$lt = new Date(parseInt(query.time.to, 10) * 1000);
+  if (sanitizedTime.to) {
+    result.time.$lt = parseInt(sanitizedTime.to, 10) * 1000;
   }
+
   return result;
+};
+
+const getPagination = (query) => {
+  const limit = parseInt(query.limit || 30, 10);
+  const page = query.page ? parseInt(query.page, 10) - 1 : 0;
+  const skip = page * limit;
+
+  return { limit, skip, sort: { time: -1 } };
 };
 
 export default {
@@ -44,6 +54,7 @@ export default {
 
   async get(query = {}) {
     const mongoQuery = Object.assign(prepareRegexpQueries(query), timeQuery(query));
+
     if (query.method && query.method.length) {
       mongoQuery.method = { $in: query.method };
     }
@@ -52,7 +63,9 @@ export default {
       mongoQuery.username = query.username;
     }
 
-    const pagination = { limit: parseInt(query.limit || 2000, 10), sort: { time: -1 } };
+    const pagination = getPagination(query);
+
+    const totalRows = await model.count(mongoQuery);
     const dbResults = await model.get(mongoQuery, null, pagination);
 
     const semanticResults = await dbResults.reduce(async (prev, logEntry) => {
@@ -61,6 +74,6 @@ export default {
       return results.concat([{ ...logEntry, semantic }]);
     }, Promise.resolve([]));
 
-    return semanticResults;
+    return { rows: semanticResults, totalRows, pageSize: pagination.limit, page: parseInt((pagination.skip / pagination.limit) + 1, 10) };
   }
 };

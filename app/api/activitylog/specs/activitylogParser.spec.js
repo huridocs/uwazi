@@ -41,7 +41,7 @@ describe('Activitylog Parser', () => {
           expect(semanticData).toEqual(expect.objectContaining({
             action: 'UPDATE',
             description: 'Updated entity / document',
-            name: 'Existing Entity',
+            name: 'Existing Entity (m0asd0)',
           }));
         });
 

@@ -16,14 +16,13 @@ const entitiesPOST = async (log) => {
     extra: `of type ${template ? template.name : `(${data.template.toString()})`}`
   };
 
-  if (!data.sharedId) {
-    semantic.action = methods.create;
-    semantic.description = 'Created entity / document';
-  }
-
   if (data.sharedId) {
+    semantic.name = `${data.title} (${data.sharedId})`;
     semantic.action = methods.update;
     semantic.description = 'Updated entity / document';
+  } else {
+    semantic.action = methods.create;
+    semantic.description = 'Created entity / document';
   }
 
   return semantic;
