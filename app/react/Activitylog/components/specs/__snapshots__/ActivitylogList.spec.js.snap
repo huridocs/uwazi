@@ -28,7 +28,7 @@ exports[`ActivitylogList should render a table with the activity log entries and
       </tr>
     </thead>
     <tbody>
-      <ActivityLogRow
+      <ActivitylogRow
         entry={
           Immutable.Map {
             "_id": 1,
@@ -48,7 +48,7 @@ exports[`ActivitylogList should render a table with the activity log entries and
         }
         key="1"
       />
-      <ActivityLogRow
+      <ActivitylogRow
         entry={
           Immutable.Map {
             "_id": 2,
@@ -62,7 +62,7 @@ exports[`ActivitylogList should render a table with the activity log entries and
         }
         key="2"
       />
-      <ActivityLogRow
+      <ActivitylogRow
         entry={
           Immutable.Map {
             "_id": 3,
