@@ -58,7 +58,7 @@ class ActivitylogForm extends Component {
             </div>
             <div className="form-group col-sm-12 col-lg-3">
               <label htmlFor="find">Find</label>
-              <Control.text className="form-control" model=".find" id="find" />
+              <Control.text className="form-control" model=".find" id="find" placeholder="by ids, methods, keywords, etc." />
             </div>
             <div className="form-group col-sm-12 col-lg-8">
               <label htmlFor="time">Time</label>
