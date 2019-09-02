@@ -58,6 +58,7 @@ describe('FiltersForm', () => {
     component
     .instance()
     .activesChange([
+      { id: 2, name: 'single', container: '', index: 1 },
       {
         id: 1,
         name: 'group',
@@ -72,6 +73,7 @@ describe('FiltersForm', () => {
     ]);
 
     expect(component.state().activeFilters).toEqual([
+      { id: 2, name: 'single', container: '', index: 1 },
       {
         id: 1,
         name: 'group',

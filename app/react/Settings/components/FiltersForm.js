@@ -30,6 +30,9 @@ export class FiltersForm extends Component {
   activesChange(items) {
     items.forEach((item) => {
       // eslint-disable-next-line
+      if(!item.items) {
+        return;
+      }
       item.items = item.items.filter((subitem) => {
         if (subitem.items) {
           items.push(subitem);
