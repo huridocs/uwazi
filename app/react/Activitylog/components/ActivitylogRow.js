@@ -1,4 +1,3 @@
-// TEST!!!
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -20,7 +19,7 @@ const label = (method) => {
   }
 };
 
-class ActivityLogRow extends Component {
+class ActivitylogRow extends Component {
   constructor(props) {
     super(props);
     this.state = { expanded: false };
@@ -68,12 +67,12 @@ class ActivityLogRow extends Component {
   }
 }
 
-ActivityLogRow.defaultProps = {
+ActivitylogRow.defaultProps = {
   entry: Map(),
 };
 
-ActivityLogRow.propTypes = {
+ActivitylogRow.propTypes = {
   entry: PropTypes.instanceOf(Map),
 };
 
-export default ActivityLogRow;
+export default ActivitylogRow;
