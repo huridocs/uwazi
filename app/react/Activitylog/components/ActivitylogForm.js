@@ -36,22 +36,27 @@ class ActivitylogForm extends Component {
   }
 
   loadMore() {
-    const { searchResults, searchMore, moreResultsAvailable } = this.props;
-    const { query } = this.state;
+    const { searchResults, searchMore } = this.props;
 
-    if (moreResultsAvailable) {
-      searchMore(Object.assign({}, query, { page: searchResults.get('page') + 1 }));
+    if (searchResults.get('remainingRows')) {
+      const { query } = this.state;
+      const lastResultTime = searchResults.getIn(['rows', -1, 'time']);
+      searchMore(Object.assign({}, query, { before: lastResultTime }));
     }
   }
 
   render() {
-    const { children, moreResultsAvailable } = this.props;
+    const { children, searchResults } = this.props;
 
     return (
       <div>
         <div className="activity-log-form">
           <LocalForm onSubmit={this.handleSubmit} >
-            <div className="form-group col-sm-12 col-lg-4">
+            <div className="form-group col-sm-12 col-lg-1">
+              <label htmlFor="find">User</label>
+              <Control.text className="form-control" model=".username" id="username" />
+            </div>
+            <div className="form-group col-sm-12 col-lg-3">
               <label htmlFor="find">Find</label>
               <Control.text className="form-control" model=".find" id="find" />
             </div>
@@ -68,7 +73,7 @@ class ActivitylogForm extends Component {
         <div className="text-center">
           <button
             type="button"
-            className={`btn btn-default btn-load-more ${moreResultsAvailable ? '' : 'disabled'}`}
+            className={`btn btn-default btn-load-more ${searchResults.get('remainingRows') ? '' : 'disabled'}`}
             onClick={() => { this.loadMore(); }}
           >
             {t('System', 'x more')}
@@ -88,19 +93,12 @@ ActivitylogForm.propTypes = {
   submit: PropTypes.func.isRequired,
   searchMore: PropTypes.func.isRequired,
   searchResults: PropTypes.instanceOf(Map).isRequired,
-  moreResultsAvailable: PropTypes.bool.isRequired,
 };
 
-export function mapStateToProps({ activitylog }) {
-  const searchResults = activitylog.search;
-  const moreResultsAvailable = Boolean(
-    searchResults.size && (searchResults.get('page') * searchResults.get('pageSize')) < searchResults.get('totalRows')
-  );
-  return { searchResults, moreResultsAvailable };
-}
+export const mapStateToProps = ({ activitylog }) => ({ searchResults: activitylog.search });
 
-export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ submit: actions.activitylogSearch, searchMore: actions.activitylogSearchMore }, dispatch);
-}
+export const mapDispatchToProps = dispatch => (
+  bindActionCreators({ submit: actions.activitylogSearch, searchMore: actions.activitylogSearchMore }, dispatch)
+);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivitylogForm);

@@ -6,17 +6,9 @@ const prepareRegexpQueries = (query) => {
 
   result.url = query.url ? new RegExp(query.url) : { $ne: '/api/semantic-search/notify-updates' };
 
-  if (query.query) {
-    result.query = new RegExp(query.query);
-  }
-
-  if (query.body) {
-    result.body = new RegExp(query.body);
-  }
-
-  if (query.params) {
-    result.params = new RegExp(query.params);
-  }
+  if (query.query) { result.query = new RegExp(query.query); }
+  if (query.body) { result.body = new RegExp(query.body); }
+  if (query.params) { result.params = new RegExp(query.params); }
 
   return result;
 };
@@ -26,33 +18,42 @@ const prepareQuery = (query) => {
     return prepareRegexpQueries(query);
   }
   const term = new RegExp(query.find);
-  return { $or: [{ method: term }, { url: term }, { query: term }, { body: term }, { params: term }, { username: term }] };
+  return { $or: [{ method: term }, { url: term }, { query: term }, { body: term }, { params: term }] };
 };
 
-const timeQuery = ({ time = {} }) => {
-  const sanitizedTime = Object.keys(time).reduce((memo, k) => time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo, {});
-  if (!Object.keys(sanitizedTime).length) {
-    return {};
-  }
+const prepareToFromRanges = (sanitizedTime) => {
+  const time = {};
 
-  const result = { time: {} };
   if (sanitizedTime.from) {
-    result.time.$gt = parseInt(sanitizedTime.from, 10) * 1000;
+    time.$gte = parseInt(sanitizedTime.from, 10) * 1000;
   }
 
   if (sanitizedTime.to) {
-    result.time.$lt = parseInt(sanitizedTime.to, 10) * 1000;
+    time.$lte = parseInt(sanitizedTime.to, 10) * 1000;
+  }
+
+  return time;
+};
+
+const timeQuery = ({ time = {}, before = null }) => {
+  const sanitizedTime = Object.keys(time).reduce((memo, k) => time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo, {});
+
+  if (before === null && !Object.keys(sanitizedTime).length) {
+    return {};
+  }
+
+  const result = { time: prepareToFromRanges(sanitizedTime) };
+
+  if (before !== null) {
+    result.time.$lt = parseInt(before, 10);
   }
 
   return result;
 };
 
-const getPagination = (query) => {
+const getLimit = (query) => {
   const limit = parseInt(query.limit || 15, 10);
-  const page = query.page ? parseInt(query.page, 10) - 1 : 0;
-  const skip = page * limit;
-
-  return { limit, skip, sort: { time: -1 } };
+  return { limit, sort: { time: -1 } };
 };
 
 export default {
@@ -71,10 +72,10 @@ export default {
       mongoQuery.username = query.username;
     }
 
-    const pagination = getPagination(query);
+    const limitQuery = getLimit(query);
 
     const totalRows = await model.count(mongoQuery);
-    const dbResults = await model.get(mongoQuery, null, pagination);
+    const dbResults = await model.get(mongoQuery, null, limitQuery);
 
     const semanticResults = await dbResults.reduce(async (prev, logEntry) => {
       const results = await prev;
@@ -82,6 +83,6 @@ export default {
       return results.concat([{ ...logEntry, semantic }]);
     }, Promise.resolve([]));
 
-    return { rows: semanticResults, totalRows, pageSize: pagination.limit, page: parseInt((pagination.skip / pagination.limit) + 1, 10) };
+    return { rows: semanticResults, remainingRows: totalRows - dbResults.length, limit: limitQuery.limit };
   }
 };

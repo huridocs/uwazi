@@ -11,7 +11,21 @@ exports[`ActivitylogForm should render a form 1`] = `
       onSubmit={[Function]}
     >
       <div
-        className="form-group col-sm-12 col-lg-4"
+        className="form-group col-sm-12 col-lg-1"
+      >
+        <label
+          htmlFor="find"
+        >
+          User
+        </label>
+        <DefaultConnectedControlText
+          className="form-control"
+          id="username"
+          model=".username"
+        />
+      </div>
+      <div
+        className="form-group col-sm-12 col-lg-3"
       >
         <label
           htmlFor="find"

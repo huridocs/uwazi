@@ -45,9 +45,10 @@ describe('activitylog', () => {
     });
 
     it('should filter by time', async () => {
-      let { rows: entries } = await activitylog.get({ time: { from: 5, to: 7 } });
-      expect(entries.length).toBe(1);
-      expect(entries[0].method).toBe('PUT');
+      let { rows: entries } = await activitylog.get({ time: { from: 5, to: 6 } });
+      expect(entries.length).toBe(2);
+      expect(entries[0].time).toBe(6000);
+      expect(entries[1].time).toBe(5000);
 
       ({ rows: entries } = await activitylog.get({ time: { from: null } }));
       expect(entries.length).toBe(5);
@@ -86,21 +87,20 @@ describe('activitylog', () => {
       expect(entries[2].time).toBe(5000);
     });
 
-    describe('Pagination', () => {
+    describe('Load More functionality', () => {
       const assessResults = (results, expected) => {
         expect(results.rows.length).toBe(expected.size);
-        expect(results.totalRows).toBe(expected.totalRows);
-        expect(results.pageSize).toBe(expected.pageSize);
-        expect(results.page).toBe(expected.page);
+        expect(results.remainingRows).toBe(expected.remainingRows);
+        expect(results.limit).toBe(expected.limit);
         expect(results.rows[0].time).toBe(expected.initialTime);
       };
 
-      it('should allow to load more via page param', async () => {
+      it('should allow to load more via "before" param', async () => {
         const initialResults = await activitylog.get({ limit: 2 });
-        assessResults(initialResults, { size: 2, totalRows: 5, pageSize: 2, page: 1, initialTime: 8000 });
+        assessResults(initialResults, { size: 2, remainingRows: 3, limit: 2, initialTime: 8000 });
 
-        const nextResults = await activitylog.get({ page: 2, limit: 2 });
-        assessResults(nextResults, { size: 2, totalRows: 5, pageSize: 2, page: 2, initialTime: 5000 });
+        const nextResults = await activitylog.get({ before: 6000, limit: 2 });
+        assessResults(nextResults, { size: 2, remainingRows: 1, limit: 2, initialTime: 5000 });
       });
     });
   });

@@ -15,7 +15,14 @@ describe('ActivitylogForm', () => {
     spyOn(actions, 'activitylogSearch');
     spyOn(actions, 'activitylogSearchMore');
     spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
-    state = { activitylog: { search: Immutable.fromJS({ page: 1, pageSize: 5, totalRows: 12 }) } };
+    const rows = [
+      { time: 8235 },
+      { time: 7614 },
+      { time: 6613 },
+      { time: 6187 },
+      { time: 6013 }
+    ];
+    state = { activitylog: { search: Immutable.fromJS({ limit: 5, remainingRows: 7, rows }) } };
   });
 
   const render = () => {
@@ -43,11 +50,11 @@ describe('ActivitylogForm', () => {
     expect(button.hasClass('disabled')).toBe(false);
 
     button.simulate('click');
-    expect(actions.activitylogSearchMore).toHaveBeenCalledWith({ page: 2 });
+    expect(actions.activitylogSearchMore).toHaveBeenCalledWith({ before: 6013 });
   });
 
   it('should not load more values if all are loaded', () => {
-    state.activitylog.search = state.activitylog.search.set('totalRows', 4);
+    state.activitylog.search = state.activitylog.search.set('remainingRows', 0);
 
     render();
 
