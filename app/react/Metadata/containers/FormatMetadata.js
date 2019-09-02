@@ -2,12 +2,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Immutable from 'immutable';
-import selectors from '../selectors';
+import { metadataSelectors } from '../selectors';
 import Metadata from '../components/Metadata';
 
 const FormatMetadata = ({ additionalMetadata, sortedProperty, entity, relationships, ...props }) => (
   <Metadata
-    metadata={additionalMetadata.concat(selectors.formatMetadata(props, entity, sortedProperty, relationships))}
+    metadata={additionalMetadata.concat(metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships))}
     compact={!!sortedProperty}
     {...props}
   />

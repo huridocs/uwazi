@@ -3,11 +3,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import FormatMetadata from '../FormatMetadata';
-import selectors from '../../selectors';
+import { metadataSelectors } from '../../selectors';
 
 describe('FormatMetadata', () => {
   it('should render Metadata component passing the formatted metadata', () => {
-    spyOn(selectors, 'formatMetadata').and.returnValue([{ formated: 'metadata' }]);
+    spyOn(metadataSelectors, 'formatMetadata').and.returnValue([{ formated: 'metadata' }]);
     const props = {
       templates: [],
       thesauris: [],
@@ -19,7 +19,7 @@ describe('FormatMetadata', () => {
   });
 
   it('should unshift additional metadata if passed', () => {
-    spyOn(selectors, 'formatMetadata').and.returnValue([{ formated: 'metadata' }]);
+    spyOn(metadataSelectors, 'formatMetadata').and.returnValue([{ formated: 'metadata' }]);
     const props = {
       templates: [],
       thesauris: [],

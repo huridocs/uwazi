@@ -16,7 +16,7 @@ export const doc = {
     daterange: { from: 10, to: 1000000 },
     multidaterange: [{ from: 10, to: 1000000 }, { from: 2000000, to: 3000000 }],
     markdown: 'markdown content',
-    select: 'value3',
+    select: 'value5',
     image: 'imageURL',
     media: 'mediaURL',
     relationship1: ['value1', 'value2'],
