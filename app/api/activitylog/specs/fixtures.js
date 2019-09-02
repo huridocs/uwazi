@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 export default {
   activitylogs: [
     { method: 'POST', url: '/api/entities', query: '{}', body: '{"_id":"123","title":"Hello"}', time: 5000, username: 'admin' },
