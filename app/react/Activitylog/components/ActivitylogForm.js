@@ -62,7 +62,7 @@ class ActivitylogForm extends Component {
             </div>
             <div className="form-group col-sm-12 col-lg-6">
               <label htmlFor="time">Time</label>
-              <DateRange className="form-control" model=".time" id="time" format="YYYY-MM-DD"/>
+              <DateRange className="form-control" model=".time" id="time" format="YYYY-MM-DD" useTimezone />
             </div>
             <div className="form-group col-sm-12"><input type="submit" className="btn btn-success" value="Search"/></div>
           </LocalForm>
