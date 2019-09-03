@@ -35,6 +35,7 @@ export default class DateRange extends Component {
             locale={this.props.locale}
             format={this.props.format}
             value={this.state.to}
+            endOfDay
             onChange={val => this.onChange('to', val)}
           />
         </div>

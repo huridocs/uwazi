@@ -12,7 +12,7 @@ describe('DatePicker', () => {
 
   beforeEach(() => {
     props = {
-      value: date.format('X'),
+      value: Number(date.format('X')),
       onChange: jasmine.createSpy('onChange')
     };
   });
