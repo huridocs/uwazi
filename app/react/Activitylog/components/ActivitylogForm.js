@@ -52,17 +52,17 @@ class ActivitylogForm extends Component {
       <div>
         <div className="activity-log-form">
           <LocalForm onSubmit={this.handleSubmit} >
-            <div className="form-group col-sm-12 col-lg-1">
+            <div className="form-group col-sm-12 col-md-6 col-lg-2">
               <label htmlFor="find">User</label>
               <Control.text className="form-control" model=".username" id="username" />
             </div>
-            <div className="form-group col-sm-12 col-lg-3">
+            <div className="form-group col-sm-12 col-md-6 col-lg-4">
               <label htmlFor="find">Find</label>
               <Control.text className="form-control" model=".find" id="find" placeholder="by ids, methods, keywords, etc." />
             </div>
-            <div className="form-group col-sm-12 col-lg-8">
+            <div className="form-group col-sm-12 col-lg-6">
               <label htmlFor="time">Time</label>
-              <DateRange className="form-control" model=".time" id="time" showTimeSelect format="dd/MM/yyyy HH:mm"/>
+              <DateRange className="form-control" model=".time" id="time" format="YYYY-MM-DD"/>
             </div>
             <div className="form-group col-sm-12"><input type="submit" className="btn btn-success" value="Search"/></div>
           </LocalForm>

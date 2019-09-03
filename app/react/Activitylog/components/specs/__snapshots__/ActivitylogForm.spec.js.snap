@@ -11,7 +11,7 @@ exports[`ActivitylogForm should render a form 1`] = `
       onSubmit={[Function]}
     >
       <div
-        className="form-group col-sm-12 col-lg-1"
+        className="form-group col-sm-12 col-md-6 col-lg-2"
       >
         <label
           htmlFor="find"
@@ -25,7 +25,7 @@ exports[`ActivitylogForm should render a form 1`] = `
         />
       </div>
       <div
-        className="form-group col-sm-12 col-lg-3"
+        className="form-group col-sm-12 col-md-6 col-lg-4"
       >
         <label
           htmlFor="find"
@@ -40,7 +40,7 @@ exports[`ActivitylogForm should render a form 1`] = `
         />
       </div>
       <div
-        className="form-group col-sm-12 col-lg-8"
+        className="form-group col-sm-12 col-lg-6"
       >
         <label
           htmlFor="time"
@@ -49,10 +49,9 @@ exports[`ActivitylogForm should render a form 1`] = `
         </label>
         <DateRange
           className="form-control"
-          format="dd/MM/yyyy HH:mm"
+          format="YYYY-MM-DD"
           id="time"
           model=".time"
-          showTimeSelect={true}
         />
       </div>
       <div
