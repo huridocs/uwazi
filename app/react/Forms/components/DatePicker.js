@@ -10,33 +10,33 @@ export default class DatePicker extends Component {
     super(props);
     this.state = {};
     if (props.value) {
-      this.state.value = moment.utc(props.value, 'X').toDate();
+      this.state.value = moment.utc(props.value, 'X');
     }
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.value) {
-      this.setState({ value: moment.utc(newProps.value, 'X').toDate() });
+      this.setState({ value: moment.utc(newProps.value, 'X') });
     }
   }
 
-  onChange(_value) {
-    const { onChange, endOfDay } = this.props;
-    this.setState({ value: _value });
-    if (!_value) {
-      return onChange(null);
+  onChange(value) {
+    this.setState({ value });
+    if (!value) {
+      return this.props.onChange(null);
     }
-    const value = moment(_value);
-
-    if (endOfDay) {
+    value.add(value.utcOffset(), 'minute');
+    if (this.props.endOfDay) {
       value.utc().endOf('day');
     }
 
-    onChange(parseInt(value.utc().format('X'), 10));
+    this.props.onChange(parseInt(value.utc().format('X'), 10));
   }
 
   render() {
-    const { locale, format, showTimeSelect } = this.props;
+    const locale = this.props.locale || 'en';
+    const format = this.props.format || 'DD/MM/YYYY';
+
     return (
       <DatePickerComponent
         dateFormat={format}
@@ -48,26 +48,15 @@ export default class DatePicker extends Component {
         isClearable
         fixedHeight
         showYearDropdown
-        showTimeSelect={showTimeSelect}
-        timeFormat="HH:mm"
-        timeIntervals={15}
       />
     );
   }
 }
 
-DatePicker.defaultProps = {
-  showTimeSelect: false,
-  endOfDay: false,
-  locale: 'en',
-  format: 'dd/MM/yyyy',
-};
-
 DatePicker.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.any,
   endOfDay: PropTypes.bool,
-  showTimeSelect: PropTypes.bool,
   locale: PropTypes.string,
   format: PropTypes.string
 };

@@ -120,7 +120,7 @@ export class MetadataFormFields extends Component {
 
 MetadataFormFields.defaultProps = {
   multipleEdition: false,
-  dateFormat: undefined
+  dateFormat: null
 };
 
 MetadataFormFields.propTypes = {

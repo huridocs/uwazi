@@ -18,27 +18,24 @@ export default class DateRange extends Component {
   }
 
   render() {
-    const { locale, format, showTimeSelect } = this.props;
     return (
       <div>
         <div className="DatePicker__From">
           <span>{t('System', 'Label date "From"', 'From:')}&nbsp;</span>
           <DatePicker
-            locale={locale}
-            format={format}
+            locale={this.props.locale}
+            format={this.props.format}
             value={this.state.from}
             onChange={val => this.onChange('from', val)}
-            showTimeSelect={showTimeSelect}
           />
         </div>
         <div className="DatePicker__To">
           <span>&nbsp;{t('System', 'Label date "to"', 'To:')}&nbsp;</span>
           <DatePicker
-            locale={locale}
-            format={format}
+            locale={this.props.locale}
+            format={this.props.format}
             value={this.state.to}
             onChange={val => this.onChange('to', val)}
-            showTimeSelect={showTimeSelect}
           />
         </div>
       </div>
@@ -46,17 +43,10 @@ export default class DateRange extends Component {
   }
 }
 
-DateRange.defaultProps = {
-  showTimeSelect: false,
-  locale: 'en',
-  format: 'dd/MM/yyyy',
-};
-
 DateRange.propTypes = {
   model: PropTypes.string,
   value: PropTypes.object,
   onChange: PropTypes.func,
   locale: PropTypes.string,
-  format: PropTypes.string,
-  showTimeSelect: PropTypes.bool,
+  format: PropTypes.string
 };
