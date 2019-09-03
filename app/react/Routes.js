@@ -104,7 +104,6 @@ function getIndexRoute(nextState, callBack) {
 
 const routes = (
   <Route getIndexRoute={getIndexRoute}>
-    <Route path="activitylog" component={Activitylog} onEnter={needsAuth} />
     <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
       <Route path="collection" component={CollectionSettings} />
@@ -142,6 +141,7 @@ const routes = (
       <Route path="filters" component={FiltersForm} />
       <Route path="customisation" component={Customisation} />
       <Route path="custom-uploads" component={CustomUploads} />
+      <Route path="activitylog" component={Activitylog} onEnter={needsAuth} />
     </Route>
     <Route path="library" component={Library} onEnter={enterOnLibrary}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>

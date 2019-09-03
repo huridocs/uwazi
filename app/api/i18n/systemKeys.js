@@ -162,6 +162,7 @@ export default [
 { key: 'Thesaurus saved', label: 'Thesaurus saved' },
 { key: 'This action will unselect all the entities.', label: 'This action will unselect all the entities.' },
 { key: 'Title', label: 'Title' },
+{ key: 'Tools', label: 'Tools' },
 { key: 'Translate', label: 'Translate' },
 { key: 'Translations saved', label: 'Translations saved' },
 { key: 'Translations', label: 'Translations' },
