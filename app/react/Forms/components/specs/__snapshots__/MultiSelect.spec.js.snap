@@ -145,7 +145,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         className="multiselectItem-results"
       >
         <span>
-          4
+          5
         </span>
       </span>
     </label>
@@ -196,7 +196,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         className="multiselectItem-results"
       >
         <span>
-          2
+          4
         </span>
       </span>
     </label>

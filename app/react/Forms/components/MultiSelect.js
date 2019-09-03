@@ -86,7 +86,7 @@ export default class MultiSelect extends Component {
   }
 
   sort(options, optionsValue, optionsLabel, isSubGroup = false) {
-    let sortedOptions = options.sort((a, b) => {
+    const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
         sorting = (this.checked(b) || this.anyChildChecked(b)) - (this.checked(a) || this.anyChildChecked(a));
@@ -104,12 +104,25 @@ export default class MultiSelect extends Component {
       return sorting;
     });
 
-    const noValueOption = sortedOptions.find(opt => opt.noValueKey);
-    if (noValueOption && !this.checked(noValueOption)) {
-      sortedOptions = sortedOptions.filter(opt => !opt.noValueKey);
-      sortedOptions.push(noValueOption);
+    return this.moveNoValueOptionToBottom(sortedOptions);
+  }
+
+  sortOnlyAggregates(options) {
+    if (!options.length || typeof options[0].results === 'undefined') {
+      return options;
     }
-    return sortedOptions;
+    const sortedOptions = options.sort((a, b) => a.results > b.results ? -1 : 1);
+    return this.moveNoValueOptionToBottom(sortedOptions);
+  }
+
+  moveNoValueOptionToBottom(options) {
+    let _options = [...options];
+    const noValueOption = _options.find(opt => opt.noValueKey);
+    if (noValueOption && !this.checked(noValueOption)) {
+      _options = _options.filter(opt => !opt.noValueKey);
+      _options.push(noValueOption);
+    }
+    return _options;
   }
 
   hoistCheckedOptions(options) {
@@ -249,6 +262,8 @@ export default class MultiSelect extends Component {
 
     if (this.props.sort) {
       options = this.sort(options, optionsValue, optionsLabel);
+    } else {
+      options = this.sortOnlyAggregates(options);
     }
 
     if (!this.props.sort && !this.state.showAll) {

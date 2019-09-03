@@ -13,8 +13,8 @@ describe('MultiSelect', () => {
       label: 'input label',
       value: [],
       options: [
-        { label: 'Option1', value: 'option1', results: 4 },
-        { label: 'Option2', value: 'option2', results: 2 },
+        { label: 'Option1', value: 'option1', results: 5 },
+        { label: 'Option2', value: 'option2', results: 4 },
         { label: 'Sub Group',
           value: 'Group',
           results: 3,
@@ -109,8 +109,8 @@ describe('MultiSelect', () => {
         label: 'input label',
         value: [],
         options: [
-          { label: 'Option1', value: 'option1', results: 4 },
-          { label: 'Option2', value: 'option2', results: 2 },
+          { label: 'Option1', value: 'option1', results: 5 },
+          { label: 'Option2', value: 'option2', results: 4 },
           { label: 'Sub Group',
             value: 'Group',
             results: 3,
@@ -148,7 +148,7 @@ describe('MultiSelect', () => {
         value: [],
         options: [
           { name: 'Option1', id: 'option1', results: 4 },
-          { name: 'Option3', id: 'option3', results: 2 },
+          { name: 'Option3', id: 'option3', results: 3 },
           { name: 'Option2', id: 'option2', results: 2 }
         ],
         optionsValue: 'id',
@@ -174,6 +174,65 @@ describe('MultiSelect', () => {
       expect(optionElements.length).toBe(3);
       expect(optionElements.first().props().value).toBe('option1');
       expect(optionElements.last().props().value).toBe('option3');
+    });
+  });
+
+  describe('sorting', () => {
+    beforeEach(() => {
+      props = {
+        label: 'input label',
+        value: [],
+        options: [
+          { label: 'D', value: 'option1', results: 2 },
+          { label: 'A', value: 'option2', results: 1 },
+          { label: 'C', value: 'option3', results: 4 }
+        ],
+        onChange: jasmine.createSpy('onChange')
+      };
+    });
+    describe('when prop.sort is false', () => {
+      it('should sort by descending aggregated results count', () => {
+        render();
+        const options = component.find('input[type="checkbox"]');
+        expect(options.length).toBe(3);
+        expect(options.first().props().value).toBe('option3');
+        expect(options.last().props().value).toBe('option2');
+      });
+      it('should not sort if options do not have aggregate results', () => {
+        props.options = [
+          { label: 'D', value: 'option1' },
+          { label: 'A', value: 'option2' },
+          { label: 'C', value: 'option3' }
+        ];
+        render();
+        const options = component.find('input[type="checkbox"]');
+        expect(options.length).toBe(3);
+        expect(options.first().props().value).toBe('option1');
+        expect(options.at(1).props().value).toBe('option2');
+        expect(options.last().props().value).toBe('option3');
+      });
+    });
+
+    describe('when prop.sort is true', () => {
+      it('should sort by alphabetical order', () => {
+        props.sort = true;
+        render();
+        const options = component.find('input[type="checkbox"]');
+        expect(options.length).toBe(3);
+        expect(options.first().props().value).toBe('option2');
+        expect(options.at(1).props().value).toBe('option3');
+        expect(options.last().props().value).toBe('option1');
+      });
+      it('should sort by descending results if not showing all options', () => {
+        props.showAll = false;
+        props.optionsToShow = 2;
+
+        render();
+        const options = component.find('input[type="checkbox"]');
+        expect(options.length).toBe(2);
+        expect(options.first().props().value).toBe('option3');
+        expect(options.at(1).props().value).toBe('option1');
+      });
     });
   });
 
