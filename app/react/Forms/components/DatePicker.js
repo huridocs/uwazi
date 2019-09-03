@@ -41,7 +41,9 @@ class DatePicker extends Component {
   }
 
   render() {
-    const { locale = 'en', format = 'YYYY/MM/DD' } = this.props;
+    let { locale, format } = this.props;
+    locale = locale || 'en';
+    format = format || 'DD/MM/YYYY';
     const { value } = this.state;
 
     return (
