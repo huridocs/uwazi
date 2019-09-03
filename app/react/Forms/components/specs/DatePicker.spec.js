@@ -8,6 +8,8 @@ import DatePicker from '../DatePicker';
 describe('DatePicker', () => {
   let component;
   let props;
+  let input;
+
   const date = moment.utc('2016-07-28T00:00:00+00:00');
 
   beforeEach(() => {
@@ -19,18 +21,17 @@ describe('DatePicker', () => {
 
   const render = () => {
     component = shallow(<DatePicker {...props}/>);
+    input = component.find(DatePickerComponent);
   };
 
   it('should render a DatePickerComponent with the date passed', () => {
     render();
-    const input = component.find(DatePickerComponent);
     expect(input.props().selected.toString()).toEqual(date.toString());
   });
 
   describe('onChange', () => {
     it('should return the value in timestamp', () => {
       render();
-      const input = component.find(DatePickerComponent);
       input.simulate('change', date);
       expect(props.onChange).toHaveBeenCalledWith(1469664000);
     });
@@ -38,7 +39,6 @@ describe('DatePicker', () => {
     describe('when clearing the input', () => {
       it('should return empty value', () => {
         render();
-        const input = component.find(DatePickerComponent);
         input.simulate('change');
         expect(props.onChange).toHaveBeenCalledWith(null);
       });
@@ -48,24 +48,33 @@ describe('DatePicker', () => {
       it('should set the value to the end of the day', () => {
         props.endOfDay = true;
         render();
-        const input = component.find(DatePickerComponent);
         input.simulate('change', date);
         expect(props.onChange).toHaveBeenCalledWith(1469750399);
       });
     });
 
     describe('when the value is not utc', () => {
-      it('should add the utc offset to the value', () => {
+      const expectChange = (first, second) => {
         render();
-        const input = component.find(DatePickerComponent);
 
         const twoHoursFromUtc = moment('2016-07-28T00:00:00+02:00').tz('Europe/Madrid');
         input.simulate('change', twoHoursFromUtc);
-        expect(props.onChange).toHaveBeenCalledWith(1469664000);
+        expect(props.onChange).toHaveBeenCalledWith(first);
 
         const twoHoursAfterUtc = moment('2016-07-28T00:00:00-02:00').tz('Europe/Madrid');
         input.simulate('change', twoHoursAfterUtc);
-        expect(props.onChange).toHaveBeenCalledWith(1469664000);
+        expect(props.onChange).toHaveBeenCalledWith(second);
+      };
+
+      it('should add the utc offset to the value by default', () => {
+        expectChange(1469664000, 1469664000);
+      });
+
+      it('should allow to use local timezone (keep UTC offset) if configured', () => {
+        props.useTimezone = true;
+        expectChange(1469656800, 1469671200);
+        props.endOfDay = true;
+        expectChange(1469743199, 1469743199);
       });
     });
   });

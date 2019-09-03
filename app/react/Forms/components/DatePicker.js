@@ -22,15 +22,18 @@ class DatePicker extends Component {
   }
 
   onChange(value) {
-    const { onChange, endOfDay } = this.props;
+    const { onChange, endOfDay, useTimezone } = this.props;
     this.setState({ value });
     if (!value) {
       onChange(null);
     } else {
-      value.add(value.utcOffset(), 'minute');
+      if (!useTimezone) {
+        value.add(value.utcOffset(), 'minute');
+      }
 
       if (endOfDay) {
-        value.utc().endOf('day');
+        const method = useTimezone ? value : value.utc();
+        method.endOf('day');
       }
 
       onChange(parseInt(value.utc().format('X'), 10));
@@ -38,7 +41,7 @@ class DatePicker extends Component {
   }
 
   render() {
-    const { locale = 'en', format = 'DD/MM/YYYY' } = this.props;
+    const { locale = 'en', format = 'YYYY/MM/DD' } = this.props;
     const { value } = this.state;
 
     return (
@@ -62,7 +65,8 @@ DatePicker.defaultProps = {
   value: undefined,
   endOfDay: false,
   locale: undefined,
-  format: undefined
+  format: undefined,
+  useTimezone: false
 };
 
 DatePicker.propTypes = {
@@ -70,7 +74,8 @@ DatePicker.propTypes = {
   value: PropTypes.number,
   endOfDay: PropTypes.bool,
   locale: PropTypes.string,
-  format: PropTypes.string
+  format: PropTypes.string,
+  useTimezone: PropTypes.bool
 };
 
 export default DatePicker;
