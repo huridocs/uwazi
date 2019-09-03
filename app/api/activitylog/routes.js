@@ -1,7 +1,5 @@
 import Joi from 'joi';
-
 import { validation } from '../utils';
-
 import needsAuthorization from '../auth/authMiddleware';
 import activitylog from './activitylog';
 
@@ -9,7 +7,7 @@ export default (app) => {
   app.get(
     '/api/activitylog',
 
-    needsAuthorization(),
+    needsAuthorization(['admin']),
 
     validation.validateRequest(Joi.object().keys({
       user: Joi.objectId(),
