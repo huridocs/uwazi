@@ -88,7 +88,7 @@ describe('search filters path', () => {
 
     it('should filter by multiple options', (done) => {
       filterBySuperVillian();
-      filterBySuperPowers('hyper speed kick');
+      filterBySuperPowers('laser beam');
       filterBySuperPowers('fly')
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
