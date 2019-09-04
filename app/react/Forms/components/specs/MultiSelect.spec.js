@@ -198,11 +198,22 @@ describe('MultiSelect', () => {
         expect(options.first().props().value).toBe('option3');
         expect(options.last().props().value).toBe('option2');
       });
+      it('should use alphabetical order as tie breaker if items have the same count', () => {
+        props.options[0].results = 4;
+        props.options.push({ label: 'B', value: 'option4', results: 1 });
+        render();
+        const options = component.find('input[type="checkbox"]');
+        expect(options.length).toBe(4);
+        expect(options.first().props().value).toBe('option3');
+        expect(options.at(1).props().value).toBe('option1');
+        expect(options.at(2).props().value).toBe('option2');
+        expect(options.last().props().value).toBe('option4');
+      });
       it('should not sort if options do not have aggregate results', () => {
         props.options = [
           { label: 'D', value: 'option1' },
           { label: 'A', value: 'option2' },
-          { label: 'C', value: 'option3' }
+          { label: 'C', value: 'option3' },
         ];
         render();
         const options = component.find('input[type="checkbox"]');

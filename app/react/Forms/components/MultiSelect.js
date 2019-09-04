@@ -107,11 +107,19 @@ export default class MultiSelect extends Component {
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
-  sortOnlyAggregates(options) {
+  sortOnlyAggregates(options, optionsvalue, optionsLabel) {
     if (!options.length || typeof options[0].results === 'undefined') {
       return options;
     }
-    const sortedOptions = options.sort((a, b) => a.results > b.results ? -1 : 1);
+    const sortedOptions = options.sort((a, b) => {
+      let sorting = b.results - a.results;
+
+      if (sorting === 0) {
+        sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
+      }
+
+      return sorting;
+    });
     return this.moveNoValueOptionToBottom(sortedOptions);
   }
 
@@ -263,7 +271,7 @@ export default class MultiSelect extends Component {
     if (this.props.sort) {
       options = this.sort(options, optionsValue, optionsLabel);
     } else {
-      options = this.sortOnlyAggregates(options);
+      options = this.sortOnlyAggregates(options, optionsValue, optionsLabel);
     }
 
     if (!this.props.sort && !this.state.showAll) {
