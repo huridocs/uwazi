@@ -11,6 +11,7 @@ selectors.libraryView.filters = {
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
   superPowers: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li',
   superPowersAndOrSwitch: '#filtersForm > div:nth-child(1) > ul > li:nth-child(1) > div > label',
+  superPowerMoreButton: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > .multiselectActions button',
   searchButton: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > button',
   planetsConqueredFrom: '#filtersForm div.Numeric__From > input',
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
@@ -48,7 +49,7 @@ describe('search filters path', () => {
 
   describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
-      nightmare
+      nightmare.gotoLibrary()
       .library.clickFilter(selectors.libraryView.superVillianType)
       .wait(3000)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
@@ -165,6 +166,41 @@ describe('search filters path', () => {
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
         expect(text).toBe('Daneryl');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('sorting of filters', () => {
+    it('should order them by aggregated value', (done) => {
+      filterBySuperVillian()
+      .getInnerText(selectors.libraryView.filters.firstPower)
+      .then((text) => {
+        expect(text).toBe('create chaos');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should show selected filter values first', (done) => {
+      filterBySuperVillian();
+      filterBySuperPowers('fly')
+      .getInnerText(selectors.libraryView.filters.firstPower)
+      .then((text) => {
+        expect(text).toBe('fly');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should order by aggregation count despite of selected value when expanded', (done) => {
+      filterBySuperVillian();
+      filterBySuperPowers('fly')
+      .click(selectors.libraryView.filters.superPowerMoreButton)
+      .getInnerText(selectors.libraryView.filters.firstPower)
+      .then((text) => {
+        expect(text).toBe('create chaos');
         done();
       })
       .catch(catchErrors(done));
