@@ -7,6 +7,7 @@ import insertFixtures from '../helpers/insertFixtures';
 selectors.libraryView.filters = {
   firstPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
   secondPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name',
+  thirdPorwer: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(4) > label > span.multiselectItem-name',
   sixthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
   superPowers: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li',
@@ -42,6 +43,21 @@ const filterBySuperPowers = superPower => (
   .clickMultiselectOption(selectors.libraryView.filters.superPowers, superPower)
   .library.waitForSearchToFinish()
 );
+
+const expectSuperPowersTexts = ([firstPower, secondPower, thirdPower]) =>
+  nightmare.getInnerText(selectors.libraryView.filters.firstPower)
+  .then((text) => {
+    expect(text).toBe(firstPower);
+    return nightmare.getInnerText(selectors.libraryView.filters.secondPower);
+  })
+  .then((text) => {
+    expect(text).toBe(secondPower);
+    return nightmare.getInnerText(selectors.libraryView.filters.thirdPorwer);
+  })
+  .then((text) => {
+    expect(text).toBe(thirdPower);
+    return Promise.resolve();
+  });
 
 describe('search filters path', () => {
   beforeAll(async () => insertFixtures());
@@ -174,35 +190,26 @@ describe('search filters path', () => {
 
   describe('sorting of filters', () => {
     it('should order them by aggregated value', (done) => {
-      filterBySuperVillian()
-      .getInnerText(selectors.libraryView.filters.firstPower)
-      .then((text) => {
-        expect(text).toBe('create chaos');
-        done();
-      })
+      filterBySuperVillian();
+      expectSuperPowersTexts(['create chaos', 'tricky weapons', 'fly'])
+      .then(done)
       .catch(catchErrors(done));
     });
 
     it('should show selected filter values first', (done) => {
       filterBySuperVillian();
-      filterBySuperPowers('fly')
-      .getInnerText(selectors.libraryView.filters.firstPower)
-      .then((text) => {
-        expect(text).toBe('fly');
-        done();
-      })
+      filterBySuperPowers('fly');
+      expectSuperPowersTexts(['fly', 'create chaos', 'tricky weapons'])
+      .then(done)
       .catch(catchErrors(done));
     });
 
     it('should order by aggregation count despite of selected value when expanded', (done) => {
       filterBySuperVillian();
       filterBySuperPowers('fly')
-      .click(selectors.libraryView.filters.superPowerMoreButton)
-      .getInnerText(selectors.libraryView.filters.firstPower)
-      .then((text) => {
-        expect(text).toBe('create chaos');
-        done();
-      })
+      .click(selectors.libraryView.filters.superPowerMoreButton);
+      expectSuperPowersTexts(['create chaos', 'tricky weapons', 'fly'])
+      .then(done)
       .catch(catchErrors(done));
     });
   });
