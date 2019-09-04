@@ -14,12 +14,13 @@ import entitiesAPI from 'app/Entities/EntitiesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { scrollToPage, activateReference } from './actions/uiActions';
 
-import { requestViewerState, setViewerState } from './actions/routeActions';
+import { requestViewerState } from './actions/routeActions';
 
 class ViewDocument extends RouteHandler {
   constructor(props, context) {
     //Force client state even if is rendered from server to force the pdf character count process
-    RouteHandler.renderedFromServer = props.renderedFromServer || false;
+    // @konzz I have removed this line!
+    // RouteHandler.renderedFromServer = props.renderedFromServer || false;
     //
     super(props, context);
     this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
@@ -28,6 +29,7 @@ class ViewDocument extends RouteHandler {
   }
 
   static async requestState(requestParams, globalResources) {
+    console.log('Executing requestState', requestParams);
     return requestViewerState(
       requestParams.add({ raw: (requestParams.data.raw === 'true') || !isClient }),
       globalResources
@@ -69,10 +71,6 @@ class ViewDocument extends RouteHandler {
     this.context.store.dispatch(actions.unset('viewer/targetDoc'));
     this.context.store.dispatch(setReferences([]));
     this.context.store.dispatch(relationships.emptyState());
-  }
-
-  setReduxState(state) {
-    this.context.store.dispatch(setViewerState(state));
   }
 
   changePage(nextPage) {

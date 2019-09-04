@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { List } from 'immutable';
 
 import { ConnectionsList } from 'app/ConnectionsList';
 import { CreateConnectionPanel } from 'app/Connections';
@@ -16,6 +17,7 @@ import Footer from 'app/App/Footer';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { PaginatorWithPage } from './Paginator';
 import { addReference } from '../actions/referencesActions';
@@ -30,6 +32,8 @@ import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 
 import determineDirection from '../utils/determineDirection';
+import { requestViewerState } from '../actions/routeActions';
+
 
 export class Viewer extends Component {
   constructor(props) {
@@ -53,6 +57,24 @@ export class Viewer extends Component {
     this.context.store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
+
+    // ---------------------------------------------------------------------------------------------------------------------
+    // @konzz I have added this which is the component that receives the doc... the documentViewer knows nothing about it.
+    // TEST!!!
+    const { store } = this.context;
+    const { doc } = store.getState().documentViewer;
+    const { templates } = this.props;
+
+    if (doc.size && !doc.get('pdfInfo')) {
+      console.log('Missing pdfInfo, and server rendered!!!');
+      requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), { templates: templates.toJS() })
+      .then((viewerActions) => {
+        viewerActions.forEach((action) => {
+          store.dispatch(action);
+        });
+      });
+    }
+    // ---------------------------------------------------------------------------------------------------------------------
   }
 
   renderNoDoc() {
@@ -174,6 +196,7 @@ Viewer.defaultProps = {
   changePage: () => {},
   onDocumentReady: () => {},
   page: 1,
+  templates: List()
 };
 
 Viewer.propTypes = {
@@ -196,6 +219,7 @@ Viewer.propTypes = {
   selectedConnectionMetadata: PropTypes.object,
   showTab: PropTypes.func,
   page: PropTypes.number,
+  templates: PropTypes.instanceOf(List),
 };
 
 Viewer.contextTypes = {
@@ -214,7 +238,9 @@ const mapStateToProps = (state) => {
     // TEST!!!
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
-    showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
+    showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange),
+    // TEST!!!
+    templates: state.templates,
   };
 };
 
