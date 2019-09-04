@@ -6,8 +6,8 @@ export default {
     .then(response => response.json);
   },
 
-  get() {
-    return api.get('settings')
+  get(query, headers) {
+    return api.get('settings', query, headers)
     .then(response => response.json);
   }
 };

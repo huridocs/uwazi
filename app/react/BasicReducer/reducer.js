@@ -6,6 +6,8 @@ const UPDATE_IN = 'UPDATE_IN';
 const UNSET = 'UNSET';
 const REMOVE = 'REMOVE';
 const PUSH = 'PUSH';
+const CONCAT = 'CONCAT';
+const CONCAT_IN = 'CONCAT_IN';
 
 export default function createReducer(namespace, defaultValue) {
   return (currentState = defaultValue, action = {}) => {
@@ -20,6 +22,12 @@ export default function createReducer(namespace, defaultValue) {
 
     case `${namespace}/${PUSH}`:
       return currentState.push(Immutable.fromJS(action.value));
+
+    case `${namespace}/${CONCAT}`:
+      return currentState.concat(Immutable.fromJS(action.value));
+
+    case `${namespace}/${CONCAT_IN}`:
+      return currentState.updateIn(action.key, collection => collection.concat(Immutable.fromJS(action.value)));
 
     case `${namespace}/${REMOVE}`:
       return Immutable.fromJS(currentState).filter(object => object.get('_id') !== action.value._id);
@@ -79,9 +87,35 @@ export function push(namespace, value) {
   };
 }
 
+export function concat(namespace, value) {
+  return {
+    type: `${namespace}/${CONCAT}`,
+    value
+  };
+}
+
+export function concatIn(namespace, key, value) {
+  return {
+    type: `${namespace}/${CONCAT_IN}`,
+    key,
+    value
+  };
+}
+
 export function remove(namespace, value) {
   return {
     type: `${namespace}/${REMOVE}`,
     value
   };
 }
+
+export const actions = {
+  update,
+  updateIn,
+  set,
+  unset,
+  push,
+  concat,
+  concatIn,
+  remove
+};

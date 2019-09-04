@@ -24,6 +24,20 @@ Object {
       ],
       "type": "string",
     },
+    "allowedPublicTemplates": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
     "analyticsTrackingId": Object {
       "type": "string",
       "valids": Array [
@@ -62,6 +76,23 @@ Object {
       "valids": Array [
         "",
       ],
+    },
+    "features": Object {
+      "children": Object {
+        "semanticSearch": Object {
+          "falsy": Array [
+            false,
+          ],
+          "flags": Object {
+            "insensitive": true,
+          },
+          "truthy": Array [
+            true,
+          ],
+          "type": "boolean",
+        },
+      },
+      "type": "object",
     },
     "filters": Object {
       "flags": Object {
@@ -224,6 +255,12 @@ Object {
         "",
       ],
       "type": "string",
+    },
+    "publicFormDestination": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
     },
     "site_name": Object {
       "type": "string",

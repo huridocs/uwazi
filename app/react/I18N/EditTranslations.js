@@ -6,13 +6,11 @@ import { actions } from 'app/I18N/';
 import { I18NApi } from 'app/I18N';
 
 export default class EditTranslations extends RouteHandler {
-  static requestState() {
-    return I18NApi.get()
-    .then(translations => ({ translations }));
-  }
-
-  setReduxState({ translations }) {
-    this.context.store.dispatch(actions.editTranslations(translations));
+  static async requestState(requestParams) {
+    const translations = await I18NApi.get(requestParams);
+    return [
+      actions.editTranslations(translations)
+    ];
   }
 
   render() {

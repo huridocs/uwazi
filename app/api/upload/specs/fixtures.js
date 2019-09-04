@@ -18,8 +18,13 @@ export default {
     { _id: templateId, default: true, name: 'mydoc', properties: [] }
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'es', default: true }] }
-  ]
+    {
+      _id: db.id(),
+      languages: [{ key: 'es', default: true }],
+      publicFormDestination: 'http://localhost:54321',
+      allowedPublicTemplates: [templateId.toString()]
+    }
+  ],
 };
 
 export {

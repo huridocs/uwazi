@@ -1,23 +1,18 @@
 import api from 'app/utils/api';
 
 export default {
-  get(id) {
-    const params = {};
-    if (id) {
-      params._id = id;
-    }
-
-    return api.get('relationtypes', params)
+  get(request) {
+    return api.get('relationtypes', request)
     .then(response => response.json.rows);
   },
 
-  save(relationType) {
-    return api.post('relationtypes', relationType)
+  save(request) {
+    return api.post('relationtypes', request)
     .then(response => response.json);
   },
 
-  delete(relationType) {
-    return api.delete('relationtypes', { _id: relationType._id })
+  delete(request) {
+    return api.delete('relationtypes', request)
     .then(response => response.json);
   }
 };

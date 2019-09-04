@@ -11,21 +11,21 @@ import entitiesAPI from './EntitiesAPI';
 import * as uiActions from './actions/uiActions';
 
 export default class Entity extends RouteHandler {
-  static requestState({ entityId }, query, state) {
-    return Promise.all([
-      entitiesAPI.get(entityId),
-      relationTypesAPI.get(),
-      relationships.requestState(entityId, state)
-    ])
-    .then(([entities, relationTypes, [connectionsGroups, searchResults, sort, filters]]) => {
-      const entity = entities[0];
-      return {
-        entityView: {
-          entity
-        },
+  static async requestState(requestParams, state) {
+    const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
+      await Promise.all([
+        entitiesAPI.get(requestParams.set({ sharedId: requestParams.data.sharedId })),
+        relationTypesAPI.get(requestParams.onlyHeaders()),
+        relationships.requestState(requestParams, state)
+      ]);
+
+    return [
+      actions.set('relationTypes', relationTypes),
+      actions.set('entityView/entity', entity),
+      relationships.setReduxState({
         relationships: {
           list: {
-            entityId: entity.sharedId,
+            sharedId: entity.sharedId,
             entity,
             connectionsGroups,
             searchResults,
@@ -33,10 +33,9 @@ export default class Entity extends RouteHandler {
             filters,
             view: 'graph'
           }
-        },
-        relationTypes
-      };
-    });
+        }
+      }),
+    ];
   }
 
   componentWillMount() {
@@ -50,12 +49,6 @@ export default class Entity extends RouteHandler {
   emptyState() {
     this.context.store.dispatch(actions.unset('entityView/entity'));
     this.context.store.dispatch(relationships.emptyState());
-  }
-
-  setReduxState(state) {
-    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
-    this.context.store.dispatch(actions.set('entityView/entity', state.entityView.entity));
-    this.context.store.dispatch(relationships.setReduxState(state));
   }
 
   static renderTools() {

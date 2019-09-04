@@ -103,6 +103,33 @@ describe('BasicReducer', () => {
     });
   });
 
+  describe('Concat', () => {
+    it('should concat an array to the list', () => {
+      const reducer1 = createReducer('1', []);
+      const reducer2 = createReducer('2', []);
+
+      const newState1 = reducer1(Immutable([1, 2, 3]), actions.concat('1', [4, 5]));
+      const newState2 = reducer2(Immutable([1, 2, 3]), actions.concat('1', [4, 5]));
+
+      expect(newState1.toJS()).toEqual([1, 2, 3, 4, 5]);
+      expect(newState2.toJS()).toEqual([1, 2, 3]);
+    });
+  });
+
+  describe('Concat In', () => {
+    it('should concat an array to the list at the specified key in the map', () => {
+      const reducer1 = createReducer('1', {});
+      const reducer2 = createReducer('2', {});
+
+      const initial = { nested: { key: [1, 2] } };
+      const newState1 = reducer1(Immutable(initial), actions.concatIn('1', ['nested', 'key'], [3, 4]));
+      const newState2 = reducer2(Immutable(initial), actions.concatIn('1', ['nested', 'key'], [3, 4]));
+
+      expect(newState1.toJS().nested.key).toEqual([1, 2, 3, 4]);
+      expect(newState2.toJS().nested.key).toEqual([1, 2]);
+    });
+  });
+
   describe('Delete', () => {
     it('should delete an element from the array based on the id', () => {
       const reducer1 = createReducer('namespace1', []);

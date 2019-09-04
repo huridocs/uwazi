@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import { isClient } from 'app/utils';
 import { Link } from 'react-router';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -68,7 +69,8 @@ export class CollectionSettings extends Component {
     const dateSeparator = props.settings.dateFormat && props.settings.dateFormat.includes('/') ? '/' : '-';
     const dateFormat = CollectionSettings.getDateFormatValue(settings.dateFormat, dateSeparator);
     const customLandingpage = Boolean(props.settings.home_page);
-    this.state = Object.assign({}, settings, { dateSeparator, customLandingpage, dateFormat });
+    const allowedPublicTemplatesString = settings.allowedPublicTemplates ? settings.allowedPublicTemplates.join(',') : '';
+    this.state = Object.assign({}, settings, { dateSeparator, customLandingpage, dateFormat, allowedPublicTemplatesString });
     this.updateSettings = this.updateSettings.bind(this);
   }
 
@@ -76,21 +78,27 @@ export class CollectionSettings extends Component {
     const settings = Object.assign({}, values);
     delete settings.customLandingpage;
     delete settings.dateSeparator;
+    delete settings.allowedPublicTemplatesString;
+
     settings.dateFormat = CollectionSettings.getDateFormat(values.dateFormat, values.dateSeparator);
 
     if (!values.customLandingpage) {
       settings.home_page = '';
     }
 
-    SettingsAPI.save(settings)
+    settings.allowedPublicTemplates = values.allowedPublicTemplatesString ? values.allowedPublicTemplatesString.split(',') : [];
+
+    SettingsAPI.save(new RequestParams(settings))
     .then((result) => {
-      this.props.notify(t('System', 'Settings updated', null, false), 'success');
-      this.props.setSettings(result);
+      const { notify, setSettings } = this.props;
+      notify(t('System', 'Settings updated', null, false), 'success');
+      setSettings(result);
     });
   }
 
   render() {
     const hostname = isClient ? window.location.origin : '';
+    const { dateSeparator, customLandingpage } = this.state;
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Collection')}</div>
@@ -118,7 +126,7 @@ export class CollectionSettings extends Component {
               />
               <div>{t('System', 'Order')}</div>
               <RadioButtons
-                options={CollectionSettings.dateFormatOptions(this.state.dateSeparator)}
+                options={CollectionSettings.dateFormatOptions(dateSeparator)}
                 model=".dateFormat"
                 renderLabel={CollectionSettings.renderDateFormatLabel}
               />
@@ -131,11 +139,11 @@ export class CollectionSettings extends Component {
                 model=".customLandingpage"
               />
               <div className="input-group">
-                <span disabled={!this.state.customLandingpage} className="input-group-addon">
+                <span disabled={!customLandingpage} className="input-group-addon">
                   {hostname}
                 </span>
                 <Control.text
-                  disabled={!this.state.customLandingpage}
+                  disabled={!customLandingpage}
                   model=".home_page"
                   className="form-control"
                 />
@@ -184,6 +192,15 @@ export class CollectionSettings extends Component {
                 rows="5"
               />
             </div>
+            <div className="alert alert-info">
+              <Icon icon="envelope" size="2x" />
+              <div className="force-ltr">
+                This is a JSON configuration object that should match the options values required by Nodemailer,
+                as explained in <a href="https://nodemailer.com/smtp/" target="_blank" rel="noopener noreferrer">nodemailer.com/smtp/</a><br />
+                This setting takes precedence over all other mailer configuration.<br />
+                If left blank, then the configuration file in /api/config/mailer.js will be used.
+              </div>
+            </div>
             <div className="form-group">
               <label className="form-group-label" htmlFor="collectionContactEmail">{t('System', 'Contact email')}</label>
               <Control.text
@@ -191,13 +208,32 @@ export class CollectionSettings extends Component {
                 className="form-control"
               />
             </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionPublicFormDestination">{t('System', 'Public Form destination')}</label>
+              <Control.text
+                id="collectionPublicFormDestination"
+                model=".publicFormDestination"
+                className="form-control"
+              />
+            </div>
             <div className="alert alert-info">
-              <Icon icon="envelope" size="2x" />
               <div className="force-ltr">
-                This is a JSON configuration object that should match the options values required by Nodemailer,
-                as explained in <a href="https://nodemailer.com/smtp/" target="_blank">nodemailer.com/smtp/</a><br />
-                This setting takes precedence over all other mailer configuration.<br />
-                If left blank, then the configuration file in /api/config/mailer.js will be used.
+                You can configure the URL of a different Uwazi to receive the submits from your Public Form
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-group-label" htmlFor="collectionAllowedPublicTemplates">{t('System', 'Allowed Public Templates')}</label>
+              <Control.text
+                id="collectionAllowedPublicTemplates"
+                model=".allowedPublicTemplatesString"
+                className="form-control"
+              />
+            </div>
+            <div className="alert alert-info">
+              <div className="force-ltr">
+                If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected.
+                Please include a comma-separated list of tempate IDs without spaces. For example:<br/ >
+                5d5b0698e28d130bc98efc8b,5d5d876aa77a121bf9cdd1ff
               </div>
             </div>
             <span className="form-group-label" >{t('System', 'Show Cookie policy')}</span>

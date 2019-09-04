@@ -1,5 +1,6 @@
 import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions as basicActions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
@@ -34,7 +35,7 @@ describe('Page actions', () => {
       actions.savePage('data')(dispatch);
       expect(dispatch.calls.count()).toBe(1);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
-      expect(api.save).toHaveBeenCalledWith('data');
+      expect(api.save).toHaveBeenCalledWith(new RequestParams('data'));
     });
 
     describe('upon success', () => {
@@ -79,7 +80,7 @@ describe('Page actions', () => {
     const data = { sharedId: 'page1', _id: 'id' };
     it('should delete the page', () => {
       actions.deletePage(data)(dispatch);
-      expect(api.delete).toHaveBeenCalledWith({ sharedId: 'page1' });
+      expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: 'page1' }));
     });
 
     describe('upon success', () => {

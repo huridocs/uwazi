@@ -2,22 +2,17 @@ import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
 import { editRelationType } from 'app/RelationTypes/actions/relationTypesActions';
-import api from 'app/RelationTypes/RelationTypesAPI';
+import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import TemplateCreator from '../Templates/components/TemplateCreator';
 
 export default class EditRelationType extends RouteHandler {
-  static requestState({ relationTypeId }) {
-    return api.get(relationTypeId)
-    .then(([relationType]) => {
-      if (!relationType.properties) {
-        relationType.properties = [];
-      }
-      return { relationType };
-    });
-  }
+  static async requestState(requestParams) {
+    const [relationType] = await relationTypesAPI.get(requestParams);
+    relationType.properties = relationType.properties || [];
 
-  setReduxState({ relationType }) {
-    this.context.store.dispatch(editRelationType(relationType));
+    return [
+      editRelationType(relationType)
+    ];
   }
 
   render() {

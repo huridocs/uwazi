@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet';
 import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import React from 'react';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { actions } from 'app/BasicReducer';
 import { isClient, events } from 'app/utils';
@@ -26,8 +27,11 @@ class ViewDocument extends RouteHandler {
     this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
-  static requestState(routeParams, query = {}, globalResources) {
-    return requestViewerState({ ...routeParams, raw: (query.raw === 'true') || !isClient, page: query.page }, globalResources);
+  static async requestState(requestParams, globalResources) {
+    return requestViewerState(
+      requestParams.add({ raw: (requestParams.data.raw === 'true') || !isClient }),
+      globalResources
+    );
   }
 
   componentWillUnmount() {
@@ -47,7 +51,8 @@ class ViewDocument extends RouteHandler {
       this.changePage(query.page);
     }
     if ((query.page !== this.props.location.query.page || query.raw !== this.props.location.query.raw) && query.raw === 'true') {
-      return entitiesAPI.getRawPage(props.params.documentId, query.page)
+      const { sharedId } = props.params;
+      return entitiesAPI.getRawPage(new RequestParams({ sharedId, pageNumber: query.page }))
       .then((pageText) => {
         this.context.store.dispatch(actions.set('viewer/rawText', pageText));
       });

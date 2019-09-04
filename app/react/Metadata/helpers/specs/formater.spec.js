@@ -1,7 +1,8 @@
 /* eslint-disable max-statements */
 import Immutable from 'immutable';
 
-import metadataSelectors from '../../selectors';
+import { metadataSelectors } from '../../selectors';
+
 import formater from '../formater';
 import { doc, templates, thesauris, relationships } from './fixtures';
 
@@ -44,10 +45,10 @@ describe('metadata formater', () => {
     let nested;
 
     beforeAll(() => {
-      data = formater.prepareMetadata(doc, templates, thesauris, relationships);
+      data = formater.prepareMetadata(doc, templates, metadataSelectors.indexedThesaurus({ thesauris }), relationships);
       [text, date, multiselect, multidate, daterange, multidaterange, markdown,
-       select, image, preview, media, relationship1, relationship2, relationship3, relationship4,
-       geolocation, nested] =
+        select, image, preview, media, relationship1, relationship2, relationship3, relationship4,
+        geolocation, nested] =
         data.metadata;
     });
 
@@ -106,7 +107,7 @@ describe('metadata formater', () => {
     });
 
     it('should process select type', () => {
-      assessBasicProperties(select, ['Select', 'select', 'templateID', 'Value 3']);
+      assessBasicProperties(select, ['Select', 'select', 'templateID', 'Value 5']);
     });
 
     it('should process bound relationship types', () => {
@@ -286,7 +287,7 @@ describe('metadata formater', () => {
       const state = { templates, thesauris };
       const metadata = metadataSelectors.formatMetadata(state, doc, null, relationships);
       expect(metadata).toBe('metadataFormated');
-      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, thesauris, relationships);
+      expect(formater.prepareMetadata).toHaveBeenCalledWith(doc, templates, metadataSelectors.indexedThesaurus(state), relationships);
     });
 
     describe('when passing sortProperty', () => {
@@ -295,7 +296,7 @@ describe('metadata formater', () => {
         const state = { templates, thesauris };
         const metadata = metadataSelectors.formatMetadata(state, doc, 'sortProperty', relationships);
         expect(metadata).toBe('metadataFormated');
-        expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, thesauris, 'sortProperty');
+        expect(formater.prepareMetadataForCard).toHaveBeenCalledWith(doc, templates, metadataSelectors.indexedThesaurus(state), 'sortProperty');
       });
     });
   });

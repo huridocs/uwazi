@@ -130,10 +130,8 @@ export default {
         currentDefault.default = false;
         saveCurrentDefault = this.save(currentDefault);
       }
-
       return Promise.all([this.save(templateToBeDefault), saveCurrentDefault]);
-    })
-    .catch(console.log);
+    });
   },
 
   getById(templateId) {

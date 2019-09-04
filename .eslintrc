@@ -75,7 +75,7 @@
       //import
       "import/no-duplicates": ["warn"],
       "import/no-named-as-default": ["warn"],
-      "import/prefer-default-export": ["warn"],
+      "import/prefer-default-export": ["off"],
       "import/first": ["warn"],
       "import/newline-after-import": ["warn"],
       "import/extensions": "never",

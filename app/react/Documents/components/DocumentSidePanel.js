@@ -13,6 +13,7 @@ import Connections from 'app/Viewer/components/ConnectionsList';
 import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
@@ -102,6 +103,18 @@ export class DocumentSidePanel extends Component {
           </button>
           <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
             <ul className="nav nav-tabs">
+              {(() => {
+                if (!this.props.raw && doc.get('semanticSearch')) {
+                  return (
+                    <li>
+                      <TabLink to="semantic-search-results">
+                        <Icon icon="flask" />
+                        <span className="tab-link-tooltip">{t('System', 'Semantic search results')}</span>
+                      </TabLink>
+                    </li>
+                  );
+                }
+              })()}
               {(() => {
                 if (!this.props.raw) {
                   return (
@@ -256,6 +269,9 @@ export class DocumentSidePanel extends Component {
             </TabContent>
             <TabContent for="connections">
               <ConnectionsGroups />
+            </TabContent>
+            <TabContent for="semantic-search-results">
+              <DocumentSemanticSearchResults doc={this.props.doc.toJS()}/>
             </TabContent>
           </Tabs>
         </div>

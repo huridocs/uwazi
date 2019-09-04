@@ -55,6 +55,12 @@ Object {
         "",
       ],
     },
+    "sharedId": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
     "sort": Object {
       "type": "string",
       "valids": Array [

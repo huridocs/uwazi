@@ -5,6 +5,9 @@ import request from 'supertest';
 import db from 'api/utils/testing_db';
 
 import users from 'api/users/users';
+import svgCaptcha from 'svg-captcha';
+import backend from 'fetch-mock';
+import { Readable } from 'stream';
 import authRoutes from '../routes';
 import fixtures from './fixtures.js';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -73,6 +76,34 @@ describe('Auth Routes', () => {
         const passwordHasBeenChanged = await comparePasswords('oldPassword', oldUser.password);
         expect(passwordHasBeenChanged).toBe(true);
       });
+    });
+  });
+
+  describe('/captcha', () => {
+    it('should return the captcha and store its value in session', async () => {
+      spyOn(svgCaptcha, 'createMathExpr').and.returnValue({ data: 'captchaImage', text: 42 });
+      const req = { session: {} };
+      const response = await routes.get('/captcha', req);
+      expect(req.session.captcha).toBe(42);
+      expect(response).toBe('send:captchaImage');
+    });
+  });
+
+  describe('/remotecaptcha', () => {
+    beforeEach(() => {
+      const stream = new Readable();
+      stream.push('captchaImage');
+      stream.push(null);
+      backend.restore();
+      backend
+      .get('http://secret.place.io/captcha', { body: stream, headers: { 'set-cookie': ['connect.ssid: 12n32ndi23j4hsj;'] } }, { sendAsJson: false });
+    });
+
+    it('should return the captcha and store its value in session', async () => {
+      const req = { session: {} };
+      const response = await routes.get('/remotecaptcha', req);
+      expect(req.session.remotecookie).toBe('connect.ssid: 12n32ndi23j4hsj;');
+      expect(response).toBe('captchaImage');
     });
   });
 });

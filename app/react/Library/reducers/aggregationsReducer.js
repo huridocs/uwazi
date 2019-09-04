@@ -5,7 +5,6 @@ const reducer = createReducer('aggregations', {});
 
 export default function aggregations(state, _action = {}) {
   let action = _action;
-
   if (action.type === types.INITIALIZE_FILTERS_FORM) {
     action = actions.set('aggregations', action.aggregations);
   }

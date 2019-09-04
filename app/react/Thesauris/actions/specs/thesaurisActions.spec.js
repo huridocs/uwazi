@@ -44,9 +44,8 @@ describe('thesaurisActions', () => {
 
     describe('checkThesauriCanBeDeleted', () => {
       it('should return a promise if the thesauri is NOT been use', (done) => {
-        const thesauri = { _id: 'thesauriWithoutTemplates' };
-
-        actions.checkThesauriCanBeDeleted(thesauri)(dispatch)
+        const data = { _id: 'thesauriWithoutTemplates' };
+        actions.checkThesauriCanBeDeleted(data)(dispatch)
         .then(() => {
           done();
         })
@@ -57,9 +56,8 @@ describe('thesaurisActions', () => {
       });
 
       it('should reject a promise if the thesauri IS been use', (done) => {
-        const thesauri = { _id: 'thesauriWithTemplates' };
-
-        actions.checkThesauriCanBeDeleted(thesauri)(dispatch)
+        const data = { _id: 'thesauriWithTemplates' };
+        actions.checkThesauriCanBeDeleted(data)(dispatch)
         .then(() => {
           expect('Promise to be rejected').toBe(false);
           done();

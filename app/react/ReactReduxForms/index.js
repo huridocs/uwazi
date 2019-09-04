@@ -13,6 +13,7 @@ const MultiDate = props => <Control.select component={forms.MultiDate} {...props
 const MultiDateRange = props => <Control.select component={forms.MultiDateRange} {...props}/>;
 const Numeric = props => <Control component={forms.Numeric} {...props}/>;
 const NumericRange = props => <Control.select component={forms.NumericRange} {...props}/>;
+const NumericRangeSlide = props => <Control.select component={forms.NumericRangeSlide} {...props}/>;
 const DropdownList = props => <Control.select component={forms.DropdownList} {...props}/>;
 const IconSelector = props => <Control.select component={forms.IconSelector} {...props}/>;
 const RadioButtons = props => <Control.select component={forms.RadioButtons} {...props}/>;
@@ -34,6 +35,7 @@ export {
   NestedMultiselect,
   Numeric,
   NumericRange,
+  NumericRangeSlide,
   MultiDate,
   MultiDateRange,
   DropdownList,

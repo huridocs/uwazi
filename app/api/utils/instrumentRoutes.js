@@ -4,6 +4,19 @@ const createSpy = (key, resolve) => jasmine.createSpy(key).and.callFake((...args
   resolve(`${key}:${args.join(',')}`);
 });
 
+const mockResponseAsWritableStream = (res, resolve) => {
+  let response = '';
+  res.on = () => {};
+  res.once = () => {};
+  res.emit = () => {};
+  res.write = (data) => {
+    response += data.toString('utf8');
+  };
+  res.end = () => {
+    resolve(response);
+  };
+};
+
 const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, runRoute = true) => {
   const args = app[method].calls.allArgs().find(a => a[0] === routePath);
   if (!args) {
@@ -11,18 +24,28 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
   }
   const result = new Promise((resolve, reject) => {
     let statusCode;
+    let resType;
+    mockResponseAsWritableStream(res, resolve);
 
     res.status = (code) => {
       statusCode = code;
     };
 
+    res.type = (type) => {
+      resType = type;
+    };
+
     res.download = createSpy('download', resolve);
     res.redirect = createSpy('redirect', resolve);
     res.sendFile = createSpy('sendFile', resolve);
+    res.send = createSpy('send', resolve);
 
     res.json = jasmine.createSpy('json').and.callFake((response) => {
       if (statusCode) {
         response.status = statusCode;
+      }
+      if (resType) {
+        response.type = resType;
       }
       resolve(response);
     });

@@ -5,6 +5,7 @@ import moment from 'moment';
 import { I18NUtils } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 
 const getLocale = ({ store }) => store.getState().locale;
 
@@ -16,10 +17,9 @@ const setLocale = (locale) => {
 
 class RouteHandler extends Component {
   static requestState() {
-    return Promise.resolve({});
+    return Promise.resolve([]);
   }
 
-  setReduxState() {} //eslint-disable-line
   emptyState() {} //eslint-disable-line
 
   static renderTools() {}
@@ -33,27 +33,33 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props, context);
     setLocale(getLocale(context));
-    if (!this.isRenderedFromServer() && this.setReduxState) {
+    if (!this.isRenderedFromServer()) {
       this.getClientState(this.props);
     }
   }
 
-  getClientState(props) {
+  componentWillReceiveProps(nextProps) {
+    if (this.urlHasChanged(nextProps)) {
+      this.emptyState();
+      this.getClientState(nextProps);
+    }
+  }
+
+  async getClientState(props) {
     let query;
     if (props.location) {
       query = JSONUtils.parseNested(props.location.query);
     }
 
-    let state = {};
+    const { store = { getState: () => {} } } = this.context;
 
-    const { store } = this.context;
-    if (store && store.getState) {
-      state = store.getState();
-    }
+    const headers = {};
+    const { lang, ...params } = props.params;
+    const requestParams = new RequestParams({ ...query, ...params }, headers);
+    const actions = await this.constructor.requestState(requestParams, store.getState());
 
-    this.constructor.requestState(props.params, query, state)
-    .then((response) => {
-      this.setReduxState(response);
+    actions.forEach((action) => {
+      store.dispatch(action);
     });
   }
 
@@ -69,19 +75,16 @@ class RouteHandler extends Component {
     return !sameParams || !sameAmountOfparams || !samePath;
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.urlHasChanged(nextProps)) {
-      this.emptyState();
-      this.getClientState(nextProps);
-    }
-  }
-
   render() {
     return false;
   }
 }
 
 RouteHandler.renderedFromServer = true;
+
+RouteHandler.defaultProps = {
+  params: {}
+};
 
 RouteHandler.contextTypes = {
   getInitialData: PropTypes.func,

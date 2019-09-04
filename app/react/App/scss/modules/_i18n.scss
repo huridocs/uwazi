@@ -1,9 +1,9 @@
 .translation.active {
-  border-bottom: 2px dashed magenta;
+  border-bottom: 2px dashed $c-active-feature;
   cursor: pointer;
 }
 
 .menuNav-btn.inlineEdit.active {
-  border-color: magenta;
+  border-color: $c-active-feature;
   background-color: white;
 }

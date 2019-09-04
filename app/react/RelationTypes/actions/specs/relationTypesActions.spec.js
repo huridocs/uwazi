@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config.js';
-import { actions as formActions } from 'react-redux-form';
 
 import referencesAPI from 'app/Viewer/referencesAPI';
 import * as modalActions from 'app/Modals/actions/modalActions';
@@ -11,12 +10,7 @@ describe('relationTypesActions', () => {
   describe('editRelationType', () => {
     it('should load the relationType in the form model', () => {
       const relationType = { name: 'Secret list of things', values: [] };
-      spyOn(formActions, 'load').and.returnValue('RELATION_TYPE_LOADED');
-      const dispatch = jasmine.createSpy('dispatch');
-      actions.editRelationType(relationType)(dispatch);
-
-      expect(formActions.load).toHaveBeenCalledWith('template.data', relationType);
-      expect(dispatch).toHaveBeenCalledWith('RELATION_TYPE_LOADED');
+      expect(actions.editRelationType(relationType)).toMatchSnapshot();
     });
   });
 

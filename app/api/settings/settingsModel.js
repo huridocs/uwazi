@@ -19,10 +19,16 @@ const filtersSchema = new mongoose.Schema({
   items: mongoose.Schema.Types.Mixed
 });
 
+const featuresSchema = new mongoose.Schema({
+  semanticSearch: Boolean
+});
+
 const settingsSchema = new mongoose.Schema({
   project: String,
   site_name: String,
   contactEmail: String,
+  publicFormDestination: { type: String, select: false },
+  allowedPublicTemplates: [{ type: String }],
   home_page: String,
   private: Boolean,
   cookiepolicy: Boolean,
@@ -33,6 +39,7 @@ const settingsSchema = new mongoose.Schema({
   analyticsTrackingId: String,
   matomoConfig: String,
   dateFormat: String,
+  features: featuresSchema,
   custom: mongoose.Schema.Types.Mixed,
   sync: mongoose.Schema.Types.Mixed,
   evidencesVault: mongoose.Schema.Types.Mixed,

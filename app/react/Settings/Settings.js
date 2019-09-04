@@ -11,25 +11,24 @@ import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
 export class Settings extends RouteHandler {
-  static requestState() {
-    return Promise.all([
-      UsersAPI.currentUser(),
-      ThesaurisAPI.getDictionaries(),
-      RelationTypesAPI.get(),
-      I18NApi.get(),
-      SettingsAPI.get()
-    ])
-    .then(([user, dictionaries, relationTypes, translations, collection]) => (
-      { user, dictionaries, relationTypes, translations, settings: { collection } }
-    ));
-  }
+  static async requestState(requestParams) {
+    const request = requestParams.onlyHeaders();
+    const [user, dictionaries, relationTypes, translations, collection] =
+    await Promise.all([
+      UsersAPI.currentUser(request),
+      ThesaurisAPI.getDictionaries(request),
+      RelationTypesAPI.get(request),
+      I18NApi.get(request),
+      SettingsAPI.get(request)
+    ]);
 
-  setReduxState(state) {
-    this.context.store.dispatch(actions.set('auth/user', state.user));
-    this.context.store.dispatch(actions.set('dictionaries', state.dictionaries));
-    this.context.store.dispatch(actions.set('relationTypes', state.relationTypes));
-    this.context.store.dispatch(actions.set('translations', state.translations));
-    this.context.store.dispatch(actions.set('settings/collection', state.settings.collection));
+    return [
+      actions.set('auth/user', user),
+      actions.set('dictionaries', dictionaries),
+      actions.set('relationTypes', relationTypes),
+      actions.set('translations', translations),
+      actions.set('settings/collection', collection),
+    ];
   }
 
   render() {

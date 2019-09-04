@@ -7,6 +7,7 @@ import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import uniqueID from 'shared/uniqueID';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
@@ -47,7 +48,7 @@ export function newEntity() {
 }
 
 export function createDocument(newDoc) {
-  return dispatch => api.post('documents', newDoc)
+  return dispatch => api.post('documents', new RequestParams(newDoc))
   .then((response) => {
     const doc = response.json;
     dispatch({ type: types.NEW_UPLOAD_DOCUMENT, doc: doc.sharedId });
@@ -93,42 +94,42 @@ export function upload(docId, file, endpoint = 'upload') {
   });
 }
 
-export function publicSubmit(data) {
-  return dispatch => new Promise((resolve, reject) => {
-    const request = superagent.post(`${APIURL}public`)
+export function publicSubmit(data, remote = false) {
+  return dispatch => new Promise((resolve) => {
+    const request = superagent.post(remote ? `${APIURL}remotepublic` : `${APIURL}public`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
     .field('captcha', data.captcha);
-    delete data.captcha;
 
     if (data.file) {
       request.attach('file', data.file);
-      delete data.file;
     }
 
     if (data.attachments) {
       data.attachments.forEach((attachment, index) => {
         request.attach(`attachments[${index}]`, attachment);
-        delete data.attachments;
       });
     }
-
-    request.field('entity', JSON.stringify(data));
-
+    request.field('entity', JSON.stringify(Object.assign({}, { title: data.title, template: data.template, metadata: data.metadata })));
+    let completionResolve;
+    let completionReject;
+    const uploadCompletePromise = new Promise((_resolve, _reject) => { completionResolve = _resolve; completionReject = _reject; });
     request
+    .on('progress', () => {
+      resolve({ promise: uploadCompletePromise });
+    })
     .on('response', (response) => {
       if (response.status === 200) {
         dispatch(notificationActions.notify('Success', 'success'));
-        resolve(response);
+        completionResolve(response);
         return;
       }
-
-      reject(response);
       if (response.status === 403) {
-        dispatch(notificationActions.notify('Captcha error', 'danger'));
+        dispatch(notificationActions.notify(response.body.error, 'danger'));
+        completionReject(response);
         return;
       }
-
+      completionReject(response);
       dispatch(notificationActions.notify('An error has ocurred', 'danger'));
     })
     .end();
@@ -146,7 +147,7 @@ export function uploadCustom(file) {
 }
 
 export function deleteCustomUpload(_id) {
-  return dispatch => api.delete('customisation/upload', { _id })
+  return dispatch => api.delete('customisation/upload', new RequestParams({ _id }))
   .then((response) => {
     dispatch(basicActions.remove('customUploads', response.json));
   });
@@ -159,7 +160,7 @@ export function uploadDocument(docId, file) {
 export function documentProcessed(sharedId, __reducerKey) {
   return (dispatch) => {
     dispatch({ type: types.DOCUMENT_PROCESSED, sharedId });
-    api.get('entities', { _id: sharedId })
+    api.get('entities', new RequestParams({ sharedId }))
     .then((response) => {
       const doc = response.json.rows[0];
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
@@ -176,7 +177,7 @@ export function documentProcessError(sharedId) {
 }
 
 export function publishEntity(entity) {
-  return dispatch => api.post('entities', { ...entity, published: true })
+  return dispatch => api.post('entities', new RequestParams({ ...entity, published: true }))
   .then((response) => {
     dispatch(notificationActions.notify('Entity published', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
@@ -186,7 +187,7 @@ export function publishEntity(entity) {
 }
 
 export function publishDocument(doc) {
-  return dispatch => api.post('documents', { ...doc, published: true })
+  return dispatch => api.post('documents', new RequestParams({ ...doc, published: true }))
   .then((response) => {
     dispatch(notificationActions.notify('Document published', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc });
@@ -196,7 +197,7 @@ export function publishDocument(doc) {
 }
 
 export function unpublishEntity(entity) {
-  return dispatch => api.post('entities', { ...entity, published: false })
+  return dispatch => api.post('entities', new RequestParams({ ...entity, published: true }))
   .then((response) => {
     dispatch(notificationActions.notify('Entity unpublished', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc: entity });
@@ -206,7 +207,7 @@ export function unpublishEntity(entity) {
 }
 
 export function unpublishDocument(doc) {
-  return dispatch => api.post('documents', { ...doc, published: false })
+  return dispatch => api.post('documents', new RequestParams({ ...doc, published: false }))
   .then((response) => {
     dispatch(notificationActions.notify('Document unpublished', 'success'));
     dispatch({ type: types.REMOVE_DOCUMENT, doc });

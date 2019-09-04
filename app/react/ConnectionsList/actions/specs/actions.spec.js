@@ -4,6 +4,7 @@ import { actions as formActions } from 'react-redux-form';
 import { notificationActions } from 'app/Notifications';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import referencesAPI from 'app/Viewer/referencesAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import * as actions from '../actions';
 
@@ -18,7 +19,7 @@ describe('ConnectionsList actions', () => {
         templates: 'templates',
         entityView: { entity: Immutable({ sharedId: 'sid' }) },
         relationships: {
-          list: { entityId: 'sid', sort: { order: 'order' }, filters: Immutable({ filter: 'filter' }) }
+          list: { sharedId: 'sid', sort: { order: 'order' }, filters: Immutable({ filter: 'filter' }) }
         }
     });
 
@@ -40,44 +41,48 @@ describe('ConnectionsList actions', () => {
     expect(dispatch.calls.argsFor(argPos)[0].type).toBe('relationships/list/filters/SET');
     expect(dispatch.calls.argsFor(argPos)[0].value.toJS()).toEqual({ filter: 'filter', limit: 9999 });
 
-    expect(referencesAPI.search).toHaveBeenCalledWith('sid', { filter: 'filter', order: 'order', searchTerm: '' });
+    expect(referencesAPI.search)
+    .toHaveBeenCalledWith(new RequestParams({ sharedId: 'sid', filter: 'filter', order: 'order', searchTerm: '' }));
     expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
     done();
   }
 
   describe('searchReferences', () => {
-    it('should fetch the connections with the current state filters, sorting and empty text by default', (done) => {
-      actions.searchReferences()(dispatch, getState)
-      .then(() => {
-        expect(referencesAPI.search).toHaveBeenCalledWith('sid', { filter: 'filter', order: 'order', searchTerm: '' });
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
-        expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_TAB', tab: 'connections' });
-        done();
-      });
+    it('should fetch the connections with the current state filters, sorting and empty text by default', async () => {
+      await actions.searchReferences()(dispatch, getState);
+      expect(referencesAPI.search).toHaveBeenCalledWith(
+        new RequestParams({
+          sharedId: 'sid',
+          filter: 'filter',
+          order: 'order',
+          searchTerm: ''
+        })
+      );
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_TAB', tab: 'connections' });
     });
 
-    it('should fetch the connections with the default state when filters is undefined', (done) => {
+    it('should fetch the connections with the default state when filters is undefined', async () => {
       getState = () => ({
-          templates: 'templates',
-          entityView: { entity: Immutable({ sharedId: 'sid' }) },
-          relationships: {
-            list: { entityId: 'sid', sort: { order: 'order' } }
-          }
+        templates: 'templates',
+        entityView: { entity: Immutable({ sharedId: 'sid' }) },
+        relationships: {
+          list: { sharedId: 'sid', sort: { order: 'order' } }
+        }
       });
-      actions.searchReferences()(dispatch, getState)
-      .then(() => {
-        expect(referencesAPI.search).toHaveBeenCalledWith('sid', { order: 'order' });
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
-        expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_TAB', tab: 'connections' });
-        done();
-      });
+
+      await actions.searchReferences()(dispatch, getState);
+
+      expect(referencesAPI.search).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sid', order: 'order' }));
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
+      expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_TAB', tab: 'connections' });
     });
 
-    it('should fetch the connections with custom text search', (done) => {
+    it('should fetch the connections with custom text search', async () => {
       getState = () => ({
         relationships: {
           list: {
-            entityId: 'sid',
+            sharedId: 'sid',
             sort: {},
             filters: Immutable({}),
             search: {
@@ -88,11 +93,9 @@ describe('ConnectionsList actions', () => {
           }
         }
       });
-      actions.searchReferences()(dispatch, getState)
-      .then(() => {
-        expect(referencesAPI.search).toHaveBeenCalledWith('sid', { searchTerm: 'term' });
-        done();
-      });
+      await actions.searchReferences()(dispatch, getState);
+
+      expect(referencesAPI.search).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sid', searchTerm: 'term' }));
     });
   });
 
@@ -100,7 +103,7 @@ describe('ConnectionsList actions', () => {
     it('should reasssign connectionsGroup, sorting criteria, and call on search again', (done) => {
       actions.connectionsChanged()(dispatch, getState)
       .then(() => {
-        expect(referencesAPI.getGroupedByConnection).toHaveBeenCalledWith('sid');
+        expect(referencesAPI.getGroupedByConnection).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sid' }));
         expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
           currentCriteria: { order: 'order' },
           filteredTemplates: ['t1', 't2', 't3'],
@@ -116,17 +119,14 @@ describe('ConnectionsList actions', () => {
   });
 
   describe('deleteConnection', () => {
-    it('should delete the connection and triger a connectionsChanged action', (done) => {
-      actions.deleteConnection('data')(dispatch, getState)
-      .then(() => {
-        expect(referencesAPI.delete).toHaveBeenCalledWith('data');
-        expect(notificationActions.notify).toHaveBeenCalledWith('Connection deleted', 'success');
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/connectionsGroups/SET', value: groupedConnections });
-        expect(dispatch).toHaveBeenCalledWith('merge: relationships/list.sort with: prioritySorting');
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
-        done();
-      })
-      .catch(done.fail);
+    it('should delete the connection and triger a connectionsChanged action', async () => {
+      await actions.deleteConnection({ _id: 'id', key: 'value' })(dispatch, getState);
+
+      expect(referencesAPI.delete).toHaveBeenCalledWith(new RequestParams({ _id: 'id' }));
+      expect(notificationActions.notify).toHaveBeenCalledWith('Connection deleted', 'success');
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/connectionsGroups/SET', value: groupedConnections });
+      expect(dispatch).toHaveBeenCalledWith('merge: relationships/list.sort with: prioritySorting');
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
     });
   });
 
@@ -140,61 +140,54 @@ describe('ConnectionsList actions', () => {
   });
 
   describe('loadMoreReferences', () => {
-    it('should set the limit to the passed parameter', (done) => {
-      actions.loadMoreReferences(60)(dispatch, getState)
-      .then(() => {
-        expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
-        expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({ filter: 'filter', limit: 60 });
+    it('should set the limit to the passed parameter', async () => {
+      await actions.loadMoreReferences(60)(dispatch, getState);
 
-        expect(referencesAPI.search).toHaveBeenCalledWith('sid', { filter: 'filter', order: 'order', searchTerm: '' });
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
-        done();
-      });
+      expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
+      expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({ filter: 'filter', limit: 60 });
+
+      expect(referencesAPI.search)
+      .toHaveBeenCalledWith(new RequestParams({ sharedId: 'sid', filter: 'filter', order: 'order', searchTerm: '' }));
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
     });
   });
 
   describe('setFilter', () => {
-    it('should merge the passed filter to the exisiting filters', (done) => {
+    it('should merge the passed filter to the exisiting filters', async () => {
       getState = () => ({
-          templates: 'templates',
-          relationships: {
-            list: {
-              entityId: 'sid',
-              sort: { order: 'order' },
-              filters: Immutable({ filter: Immutable({ oldProperty: 'old', modifiedProperty: 'original' }) })
-            }
+        templates: 'templates',
+        relationships: {
+          list: {
+            sharedId: 'sid',
+            sort: { order: 'order' },
+            filters: Immutable({ filter: Immutable({ oldProperty: 'old', modifiedProperty: 'original' }) })
           }
+        }
       });
 
-      actions.setFilter({ modifiedProperty: 'modified' })(dispatch, getState)
-      .then(() => {
-        expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
-        expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({ filter: { oldProperty: 'old', modifiedProperty: 'modified' } });
+      await actions.setFilter({ modifiedProperty: 'modified' })(dispatch, getState);
+      expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/filters/SET');
+      expect(dispatch.calls.argsFor(0)[0].value.toJS()).toEqual({ filter: { oldProperty: 'old', modifiedProperty: 'modified' } });
 
-        expect(referencesAPI.search).toHaveBeenCalledWith(
-          'sid',
-          { filter: getState().relationships.list.filters.get('filter').toJS(), order: 'order', searchTerm: '' }
-        );
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
-        done();
-      });
+      expect(referencesAPI.search).toHaveBeenCalledWith(new RequestParams(
+        { sharedId: 'sid', filter: getState().relationships.list.filters.get('filter').toJS(), order: 'order', searchTerm: '' }
+      ));
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
     });
   });
 
   describe('resetSearch', () => {
-    it('should set term and filters to blank state', (done) => {
-      actions.resetSearch()(dispatch, getState)
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledWith('change: relationships/list/search.searchTerm with: empty');
+    it('should set term and filters to blank state', async () => {
+      await actions.resetSearch()(dispatch, getState);
+      expect(dispatch).toHaveBeenCalledWith('change: relationships/list/search.searchTerm with: empty');
 
-        expect(dispatch.calls.argsFor(1)[0].type).toBe('relationships/list/filters/SET');
-        expect(dispatch.calls.argsFor(1)[0].value.toJS()).toEqual({});
+      expect(dispatch.calls.argsFor(1)[0].type).toBe('relationships/list/filters/SET');
+      expect(dispatch.calls.argsFor(1)[0].value.toJS()).toEqual({});
 
-        expect(referencesAPI.search).toHaveBeenCalledWith('sid', { filter: 'filter', order: 'order', searchTerm: '' });
-        expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
-
-        done();
-      });
+      expect(referencesAPI.search).toHaveBeenCalledWith(
+        new RequestParams({ sharedId: 'sid', filter: 'filter', order: 'order', searchTerm: '' })
+      );
+      expect(dispatch).toHaveBeenCalledWith({ type: 'relationships/list/searchResults/SET', value: 'searchResults' });
     });
   });
 

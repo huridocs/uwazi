@@ -41,6 +41,7 @@
     }
   }
   .input-group .fa-search,
+  .input-group .fa-flask,
   .input-group .fa-times {
     position: absolute;
     line-height: $header-height;
@@ -48,7 +49,7 @@
     transform: translateY(-50%);
     z-index: 4;
   }
-  .input-group .fa-search {
+  .input-group .fa-search, .input-group .fa-flask {
     right: 20px;
     font-size: $f-size-lg;
     cursor: pointer;
@@ -74,10 +75,7 @@
     display: block;
   }
   .search-tips {
-    position: absolute;
-    right: .5em;
     font-size: $f-size-xs;
-    bottom: -1.6em;
     color: $c-primary;
     border-bottom: 1px solid $c-primary-light;
     cursor: pointer;

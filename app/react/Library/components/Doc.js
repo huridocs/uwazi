@@ -15,6 +15,7 @@ export class Doc extends Component {
   shouldComponentUpdate(nextProps) {
     return !is(this.props.doc, nextProps.doc) ||
            !is(this.props.targetReference, nextProps.targetReference) ||
+           this.props.additionalText !== nextProps.additionalText ||
            this.props.active !== nextProps.active ||
            this.props.searchParams && nextProps.searchParams && this.props.searchParams.sort !== nextProps.searchParams.sort;
   }
@@ -110,7 +111,7 @@ Doc.propTypes = {
   onSnippetClick: PropTypes.func,
   onClick: PropTypes.func,
   className: PropTypes.string,
-  additionalText: PropTypes.string,
+  additionalText: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   storeKey: PropTypes.string,
   targetReference: PropTypes.instanceOf(Map)
 };
@@ -122,7 +123,6 @@ Doc.contextTypes = {
 export function mapStateToProps(state, ownProps) {
   const active = ownProps.storeKey ? !!state[ownProps.storeKey].ui.get('selectedDocuments')
   .find(doc => doc.get('_id') === ownProps.doc.get('_id')) : false;
-
   return {
     active
   };

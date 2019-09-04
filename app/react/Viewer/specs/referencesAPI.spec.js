@@ -1,5 +1,6 @@
 import referencesAPI from 'app/Viewer/referencesAPI';
 import { APIURL } from 'app/config.js';
+import { RequestParams } from 'app/utils/RequestParams';
 import backend from 'fetch-mock';
 
 describe('referencesAPI', () => {
@@ -11,11 +12,11 @@ describe('referencesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}references/by_document/sourceDocument`, { body: JSON.stringify(byDocumentResponse) })
-    .get(`${APIURL}references/group_by_connection/sourceDocument`, { body: JSON.stringify(groupByConnectionResponse) })
-    .get(`${APIURL}references/search/sourceDocument`, { body: JSON.stringify(searchResponse) })
-    .get(`${APIURL}references/search/sourceDocument?sort=title`, { body: JSON.stringify(searchSortedResponse) })
-    .get(`${APIURL}references/count_by_relationtype?relationtypeId=abc1`, { body: '2' })
+    .get(`${APIURL}references/by_document?sharedId=sourceDocument`, { body: JSON.stringify(byDocumentResponse) })
+    .get(`${APIURL}references/group_by_connection?sharedId=sourceDocument`, { body: JSON.stringify(groupByConnectionResponse) })
+    .get(`${APIURL}references/search?sharedId=sourceDocument`, { body: JSON.stringify(searchResponse) })
+    .get(`${APIURL}references/search?sharedId=sourceDocument&sort=title`, { body: JSON.stringify(searchSortedResponse) })
+    .get(`${APIURL}references/count_by_relationtype?sharedId=abc1`, { body: '2' })
     .delete(`${APIURL}references?_id=id`, { body: JSON.stringify({ backendResponse: 'testdelete' }) })
     .post(`${APIURL}references`, { body: JSON.stringify({ backednResponse: 'test' }) });
   });
@@ -23,19 +24,17 @@ describe('referencesAPI', () => {
   afterEach(() => backend.restore());
 
   describe('get()', () => {
-    it('should request references', (done) => {
-      referencesAPI.get('sourceDocument')
-      .then((response) => {
-        expect(response).toEqual(byDocumentResponse);
-        done();
-      })
-      .catch(done.fail);
+    it('should request references', async () => {
+      const requestParams = new RequestParams({ sharedId: 'sourceDocument' });
+      const response = await referencesAPI.get(requestParams);
+      expect(response).toEqual(byDocumentResponse);
     });
   });
 
   describe('getGroupedByConnection()', () => {
     it('should request grouped references', (done) => {
-      referencesAPI.getGroupedByConnection('sourceDocument')
+      const requestParams = new RequestParams({ sharedId: 'sourceDocument' });
+      referencesAPI.getGroupedByConnection(requestParams)
       .then((response) => {
         expect(response).toEqual(groupByConnectionResponse);
         done();
@@ -46,7 +45,8 @@ describe('referencesAPI', () => {
 
   describe('search()', () => {
     it('should search references', (done) => {
-      referencesAPI.search('sourceDocument')
+      const requestParams = new RequestParams({ sharedId: 'sourceDocument' });
+      referencesAPI.search(requestParams)
       .then((response) => {
         expect(response).toEqual(searchResponse);
         done();
@@ -55,7 +55,8 @@ describe('referencesAPI', () => {
     });
 
     it('should search references with additional options', (done) => {
-      referencesAPI.search('sourceDocument', { sort: 'title' })
+      const requestParams = new RequestParams({ sharedId: 'sourceDocument', sort: 'title' });
+      referencesAPI.search(requestParams)
       .then((response) => {
         expect(response).toEqual(searchSortedResponse);
         done();
@@ -67,7 +68,8 @@ describe('referencesAPI', () => {
   describe('save()', () => {
     it('should post the document data to /references', (done) => {
       const data = { name: 'document name' };
-      referencesAPI.save(data)
+      const requestParams = new RequestParams(data);
+      referencesAPI.save(requestParams)
       .then((response) => {
         expect(JSON.parse(backend.lastOptions(`${APIURL}references`).body)).toEqual(data);
         expect(response).toEqual({ backednResponse: 'test' });
@@ -79,8 +81,8 @@ describe('referencesAPI', () => {
 
   describe('delete()', () => {
     it('should delete the document', (done) => {
-      const document = { _id: 'id', omitProperty: 'omit' };
-      referencesAPI.delete(document)
+      const requestParams = new RequestParams({ _id: 'id' });
+      referencesAPI.delete(requestParams)
       .then((response) => {
         expect(response).toEqual({ backendResponse: 'testdelete' });
         done();
@@ -91,7 +93,8 @@ describe('referencesAPI', () => {
 
   describe('countByRelationType()', () => {
     it('should request references', (done) => {
-      referencesAPI.countByRelationType('abc1')
+      const requestParams = new RequestParams({ sharedId: 'abc1' });
+      referencesAPI.countByRelationType(requestParams)
       .then((response) => {
         expect(response).toEqual(2);
         done();

@@ -28,60 +28,54 @@ describe('static requestState()', () => {
     spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
   });
 
-  it('should request the documents passing search object on the store', (done) => {
-    const query = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
+  it('should request the documents passing search object on the store', async () => {
+    const data = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
+    const request = { data, headers: 'headers' };
+
     const expectedSearch = {
-      sort: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).sort,
-      order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
-      filters: { something: 1 },
-      types: []
-    };
-
-    requestState({}, query, globalResources)
-    .then((state) => {
-      expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
-      expect(state.library.documents).toEqual(documents);
-      expect(state.library.aggregations).toEqual(aggregations);
-      expect(state.library.filters.documentTypes).toEqual([]);
-      done();
-    })
-    .catch(done.fail);
-  });
-
-  it('should process the query url params and transform it to state', (done) => {
-    spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({ properties: 'properties', search: 'search' });
-    const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
-    const query = { q: rison.encode(q) };
-    requestState({}, query, globalResources)
-    .then((state) => {
-      expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris, relationTypes);
-      expect(state.library.filters.documentTypes).toEqual(['type1']);
-      expect(state.library.filters.properties).toBe('properties');
-      expect(state.library.search).toBe('search');
-      done();
-    })
-    .catch(done.fail);
-  });
-
-  describe('when is for geolocation', () => {
-    it('should query with geolocation flag', (done) => {
-      const query = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
-      const expectedSearch = {
+      data: {
         sort: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).sort,
         order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
         filters: { something: 1 },
-        types: [],
-        geolocation: true
+        types: []
+      },
+      headers: 'headers',
+    };
+
+    const actions = await requestState(request, globalResources);
+
+    expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
+    expect(actions).toMatchSnapshot();
+  });
+
+  it('should process the query url params and transform it to state', async () => {
+    spyOn(libraryHelpers, 'URLQueryToState').and.returnValue({ properties: 'properties', search: 'search' });
+    const q = { filters: {}, types: ['type1'], order: 'desc', sort: 'creationDate' };
+    const query = { q: rison.encode(q) };
+    const request = { data: query };
+    await requestState(request, globalResources);
+
+    expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(q, templates, thesauris, relationTypes);
+  });
+
+  describe('when is for geolocation', () => {
+    it('should query with geolocation flag', async () => {
+      const query = { q: rison.encode({ filters: { something: 1 }, types: [] }) };
+      const expectedSearch = {
+        data: {
+          sort: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).sort,
+          order: prioritySortingCriteria.get({ templates: Immutable.fromJS(templates) }).order,
+          filters: { something: 1 },
+          types: [],
+          geolocation: true
+        }
       };
 
-      requestState({}, query, globalResources, 'markers')
-      .then((state) => {
-        expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
-        expect(state.library.markers).toEqual(documents);
-        expect(state.library.aggregations).toEqual(aggregations);
-        expect(state.library.filters.documentTypes).toEqual([]);
-        done();
-      });
+      const request = { data: query };
+      const actions = await requestState(request, globalResources, 'markers');
+
+      expect(searchAPI.search).toHaveBeenCalledWith(expectedSearch);
+      expect(actions).toMatchSnapshot();
     });
   });
 });

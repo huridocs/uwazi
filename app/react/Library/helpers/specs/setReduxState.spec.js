@@ -14,7 +14,7 @@ describe('setReduxState()', () => {
       dispatchCallsOrder.push(action.type);
     }) } };
     const state = { library: { documents, aggregations, filters: { documentTypes: 'types', properties: 'properties' } } };
-    setReduxState(state, context);
+    setReduxState(state)(context.store.dispatch);
   });
 
   it('should set the documents and aggregations and Unset the documents as first action', () => {

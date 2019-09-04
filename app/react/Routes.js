@@ -47,6 +47,9 @@ import EditTranslations from 'app/I18N/EditTranslations';
 
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
+
+import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
+
 import { trackPage } from 'app/App/GoogleAnalytics';
 import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
@@ -112,7 +115,7 @@ const routes = (
       <Route path="pages">
         <IndexRoute component={Pages} />
         <Route path="new" component={NewPage} />
-        <Route path="edit/:pageId" component={EditPage} />
+        <Route path="edit/:sharedId" component={EditPage} />
       </Route>
       <Route path="templates">
         <IndexRoute component={EntityTypesList} />
@@ -122,12 +125,12 @@ const routes = (
       <Route path="connections">
         <IndexRoute component={RelationTypesList} />
         <Route path="new" component={NewRelationType} />
-        <Route path="edit/:relationTypeId" component={EditRelationType} />
+        <Route path="edit/:_id" component={EditRelationType} />
       </Route>
       <Route path="dictionaries">
         <IndexRoute component={ThesaurisList} />
         <Route path="new" component={NewThesauri} />
-        <Route path="edit/:thesauriId" component={EditThesauri} />
+        <Route path="edit/:_id" component={EditThesauri} />
       </Route>
       <Route path="languages" component={Languages}/>
       <Route path="translations">
@@ -144,9 +147,10 @@ const routes = (
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />
     <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
-    <Route path="document/:documentId*" component={ViewDocument} onEnter={onEnter}/>
-    <Route path="entity/:entityId" component={EntityView} onEnter={onEnter}/>
-    <Route path="page/:pageId" component={PageView} onEnter={onEnter}/>
+    <Route path="document/:sharedId*" component={ViewDocument} onEnter={onEnter}/>
+    <Route path="entity/:sharedId" component={EntityView} onEnter={onEnter}/>
+    <Route path="page/:sharedId" component={PageView} onEnter={onEnter}/>
+    <Route path="semanticsearch/:searchId" component={SemanticSearchResultsView} onEnter={onEnter}/>
     <Route path="404" component={NoMatch} />
   </Route>
 );

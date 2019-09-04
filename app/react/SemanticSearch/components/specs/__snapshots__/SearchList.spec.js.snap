@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchList should render list of SearchItem with specified searches 1`] = `
+<div
+  className="semantic-search-list"
+>
+  <Connect(SearchItem)
+    key="id1"
+    search={
+      Object {
+        "_id": "id1",
+        "documents": Array [],
+        "searchTerm": "query",
+        "status": "completed",
+      }
+    }
+  />
+  <Connect(SearchItem)
+    key="id2"
+    search={
+      Object {
+        "_id": "id2",
+        "documents": Array [],
+        "searchTerm": "query",
+        "status": "completed",
+      }
+    }
+  />
+</div>
+`;
