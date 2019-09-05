@@ -23,6 +23,7 @@ import {
   CustomUploads
 } from 'app/Settings';
 
+import Activitylog from 'app/Activitylog/Activitylog';
 import Pages from 'app/Pages/Pages';
 import NewPage from 'app/Pages/NewPage';
 import EditPage from 'app/Pages/EditPage';
@@ -58,7 +59,7 @@ function onEnter() {
   trackPage();
 }
 
-function settingsEnter(nxtState, replace) {
+function needsAuth(nxtState, replace) {
   if (!store.getState().user.get('_id')) {
     replace('/login');
   }
@@ -103,7 +104,7 @@ function getIndexRoute(nextState, callBack) {
 
 const routes = (
   <Route getIndexRoute={getIndexRoute}>
-    <Route path="settings" component={Settings} onEnter={settingsEnter}>
+    <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
@@ -140,6 +141,7 @@ const routes = (
       <Route path="filters" component={FiltersForm} />
       <Route path="customisation" component={Customisation} />
       <Route path="custom-uploads" component={CustomUploads} />
+      <Route path="activitylog" component={Activitylog} onEnter={needsAuth} />
     </Route>
     <Route path="library" component={Library} onEnter={enterOnLibrary}/>
     <Route path="library/map" component={LibraryMap} onEnter={onEnter}/>

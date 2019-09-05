@@ -102,6 +102,8 @@ export class Menu extends Component {
                   </li>
                 );
               }
+
+              return null;
             })()}
           </ul>
           <I18NMenu />

@@ -1,0 +1,104 @@
+.activity-log {
+  overflow: auto;
+  margin-right: -15px;
+}
+
+.activity-log-list .table > thead > tr > th,
+.activity-log-list .table > tbody > tr > td {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.activity-log-form {
+  & > form {
+    min-height: 60px;
+
+    .form-group {
+      min-height: 53px;
+    }
+  }
+
+  padding: 20px 0;
+}
+
+@media(min-width: 769px) {
+  .activity-log-form {
+    & > form {
+      .DatePicker__From,
+      .DatePicker__To {
+        margin: 0px;
+        width: calc(50% - 15px);
+
+        .react-datepicker__input-container {
+          width: 100%;
+        }
+      }
+
+      .DatePicker__From {
+        margin-right: 15px;
+      }
+
+      .DatePicker__To {
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
+.tdbody, .tdquery {
+  word-break: break-word;
+}
+
+.activitylog-description {
+  width: 100%;
+}
+
+.activity-log-list .table > tbody > tr > td span.expand {
+  cursor: pointer;
+  .badge {
+    width: 17px;
+    padding: 1px 5px;
+    margin-top: -4px;
+    margin-left: 10px;
+  }
+}
+
+.activity-log-list .table > tbody > tr {
+  & > td .expanded-content {
+    margin-left: 15px;
+    font-size: 90%;
+    color: #888;
+
+    td {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+
+  &.activitylog-raw {
+    font-size: 90%;
+
+    & > td .expanded-content {
+      font-size: 100%;
+    }
+  }
+}
+
+.activity-log-list .table > tbody > tr > td.activitylog-time {
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.activitylog-prefix::after {
+  content: ":";
+}
+
+.activitylog-name {
+  font-weight: bold;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.activitylog-extra {
+  color: #777;
+}

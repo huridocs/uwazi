@@ -43,6 +43,14 @@ export class SettingsNavigation extends Component {
             </div>
           </div>
         </NeedAuthorization>
+        <NeedAuthorization roles={['admin']}>
+          <div className="panel panel-default">
+            <div className="panel-heading">{t('System', 'Tools')}</div>
+            <div className="list-group">
+              <I18NLink to="settings/activitylog" activeClassName="active" className="list-group-item">{t('System', 'Activity log')}</I18NLink>
+            </div>
+          </div>
+        </NeedAuthorization>
       </div>
     );
   }
