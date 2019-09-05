@@ -1,14 +1,16 @@
-import { fromJS as Immutable } from 'immutable';
+import { fromJS } from 'immutable';
 import React from 'react';
-
+import { shallow } from 'enzyme';
 
 import { CreateConnectionPanel } from 'app/Connections';
-import { Viewer } from 'app/Viewer/components/Viewer';
-import { shallow } from 'enzyme';
 import ContextMenu from 'app/ContextMenu';
 import ShowIf from 'app/App/ShowIf';
-import SourceDocument from 'app/Viewer/components/SourceDocument';
-import TargetDocument from 'app/Viewer/components/TargetDocument';
+import { RequestParams } from 'app/utils/RequestParams';
+import { Viewer } from '../Viewer';
+import SourceDocument from '../SourceDocument';
+import TargetDocument from '../TargetDocument';
+import * as routeActions from '../../actions/routeActions';
+
 
 describe('Viewer', () => {
   let component;
@@ -17,17 +19,23 @@ describe('Viewer', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable({ _id: 'id', sharedId: 'sharedId', file: {} }),
+      doc: fromJS({ _id: 'id', sharedId: 'sharedId', file: {}, pdfInfo: 'already parsed' }),
       targetDoc: false,
       addReference: () => {},
       loadTargetDocument: () => {},
       location: { query: {} },
+      templates: fromJS([]),
     };
   });
 
-  const render = () => {
+  const render = ({ mount = false } = {}) => {
     context = { store: { dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<Viewer {...props}/>, { context, disableLifecycleMethods: true });
+
+    if (mount) {
+      component.instance().componentDidMount();
+      component.update();
+    }
   };
 
   it('should add "connections" className when showConnections', () => {
@@ -51,9 +59,7 @@ describe('Viewer', () => {
 
   it('should not render SourceDocument when targetDocument loaded', () => {
     props.targetDoc = true;
-    render();
-    component.instance().componentDidMount();
-    component.update();
+    render({ mount: true });
     expect(component.find(SourceDocument).parent(ShowIf).props().if).toBe(false);
   });
 
@@ -61,9 +67,7 @@ describe('Viewer', () => {
     props.panelIsOpen = true;
     props.showTextSelectMenu = false;
 
-    render();
-    component.instance().componentDidMount();
-    component.update();
+    render({ mount: true });
 
     expect(component.find(ContextMenu).length).toBe(2);
     expect(component.find(SourceDocument).length).toBe(1);
@@ -74,7 +78,9 @@ describe('Viewer', () => {
 
     expect(component.find(ContextMenu).at(0).props().show).toBe(false);
     expect(component.find(ContextMenu).at(1).props().show).toBe(false);
+  });
 
+  it('should show the correct panels and menus', () => {
     props.panelIsOpen = false;
     props.showTextSelectMenu = true;
 
@@ -100,7 +106,7 @@ describe('Viewer', () => {
     render();
     expect(component.find('pre').props().className).toBe('force-ltr');
 
-    props.doc = props.doc.set('file', Immutable({ language: 'arb' }));
+    props.doc = props.doc.set('file', fromJS({ language: 'arb' }));
     render();
     expect(component.find('pre').props().className).toBe('force-rtl');
 
@@ -130,10 +136,24 @@ describe('Viewer', () => {
   });
 
   describe('on mount', () => {
+    beforeEach(() => {
+      spyOn(routeActions, 'requestViewerState').and.returnValue({ then: (callback) => {
+        callback(['requestViewerState:action1', 'requestViewerState:action2']);
+      } });
+    });
+
     it('should loadDefaultViewerMenu()', () => {
-      render();
-      component.instance().componentDidMount();
+      render({ mount: true });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
+    });
+
+    it('should requestViewerState to populate pdfInfo when pdf not yet rendered for the first time', () => {
+      props.doc = props.doc.set('pdfInfo', undefined);
+      render({ mount: true });
+
+      expect(routeActions.requestViewerState).toHaveBeenCalledWith(new RequestParams({ sharedId: 'sharedId' }), { templates: [] });
+      expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action1');
+      expect(context.store.dispatch).toHaveBeenCalledWith('requestViewerState:action2');
     });
   });
 });

@@ -2,26 +2,22 @@ import { Helmet } from 'react-helmet';
 import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import React from 'react';
-import { RequestParams } from 'app/utils/RequestParams';
 
+import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import { isClient, events } from 'app/utils';
-import { setReferences } from 'app/Viewer/actions/referencesActions';
 import { toUrlParams } from 'shared/JSONRequest';
 import RouteHandler from 'app/App/RouteHandler';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
-import { scrollToPage, activateReference } from './actions/uiActions';
 
+import { setReferences } from './actions/referencesActions';
+import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
 class ViewDocument extends RouteHandler {
   constructor(props, context) {
-    //Force client state even if is rendered from server to force the pdf character count process
-    // @konzz I have removed this line!
-    // RouteHandler.renderedFromServer = props.renderedFromServer || false;
-    //
     super(props, context);
     this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
     this.changePage = this.changePage.bind(this);
@@ -29,7 +25,6 @@ class ViewDocument extends RouteHandler {
   }
 
   static async requestState(requestParams, globalResources) {
-    console.log('Executing requestState', requestParams);
     return requestViewerState(
       requestParams.add({ raw: (requestParams.data.raw === 'true') || !isClient }),
       globalResources
