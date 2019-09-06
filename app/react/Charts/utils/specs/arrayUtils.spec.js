@@ -1,6 +1,6 @@
 import React from 'react';
 import Immutable from 'immutable';
-import libraryFilters from 'app/Library/helpers/libraryFilters';
+import * as libraryFilters from 'app/Library/helpers/libraryFilters';
 import colorScheme from '../colorScheme';
 import arrayUtils from '../arrayUtils';
 

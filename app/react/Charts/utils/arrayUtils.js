@@ -1,6 +1,6 @@
 import React from 'react';
 import { t } from 'app/I18N';
-import libraryFilters from 'app/Library/helpers/libraryFilters';
+import { populateOptions } from 'app/Library/helpers/libraryFilters';
 
 import colorScheme from './colorScheme';
 
@@ -30,7 +30,7 @@ function formatPayload(data) {
 }
 
 const formatDataForChart = (data, property, thesauris, { context, excludeZero, maxCategories, aggregateOthers = false }) => {
-  const res = libraryFilters.populateOptions([{ content: context }], thesauris.toJS());
+  const res = populateOptions([{ content: context }], thesauris.toJS());
   const { options } = res[0];
 
   let relevant = data.toJS().filter(i => i.key !== 'missing');
