@@ -7,10 +7,12 @@ import insertFixtures from '../helpers/insertFixtures';
 selectors.libraryView.filters = {
   firstPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(2) > label > span.multiselectItem-name',
   secondPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(3) > label > span.multiselectItem-name',
+  thirdPorwer: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(4) > label > span.multiselectItem-name',
   sixthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(6) > label > span.multiselectItem-name',
   fifthPower: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li:nth-child(5) > label > span.multiselectItem-name',
   superPowers: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > li',
   superPowersAndOrSwitch: '#filtersForm > div:nth-child(1) > ul > li:nth-child(1) > div > label',
+  superPowerMoreButton: '#filtersForm > div:nth-child(1) > ul > li.wide > ul > .multiselectActions button',
   searchButton: '#app > div.content > div > div > aside.side-panel.library-filters > div.sidepanel-footer > button',
   planetsConqueredFrom: '#filtersForm div.Numeric__From > input',
   planetsConqueredTo: '#filtersForm div.Numeric__To > input',
@@ -42,13 +44,28 @@ const filterBySuperPowers = superPower => (
   .library.waitForSearchToFinish()
 );
 
+const expectSuperPowersTexts = ([firstPower, secondPower, thirdPower]) =>
+  nightmare.getInnerText(selectors.libraryView.filters.firstPower)
+  .then((text) => {
+    expect(text).toBe(firstPower);
+    return nightmare.getInnerText(selectors.libraryView.filters.secondPower);
+  })
+  .then((text) => {
+    expect(text).toBe(secondPower);
+    return nightmare.getInnerText(selectors.libraryView.filters.thirdPorwer);
+  })
+  .then((text) => {
+    expect(text).toBe(thirdPower);
+    return Promise.resolve();
+  });
+
 describe('search filters path', () => {
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
 
   describe('filter one type', () => {
     it('should only show entities of that type', (done) => {
-      nightmare
+      nightmare.gotoLibrary()
       .library.clickFilter(selectors.libraryView.superVillianType)
       .wait(3000)
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
@@ -88,7 +105,7 @@ describe('search filters path', () => {
 
     it('should filter by multiple options', (done) => {
       filterBySuperVillian();
-      filterBySuperPowers('hyper speed kick');
+      filterBySuperPowers('laser beam');
       filterBySuperPowers('fly')
       .getInnerText(selectors.libraryView.libraryFirstDocumentTitle)
       .then((text) => {
@@ -167,6 +184,32 @@ describe('search filters path', () => {
         expect(text).toBe('Daneryl');
         done();
       })
+      .catch(catchErrors(done));
+    });
+  });
+
+  describe('sorting of filters', () => {
+    it('should order them by aggregated value', (done) => {
+      filterBySuperVillian();
+      expectSuperPowersTexts(['create chaos', 'tricky weapons', 'fly'])
+      .then(done)
+      .catch(catchErrors(done));
+    });
+
+    it('should show selected filter values first', (done) => {
+      filterBySuperVillian();
+      filterBySuperPowers('fly');
+      expectSuperPowersTexts(['fly', 'create chaos', 'tricky weapons'])
+      .then(done)
+      .catch(catchErrors(done));
+    });
+
+    it('should order by aggregation count despite of selected value when expanded', (done) => {
+      filterBySuperVillian();
+      filterBySuperPowers('fly')
+      .click(selectors.libraryView.filters.superPowerMoreButton);
+      expectSuperPowersTexts(['create chaos', 'tricky weapons', 'fly'])
+      .then(done)
       .catch(catchErrors(done));
     });
   });
