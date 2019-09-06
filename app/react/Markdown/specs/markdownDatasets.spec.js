@@ -1,17 +1,32 @@
 import Immutable from 'immutable';
 
+import { RequestParams } from 'app/utils/RequestParams';
 import searchApi from 'app/Search/SearchAPI';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 import api from 'app/utils/api';
 
 import markdownDatasets from '../markdownDatasets';
+import fixtures from './fixtures';
 
 describe('markdownDatasets', () => {
+  let requestParams;
+
+  const getTestState = (method) => {
+    const { dataset1, dataset2 } = fixtures[method];
+
+    return {
+      page: {
+        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
+      }
+    };
+  };
+
   describe('request', () => {
     beforeEach(() => {
-      spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true }, params)));
-      spyOn(entitiesApi, 'get').and.callFake(_id => Promise.resolve([{ isEntity: true, _id }]));
-      spyOn(api, 'get').and.callFake(url => Promise.resolve({ json: { url } }));
+      requestParams = new RequestParams({}, 'headers');
+      spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true, headers: params.headers }, params.data)));
+      spyOn(entitiesApi, 'get').and.callFake(params => Promise.resolve([{ isEntity: true, _id: params.data, headers: params.headers }]));
+      spyOn(api, 'get').and.callFake((url, pasedRequestParams) => Promise.resolve({ json: { url, headers: pasedRequestParams.headers } }));
     });
 
     it('should not fetch anything if no datasets defined', async () => {
@@ -26,9 +41,9 @@ describe('markdownDatasets', () => {
     it('should fetch default dataset and return it indexed by "default" key', async () => {
       const markdown = '<div><Dataset /></div>';
 
-      const datasets = await markdownDatasets.fetch(markdown);
+      const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
-      expect(datasets).toEqual({ default: { allAggregations: true, limit: 0, isSearch: true } });
+      expect(datasets).toEqual({ default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' } });
     });
 
     it('should fetch named datasets and return it indexed by name attrib key', async () => {
@@ -41,13 +56,13 @@ describe('markdownDatasets', () => {
       <Dataset name="dataset1" url="url2?q=(key:value2)"/>
       `;
 
-      const datasets = await markdownDatasets.fetch(markdown);
+      const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
       expect(datasets).toEqual({
-        default: { allAggregations: true, limit: 0, isSearch: true },
-        dataset1: { key: 'value2', limit: 0, isSearch: true },
-        dataset2: { key: 'value', limit: 0, isSearch: true },
-        entityDataset: { _id: 'entityId', isEntity: true },
+        default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
+        dataset1: { key: 'value2', limit: 0, isSearch: true, headers: 'headers' },
+        dataset2: { key: 'value', limit: 0, isSearch: true, headers: 'headers' },
+        entityDataset: { _id: 'entityId', isEntity: true, headers: 'headers' },
       });
     });
 
@@ -61,40 +76,33 @@ describe('markdownDatasets', () => {
       <Dataset name="dataset3" geolocation="true"/>
       `;
 
-      const datasets = await markdownDatasets.fetch(markdown);
+      const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
       expect(datasets).toEqual({
-        default: { allAggregations: true, limit: 0, isSearch: true },
-        dataset1: { key: 'value2', limit: 0, isSearch: true },
-        dataset2: { key: 'value', limit: 0, geolocation: true, isSearch: true },
-        dataset3: { allAggregations: true, limit: 0, geolocation: true, isSearch: true },
+        default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
+        dataset1: { key: 'value2', limit: 0, isSearch: true, headers: 'headers' },
+        dataset2: { key: 'value', limit: 0, geolocation: true, isSearch: true, headers: 'headers' },
+        dataset3: { allAggregations: true, limit: 0, geolocation: true, isSearch: true, headers: 'headers' },
       });
     });
 
-    it('should allow query to anything', async () => {
+    it('should allow query to any api endpoint', async () => {
       const markdown = `
       <div>
         <Query url="users?_id=23234324" name="customQuery"/>
       </div>
       `;
 
-      const datasets = await markdownDatasets.fetch(markdown);
+      const datasets = await markdownDatasets.fetch(markdown, requestParams);
 
       expect(datasets).toEqual({
-        customQuery: { url: 'users?_id=23234324' }
+        customQuery: { url: 'users?_id=23234324', headers: 'headers' }
       });
     });
   });
 
   describe('getRows', () => {
-    const dataset1 = { rows: 'rows dataset 1' };
-    const dataset2 = { rows: 'rows dataset 2' };
-
-    const state = {
-      page: {
-        datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 })
-      }
-    };
+    const state = getTestState('getRows');
 
     it('should get the rows for the default dataset', () => {
       let rows = markdownDatasets.getRows(state, { });
@@ -111,38 +119,7 @@ describe('markdownDatasets', () => {
   });
 
   describe('getAggregations', () => {
-    const dataset = {
-      aggregations: {
-        all: { property1: {
-            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }] },
-          property2: {
-            buckets: [{ key: 'id5', filtered: { doc_count: 5 } }, { key: 'id6', filtered: { doc_count: 7 } }]
-          }
-        }
-      }
-    };
-
-    const dataset2 = {
-      aggregations: {
-        all: {
-          property3: {
-            buckets: [{ key: 'id7', filtered: { doc_count: 6 } }, { key: 'id8', filtered: { doc_count: 76 } }]
-          },
-          property4: {
-            buckets: [{ key: 'id36', filtered: { doc_count: 36 } }]
-          }
-        }
-      }
-    };
-
-    const state = {
-      page: {
-        datasets: Immutable.fromJS({
-          default: dataset,
-          another_dataset: dataset2
-        })
-      }
-    };
+    const state = getTestState('getAggregations');
 
     it('should get the aggregation for the type/property and value', () => {
       let aggregations = markdownDatasets.getAggregations(state, { property: 'property1' });
@@ -166,46 +143,7 @@ describe('markdownDatasets', () => {
   });
 
   describe('getAggregation', () => {
-    const dataset = {
-      aggregations: {
-        all: {
-          _types: {
-            buckets: [
-              { key: 'id1', filtered: { doc_count: 1 } },
-              { key: 'id2', filtered: { doc_count: 25 } },
-              { key: 'id3', filtered: { doc_count: 5.6 } },
-              { key: 'id4', filtered: { doc_count: 7.8 } },
-              { key: 'id5', filtered: { doc_count: 0 } },
-            ]
-          },
-          property1: {
-            buckets: [{ key: 'id3', filtered: { doc_count: 5 } }]
-          }
-        }
-      }
-    };
-
-    const dataset2 = {
-      aggregations: {
-        all: {
-          _types: {
-            buckets: [{ key: 'id5', filtered: { doc_count: 6 } }, { key: 'id7', filtered: { doc_count: 76 } }]
-          },
-          property4: {
-            buckets: [{ key: 'id36', filtered: { doc_count: 36 } }]
-          }
-        }
-      }
-    };
-
-    const state = {
-      page: {
-        datasets: Immutable.fromJS({
-          default: dataset,
-          another_dataset: dataset2
-        })
-      }
-    };
+    const state = getTestState('getAggregation');
 
     const expectAggregation = options => expect(markdownDatasets.getAggregation(state, options));
 
@@ -239,19 +177,7 @@ describe('markdownDatasets', () => {
   });
 
   describe('getMetadataValue', () => {
-    const dataset1 = {
-      title: 'Entity 1',
-      metadata: { progress: '3.5', otherProperty: '2' },
-    };
-
-    const dataset2 = {
-      title: 'Entity 2',
-      metadata: { progress: '1.5', otherProperty: '4' },
-    };
-
-    const state = {
-      page: { datasets: Immutable.fromJS({ default: dataset1, another_dataset: dataset2 }) }
-    };
+    const state = getTestState('getMetadataValue');
 
     it('should get the value for the property', () => {
       expect(markdownDatasets.getMetadataValue(state, { property: 'progress' })).toBe(3.5);

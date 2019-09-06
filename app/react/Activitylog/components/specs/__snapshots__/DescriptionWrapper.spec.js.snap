@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DescriptionWrapper should render expanded data 1`] = `
+<div>
+  <div>
+    <span
+      className="expand"
+      onClick={[Function]}
+    >
+      <span>
+        Some children
+      </span>
+    </span>
+  </div>
+  <div
+    className="expanded-content"
+  >
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            Query
+          </td>
+          <td
+            className="tdquery"
+          >
+            Long text for query
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Body
+          </td>
+          <td
+            className="tdbody"
+          >
+            Very complex body text
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;
+
+exports[`DescriptionWrapper should render extra info when expanded and beautified 1`] = `
+<div>
+  <div>
+    <span
+      className="expand"
+      onClick={[Function]}
+    >
+      <span>
+        Some children
+      </span>
+    </span>
+  </div>
+  <div
+    className="expanded-content"
+  >
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            Route
+          </td>
+          <td>
+            POST, PUT or DELETE
+             : 
+            /api/route/called
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Query
+          </td>
+          <td
+            className="tdquery"
+          >
+            Long text for query
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Body
+          </td>
+          <td
+            className="tdbody"
+          >
+            Very complex body text
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;
+
+exports[`DescriptionWrapper should render the component with correct children 1`] = `
+<div>
+  <div>
+    <span
+      className="expand"
+      onClick={[Function]}
+    >
+      <span>
+        Some children
+      </span>
+    </span>
+  </div>
+</div>
+`;
