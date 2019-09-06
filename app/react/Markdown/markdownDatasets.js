@@ -49,17 +49,17 @@ const parseDatasets = (markdown) => {
   return result;
 };
 
-const requestDatasets = datasets => Promise.all(
+const requestDatasets = (datasets, requestParams) => Promise.all(
   Object.keys(datasets)
   .map(
     (name) => {
       if (datasets[name].query) {
-        return api.get(datasets[name].url).then(data => ({ data: data.json, name }));
+        return api.get(datasets[name].url, requestParams).then(data => ({ data: data.json, name }));
       }
       const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
       const params = datasets[name].entity ? datasets[name].entity : datasets[name];
       const postAction = datasets[name].entity ? d => d[0] : d => d;
-      return apiAction(params).then(postAction).then(data => ({ data, name }));
+      return apiAction(requestParams.set(params)).then(postAction).then(data => ({ data, name }));
     }
   )
 );
@@ -82,9 +82,9 @@ const addValues = (aggregations, values) => {
 };
 
 export default {
-  async fetch(markdown) {
+  async fetch(markdown, requestParams) {
     const datasets = parseDatasets(markdown);
-    return requestDatasets(datasets).then(conformDatasets);
+    return requestDatasets(datasets, requestParams).then(conformDatasets);
   },
 
   getRows(state, { dataset = 'default' }) {
