@@ -29,10 +29,10 @@ export class FiltersForm extends Component {
 
   activesChange(items) {
     items.forEach((item) => {
-      // eslint-disable-next-line
-      if(!item.items) {
+      if (!item.items) {
         return;
       }
+      // eslint-disable-next-line
       item.items = item.items.filter((subitem) => {
         if (subitem.items) {
           items.push(subitem);
