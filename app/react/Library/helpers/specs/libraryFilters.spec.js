@@ -110,6 +110,13 @@ describe('library helper', () => {
       ]);
       expect(populatedFilters[3].filters[0].options).toEqual([{ id: 1, value: 'value1' }, { id: 2, value: 'value2' }]);
     });
+    describe('when property unknown content id is provided', () => {
+      it('should return null as options', () => {
+        const filters = [{ content: 'unknown' }];
+        const result = libraryHelper.populateOptions(filters, thesauris);
+        expect(result[0].options).toBe(null);
+      });
+    });
   });
 
   describe('parseWithAggregations', () => {
