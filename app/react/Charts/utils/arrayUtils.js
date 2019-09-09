@@ -30,7 +30,8 @@ function formatPayload(data) {
 }
 
 const formatDataForChart = (data, property, thesauris, { context, excludeZero, maxCategories, aggregateOthers = false }) => {
-  const { options } = populateOptions([{ content: context }], thesauris.toJS())[0];
+  const res = populateOptions([{ content: context }], thesauris.toJS());
+  const { options } = res[0];
 
   let relevant = data.toJS().filter(i => i.key !== 'missing');
 
@@ -55,7 +56,7 @@ const formatDataForChart = (data, property, thesauris, { context, excludeZero, m
       return { others: true, id: item.key, label: 'others', results: item.filtered.doc_count };
     }
 
-    const label = options.find(o => o.id === item.key);
+    const label = options && options.find(o => o.id === item.key);
     if (!label) {
       return null;
     }
