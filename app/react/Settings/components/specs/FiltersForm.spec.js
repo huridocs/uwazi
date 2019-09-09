@@ -42,7 +42,7 @@ describe('FiltersForm', () => {
     expect(component.state().activeFilters).toEqual(filters);
   });
 
-  it('should set the state with the active inactiveFilters', () => {
+  it('should set the state with the inactiveFilters', () => {
     render();
     expect(component.state().inactiveFilters).toEqual([{ id: 3, name: 'Judge' }]);
   });
@@ -98,10 +98,15 @@ describe('FiltersForm', () => {
     it('should sanitize and call teh api', () => {
       spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
       instance.save();
-      const expectedFilters = { filters: [
-        { id: 1, name: 'Country' },
-        { id: 2, name: 'Case' },
-        { id: 'asd', items: [{ id: 4, name: 'Court' }], name: 'Institutions' }]
+      const expectedFilters = {
+        data: {
+          filters: [
+            { id: 1, name: 'Country' },
+            { id: 2, name: 'Case' },
+            { id: 'asd', items: [{ id: 4, name: 'Court' }], name: 'Institutions' }
+          ]
+        },
+        headers: {}
       };
       expect(SettingsAPI.save).toHaveBeenCalledWith(expectedFilters);
     });
