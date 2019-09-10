@@ -84,11 +84,12 @@ export function loadTemplate(form, template) {
 }
 
 export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({ type: types.START_REUPLOAD_DOCUMENT, doc: docId });
     superagent.post(`${APIURL}reupload`)
     .set('Accept', 'application/json')
     .set('X-Requested-With', 'XMLHttpRequest')
+    .set('Content-Language', getState().locale)
     .field('document', docSharedId)
     .attach('file', file, file.name)
     .on('progress', (data) => {
@@ -97,7 +98,7 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('response', ({ body }) => {
       const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
-      api.get(new RequestParams({ docSharedId }))
+      api.get(new RequestParams({ sharedId: docSharedId }))
       .then(([doc]) => {
         dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
         dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
@@ -112,9 +113,10 @@ export function removeIcon(model) {
   return formActions.change(model, { _id: null, type: 'Empty' });
 }
 
-export function multipleUpdate(_entities, values) {
+export function multipleUpdate(entities, values) {
   return (dispatch) => {
-    const updatedEntities = _entities.toJS().map((entity) => {
+    const updatedEntities = entities.toJS().map((_entity) => {
+      const entity = { ..._entity };
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
         entity.icon = values.icon;
