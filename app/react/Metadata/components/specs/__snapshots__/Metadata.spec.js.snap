@@ -236,12 +236,11 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
           className="item-icon"
           data={
             Object {
-              "id": "icon",
+              "_id": "icon",
               "type": "Icons",
             }
           }
         />
-         
         string value
       </Connect(I18NLink)>
     </dd>
