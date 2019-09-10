@@ -7,6 +7,7 @@ import { browserHistory } from 'react-router';
 import { shallow } from 'enzyme';
 import ViewDocument from 'app/Viewer/ViewDocument';
 import Viewer from 'app/Viewer/components/Viewer';
+import RouteHandler from 'app/App/RouteHandler';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -22,7 +23,8 @@ describe('ViewDocument', () => {
   let props;
 
   const render = () => {
-    component = shallow(<ViewDocument {...props} renderedFromServer />, { context });
+    RouteHandler.renderedFromServer = true;
+    component = shallow(<ViewDocument {...props} />, { context });
     instance = component.instance();
   };
 
