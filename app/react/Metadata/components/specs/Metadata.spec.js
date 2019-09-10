@@ -69,6 +69,10 @@ describe('Metadata', () => {
     testMetadata([{ name: 'withurl', label: 'withUrl', value: 'string value', url: 'url' }]);
   });
 
+  it('should render links with icons if propery has url and icon', () => {
+    testMetadata([{ name: 'withurl', label: 'withUrl', value: 'string value', url: 'url', icon: { _id: 'icon', type: 'Icons' } }]);
+  });
+
   it('should render links when multiple properties have url', () => {
     testMetadata(prepareMultivalueMetadata());
   });

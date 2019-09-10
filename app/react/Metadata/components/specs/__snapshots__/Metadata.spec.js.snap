@@ -216,6 +216,39 @@ exports[`Metadata should render links when the property has url 1`] = `
 </React.Fragment>
 `;
 
+exports[`Metadata should render links with icons if propery has url and icon 1`] = `
+<React.Fragment>
+  <dl
+    className="metadata-type-default "
+    key="withurl_0"
+  >
+    <dt>
+      withUrl
+    </dt>
+    <dd
+      className=""
+    >
+      <Connect(I18NLink)
+        key="url"
+        to="url"
+      >
+        <Connect(Icon)
+          className="item-icon"
+          data={
+            Object {
+              "id": "icon",
+              "type": "Icons",
+            }
+          }
+        />
+         
+        string value
+      </Connect(I18NLink)>
+    </dd>
+  </dl>
+</React.Fragment>
+`;
+
 exports[`Metadata should render property not have this item when type is null 1`] = `
 <React.Fragment>
   <dl
