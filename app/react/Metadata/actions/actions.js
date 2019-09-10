@@ -98,7 +98,7 @@ export function reuploadDocument(docId, file, docSharedId, __reducerKey) {
     .on('response', ({ body }) => {
       const _file = { filename: body.filename, size: body.size, originalname: body.originalname };
       dispatch({ type: types.REUPLOAD_COMPLETE, doc: docId, file: _file, __reducerKey });
-      api.get(new RequestParams({ docSharedId }))
+      api.get(new RequestParams({ sharedId: docSharedId }))
       .then(([doc]) => {
         dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
         dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });

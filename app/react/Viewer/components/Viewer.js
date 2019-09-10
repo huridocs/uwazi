@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { List, Map } from 'immutable';
 
 import { ConnectionsList } from 'app/ConnectionsList';
 import { CreateConnectionPanel } from 'app/Connections';
@@ -16,10 +17,11 @@ import Footer from 'app/App/Footer';
 import Marker from 'app/Viewer/utils/Marker';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
+import { RequestParams } from 'app/utils/RequestParams';
 
 import { PaginatorWithPage } from './Paginator';
-import { addReference } from '../actions/referencesActions';
-import { loadDefaultViewerMenu, loadTargetDocument } from '../actions/documentActions';
+import { addReference as addReferenceAction } from '../actions/referencesActions';
+import { loadDefaultViewerMenu, loadTargetDocument as loadTargetDocumentAction } from '../actions/documentActions';
 import { openPanel } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
@@ -30,6 +32,8 @@ import ViewerDefaultMenu from './ViewerDefaultMenu';
 import ViewerTextSelectedMenu from './ViewerTextSelectedMenu';
 
 import determineDirection from '../utils/determineDirection';
+import { requestViewerState } from '../actions/routeActions';
+
 
 export class Viewer extends Component {
   constructor(props) {
@@ -39,20 +43,55 @@ export class Viewer extends Component {
   }
 
   componentWillMount() {
-    this.context.store.dispatch(openPanel('viewMetadataPanel'));
-    if (this.props.sidepanelTab === 'connections') {
-      this.context.store.dispatch(actions.set('viewer.sidepanel.tab', ''));
+    const { store } = this.context;
+    const { sidepanelTab } = this.props;
+
+    store.dispatch(openPanel('viewMetadataPanel'));
+    if (sidepanelTab === 'connections') {
+      store.dispatch(actions.set('viewer.sidepanel.tab', ''));
+    }
+  }
+
+  componentDidMount() {
+    const { store } = this.context;
+
+    store.dispatch(loadDefaultViewerMenu());
+    Marker.init('div.main-wrapper');
+    this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
+
+    const { templates, doc } = this.props;
+
+    if (doc.size && !doc.get('pdfInfo')) {
+      requestViewerState(new RequestParams({ sharedId: doc.get('sharedId') }), { templates: templates.toJS() })
+      .then((viewerActions) => {
+        viewerActions.forEach((action) => {
+          store.dispatch(action);
+        });
+      });
     }
   }
 
   handlePlainTextClick() {
-    this.props.showTab('metadata');
+    const { showTab } = this.props;
+    showTab('metadata');
   }
 
-  componentDidMount() {
-    this.context.store.dispatch(loadDefaultViewerMenu());
-    Marker.init('div.main-wrapper');
-    this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
+  prepareClassName() {
+    const { panelIsOpen, targetDoc, showConnections } = this.props;
+
+    let className = 'document-viewer';
+
+    if (panelIsOpen) {
+      className += ' with-panel is-active';
+    }
+    if (targetDoc) {
+      className += ' show-target-document';
+    }
+    if (showConnections) {
+      className += ' connections';
+    }
+
+    return className;
   }
 
   renderNoDoc() {
@@ -75,20 +114,14 @@ export class Viewer extends Component {
 
 
   render() {
-    const { doc, sidepanelTab } = this.props;
+    const { doc, sidepanelTab, targetDoc, changePage, onPageChange, onDocumentReady,
+            addReference, loadTargetDocument, panelIsOpen, showTextSelectMenu } = this.props;
+    const { firstRender } = this.state;
     if (doc.get('_id') && !doc.get('file')) {
       return this.renderNoDoc();
     }
-    let className = 'document-viewer';
-    if (this.props.panelIsOpen) {
-      className += ' with-panel is-active';
-    }
-    if (this.props.targetDoc) {
-      className += ' show-target-document';
-    }
-    if (this.props.showConnections) {
-      className += ' connections';
-    }
+
+    const className = this.prepareClassName();
 
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
@@ -97,21 +130,21 @@ export class Viewer extends Component {
     return (
       <div className="row">
         <Helmet title={`${documentTitle} • Page ${page}`} />
-        <ShowIf if={!this.props.targetDoc}>
+        <ShowIf if={!targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
               {sidepanelTab !== 'connections' && (
                 <React.Fragment>
                   <PaginatorWithPage
                     totalPages={doc.get('totalPages')}
-                    onPageChange={this.props.changePage}
+                    onPageChange={changePage}
                   />
                   <CurrentLocationLink
                     onClick={!raw ? this.handlePlainTextClick : () => {}}
                     className="btn btn-default"
-                    queryParams={{ raw: raw || this.state.firstRender ? '' : 'true' }}
+                    queryParams={{ raw: raw || firstRender ? '' : 'true' }}
                   >
-                    { raw || this.state.firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
+                    { raw || firstRender ? <Translate>Normal view</Translate> : <Translate>Plain text</Translate> }
                   </CurrentLocationLink>
                 </React.Fragment>
               )}
@@ -120,10 +153,10 @@ export class Viewer extends Component {
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
-            <ShowIf if={sidepanelTab !== 'connections' && !this.props.targetDoc}>
-              {raw || this.state.firstRender ?
+            <ShowIf if={sidepanelTab !== 'connections' && !targetDoc}>
+              {raw || firstRender ?
                 <pre className={determineDirection(documentFile)}>{pageText}</pre> :
-                <SourceDocument searchTerm={searchTerm} onPageChange={this.props.onPageChange} onDocumentReady={this.props.onDocumentReady}/>
+                <SourceDocument searchTerm={searchTerm} onPageChange={onPageChange} onDocumentReady={onDocumentReady}/>
               }
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections'}>
@@ -135,11 +168,11 @@ export class Viewer extends Component {
         </main>
 
         <ConfirmCloseForm />
-        <ViewMetadataPanel raw={raw || this.state.firstRender} storeKey="documentViewer" searchTerm={searchTerm}/>
+        <ViewMetadataPanel raw={raw || firstRender} storeKey="documentViewer" searchTerm={searchTerm}/>
         <CreateConnectionPanel
-          containerId={this.props.targetDoc ? 'target' : doc.get('sharedId')}
-          onCreate={this.props.addReference}
-          onRangedConnect={this.props.loadTargetDocument}
+          containerId={targetDoc ? 'target' : doc.get('sharedId')}
+          onCreate={addReference}
+          onRangedConnect={loadTargetDocument}
         />
 
         <ShowIf if={sidepanelTab === 'connections'}>
@@ -156,10 +189,10 @@ export class Viewer extends Component {
           </div>
         </ShowIf>
 
-        <ContextMenu align="bottom" overrideShow show={!this.props.panelIsOpen}>
+        <ContextMenu align="bottom" overrideShow show={!panelIsOpen}>
           <ViewerDefaultMenu/>
         </ContextMenu>
-        <ContextMenu align="center" overrideShow show={this.props.showTextSelectMenu}>
+        <ContextMenu align="center" overrideShow show={showTextSelectMenu}>
           <ViewerTextSelectedMenu/>
         </ContextMenu>
       </div>
@@ -174,6 +207,8 @@ Viewer.defaultProps = {
   changePage: () => {},
   onDocumentReady: () => {},
   page: 1,
+  templates: List(),
+  doc: Map()
 };
 
 Viewer.propTypes = {
@@ -182,7 +217,7 @@ Viewer.propTypes = {
   onPageChange: PropTypes.func,
   changePage: PropTypes.func,
   onDocumentReady: PropTypes.func,
-  doc: PropTypes.object,
+  doc: PropTypes.instanceOf(Map),
   pageText: PropTypes.string,
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
@@ -196,6 +231,7 @@ Viewer.propTypes = {
   selectedConnectionMetadata: PropTypes.object,
   showTab: PropTypes.func,
   page: PropTypes.number,
+  templates: PropTypes.instanceOf(List),
 };
 
 Viewer.contextTypes = {
@@ -211,16 +247,17 @@ const mapStateToProps = (state) => {
     doc: selectDoc(state),
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
+    templates: state.templates,
     // TEST!!!
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
-    showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange)
+    showTextSelectMenu: Boolean(!documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange),
   };
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  addReference,
-  loadTargetDocument,
+  addReference: addReferenceAction,
+  loadTargetDocument: loadTargetDocumentAction,
   showTab: tab => actions.set('viewer.sidepanel.tab', tab),
 }, dispatch);
 
