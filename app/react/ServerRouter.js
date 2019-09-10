@@ -123,7 +123,7 @@ function handleRoute(res, renderProps, req) {
     }
 
     const headers = {
-      'Content-language': locale,
+      'Content-Language': locale,
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
     };
 
@@ -151,7 +151,7 @@ function handleRoute(res, renderProps, req) {
 
     const { lang, ...params } = renderProps.params;
     const headers = {
-      'Content-language': locale,
+      'Content-Language': locale,
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
     };
 

@@ -90,10 +90,26 @@ describe('Metadata Actions', () => {
   });
 
   describe('changeTemplate', () => {
+    let dispatch;
+    let state;
+
     beforeEach(() => {
       const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
       spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
       jasmine.clock().install();
+
+      spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
+      spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
+
+      dispatch = jasmine.createSpy('dispatch');
+
+      const template = { _id: 'newTemplate', properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }] };
+      state = {
+        templates: Immutable.fromJS([
+          template,
+          { _id: 'templateId', properties: [{ name: 'test' }, { name: 'test2' }] }
+        ])
+      };
     });
 
     afterEach(() => {
@@ -101,19 +117,6 @@ describe('Metadata Actions', () => {
     });
 
     it('should change the document template preserve matching values', () => {
-      spyOn(reactReduxForm.actions, 'reset').and.returnValue('formReset');
-      spyOn(reactReduxForm.actions, 'load').and.returnValue('formLoad');
-
-      const dispatch = jasmine.createSpy('dispatch');
-
-      const template = { _id: 'newTemplate', properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }] };
-      const state = {
-        templates: Immutable.fromJS([
-          template,
-          { _id: 'templateId', properties: [{ name: 'test' }, { name: 'test2' }] }
-        ])
-      };
-
       const getState = () => state;
 
       actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
@@ -194,22 +197,20 @@ describe('Metadata Actions', () => {
       mockUpload = superagent.post(`${APIURL}reupload`);
       spyOn(mockUpload, 'field').and.returnValue(mockUpload);
       spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+      spyOn(mockUpload, 'set').and.returnValue(mockUpload);
       spyOn(superagent, 'post').and.returnValue(mockUpload);
 
       // needed to work with firefox/chrome and phantomjs
-      file = { name: 'filename' };
       const isChrome = typeof File === 'function';
-      if (isChrome) {
-        file = new File([], 'filename');
-      }
-      //
+      file = isChrome ? new File([], 'filename') : { name: 'filename' };
+      // ------------------------------------------------
 
       jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve({ documentViewer: { doc: 'doc' } }));
       jest.spyOn(routeActions, 'setViewerState').mockImplementation(() => ({ type: 'setViewerState' }));
       store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
     });
 
-    it('should upload the file while dispatching the upload progress (including the storeKey to update the results)', () => {
+    it('should upload the file while dispatching the upload progress (including the language and storeKey to update the results)', () => {
       api.get = () => Promise.resolve([doc]);
       store.dispatch(actions.reuploadDocument('abc1', file, 'sharedId', 'storeKey'));
       const expectedActions = [
@@ -219,6 +220,7 @@ describe('Metadata Actions', () => {
         { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'filename', size: 34, originalname: 'name' }, __reducerKey: 'storeKey' }
       ];
 
+      expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
       expect(mockUpload.field).toHaveBeenCalledWith('document', 'sharedId');
       expect(mockUpload.attach).toHaveBeenCalledWith('file', file, 'filename');
 
