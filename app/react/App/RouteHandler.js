@@ -6,6 +6,7 @@ import { I18NUtils } from 'app/I18N';
 import JSONUtils from 'shared/JSONUtils';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import { isClient } from 'app/utils';
 
 const getLocale = ({ store }) => store.getState().locale;
 
@@ -33,7 +34,7 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props, context);
     setLocale(getLocale(context));
-    if (!this.isRenderedFromServer()) {
+    if (!this.isRenderedFromServer() && isClient) {
       this.getClientState(this.props);
     }
   }
