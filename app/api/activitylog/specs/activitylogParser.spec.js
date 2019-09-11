@@ -54,7 +54,7 @@ describe('Activitylog Parser', () => {
           expect(semanticData).toEqual(expect.objectContaining({ name: 'New Document', extra: `of type (${template.toString()})` }));
         });
 
-        fit('should allow uploaded documents without template', async () => {
+        it('should allow uploaded documents without template', async () => {
           const semanticData = await getSemanticData({ method: 'POST', url: '/api/documents', body: '{"title":"New Document"}' });
           expect(semanticData).toEqual(expect.objectContaining({ extra: 'of type (unassigned)' }));
         });
