@@ -13,7 +13,7 @@ const entitiesPOST = async (log) => {
   const semantic = {
     beautified: true,
     name: data.title,
-    extra: `of type ${template ? template.name : `(${data.template.toString()})`}`
+    extra: `of type ${template ? template.name : `(${data.template ? data.template.toString() : 'unassigned'})`}`
   };
 
   if (data.sharedId) {
