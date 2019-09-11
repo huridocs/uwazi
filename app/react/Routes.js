@@ -83,7 +83,7 @@ function getIndexRoute(nextState, callBack) {
   let component = Library;
   if (isPageRoute) {
     pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    component = props => <PageView {...props} params={{ pageId }}/>;
+    component = props => <PageView {...props} params={{ sharedId: pageId }}/>;
     component.requestState = requestParams => PageView.requestState(requestParams.set({ sharedId: pageId }));
   }
 
