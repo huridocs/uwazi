@@ -10,6 +10,8 @@ import DocumentsAPI from 'app/Documents/DocumentsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import ReferencesAPI from 'app/Viewer/referencesAPI';
 import formater from 'app/Metadata/helpers/formater';
+import { RequestParams } from 'app/utils/RequestParams';
+
 import { Icon } from 'UI';
 
 import moment from 'moment';
@@ -21,6 +23,56 @@ const dateProperties = Object.keys(renderableTemplates).reduce((memo, t) => (
   Object.assign(memo, { [renderableTemplates[t]]: datePropertyOverrides[t] || 'fecha' })
 ), {});
 
+const fetchReferences = entityId => ReferencesAPI.get(new RequestParams({ sharedId: entityId }));
+
+const getRelatedReferences = (references, template) => {
+  let promise = Promise.resolve([]);
+  const relatedEntity = references.find(r => r.entityData.template === template);
+  if (relatedEntity) {
+    promise = fetchReferences(relatedEntity.entityData.sharedId);
+  }
+
+  return promise;
+};
+
+const fetchReferenceData = (references) => {
+  const fetchPromises = references.map((reference) => {
+    const get = reference.entityData.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
+    return get(new RequestParams({ sharedId: reference.entityData.sharedId }));
+  });
+
+  return Promise.all(fetchPromises);
+};
+
+const assignDataToYear = (years, date, data) => {
+  const year = moment.utc(date * 1000).format('YYYY');
+  years[year] = years[year] || [];
+  years[year].push(data);
+};
+
+const normalizeYears = (years) => {
+  const currentYear = Number(moment().format('YYYY'));
+  const { minYear, maxYear } = Object.keys(years).reduce((memo, year) => {
+    memo.minYear = Math.min(memo.minYear, Number(year));
+    memo.maxYear = Math.max(memo.maxYear, Number(year));
+    return memo;
+  }, { minYear: currentYear, maxYear: 0 });
+
+  for (let year = minYear - 3; year < (maxYear || currentYear) + 3; year += 1) {
+    years[year] = years[year] || [];
+  }
+
+  return years;
+};
+
+const splitByOrigin = years => ['main', 'related'].reduce((tracks, trackName) => {
+  tracks[trackName] = Object.keys(years).reduce((memo, year) => {
+    memo.years[year] = years[year].filter(i => trackName === 'main' ? i.origin !== 'related' : i.origin === 'related');
+    return memo;
+  }, { years: {}, label: '', className: '' });
+  return tracks;
+}, { main: {}, related: {} });
+
 export class TimelineViewer extends Component {
   getTemplateType(itemTemplate) {
     return this.plainTemplates.reduce((result, template, index) => {
@@ -29,61 +81,6 @@ export class TimelineViewer extends Component {
       }
       return result;
     }, '');
-  }
-
-  fetchReferences(entityId) {
-    return ReferencesAPI.get(entityId);
-  }
-
-  getRelatedReferences(references, template) {
-    let promise = Promise.resolve([]);
-    const relatedEntity = references.find(r => r.entityData.template === template);
-    if (relatedEntity) {
-      promise = this.fetchReferences(relatedEntity.entityData.sharedId);
-    }
-
-    return promise;
-  }
-
-  filterUsefulReferences(entity, references, relatedReferences, isCase) {
-    const referenceLabel = this.plainTemplates.find(t => t._id === entity.template).name;
-    const referenceClassName = this.getTemplateType(entity.template);
-    const relatedReferenceLabel = this.plainTemplates.find(t => t._id === (isCase ? matterTemplate : caseTemplate)).name;
-    const relatedReferenceClassName = this.getTemplateType(isCase ? matterTemplate : caseTemplate);
-
-    return references
-    .map((r) => {
-      r.parentTemplate = { label: referenceLabel, className: referenceClassName };
-      r.origin = isCase || !relatedReferences.length ? 'main' : 'related';
-      return r;
-    })
-    .concat(relatedReferences.map((r) => {
-      r.parentTemplate = { label: relatedReferenceLabel, className: relatedReferenceClassName };
-      r.origin = isCase ? 'related' : 'main';
-      return r;
-    }))
-    .filter(r => desiredTemplates.indexOf(r.entityData.template) !== -1);
-  }
-
-  fetchReferenceData(references) {
-    const fetchPromises = references.map((reference) => {
-      const get = reference.entityData.type === 'document' ? DocumentsAPI.get : EntitiesAPI.get;
-      return get(reference.entityData.sharedId);
-    });
-
-    return Promise.all(fetchPromises);
-  }
-
-  assignAdditionalData(reference) {
-    Object.keys(renderableTemplates).forEach((templateName) => {
-      if (reference.data.template === renderableTemplates[templateName]) {
-        reference.additionalData = { type: templateName };
-      }
-    });
-
-    reference.additionalData.className = this.getTemplateType(reference.data.template);
-    reference.additionalData.date = reference.data.metadata[dateProperties[reference.data.template]];
-    reference.timestamp = reference.data.metadata[dateProperties[reference.data.template]];
   }
 
   getDates(entity, origin) {
@@ -110,37 +107,6 @@ export class TimelineViewer extends Component {
       }
       return dates;
     }, []);
-  }
-
-  assignDataToYear(years, date, data) {
-    const year = moment.utc(date * 1000).format('YYYY');
-    years[year] = years[year] || [];
-    years[year].push(data);
-  }
-
-  normalizeYears(years) {
-    const currentYear = Number(moment().format('YYYY'));
-    const { minYear, maxYear } = Object.keys(years).reduce((memo, year) => {
-      memo.minYear = Math.min(memo.minYear, Number(year));
-      memo.maxYear = Math.max(memo.maxYear, Number(year));
-      return memo;
-    }, { minYear: currentYear, maxYear: 0 });
-
-    for (let year = minYear - 3; year < (maxYear || currentYear) + 3; year += 1) {
-      years[year] = years[year] || [];
-    }
-
-    return years;
-  }
-
-  splitByOrigin(years) {
-    return ['main', 'related'].reduce((tracks, trackName) => {
-      tracks[trackName] = Object.keys(years).reduce((memo, year) => {
-        memo.years[year] = years[year].filter(i => trackName === 'main' ? i.origin !== 'related' : i.origin === 'related');
-        return memo;
-      }, { years: {}, label: '', className: '' });
-      return tracks;
-    }, { main: {}, related: {} });
   }
 
   assignActiveYears(tracks) {
@@ -178,16 +144,16 @@ export class TimelineViewer extends Component {
       const isDesiredTemplate = desiredTemplates.indexOf(reference.data.template !== -1);
       const hasDate = reference.data.metadata[dateProperties[reference.data.template]] !== null;
       if (isDesiredTemplate && hasDate) {
-        this.assignDataToYear(years, reference.data.metadata[dateProperties[reference.data.template]], reference);
+        assignDataToYear(years, reference.data.metadata[dateProperties[reference.data.template]], reference);
         this.assignAdditionalData(reference);
       }
     });
 
     dates.forEach((date) => {
-      this.assignDataToYear(years, date.timestamp, date);
+      assignDataToYear(years, date.timestamp, date);
     });
 
-    const tracks = this.assignActiveYears(this.splitByOrigin(this.normalizeYears(this.sortEvents(years))));
+    const tracks = this.assignActiveYears(splitByOrigin(normalizeYears(this.sortEvents(years))));
 
     if (!hasRelatedReferences) {
       delete tracks.related;
@@ -213,7 +179,7 @@ export class TimelineViewer extends Component {
 
     const relatedEntity = references.find(r => r.entityData.template === (isCase ? matterTemplate : caseTemplate));
     if (relatedEntity) {
-      fetchRelatedEntity = EntitiesAPI.get(relatedEntity.entityData.sharedId)
+      fetchRelatedEntity = EntitiesAPI.get(new RequestParams({ sharedId: relatedEntity.entityData.sharedId }))
       .then(results => formater.prepareMetadata(results[0], this.props.templates, this.props.thesauris));
     }
 
@@ -227,14 +193,14 @@ export class TimelineViewer extends Component {
     this.plainTemplates = this.props.templates.toJS();
     this.plainThesauris = this.props.thesauris.toJS();
 
-    this.fetchReferences(entity.sharedId)
+    fetchReferences(entity.sharedId)
     .then((references) => {
-      const relatedReferences = this.getRelatedReferences(references, isCase ? matterTemplate : caseTemplate);
+      const relatedReferences = getRelatedReferences(references, isCase ? matterTemplate : caseTemplate);
       return Promise.all([this.getRelatedEntity(references, isCase), references, relatedReferences]);
     })
     .then(([relatedEntity, references, relatedReferences]) => {
       usefulReferences = this.filterUsefulReferences(entity, references, relatedReferences, isCase);
-      return Promise.all([relatedEntity, this.fetchReferenceData(usefulReferences), relatedReferences]);
+      return Promise.all([relatedEntity, fetchReferenceData(usefulReferences), relatedReferences]);
     })
     .then(([relatedEntity, referencesData, relatedReferences]) => {
       const conformedReferences = usefulReferences.map((reference, index) => {
@@ -256,6 +222,38 @@ export class TimelineViewer extends Component {
         tracks: this.assignTrackLabels(this.arrangeTracks(conformedReferences, dates, relatedReferences.length), isMainMatter)
       });
     });
+  }
+
+  assignAdditionalData(reference) {
+    Object.keys(renderableTemplates).forEach((templateName) => {
+      if (reference.data.template === renderableTemplates[templateName]) {
+        reference.additionalData = { type: templateName };
+      }
+    });
+
+    reference.additionalData.className = this.getTemplateType(reference.data.template);
+    reference.additionalData.date = reference.data.metadata[dateProperties[reference.data.template]];
+    reference.timestamp = reference.data.metadata[dateProperties[reference.data.template]];
+  }
+
+  filterUsefulReferences(entity, references, relatedReferences, isCase) {
+    const referenceLabel = this.plainTemplates.find(t => t._id === entity.template).name;
+    const referenceClassName = this.getTemplateType(entity.template);
+    const relatedReferenceLabel = this.plainTemplates.find(t => t._id === (isCase ? matterTemplate : caseTemplate)).name;
+    const relatedReferenceClassName = this.getTemplateType(isCase ? matterTemplate : caseTemplate);
+
+    return references
+    .map((r) => {
+      r.parentTemplate = { label: referenceLabel, className: referenceClassName };
+      r.origin = isCase || !relatedReferences.length ? 'main' : 'related';
+      return r;
+    })
+    .concat(relatedReferences.map((r) => {
+      r.parentTemplate = { label: relatedReferenceLabel, className: relatedReferenceClassName };
+      r.origin = isCase ? 'related' : 'main';
+      return r;
+    }))
+    .filter(r => desiredTemplates.indexOf(r.entityData.template) !== -1);
   }
 
   componentDidMount() {
@@ -354,6 +352,8 @@ export class TimelineViewer extends Component {
           if (!this.state || !this.state.tracks) {
             return <Loader/>;
           }
+
+          return null;
         })()}
         <ShowIf if={Boolean(this.state && this.state.tracks && this.state.tracks.related)}>
           <div className="timeline-track">

@@ -46,7 +46,7 @@ const headTag = (head, CSS, reduxData) => (
     {head.link.toComponent()}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {CSS.map((style, key) => <link key={key} href={style} rel="stylesheet" type="text/css" />)}
-    <style type="text/css" dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.customCSS }} />
+    <style type="text/css" dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }} />
     {googelFonts}
     <link rel="shortcut icon" href="/public/favicon.ico"/>
   </head>
