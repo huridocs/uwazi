@@ -22,7 +22,10 @@ describe('PageView', () => {
 
   beforeEach(() => {
     let searchCalls = -1;
-    spyOn(api, 'search').and.callFake(() => Promise.resolve({ rows: [`resultsFor:${searchCalls += 1}`] }));
+    spyOn(api, 'search').and.callFake(() => {
+      searchCalls += 1;
+      return Promise.resolve({ rows: [`resultsFor:${searchCalls}`] });
+    });
 
     spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve([page]));
     spyOn(pageItemLists, 'generate').and.returnValue({
@@ -119,7 +122,7 @@ describe('PageView', () => {
       const data = { sharedId: 'abc2' };
       const request = new RequestParams(data, 'headers');
       const stateActions = await PageView.requestState(request);
-      expect(markdownDatasets.fetch).toHaveBeenCalledWith('originalContent', 'headers');
+      expect(markdownDatasets.fetch).toHaveBeenCalledWith('originalContent', request.onlyHeaders());
       expect(stateActions[2].value).toEqual(markdownDatasetsResponse);
     });
   });

@@ -5,10 +5,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import moment from 'moment';
 
-export default class DatePicker extends Component {
+class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.onChange = this.onChange.bind(this);
     if (props.value) {
       this.state.value = moment.utc(props.value, 'X');
     }
@@ -21,28 +22,36 @@ export default class DatePicker extends Component {
   }
 
   onChange(value) {
+    const { onChange, endOfDay, useTimezone } = this.props;
     this.setState({ value });
     if (!value) {
-      return this.props.onChange(null);
-    }
-    value.add(value.utcOffset(), 'minute');
-    if (this.props.endOfDay) {
-      value.utc().endOf('day');
-    }
+      onChange(null);
+    } else {
+      if (!useTimezone) {
+        value.add(value.utcOffset(), 'minute');
+      }
 
-    this.props.onChange(parseInt(value.utc().format('X'), 10));
+      if (endOfDay) {
+        const method = useTimezone ? value : value.utc();
+        method.endOf('day');
+      }
+
+      onChange(parseInt(value.utc().format('X'), 10));
+    }
   }
 
   render() {
-    const locale = this.props.locale || 'en';
-    const format = this.props.format || 'DD/MM/YYYY';
+    let { locale, format } = this.props;
+    locale = locale || 'en';
+    format = format || 'DD/MM/YYYY';
+    const { value } = this.state;
 
     return (
       <DatePickerComponent
         dateFormat={format}
         className="form-control"
-        onChange={this.onChange.bind(this)}
-        selected={this.state.value}
+        onChange={this.onChange}
+        selected={value}
         locale={locale}
         placeholderText={format}
         isClearable
@@ -53,10 +62,22 @@ export default class DatePicker extends Component {
   }
 }
 
+DatePicker.defaultProps = {
+  onChange: () => {},
+  value: undefined,
+  endOfDay: false,
+  locale: undefined,
+  format: undefined,
+  useTimezone: false
+};
+
 DatePicker.propTypes = {
   onChange: PropTypes.func,
-  value: PropTypes.any,
+  value: PropTypes.number,
   endOfDay: PropTypes.bool,
   locale: PropTypes.string,
-  format: PropTypes.string
+  format: PropTypes.string,
+  useTimezone: PropTypes.bool
 };
+
+export default DatePicker;

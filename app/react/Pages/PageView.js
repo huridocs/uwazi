@@ -30,18 +30,17 @@ function prepareLists(page, requestParams) {
     }
 
     query.limit = listsData.options[index].limit ? String(listsData.options[index].limit) : '6';
-    // return api.search({ data: query, headers: requestParams.headers });
     return api.search(requestParams.set(query));
   }));
 
   return listsData;
 }
 
-export class PageView extends RouteHandler {
+class PageView extends RouteHandler {
   static async requestState(requestParams) {
     const [page] = await PagesAPI.get(requestParams);
     const listsData = prepareLists(page, requestParams);
-    const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.headers);
+    const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
 
     const [pageView, searchParams, searchOptions, datasets, listSearchs] =
       await Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
