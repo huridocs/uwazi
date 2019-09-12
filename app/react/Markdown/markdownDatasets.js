@@ -57,7 +57,7 @@ const requestDatasets = (datasets, requestParams) => Promise.all(
         return api.get(datasets[name].url, requestParams).then(data => ({ data: data.json, name }));
       }
       const apiAction = datasets[name].entity ? entitiesApi.get : searchApi.search;
-      const params = datasets[name].entity ? datasets[name].entity : datasets[name];
+      const params = datasets[name].entity ? { sharedId: datasets[name].entity } : datasets[name];
       const postAction = datasets[name].entity ? d => d[0] : d => d;
       return apiAction(requestParams.set(params)).then(postAction).then(data => ({ data, name }));
     }
