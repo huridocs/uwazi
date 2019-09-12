@@ -25,7 +25,7 @@ describe('markdownDatasets', () => {
     beforeEach(() => {
       requestParams = new RequestParams({}, 'headers');
       spyOn(searchApi, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true, headers: params.headers }, params.data)));
-      spyOn(entitiesApi, 'get').and.callFake(params => Promise.resolve([{ isEntity: true, _id: params.data, headers: params.headers }]));
+      spyOn(entitiesApi, 'get').and.callFake(params => Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }]));
       spyOn(api, 'get').and.callFake((url, pasedRequestParams) => Promise.resolve({ json: { url, headers: pasedRequestParams.headers } }));
     });
 
@@ -62,7 +62,7 @@ describe('markdownDatasets', () => {
         default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
         dataset1: { key: 'value2', limit: 0, isSearch: true, headers: 'headers' },
         dataset2: { key: 'value', limit: 0, isSearch: true, headers: 'headers' },
-        entityDataset: { _id: 'entityId', isEntity: true, headers: 'headers' },
+        entityDataset: { data: { sharedId: 'entityId' }, isEntity: true, headers: 'headers' },
       });
     });
 
