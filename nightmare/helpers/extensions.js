@@ -270,6 +270,14 @@ Nightmare.action('getInnerText', function (selector, done) {
   }, done, selector);
 });
 
+Nightmare.action('getInnerHtml', function (selector, done) {
+  this.wait(selector)
+  .evaluate_now((elementToSelect) => {
+    const helpers = document.__helpers;
+    return helpers.querySelector(elementToSelect).innerHTML;
+  }, done, selector);
+});
+
 Nightmare.action('selectText', function (selector, done) {
   this.wait(selector)
   .evaluate((elementToSelect) => {
