@@ -23,7 +23,7 @@ const localSelectors = {
 };
 
 
-describe('pages path', () => {
+describe('custom home page and styles path path', () => {
   const pageHTML = '<h1>Page header</h1><div class="myDiv">Contents</div>';
   const customStyles = '.myDiv { color: white; font-size: 20px; background-color: red; }';
 
