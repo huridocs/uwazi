@@ -4,7 +4,7 @@ import selectors from './selectors.js';
 import config from './config.js';
 
 
-Nightmare.action('clearInput', function (selector, done) {
+Nightmare.action('clearInput', function clearInput(selector, done) {
   const backSpaces = [];
   for (let i = 0; i < 50; i += 1) {
     backSpaces.push('\u0008');
@@ -14,12 +14,12 @@ Nightmare.action('clearInput', function (selector, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('typeEnter', function (selector, done) {
+Nightmare.action('typeEnter', function typeEnter(selector, done) {
   this.type(selector, '\u000d')
   .then(() => { done(); });
 });
 
-Nightmare.action('waitFirstDocumentToMatch', function (term, done) {
+Nightmare.action('waitFirstDocumentToMatch', function waitFirstDocumentToMatch(term, done) {
   this.wait((termToMatch, selector) => {
     const element = document.querySelector(selector);
     if (!element) {
@@ -31,20 +31,20 @@ Nightmare.action('waitFirstDocumentToMatch', function (term, done) {
   .catch(done);
 });
 
-Nightmare.action('waitToDisapear', function (selector, done) {
+Nightmare.action('waitToDisapear', function waitToDisappear(selector, done) {
   this.wait(_selector => !document.querySelector(_selector), selector)
   .then(() => { done(); })
   .catch(done);
 });
 
-Nightmare.action('librarySearch', function (searchTerm, done) {
+Nightmare.action('librarySearch', function librarySearch(searchTerm, done) {
   this.write(selectors.libraryView.searchInput, searchTerm)
   .type(selectors.libraryView.searchInput, '\u000d')
   .wait('.item-snippet')
   .then(() => { done(); });
 });
 
-Nightmare.action('write', function (selector, text, done) {
+Nightmare.action('write', function write(selector, text, done) {
   this.wait(selector)
   // to prevet fails from multiple renders :(
   .wait(300)
@@ -53,25 +53,25 @@ Nightmare.action('write', function (selector, text, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('gotoLibrary', function (done) {
+Nightmare.action('gotoLibrary', function gotoLibrary(done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.libraryNavButton)
   .wait(selectors.libraryView.libraryFirstDocument)
   .then(() => { done(); });
 });
 
-Nightmare.action('countFiltersResults', function (done) {
+Nightmare.action('countFiltersResults', function countFiltersResults(done) {
   this.evaluate_now(() => document.querySelectorAll('.item-document').length, done);
 });
 
-Nightmare.action('goToUploads', function (done) {
+Nightmare.action('goToUploads', function goToUploads(done) {
   this.goto(config.url)
   .waitToClick(selectors.navigation.uploadsNavButton)
   .wait(selectors.libraryView.libraryFirstDocument)
   .then(() => { done(); });
 });
 
-Nightmare.action('login', function (name, password, done) {
+Nightmare.action('login', function login(name, password, done) {
   this.goto(config.url)
   .wait(selectors.navigation.loginNavButton)
   .click(selectors.navigation.loginNavButton)
@@ -95,12 +95,12 @@ Nightmare.action('logout', function logout(done) {
   .then(() => done());
 });
 
-Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
+Nightmare.action('waitForTheEntityToBeIndexed', function waitForTheEntityToBeIndexed(done) {
   this.wait(1200)
   .then(() => { done(); });
 });
 
-Nightmare.action('waitToClick', function (selector, done) {
+Nightmare.action('waitToClick', function waitToClicked(selector, done) {
   this.wait(selector, 1000)
   .wait(300)
   .wait(selector, 1000)
@@ -109,7 +109,7 @@ Nightmare.action('waitToClick', function (selector, done) {
   .catch(done);
 });
 
-Nightmare.action('ctrlClick', function (selector, done) {
+Nightmare.action('ctrlClick', function ctrlClick(selector, done) {
   this.wait(selector)
   .evaluate((elementToClick) => {
     const e = new MouseEvent('click', {
@@ -123,7 +123,7 @@ Nightmare.action('ctrlClick', function (selector, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('shiftClick', function (selector, done) {
+Nightmare.action('shiftClick', function shiftClick(selector, done) {
   this.wait(selector)
   .evaluate((elementToClick) => {
     const e = new MouseEvent('click', {
@@ -137,7 +137,7 @@ Nightmare.action('shiftClick', function (selector, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('isVisible', function (selector, done) {
+Nightmare.action('isVisible', function checkIsVisible(selector, done) {
   this.wait(selector)
   .evaluate_now((elementSelector) => {
     const selectorMatches = document.querySelectorAll(elementSelector);
@@ -178,7 +178,7 @@ Nightmare.action('isVisible', function (selector, done) {
   }, done, selector);
 });
 
-Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
+Nightmare.action('waitForCardToBeCreated', function waitForCardToBeCreated(cardTitle, done) {
   this.wait((title) => {
     const cards = document.querySelectorAll('.main-wrapper div.item-document, .main-wrapper div.item');
 
@@ -195,7 +195,7 @@ Nightmare.action('waitForCardToBeCreated', function (cardTitle, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
+Nightmare.action('waitForCardStatus', function waitForCardStatus(selector, statusText, done) {
   this.wait((cardSelector, cardStatus) => {
     const cardLabel = document.querySelector(`${cardSelector} .label`);
     if (cardLabel) {
@@ -207,7 +207,7 @@ Nightmare.action('waitForCardStatus', function (selector, statusText, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('waitForCardTemplate', function (selector, templateText, done) {
+Nightmare.action('waitForCardTemplate', function waitForCardTemplate(selector, templateText, done) {
   this.wait((cardSelector, cardTemplate) => {
     const cardTemplateLabel = document.querySelector(`${cardSelector} .item-actions .btn-color`);
     if (cardTemplateLabel) {
@@ -219,7 +219,7 @@ Nightmare.action('waitForCardTemplate', function (selector, templateText, done) 
   .then(() => { done(); });
 });
 
-Nightmare.action('manageItemFromList', function (liElement, targetText, action, done) {
+Nightmare.action('manageItemFromList', function manageItemFromList(liElement, targetText, action, done) {
   this.wait((listSelector, textToMatch) => {
     let itemFound = false;
     const list = document.querySelectorAll(listSelector);
@@ -245,23 +245,23 @@ Nightmare.action('manageItemFromList', function (liElement, targetText, action, 
   .then(() => { done(); });
 });
 
-Nightmare.action('deleteItemFromList', function (liElement, targetText, done) {
+Nightmare.action('deleteItemFromList', function deleteItemFromList(liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.btn-danger')
   .then(() => { done(); });
 });
 
-Nightmare.action('editItemFromList', function (liElement, targetText, done) {
+Nightmare.action('editItemFromList', function editItemFromList(liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.btn-default')
   .wait('.settings form')
   .then(() => { done(); });
 });
 
-Nightmare.action('clickMultiselectOption', function (liElement, targetText, done) {
+Nightmare.action('clickMultiselectOption', function clickMultiselectOption(liElement, targetText, done) {
   this.manageItemFromList(liElement, targetText, '.multiselectItem-label')
   .then(() => { done(); });
 });
 
-Nightmare.action('scrollElement', function (selector, height, done) {
+Nightmare.action('scrollElement', function scrollElement(selector, height, done) {
   this.wait(selector)
   .evaluate((elementToScroll, scrollHeight) => {
     document.querySelector(elementToScroll).scrollTop = scrollHeight;
@@ -269,12 +269,12 @@ Nightmare.action('scrollElement', function (selector, height, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('waitForText', function (selector, done) {
+Nightmare.action('waitForText', function waitForText(selector, done) {
   this.wait(elementToSelect => document.querySelector(elementToSelect) && document.querySelector(elementToSelect).innerText, selector)
   .then(() => { done(); });
 });
 
-Nightmare.action('getInnerText', function (selector, done) {
+Nightmare.action('getInnerText', function getInnerText(selector, done) {
   this.wait(selector)
   .evaluate_now((elementToSelect) => {
     const helpers = document.__helpers;
@@ -282,7 +282,7 @@ Nightmare.action('getInnerText', function (selector, done) {
   }, done, selector);
 });
 
-Nightmare.action('getInnerHtml', function (selector, done) {
+Nightmare.action('getInnerHtml', function getInnerHtml(selector, done) {
   this.wait(selector)
   .evaluate_now((elementToSelect) => {
     const helpers = document.__helpers;
@@ -290,7 +290,7 @@ Nightmare.action('getInnerHtml', function (selector, done) {
   }, done, selector);
 });
 
-Nightmare.action('selectText', function (selector, done) {
+Nightmare.action('selectText', function selectText(selector, done) {
   this.wait(selector)
   .evaluate((elementToSelect) => {
     const range = document.createRange();
@@ -307,7 +307,7 @@ Nightmare.action('selectText', function (selector, done) {
 //this.write(selectors.libraryView.searchInput, itemName)
 //.type(selectors.libraryView.searchInput, '\u000d')
 //.wait(selectors.libraryView.anyItemSnippet)
-Nightmare.action('clickCardOnLibrary', function (itemName, done) {
+Nightmare.action('clickCardOnLibrary', function clickCardOnLibrary(itemName, done) {
   this.evaluate((nameToFind) => {
     const cards = document.querySelectorAll('.main-wrapper div.item-document,.main-wrapper div.item-document');
     let found = false;
@@ -327,7 +327,7 @@ Nightmare.action('clickCardOnLibrary', function (itemName, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('getResultsAsJson', function (done) {
+Nightmare.action('getResultsAsJson', function getResultsAsJson(done) {
   this.evaluate_now(() => {
     const normalizedCards = [];
     const cards = document.querySelectorAll('.main-wrapper div.item-document, .main-wrapper div.item-document');
@@ -343,7 +343,7 @@ Nightmare.action('getResultsAsJson', function (done) {
   }, done);
 });
 
-Nightmare.action('openEntityFromLibrary', function (itemName, done) {
+Nightmare.action('openEntityFromLibrary', function openEntityFromLibrary(itemName, done) {
   this.evaluate((nameToFind) => {
     const cards = document.querySelectorAll('.main-wrapper div.item-document');
     let found = false;
@@ -364,7 +364,7 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('openEntityFromLibrary', function (itemName, done) {
+Nightmare.action('openEntityFromLibrary', function openEntityFromLibrary(itemName, done) {
   this.evaluate((nameToFind) => {
     const cards = document.querySelectorAll('div.item-document');
     let found = false;
@@ -385,7 +385,7 @@ Nightmare.action('openEntityFromLibrary', function (itemName, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
+Nightmare.action('openDocumentFromLibrary', function openDocumentFromLibrary(itemName, done) {
   this.evaluate((nameToFind) => {
     const cards = document.querySelectorAll('div.item-document');
     let found = false;
@@ -406,37 +406,37 @@ Nightmare.action('openDocumentFromLibrary', function (itemName, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('editEntityFromEntityViewer', function (done) {
+Nightmare.action('editEntityFromEntityViewer', function editEntityFromEntityViewer(done) {
   this.waitToClick(selectors.entityView.editButton)
   .wait(selectors.entityView.metadataForm)
   .then(() => { done(); });
 });
 
-Nightmare.action('editDocumentFromDocumentViewer', function (done) {
+Nightmare.action('editDocumentFromDocumentViewer', function editDocumentFromDocumentViewer(done) {
   this.waitToClick(selectors.documentView.editButton)
   .wait(selectors.documentView.metadataForm)
   .then(() => { done(); });
 });
 
-Nightmare.action('saveEntityFromEntityViewer', function (done) {
+Nightmare.action('saveEntityFromEntityViewer', function saveEntityFromEntityViewer(done) {
   this.waitToClick(selectors.entityView.saveButton)
   .wait(selectors.entityView.editButton)
   .then(() => { done(); });
 });
 
-Nightmare.action('saveFromDocumentViewer', function (done) {
+Nightmare.action('saveFromDocumentViewer', function saveFromDocumentViewer(done) {
   this.waitToClick(selectors.documentView.saveButton)
   .wait(selectors.documentView.editButton)
   .then(() => { done(); });
 });
 
-Nightmare.action('openSidePanelOnDocumentViewer', function (done) {
+Nightmare.action('openSidePanelOnDocumentViewer', function openSidePanelOnDocumentViewer(done) {
   this.waitToClick(selectors.documentView.openSidePanelButton)
   .wait(selectors.documentView.sidePanelTitle)
   .then(() => { done(); });
 });
 
-Nightmare.action('pickToday', function (input, done) {
+Nightmare.action('pickToday', function pickToday(input, done) {
   this.waitToClick(input)
   .wait(selectors.datePicker.today)
   .click(selectors.datePicker.today)
@@ -444,7 +444,7 @@ Nightmare.action('pickToday', function (input, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('clickLink', function (label, done) {
+Nightmare.action('clickLink', function clickLink(label, done) {
   this.evaluate((nameToFind) => {
     const links = document.querySelectorAll('a, button');
     let found = false;
