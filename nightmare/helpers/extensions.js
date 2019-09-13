@@ -83,6 +83,18 @@ Nightmare.action('login', function (name, password, done) {
   .then(() => { done(); });
 });
 
+Nightmare.action('logout', function logout(done) {
+  this.waitToClick(selectors.navigation.settingsNavButton)
+  .wait(selectors.settingsView.settingsHeader)
+  .url()
+  .then((url) => {
+    expect(url).toBe(`${config.url}/settings/account`);
+
+    return this.waitToClick(selectors.settingsView.logoutButton)
+  })
+  .then(() => done());
+});
+
 Nightmare.action('waitForTheEntityToBeIndexed', function (done) {
   this.wait(1200)
   .then(() => { done(); });
