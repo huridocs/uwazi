@@ -16,15 +16,36 @@ const localSelectors = {
   customHomePageRadio: '.settings-content #collectionSettingsForm .form-group:nth-child(5) .radio:nth-child(2) input[type=radio]',
   customHomePageInput: '.settings-content #collectionSettingsForm .form-group:nth-child(5) .input-group input[name="local.home_page"]',
   collectionSaveButton: '.settings-content .settings-footer .btn-success',
+  customStylesButton: '.settings-content .panel-body div:nth-child(3) a:nth-child(1)',
+  customStylesInput: '#custom_css',
+  customStylesUpdateButton: '.settings-content .settings-footer .btn-success',
   pageViewer: '.page-viewer .main-wrapper .markdown-viewer'
 };
 
 
 describe('pages path', () => {
-  const pageHTML = '<h1>Page header</h1><div>Contents</div>';
+  const pageHTML = '<h1>Page header</h1><div class="myDiv">Contents</div>';
+  const customStyles = '.myDiv { color: white; font-size: 20px; background-color: red; }';
 
   beforeAll(async () => insertFixtures());
   afterAll(async () => nightmare.end());
+
+  const verifyHomePage = done => nightmare
+  .getInnerHtml(localSelectors.pageViewer)
+  .then((html) => {
+    expect(html).toBe(pageHTML);
+    return nightmare.evaluate(() => {
+      const helpers = document.__helpers;
+      const el = helpers.querySelector('.myDiv');
+      return getComputedStyle(el);
+    });
+  })
+  .then((style) => {
+    expect(style.backgroundColor).toBe('rgb(255, 0, 0)');
+    expect(style.color).toBe('rgb(255, 255, 255)');
+    expect(style.fontSize).toBe('20px');
+    done();
+  });
 
   describe('login', () => {
     it('should login as admin then click the settings nav button', (done) => {
@@ -41,7 +62,7 @@ describe('pages path', () => {
     });
   });
 
-  describe('Pages', () => {
+  describe('Create custom home page', () => {
     let pageUrl = '';
 
     it('should create page', (done) => {
@@ -83,33 +104,62 @@ describe('pages path', () => {
       })
       .catch(catchErrors(done));
     });
+  });
 
-    it('should click home link and get custom page', (done) => {
+  describe('Create custom css', () => {
+    it('should create custom css', (done) => {
       nightmare
-      .waitToClick(selectors.homeLink)
+      .waitToClick(localSelectors.collectionButton)
+      .waitToClick(localSelectors.customStylesButton)
       .wait(1000)
-      .getInnerHtml(localSelectors.pageViewer)
-      .then((html) => {
-        expect(html).toBe(pageHTML);
+      .write(localSelectors.customStylesInput, customStyles)
+      .waitToClick(localSelectors.customStylesUpdateButton)
+      .then(() => {
         done();
       })
       .catch(catchErrors(done));
     });
+  });
 
-    it('should show custom page when reloading to home page', (done) => {
+  describe('View home page', () => {
+    it('should show custom page with css when reloading to home page', (done) => {
       nightmare
       .goto(config.url)
       .then((page) => {
         expect(page.code).toBe(200);
+        return verifyHomePage(done);
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should show custom home page when navigating to home using client-side routing', (done) => {
+      nightmare
+      .goto(`${config.url}/library`)
+      .then((page) => {
+        expect(page.code).toBe(200);
 
         return nightmare
-        .getInnerHtml(localSelectors.pageViewer)
-        .then((html) => {
-          expect(html).toBe(pageHTML);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
+        .waitToClick(selectors.homeLink)
+        .wait(1000)
+        .then(verifyHomePage(done));
+      })
+      .catch(catchErrors(done));
+    });
+
+    it('should show custom home page when the user is not logged in', (done) => {
+      nightmare
+      .logout()
+      .then(() => verifyHomePage(done))
+      .catch(catchErrors(done));
+    });
+
+    it('should show custom home page for logged out users when using client-side routing', (done) => {
+      nightmare
+      .goto(`${config.url}/library`)
+      .waitToClick(selectors.homeLink)
+      .wait(1000)
+      .then(() => verifyHomePage(done))
+      .catch(catchErrors(done));
     });
   });
 });
