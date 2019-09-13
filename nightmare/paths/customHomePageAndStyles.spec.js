@@ -149,6 +149,7 @@ describe('pages path', () => {
     it('should show custom home page when the user is not logged in', (done) => {
       nightmare
       .logout()
+      .then(() => nightmare.goto(`${config.url}`))
       .then(() => verifyHomePage(done))
       .catch(catchErrors(done));
     });
