@@ -83,15 +83,24 @@ Nightmare.action('login', function login(name, password, done) {
   .then(() => { done(); });
 });
 
-Nightmare.action('logout', function logout(done) {
-  this.waitToClick(selectors.navigation.settingsNavButton)
+Nightmare.action('loginAsAdminToSettings', function loginAsAdminToSettings(done) {
+  this
+  .login('admin', 'admin')
+  .waitToClick(selectors.navigation.settingsNavButton)
   .wait(selectors.settingsView.settingsHeader)
   .url()
   .then((url) => {
     expect(url).toBe(`${config.url}/settings/account`);
+    done();
+  });
+});
 
-    return this.waitToClick(selectors.settingsView.logoutButton)
-  })
+Nightmare.action('logout', function logout(done) {
+  this.waitToClick(selectors.navigation.settingsNavButton)
+  .wait(selectors.settingsView.settingsHeader)
+  .url()
+  .then(() => this.waitToClick(selectors.settingsView.logoutButton))
+  .then(done)
   .then(() => done());
 });
 
