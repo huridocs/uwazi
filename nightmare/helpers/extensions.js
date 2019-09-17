@@ -118,11 +118,11 @@ Nightmare.action('waitToClick', function waitToClicked(selector, done) {
   .catch(done);
 });
 
-Nightmare.action('modifierClick', function modifierClick(selector, modifierKey, done) {
+Nightmare.action('ctrlClick', function ctrlClick(selector, done) {
   this.wait(selector)
   .evaluate((elementToClick) => {
     const e = new MouseEvent('click', {
-      [modifierKey]: true,
+      ctrlKey: true,
       view: window,
       bubbles: true,
       cancelable: true
@@ -132,12 +132,18 @@ Nightmare.action('modifierClick', function modifierClick(selector, modifierKey, 
   .then(() => { done(); });
 });
 
-Nightmare.action('ctrlClick', function ctrlClick(selector, done) {
-  this.modifierClick(selector, 'ctrlKey', done);
-});
-
 Nightmare.action('shiftClick', function shiftClick(selector, done) {
-  this.modifierClick(selector, 'shiftClick', done);
+  this.wait(selector)
+  .evaluate((elementToClick) => {
+    const e = new MouseEvent('click', {
+      shiftKey: true,
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    document.querySelector(elementToClick).dispatchEvent(e);
+  }, selector)
+  .then(() => { done(); });
 });
 
 Nightmare.action('isVisible', function checkIsVisible(selector, done) {

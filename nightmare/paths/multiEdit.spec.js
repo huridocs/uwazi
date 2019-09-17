@@ -3,6 +3,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
+import config from '../helpers/config';
 import { loginAsAdminAndGoToUploads } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
@@ -14,7 +15,17 @@ describe('multi edit path', () => {
   describe('creating entities for the test', () => {
     describe('login', () => {
       it('it should login and go to uploads', (done) => {
-        loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
+        // loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
+        nightmare
+        .login('admin', 'admin')
+        .waitToClick(selectors.navigation.uploadsNavButton)
+        .wait(selectors.uploadsView.newEntityButtom)
+        .url()
+        .then((url) => {
+          expect(url.match(`${config.url}/uploads`)).not.toBe(null);
+          done();
+        })
+        .catch(catchErrors(done));
       });
     });
 
