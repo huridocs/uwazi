@@ -1,9 +1,9 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import selectors from '../helpers/selectors.js';
-import config from '../helpers/config.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
+import { loginAsAdminAndGoToUploads } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
 
@@ -13,17 +13,8 @@ describe('multi edit path', () => {
 
   describe('creating entities for the test', () => {
     describe('login', () => {
-      it('it should create 3 entities', (done) => {
-        nightmare
-        .login('admin', 'admin')
-        .waitToClick(selectors.navigation.uploadsNavButton)
-        .wait(selectors.uploadsView.newEntityButtom)
-        .url()
-        .then((url) => {
-          expect(url.match(`${config.url}/uploads`)).not.toBe(null);
-          done();
-        })
-        .catch(catchErrors(done));
+      it('it should login and go to uploads', (done) => {
+        loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
       });
     });
 

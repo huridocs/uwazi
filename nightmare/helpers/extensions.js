@@ -118,11 +118,11 @@ Nightmare.action('waitToClick', function waitToClicked(selector, done) {
   .catch(done);
 });
 
-Nightmare.action('ctrlClick', function ctrlClick(selector, done) {
+Nightmare.action('modifierClick', function modifierClick(selector, modifierKey, done) {
   this.wait(selector)
   .evaluate((elementToClick) => {
     const e = new MouseEvent('click', {
-      ctrlKey: true,
+      [modifierKey]: true,
       view: window,
       bubbles: true,
       cancelable: true
@@ -132,18 +132,12 @@ Nightmare.action('ctrlClick', function ctrlClick(selector, done) {
   .then(() => { done(); });
 });
 
+Nightmare.action('ctrlClick', function ctrlClick(selector, done) {
+  this.modifierClick(selector, 'ctrlKey', done);
+});
+
 Nightmare.action('shiftClick', function shiftClick(selector, done) {
-  this.wait(selector)
-  .evaluate((elementToClick) => {
-    const e = new MouseEvent('click', {
-      shiftKey: true,
-      view: window,
-      bubbles: true,
-      cancelable: true
-    });
-    document.querySelector(elementToClick).dispatchEvent(e);
-  }, selector)
-  .then(() => { done(); });
+  this.modifierClick(selector, 'shiftClick', done);
 });
 
 Nightmare.action('isVisible', function checkIsVisible(selector, done) {
@@ -415,28 +409,26 @@ Nightmare.action('openDocumentFromLibrary', function openDocumentFromLibrary(ite
   .then(() => { done(); });
 });
 
-Nightmare.action('editEntityFromEntityViewer', function editEntityFromEntityViewer(done) {
-  this.waitToClick(selectors.entityView.editButton)
-  .wait(selectors.entityView.metadataForm)
+Nightmare.action('clickThenWaitOn', function clickThenWaitOn(clickTargetSelector, waitTargetSelector, done) {
+  this.waitToClick(clickTargetSelector)
+  .wait(waitTargetSelector)
   .then(() => { done(); });
+});
+
+Nightmare.action('editEntityFromEntityViewer', function editEntityFromEntityViewer(done) {
+  this.clickThenWaitOn(selectors.entityView.editButton, selectors.entityView.metadataForm, done);
 });
 
 Nightmare.action('editDocumentFromDocumentViewer', function editDocumentFromDocumentViewer(done) {
-  this.waitToClick(selectors.documentView.editButton)
-  .wait(selectors.documentView.metadataForm)
-  .then(() => { done(); });
+  this.clickThenWaitOn(selectors.documentView.editButton, selectors.documentView.metadataForm, done);
 });
 
 Nightmare.action('saveEntityFromEntityViewer', function saveEntityFromEntityViewer(done) {
-  this.waitToClick(selectors.entityView.saveButton)
-  .wait(selectors.entityView.editButton)
-  .then(() => { done(); });
+  this.clickThenWaitOn(selectors.entityView.saveButton, selectors.entityView.editButton, done);
 });
 
 Nightmare.action('saveFromDocumentViewer', function saveFromDocumentViewer(done) {
-  this.waitToClick(selectors.documentView.saveButton)
-  .wait(selectors.documentView.editButton)
-  .then(() => { done(); });
+  this.clickThenWaitOn(selectors.entityView.saveButton, selectors.entityView.editButton, done);
 });
 
 Nightmare.action('openSidePanelOnDocumentViewer', function openSidePanelOnDocumentViewer(done) {
