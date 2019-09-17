@@ -1,9 +1,8 @@
 /*eslint max-len: ["error", 500], */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
-import config from '../helpers/config.js';
-import selectors from '../helpers/selectors.js';
 import insertFixtures from '../helpers/insertFixtures';
+import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
 
 const localSelectors = {
   templatesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(2) > div.list-group > a:nth-child(1)',
@@ -34,16 +33,7 @@ describe('templates path', () => {
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
-      nightmare
-      .login('admin', 'admin')
-      .waitToClick(selectors.navigation.settingsNavButton)
-      .wait(selectors.settingsView.settingsHeader)
-      .url()
-      .then((url) => {
-        expect(url).toBe(`${config.url}/settings/account`);
-        done();
-      })
-      .catch(catchErrors(done));
+      loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
   });
 
