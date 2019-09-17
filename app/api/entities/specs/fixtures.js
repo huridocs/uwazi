@@ -77,7 +77,8 @@ export default {
         { type: 'multidate', name: 'multidate' },
         { type: 'multidaterange', name: 'multidaterange' },
         { type: 'daterange', name: 'daterange' },
-        { type: 'relationship', name: 'friends', relationType: 'relation1' }
+        { type: 'relationship', name: 'friends', relationType: 'relation1' },
+        { type: 'numeric', name: 'numeric' }
       ] },
     { _id: templateWithOnlyMultiselect,
       name: 'templateWithOnlyMultiSelectSelect',

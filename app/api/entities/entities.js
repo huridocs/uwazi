@@ -28,7 +28,7 @@ function updateEntity(entity, _template) {
   .then((docLanguages) => {
     const template = _template || { properties: [] };
     const toSyncProperties = template.properties
-    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation'))
+    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation|numeric'))
     .map(p => p.name);
     const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
