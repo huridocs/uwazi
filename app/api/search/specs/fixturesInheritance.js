@@ -153,6 +153,7 @@ export default {
       title: 'Inheriting private country',
       metadata: {
         text: 'Text content',
+        null_geolocation_geolocation: null,
         inhertied_country: ['entityPrivate01']
       },
       published: true,
@@ -243,6 +244,11 @@ export default {
       _id: template3,
       properties: [
         { _id: db.id(), name: 'text', type: 'text' },
+        {
+          _id: db.id(),
+          name: 'null_geolocation_geolocation',
+          type: 'geolocation'
+        },
         {
           _id: db.id(),
           name: 'regular_geolocation_geolocation',
