@@ -5,7 +5,8 @@ import { bindActionCreators } from 'redux';
 import { actions } from 'app/BasicReducer';
 
 import UsersAPI from 'app/Users/UsersAPI';
-import { notify } from 'app/Notifications/actions/notificationsActions';
+import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
+import { RequestParams } from 'app/utils/RequestParams';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
@@ -35,33 +36,42 @@ export class AccountSettings extends Component {
   }
 
   updateEmail(e) {
+    const { email } = this.state;
+    const { user, notify, setUser } = this.props;
+
     e.preventDefault();
-    const userData = Object.assign({}, this.props.user, { email: this.state.email });
-    UsersAPI.save(userData)
+    const userData = Object.assign({}, user, { email });
+    UsersAPI.save(new RequestParams(userData))
     .then((result) => {
-      this.props.notify(t('System', 'Email updated', null, false), 'success');
-      this.props.setUser(Object.assign(userData, { _rev: result.rev }));
+      notify(t('System', 'Email updated', null, false), 'success');
+      setUser(Object.assign(userData, { _rev: result.rev }));
     });
   }
 
   updatePassword(e) {
     e.preventDefault();
-    const passwordsDontMatch = this.state.password !== this.state.repeatPassword;
-    const emptyPassword = this.state.password.trim() === '';
+
+    const { password, repeatPassword } = this.state;
+    const { user, notify, setUser } = this.props;
+
+    const passwordsDontMatch = password !== repeatPassword;
+    const emptyPassword = password.trim() === '';
     if (emptyPassword || passwordsDontMatch) {
       this.setState({ passwordError: true });
       return;
     }
 
-    UsersAPI.save(Object.assign({}, this.props.user, { password: this.state.password }))
+    UsersAPI.save(new RequestParams(Object.assign({}, user, { password })))
     .then((result) => {
-      this.props.notify(t('System', 'Password updated', null, false), 'success');
-      this.props.setUser(Object.assign(this.props.user, { _rev: result.rev }));
+      notify(t('System', 'Password updated', null, false), 'success');
+      setUser(Object.assign(user, { _rev: result.rev }));
     });
     this.setState({ password: '', repeatPassword: '' });
   }
 
   render() {
+    const { email, password, repeatPassword, passwordError } = this.state;
+
     return (
       <div className="account-settings">
         <div className="panel panel-default">
@@ -73,44 +83,40 @@ export class AccountSettings extends Component {
             <form onSubmit={this.updateEmail.bind(this)}>
               <div className="form-group">
                 <label className="form-group-label" htmlFor="collection_name">{t('System', 'Email')}</label>
-                <input type="email" onChange={this.emailChange.bind(this)} value={this.state.email} className="form-control"/>
+                <input type="email" onChange={this.emailChange.bind(this)} value={email} className="form-control"/>
               </div>
               <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
             </form>
             <hr />
             <h5>{t('System', 'Change password')}</h5>
             <form onSubmit={this.updatePassword.bind(this)}>
-              <div className={`form-group${this.state.passwordError ? ' has-error' : ''}`}>
+              <div className={`form-group${passwordError ? ' has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="password">{t('System', 'New password')}</label>
                 <input
                   type="password"
                   onChange={this.passwordChange.bind(this)}
-                  value={this.state.password}
+                  value={password}
                   id="password"
                   className="form-control"
                 />
               </div>
-              <div className={`form-group${this.state.passwordError ? ' has-error' : ''}`}>
+              <div className={`form-group${passwordError ? ' has-error' : ''}`}>
                 <label className="form-group-label" htmlFor="repeatPassword">{t('System', 'Confirm new password')}</label>
                 <input
                   type="password"
                   onChange={this.repeatPasswordChange.bind(this)}
-                  value={this.state.repeatPassword}
+                  value={repeatPassword}
                   id="repeatPassword"
                   className="form-control"
                 />
               </div>
-              {(() => {
-                if (this.state.passwordError) {
-                  return (
-                    <div className="validation-error validation-error-centered">
-                      <Icon icon="exclamation-triangle" />
-                            &nbsp;
-                      {t('System', 'bothFieldsRequired', 'Both fields are required and should match.')}
-                    </div>
-);
-                }
-              })()}
+              {passwordError && (
+                <div className="validation-error validation-error-centered">
+                  <Icon icon="exclamation-triangle" />
+                  &nbsp;
+                  {t('System', 'Password Error')}
+                </div>
+              )}
               <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
             </form>
           </div>
@@ -126,10 +132,14 @@ export class AccountSettings extends Component {
   }
 }
 
+AccountSettings.defaultProps = {
+  user: {},
+};
+
 AccountSettings.propTypes = {
-  user: PropTypes.object,
-  notify: PropTypes.func,
-  setUser: PropTypes.func
+  user: PropTypes.instanceOf(Object),
+  notify: PropTypes.func.isRequired,
+  setUser: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -137,7 +147,7 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setUser: actions.set.bind(null, 'auth/user'), notify }, dispatch);
+  return bindActionCreators({ setUser: actions.set.bind(null, 'auth/user'), notify: notifyAction }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);
