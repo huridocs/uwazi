@@ -229,7 +229,7 @@ describe('entities', () => {
       });
     });
 
-    it('should sync select/multiselect/dates/multidate/multidaterange', (done) => {
+    it('should sync select/multiselect/dates/multidate/multidaterange/numeric', (done) => {
       const doc = { _id: syncPropertiesEntityId,
         sharedId: 'shared1',
         template: templateId,
@@ -239,7 +239,8 @@ describe('entities', () => {
           multiselect: 'multiselect',
           date: 'date',
           multidate: [1234],
-          multidaterange: [{ from: 1, to: 2 }]
+          multidaterange: [{ from: 1, to: 2 }],
+          numeric: 100
         }
       };
 
@@ -259,6 +260,7 @@ describe('entities', () => {
         expect(docEN.metadata.date).toBe('date');
         expect(docEN.metadata.multidate).toEqual([1234]);
         expect(docEN.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
+        expect(docEN.metadata.numeric).toEqual(100);
 
         expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
@@ -266,6 +268,8 @@ describe('entities', () => {
         expect(docES.metadata.date).toBe('date');
         expect(docES.metadata.multidate).toEqual([1234]);
         expect(docES.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
+        expect(docES.metadata.numeric).toEqual(100);
+
 
         expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
@@ -273,6 +277,7 @@ describe('entities', () => {
         expect(docPT.metadata.date).toBe('date');
         expect(docPT.metadata.multidate).toEqual([1234]);
         expect(docPT.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
+        expect(docPT.metadata.numeric).toEqual(100);
         done();
       })
       .catch(catchErrors(done));
@@ -326,7 +331,7 @@ describe('entities', () => {
       await entities.updateMetdataFromRelationships([newEntity.sharedId], 'es');
       const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
       expect(updatedEntity.metadata).toEqual({
-        date: null, daterange: null, friends: [], multidate: null, multidaterange: null, multiselect: null, select: null
+        date: null, daterange: null, friends: [], multidate: null, multidaterange: null, multiselect: null, select: null, numeric: null
       });
     });
   });
