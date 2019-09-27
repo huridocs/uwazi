@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import { Icon } from 'UI';
 
 import { isClient } from 'app/utils';
-import Supercluster from 'supercluster'; //eslint-disable-line
+import supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
@@ -30,7 +30,7 @@ export default class Map extends Component {
     this.state.showControls = props.showControls;
 
     this.mapStyle = Immutable.fromJS(_style);
-    this.supercluster = new Supercluster({
+    this.supercluster = supercluster({
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
