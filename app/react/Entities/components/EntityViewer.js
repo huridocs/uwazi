@@ -26,6 +26,7 @@ import SidePanel from 'app/Layout/SidePanel';
 import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
 
+import ShowSidepanelMenu from './ShowSidepanelMenu';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
@@ -39,6 +40,7 @@ export class EntityViewer extends Component {
     };
     this.deleteEntity = this.deleteEntity.bind(this);
     this.closePanel = this.closePanel.bind(this);
+    this.openPanel = this.openPanel.bind(this);
   }
 
   deleteEntity() {
@@ -94,7 +96,7 @@ export class EntityViewer extends Component {
       <div className="row">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
 
-        <div className="content-header content-header-document">
+        <div className="content-header content-header-entity">
           <div className="content-header-title">
             <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
             <h1 className="item-name">{entity.title}</h1>
@@ -194,14 +196,8 @@ export class EntityViewer extends Component {
           </div>
         </SidePanel>
 
-        <ContextMenu align="bottom" overrideShow show={!panelOpen} className="show-info-sidepanel">
-          <div>
-            <ShowIf if={!panelOpen}>
-              <div className="btn btn-primary" onClick={this.openPanel.bind(this)}>
-                <Icon icon="chart-bar" />
-              </div>
-            </ShowIf>
-          </div>
+        <ContextMenu align="bottom" overrideShow show={!panelOpen} className="show-info-sidepanel-context-menu">
+          <ShowSidepanelMenu className="show-info-sidepanel-menu" panelIsOpen={panelOpen} openPanel={this.openPanel} />
         </ContextMenu>
 
         <CreateConnectionPanel className="entity-create-connection-panel" containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>

@@ -83,17 +83,17 @@ describe('EntityViewer', () => {
     it('should close the side panel when close button is clicked', () => {
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(false);
       expect(component.find('.entity-connections').prop('open')).toBe(false);
-      expect(component.find('.show-info-sidepanel').prop('show')).toBe(true);
+      expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(true);
     });
     it('should reveal side panel when context menu is clicked', () => {
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(false);
 
-      component.find('.show-info-sidepanel .btn').simulate('click');
+      component.find('.show-info-sidepanel-menu').prop('openPanel')();
       component.update();
 
       expect(component.find('.entity-viewer').hasClass('with-panel')).toBe(true);
       expect(component.find('.entity-connections').prop('open')).toBe(true);
-      expect(component.find('.show-info-sidepanel').prop('show')).toBe(false);
+      expect(component.find('.show-info-sidepanel-context-menu').prop('show')).toBe(false);
     });
   });
 });
