@@ -11,7 +11,7 @@ $c-sidebar: $c-white;
   flex-direction: column;
   position: fixed;
   right: 0;
-  top: $header-height;
+  top: $header-height + 1;
   bottom: 0;
   border-left: 1px solid $c-grey-light;
   background-color: $c-sidebar;

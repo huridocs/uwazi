@@ -23,16 +23,22 @@ import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
+import ContextMenu from 'app/ContextMenu';
 import { Icon } from 'UI';
 
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
 
+
 export class EntityViewer extends Component {
   constructor(props, context) {
     super(props, context);
+    this.state = {
+      panelOpen: true
+    };
     this.deleteEntity = this.deleteEntity.bind(this);
+    this.closePanel = this.closePanel.bind(this);
   }
 
   deleteEntity() {
@@ -60,9 +66,18 @@ export class EntityViewer extends Component {
     }
   }
 
+  closePanel() {
+    this.setState({ panelOpen: false });
+  }
+
+  openPanel() {
+    this.setState({ panelOpen: true });
+  }
+
 
   render() {
     const { entity, entityBeingEdited, tab, connectionsGroups, relationships } = this.props;
+    const { panelOpen } = this.state;
     const selectedTab = tab || 'info';
 
     const docAttachments = entity.attachments ? entity.attachments : [];
@@ -76,42 +91,18 @@ export class EntityViewer extends Component {
     }, { totalConnections: 0 });
 
     return (
-      <div className="row entity-content">
+      <div className="row">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
 
-        <div className="content-header content-header-entity">
+        <div className="content-header content-header-document">
           <div className="content-header-title">
             <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm"/>
             <h1 className="item-name">{entity.title}</h1>
             <TemplateLabel template={entity.template}/>
           </div>
-
-          <Tabs
-            className="content-header-tabs"
-            selectedTab={selectedTab}
-            handleSelect={(tabName) => {
-                  this.props.showTab(tabName);
-                }}
-          >
-            <ul className="nav nav-tabs">
-              <li>
-                <TabLink to="info">
-                  <Icon icon="info-circle" />
-                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-                </TabLink>
-              </li>
-              <li>
-                <TabLink to="connections">
-                  <Icon icon="exchange-alt" />
-                  <span className="connectionsNumber">{summary.totalConnections}</span>
-                  <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
-                </TabLink>
-              </li>
-            </ul>
-          </Tabs>
         </div>
 
-        <main className="entity-viewer">
+        <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
 
           <Tabs selectedTab={selectedTab}>
             <TabContent for={selectedTab === 'info' || selectedTab === 'attachments' ? selectedTab : 'none'}>
@@ -159,7 +150,35 @@ export class EntityViewer extends Component {
           </div>
         </ShowIf>
 
-        <SidePanel className={`entity-connections entity-${this.props.tab}`} open>
+        <SidePanel className={`entity-connections entity-${this.props.tab}`} open={panelOpen}>
+          <div className="sidepanel-header">
+            <button type="button" className="closeSidepanel close-modal" onClick={this.closePanel.bind(this)}>
+              <Icon icon="times" />
+            </button>
+            <Tabs
+              className="content-header-tabs"
+              selectedTab={selectedTab}
+              handleSelect={(tabName) => {
+                    this.props.showTab(tabName);
+                  }}
+            >
+              <ul className="nav nav-tabs">
+                <li>
+                  <TabLink to="info">
+                    <Icon icon="info-circle" />
+                    <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                  </TabLink>
+                </li>
+                <li>
+                  <TabLink to="connections">
+                    <Icon icon="exchange-alt" />
+                    <span className="connectionsNumber">{summary.totalConnections}</span>
+                    <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                  </TabLink>
+                </li>
+              </ul>
+            </Tabs>
+          </div>
           <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
             <div className="sidepanel-footer">
               <ResetSearch />
@@ -174,6 +193,16 @@ export class EntityViewer extends Component {
             </Tabs>
           </div>
         </SidePanel>
+
+        <ContextMenu align="bottom" overrideShow show={!panelOpen}>
+          <div>
+            <ShowIf if={!panelOpen}>
+              <div className="btn btn-primary" onClick={this.openPanel.bind(this)}>
+                <Icon icon="chart-bar" />
+              </div>
+            </ShowIf>
+          </div>
+        </ContextMenu>
 
         <CreateConnectionPanel className="entity-create-connection-panel" containerId={entity.sharedId} onCreate={this.props.connectionsChanged}/>
         <AddEntitiesPanel />
