@@ -194,7 +194,7 @@ export class EntityViewer extends Component {
           </div>
         </SidePanel>
 
-        <ContextMenu align="bottom" overrideShow show={!panelOpen}>
+        <ContextMenu align="bottom" overrideShow show={!panelOpen} className="show-info-sidepanel">
           <div>
             <ShowIf if={!panelOpen}>
               <div className="btn btn-primary" onClick={this.openPanel.bind(this)}>
