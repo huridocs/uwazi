@@ -33,21 +33,21 @@ export class EditTranslationForm extends Component {
   }
 
   prepareTranslations() {
-    const translations = this.props.translationsForm;
+    const { translationsForm, settings } = this.props;
 
-    if (translations.length) {
-      const { languages } = this.props.settings.collection.toJS();
+    if (translationsForm.length) {
+      const { languages } = settings.collection.toJS();
       languages.forEach((lang) => {
-        if (!EditTranslationForm.translationExists(translations, lang.key)) {
-          const defaultTranslation = EditTranslationForm.getDefaultTranslation(translations, languages);
+        if (!EditTranslationForm.translationExists(translationsForm, lang.key)) {
+          const defaultTranslation = EditTranslationForm.getDefaultTranslation(translationsForm, languages);
           const translation = { locale: lang.key };
           translation.values = Object.assign({}, defaultTranslation.values);
-          translations.push(translation);
+          translationsForm.push(translation);
         }
       });
     }
 
-    return translations;
+    return translationsForm;
   }
 
   save(_translations) {
@@ -94,7 +94,7 @@ export class EditTranslationForm extends Component {
                             <FormGroup key={`${translation.locale}-${value}-${i}`}>
                               <div className="input-group">
                                 <span className="input-group-addon">{translation.locale}</span>
-                                <Field model={`translationsForm[${i}].contexts[${index}].values[${value}]`}>
+                                <Field model={['translationsForm', i, 'contexts', index, 'values', value]}>
                                   <input className="form-control" type="text" />
                                 </Field>
                               </div>
