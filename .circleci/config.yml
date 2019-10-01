@@ -38,7 +38,7 @@ jobs:
       # run tests!
       - run: wget --waitretry=5 --retry-connrefused -v http://127.0.0.1:9200/ #check if elastic is up
       - run: ./cc-test-reporter before-build #prepare codeclimate code coverage reporter
-      - run: ./node_modules/.bin/jest -i --coverage --runInBand --maxWorkers=2 #run tests
+      - run: ./node_modules/.bin/jest --coverage --maxWorkers=2 #run tests
       - run: ./cc-test-reporter after-build --exit-code $? #send codecoverage
   eslint:
     working_directory: ~/huridocs/uwazi
