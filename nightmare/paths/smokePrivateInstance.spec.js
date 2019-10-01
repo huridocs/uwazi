@@ -4,6 +4,7 @@ import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
+import { loginAsAdminAndGoToSettings } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
 
@@ -13,16 +14,7 @@ describe('Private instance', () => {
 
   describe('login', () => {
     it('should log in as admin then click the settings nav button', (done) => {
-      nightmare
-      .login('admin', 'admin')
-      .waitToClick(selectors.navigation.settingsNavButton)
-      .wait(selectors.settingsView.settingsHeader)
-      .url()
-      .then((url) => {
-        expect(url).toBe(`${config.url}/settings/account`);
-        done();
-      })
-      .catch(catchErrors(done));
+      loginAsAdminAndGoToSettings(nightmare, catchErrors, done);
     });
   });
 

@@ -1,9 +1,9 @@
 /*eslint max-nested-callbacks: ["error", 10], max-len: ["error", 300]*/
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import createNightmare from '../helpers/nightmare';
 import insertFixtures from '../helpers/insertFixtures';
+import { loginAsAdminAndGoToUploads } from '../helpers/commonTests.js';
 
 const nightmare = createNightmare();
 
@@ -37,15 +37,7 @@ describe('PublishDocument', () => {
 
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
-      nightmare
-      .login('admin', 'admin')
-      .waitToClick(selectors.navigation.uploadsNavButton)
-      .url()
-      .then((url) => {
-        expect(url.match(`${config.url}/uploads`)).not.toBe(null);
-        done();
-      })
-      .catch(catchErrors(done));
+      loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
     });
   });
 
