@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PageView static requestState() should request page for view 1`] = `
+exports[`Static requestState() should request page for view 1`] = `
 Array [
   Object {
     "type": "page/pageView/SET",
