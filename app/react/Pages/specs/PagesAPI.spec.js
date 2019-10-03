@@ -10,6 +10,7 @@ describe('pagesAPI', () => {
     backend.restore();
     backend
     .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
+    .get(`${APIURL}page?param=value`, { body: JSON.stringify([singleResponse]) })
     .post(`${APIURL}pages`, { body: JSON.stringify({ backednResponse: 'post' }) })
     .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backednResponse: 'delete' }) });
   });
@@ -20,6 +21,14 @@ describe('pagesAPI', () => {
     it('should request for the page', async () => {
       const request = new RequestParams({ param: 'value' });
       const response = await pagesAPI.get(request);
+      expect(response).toEqual([singleResponse]);
+    });
+  });
+
+  describe('getById()', () => {
+    it('should request for the page', async () => {
+      const request = new RequestParams({ param: 'value' });
+      const response = await pagesAPI.getById(request);
       expect(response).toEqual([singleResponse]);
     });
   });

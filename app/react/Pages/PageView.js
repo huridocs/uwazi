@@ -14,8 +14,8 @@ import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
 
-function prepareLists(page, requestParams) {
-  const listsData = pageItemLists.generate(page.metadata.content);
+function prepareLists(content, requestParams) {
+  const listsData = pageItemLists.generate(content);
 
   listsData.searchs = Promise.all(listsData.params.map((params, index) => {
     const sanitizedParams = params ? decodeURI(params) : '';
@@ -38,8 +38,9 @@ function prepareLists(page, requestParams) {
 
 class PageView extends RouteHandler {
   static async requestState(requestParams) {
-    const [page] = await PagesAPI.get(requestParams);
-    const listsData = prepareLists(page, requestParams);
+    let page = await PagesAPI.getById(requestParams);
+
+    const listsData = prepareLists(page.metadata.content, requestParams);
     const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
 
     const [pageView, searchParams, searchOptions, datasets, listSearchs] =
