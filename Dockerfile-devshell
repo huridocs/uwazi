@@ -1,0 +1,40 @@
+FROM fedora:30
+
+# Update base image (the public one is typically outdated)
+RUN dnf update -y
+
+# Install utility packages generally useful in any devshell
+# tsflags=nodocs is to install man pages (which is handy in a non-prod devshell)
+RUN sed -i -e '/tsflags=nodocs/s/^/#/' /etc/dnf/dnf.conf \
+ && dnf install -y openssh-clients git findutils man-db man man-pages less which nano \
+
+# Install system packages specifically required by Uwazi
+    libpng12-devel libpng-devel
+
+# Create ~uwazi UID
+RUN useradd uwazi
+USER uwazi
+
+# Install Node.JS
+# Due to https://github.com/nodesource/distributions/issues/842, NOT https://github.com/nodesource/distributions/#rpminstall
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
+RUN source $HOME/.nvm/nvm.sh  \
+ && nvm install 8.11 \
+ && node --version
+
+# Install Yarn
+# https://yarnpkg.com/en/docs/install
+# use simple installation script method instead of OS package,
+# because package manager dependencies are a mess if Node is installed by NVM instead of package (above)
+RUN source $HOME/.nvm/nvm.sh \
+ && curl -o- -L https://yarnpkg.com/install.sh | bash \
+ && $HOME/.yarn/bin/yarn --version
+
+# TODO merge below with into a singler layer (it was just easier to develop iteratively)
+
+RUN mkdir /home/uwazi/git
+WORKDIR /home/uwazi/git
+RUN git clone https://github.com/huridocs/uwazi.git .
+
+RUN source $HOME/.nvm/nvm.sh \
+ && $HOME/.yarn/bin/yarn install

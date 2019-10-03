@@ -134,6 +134,14 @@ Note that if you already have an instance running, this will likely throw an err
 
 E2E Tests depend on electron.  If something appears to not be working, please run `node_modules/electron/dist/electron --help` to check for problems.
 
+#### Dev Shell Container ("Docker")
+
+This project includes a container ("Docker") which includes the required dependencies (as above)
+for local development.  This guarantees a uniform development environment by avoiding subtle differences between individual developers machines.  Here's how to use it:
+
+    ./devshell.sh
+
+
 ### Default login
 
 The application's default log in is admin / change this password now 
