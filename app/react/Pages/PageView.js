@@ -38,7 +38,7 @@ function prepareLists(content, requestParams) {
 
 class PageView extends RouteHandler {
   static async requestState(requestParams) {
-    let page = await PagesAPI.getById(requestParams);
+    const page = await PagesAPI.getById(requestParams);
 
     const listsData = prepareLists(page.metadata.content, requestParams);
     const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
@@ -46,7 +46,12 @@ class PageView extends RouteHandler {
     const [pageView, searchParams, searchOptions, datasets, listSearchs] =
       await Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
 
-    const itemLists = searchParams.map((p, index) => ({ params: p, items: listSearchs[index].rows, options: searchOptions[index] }));
+    const itemLists = searchParams.map((p, index) => ({
+      params: p,
+      items: listSearchs[index].rows,
+      options: searchOptions[index]
+    }));
+
     return [
       actions.set('page/pageView', pageView),
       actions.set('page/itemLists', itemLists),
@@ -84,7 +89,7 @@ class PageView extends RouteHandler {
       <React.Fragment>
         <PageViewer />
         <ViewMetadataPanel storeKey="library" />
-        <SelectMultiplePanelContainer storeKey="library"/>
+        <SelectMultiplePanelContainer storeKey="library" />
       </React.Fragment>
     );
   }

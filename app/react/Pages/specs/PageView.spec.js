@@ -22,7 +22,7 @@ describe('PageView', () => {
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<PageView />, { context });
+    component = shallow(<PageView/>, { context });
     instance = component.instance();
   });
 
@@ -70,7 +70,7 @@ describe('PageView', () => {
   });
 
   describe('Static requestState()', () => {
-    const page = {_id: 'abc2', title: 'Page 1', metadata: {content: 'originalContent'}};
+    const page = { _id: 'abc2', title: 'Page 1', metadata: { content: 'originalContent' } };
 
     let data;
     let request;
@@ -81,16 +81,16 @@ describe('PageView', () => {
       spyOn(pageItemLists, 'generate').and.returnValue({
         content: 'parsedContent',
         params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number'],
-        options: [{}, {limit: 9}, {limit: 0}, {limit: 12}]
+        options: [{}, { limit: 9 }, { limit: 0 }, { limit: 12 }]
       });
 
       let searchCalls = -1;
       spyOn(api, 'search').and.callFake(() => {
         searchCalls += 1;
-        return Promise.resolve({rows: [`resultsFor:${searchCalls}`]});
+        return Promise.resolve({ rows: [`resultsFor:${searchCalls}`] });
       });
 
-      data = {sharedId: 'abc2'};
+      data = { sharedId: 'abc2' };
       request = new RequestParams(data, 'headers');
     });
 
@@ -111,7 +111,7 @@ describe('PageView', () => {
       expect(itemLists[2].items).toEqual(['resultsFor:2']);
       expect(itemLists[3].params).toBe('?order=metadata.form&treatAs=number');
       expect(itemLists[3].items).toEqual(['resultsFor:3']);
-      expect(itemLists[3].options).toEqual({limit: 12});
+      expect(itemLists[3].options).toEqual({ limit: 12 });
     };
 
     it('should request each list inside the content limited to 6 items (default) or the passed value and set the state', async () => {
@@ -119,26 +119,33 @@ describe('PageView', () => {
 
       expect(api.search.calls.count()).toBe(4);
       expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({
-        data: {a: 1, b: 2, limit: '6'},
+        data: { a: 1, b: 2, limit: '6' },
         headers: 'headers'
       });
-      expect(api.search.calls.argsFor(1)[0]).toEqual({data: {filters: {}, types: [], limit: '9'}, headers: 'headers'});
+      expect(api.search.calls.argsFor(1)[0]).toEqual({
+        data: { filters: {}, types: [], limit: '9' },
+        headers: 'headers'
+      });
 
       expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({
         data: {
           x: 1,
           y: ['array'],
           limit: '6'
-        }, headers: 'headers'
+        },
+        headers: 'headers'
       });
-      expect(api.search.calls.argsFor(3)[0]).toEqual({data: {filters: {}, types: [], limit: '12'}, headers: 'headers'});
+      expect(api.search.calls.argsFor(3)[0]).toEqual({
+        data: { filters: {}, types: [], limit: '12' },
+        headers: 'headers'
+      });
 
       const itemLists = stateActions[1].value;
       assertItemLists(itemLists);
     });
 
     it('should request each dataset inside the content', async () => {
-      const markdownDatasetsResponse = {request1: 'url1', request2: 'url2'};
+      const markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
       spyOn(markdownDatasets, 'fetch').and.returnValue(Promise.resolve(markdownDatasetsResponse));
 
       const stateActions = await PageView.requestState(request);

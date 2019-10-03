@@ -9,10 +9,10 @@ describe('pagesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
-    .get(`${APIURL}page?param=value`, { body: JSON.stringify([singleResponse]) })
-    .post(`${APIURL}pages`, { body: JSON.stringify({ backednResponse: 'post' }) })
-    .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backednResponse: 'delete' }) });
+      .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
+      .get(`${APIURL}page?param=value`, { body: JSON.stringify(singleResponse) })
+      .post(`${APIURL}pages`, { body: JSON.stringify({ backednResponse: 'post' }) })
+      .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backednResponse: 'delete' }) });
   });
 
   afterEach(() => backend.restore());
@@ -26,10 +26,10 @@ describe('pagesAPI', () => {
   });
 
   describe('getById()', () => {
-    it('should request for the page', async () => {
+    it('should request for the page by id', async () => {
       const request = new RequestParams({ param: 'value' });
       const response = await pagesAPI.getById(request);
-      expect(response).toEqual([singleResponse]);
+      expect(response).toEqual(singleResponse);
     });
   });
 
