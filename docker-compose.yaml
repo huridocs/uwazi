@@ -11,15 +11,22 @@ services:
 #    depends_on:
 #      - mongo
 #    command: mongo test
+  elasticsearch:
+    image: elasticsearch:5.6
+    ports:
+      - "9200"
+      - "9300"
   uwazi:
     build:
       context: .
       dockerfile: Dockerfile-devshell
     links:
       - mongo
+      - elasticsearch
     ports:
       - "8080"
     depends_on:
       - mongo
+      - elasticsearch
 
 # TODO volume, as in https://github.com/apache/fineract/blob/develop/docker-compose.yml#L24
