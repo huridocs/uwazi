@@ -1,0 +1,25 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3.4-xenial
+    ports:
+      - "27017"
+#  mongo-test:
+#    image: mongo:3.4-xenial
+#    links:
+#      - mongo
+#    depends_on:
+#      - mongo
+#    command: mongo test
+  uwazi:
+    build:
+      context: .
+      dockerfile: Dockerfile-devshell
+    links:
+      - mongo
+    ports:
+      - "8080"
+    depends_on:
+      - mongo
+
+# TODO volume, as in https://github.com/apache/fineract/blob/develop/docker-compose.yml#L24

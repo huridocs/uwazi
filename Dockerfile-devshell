@@ -1,5 +1,8 @@
 FROM fedora:30
 
+# Initially built for Huridocs by Google, later maintained by the Huridocs community
+LABEL maintainer="vorburger@google.com"
+
 # Update base image (the public one is typically outdated)
 RUN dnf update -y
 
@@ -8,10 +11,12 @@ RUN dnf update -y
 RUN sed -i -e '/tsflags=nodocs/s/^/#/' /etc/dnf/dnf.conf \
  && dnf install -y openssh-clients git findutils man-db man man-pages less which nano \
 
+# TODO remove ^^^ man pages doc and nano once fully completed.. (they are handy during development)
+
 # Install system packages specifically required by Uwazi
     libpng12-devel libpng-devel
 
-# Create ~uwazi UID
+# Create ~uwazi and switch to it (without this, Node & Co. would get installed as root)
 RUN useradd uwazi
 USER uwazi
 
@@ -38,3 +43,8 @@ RUN git clone https://github.com/huridocs/uwazi.git .
 
 RUN source $HOME/.nvm/nvm.sh \
  && $HOME/.yarn/bin/yarn install
+# TODO!  && $HOME/.yarn/bin/yarn test
+
+# TODO document how to run tests in-container, after changing code (need to use CMD instead of ENTRYPOINT?)
+ENTRYPOINT source $HOME/.nvm/nvm.sh \
+ && $HOME/.yarn/bin/yarn hot

@@ -136,11 +136,17 @@ E2E Tests depend on electron.  If something appears to not be working, please ru
 
 #### Dev Shell Container ("Docker")
 
-This project includes a container ("Docker") which includes the required dependencies (as above)
-for local development.  This guarantees a uniform development environment by avoiding subtle differences between individual developers machines.  Here's how to use it:
+This project includes a ("Docker") container which already includes the required dependencies (as above) to simplify set up for development.  This guarantees a uniform development environment by avoiding subtle differences between individual developers machines.  Once you have a container runtime installed (e.g.
+[Podman](https://github.com/containers/libpod) via `dnf install podman-docker` or
+[Docker](https://docs.docker.com/install/)), and a tool to process docker-compose.yml
+(e.g. [Podman Compose](https://github.com/containers/podman-compose/) via `pip3 install podman-compose`
+or [Docker Compose](https://docs.docker.com/compose/install/), you can simply use:
 
-    ./devshell.sh
+    ./docker-compose build
+    ./docker-compose up
 
+_TODO mount $PWD into container as GitHub source, and make container simply run it, not devshell..._
+and _TODO access Uwazi on ...!_
 
 ### Default login
 
