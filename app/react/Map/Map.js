@@ -143,7 +143,7 @@ export default class Map extends Component {
     const map = this.map.getMap();
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
     this.supercluster.load(currentData);
-    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
+    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Infinity);
     this.clickOnCluster(markersOnCluster);
   }
 
