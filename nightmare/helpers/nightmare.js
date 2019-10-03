@@ -7,6 +7,7 @@ import realMouse from 'nightmare-real-mouse';
 
 import './LibraryDSL.js';
 import './connectionsDSL.js';
+import './navlinksDSL';
 import './extensions.js';
 
 realMouse(Nightmare);

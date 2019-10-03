@@ -1,8 +1,8 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import createNightmare from '../helpers/nightmare';
-import config from '../helpers/config.js';
 import selectors from '../helpers/selectors.js';
 import insertFixtures from '../helpers/insertFixtures';
+import { loginAsAdminAndGoToUploads } from '../helpers/commonTests';
 
 //iphone 6 measures
 const nightmare = createNightmare(376, 667);
@@ -13,16 +13,7 @@ describe('mobile somke test', () => {
 
   describe('login', () => {
     it('should log in as admin then click the uploads nav button', (done) => {
-      nightmare
-      .login('admin', 'admin')
-      .waitToClick(selectors.navigation.uploadsNavButton)
-      .wait(selectors.uploadsView.newEntityButtom)
-      .url()
-      .then((url) => {
-        expect(url.match(`${config.url}/uploads`)).not.toBe(null);
-        done();
-      })
-      .catch(catchErrors(done));
+      loginAsAdminAndGoToUploads(nightmare, catchErrors, done);
     });
   });
 

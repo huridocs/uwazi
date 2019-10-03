@@ -1,6 +1,7 @@
 /*eslint max-len: ["error", 500], */
 /*eslint key-spacing: ["error", 500] */
 export default {
+  homeLink: 'header .logotype a',
   settingsView: {
     liElementsOfSection: '#app > div.content > div > div > div.settings-content > div > ul > li',
     firstEditButton: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(1) > div > a > i',
