@@ -15,28 +15,14 @@ import PageView from '../PageView';
 import pageItemLists from '../utils/pageItemLists';
 
 describe('PageView', () => {
-  const page = { _id: 'abc2', title: 'Page 1', metadata: { content: 'originalContent' } };
   let component;
   let instance;
   let context;
 
   beforeEach(() => {
-    let searchCalls = -1;
-    spyOn(api, 'search').and.callFake(() => {
-      searchCalls += 1;
-      return Promise.resolve({ rows: [`resultsFor:${searchCalls}`] });
-    });
-
-    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve([page]));
-    spyOn(pageItemLists, 'generate').and.returnValue({
-      content: 'parsedContent',
-      params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number'],
-      options: [{}, { limit: 9 }, { limit: 0 }, { limit: 12 }]
-    });
-
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<PageView />, { context });
+    component = shallow(<PageView/>, { context });
     instance = component.instance();
   });
 
@@ -76,13 +62,42 @@ describe('PageView', () => {
     });
   });
 
-  describe('static requestState()', () => {
+  describe('closeSidePanel', () => {
+    it('should unselectAllDocuments', () => {
+      instance.closeSidePanel();
+      expect(context.store.dispatch).toHaveBeenCalledWith({ __reducerKey: 'library', type: 'UNSELECT_ALL_DOCUMENTS' });
+    });
+  });
+
+  describe('Static requestState()', () => {
+    const page = { _id: 'abc2', title: 'Page 1', metadata: { content: 'originalContent' } };
+
+    let data;
+    let request;
+
+    beforeEach(() => {
+      spyOn(PagesAPI, 'getById').and.returnValue(Promise.resolve(page));
+
+      spyOn(pageItemLists, 'generate').and.returnValue({
+        content: 'parsedContent',
+        params: ['?q=(a:1,b:2)', '', '?q=(x:1,y:!(%27array%27),limit:24)', '?order=metadata.form&treatAs=number'],
+        options: [{}, { limit: 9 }, { limit: 0 }, { limit: 12 }]
+      });
+
+      let searchCalls = -1;
+      spyOn(api, 'search').and.callFake(() => {
+        searchCalls += 1;
+        return Promise.resolve({ rows: [`resultsFor:${searchCalls}`] });
+      });
+
+      data = { sharedId: 'abc2' };
+      request = new RequestParams(data, 'headers');
+    });
+
     it('should request page for view', async () => {
-      const data = { sharedId: 'abc2' };
-      const request = new RequestParams(data, 'headers');
       const stateActions = await PageView.requestState(request);
 
-      expect(PagesAPI.get).toHaveBeenCalledWith(request);
+      expect(PagesAPI.getById).toHaveBeenCalledWith(request);
       expect(stateActions).toMatchSnapshot();
     });
 
@@ -100,16 +115,30 @@ describe('PageView', () => {
     };
 
     it('should request each list inside the content limited to 6 items (default) or the passed value and set the state', async () => {
-      const data = { sharedId: 'abc2' };
-      const request = new RequestParams(data, 'headers');
       const stateActions = await PageView.requestState(request);
 
       expect(api.search.calls.count()).toBe(4);
-      expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({ data: { a: 1, b: 2, limit: '6' }, headers: 'headers' });
-      expect(api.search.calls.argsFor(1)[0]).toEqual({ data: { filters: {}, types: [], limit: '9' }, headers: 'headers' });
+      expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(0)[0]))).toEqual({
+        data: { a: 1, b: 2, limit: '6' },
+        headers: 'headers'
+      });
+      expect(api.search.calls.argsFor(1)[0]).toEqual({
+        data: { filters: {}, types: [], limit: '9' },
+        headers: 'headers'
+      });
 
-      expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({ data: { x: 1, y: ['array'], limit: '6' }, headers: 'headers' });
-      expect(api.search.calls.argsFor(3)[0]).toEqual({ data: { filters: {}, types: [], limit: '12' }, headers: 'headers' });
+      expect(JSON.parse(JSON.stringify(api.search.calls.argsFor(2)[0]))).toEqual({
+        data: {
+          x: 1,
+          y: ['array'],
+          limit: '6'
+        },
+        headers: 'headers'
+      });
+      expect(api.search.calls.argsFor(3)[0]).toEqual({
+        data: { filters: {}, types: [], limit: '12' },
+        headers: 'headers'
+      });
 
       const itemLists = stateActions[1].value;
       assertItemLists(itemLists);
@@ -119,18 +148,9 @@ describe('PageView', () => {
       const markdownDatasetsResponse = { request1: 'url1', request2: 'url2' };
       spyOn(markdownDatasets, 'fetch').and.returnValue(Promise.resolve(markdownDatasetsResponse));
 
-      const data = { sharedId: 'abc2' };
-      const request = new RequestParams(data, 'headers');
       const stateActions = await PageView.requestState(request);
       expect(markdownDatasets.fetch).toHaveBeenCalledWith('originalContent', request.onlyHeaders());
       expect(stateActions[2].value).toEqual(markdownDatasetsResponse);
-    });
-  });
-
-  describe('closeSidePanel', () => {
-    it('should unselectAllDocuments', () => {
-      instance.closeSidePanel();
-      expect(context.store.dispatch).toHaveBeenCalledWith({ __reducerKey: 'library', type: 'UNSELECT_ALL_DOCUMENTS' });
     });
   });
 });

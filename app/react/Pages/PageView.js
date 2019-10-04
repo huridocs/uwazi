@@ -14,8 +14,8 @@ import PageViewer from './components/PageViewer';
 import PagesAPI from './PagesAPI';
 import pageItemLists from './utils/pageItemLists';
 
-function prepareLists(page, requestParams) {
-  const listsData = pageItemLists.generate(page.metadata.content);
+function prepareLists(content, requestParams) {
+  const listsData = pageItemLists.generate(content);
 
   listsData.searchs = Promise.all(listsData.params.map((params, index) => {
     const sanitizedParams = params ? decodeURI(params) : '';
@@ -38,14 +38,20 @@ function prepareLists(page, requestParams) {
 
 class PageView extends RouteHandler {
   static async requestState(requestParams) {
-    const [page] = await PagesAPI.get(requestParams);
-    const listsData = prepareLists(page, requestParams);
+    const page = await PagesAPI.getById(requestParams);
+
+    const listsData = prepareLists(page.metadata.content, requestParams);
     const dataSets = markdownDatasets.fetch(page.metadata.content, requestParams.onlyHeaders());
 
     const [pageView, searchParams, searchOptions, datasets, listSearchs] =
       await Promise.all([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
 
-    const itemLists = searchParams.map((p, index) => ({ params: p, items: listSearchs[index].rows, options: searchOptions[index] }));
+    const itemLists = searchParams.map((p, index) => ({
+      params: p,
+      items: listSearchs[index].rows,
+      options: searchOptions[index]
+    }));
+
     return [
       actions.set('page/pageView', pageView),
       actions.set('page/itemLists', itemLists),
@@ -83,7 +89,7 @@ class PageView extends RouteHandler {
       <React.Fragment>
         <PageViewer />
         <ViewMetadataPanel storeKey="library" />
-        <SelectMultiplePanelContainer storeKey="library"/>
+        <SelectMultiplePanelContainer storeKey="library" />
       </React.Fragment>
     );
   }
