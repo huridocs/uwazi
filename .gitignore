@@ -22,4 +22,5 @@ custom_uploads/*
 !uploads/index.html
 !attachments/index.html
 !custom_uploads/index.html
+.idea
 

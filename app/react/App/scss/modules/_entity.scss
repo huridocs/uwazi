@@ -1,22 +1,23 @@
-@media(min-width: 1024px) {
-  .entity-viewer ~ .sidepanel-footer {
-    left: calc((100% - 400px)/2);
-  }
-}
-
 .entity-viewer {
   position: relative;
   width: 100%;
   height: calc(100% - 100px);
   padding: 15px;
   background: $c-white;
+  transition: all 500ms;
   //overflow-x: hidden;
   //overflow-y: scroll;
   overflow: auto;
 
   @media(min-width: 1024px) {
     height: calc(100% - 51px);
-    width: calc(100% - 400px) !important;
+  }
+
+  @media(min-width: 1024px) {
+    &.with-panel,
+    &.is-active {
+      width: calc(100% - 400px) !important;
+    }
   }
 
   .connection-data {
@@ -38,7 +39,7 @@
   z-index: 6;
   top: 0;
   @media (min-width: 1024px) {
-    top: $header-height * 2 + 1 !important;
+    top: $header-height + 1 !important;
   }
 }
 
@@ -53,7 +54,7 @@
   .side-panel {
     top: $header-height;
     @media (min-width: 1024px) {
-      top: $header-height * 2 + 1;
+      top: $header-height + 1;
     }
   }
 }
