@@ -6,39 +6,50 @@ import pagesAPI from '../PagesAPI';
 describe('pagesAPI', () => {
   const singleResponse = [{ pages: 'single' }];
 
+  async function requestFor(pagesAPIMethod, parameters) {
+    const request = new RequestParams(parameters);
+    const response = await pagesAPIMethod(request);
+    return response;
+  }
+
   beforeEach(() => {
     backend.restore();
     backend
     .get(`${APIURL}pages?param=value`, { body: JSON.stringify([singleResponse]) })
-    .post(`${APIURL}pages`, { body: JSON.stringify({ backednResponse: 'post' }) })
-    .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backednResponse: 'delete' }) });
+    .get(`${APIURL}page?param=id`, { body: JSON.stringify(singleResponse) })
+    .post(`${APIURL}pages`, { body: JSON.stringify({ backendResponse: 'post' }) })
+    .delete(`${APIURL}pages?sharedId=id`, { body: JSON.stringify({ backendResponse: 'delete' }) });
   });
 
   afterEach(() => backend.restore());
 
   describe('get()', () => {
     it('should request for the page', async () => {
-      const request = new RequestParams({ param: 'value' });
-      const response = await pagesAPI.get(request);
+      const response = await requestFor(pagesAPI.get, { param: 'value' });
       expect(response).toEqual([singleResponse]);
+    });
+  });
+
+  describe('getById()', () => {
+    it('should request for the page by id', async () => {
+      const response = await requestFor(pagesAPI.getById, { param: 'id' });
+      expect(response).toEqual(singleResponse);
     });
   });
 
   describe('save()', () => {
     it('should post the document data to /pages', async () => {
-      const request = new RequestParams({ title: 'document name' });
-      const response = await pagesAPI.save(request);
+      const response = await requestFor(pagesAPI.save, { title: 'document name' });
       expect(JSON.parse(backend.lastOptions(`${APIURL}pages`).body)).toEqual({ title: 'document name' });
-      expect(response).toEqual({ backednResponse: 'post' });
+      expect(response).toEqual({ backendResponse: 'post' });
     });
   });
 
   describe('delete()', () => {
     it('should delete the document', async () => {
       const data = { sharedId: 'id' };
-      const request = new RequestParams(data);
-      const response = await pagesAPI.delete(request);
-      expect(response).toEqual({ backednResponse: 'delete' });
+      const response = await requestFor(pagesAPI.delete, data);
+      expect(response).toEqual({ backendResponse: 'delete' });
     });
   });
 });

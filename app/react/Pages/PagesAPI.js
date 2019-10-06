@@ -6,6 +6,11 @@ export default {
     .then(response => response.json);
   },
 
+  getById(requestParams) {
+    return api.get('page', requestParams)
+    .then(response => response.json);
+  },
+
   save(requestParams) {
     return api.post('pages', requestParams)
     .then(response => response.json);
