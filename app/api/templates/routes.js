@@ -60,6 +60,13 @@ export default (app) => {
       .then((response) => {
         res.json(response);
         req.io.sockets.emit('templateChange', response);
+        return response;
+      })
+      .then(response => settings.updateFilterName(response._id.toString(), response.name))
+      .then((updatedSettings) => {
+        if (updatedSettings) {
+          req.io.sockets.emit('updateSettings', updatedSettings);
+        }
       })
       .catch(next);
     }

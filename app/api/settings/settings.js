@@ -102,5 +102,16 @@ export default {
 
     settings.filters = removeTemplate(settings.filters, templateId);
     return this.save(settings);
+  },
+
+  async updateFilterName(filterId, name) {
+    const settings = await this.get();
+
+    if (!settings.filters.some(eachFilter => eachFilter.id === filterId)) {
+      return Promise.resolve();
+    }
+
+    settings.filters.find(eachFilter => eachFilter.id === filterId).name = name;
+    return this.save(settings);
   }
 };
