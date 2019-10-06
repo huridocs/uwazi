@@ -18,12 +18,9 @@ RUN dnf install -y git findutils less which \
 # Install system packages specifically required by Uwazi
     libpng12-devel libpng-devel mongodb-org-shell mongodb-org-tools poppler
 
-# Create ~uwazi and switch to it (without this, Node & Co. would get installed as root)
-RUN useradd uwazi
-USER uwazi
-
 # Install Node.JS
-# Due to https://github.com/nodesource/distributions/issues/842, NOT https://github.com/nodesource/distributions/#rpminstall
+# Due to https://github.com/nodesource/distributions/issues/842,
+# DO NOT https://github.com/nodesource/distributions/#rpminstall
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh | bash
 RUN source $HOME/.nvm/nvm.sh  \
  && nvm install 8.11 \
@@ -37,14 +34,12 @@ RUN source $HOME/.nvm/nvm.sh \
  && curl -o- -L https://yarnpkg.com/install.sh | bash \
  && $HOME/.yarn/bin/yarn --version
 
-RUN mkdir /home/uwazi/git
-WORKDIR /home/uwazi/git
-# TODO rm git clone and replace with mounting from host
-RUN git clone https://github.com/huridocs/uwazi.git . \
- && source $HOME/.nvm/nvm.sh \
- && $HOME/.yarn/bin/yarn install
+# Working Directory as per volume mount in docker-compose.yaml
+WORKDIR /root/uwazi/
 
-# NB: Can't run "yarn test" during BUILD, because it requires MongoDB.
+# ENTRYPOINT sleep infinity because the idea is that developers use "docker exec -it -u uwazi uwazi_uwazi_1 bash"
+# to get into the container and then work there to run yarn etc. manually.
+ENTRYPOINT sleep infinity
 
-# NB Do not run yarn blank-state & hot here (in ENTRYPOINT), but let the developer do this manually
-ENTRYPOINT bash -c echo "TODO" && sleep infinity
+# NB Do not run yarn (neither during BUILD here, nor in ENTRYPOINT), but let the developer use it manually.
+# PS Can't run "yarn test" during BUILD already, because it requires MongoDB.

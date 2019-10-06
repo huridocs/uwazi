@@ -136,26 +136,40 @@ E2E Tests depend on electron.  If something appears to not be working, please ru
 
 #### Dev Shell Container ("Docker")
 
-This project includes a ("Docker") container which already includes the required dependencies (as above) to simplify set up for development.  This guarantees a uniform development environment by avoiding subtle differences between individual developers machines.  Once you have a container runtime installed (e.g.
+This project includes a [`Dockerfile`](Dockerfile-devshell) to build a container which already includes the required dependencies (as above) to simplify set up for development.  This guarantees a uniform development environment by avoiding subtle differences between individual developers machines.  Once you have a container runtime installed (e.g.
 [Podman](https://github.com/containers/libpod) via `dnf install podman-docker` or
-[Docker](https://docs.docker.com/install/)), and a tool to process docker-compose.yml
+[Docker](https://docs.docker.com/install/)), and a tool to process the [`docker-compose.yaml`](docker-compose.yaml)
 (e.g. [Podman Compose](https://github.com/containers/podman-compose/) via `pip3 install podman-compose`
 or [Docker Compose](https://docs.docker.com/compose/install/), you can simply use:
 
-    ./docker-compose build
-    ./docker-compose up
-    docker exec -it -u uwazi uwazi_uwazi_1 bash
+    podman-compose build
+    podman-compose up
+    podman exec -it uwazi_uwazi_1 bash
 
-and now, as above, inside the devcontainer you can e.g. do:
+and now inside the container you can do, as above:
 
     yarn blank-state
     yarn hot
 
-_TODO mount $PWD into container as GitHub source, and make container simply run it, not devshell..._
-and access Uwazi on http://localhost:3000 !
+and then will be able to to access Uwazi on http://localhost:3000 on your host.
+
+The source files from your host are mounted into the container.  This is known to be somewhat of
+a PITA, and there are several ways of dealing with related UID mapping problems, but they can differ
+between Podman and (original) Docker, including:
+
+1. Not sharing the source files between container and host is the simplest solution.
+   This can be inconvenient if you would like to e.g. use IDEs on the host.
+
+1. If one simply avoids `useradd` and `USER` in the `Dockerfile`,
+   then the _in-container_ `id` will be `uid=0(root) gid=0(root) groups=0(root)`.
+   Podman (on Fedora) maps this to the _host uid_ of the user using Podman,
+   which contrary to Docker is typically not `root`.
+   Volume mounting e.g. `.:/root/uwazi:Z,rw` thus lets you "naturally" work on sources.
+   (This can look a bit weird to users of the container.  It also permits changes to the container's
+   root filesystem which should ideally be immutable (outside the mounted dev source tree).
 
 ### Default login
 
-The application's default log in is admin / change this password now 
+The application's default log in is "admin" / "change this password now"
 
 Note the subtle nudge ;)

@@ -20,6 +20,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-devshell
+    volumes:
+      - .:/root/uwazi:Z,rw
     links:
       - mongo
       - elasticsearch
@@ -29,5 +31,3 @@ services:
     depends_on:
       - mongo
       - elasticsearch
-
-# TODO volume, as in https://github.com/apache/fineract/blob/develop/docker-compose.yml#L24
