@@ -3,17 +3,20 @@
 # https://getfedora.org
 FROM fedora:30
 
-# Initially built for Huridocs by Google, later maintained by the Huridocs community
-LABEL maintainer="vorburger@google.com"
+# Initially built by Michael Vorburger.ch at Google for Huridocs, later maintained by the Uwazi open source community
+LABEL maintainer="Michael Vorburger.ch <vorburger@google.com>"
 
 # Update base image (the public one is typically outdated and contains already patched security vulnerabilities)
 RUN dnf update -y
+
+# https://docs.mongodb.com/v3.4/tutorial/install-mongodb-on-red-hat/
+COPY mongodb-org-3.4.repo /etc/yum.repos.d/mongodb-org-3.4.repo
 
 # Install utility packages generally useful in any devshell
 RUN dnf install -y git findutils less which \
 
 # Install system packages specifically required by Uwazi
-    libpng12-devel libpng-devel
+    libpng12-devel libpng-devel mongodb-org-shell mongodb-org-tools poppler
 
 # Create ~uwazi and switch to it (without this, Node & Co. would get installed as root)
 RUN useradd uwazi
@@ -40,8 +43,8 @@ WORKDIR /home/uwazi/git
 RUN git clone https://github.com/huridocs/uwazi.git . \
  && source $HOME/.nvm/nvm.sh \
  && $HOME/.yarn/bin/yarn install
-# TODO!  && $HOME/.yarn/bin/yarn test
 
-# TODO document how to run tests in-container, after changing code (need to use CMD instead of ENTRYPOINT?)
-ENTRYPOINT source $HOME/.nvm/nvm.sh \
- && $HOME/.yarn/bin/yarn hot
+# NB: Can't run "yarn test" during BUILD, because it requires MongoDB.
+
+# NB Do not run yarn blank-state & hot here (in ENTRYPOINT), but let the developer do this manually
+ENTRYPOINT bash -c echo "TODO" && sleep infinity

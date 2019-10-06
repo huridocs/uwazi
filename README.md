@@ -144,9 +144,15 @@ or [Docker Compose](https://docs.docker.com/compose/install/), you can simply us
 
     ./docker-compose build
     ./docker-compose up
+    docker exec -it -u uwazi uwazi_uwazi_1 bash
+
+and now, as above, inside the devcontainer you can e.g. do:
+
+    yarn blank-state
+    yarn hot
 
 _TODO mount $PWD into container as GitHub source, and make container simply run it, not devshell..._
-and _TODO access Uwazi on ...!_
+and access Uwazi on http://localhost:3000 !
 
 ### Default login
 
