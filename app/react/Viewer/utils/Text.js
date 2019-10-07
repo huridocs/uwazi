@@ -82,7 +82,7 @@ export default function (container) {
       }
 
       if (range.start >= this.charRange.start && range.start <= this.charRange.end ||
-          range.end <= this.charRange.end && range.end >= this.charRange.start) {
+          range.end < this.charRange.end && range.end > this.charRange.start) {
         const offsetRange = Object.assign({}, range);
         offsetRange.start -= this.charRange.start;
         offsetRange.end -= this.charRange.start;
