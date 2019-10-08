@@ -28,6 +28,7 @@ Intallation guide
     * [Testing](#testing)
       * [Unit and Integration tests](#unit-and-integration-tests)
       * [End to End (e2e)](#end-to-end-e2e)
+    * [Docker](#development-docker)
 
 # Dependencies
 
@@ -134,9 +135,9 @@ Note that if you already have an instance running, this will likely throw an err
 
 E2E Tests depend on electron.  If something appears to not be working, please run `node_modules/electron/dist/electron --help` to check for problems.
 
-#### Dev Shell Container ("Docker")
+#### Development Docker
 
-This project includes a [`Dockerfile`](Dockerfile-devshell) to build a container which already includes the required dependencies (as above) to simplify set up for development.  This guarantees a uniform development environment by avoiding subtle differences between individual developers machines.  Once you have a container runtime installed (e.g.
+This project includes a [`Dockerfile`](Dockerfile-devshell) to build a "dev container" which already includes the required dependencies (as above).  This simplifies setting up your development environment, and guarantees a uniform environment by avoiding subtle differences between individual developers' machines.  Once you have a container runtime installed (e.g.
 [Podman](https://github.com/containers/libpod) via `dnf install podman-docker` or
 [Docker](https://docs.docker.com/install/)), and a tool to process the [`docker-compose.yaml`](docker-compose.yaml)
 (e.g. [Podman Compose](https://github.com/containers/podman-compose/) via `pip3 install podman-compose`
