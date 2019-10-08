@@ -46,6 +46,11 @@ describe('Geolocation', () => {
       expect(props.onChange).toHaveBeenCalledWith([{ lat: 19, lon: -17.2, label: 'home' }, props.value[1]]);
     });
 
+    it('should not call onChange when empty value', () => {
+      latInput.simulate('change', { target: { value: '' } });
+      expect(props.onChange).not.toHaveBeenCalled();
+    });
+
     it('with an angle lower than -90 degrees the value should be replace by -90 degrees', () => {
       latInput.simulate('change', { target: { value: '-91' } });
       expect(props.onChange).toHaveBeenCalledWith([{ lat: -90, lon: -17.2, label: 'home' }, props.value[1]]);
@@ -58,10 +63,20 @@ describe('Geolocation', () => {
   });
 
   describe('when lon changes', () => {
+    let lonInput;
+
+    beforeEach(() => {
+      lonInput = component.find('input').at(1);
+    });
+
     it('should call onChange with the new value', () => {
-      const lonInput = component.find('input').at(1);
       lonInput.simulate('change', { target: { value: '28' } });
       expect(props.onChange).toHaveBeenCalledWith([{ lat: 32.18, lon: 28, label: 'home' }, props.value[1]]);
+    });
+
+    it('should not call onChange when empty value', () => {
+      lonInput.simulate('change', { target: { value: '' } });
+      expect(props.onChange).not.toHaveBeenCalled();
     });
   });
 

@@ -16,6 +16,13 @@ export default class Geolocation extends Component {
     this.lonChange = this.lonChange.bind(this);
     this.mapClick = this.mapClick.bind(this);
     this.clearCoordinates = this.clearCoordinates.bind(this);
+
+    const { value: [value] } = this.props;
+
+    this.state = {
+      currentLatitude: value ? value.lat : '',
+      currentLongitude: value ? value.lon : '',
+    };
   }
 
   onChange(newValue) {
@@ -27,11 +34,6 @@ export default class Geolocation extends Component {
     const valueToSend = value.slice(1);
     valueToSend.unshift(newValue);
 
-    // The latitude is a value between -90 degrees and 90 degrees
-    // The page breaks if the map is refreshed with a latitude out of range
-    valueToSend[0].lat = valueToSend[0].lat < -90 ? -90 : valueToSend[0].lat;
-    valueToSend[0].lat = valueToSend[0].lat > 90 ? 90 : valueToSend[0].lat;
-
     onChange(valueToSend);
   }
 
@@ -42,11 +44,30 @@ export default class Geolocation extends Component {
   }
 
   latChange(e) {
+    if (!e.target.value) {
+      this.setState({ currentLatitude: e.target.value });
+      return;
+    }
+
+    let latitude = parseFloat(e.target.value);
+
+    // The latitude is a value between -90 degrees and 90 degrees
+    // The page breaks if the map is refreshed with a latitude out of range
+    latitude = latitude < -90 ? -90 : latitude;
+    latitude = latitude > 90 ? 90 : latitude;
+
+    this.setState({ currentLatitude: latitude });
+
     const { lon, label } = this.getInputValues();
-    this.onChange({ lat: parseFloat(e.target.value), lon, label });
+    this.onChange({ lat: parseFloat(latitude), lon, label });
   }
 
   lonChange(e) {
+    this.setState({ currentLongitude: e.target.value });
+    if (!e.target.value) {
+      return;
+    }
+
     const { lat, label } = this.getInputValues();
     this.onChange({ lat, lon: parseFloat(e.target.value), label });
   }
@@ -64,32 +85,43 @@ export default class Geolocation extends Component {
   render() {
     const markers = [];
     const { value: [value] } = this.props;
+    const latitude = value ? value.lat : '';
+    const longitude = value ? value.lon : '';
 
-    let lat = '';
-    let lon = '';
+    const { currentLatitude, currentLongitude } = this.state;
 
-    if (value) {
-      ({ lat, lon } = value);
-    }
-
-    if (isCoordinateValid(lat) && isCoordinateValid(lon)) {
-      markers.push({ latitude: parseFloat(value.lat), longitude: parseFloat(value.lon) });
+    if (isCoordinateValid(latitude) && isCoordinateValid(longitude)) {
+      markers.push({ latitude: parseFloat(latitude), longitude: parseFloat(longitude) });
     }
 
     return (
       <div className="geolocation form-inline">
-        <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false}/>
+        <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false} />
         <div className="form-row">
           <div className="form-group half-width">
             <label>Latitude</label>
-            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat} step="any"/>
+            <input
+              onChange={this.latChange}
+              className="form-control"
+              type="number"
+              id="lat"
+              value={currentLatitude}
+              step="any"
+            />
           </div>
           <div className="form-group half-width">
             <label>Longitude</label>
-            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="any"/>
+            <input
+              onChange={this.lonChange}
+              className="form-control"
+              type="number"
+              id="lon"
+              value={currentLongitude}
+              step="any"
+            />
           </div>
         </div>
-        { (isCoordinateValid(lat) || isCoordinateValid(lon)) && (
+        {(isCoordinateValid(latitude) || isCoordinateValid(longitude)) && (
           <div className="clear-field-button">
             <button type="button" onClick={this.clearCoordinates}>
               <Translate>Clear coordinates</Translate>
