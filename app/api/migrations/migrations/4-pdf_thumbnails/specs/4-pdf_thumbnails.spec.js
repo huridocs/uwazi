@@ -36,7 +36,7 @@ describe('migration pdf_thumbnails', () => {
         fs.unlinkSync(thumbnail2);
         done();
       } catch (err) {
-        console.log(err);
+        console.log("E", err);
         done();
       }
     };
@@ -50,6 +50,7 @@ describe('migration pdf_thumbnails', () => {
     });
 
     it('should create thumbnails of document PDFs', async () => {
+      console.log(await testingDB.mongodb.doc)
       await migration.up(testingDB.mongodb);
       await exists(thumbnail1);
       await exists(thumbnail2);
