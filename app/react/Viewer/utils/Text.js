@@ -75,22 +75,30 @@ export default function (container) {
       this.activeReference = referenceId;
     },
 
+    isWithinCurrentRange(range) {
+      return range.start >= this.charRange.start && range.start <= this.charRange.end ||
+        range.end < this.charRange.end && range.end > this.charRange.start;
+    },
+
+    wrapFakeSelection(range) {
+      const offsetRange = Object.assign({}, range);
+      offsetRange.start -= this.charRange.start;
+      offsetRange.end -= this.charRange.start;
+
+      const restoredRange = TextRange.restore(offsetRange, container);
+      const elementWrapper = document.createElement('span');
+      elementWrapper.classList.add('fake-selection');
+      this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+    },
+
     simulateSelection(range, force) {
       this.removeSimulatedSelection();
       if (!range || this.selected() && !force) {
         return;
       }
 
-      if (range.start >= this.charRange.start && range.start <= this.charRange.end ||
-          range.end <= this.charRange.end && range.end >= this.charRange.start) {
-        const offsetRange = Object.assign({}, range);
-        offsetRange.start -= this.charRange.start;
-        offsetRange.end -= this.charRange.start;
-
-        const restoredRange = TextRange.restore(offsetRange, container);
-        const elementWrapper = document.createElement('span');
-        elementWrapper.classList.add('fake-selection');
-        this.fakeSelection = wrapper.wrap(elementWrapper, restoredRange);
+      if (this.isWithinCurrentRange(range)) {
+        this.wrapFakeSelection(range);
       }
     },
 

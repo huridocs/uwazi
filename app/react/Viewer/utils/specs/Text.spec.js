@@ -123,6 +123,21 @@ describe('Text', () => {
         expect(text.removeSimulatedSelection.bind(text)).not.toThrow();
       });
     });
+
+    describe('when selection range ends just before the current char range', () => {
+      it('should not wrap fake selection', () => {
+        spyOn(wrapper, 'wrap');
+        spyOn(TextRange, 'restore');
+        spyOn(text, 'removeSimulatedSelection');
+        spyOn(text, 'selected').and.returnValue(false);
+        const selectedRange = { start: 290, end: 300 };
+        text.range({ start: 300, end: 450 });
+        text.simulateSelection(selectedRange);
+        expect(wrapper.wrap).not.toHaveBeenCalled();
+        expect(TextRange.restore).not.toHaveBeenCalled();
+        expect(text.fakeSelection).toBeFalsy();
+      });
+    });
   });
 
   describe('renderReferences', () => {
