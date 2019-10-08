@@ -16,7 +16,7 @@ COPY mongodb-org-3.4.repo /etc/yum.repos.d/mongodb-org-3.4.repo
 RUN dnf install -y git findutils less which \
 
 # Install system packages specifically required by Uwazi
-    libpng12-devel libpng-devel mongodb-org-shell mongodb-org-tools poppler
+    libpng12-devel libpng-devel mongodb-org-shell mongodb-org-tools poppler poppler-utils
 
 # Install Node.JS
 # Due to https://github.com/nodesource/distributions/issues/842,
