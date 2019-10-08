@@ -5,15 +5,13 @@ import { Translate } from 'app/I18N';
 
 const defaultValue = { lat: '', lon: '', label: '' };
 
-function isCoordValid(coord) {
-  // eslint-disable-next-line no-restricted-globals
-  return typeof coord === 'number' && !isNaN(coord);
+function isCoordinateValid(coord) {
+  return typeof coord === 'number' && !Number.isNaN(coord);
 }
 
 export default class Geolocation extends Component {
   constructor(props) {
     super(props);
-
     this.latChange = this.latChange.bind(this);
     this.lonChange = this.lonChange.bind(this);
     this.mapClick = this.mapClick.bind(this);
@@ -22,12 +20,17 @@ export default class Geolocation extends Component {
 
   onChange(newValue) {
     const { onChange, value } = this.props;
-    if (!isCoordValid(newValue.lat) && !isCoordValid(newValue.lon)) {
+    if (!isCoordinateValid(newValue.lat) && !isCoordinateValid(newValue.lon)) {
       onChange();
       return;
     }
     const valueToSend = value.slice(1);
     valueToSend.unshift(newValue);
+
+    // The latitude is a value between -90 degrees and 90 degrees
+    // The page breaks if the map is refreshed with a latitude out of range
+    valueToSend[0].lat = valueToSend[0].lat < -90 ? -90 : valueToSend[0].lat;
+    valueToSend[0].lat = valueToSend[0].lat > 90 ? 90 : valueToSend[0].lat;
 
     onChange(valueToSend);
   }
@@ -69,7 +72,7 @@ export default class Geolocation extends Component {
       ({ lat, lon } = value);
     }
 
-    if (isCoordValid(lat) && isCoordValid(lon)) {
+    if (isCoordinateValid(lat) && isCoordinateValid(lon)) {
       markers.push({ latitude: parseFloat(value.lat), longitude: parseFloat(value.lon) });
     }
 
@@ -86,7 +89,7 @@ export default class Geolocation extends Component {
             <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="any"/>
           </div>
         </div>
-        { (isCoordValid(lat) || isCoordValid(lon)) && (
+        { (isCoordinateValid(lat) || isCoordinateValid(lon)) && (
           <div className="clear-field-button">
             <button type="button" onClick={this.clearCoordinates}>
               <Translate>Clear coordinates</Translate>
