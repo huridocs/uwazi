@@ -37,7 +37,11 @@ Intallation guide
 - **Yarn** https://yarnpkg.com/en/docs/install
 - **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/
 
-Before anything else you will need to install the application dependencies. 
+Before anything else you will need to install the application dependencies.
+We also recommend changing some global settings:
+```
+$ npm config set scripts-prepend-node-path auto
+```
 
 If you want to use the latest development code:
 ```
