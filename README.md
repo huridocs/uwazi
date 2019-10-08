@@ -95,6 +95,15 @@ $ yarn run-production
 - 'yarn install' will automatically add, remove or replace any changes in module dependecies.
 - 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
 
+### Environment Variables
+
+Uwazi supports the following environment variables to customize its deployment:
+
+* `DBHOST`: MongoDB hostname (default: `localhost`)
+* `DATABASE_NAME`: MongoDB instance name
+* `ELASTICSEARCH_URL`: ElasticSearch connection URL (default: `http://localhost:9200`)
+* `UPLOADS_FOLDER`: Folder on local filesystem where uploaded PDF and other files are written to (_TODO temporarily or permanently?_)
+
 # Development
 
 ### Development Run
