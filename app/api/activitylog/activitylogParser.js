@@ -87,6 +87,38 @@ const templatesDELETE = async (log) => {
   return semantic;
 };
 
+const createCreateUpdateBeautifier = (resourceName, nameField, idField) => async (log) => {
+  const data = JSON.parse(log.body);
+
+  const semantic = {
+    beautified: true,
+    name: data[nameField]
+  };
+
+  if (data[idField]) {
+    semantic.name = `${data[nameField]} (${data[idField]})`;
+    semantic.action = methods.update;
+    semantic.description = `Updated ${resourceName}`;
+  } else {
+    semantic.action = methods.create;
+    semantic.description = `Created ${resourceName}`;
+  }
+
+  return semantic;
+};
+
+
+const createDeleteBeautifier = (resourceName, idField) => async (log) => {
+  const data = JSON.parse(log.query);
+
+  return {
+    beautified: true,
+    action: methods.delete,
+    description: `Deleted ${resourceName}`,
+    name: data[idField]
+  };
+};
+
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
@@ -94,7 +126,9 @@ const actions = {
   'DELETE/api/documents': entitiesDELETE,
   'DELETE/api/attachments/delete': attachmentsDELETE,
   'POST/api/templates': templatesPOST,
-  'DELETE/api/templates': templatesDELETE
+  'DELETE/api/templates': templatesDELETE,
+  'POST/api/thesauris': createCreateUpdateBeautifier('thesaurus', 'name', '_id'),
+  'DELETE/api/thesauris': createDeleteBeautifier('thesaurus', '_id')
 };
 
 const getSemanticData = async (data) => {

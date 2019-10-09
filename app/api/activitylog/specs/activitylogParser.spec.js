@@ -137,5 +137,50 @@ describe('Activitylog Parser', () => {
         });
       });
     });
+
+    describe('routes: /api/thesauris', () => {
+      describe('method:POST', () => {
+        it('should beautify as CREATE if no thesaurus id is found', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/thesauris', body: '{"name":"Things","values":[]}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'CREATE',
+            description: 'Created thesaurus',
+            name: 'Things'
+          });
+        });
+
+        it('should beautify as UPDATE if not thesauris id is found', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/thesauris', body: '{"_id":"thes123","name":"Things","values":[]}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'UPDATE',
+            description: 'Updated thesaurus',
+            name: 'Things (thes123)'
+          });
+        });
+      });
+    });
+
+    describe('method:DELETE', () => {
+      it('should beautify as DELETE', async () => {
+        const semanticData = await getSemanticData(
+          { method: 'DELETE', url: '/api/thesauris', query: '{"_id":"thes123"}' }
+        );
+
+        expect(semanticData).toEqual({
+          beautified: true,
+          action: 'DELETE',
+          description: 'Deleted thesaurus',
+          name: 'thes123'
+        });
+      });
+    });
   });
 });
