@@ -54,12 +54,47 @@ const attachmentsDELETE = async (log) => {
   return semantic;
 };
 
+const templatesPOST = async (log) => {
+  const data = JSON.parse(log.body);
+
+  const semantic = {
+    beautified: true,
+    name: data.name,
+  };
+
+  if (data._id) {
+    semantic.name = `${data.name} (${data._id})`;
+    semantic.action = methods.update;
+    semantic.description = 'Updated template';
+  } else {
+    semantic.action = methods.create;
+    semantic.description = 'Created template';
+  }
+
+  return semantic;
+};
+
+const templatesDELETE = async (log) => {
+  const data = JSON.parse(log.query);
+
+  const semantic = {
+    beautified: true,
+    action: methods.delete,
+    description: 'Deleted template',
+    name: data._id
+  };
+
+  return semantic;
+};
+
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
   'DELETE/api/entities': entitiesDELETE,
   'DELETE/api/documents': entitiesDELETE,
   'DELETE/api/attachments/delete': attachmentsDELETE,
+  'POST/api/templates': templatesPOST,
+  'DELETE/api/templates': templatesDELETE
 };
 
 const getSemanticData = async (data) => {
