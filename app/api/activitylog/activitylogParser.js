@@ -6,6 +6,38 @@ const methods = {
   delete: 'DELETE'
 };
 
+const generateCreateUpdateBeautifier = (resourceName, nameField, idField) => async (log) => {
+  const data = JSON.parse(log.body);
+
+  const semantic = {
+    beautified: true,
+    name: data[nameField]
+  };
+
+  if (data[idField]) {
+    semantic.name = `${data[nameField]} (${data[idField]})`;
+    semantic.action = methods.update;
+    semantic.description = `Updated ${resourceName}`;
+  } else {
+    semantic.action = methods.create;
+    semantic.description = `Created ${resourceName}`;
+  }
+
+  return semantic;
+};
+
+
+const generateDeleteBeautifier = (resourceName, idField) => async (log) => {
+  const data = JSON.parse(log.query);
+
+  return {
+    beautified: true,
+    action: methods.delete,
+    description: `Deleted ${resourceName}`,
+    name: data[idField]
+  };
+};
+
 const entitiesPOST = async (log) => {
   const data = JSON.parse(log.body);
   const template = await templates.getById(data.template);
@@ -28,94 +60,17 @@ const entitiesPOST = async (log) => {
   return semantic;
 };
 
-const entitiesDELETE = async (log) => {
-  const data = JSON.parse(log.query);
+const entitiesDELETE = generateDeleteBeautifier('entity / document', 'sharedId');
 
-  const semantic = {
-    beautified: true,
-    action: methods.delete,
-    description: 'Deleted entity / document',
-    name: data.sharedId,
-  };
-
-  return semantic;
-};
-
-const attachmentsDELETE = async (log) => {
-  const data = JSON.parse(log.query);
-
-  const semantic = {
-    beautified: true,
-    action: methods.delete,
-    description: 'Deleted attachment',
-    name: data.attachmentId
-  };
-
-  return semantic;
-};
-
-const templatesPOST = async (log) => {
+const templatesAsDefaultPOST = async (log) => {
   const data = JSON.parse(log.body);
-
-  const semantic = {
-    beautified: true,
-    name: data.name,
-  };
-
-  if (data._id) {
-    semantic.name = `${data.name} (${data._id})`;
-    semantic.action = methods.update;
-    semantic.description = 'Updated template';
-  } else {
-    semantic.action = methods.create;
-    semantic.description = 'Created template';
-  }
-
-  return semantic;
-};
-
-const templatesDELETE = async (log) => {
-  const data = JSON.parse(log.query);
-
-  const semantic = {
-    beautified: true,
-    action: methods.delete,
-    description: 'Deleted template',
-    name: data._id
-  };
-
-  return semantic;
-};
-
-const createCreateUpdateBeautifier = (resourceName, nameField, idField) => async (log) => {
-  const data = JSON.parse(log.body);
-
-  const semantic = {
-    beautified: true,
-    name: data[nameField]
-  };
-
-  if (data[idField]) {
-    semantic.name = `${data[nameField]} (${data[idField]})`;
-    semantic.action = methods.update;
-    semantic.description = `Updated ${resourceName}`;
-  } else {
-    semantic.action = methods.create;
-    semantic.description = `Created ${resourceName}`;
-  }
-
-  return semantic;
-};
-
-
-const createDeleteBeautifier = (resourceName, idField) => async (log) => {
-  const data = JSON.parse(log.query);
+  const template = await templates.getById(data._id);
 
   return {
     beautified: true,
-    action: methods.delete,
-    description: `Deleted ${resourceName}`,
-    name: data[idField]
+    action: methods.update,
+    description: 'Set default template',
+    name: template ? `${template.name} (${data._id})` : data._id,
   };
 };
 
@@ -124,11 +79,14 @@ const actions = {
   'POST/api/documents': entitiesPOST,
   'DELETE/api/entities': entitiesDELETE,
   'DELETE/api/documents': entitiesDELETE,
-  'DELETE/api/attachments/delete': attachmentsDELETE,
-  'POST/api/templates': templatesPOST,
-  'DELETE/api/templates': templatesDELETE,
-  'POST/api/thesauris': createCreateUpdateBeautifier('thesaurus', 'name', '_id'),
-  'DELETE/api/thesauris': createDeleteBeautifier('thesaurus', '_id')
+  'DELETE/api/attachments/delete': generateDeleteBeautifier('attachment', 'attachmentId'),
+  'POST/api/templates': generateCreateUpdateBeautifier('template', 'name', '_id'),
+  'POST/api/templates/setasdefault': templatesAsDefaultPOST,
+  'DELETE/api/templates': generateDeleteBeautifier('template', '_id'),
+  'POST/api/thesauris': generateCreateUpdateBeautifier('thesaurus', 'name', '_id'),
+  'DELETE/api/thesauris': generateDeleteBeautifier('thesaurus', '_id'),
+  'POST/api/relationtypes': generateCreateUpdateBeautifier('relation type', 'name', '_id'),
+  'DELETE/api/relationtypes': generateDeleteBeautifier('relation type', '_id')
 };
 
 const getSemanticData = async (data) => {
