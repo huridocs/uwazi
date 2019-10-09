@@ -92,5 +92,50 @@ describe('Activitylog Parser', () => {
         });
       });
     });
+
+    describe('routes: /api/templates', () => {
+      describe('method: POST', () => {
+        it('should beautify as CREATE if no template id is found', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/templates', body: '{"name":"Person","fields":[]}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'CREATE',
+            description: 'Created template',
+            name: 'Person'
+          });
+        });
+
+        it('should beautify as UPDATE if no template id is found', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/templates', body: '{"_id":"tmp123","name":"Person","fields":[]}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'UPDATE',
+            description: 'Updated template',
+            name: 'Person (tmp123)'
+          });
+        });
+      });
+
+      describe('method:DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'DELETE', url: '/api/templates', query: '{"_id":"tmp123"}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'DELETE',
+            description: 'Deleted template',
+            name: 'tmp123'
+          });
+        });
+      });
+    });
   });
 });
