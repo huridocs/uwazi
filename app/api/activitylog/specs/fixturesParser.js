@@ -1,6 +1,7 @@
 import db from 'api/utils/testing_db';
 
 const firstTemplate = db.id();
+const nonExistentId = db.id();
 
 export default {
   activitylogs: [
@@ -14,4 +15,5 @@ export default {
 
 export {
   firstTemplate,
+  nonExistentId
 };

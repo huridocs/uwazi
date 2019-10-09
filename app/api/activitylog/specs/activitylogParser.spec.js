@@ -1,5 +1,5 @@
 import db from 'api/utils/testing_db';
-import fixtures, { firstTemplate } from './fixturesParser';
+import fixtures, { firstTemplate, nonExistentId } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
 
 describe('Activitylog Parser', () => {
@@ -122,6 +122,36 @@ describe('Activitylog Parser', () => {
         });
       });
 
+      describe('method: POST setasdefault', () => {
+        it('should beautify as UPDATE set default template', async () => {
+          const id = firstTemplate.toString();
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/templates/setasdefault', body: `{"_id":"${id}"}` }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'UPDATE',
+            description: 'Set default template',
+            name: `Existing Template (${id})`
+          });
+        });
+
+        it('should display the id as name if the template does not exist', async () => {
+          const id = nonExistentId.toString();
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/templates/setasdefault', body: `{"_id":"${id}"}` }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'UPDATE',
+            description: 'Set default template',
+            name: id
+          });
+        });
+      });
+
       describe('method:DELETE', () => {
         it('should beautify as DELETE', async () => {
           const semanticData = await getSemanticData(
@@ -166,19 +196,64 @@ describe('Activitylog Parser', () => {
           });
         });
       });
+
+      describe('method:DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'DELETE', url: '/api/thesauris', query: '{"_id":"thes123"}' }
+          );
+  
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'DELETE',
+            description: 'Deleted thesaurus',
+            name: 'thes123'
+          });
+        });
+      });
     });
 
-    describe('method:DELETE', () => {
-      it('should beautify as DELETE', async () => {
-        const semanticData = await getSemanticData(
-          { method: 'DELETE', url: '/api/thesauris', query: '{"_id":"thes123"}' }
-        );
+    describe('routes: /api/relationtypes', () => {
+      describe('method:POST', () => {
+        it('should beautify as CREATE if no id is found', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/relationtypes', body: '{"name":"Rel"}' }
+          );
 
-        expect(semanticData).toEqual({
-          beautified: true,
-          action: 'DELETE',
-          description: 'Deleted thesaurus',
-          name: 'thes123'
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'CREATE',
+            description: 'Created relation type',
+            name: 'Rel'
+          });
+        });
+
+        it('should beautify as UPDATE if not id is found', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'POST', url: '/api/relationtypes', body: '{"_id":"rel123","name":"Rel"}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'UPDATE',
+            description: 'Updated relation type',
+            name: 'Rel (rel123)'
+          });
+        });
+      });
+
+      describe('method:DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'DELETE', url: '/api/relationtypes', query: '{"_id":"rel123"}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'DELETE',
+            description: 'Deleted relation type',
+            name: 'rel123'
+          });
         });
       });
     });
