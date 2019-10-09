@@ -106,7 +106,7 @@
     "jvent": "1.0.2",
     "macaddress": "0.2.9",
     "mark.js": "^8.11.1",
-    "markdown-it": "^8.4.1",
+    "markdown-it": "^10.0.0",
     "markdown-it-container": "^2.0.0",
     "moment": "2.21.0",
     "moment-timezone": "^0.5.5",
