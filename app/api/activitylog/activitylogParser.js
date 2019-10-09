@@ -41,11 +41,25 @@ const entitiesDELETE = async (log) => {
   return semantic;
 };
 
+const attachmentsDELETE = async (log) => {
+  const data = JSON.parse(log.query);
+
+  const semantic = {
+    beautified: true,
+    action: methods.delete,
+    description: 'Deleted attachment',
+    name: data.attachmentId
+  };
+
+  return semantic;
+};
+
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
   'DELETE/api/entities': entitiesDELETE,
   'DELETE/api/documents': entitiesDELETE,
+  'DELETE/api/attachments/delete': attachmentsDELETE,
 };
 
 const getSemanticData = async (data) => {

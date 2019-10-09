@@ -75,5 +75,22 @@ describe('Activitylog Parser', () => {
         });
       });
     });
+
+    describe('route: /api/attachments/delete', () => {
+      describe('method: DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'DELETE', url: '/api/attachments/delete', query: '{"attachmentId":"1234"}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'DELETE',
+            description: 'Deleted attachment',
+            name: '1234'
+          });
+        });
+      });
+    });
   });
 });
