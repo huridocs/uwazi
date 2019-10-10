@@ -110,6 +110,7 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
       );
     }
 
+    console.info(paths);
     console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
     if (process.env.HOT) {
       console.info('');
