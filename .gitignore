@@ -25,3 +25,4 @@ custom_uploads/*
 !custom_uploads/index.html
 .idea
 test
+yarn.lock
