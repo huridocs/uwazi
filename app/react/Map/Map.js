@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import { Icon } from 'UI';
 
 import { isClient } from 'app/utils';
-import supercluster from 'supercluster'; //eslint-disable-line
+import Supercluster from 'supercluster'; //eslint-disable-line
 import _style from './style.json';
 import { getMarkersBoudingBox, markersToStyleFormat, TRANSITION_PROPS } from './helper';
 
@@ -30,7 +30,7 @@ export default class Map extends Component {
     this.state.showControls = props.showControls;
 
     this.mapStyle = Immutable.fromJS(_style);
-    this.supercluster = supercluster({
+    this.supercluster = new Supercluster({
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
@@ -285,6 +285,7 @@ export default class Map extends Component {
           onViewStateChange={this._onViewStateChange}
           onClick={this.onClick}
           onHover={this.onHover}
+          interactiveLayerIds={this.interactiveLayerIds}
         >
           {this.renderMarkers()}
           {this.renderPopup()}
@@ -315,7 +316,8 @@ Map.defaultProps = {
   cluster: false,
   autoCenter: true,
   scrollZoom: true,
-  showControls: false
+  showControls: false,
+  interactiveLayerIds: null
 };
 
 Map.propTypes = {
@@ -334,5 +336,6 @@ Map.propTypes = {
   cluster: PropTypes.bool,
   autoCenter: PropTypes.bool,
   scrollZoom: PropTypes.bool,
-  showControls: PropTypes.bool
+  showControls: PropTypes.bool,
+  interactiveLayerIds: PropTypes.arrayOf(PropTypes.string)
 };
