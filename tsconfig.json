@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "module": "commonjs",
+    "target": "es6",
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "api/*": ["./app/api/*"],
+      "app/*": ["./app/react/*"],
+      "shared/*": ["./app/shared/*"]
+    }
+  },
+  "include": ["./app/**/*"],
+  "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist"]
+}

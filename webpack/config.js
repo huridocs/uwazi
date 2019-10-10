@@ -39,6 +39,9 @@ module.exports = function(production) {
       publicPath: "/",
       filename: "[name]" + jsChunkHashName + ".js"
     },
+    resolve: {
+      extensions: ["", ".webpack.js", ".web.js", ".js", ".tsx", ".ts"]
+    },
     optimization: {
       splitChunks: {
         cacheGroups: {
