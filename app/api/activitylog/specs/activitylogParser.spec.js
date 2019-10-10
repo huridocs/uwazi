@@ -11,6 +11,14 @@ describe('Activitylog Parser', () => {
     await db.disconnect();
   });
 
+  async function testBeautified(log, expected) {
+    const semanticData = await getSemanticData(log);
+    expect(semanticData).toEqual({
+      ...expected,
+      beautified: true
+    });
+  }
+
   describe('getSemanticData', () => {
     it('should report as beautified: false if no translation present for the route', async () => {
       const semanticData = await getSemanticData({ url: '/api/untraslated-route' });
@@ -202,7 +210,7 @@ describe('Activitylog Parser', () => {
           const semanticData = await getSemanticData(
             { method: 'DELETE', url: '/api/thesauris', query: '{"_id":"thes123"}' }
           );
-  
+
           expect(semanticData).toEqual({
             beautified: true,
             action: 'DELETE',
@@ -253,6 +261,100 @@ describe('Activitylog Parser', () => {
             action: 'DELETE',
             description: 'Deleted relation type',
             name: 'rel123'
+          });
+        });
+      });
+    });
+
+    describe('routes: /api/translations', () => {
+      describe('method:DELETE /languages', () => {
+        it('should beautify as DELETE with language name', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'DELETE', url: '/api/translations/languages', query: '{"key":"de"}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'DELETE',
+            description: 'Removed language',
+            name: 'German (de)'
+          });
+        });
+        it('should only display key if language name is unknown', async () => {
+          const semanticData = await getSemanticData(
+            { method: 'DELETE', url: '/api/translations/languages', query: '{"key":"abcd"}' }
+          );
+
+          expect(semanticData).toEqual({
+            beautified: true,
+            action: 'DELETE',
+            description: 'Removed language',
+            name: 'abcd'
+          });
+        });
+      });
+      describe('method:POST /setasdeafult', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/translations/setasdeafult', body: '{"key":"en"}'
+          }, {
+            action: 'UPDATE',
+            description: 'Set default language',
+            name: 'English (en)'
+          });
+        });
+        it('should display only key if language name is unknown', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/translations/setasdeafult', body: '{"key":"unknown"}'
+          }, {
+            action: 'UPDATE',
+            description: 'Set default language',
+            name: 'unknown'
+          });
+        });
+      });
+      describe('method:POST /languages', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/translations/languages', body: '{"key":"de","label":"German"}'
+          }, {
+            action: 'CREATE',
+            description: 'Added language',
+            name: 'German (de)'
+          });
+        });
+      });
+    });
+
+    describe('routes: /api/pages', () => {
+      describe('method:POST', () => {
+        it('should beautify as CREATE when id is not provided', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/pages', body: '{"title":"Home","metadata":{"content":"foo"}}'
+          }, {
+            action: 'CREATE',
+            description: 'Created page',
+            name: 'Home'
+          });
+        });
+        it('should beautify as UPDATE when id is provided', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/pages', body: '{"sharedId":"page123","title":"Home","metadata":{"content":"foo"}}'
+          }, {
+            action: 'UPDATE',
+            description: 'Updated page',
+            name: 'Home (page123)'
+          });
+        });
+      });
+      describe('method:DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          await testBeautified({
+            method: 'DELETE', url: '/api/pages', query: '{"sharedId":"page123"}'
+          }, {
+            action: 'DELETE',
+            description: 'Deleted page',
+            name: 'page123'
           });
         });
       });

@@ -1,4 +1,5 @@
 import templates from 'api/templates';
+import { allLanguages } from 'shared/languagesList';
 
 const methods = {
   create: 'CREATE',
@@ -74,6 +75,41 @@ const templatesAsDefaultPOST = async (log) => {
   };
 };
 
+const translationsLanguagesPOST = async (log) => {
+  const data = JSON.parse(log.body);
+
+  return {
+    beautified: true,
+    action: methods.create,
+    description: 'Added language',
+    name: `${data.label} (${data.key})`
+  };
+};
+
+const translationsLanguagesDELETE = async (log) => {
+  const data = JSON.parse(log.query);
+  const lang = allLanguages.find(({ key }) => key === data.key);
+
+  return {
+    beautified: true,
+    action: methods.delete,
+    description: 'Removed language',
+    name: lang ? `${lang.label} (${lang.key})` : data.key
+  };
+};
+
+const translationsAsDefaultPOST = async (log) => {
+  const data = JSON.parse(log.body);
+  const lang = allLanguages.find(({ key }) => key === data.key);
+
+  return {
+    beautified: true,
+    action: methods.update,
+    description: 'Set default language',
+    name: lang ? `${lang.label} (${lang.key})` : data.key
+  };
+};
+
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
@@ -86,7 +122,12 @@ const actions = {
   'POST/api/thesauris': generateCreateUpdateBeautifier('thesaurus', 'name', '_id'),
   'DELETE/api/thesauris': generateDeleteBeautifier('thesaurus', '_id'),
   'POST/api/relationtypes': generateCreateUpdateBeautifier('relation type', 'name', '_id'),
-  'DELETE/api/relationtypes': generateDeleteBeautifier('relation type', '_id')
+  'DELETE/api/relationtypes': generateDeleteBeautifier('relation type', '_id'),
+  'POST/api/translations/languages': translationsLanguagesPOST,
+  'DELETE/api/translations/languages': translationsLanguagesDELETE,
+  'POST/api/translations/setasdeafult': translationsAsDefaultPOST,
+  'POST/api/pages': generateCreateUpdateBeautifier('page', 'title', 'sharedId'),
+  'DELETE/api/pages': generateDeleteBeautifier('page', 'sharedId')
 };
 
 const getSemanticData = async (data) => {
