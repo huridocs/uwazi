@@ -87,7 +87,7 @@ jobs:
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
-      - run: NODE_ENV=production node_modules/.bin/webpack --config ./webpack.production.config.js
+      - run: yarn production-build
       - save_cache:
           paths:
             - ./node_modules
