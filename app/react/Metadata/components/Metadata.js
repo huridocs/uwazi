@@ -3,6 +3,7 @@ import React from 'react';
 
 import { t, I18NLink } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
+import { Icon } from 'app/Layout';
 
 import GeolocationViewer from './GeolocationViewer';
 import ValueList from './ValueList';
@@ -27,7 +28,7 @@ const showByType = (prop, compact) => {
     break;
   default:
     if (prop.url) {
-      result = <I18NLink key={prop.url} to={prop.url}>{prop.value}</I18NLink>;
+      result = <I18NLink key={prop.url} to={prop.url}>{(prop.icon && <Icon className="item-icon" data={prop.icon} />)}{prop.value}</I18NLink>;
     }
 
     if (prop.value && prop.value.map) {

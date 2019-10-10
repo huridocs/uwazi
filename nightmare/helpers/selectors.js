@@ -1,6 +1,7 @@
 /*eslint max-len: ["error", 500], */
 /*eslint key-spacing: ["error", 500] */
 export default {
+  homeLink: 'header .logotype a',
   settingsView: {
     liElementsOfSection: '#app > div.content > div > div > div.settings-content > div > ul > li',
     firstEditButton: '#app > div.content > div > div > div.settings-content > div > ul > li:nth-child(1) > div > a > i',
@@ -132,7 +133,7 @@ export default {
     attachmentFormInput: '#attachmentForm > div > div > input',
     attachmentFormSubmit: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div:nth-child(2) > div.attachments-list > div > div.attachment-buttons > div > button.item-shortcut.btn.btn-success',
     conectionsTabLink: '#app > div.content > div > div > div > div.content-header-tabs > ul > li:nth-child(2) > div',
-    connectionsListView: '#app > div.content > div > div > div.content-header.content-header-entity > div.content-header-tabs > ul > li:nth-child(2) > div'
+    connectionsListView: '#app > div.content > div > div > .entity-connections ul > li:nth-child(2) > div'
   },
   uploadsView: {
     uploadBox: '#app > div.content > div > div > main > div.upload-box',

@@ -214,4 +214,32 @@ describe('settings', () => {
       });
     });
   });
+
+  describe('updateFilterName', () => {
+    const _settings = {
+      filters: [
+        { id: '123', name: 'Batman' },
+      ]
+    };
+
+    it('should update a filter name', async () => {
+      spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
+      spyOn(settings, 'save').and.returnValue(Promise.resolve('updatedSettings'));
+
+      const updatedFilter = await settings.updateFilterName('123', 'The dark knight');
+
+      expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: '123', name: 'The dark knight' }] });
+      expect(updatedFilter).toEqual('updatedSettings');
+    });
+
+    it('should do nothing when filter does not exist', async () => {
+      spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
+      spyOn(settings, 'save').and.returnValue(Promise.resolve('updatedSettings'));
+
+      const updatedFilter = await settings.updateFilterName('321', 'Filter not present');
+
+      expect(settings.save).not.toHaveBeenCalled();
+      expect(updatedFilter).toBeUndefined();
+    });
+  });
 });

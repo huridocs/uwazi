@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import UsersAPI from 'app/Users/UsersAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 import { AccountSettings } from '../AccountSettings';
 
 describe('AccountSettings', () => {
@@ -22,7 +23,7 @@ describe('AccountSettings', () => {
     it('should save the user with the new email and update the user.rev', () => {
       component.setState({ email: 'newemail@uwazi.com' });
       component.childAt(0).find('form').at(0).simulate('submit', { preventDefault: () => {} });
-      expect(UsersAPI.save).toHaveBeenCalledWith({ name: 'doe', email: 'newemail@uwazi.com' });
+      expect(UsersAPI.save).toHaveBeenCalledWith(new RequestParams({ name: 'doe', email: 'newemail@uwazi.com' }));
     });
   });
 
@@ -30,7 +31,7 @@ describe('AccountSettings', () => {
     it('should save the user with the new password', () => {
       component.setState({ password: 'ultraSecret', repeatPassword: 'ultraSecret' });
       component.find('form').at(1).simulate('submit', { preventDefault: () => {} });
-      expect(UsersAPI.save).toHaveBeenCalledWith({ name: 'doe', password: 'ultraSecret' });
+      expect(UsersAPI.save).toHaveBeenCalledWith(new RequestParams({ name: 'doe', password: 'ultraSecret' }));
     });
 
     it('should empty the passwords values', () => {

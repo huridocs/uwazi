@@ -68,10 +68,7 @@
   z-index: 4;
 }
 .content-header-entity {
-  z-index: 5;
-  @media(min-width: 1024px) {
-    z-index: 7;
-  }
+  z-index: 4;
 }
 
 @media(min-width: 1024px) {

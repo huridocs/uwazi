@@ -43,6 +43,20 @@ export default (app) => {
     }
   );
 
+  app.get(
+    '/api/page',
+
+    validation.validateRequest(Joi.object().keys({
+      sharedId: Joi.string(),
+    }).required(), 'query'),
+
+    (req, res, next) => {
+      pages.getById(req.query.sharedId, req.language)
+      .then(res.json.bind(res))
+      .catch(next);
+    }
+  );
+
   app.delete(
     '/api/pages',
     needsAuthorization(),
