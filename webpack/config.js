@@ -3,6 +3,7 @@
 
 var path = require("path");
 var webpack = require("webpack");
+const AssetsPlugin = require("assets-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const RtlCssPlugin = require("rtlcss-webpack-plugin");
@@ -10,17 +11,14 @@ var CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var rootPath = __dirname + "/../";
 
-var AssetsPlugin = require("assets-webpack-plugin");
-var assetsPluginInstance = new AssetsPlugin({
-  path: path.join(rootPath + "/dist/")
-});
-
 module.exports = function(production) {
   var stylesName = "[name].css";
   var rtlStylesName = "rtl-[name].css";
   var jsChunkHashName = "";
+  var outputPath = path.join(rootPath, "dist");
 
   if (production) {
+    outputPath = path.join(rootPath, "prod/dist");
     stylesName = "[name].[chunkhash].css";
     rtlStylesName = "rtl-[name].[hash].css";
     jsChunkHashName = ".[chunkhash]";
@@ -35,7 +33,7 @@ module.exports = function(production) {
       nprogress: path.join(rootPath, "node_modules/nprogress/nprogress.js"),
     },
     output: {
-      path: path.join(rootPath, "/dist/"),
+      path: outputPath,
       publicPath: "/",
       filename: "[name]" + jsChunkHashName + ".js"
     },
@@ -81,7 +79,7 @@ module.exports = function(production) {
       ]
     },
     plugins: [
-      new CleanWebpackPlugin([path.join(rootPath, "/dist/*")], {
+      new CleanWebpackPlugin([path.join(outputPath, "/*")], {
         root: rootPath
       }),
       new MiniCssExtractPlugin({
@@ -90,7 +88,9 @@ module.exports = function(production) {
       new RtlCssPlugin({
         filename: rtlStylesName
       }),
-      assetsPluginInstance
+      new AssetsPlugin({
+        path: outputPath
+      })
     ]
   };
 };
