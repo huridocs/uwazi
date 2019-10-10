@@ -4,16 +4,18 @@
     "noEmit": true,
     "module": "commonjs",
     "target": "es6",
-    "jsx": "preserve",
+    "jsx": "react",
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,
     "strict": true,
     "baseUrl": ".",
     "paths": {
+      // must match .bablerc
       "api/*": ["./app/api/*"],
       "app/*": ["./app/react/*"],
-      "shared/*": ["./app/shared/*"]
+      "shared/*": ["./app/shared/*"],
+      "UI/*": ["./app/react/UI/*"]
     }
   },
   "include": ["./app/**/*"],

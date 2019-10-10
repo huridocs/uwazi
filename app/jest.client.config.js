@@ -2,7 +2,8 @@ module.exports = {
   name: 'client',
   displayName: 'Client',
   testMatch: [
-    '**/react/**/specs/*spec.js?(x)'
+    '**/react/**/specs/*spec.js?(x)',
+    '**/react/**/specs/*spec.ts?(x)'
   ],
   testPathIgnorePatterns: [],
   setupFilesAfterEnv: ['<rootDir>/setUpJestClient.js'],

@@ -3,7 +3,7 @@
     "targets": {
       "node": "current"
     }
-  }], "@babel/preset-react", "@babel/typescript"],
+  }], "@babel/preset-react", "@babel/preset-typescript"],
   "retainLines": true,
   "env": {
     "production": {

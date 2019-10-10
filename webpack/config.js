@@ -40,7 +40,7 @@ module.exports = function(production) {
       filename: "[name]" + jsChunkHashName + ".js"
     },
     resolve: {
-      extensions: ["", ".webpack.js", ".web.js", ".js", ".tsx", ".ts"]
+      extensions: ["*", ".webpack.js", ".web.js", ".js", ".tsx", ".ts"]
     },
     optimization: {
       splitChunks: {
@@ -65,7 +65,7 @@ module.exports = function(production) {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.(js|jsx|ts|tsx)$/,
           loader: "babel-loader?cacheDirectory",
           include: path.join(rootPath, "app"),
           exclude: /node_modules/
