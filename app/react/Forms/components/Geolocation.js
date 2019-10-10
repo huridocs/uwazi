@@ -17,17 +17,18 @@ export default class Geolocation extends Component {
     this.mapClick = this.mapClick.bind(this);
     this.clearCoordinates = this.clearCoordinates.bind(this);
 
-    const { value: [value] } = this.props;
+    const { lat, lon } = this.getInputValues();
 
     this.state = {
-      currentLatitude: value ? value.lat : '',
-      currentLongitude: value ? value.lon : '',
+      currentLatitude: lat,
+      currentLongitude: lon,
     };
   }
 
   onChange(newValue) {
+    this.setState({currentLatitude: newValue.lat, currentLongitude: newValue.lon});
     const { onChange, value } = this.props;
-    if (!isCoordinateValid(newValue.lat) && !isCoordinateValid(newValue.lon)) {
+    if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
       onChange();
       return;
     }
@@ -44,30 +45,22 @@ export default class Geolocation extends Component {
   }
 
   latChange(e) {
-    if (!e.target.value) {
-      this.setState({ currentLatitude: e.target.value });
-      return;
+    let latitude = e.target.value ? parseFloat(e.target.value) : '';
+
+    if (latitude) {
+      latitude = latitude < -90 ? -90 : latitude;
+      latitude = latitude > 90 ? 90 : latitude;
     }
 
-    let latitude = parseFloat(e.target.value);
-
-    latitude = latitude < -90 ? -90 : latitude;
-    latitude = latitude > 90 ? 90 : latitude;
-
-    this.setState({ currentLatitude: latitude });
-
-    const { lon, label } = this.getInputValues();
-    this.onChange({ lat: parseFloat(latitude), lon, label });
+    const { label } = this.getInputValues();
+    this.onChange({ lat: latitude, lon: this.state.currentLongitude, label });
   }
 
   lonChange(e) {
-    this.setState({ currentLongitude: e.target.value });
-    if (!e.target.value) {
-      return;
-    }
+    const longitude = e.target.value ? parseFloat(e.target.value) : '';
 
-    const { lat, label } = this.getInputValues();
-    this.onChange({ lat, lon: parseFloat(e.target.value), label });
+    const { label } = this.getInputValues();
+    this.onChange({ lat: this.state.currentLatitude, lon: longitude, label });
   }
 
   mapClick(event) {
@@ -76,20 +69,16 @@ export default class Geolocation extends Component {
   }
 
   clearCoordinates() {
-    const { onChange } = this.props;
-    onChange();
+    this.setState({ currentLatitude: '', currentLongitude: '' });
+    this.props.onChange();
   }
 
   render() {
-    const markers = [];
-    const { value: [value] } = this.props;
-    const latitude = value ? value.lat : '';
-    const longitude = value ? value.lon : '';
-
     const { currentLatitude, currentLongitude } = this.state;
+    const markers = [];
 
-    if (isCoordinateValid(latitude) && isCoordinateValid(longitude)) {
-      markers.push({ latitude: parseFloat(latitude), longitude: parseFloat(longitude) });
+    if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
+      markers.push({ latitude: parseFloat(currentLatitude), longitude: parseFloat(currentLongitude) });
     }
 
     return (
@@ -119,7 +108,7 @@ export default class Geolocation extends Component {
             />
           </div>
         </div>
-        {(isCoordinateValid(latitude) || isCoordinateValid(longitude)) && (
+        {(currentLatitude || currentLongitude) && (
           <div className="clear-field-button">
             <button type="button" onClick={this.clearCoordinates}>
               <Translate>Clear coordinates</Translate>

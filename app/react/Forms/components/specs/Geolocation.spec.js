@@ -35,10 +35,10 @@ describe('Geolocation', () => {
   });
 
   describe('when lat changes', () => {
-    it('should not call onChange when empty value', () => {
+    it('with invalid coordinated should call onChange with empty value', () => {
       const latInput = component.find('input').at(0);
       latInput.simulate('change', { target: { value: '' } });
-      expect(props.onChange).not.toHaveBeenCalled();
+      expect(props.onChange).toHaveBeenCalledWith();
     });
 
     function expectOnChangeCallWhenInputSimulation(simulatedInput, expectedValue) {
@@ -76,9 +76,9 @@ describe('Geolocation', () => {
       expect(props.onChange).toHaveBeenCalledWith([{ lat: 32.18, lon: 28, label: 'home' }, props.value[1]]);
     });
 
-    it('should not call onChange when empty value', () => {
+    it('should call onChange with empty value when invalid longitude', () => {
       lonInput.simulate('change', { target: { value: '' } });
-      expect(props.onChange).not.toHaveBeenCalled();
+      expect(props.onChange).toHaveBeenCalledWith();
     });
   });
 
@@ -87,6 +87,8 @@ describe('Geolocation', () => {
       const event = { lngLat: [5, 13] };
       instance.mapClick(event);
       expect(props.onChange).toHaveBeenCalledWith([{ lat: 13, lon: 5, label: 'home' }, props.value[1]]);
+      expect(component.find('input').at(0).props().value).toEqual(13);
+      expect(component.find('input').at(1).props().value).toEqual(5);
     });
 
     it('should work assign default values if original point was null', () => {
@@ -102,7 +104,7 @@ describe('Geolocation', () => {
       const inputs = component.find('input');
       const input = getInput(inputs);
       input.simulate('change', { target: { value: '' } });
-      expect(props.onChange.calls.argsFor(0)).toEqual([]);
+      expect(props.onChange).toHaveBeenCalledWith();
     }
 
     describe('if lon is empty and lat is set to empty', () => {
@@ -118,23 +120,60 @@ describe('Geolocation', () => {
         testInputWillTriggerOnChangeWithoutValue(inputs => inputs.at(1));
       });
     });
+
+    describe('when they are no empty anymore', () => {
+      it('should call onChange with the correct values', () => {
+        component.find('input').at(0).simulate('change', { target: { value: '' } });
+        component.find('input').at(1).simulate('change', { target: { value: '' } });
+
+        component.find('input').at(0).simulate('change', { target: { value: '1' } });
+        component.find('input').at(1).simulate('change', { target: { value: '2' } });
+
+        expect(props.onChange).toHaveBeenCalledWith([{ lat: 1, lon: 2, label: 'home' },
+         { label: 'Created through migration?', lat: 13.07, lon: 5.1 }]);
+      });
+    });
   });
 
-  it('should render button to clear fields', () => {
-    expect(component).toMatchSnapshot();
+  describe('should render button to clear fields', () => {
+    it('when latitude empty and longitude not empty', () => {
+      component.find('input').at(0).simulate('change', { target: { value: '' } });
+      component.find('input').at(1).simulate('change', { target: { value: '2' } });
+      expect(component).toMatchSnapshot();
+    });
+
+    it('when longitude empty and latitude not empty', () => {
+      component.find('input').at(0).simulate('change', { target: { value: '2' } });
+      component.find('input').at(1).simulate('change', { target: { value: '' } });
+      expect(component).toMatchSnapshot();
+    });
+
+    it('when longitude and latitude not empty', () => {
+      expect(component).toMatchSnapshot();
+    });
   });
 
-  it('should hide clear fields button when lat and lon are empty', () => {
-    props.value = [{ lat: '', lon: '' }];
-    render();
-    expect(component).toMatchSnapshot();
+  describe('should hide clear fields button ', () => {
+    it('when latitude and longitude are empty', () => {
+      props.value = [{ lat: '', lon: '' }];
+      render();
+      expect(component).toMatchSnapshot();
+    });
   });
 
   describe('when clear fields button is clicked', () => {
-    it('should call onChange without a value', () => {
+    beforeEach(() => {
       const button = component.find('.clear-field-button button').first();
       button.simulate('click');
-      expect(props.onChange.calls.argsFor(0)).toEqual([]);
+    });
+
+    it('should call onChange without a value and remove the inputs values', () => {
+      expect(props.onChange).toHaveBeenCalledWith();
+    });
+
+    it('should remove the inputs values', () => {
+      expect(component.find('input').at(0).props().value).toEqual('');
+      expect(component.find('input').at(1).props().value).toEqual('');
     });
   });
 });
