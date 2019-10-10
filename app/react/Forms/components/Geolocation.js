@@ -26,7 +26,7 @@ export default class Geolocation extends Component {
   }
 
   onChange(newValue) {
-    this.setState({currentLatitude: newValue.lat, currentLongitude: newValue.lon});
+    this.setState({ currentLatitude: newValue.lat, currentLongitude: newValue.lon });
     const { onChange, value } = this.props;
     if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
       onChange();
@@ -46,21 +46,20 @@ export default class Geolocation extends Component {
 
   latChange(e) {
     let latitude = e.target.value ? parseFloat(e.target.value) : '';
-
-    if (latitude) {
-      latitude = latitude < -90 ? -90 : latitude;
-      latitude = latitude > 90 ? 90 : latitude;
-    }
+    latitude = latitude && latitude < -90 ? -90 : latitude;
+    latitude = latitude && latitude > 90 ? 90 : latitude;
 
     const { label } = this.getInputValues();
-    this.onChange({ lat: latitude, lon: this.state.currentLongitude, label });
+    const { currentLongitude } = this.state;
+    this.onChange({ lat: latitude, lon: currentLongitude, label });
   }
 
   lonChange(e) {
     const longitude = e.target.value ? parseFloat(e.target.value) : '';
 
     const { label } = this.getInputValues();
-    this.onChange({ lat: this.state.currentLatitude, lon: longitude, label });
+    const { currentLatitude } = this.state;
+    this.onChange({ lat: currentLatitude, lon: longitude, label });
   }
 
   mapClick(event) {
@@ -70,7 +69,8 @@ export default class Geolocation extends Component {
 
   clearCoordinates() {
     this.setState({ currentLatitude: '', currentLongitude: '' });
-    this.props.onChange();
+    const { onChange } = this.props;
+    onChange();
   }
 
   render() {

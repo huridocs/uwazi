@@ -136,16 +136,18 @@ describe('Geolocation', () => {
   });
 
   describe('should render button to clear fields', () => {
+    function expectRenderButton(latitude, longitude) {
+      component.find('input').at(0).simulate('change', { target: { value: latitude } });
+      component.find('input').at(1).simulate('change', { target: { value: longitude } });
+      expect(component.exists('.clear-field-button')).toEqual(true);
+    }
+
     it('when latitude empty and longitude not empty', () => {
-      component.find('input').at(0).simulate('change', { target: { value: '' } });
-      component.find('input').at(1).simulate('change', { target: { value: '2' } });
-      expect(component).toMatchSnapshot();
+      expectRenderButton('', '1');
     });
 
     it('when longitude empty and latitude not empty', () => {
-      component.find('input').at(0).simulate('change', { target: { value: '2' } });
-      component.find('input').at(1).simulate('change', { target: { value: '' } });
-      expect(component).toMatchSnapshot();
+      expectRenderButton('1', '');
     });
 
     it('when longitude and latitude not empty', () => {
