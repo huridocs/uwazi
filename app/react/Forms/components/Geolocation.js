@@ -51,8 +51,6 @@ export default class Geolocation extends Component {
 
     let latitude = parseFloat(e.target.value);
 
-    // The latitude is a value between -90 degrees and 90 degrees
-    // The page breaks if the map is refreshed with a latitude out of range
     latitude = latitude < -90 ? -90 : latitude;
     latitude = latitude > 90 ? 90 : latitude;
 
