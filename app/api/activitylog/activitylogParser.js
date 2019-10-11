@@ -1,10 +1,16 @@
 import templates from 'api/templates';
+import entities from 'api/entities';
 import { allLanguages } from 'shared/languagesList';
 
 const methods = {
   create: 'CREATE',
   update: 'UPDATE',
   delete: 'DELETE'
+};
+
+const formatLanguage = (langKey) => {
+  const lang = allLanguages.find(({ key }) => key === langKey);
+  return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 
 const generateCreateUpdateBeautifier = (resourceName, nameField, idField) => async (log) => {
@@ -67,6 +73,26 @@ const entitiesPOST = async (log) => {
   return semantic;
 };
 
+const documentsPdfInfoPOST = async (log) => {
+  const data = JSON.parse(log.body);
+  const [entity] = await entities.get({ _id: data._id, sharedId: data.sharedId });
+
+  const semantic = {
+    beautified: true,
+    action: methods.update,
+    description: 'Processed document pdf'
+  };
+
+  if (entity) {
+    semantic.name = `${entity.title} (${entity.sharedId})`;
+    semantic.extra = `${formatLanguage(entity.language)} version`;
+  } else {
+    semantic.name = data.sharedId;
+  }
+
+  return semantic;
+};
+
 const entitiesDELETE = generateDeleteBeautifier('entity / document', 'sharedId');
 
 const templatesAsDefaultPOST = async (log) => {
@@ -83,7 +109,6 @@ const templatesAsDefaultPOST = async (log) => {
 
 const translationsPOST = async (log) => {
   const data = JSON.parse(log.body);
-  const lang = allLanguages.find(({ key }) => key === data.locale);
   const [context] = data.contexts;
   let name = 'in multiple contexts';
   if (data.contexts.length === 1) {
@@ -95,7 +120,7 @@ const translationsPOST = async (log) => {
     action: methods.update,
     description: 'Updated translations',
     name,
-    extra: `in ${lang ? `${lang.label} (${lang.key})` : lang.key}`
+    extra: `in ${formatLanguage(data.locale)}`
   };
 };
 
@@ -112,37 +137,31 @@ const translationsLanguagesPOST = async (log) => {
 
 const translationsLanguagesDELETE = async (log) => {
   const data = JSON.parse(log.query);
-  const lang = allLanguages.find(({ key }) => key === data.key);
 
   return {
     beautified: true,
     action: methods.delete,
     description: 'Removed language',
-    name: lang ? `${lang.label} (${lang.key})` : data.key
+    name: formatLanguage(data.key)
   };
 };
 
 const translationsAsDefaultPOST = async (log) => {
   const data = JSON.parse(log.body);
-  const lang = allLanguages.find(({ key }) => key === data.key);
 
   return {
     beautified: true,
     action: methods.update,
     description: 'Set default language',
-    name: lang ? `${lang.label} (${lang.key})` : data.key
+    name: formatLanguage(data.key)
   };
 };
 
-const settingsPOST = async () => ({
-  beautified: true,
-  action: methods.update,
-  description: 'Updated settings'
-});
 
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
+  'POST/api/documents/pdfInfo': documentsPdfInfoPOST,
   'DELETE/api/entities': entitiesDELETE,
   'DELETE/api/documents': entitiesDELETE,
   'DELETE/api/attachments/delete': generateDeleteBeautifier('attachment', 'attachmentId'),
