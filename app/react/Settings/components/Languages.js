@@ -8,7 +8,7 @@ import { Icon } from 'UI';
 import {
   languages as elasticLanguages,
   allLanguages as languagesList
-} from 'shared/languagesList.js';
+} from 'shared/languagesList';
 import Warning from '../../Layout/Warning';
 import Tip from '../../Layout/Tip';
 

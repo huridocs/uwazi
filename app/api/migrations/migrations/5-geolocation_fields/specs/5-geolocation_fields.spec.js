@@ -5,7 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration geolocation_fields', () => {
   beforeEach((done) => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 

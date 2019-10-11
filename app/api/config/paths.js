@@ -1,10 +1,12 @@
-const { UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER } = process.env;
+const { ROOT_PATH, UPLOADS_FOLDER, CUSTOM_UPLOADS_FOLDER } = process.env;
 
-const uploadedDocuments = UPLOADS_FOLDER || `${__dirname}/../../../uploaded_documents/`;
-const attachments = UPLOADS_FOLDER || `${__dirname}/../../../uploaded_documents/`;
-const customUploads = CUSTOM_UPLOADS_FOLDER || `${__dirname}/../../../custom_uploads/`;
+const rootPath = ROOT_PATH || `${__dirname}/../../../`;
+const uploadedDocuments = UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`;
+const attachments = UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`;
+const customUploads = CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`;
 
 export default {
+  rootPath,
   attachments,
   customUploads,
   uploadedDocuments,

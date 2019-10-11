@@ -2,7 +2,11 @@ import activitylog from './activitylog';
 
 const ignorelist = [
   'POST/api/users',
-  'POST/api/login'
+  'POST/api/login',
+  'POST/api/contact',
+  'POST/api/unlockaccount',
+  'POST/api/resetpassword',
+  'POST/api/recoverpassword'
 ];
 
 export default (req, res, next) => {

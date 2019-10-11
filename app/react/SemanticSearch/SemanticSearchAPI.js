@@ -16,11 +16,11 @@ export default {
     return api.get(url, requestParams).then(response => response.json);
   },
   getSearch(requestParams) {
-    const url = 'semantic-search/';
+    const url = 'semantic-search';
     return api.get(url, requestParams).then(response => response.json);
   },
   deleteSearch(requestParams) {
-    const url = 'semantic-search/';
+    const url = 'semantic-search';
     return api.delete(url, requestParams).then(response => response.json);
   },
   stopSearch(requestParams) {

@@ -61,7 +61,7 @@ jobs:
           key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: ./node_modules/.bin/eslint app --quiet #eslint
+      - run: yarn eslint
   e2e_tests:
     working_directory: ~/huridocs/uwazi
     docker:
@@ -87,7 +87,7 @@ jobs:
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
       - run: sudo apt-get install poppler-utils
-      - run: NODE_ENV=production node_modules/.bin/webpack --config ./webpack.production.config.js
+      - run: yarn production-build
       - save_cache:
           paths:
             - ./node_modules
