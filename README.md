@@ -35,9 +35,13 @@ Intallation guide
 - **ElasticSearch 5.6.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.6, some sections of the instructions use 5.x which would install a different version). Please note that ElasticSearch requires java.
 - **MongoDB 3.4.x** https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
 - **Yarn** https://yarnpkg.com/en/docs/install
-- **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/
+- **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
-Before anything else you will need to install the application dependencies. 
+Before anything else you will need to install the application dependencies.
+We also recommend changing some global settings:
+```
+$ npm config set scripts-prepend-node-path auto
+```
 
 If you want to use the latest development code:
 ```
