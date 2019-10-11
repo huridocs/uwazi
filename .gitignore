@@ -4,6 +4,7 @@ node_modules
 stats.json
 coverage
 /dist
+/prod
 /build
 *.log
 npm-debug
