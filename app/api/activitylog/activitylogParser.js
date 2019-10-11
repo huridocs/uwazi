@@ -39,6 +39,12 @@ const generateDeleteBeautifier = (resourceName, idField) => async (log) => {
   };
 };
 
+const generatePlainDescriptionBeautifier = description => async () => ({
+  beautified: true,
+  action: methods.update,
+  description
+});
+
 const entitiesPOST = async (log) => {
   const data = JSON.parse(log.body);
   const template = await templates.getById(data.template);
@@ -72,6 +78,24 @@ const templatesAsDefaultPOST = async (log) => {
     action: methods.update,
     description: 'Set default template',
     name: template ? `${template.name} (${data._id})` : data._id,
+  };
+};
+
+const translationsPOST = async (log) => {
+  const data = JSON.parse(log.body);
+  const lang = allLanguages.find(({ key }) => key === data.locale);
+  const [context] = data.contexts;
+  let name = 'in multiple contexts';
+  if (data.contexts.length === 1) {
+    name = `in ${context.label} (${context.id})`;
+  }
+
+  return {
+    beautified: true,
+    action: methods.update,
+    description: 'Updated translations',
+    name,
+    extra: `in ${lang ? `${lang.label} (${lang.key})` : lang.key}`
   };
 };
 
@@ -110,6 +134,12 @@ const translationsAsDefaultPOST = async (log) => {
   };
 };
 
+const settingsPOST = async () => ({
+  beautified: true,
+  action: methods.update,
+  description: 'Updated settings'
+});
+
 const actions = {
   'POST/api/entities': entitiesPOST,
   'POST/api/documents': entitiesPOST,
@@ -123,11 +153,14 @@ const actions = {
   'DELETE/api/thesauris': generateDeleteBeautifier('thesaurus', '_id'),
   'POST/api/relationtypes': generateCreateUpdateBeautifier('relation type', 'name', '_id'),
   'DELETE/api/relationtypes': generateDeleteBeautifier('relation type', '_id'),
+  'POST/api/translations': translationsPOST,
   'POST/api/translations/languages': translationsLanguagesPOST,
   'DELETE/api/translations/languages': translationsLanguagesDELETE,
   'POST/api/translations/setasdeafult': translationsAsDefaultPOST,
   'POST/api/pages': generateCreateUpdateBeautifier('page', 'title', 'sharedId'),
-  'DELETE/api/pages': generateDeleteBeautifier('page', 'sharedId')
+  'DELETE/api/pages': generateDeleteBeautifier('page', 'sharedId'),
+  'POST/api/settings': generatePlainDescriptionBeautifier('Updated settings'),
+  'POST/api/relationships/bulk': generatePlainDescriptionBeautifier('Updated relationships')
 };
 
 const getSemanticData = async (data) => {
