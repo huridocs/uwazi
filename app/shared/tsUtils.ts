@@ -4,7 +4,7 @@ export function ensure<T>(
   message?: string 
 ): T {
   if (argument === undefined || argument === null || !(argument as T)) {
-    throw new TypeError(message || "Promised "+(typeof T)+" not provided!");
+    throw new TypeError(message || "Promised type was not provided!");
   }
 
   return argument;
