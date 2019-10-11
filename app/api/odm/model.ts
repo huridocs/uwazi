@@ -1,19 +1,16 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import { model as updatelogsModel } from "api/updatelogs";
+import { model as updatelogsModel } from 'api/updatelogs';
 
-import models from "./models";
-import { OdmModel } from "./models";
+import models from './models';
+import { OdmModel } from './models';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
-export default <T extends mongoose.Document>(
-  collectionName: string,
-  schema: mongoose.Schema
-) => {
+export default <T extends mongoose.Document>(collectionName: string, schema: mongoose.Schema) => {
   const getAffectedIds = async (conditions: any) =>
-    mongoose.models[collectionName].distinct("_id", conditions);
+    mongoose.models[collectionName].distinct('_id', conditions);
 
   const upsertLogOne = async (
     doc: mongoose.Document,
@@ -36,17 +33,17 @@ export default <T extends mongoose.Document>(
     );
   }
 
-  schema.post("save", upsertLogOne);
-  schema.post("findOneAndUpdate", upsertLogOne);
+  schema.post('save', upsertLogOne);
+  schema.post('findOneAndUpdate', upsertLogOne);
 
   const MongooseModel = mongoose.model<T>(collectionName, schema);
 
   const saveOne = async (data: mongoose.Document): Promise<T | null> => {
-    const documentExists = await MongooseModel.findById(data._id, "_id");
+    const documentExists = await MongooseModel.findById(data._id, '_id');
 
     if (documentExists) {
       return MongooseModel.findOneAndUpdate({ _id: data._id }, data, {
-        new: true
+        new: true,
       }).exec();
     }
     return MongooseModel.create(data).then(saved => saved.toObject());
@@ -63,17 +60,12 @@ export default <T extends mongoose.Document>(
       return saveOne(data);
     },
 
-    get: (query: any, select = "", pagination = {}) =>
-      MongooseModel.find(
-        query,
-        select,
-        Object.assign({ lean: true }, pagination)
-      ).exec(),
+    get: (query: any, select = '', pagination = {}) =>
+      MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)).exec(),
 
     count: (condition: any) => MongooseModel.count(condition).exec(),
 
-    getById: (id: any | string | number) =>
-      MongooseModel.findById(id, {}, { lean: true }).exec(),
+    getById: (id: any | string | number) => MongooseModel.findById(id, {}, { lean: true }).exec(),
 
     delete: async condition => {
       let cond = condition;
@@ -89,7 +81,7 @@ export default <T extends mongoose.Document>(
       }
 
       return result;
-    }
+    },
   };
 
   models[collectionName] = odmModel;
