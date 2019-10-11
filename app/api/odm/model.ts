@@ -44,6 +44,9 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
   const MongooseModel = mongoose.model<T>(collectionName, schema);
 
   const saveOne = async (data: mongoose.Document): Promise<T> => {
+    if (Array.isArray(data)) {
+      throw new TypeError('Model.save array input no longer supported - use .saveMultiple!');
+    }
     const documentExists = await MongooseModel.findById(data._id, '_id');
 
     if (documentExists) {
@@ -61,6 +64,9 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
     save: async (data: T) => {
       const o = await saveOne(data);
       return o.toObject();
+    },
+    saveMultiple: (data: T[]) => {
+      return Promise.all(data.map(d => saveOne(d).then(o => o.toObject())));
     },
 
     get: (query: any, select = '', pagination = {}) =>
@@ -92,6 +98,9 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
     save: async (data: mongoose.Document) => {
       const o = await saveOne(data);
       return o.toObject();
+    },
+    saveMultiple: (data: mongoose.Document[]) => {
+      return Promise.all(data.map(d => saveOne(d).then(o => o.toObject())));
     },
     get: odmModel.get,
     count: odmModel.count,

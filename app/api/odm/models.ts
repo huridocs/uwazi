@@ -5,6 +5,7 @@ export interface OdmModel<T extends Document> {
     db: Model<T>,
     // returns T.toObject().
     save: (data: T) => Promise<any>;
+    saveMultiple: (data: T[]) => Promise<any[]>;
     get: (query: any, select?: string, pagination?: {}) => Promise<T[]>;
     count: (condition: any) => Promise<number>;
     getById: (id: any | string | number) => Promise<T | null>;

@@ -45,7 +45,7 @@ const importEntity = async (rawEntity, template, importFile, { user = {}, langua
 };
 
 const translateEntity = async (entity, translations, template, importFile) => {
-  await entitiesModel.save(await Promise.all(
+  await entitiesModel.saveMultiple(await Promise.all(
     translations.map(translatedEntity => entityObject(
       { ...translatedEntity, id: entity.sharedId },
       template,

@@ -25,7 +25,7 @@ export default {
         return langDoc;
       });
 
-      return model.save(docs)
+      return model.saveMultiple(docs)
       .then(() => this.getById(sharedId, language));
     });
   },

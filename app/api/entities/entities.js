@@ -59,7 +59,7 @@ function updateEntity(entity, _template) {
       return d;
     });
 
-    return Promise.all(docs.map(d => model.save(d)));
+    return model.saveMultiple(docs);
   });
 }
 
@@ -70,7 +70,7 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-  return Promise.all(docs.map(d => model.save(d)));
+  return model.saveMultiple(docs);
 }
 
 function getEntityTemplate(doc, language) {
@@ -239,7 +239,7 @@ export default {
   },
 
   async saveMultiple(docs) {
-    const response = await Promise.all(docs.map(d => model.save(d)));
+    const response = await model.saveMultiple(docs);
     return Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText'));
   },
 
