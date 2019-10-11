@@ -22,12 +22,12 @@ services:
       dockerfile: Dockerfile-devshell
     volumes:
       - .:/root/uwazi:Z,rw
-    links:
-      - mongo
-      - elasticsearch
     ports:
       - "3000"
       - "8080"
     depends_on:
       - mongo
       - elasticsearch
+    environment:
+      - DBHOST=mongo
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
