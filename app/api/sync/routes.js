@@ -7,7 +7,6 @@ import search from 'api/search/search';
 
 import { needsAuthorization } from '../auth';
 import paths from '../config/paths';
-import { isArray } from 'util';
 
 const storage = multer.diskStorage({
   destination(_req, _file, cb) {
@@ -27,7 +26,7 @@ export default (app) => {
         const [settings] = await models.settings.get({});
         req.body.data._id = settings._id;
       }
-      if (isArray(req.body.data)) {
+      if (Array.isArray(req.body.data)) {
         await Promise.all(req.body.data.map(doc => models[req.body.namespace].save(doc)));
       } else {
         await models[req.body.namespace].save(req.body.data);
