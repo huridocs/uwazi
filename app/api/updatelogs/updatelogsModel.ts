@@ -7,5 +7,12 @@ const updateLogSchema = new mongoose.Schema({
   deleted: Boolean,
 });
 
-const Model = mongoose.model('updatelogs', updateLogSchema);
+export interface UpdateLog extends mongoose.Document {
+  timestamp: Number,
+  namespace: String,
+  mongoId: mongoose.Schema.Types.ObjectId,
+  deleted: Boolean,
+}
+
+const Model = mongoose.model<UpdateLog>('updatelogs', updateLogSchema);
 export default Model;

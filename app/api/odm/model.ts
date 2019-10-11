@@ -3,20 +3,21 @@ import mongoose from 'mongoose';
 import { model as updatelogsModel } from 'api/updatelogs';
 
 import models from './models';
+import {OdmModel} from './models';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
-export default (collectionName, schema) => {
-  const getAffectedIds = async conditions => mongoose.models[collectionName].distinct('_id', conditions);
+export default <T extends mongoose.Document>(collectionName: string, schema: mongoose.Schema) => {
+  const getAffectedIds = async (conditions: any) => mongoose.models[collectionName].distinct('_id', conditions);
 
-  const upsertLogOne = async (doc, next) => {
+  const upsertLogOne = async (doc: mongoose.Document, next: ()=>any) => {
     const logData = { namespace: collectionName, mongoId: doc._id };
-    await updatelogsModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now(), deleted: false }, { upsert: true, lean: true });
+    await updatelogsModel.findOneAndUpdate(logData, { ...logData, timestamp: Date.now(), deleted: false }, { upsert: true});
     next();
   };
 
-  async function upsertLogMany(affectedIds, deleted = false) {
+  async function upsertLogMany(affectedIds: any[], deleted = false) {
     await updatelogsModel.updateMany(
       { mongoId: { $in: affectedIds }, namespace: collectionName },
       { $set: { timestamp: Date.now(), deleted } },
@@ -27,26 +28,20 @@ export default (collectionName, schema) => {
   schema.post('save', upsertLogOne);
   schema.post('findOneAndUpdate', upsertLogOne);
 
-  schema.post('updateMany', async function updateMany(doc, next) {
-    const affectedIds = await getAffectedIds(this._conditions);
-    await upsertLogMany(affectedIds);
-    next();
-  });
+  const MongooseModel = mongoose.model<T>(collectionName, schema);
 
-  const MongooseModel = mongoose.model(collectionName, schema);
-
-  const saveOne = async (data) => {
+  const saveOne = async (data: mongoose.Document): Promise<T | null> => {
     const documentExists = await MongooseModel.findById(data._id, '_id');
 
     if (documentExists) {
-      return MongooseModel.findOneAndUpdate({ _id: data._id }, data, { new: true, lean: true });
+      return MongooseModel.findOneAndUpdate({ _id: data._id }, data, { new: true }).exec();
     }
     return MongooseModel.create(data).then(saved => saved.toObject());
   };
 
-  const odmModel = {
+  const odmModel : OdmModel<mongoose.Document> = {
     db: MongooseModel,
-    save: (data) => {
+    save: (data: mongoose.Document | mongoose.Document[]) => {
       if (Array.isArray(data)) {
         const promises = data.map(entry => saveOne(entry));
         return Promise.all(promises);
@@ -55,11 +50,11 @@ export default (collectionName, schema) => {
       return saveOne(data);
     },
 
-    get: (query, select = '', pagination = {}) => MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)),
+    get: (query: any, select = '', pagination = {}) => MongooseModel.find(query, select, Object.assign({ lean: true }, pagination)).exec(),
 
-    count: condition => MongooseModel.count(condition),
+    count: (condition: any) => MongooseModel.count(condition).exec(),
 
-    getById: id => MongooseModel.findById(id, {}, { lean: true }),
+    getById: (id: any | string | number) => MongooseModel.findById(id, {}, { lean: true }).exec(),
 
     delete: async (condition) => {
       let cond = condition;
