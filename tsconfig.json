@@ -19,5 +19,5 @@
     }
   },
   "include": ["./app/**/*"],
-  "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist"]
+  "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist", "prod"]
 }
