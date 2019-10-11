@@ -1,7 +1,11 @@
 #!/bin/bash
-echo -e "\n\nDeleting ${1:-uwazi_development} database"
-mongo -host ${2:-127.0.0.1} ${1:-uwazi_development} --eval "db.dropDatabase()"
-mongorestore -h ${2:-127.0.0.1} dump/uwazi_development/ --db=${1:-uwazi_development}
+
+DB=${1:-uwazi_development}
+HOST=${2:-${DBHOST:-127.0.0.1}}
+
+echo -e "\n\nDeleting $DB database on $HOST"
+mongo -host $HOST $DB --eval "db.dropDatabase()"
+mongorestore -h $HOST dump/uwazi_development/ --db=$DB
 
 echo "Restoring pdfs and other files..."
 rm ../../uploaded_documents/*.pdf
