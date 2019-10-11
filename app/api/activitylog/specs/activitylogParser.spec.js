@@ -28,12 +28,9 @@ describe('Activitylog Parser', () => {
     describe('routes: /api/entities and /api/documents', () => {
       describe('method: POST', () => {
         it('should beautify as CREATE when no ID found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/entities', body: `{"title":"New Entity","template":"${firstTemplate.toString()}"}` }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'POST', url: '/api/entities', body: `{"title":"New Entity","template":"${firstTemplate.toString()}"}`
+          }, {
             action: 'CREATE',
             description: 'Created entity / document',
             name: 'New Entity',
@@ -70,11 +67,9 @@ describe('Activitylog Parser', () => {
 
       describe('method: DELETE', () => {
         it('should beautify as DELETE', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/documents', query: '{"sharedId":"o9e07m5ni3h"}' }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'DELETE', url: '/api/documents', query: '{"sharedId":"o9e07m5ni3h"}'
+          }, {
             beautified: true,
             action: 'DELETE',
             description: 'Deleted entity / document',
@@ -87,11 +82,9 @@ describe('Activitylog Parser', () => {
     describe('route: /api/attachments/delete', () => {
       describe('method: DELETE', () => {
         it('should beautify as DELETE', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/attachments/delete', query: '{"attachmentId":"1234"}' }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'DELETE', url: '/api/attachments/delete', query: '{"attachmentId":"1234"}'
+          }, {
             beautified: true,
             action: 'DELETE',
             description: 'Deleted attachment',
@@ -104,11 +97,9 @@ describe('Activitylog Parser', () => {
     describe('routes: /api/templates', () => {
       describe('method: POST', () => {
         it('should beautify as CREATE if no template id is found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/templates', body: '{"name":"Person","fields":[]}' }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'POST', url: '/api/templates', body: '{"name":"Person","fields":[]}'
+          }, {
             beautified: true,
             action: 'CREATE',
             description: 'Created template',
@@ -117,11 +108,9 @@ describe('Activitylog Parser', () => {
         });
 
         it('should beautify as UPDATE if no template id is found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/templates', body: '{"_id":"tmp123","name":"Person","fields":[]}' }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'POST', url: '/api/templates', body: '{"_id":"tmp123","name":"Person","fields":[]}'
+          }, {
             beautified: true,
             action: 'UPDATE',
             description: 'Updated template',
@@ -133,11 +122,9 @@ describe('Activitylog Parser', () => {
       describe('method: POST setasdefault', () => {
         it('should beautify as UPDATE set default template', async () => {
           const id = firstTemplate.toString();
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/templates/setasdefault', body: `{"_id":"${id}"}` }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'POST', url: '/api/templates/setasdefault', body: `{"_id":"${id}"}`
+          }, {
             beautified: true,
             action: 'UPDATE',
             description: 'Set default template',
@@ -147,11 +134,9 @@ describe('Activitylog Parser', () => {
 
         it('should display the id as name if the template does not exist', async () => {
           const id = nonExistentId.toString();
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/templates/setasdefault', body: `{"_id":"${id}"}` }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'POST', url: '/api/templates/setasdefault', body: `{"_id":"${id}"}`
+          }, {
             beautified: true,
             action: 'UPDATE',
             description: 'Set default template',
@@ -162,12 +147,9 @@ describe('Activitylog Parser', () => {
 
       describe('method:DELETE', () => {
         it('should beautify as DELETE', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/templates', query: '{"_id":"tmp123"}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'DELETE', url: '/api/templates', query: '{"_id":"tmp123"}'
+          }, {
             action: 'DELETE',
             description: 'Deleted template',
             name: 'tmp123'
@@ -179,12 +161,9 @@ describe('Activitylog Parser', () => {
     describe('routes: /api/thesauris', () => {
       describe('method:POST', () => {
         it('should beautify as CREATE if no thesaurus id is found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/thesauris', body: '{"name":"Things","values":[]}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'POST', url: '/api/thesauris', body: '{"name":"Things","values":[]}'
+          }, {
             action: 'CREATE',
             description: 'Created thesaurus',
             name: 'Things'
@@ -192,12 +171,9 @@ describe('Activitylog Parser', () => {
         });
 
         it('should beautify as UPDATE if not thesauris id is found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/thesauris', body: '{"_id":"thes123","name":"Things","values":[]}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'POST', url: '/api/thesauris', body: '{"_id":"thes123","name":"Things","values":[]}'
+          }, {
             action: 'UPDATE',
             description: 'Updated thesaurus',
             name: 'Things (thes123)'
@@ -207,11 +183,9 @@ describe('Activitylog Parser', () => {
 
       describe('method:DELETE', () => {
         it('should beautify as DELETE', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/thesauris', query: '{"_id":"thes123"}' }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'DELETE', url: '/api/thesauris', query: '{"_id":"thes123"}'
+          }, {
             beautified: true,
             action: 'DELETE',
             description: 'Deleted thesaurus',
@@ -224,11 +198,9 @@ describe('Activitylog Parser', () => {
     describe('routes: /api/relationtypes', () => {
       describe('method:POST', () => {
         it('should beautify as CREATE if no id is found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/relationtypes', body: '{"name":"Rel"}' }
-          );
-
-          expect(semanticData).toEqual({
+          await testBeautified({
+            method: 'POST', url: '/api/relationtypes', body: '{"name":"Rel"}'
+          }, {
             beautified: true,
             action: 'CREATE',
             description: 'Created relation type',
@@ -237,12 +209,9 @@ describe('Activitylog Parser', () => {
         });
 
         it('should beautify as UPDATE if not id is found', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'POST', url: '/api/relationtypes', body: '{"_id":"rel123","name":"Rel"}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'POST', url: '/api/relationtypes', body: '{"_id":"rel123","name":"Rel"}'
+          }, {
             action: 'UPDATE',
             description: 'Updated relation type',
             name: 'Rel (rel123)'
@@ -252,12 +221,9 @@ describe('Activitylog Parser', () => {
 
       describe('method:DELETE', () => {
         it('should beautify as DELETE', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/relationtypes', query: '{"_id":"rel123"}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'DELETE', url: '/api/relationtypes', query: '{"_id":"rel123"}'
+          }, {
             action: 'DELETE',
             description: 'Deleted relation type',
             name: 'rel123'
@@ -269,24 +235,18 @@ describe('Activitylog Parser', () => {
     describe('routes: /api/translations', () => {
       describe('method:DELETE /languages', () => {
         it('should beautify as DELETE with language name', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/translations/languages', query: '{"key":"de"}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'DELETE', url: '/api/translations/languages', query: '{"key":"de"}'
+          }, {
             action: 'DELETE',
             description: 'Removed language',
             name: 'German (de)'
           });
         });
         it('should only display key if language name is unknown', async () => {
-          const semanticData = await getSemanticData(
-            { method: 'DELETE', url: '/api/translations/languages', query: '{"key":"abcd"}' }
-          );
-
-          expect(semanticData).toEqual({
-            beautified: true,
+          await testBeautified({
+            method: 'DELETE', url: '/api/translations/languages', query: '{"key":"abcd"}' 
+          }, {
             action: 'DELETE',
             description: 'Removed language',
             name: 'abcd'
