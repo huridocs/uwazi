@@ -1,5 +1,5 @@
 import db from 'api/utils/testing_db';
-import fixtures, { firstTemplate, nonExistentId } from './fixturesParser';
+import fixtures, { firstTemplate, firstDoc, firstDocSharedId, nonExistentId } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
 
 describe('Activitylog Parser', () => {
@@ -62,6 +62,39 @@ describe('Activitylog Parser', () => {
         it('should allow uploaded documents without template', async () => {
           const semanticData = await getSemanticData({ method: 'POST', url: '/api/documents', body: '{"title":"New Document"}' });
           expect(semanticData).toEqual(expect.objectContaining({ extra: 'of type (unassigned)' }));
+        });
+      });
+
+      describe('method: POST /pdfInfo', () => {
+        it('should beautify as UPDATE and include document title', async () => {
+          const body = {
+            _id: firstDoc,
+            sharedId: firstDocSharedId,
+            pdfInfo: {}
+          };
+          await testBeautified({
+            method: 'POST', url: '/api/documents/pdfInfo', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Processed document pdf',
+            name: `My Doc (${firstDocSharedId})`,
+            extra: 'Spanish (es) version'
+          });
+        });
+
+        it('should only include ids if document does not exist', async () => {
+          const body = {
+            _id: nonExistentId,
+            sharedId: 'deleted doc',
+            pdfInfo: {}
+          };
+          await testBeautified({
+            method: 'POST', url: '/api/documents/pdfInfo', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Processed document pdf',
+            name: 'deleted doc'
+          });
         });
       });
 

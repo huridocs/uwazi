@@ -1,6 +1,8 @@
 import db from 'api/utils/testing_db';
 
 const firstTemplate = db.id();
+const firstDoc = db.id();
+const firstDocSharedId = 'doc1';
 const nonExistentId = db.id();
 
 export default {
@@ -10,10 +12,16 @@ export default {
 
   templates: [
     { _id: firstTemplate, name: 'Existing Template' }
+  ],
+
+  entities: [
+    { _id: firstDoc, title: 'My Doc', sharedId: firstDocSharedId, language: 'es' }
   ]
 };
 
 export {
   firstTemplate,
+  firstDoc,
+  firstDocSharedId,
   nonExistentId
 };
