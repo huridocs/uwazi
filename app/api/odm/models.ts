@@ -3,7 +3,7 @@ import { DeleteWriteOpResultObject } from "mongodb";
 
 export interface OdmModel<T extends Document> {
     db: Model<T>,
-    save: (data: T | T[]) => Promise<T | null> | Promise<(T | null)[]>;
+    save: (data: T) => Promise<T>;
     get: (query: any, select?: string, pagination?: {}) => Promise<T[]>;
     count: (condition: any) => Promise<number>;
     getById: (id: any | string | number) => Promise<T | null>;

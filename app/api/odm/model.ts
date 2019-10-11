@@ -35,28 +35,30 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
 
   schema.post('save', upsertLogOne);
   schema.post('findOneAndUpdate', upsertLogOne);
+  schema.post('updateMany', async function updateMany(this: any, doc, next) {
+    const affectedIds = await getAffectedIds(this._conditions);
+    await upsertLogMany(affectedIds);
+    next();
+  });
 
   const MongooseModel = mongoose.model<T>(collectionName, schema);
 
-  const saveOne = async (data: mongoose.Document): Promise<T | null> => {
+  const saveOne = async (data: mongoose.Document): Promise<T> => {
     const documentExists = await MongooseModel.findById(data._id, '_id');
 
     if (documentExists) {
-      return MongooseModel.findOneAndUpdate({ _id: data._id }, data, {
-        new: true,
-      }).exec();
+      let saved = await MongooseModel.findOneAndUpdate({ _id: data._id }, data, { new: true });
+      if (saved === null) {
+        throw Error('mongoose findOneAndUpdate should never return null!');
+      }
+      return saved;
     }
     return MongooseModel.create(data).then(saved => saved.toObject());
   };
 
-  const odmModel: OdmModel<mongoose.Document> = {
+  const odmModel: OdmModel<T> = {
     db: MongooseModel,
-    save: (data: mongoose.Document | mongoose.Document[]) => {
-      if (Array.isArray(data)) {
-        const promises = data.map(entry => saveOne(entry));
-        return Promise.all(promises);
-      }
-
+    save: (data: T) => {
       return saveOne(data);
     },
 
@@ -83,7 +85,18 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
       return result;
     },
   };
+  // Unfortunately, we cannot just case OdmModel<T> to OdmModel<Document>...
+  const genericOdmModel: OdmModel<mongoose.Document> = {
+    db: MongooseModel,
+    save: (data: mongoose.Document) => {
+      return saveOne(data);
+    },
+    get: odmModel.get,
+    count: odmModel.count,
+    getById: odmModel.getById,
+    delete: odmModel.delete,
+  };
 
-  models[collectionName] = odmModel;
+  models[collectionName] = genericOdmModel;
   return odmModel;
 };
