@@ -313,7 +313,7 @@ describe('Activitylog Parser', () => {
         });
         it('should only display key if language name is unknown', async () => {
           await testBeautified({
-            method: 'DELETE', url: '/api/translations/languages', query: '{"key":"abcd"}' 
+            method: 'DELETE', url: '/api/translations/languages', query: '{"key":"abcd"}'
           }, {
             action: 'DELETE',
             description: 'Removed language',
