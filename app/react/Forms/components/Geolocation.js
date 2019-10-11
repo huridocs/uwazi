@@ -46,7 +46,7 @@ export default class Geolocation extends Component {
 
   latChange(e) {
     let latitude = e.target.value ? parseFloat(e.target.value) : '';
-    latitude = latitude && latitude < -90 ? -90 : latitude;
+    latitude = latitude && latitude < -89.99999 ? -89.99999 : latitude;
     latitude = latitude && latitude > 90 ? 90 : latitude;
 
     const { label } = this.getInputValues();

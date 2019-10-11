@@ -53,9 +53,11 @@ describe('Geolocation', () => {
       expectOnChangeCallWhenInputSimulation('19', 19);
     });
 
-    it('with an angle lower than -90 degrees the value should be replace by -90 degrees', () => {
-      expectOnChangeCallWhenInputSimulation('-91', -90);
-      expectOnChangeCallWhenInputSimulation('-120.34', -90);
+    it('with an angle lower than -89.99999 degrees the value should be replace by -89.99999 degrees', () => {
+      expectOnChangeCallWhenInputSimulation('-91', -89.99999);
+      expectOnChangeCallWhenInputSimulation('-120.34', -89.99999);
+      expectOnChangeCallWhenInputSimulation('-90', -89.99999);
+      expectOnChangeCallWhenInputSimulation('-89.999991', -89.99999);
     });
 
     it('with an angle greater than 90 degrees the value should be replace by 90 degrees', () => {
