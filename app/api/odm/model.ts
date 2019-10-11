@@ -53,13 +53,14 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
       }
       return saved;
     }
-    return MongooseModel.create(data).then(saved => saved.toObject());
+    return MongooseModel.create(data);
   };
 
   const odmModel: OdmModel<T> = {
     db: MongooseModel,
-    save: (data: T) => {
-      return saveOne(data);
+    save: async (data: T) => {
+      const o = await saveOne(data);
+      return o.toObject();
     },
 
     get: (query: any, select = '', pagination = {}) =>
@@ -88,8 +89,9 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
   // Unfortunately, we cannot just case OdmModel<T> to OdmModel<Document>...
   const genericOdmModel: OdmModel<mongoose.Document> = {
     db: MongooseModel,
-    save: (data: mongoose.Document) => {
-      return saveOne(data);
+    save: async (data: mongoose.Document) => {
+      const o = await saveOne(data);
+      return o.toObject();
     },
     get: odmModel.get,
     count: odmModel.count,

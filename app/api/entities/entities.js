@@ -70,7 +70,7 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-  return model.save(docs);
+  return Promise.all(docs.map(d => model.save(d)));
 }
 
 function getEntityTemplate(doc, language) {
@@ -238,10 +238,9 @@ export default {
     return doc;
   },
 
-  saveMultiple(docs) {
-    return model.save(docs)
-    .then(response => Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText')))
-    .then(response => response);
+  async saveMultiple(docs) {
+    const response = await Promise.all(docs.map(d => model.save(d)));
+    return Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText'));
   },
 
   multipleUpdate(ids, values, params) {

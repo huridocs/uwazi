@@ -69,7 +69,7 @@ const setMongoLanguage = (doc) => {
 
 Model.save = (data) => {
   if (Array.isArray(data)) {
-    return save(data.map(setMongoLanguage));
+    throw new TypeError('Model.save array input no longer supported - change callsites!');
   }
 
   return save(setMongoLanguage(data));
