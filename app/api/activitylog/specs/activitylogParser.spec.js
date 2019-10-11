@@ -233,6 +233,41 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/translations', () => {
+      describe('method:POST', () => {
+        it('should beautify as UPDATE and specify the language and the context updated', async () => {
+          const data = {
+            _id: 'txId',
+            locale: 'en',
+            contexts: [{
+              _id: 'abcd', id: 'ctx123', label: 'ctxLbl', type: 'Connection', values: { wordKey: 'word value' }
+            }]
+          };
+          await testBeautified({
+            method: 'POST', url: '/api/translations', body: JSON.stringify(data)
+          }, {
+            action: 'UPDATE',
+            description: 'Updated translations',
+            name: 'in ctxLbl (ctx123)',
+            extra: 'in English (en)'
+          });
+        });
+
+        it('should not specify contexts if more than one was changed', async () => {
+          const data = {
+            _id: 'txId',
+            locale: 'en',
+            contexts: [{ id: 'ctx1', label: 'One' }, { id: 'ctx2', label: 'Two' }]
+          };
+          await testBeautified({
+            method: 'POST', url: '/api/translations', body: JSON.stringify(data)
+          }, {
+            action: 'UPDATE',
+            description: 'Updated translations',
+            name: 'in multiple contexts',
+            extra: 'in English (en)'
+          });
+        });
+      });
       describe('method:DELETE /languages', () => {
         it('should beautify as DELETE with language name', async () => {
           await testBeautified({
@@ -316,6 +351,30 @@ describe('Activitylog Parser', () => {
             description: 'Deleted page',
             name: 'page123'
           });
+        });
+      });
+    });
+
+    describe('routes: /api/relationships', () => {
+      describe('method:POST /bulk', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/relationships/bulk', body: '{"save":[],"delete":[]}'
+          }, {
+            action: 'UPDATE',
+            description: 'Updated relationships'
+          });
+        });
+      });
+    });
+
+    describe('routes: /api/settings', () => {
+      it('should beautify as UPDATE', async () => {
+        await testBeautified({
+          method: 'POST', url: '/api/settings', body: '{"project":"test","filters":[]}'
+        }, {
+          action: 'UPDATE',
+          description: 'Updated settings'
         });
       });
     });
