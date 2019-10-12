@@ -332,12 +332,17 @@ const getInheritedEntities = async (results, language, user) => {
 };
 
 const entityHasGeolocation = entity =>
-  entity.metadata && !!Object.keys(entity.metadata).find((field) => {
+  entity.metadata &&
+  !!Object.keys(entity.metadata)
+  .filter(field => entity.metadata[field])
+  .find((field) => {
     if (/_geolocation/.test(field) && entity.metadata[field].length) {
       return true;
     }
     if (Array.isArray(entity.metadata[field])) {
-      return !!entity.metadata[field].find(f => f.inherit_geolocation && f.inherit_geolocation.length);
+      return !!entity.metadata[field].find(
+        f => f.inherit_geolocation && f.inherit_geolocation.length
+      );
     }
     return false;
   });
