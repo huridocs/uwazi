@@ -34,10 +34,11 @@ export default class Map extends Component {
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
+    this.interactiveLayerIds = ["clusters"];
+    
     this.updateMapStyle(props);
     this.bindActions();
     this.assignDefaults();
-    this.interactiveLayerIds = ["clusters"];
   }
 
   componentDidMount() {

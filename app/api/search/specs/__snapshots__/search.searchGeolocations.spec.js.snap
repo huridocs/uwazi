@@ -147,22 +147,12 @@ Array [
   },
   Object {
     "metadata": Object {
-      "country_geolocation": Array [
-        Object {
-          "label": "",
-          "lat": 23,
-          "lon": 7,
-        },
-      ],
-    },
-    "sharedId": "entity05",
-  },
-  Object {
-    "metadata": Object {
       "inhertied_country": Array [
         Object {
           "entity": "entity06",
-          "inherit_geolocation": Array [],
+          "inherit_geolocation": Array [
+            null,
+          ],
         },
       ],
       "inhertied_home": Array [
@@ -224,23 +214,6 @@ Array [
       ],
     },
     "sharedId": "entity08",
-  },
-  Object {
-    "metadata": Object {
-      "inhertied_work": Array [
-        Object {
-          "entity": "entity01",
-          "inherit_geolocation": Array [
-            Object {
-              "label": "",
-              "lat": 23,
-              "lon": 8,
-            },
-          ],
-        },
-      ],
-    },
-    "sharedId": "entity09",
   },
   Object {
     "metadata": Object {
