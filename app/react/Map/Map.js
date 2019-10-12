@@ -34,6 +34,8 @@ export default class Map extends Component {
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
+    this.interactiveLayerIds = ["clusters"];
+    
     this.updateMapStyle(props);
     this.bindActions();
     this.assignDefaults();
@@ -143,7 +145,7 @@ export default class Map extends Component {
     const map = this.map.getMap();
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
     this.supercluster.load(currentData);
-    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Math.floor(map.getZoom()), Infinity);
+    const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Infinity);
     this.clickOnCluster(markersOnCluster);
   }
 
@@ -285,6 +287,7 @@ export default class Map extends Component {
           onViewStateChange={this._onViewStateChange}
           onClick={this.onClick}
           onHover={this.onHover}
+          interactiveLayerIds={this.interactiveLayerIds}
         >
           {this.renderMarkers()}
           {this.renderPopup()}
@@ -315,7 +318,8 @@ Map.defaultProps = {
   cluster: false,
   autoCenter: true,
   scrollZoom: true,
-  showControls: false
+  showControls: false,
+  interactiveLayerIds: null
 };
 
 Map.propTypes = {
@@ -334,5 +338,6 @@ Map.propTypes = {
   cluster: PropTypes.bool,
   autoCenter: PropTypes.bool,
   scrollZoom: PropTypes.bool,
-  showControls: PropTypes.bool
+  showControls: PropTypes.bool,
+  interactiveLayerIds: PropTypes.arrayOf(PropTypes.string)
 };
