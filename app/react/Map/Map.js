@@ -34,8 +34,8 @@ export default class Map extends Component {
         radius: _style.sources.markers.clusterRadius,
         maxZoom: _style.sources.markers.clusterMaxZoom
     });
-    this.interactiveLayerIds = ["clusters"];
-    
+    this.interactiveLayerIds = ['clusters'];
+
     this.updateMapStyle(props);
     this.bindActions();
     this.assignDefaults();
@@ -142,7 +142,6 @@ export default class Map extends Component {
   }
 
   processClusterOnClick(cluster) {
-    const map = this.map.getMap();
     const currentData = this.mapStyle.getIn(['sources', 'markers', 'data', 'features']).toJS();
     this.supercluster.load(currentData);
     const markersOnCluster = this.supercluster.getLeaves(cluster.properties.cluster_id, Infinity);
