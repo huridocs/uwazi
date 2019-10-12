@@ -37,6 +37,7 @@ export default class Map extends Component {
     this.updateMapStyle(props);
     this.bindActions();
     this.assignDefaults();
+    this.interactiveLayerIds = ["clusters"];
   }
 
   componentDidMount() {
