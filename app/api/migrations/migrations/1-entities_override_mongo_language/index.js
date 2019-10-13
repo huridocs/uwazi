@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 export default {
   delta: 1,
 
@@ -8,29 +9,21 @@ export default {
   this is to be able to configure language "none" 
   when the language is unsuported for text indexes`,
 
-  up(db) {
+  async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    return new Promise((resolve, reject) => {
-      const cursor = db.collection('entities').find();
-      let index = 1;
-      cursor.on('data', (doc) => {
-        cursor.pause();
-        let mongoLanguage = doc.language;
-        if (mongoLanguage === 'ar') {
-          mongoLanguage = 'none';
-        }
-        db.collection('entities').findOneAndUpdate(doc, { $set: { mongoLanguage } }, () => {
-          process.stdout.write(`processed -> ${index}\r`);
-          index += 1;
-          cursor.resume();
-        });
-      });
+    let index = 1;
 
-      cursor.on('err', reject);
-      cursor.on('end', () => {
-        process.stdout.write(`processed -> ${index}\r\n`);
-        resolve();
-      });
-    });
+    const cursor = db.collection('entities').find();
+    while (await cursor.hasNext()) {
+      const doc = await cursor.next();
+      let mongoLanguage = doc.language;
+      if (mongoLanguage === 'ar') {
+        mongoLanguage = 'none';
+      }
+      await db.collection('entities').findOneAndUpdate(doc, { $set: { mongoLanguage } });
+      process.stdout.write(`processed -> ${index}\r`);
+      index += 1;
+    }
+    process.stdout.write('\r\n');
   }
 };
