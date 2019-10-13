@@ -11,6 +11,7 @@ exports[`Geolocation should hide clear fields button when lat and lon are empty 
     cluster={false}
     height={370}
     hoverOnMarker={[Function]}
+    interactiveLayerIds={null}
     latitude={null}
     longitude={null}
     markers={Array []}
@@ -70,6 +71,7 @@ exports[`Geolocation should render button to clear fields 1`] = `
     cluster={false}
     height={370}
     hoverOnMarker={[Function]}
+    interactiveLayerIds={null}
     latitude={null}
     longitude={null}
     markers={

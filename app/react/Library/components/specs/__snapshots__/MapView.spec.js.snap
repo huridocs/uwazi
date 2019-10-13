@@ -60,6 +60,7 @@ exports[`MapView render() should render a map 1`] = `
   cluster={true}
   height={null}
   hoverOnMarker={[Function]}
+  interactiveLayerIds={null}
   latitude={null}
   longitude={null}
   markers={
