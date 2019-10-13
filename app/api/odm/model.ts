@@ -66,7 +66,7 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
       return o.toObject();
     },
     saveMultiple: (data: T[]) => {
-      return Promise.all(data.map(d => saveOne(d).then(o => o.toObject())));
+      return Promise.all(data.map(d => odmModel.save(d)));
     },
 
     get: (query: any, select = '', pagination = {}) =>
@@ -100,7 +100,7 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
       return o.toObject();
     },
     saveMultiple: (data: mongoose.Document[]) => {
-      return Promise.all(data.map(d => saveOne(d).then(o => o.toObject())));
+      return Promise.all(data.map(d => genericOdmModel.save(d)));
     },
     get: odmModel.get,
     count: odmModel.count,
