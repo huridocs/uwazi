@@ -1,4 +1,4 @@
-import { Document, DocumentQuery, Model, Query } from "mongoose";
+import { Document, DocumentQuery, Model } from "mongoose";
 import { DeleteWriteOpResultObject } from "mongodb";
 
 export interface OdmModel<T extends Document> {
@@ -6,9 +6,11 @@ export interface OdmModel<T extends Document> {
     // returns T.toObject().
     save: (data: T) => Promise<any>;
     saveMultiple: (data: T[]) => Promise<any[]>;
-    get: (query: any, select?: string, pagination?: {}) => Promise<T[]>;
-    count: (condition: any) => Promise<number>;
+
     getById: (id: any | string | number) => Promise<T | null>;
+    get: (query: any, select?: string, pagination?: {}) => DocumentQuery<T[], T>;
+
+    count: (condition: any) => Promise<number>;
     delete: (condition: any) => Promise<DeleteWriteOpResultObject['result']>;
 }
 

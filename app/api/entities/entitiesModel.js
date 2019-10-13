@@ -51,7 +51,6 @@ entitySchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
 const Model = instanceModel('entities', entitySchema);
 Model.db.collection.dropIndex('title_text', () => { Model.db.ensureIndexes(); });
-const { save } = Model;
 const suportedLanguages = ['da', 'nl', 'en', 'fi', 'fr', 'de', 'hu', 'it', 'nb', 'pt', 'ro', 'ru', 'es', 'sv', 'tr'];
 
 const setMongoLanguage = (doc) => {
@@ -67,8 +66,7 @@ const setMongoLanguage = (doc) => {
   return Object.assign({}, doc, { mongoLanguage });
 };
 
-Model.save = (data) => {
-  return save(setMongoLanguage(data));
-};
+Model.saveRaw = Model.save.bind(Model);
+Model.save = doc => Model.saveRaw(setMongoLanguage(doc));
 
 export default Model;

@@ -556,5 +556,5 @@ export default {
     .then(() => search.deleteLanguage(locale));
   },
 
-  count: model.count
+  count: model.count.bind(model)
 };

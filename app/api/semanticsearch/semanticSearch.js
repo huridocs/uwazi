@@ -218,19 +218,10 @@ const resumeSearch = async (searchId) => {
   return model.getById(searchId);
 };
 
-const getAllDocumentResults = searchId => resultsModel.get({ searchId });
-const getAllSearches = async () => {
-  const models = await model.get();
-  return models.sort('-creationDate');
-};
-const getInProgress = async () => {
-  const models = await model.get({ status: IN_PROGRESS });
-  return models.sort('-creationDate');
-};
-const getPending = async () => {
-  const models = await model.get({ status: PENDING });
-  return models.sort('-creationDate');
-};
+const getAllDocumentResults = async searchId => resultsModel.get({ searchId });
+const getAllSearches = () => model.get().sort('-creationDate');
+const getInProgress = async () => model.get({ status: IN_PROGRESS }).sort('-creationDate');
+const getPending = async () => model.get({ status: PENDING }).sort('-creationDate');
 
 const semanticSearch = {
   _id: Math.random(),

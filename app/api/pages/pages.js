@@ -81,5 +81,5 @@ export default {
     return model.delete({ language });
   },
 
-  count: model.count
+  count: model.count.bind(model)
 };

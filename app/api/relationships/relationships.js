@@ -524,5 +524,5 @@ export default {
     return model.db.updateMany({ template }, actions);
   },
 
-  count: model.count,
+  count: model.count.bind(model),
 };
