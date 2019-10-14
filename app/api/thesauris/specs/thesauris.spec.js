@@ -298,24 +298,6 @@ describe('thesauris', () => {
           expect(error).toBeDefined();
         });
       });
-
-      describe('when trying to save a thesauri with duplicated values', () => {
-        it('should return an error', async () => {
-          const data = {
-            name: 'dictionary4',
-            values: [{ label: 'value1' }, { label: 'value1' }]
-          };
-
-          let error;
-          try {
-            await thesauris.save(data);
-          } catch (e) {
-            error = e;
-          }
-
-          expect(error).toBeDefined();
-        });
-      });
     });
   });
 });
