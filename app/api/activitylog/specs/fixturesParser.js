@@ -15,7 +15,7 @@ export default {
   ],
 
   entities: [
-    { _id: firstDoc, title: 'My Doc', sharedId: firstDocSharedId, language: 'es' }
+    { _id: firstDoc, title: 'My Doc', sharedId: firstDocSharedId, language: 'es', attachments: [{ _id: 'attach1' }] }
   ]
 };
 
