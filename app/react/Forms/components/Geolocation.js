@@ -5,24 +5,30 @@ import { Translate } from 'app/I18N';
 
 const defaultValue = { lat: '', lon: '', label: '' };
 
-function isCoordValid(coord) {
-  // eslint-disable-next-line no-restricted-globals
-  return typeof coord === 'number' && !isNaN(coord);
+function isCoordinateValid(coord) {
+  return typeof coord === 'number' && !Number.isNaN(coord);
 }
 
 export default class Geolocation extends Component {
   constructor(props) {
     super(props);
-
     this.latChange = this.latChange.bind(this);
     this.lonChange = this.lonChange.bind(this);
     this.mapClick = this.mapClick.bind(this);
     this.clearCoordinates = this.clearCoordinates.bind(this);
+
+    const { lat, lon } = this.getInputValues();
+
+    this.state = {
+      currentLatitude: lat,
+      currentLongitude: lon,
+    };
   }
 
   onChange(newValue) {
+    this.setState({ currentLatitude: newValue.lat, currentLongitude: newValue.lon });
     const { onChange, value } = this.props;
-    if (!isCoordValid(newValue.lat) && !isCoordValid(newValue.lon)) {
+    if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
       onChange();
       return;
     }
@@ -39,13 +45,21 @@ export default class Geolocation extends Component {
   }
 
   latChange(e) {
-    const { lon, label } = this.getInputValues();
-    this.onChange({ lat: parseFloat(e.target.value), lon, label });
+    let latitude = e.target.value ? parseFloat(e.target.value) : '';
+    latitude = latitude && latitude < -89.99999 ? -89.99999 : latitude;
+    latitude = latitude && latitude > 90 ? 90 : latitude;
+
+    const { label } = this.getInputValues();
+    const { currentLongitude } = this.state;
+    this.onChange({ lat: latitude, lon: currentLongitude, label });
   }
 
   lonChange(e) {
-    const { lat, label } = this.getInputValues();
-    this.onChange({ lat, lon: parseFloat(e.target.value), label });
+    const longitude = e.target.value ? parseFloat(e.target.value) : '';
+
+    const { label } = this.getInputValues();
+    const { currentLatitude } = this.state;
+    this.onChange({ lat: currentLatitude, lon: longitude, label });
   }
 
   mapClick(event) {
@@ -54,39 +68,47 @@ export default class Geolocation extends Component {
   }
 
   clearCoordinates() {
+    this.setState({ currentLatitude: '', currentLongitude: '' });
     const { onChange } = this.props;
     onChange();
   }
 
   render() {
+    const { currentLatitude, currentLongitude } = this.state;
     const markers = [];
-    const { value: [value] } = this.props;
 
-    let lat = '';
-    let lon = '';
-
-    if (value) {
-      ({ lat, lon } = value);
-    }
-
-    if (isCoordValid(lat) && isCoordValid(lon)) {
-      markers.push({ latitude: parseFloat(value.lat), longitude: parseFloat(value.lon) });
+    if (isCoordinateValid(currentLatitude) && isCoordinateValid(currentLongitude)) {
+      markers.push({ latitude: parseFloat(currentLatitude), longitude: parseFloat(currentLongitude) });
     }
 
     return (
       <div className="geolocation form-inline">
-        <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false}/>
+        <Map markers={markers} onClick={this.mapClick} height={370} autoCenter={false} />
         <div className="form-row">
           <div className="form-group half-width">
             <label>Latitude</label>
-            <input onChange={this.latChange} className="form-control" type="number" id="lat" value={lat} step="any"/>
+            <input
+              onChange={this.latChange}
+              className="form-control"
+              type="number"
+              id="lat"
+              value={currentLatitude}
+              step="any"
+            />
           </div>
           <div className="form-group half-width">
             <label>Longitude</label>
-            <input onChange={this.lonChange} className="form-control" type="number" id="lon" value={lon} step="any"/>
+            <input
+              onChange={this.lonChange}
+              className="form-control"
+              type="number"
+              id="lon"
+              value={currentLongitude}
+              step="any"
+            />
           </div>
         </div>
-        { (isCoordValid(lat) || isCoordValid(lon)) && (
+        {(currentLatitude || currentLongitude) && (
           <div className="clear-field-button">
             <button type="button" onClick={this.clearCoordinates}>
               <Translate>Clear coordinates</Translate>
