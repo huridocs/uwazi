@@ -2,7 +2,7 @@
 /* eslint-disable max-statements */
 
 import db from 'api/utils/testing_db';
-import fixtures, { firstTemplate, firstDoc, firstDocSharedId, nonExistentId } from './fixturesParser';
+import fixtures, { firstTemplate, firstDoc, firstDocSharedId, firstSemanticSearch, nonExistentId } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
 
 describe('Activitylog Parser', () => {
@@ -468,6 +468,19 @@ describe('Activitylog Parser', () => {
       });
     });
 
+    describe('routes: /api/users/new', () => {
+      it('should beautify as CREATE', async () => {
+        await testBeautified({
+          method: 'POST', url: '/api/users/new', body: '{"username":"myuser","role":"editor"}'
+        }, {
+          action: 'CREATE',
+          description: 'Added new user',
+          name: 'myuser',
+          extra: 'with editor role'
+        });
+      });
+    });
+
     describe('routes /api/references', () => {
       describe('method:POST', () => {
         it('should beautify as CREATE if id is not present', async () => {
@@ -508,6 +521,75 @@ describe('Activitylog Parser', () => {
         }, {
           action: 'UPDATE',
           description: 'Updated settings'
+        });
+      });
+    });
+
+    describe('routes: /api/semantic-search', () => {
+      describe('method:POST', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/semantic-search', body: '{"searchTerm":"test"}'
+          }, {
+            action: 'CREATE',
+            description: 'Started semantic search',
+            name: 'test'
+          });
+        });
+      });
+      describe('method:DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          await testBeautified({
+            method: 'DELETE', url: '/api/semantic-search', query: '{"searchId":"search1"}'
+          }, {
+            action: 'DELETE',
+            description: 'Deleted semantic search',
+            name: 'search1'
+          });
+        });
+      });
+      describe('method:POST /stop', () => {
+        it('should beautify as UPDATE and mention search term', async () => {
+          const body = { searchId: firstSemanticSearch.toString() };
+          await testBeautified({
+            method: 'POST', url: '/api/semantic-search/stop', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Stopped semantic search',
+            name: `foo (${firstSemanticSearch.toString()})`
+          });
+        });
+        it('should only mention id if search no longer exists', async () => {
+          const body = { searchId: nonExistentId.toString() };
+          await testBeautified({
+            method: 'POST', url: '/api/semantic-search/stop', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Stopped semantic search',
+            name: nonExistentId.toString()
+          });
+        });
+      });
+      describe('method:POST /resume', () => {
+        it('should beautify as UPDATE and mention search term', async () => {
+          const body = { searchId: firstSemanticSearch.toString() };
+          await testBeautified({
+            method: 'POST', url: '/api/semantic-search/resume', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Resumed semantic search',
+            name: `foo (${firstSemanticSearch.toString()})`
+          });
+        });
+        it('should only mention id if search no longer exists', async () => {
+          const body = { searchId: nonExistentId.toString() };
+          await testBeautified({
+            method: 'POST', url: '/api/semantic-search/resume', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Resumed semantic search',
+            name: nonExistentId.toString()
+          });
         });
       });
     });
