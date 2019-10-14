@@ -65,20 +65,39 @@ describe('templates routes', () => {
   });
 
   describe('POST', () => {
+    const aTemplate = { _id: 'id', name: 'name' };
+    const req = { body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] }, language: 'en', io: { sockets: { } } };
+    let emitSpy;
+
+    beforeEach(() => {
+      emitSpy = jasmine.createSpy('emit');
+      req.io.sockets.emit = emitSpy;
+    });
+
     it('should have a validation schema', () => {
       expect(routes.post.validation('/api/templates')).toMatchSnapshot();
     });
-    it('should create a template', (done) => {
-      spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve('response')));
-      const req = { body: { name: 'created_template', properties: [{ label: 'fieldLabel' }] }, language: 'en' };
 
-      routes.post('/api/templates', req)
-      .then((response) => {
-        expect(response).toBe('response');
-        expect(templates.save).toHaveBeenCalledWith(req.body, req.language);
-        done();
-      })
-      .catch(catchErrors(done));
+    it('should create a template', async () => {
+      spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
+      spyOn(settings, 'updateFilterName').and.returnValue(new Promise(resolve => resolve('updated settings')));
+
+      const response = await routes.post('/api/templates', req);
+
+      expect(response).toBe(aTemplate);
+      expect(templates.save).toHaveBeenCalledWith(req.body, req.language);
+      expect(settings.updateFilterName).toHaveBeenCalledWith(aTemplate._id, aTemplate.name);
+      expect(emitSpy).toHaveBeenCalledWith('templateChange', aTemplate);
+      expect(emitSpy).toHaveBeenCalledWith('updateSettings', 'updated settings');
+    });
+
+    it('should not emit settings update when settings not modified', async () => {
+      spyOn(templates, 'save').and.returnValue(new Promise(resolve => resolve(aTemplate)));
+      spyOn(settings, 'updateFilterName').and.returnValue(undefined);
+
+      await routes.post('/api/templates', req);
+
+      expect(emitSpy).not.toHaveBeenCalledWith('updateSettings', 'updated settings');
     });
 
     describe('when there is an error', () => {

@@ -58,6 +58,23 @@ describe('Pages Routes', () => {
     });
   });
 
+  describe('/api/page', () => {
+    it('should ask pages model for the page in the current locale', (done) => {
+      const req = {
+        query: { sharedId: '123' },
+        language: 'es'
+      };
+      spyOn(pages, 'getById').and.returnValue(Promise.resolve('page'));
+      routes.get('/api/page', req)
+      .then((response) => {
+        expect(pages.getById).toHaveBeenCalledWith('123', 'es');
+        expect(response).toBe('page');
+        done();
+      })
+      .catch(catchErrors(done));
+    });
+  });
+
   describe('GET', () => {
     describe('/api/pages', () => {
       it('should have a validation schema', () => {
