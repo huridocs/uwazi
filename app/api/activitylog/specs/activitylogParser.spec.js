@@ -1,3 +1,6 @@
+/* eslint:disable max-lines */
+/* eslint-disable max-statements */
+
 import db from 'api/utils/testing_db';
 import fixtures, { firstTemplate, firstDoc, firstDocSharedId, nonExistentId } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
@@ -103,25 +106,89 @@ describe('Activitylog Parser', () => {
           await testBeautified({
             method: 'DELETE', url: '/api/documents', query: '{"sharedId":"o9e07m5ni3h"}'
           }, {
-            beautified: true,
             action: 'DELETE',
             description: 'Deleted entity / document',
             name: 'o9e07m5ni3h'
           });
         });
       });
+
+      describe('method: POST /multipleupdate', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/entities/multipleupdate', body: '{"ids":["id1","id2"],"values":{}}'
+          }, {
+            action: 'UPDATE',
+            description: 'Updated multiple entities'
+          });
+        });
+      });
+
+      describe('method: POST /bulkdelete', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/entities/bulkdelete', body: '{"sharedIds":["id1","id2"]}'
+          }, {
+            action: 'DELETE',
+            description: 'Deleted multiple entities'
+          });
+        });
+      });
     });
 
-    describe('route: /api/attachments/delete', () => {
-      describe('method: DELETE', () => {
+    describe('route: /api/attachments', () => {
+      describe('method: POST /upload', () => {
+        it('should beautify as CREATE', async () => {
+          testBeautified({
+            method: 'POST', url: '/api/attachments/upload', body: '{}', query: '{}'
+          }, {
+            action: 'CREATE',
+            description: 'Uploaded attachment'
+          });
+        });
+      });
+
+      describe('method: DELETE /delete', () => {
         it('should beautify as DELETE', async () => {
           await testBeautified({
             method: 'DELETE', url: '/api/attachments/delete', query: '{"attachmentId":"1234"}'
           }, {
-            beautified: true,
             action: 'DELETE',
             description: 'Deleted attachment',
             name: '1234'
+          });
+        });
+      });
+
+      describe('method: POST /rename', () => {
+        it('should beautify as UPDATE and mention new name, entity and language', async () => {
+          const body = {
+            entityId: firstDoc.toString(),
+            _id: 'attach1',
+            originalname: 'New name'
+          };
+          await testBeautified({
+            method: 'POST', url: '/api/attachments/rename', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Renamed attachment',
+            name: 'New name (attach1)',
+            extra: `of entity 'My Doc' (${firstDocSharedId}) Spanish (es) version`
+          });
+        });
+
+        it('should only mention attachment new name and id if entity not found', async () => {
+          const body = {
+            entityId: nonExistentId.toString(),
+            _id: 'attach1',
+            originalname: 'New name'
+          };
+          await testBeautified({
+            method: 'POST', url: '/api/attachments/rename', body: JSON.stringify(body)
+          }, {
+            action: 'UPDATE',
+            description: 'Renamed attachment',
+            name: 'New name (attach1)'
           });
         });
       });
@@ -401,6 +468,39 @@ describe('Activitylog Parser', () => {
       });
     });
 
+    describe('routes /api/references', () => {
+      describe('method:POST', () => {
+        it('should beautify as CREATE if id is not present', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/references', body: '{"template":"t1"}'
+          }, {
+            action: 'CREATE',
+            description: 'Created relationship'
+          });
+        });
+        it('should beautify as UPDATE if id is present', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/references', body: '{"_id":"ref1","template":"t1"}'
+          }, {
+            action: 'UPDATE',
+            description: 'Updated relationship',
+            name: 'ref1'
+          });
+        });
+      });
+      describe('method: DELETE', () => {
+        it('should beautify as DELETE', async () => {
+          testBeautified({
+            method: 'DELETE', url: '/api/references', query: '{"_id":"ref1"}'
+          }, {
+            action: 'DELETE',
+            description: 'Deleted relationship',
+            name: 'ref1'
+          });
+        });
+      });
+    });
+
     describe('routes: /api/settings', () => {
       it('should beautify as UPDATE', async () => {
         await testBeautified({
@@ -408,6 +508,80 @@ describe('Activitylog Parser', () => {
         }, {
           action: 'UPDATE',
           description: 'Updated settings'
+        });
+      });
+    });
+
+    describe('routes: uploads', () => {
+      describe('POST /api/upload', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/upload', body: '{}'
+          }, {
+            action: 'CREATE',
+            description: 'Uploaded document'
+          });
+        });
+      });
+      describe('POST /api/reupload', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/reupload', body: '{}'
+          }, {
+            action: 'UPDATE',
+            description: 'Re-uploaded document'
+          });
+        });
+      });
+      describe('POST /api/customisation/upload', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/customisation/upload', body: '{}'
+          }, {
+            action: 'CREATE',
+            description: 'Uploaded custom file'
+          });
+        });
+      });
+      describe('DELETE /api/customisation/upload', () => {
+        it('should beautify as DELETE', async () => {
+          await testBeautified({
+            method: 'DELETE', url: '/api/customisation/upload', query: '{"_id":"file1"}'
+          }, {
+            action: 'DELETE',
+            description: 'Deleted custom file',
+            name: 'file1'
+          });
+        });
+      });
+      describe('POST /api/import', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/import', body: '{}'
+          }, {
+            action: 'CREATE',
+            description: 'Imported entities from file'
+          });
+        });
+      });
+      describe('POST /api/public', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/public', body: '{}'
+          }, {
+            action: 'CREATE',
+            description: 'Created entity coming from a public form'
+          });
+        });
+      });
+      describe('POST /api/remotepublic', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified({
+            method: 'POST', url: '/api/remotepublic', body: '{}'
+          }, {
+            action: 'CREATE',
+            description: 'Submitted entity to a remote instance'
+          });
         });
       });
     });

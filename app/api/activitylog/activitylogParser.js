@@ -13,16 +13,17 @@ const formatLanguage = (langKey) => {
   return lang ? `${lang.label} (${lang.key})` : langKey;
 };
 
-const generateCreateUpdateBeautifier = (resourceName, nameField, idField) => async (log) => {
+const generateCreateUpdateBeautifier = (resourceName, idField, nameField) => async (log) => {
   const data = JSON.parse(log.body);
+  const name = data[nameField];
 
   const semantic = {
     beautified: true,
-    name: data[nameField]
+    name
   };
 
   if (data[idField]) {
-    semantic.name = `${data[nameField]} (${data[idField]})`;
+    semantic.name = name ? `${name} (${data[idField]})` : `${data[idField]}`;
     semantic.action = methods.update;
     semantic.description = `Updated ${resourceName}`;
   } else {
@@ -45,9 +46,9 @@ const generateDeleteBeautifier = (resourceName, idField) => async (log) => {
   };
 };
 
-const generatePlainDescriptionBeautifier = description => async () => ({
+const generatePlainDescriptionBeautifier = (description, action = methods.update) => async () => ({
   beautified: true,
-  action: methods.update,
+  action,
   description
 });
 
@@ -94,6 +95,23 @@ const documentsPdfInfoPOST = async (log) => {
 };
 
 const entitiesDELETE = generateDeleteBeautifier('entity / document', 'sharedId');
+
+const attachmentsRenamePOST = async (log) => {
+  const data = JSON.parse(log.body);
+  const [entity] = await entities.get({ _id: data.entityId });
+
+  const semantic = {
+    beautified: true,
+    action: methods.update,
+    description: 'Renamed attachment',
+    name: `${data.originalname} (${data._id})`
+  };
+
+  if (entity) {
+    semantic.extra = `of entity '${entity.title}' (${entity.sharedId}) ${formatLanguage(entity.language)} version`;
+  }
+  return semantic;
+};
 
 const templatesAsDefaultPOST = async (log) => {
   const data = JSON.parse(log.body);
@@ -163,23 +181,36 @@ const actions = {
   'POST/api/documents': entitiesPOST,
   'POST/api/documents/pdfInfo': documentsPdfInfoPOST,
   'DELETE/api/entities': entitiesDELETE,
+  'POST/api/entities/multipleupdate': generatePlainDescriptionBeautifier('Updated multiple entities'),
+  'POST/api/entities/bulkdelete': generatePlainDescriptionBeautifier('Deleted multiple entities', methods.delete),
   'DELETE/api/documents': entitiesDELETE,
+  'POST/api/attachments/upload': generatePlainDescriptionBeautifier('Uploaded attachment', methods.create),
+  'POST/api/attachments/rename': attachmentsRenamePOST,
   'DELETE/api/attachments/delete': generateDeleteBeautifier('attachment', 'attachmentId'),
-  'POST/api/templates': generateCreateUpdateBeautifier('template', 'name', '_id'),
+  'POST/api/templates': generateCreateUpdateBeautifier('template', '_id', 'name'),
   'POST/api/templates/setasdefault': templatesAsDefaultPOST,
   'DELETE/api/templates': generateDeleteBeautifier('template', '_id'),
-  'POST/api/thesauris': generateCreateUpdateBeautifier('thesaurus', 'name', '_id'),
+  'POST/api/thesauris': generateCreateUpdateBeautifier('thesaurus', '_id', 'name'),
   'DELETE/api/thesauris': generateDeleteBeautifier('thesaurus', '_id'),
-  'POST/api/relationtypes': generateCreateUpdateBeautifier('relation type', 'name', '_id'),
+  'POST/api/relationtypes': generateCreateUpdateBeautifier('relation type', '_id', 'name'),
   'DELETE/api/relationtypes': generateDeleteBeautifier('relation type', '_id'),
   'POST/api/translations': translationsPOST,
   'POST/api/translations/languages': translationsLanguagesPOST,
   'DELETE/api/translations/languages': translationsLanguagesDELETE,
   'POST/api/translations/setasdeafult': translationsAsDefaultPOST,
-  'POST/api/pages': generateCreateUpdateBeautifier('page', 'title', 'sharedId'),
+  'POST/api/pages': generateCreateUpdateBeautifier('page', 'sharedId', 'title'),
   'DELETE/api/pages': generateDeleteBeautifier('page', 'sharedId'),
   'POST/api/settings': generatePlainDescriptionBeautifier('Updated settings'),
-  'POST/api/relationships/bulk': generatePlainDescriptionBeautifier('Updated relationships')
+  'POST/api/relationships/bulk': generatePlainDescriptionBeautifier('Updated relationships'),
+  'POST/api/references': generateCreateUpdateBeautifier('relationship', '_id'),
+  'DELETE/api/references': generateDeleteBeautifier('relationship', '_id'),
+  'POST/api/upload': generatePlainDescriptionBeautifier('Uploaded document', methods.create),
+  'POST/api/reupload': generatePlainDescriptionBeautifier('Re-uploaded document', methods.update),
+  'POST/api/customisation/upload': generatePlainDescriptionBeautifier('Uploaded custom file', methods.create),
+  'DELETE/api/customisation/upload': generateDeleteBeautifier('custom file', '_id'),
+  'POST/api/import': generatePlainDescriptionBeautifier('Imported entities from file', methods.create),
+  'POST/api/public': generatePlainDescriptionBeautifier('Created entity coming from a public form', methods.create),
+  'POST/api/remotepublic': generatePlainDescriptionBeautifier('Submitted entity to a remote instance', methods.create)
 };
 
 const getSemanticData = async (data) => {
