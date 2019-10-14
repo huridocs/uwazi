@@ -1,5 +1,6 @@
 import templates from 'api/templates';
 import entities from 'api/entities';
+import semanticSearchModel from 'api/semanticsearch/model';
 import { allLanguages } from 'shared/languagesList';
 
 const methods = {
@@ -51,6 +52,24 @@ const generatePlainDescriptionBeautifier = (description, action = methods.update
   action,
   description
 });
+
+const generateSemanticSearchUpdateBeautifier = description => async (log) => {
+  const data = JSON.parse(log.body);
+  const search = await semanticSearchModel.getById(data.searchId);
+
+  const semantic = {
+    beautified: true,
+    action: methods.update,
+    description,
+    name: data.searchId
+  };
+
+  if (search) {
+    semantic.name = `${search.searchTerm} (${data.searchId})`;
+  }
+
+  return semantic;
+};
 
 const entitiesPOST = async (log) => {
   const data = JSON.parse(log.body);
@@ -175,6 +194,28 @@ const translationsAsDefaultPOST = async (log) => {
   };
 };
 
+const usersNewPOST = async (log) => {
+  const data = JSON.parse(log.body);
+
+  return {
+    beautified: true,
+    action: methods.create,
+    description: 'Added new user',
+    name: data.username,
+    extra: `with ${data.role} role`
+  };
+};
+
+const semanticSearchPOST = async (log) => {
+  const data = JSON.parse(log.body);
+
+  return {
+    beautified: true,
+    action: methods.create,
+    description: 'Started semantic search',
+    name: data.searchTerm
+  };
+};
 
 const actions = {
   'POST/api/entities': entitiesPOST,
@@ -210,7 +251,12 @@ const actions = {
   'DELETE/api/customisation/upload': generateDeleteBeautifier('custom file', '_id'),
   'POST/api/import': generatePlainDescriptionBeautifier('Imported entities from file', methods.create),
   'POST/api/public': generatePlainDescriptionBeautifier('Created entity coming from a public form', methods.create),
-  'POST/api/remotepublic': generatePlainDescriptionBeautifier('Submitted entity to a remote instance', methods.create)
+  'POST/api/remotepublic': generatePlainDescriptionBeautifier('Submitted entity to a remote instance', methods.create),
+  'POST/api/users/new': usersNewPOST,
+  'POST/api/semantic-search': semanticSearchPOST,
+  'DELETE/api/semantic-search': generateDeleteBeautifier('semantic search', 'searchId'),
+  'POST/api/semantic-search/stop': generateSemanticSearchUpdateBeautifier('Stopped semantic search'),
+  'POST/api/semantic-search/resume': generateSemanticSearchUpdateBeautifier('Resumed semantic search')
 };
 
 const getSemanticData = async (data) => {
