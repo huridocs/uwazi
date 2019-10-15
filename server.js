@@ -1,4 +1,4 @@
-require('@babel/register')();
+require('@babel/register')({ extensions: ['.js', '.jsx', '.ts'] });
 
 process.env.ROOT_PATH = __dirname;
 const { NODE_ENV } = process.env;
