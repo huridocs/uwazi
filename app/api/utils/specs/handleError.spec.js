@@ -46,6 +46,13 @@ describe('handleError', () => {
       expect(error.message).toBe('error');
     });
   });
+  describe('when error is a mongoose ValidationError', () => {
+    it('should return the error with a 422 error', () => {
+      const error = handleError({ name: 'ValidationError', message: 'error', code: '1000' });
+      expect(error.code).toBe(422);
+      expect(error.message).toBe('error');
+    });
+  });
   describe('when error is uncaught', () => {
     it('should append the info into the message', () => {
       const uncaught = true;
