@@ -61,7 +61,7 @@ jobs:
           key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
       # run tests!
-      - run: ./node_modules/.bin/eslint app --quiet #eslint
+      - run: yarn eslint
   e2e_tests:
     working_directory: ~/huridocs/uwazi
     docker:

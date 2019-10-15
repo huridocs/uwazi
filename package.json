@@ -48,7 +48,7 @@
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
-    "eslint": "./node_modules/.bin/eslint app --quiet"
+    "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts"
   },
   "dependencies": {
     "@babel/core": "7.4.4",
@@ -178,6 +178,8 @@
     "@types/jest": "22.2.3",
     "@types/enzyme": "3.1.10",
     "@types/enzyme-adapter-react-16": "1.0.2",
+    "@typescript-eslint/eslint-plugin": "1.13.0",
+    "@typescript-eslint/parser": "1.13.0",
     "assets-webpack-plugin": "3.9.7",
     "babel-jest": "24.8.0",
     "clean-webpack-plugin": "1.0.1",
