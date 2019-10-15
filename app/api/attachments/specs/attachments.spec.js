@@ -57,12 +57,12 @@ describe('attachments', () => {
       expect(response.toc).toBe(null);
 
       const changedEntities = await entities.get({ sharedId });
-      changedEntities.forEach(async (e) => {
+      await Promise.all(changedEntities.map(async (e) => {
         expect(e.file).toBe(null);
         expect(e.file).toBe(null);
         expect(relationships.deleteTextReferences).toHaveBeenCalledWith(sharedId, e.language);
         expect(await fs.exists(path.join(paths.attachments, `${e._id.toString()}.jpg`))).toBe(false);
-      });
+      }));
     });
 
     it('should remove the passed file from attachments and delte the local file', async () => {
