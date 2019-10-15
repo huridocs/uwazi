@@ -14,6 +14,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 422, message: error.message, validations: error.errors };
   }
 
+  if (error.name === 'ValidationError') {
+    result = { code: 422, message: error.message, validations: error.properties };
+  }
+
   if (error.name === 'MongoError') {
     result.code = 500;
   }
