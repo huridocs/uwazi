@@ -27,7 +27,7 @@
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
     "production-build": "export NODE_ENV=production; rm -rf prod/* && webpack --config ./webpack.production.config.js --progress --profile --colors && babel -D -d prod/app --extensions .js,.ts app && cp *.js prod/",
     "run-production": "export NODE_ENV=production; node server.js",
-    "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js'",
+    "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --watch 'app/react/ServerRouter.js' --watch 'app/react/App/Root.js' --ext 'ts js'",
     "webpack-server": "node ./webpack/webpack.server.js",
     "hot": "export HOT=true;npm run watch-types & npm run dev-server & npm run webpack-server",
     "hot-inspect": "export HOT=true;yarn dev-server --inspect & npm run webpack-server",
