@@ -6,9 +6,19 @@
   "configurations": [
     {
       "type": "node",
-      "request": "attach",
-      "name": "attach-to-hot",
-      "port": 9229
+      "request": "launch",
+      "name": "hot-debug",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["hot-debug"],
+      "cwd": "${workspaceRoot}",
+      "timeout": 60000,
+      "port": 9229,
+      "stopOnEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "BABEL_ENV": "debug"
+      }
     },
     {
       "type": "node",
