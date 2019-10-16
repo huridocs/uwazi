@@ -1,4 +1,4 @@
-require('@babel/register');
+require('@babel/register')({ extensions: ['.js', '.jsx', '.ts'] });
 const fs = require('fs');
 if (process.argv[2]) {
   const script = process.argv[2];

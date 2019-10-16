@@ -1,7 +1,6 @@
 /* eslint-disable */
 'use strict';
 process.env.NODE_ENV = 'production';
-var path = require('path');
 var webpack = require('webpack');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
@@ -15,7 +14,7 @@ config.context = __dirname;
 config.mode = 'development';
 config.resolveLoader = {
   modules: ["node_modules", __dirname + "/webpack/webpackLoaders"],
-  extensions: [".js", ".json"],
+  extensions: [".js", ".json", ".ts"],
   mainFields: ["loader", "main"]
 },
 config.module.rules.push({
