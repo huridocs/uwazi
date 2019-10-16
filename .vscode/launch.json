@@ -14,8 +14,6 @@
       "type": "node",
       "request": "launch",
       "name": "jest-this-file",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/babel-node",
-      "runtimeArgs": ["--extensions", ".ts,.js"],
       "program": "${workspaceFolder}/node_modules/.bin/jest",
       "args": ["${file}"],
       "restart": true,
