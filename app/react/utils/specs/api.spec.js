@@ -26,7 +26,8 @@ describe('api', () => {
     .get(`${APIURL}error_url`, { status: 500, body: {} })
     .get(`${APIURL}network_error`, {
       throws: new TypeError('Failed to fetch')
-    });
+    })
+    .get(`${APIURL}unknown_error`, { throws: new Error('some error') });
   });
 
   afterEach(() => backend.restore());
@@ -118,12 +119,22 @@ describe('api', () => {
       });
     });
 
-    describe('fetch error', () => {
+    describe('network error', () => {
       it('should notify that server is unreachable', async () => {
         await testErrorHandling('network_error', () => {
           expect(store.dispatch).toHaveBeenCalledWith('notify action');
           expect(notifyActions.notify)
           .toHaveBeenCalledWith('Could not reach server. Please try again later.', 'danger');
+        });
+      });
+    });
+
+    describe('unknown error', () => {
+      it('should show generic error message', async () => {
+        await testErrorHandling('unknown_error', () => {
+          expect(store.dispatch).toHaveBeenCalledWith('notify action');
+          expect(notifyActions.notify)
+          .toHaveBeenCalledWith('An error has occurred', 'danger');
         });
       });
     });
