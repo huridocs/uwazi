@@ -16,16 +16,7 @@ const doneLoading = (data) => {
   return data;
 };
 
-const handleError = (e, endpoint) => {
-  const error = e;
-  error.endpoint = endpoint;
-
-  if (!isClient) {
-    return Promise.reject(error);
-  }
-
-  doneLoading();
-
+const handleErrorStatus = (error) => {
   if (error.status === 401) {
     browserHistory.replace('/login');
   }
@@ -45,6 +36,19 @@ const handleError = (e, endpoint) => {
   if (/failed to fetch/i.test(error.message)) {
     store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
   }
+};
+
+const handleError = (e, endpoint) => {
+  const error = e;
+  error.endpoint = endpoint;
+
+  if (!isClient) {
+    return Promise.reject(error);
+  }
+
+  doneLoading();
+
+  handleErrorStatus(error);
 
   return Promise.reject(error);
 };
