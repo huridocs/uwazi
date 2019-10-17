@@ -20,7 +20,10 @@ describe('api', () => {
     .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
     .get(`${APIURL}unauthorised`, { status: 401, body: {} })
     .get(`${APIURL}notfound`, { status: 404, body: {} })
-    .get(`${APIURL}error_url`, { status: 500, body: {} });
+    .get(`${APIURL}error_url`, { status: 500, body: {} })
+    .get(`${APIURL}network_error`, {
+      throws: new TypeError('Failed to fetch')
+    });
   });
 
   afterEach(() => backend.restore());
@@ -106,6 +109,21 @@ describe('api', () => {
           expect(browserHistory.replace).toHaveBeenCalledWith('/404');
           done();
         });
+      });
+    });
+
+    describe('fetch error', () => {
+      it('should notify that server is unreachable', async () => {
+        spyOn(store, 'dispatch');
+        spyOn(notifyActions, 'notify').and.returnValue('notify action');
+        try {
+          await api.get('network_error');
+          fail('should throw error');
+        } catch (e) {
+          expect(store.dispatch).toHaveBeenCalledWith('notify action');
+          expect(notifyActions.notify)
+          .toHaveBeenCalledWith('Could not reach server. Please try again later.', 'danger');
+        }
       });
     });
 
