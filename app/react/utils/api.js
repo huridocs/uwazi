@@ -38,8 +38,12 @@ const handleError = (e, endpoint) => {
     store.dispatch(notify('An error has occurred', 'danger'));
   }
 
-  if (![500, 404, 401].includes(error.status)) {
+  if (error.status && ![500, 404, 401].includes(error.status)) {
     store.dispatch(notify(error.json.error, 'danger'));
+  }
+
+  if (/failed to fetch/i.test(error.message)) {
+    store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
   }
 
   return Promise.reject(error);
