@@ -12,6 +12,8 @@ describe('api', () => {
   beforeEach(() => {
     spyOn(loadingBar, 'start');
     spyOn(loadingBar, 'done');
+    spyOn(store, 'dispatch');
+    spyOn(notifyActions, 'notify').and.returnValue('notify action');
     backend.restore();
     backend
     .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
@@ -91,31 +93,31 @@ describe('api', () => {
 
   describe('error handling', () => {
     describe('401', () => {
-      it('should redirect to login', (done) => {
+      it('should redirect to login', async () => {
         spyOn(browserHistory, 'replace');
-        api.get('unauthorised')
-        .catch(() => {
+        try {
+          await api.get('unauthorised');
+          fail('should throw error');
+        } catch (e) {
           expect(browserHistory.replace).toHaveBeenCalledWith('/login');
-          done();
-        });
+        }
       });
     });
 
     describe('404', () => {
-      it('should redirect to login', (done) => {
+      it('should redirect to login', async () => {
         spyOn(browserHistory, 'replace');
-        api.get('notfound')
-        .catch(() => {
+        try {
+          await api.get('notfound');
+          fail('should throw error');
+        } catch (e) {
           expect(browserHistory.replace).toHaveBeenCalledWith('/404');
-          done();
-        });
+        }
       });
     });
 
     describe('fetch error', () => {
       it('should notify that server is unreachable', async () => {
-        spyOn(store, 'dispatch');
-        spyOn(notifyActions, 'notify').and.returnValue('notify action');
         try {
           await api.get('network_error');
           fail('should throw error');
@@ -127,23 +129,23 @@ describe('api', () => {
       });
     });
 
-    it('should notify the user', (done) => {
-      spyOn(store, 'dispatch');
-      spyOn(notifyActions, 'notify').and.returnValue('notify action');
-      api.get('error_url')
-      .catch(() => {
+    it('should notify the user', async () => {
+      try {
+        await api.get('error_url');
+        fail('should throw error');
+      } catch (e) {
         expect(store.dispatch).toHaveBeenCalledWith('notify action');
         expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'danger');
-        done();
-      });
+      }
     });
 
-    it('should end the loading bar', (done) => {
-      api.get('error_url')
-      .catch(() => {
+    it('should end the loading bar', async () => {
+      try {
+        await api.get('error_url');
+        fail('should throw error');
+      } catch (e) {
         expect(loadingBar.done).toHaveBeenCalled();
-        done();
-      });
+      }
     });
   });
 });
