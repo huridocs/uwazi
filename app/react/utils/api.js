@@ -19,22 +19,16 @@ const doneLoading = (data) => {
 const handleErrorStatus = (error) => {
   if (error.status === 401) {
     browserHistory.replace('/login');
-  }
-
-  if (error.status === 404) {
+  } else if (error.status === 404) {
     browserHistory.replace('/404');
-  }
-
-  if (error.status === 500) {
+  } else if (error.status === 500) {
     store.dispatch(notify('An error has occurred', 'danger'));
-  }
-
-  if (error.status && ![500, 404, 401].includes(error.status)) {
+  } else if (error.status && ![500, 404, 401].includes(error.status)) {
     store.dispatch(notify(error.json.error, 'danger'));
-  }
-
-  if (error instanceof TypeError) {
+  } else if (error instanceof TypeError) {
     store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
+  } else {
+    store.dispatch(notify('An error has occurred', 'danger'));
   }
 };
 
