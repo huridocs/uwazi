@@ -41,7 +41,6 @@ const schema = {
           }
         }
       },
-      uniqueItemProperties: ['label']
     }
   }
 };
