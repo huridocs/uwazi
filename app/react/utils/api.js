@@ -33,7 +33,7 @@ const handleErrorStatus = (error) => {
     store.dispatch(notify(error.json.error, 'danger'));
   }
 
-  if (/failed to fetch/i.test(error.message)) {
+  if (error instanceof TypeError) {
     store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
   }
 };
@@ -49,7 +49,6 @@ const handleError = (e, endpoint) => {
   doneLoading();
 
   handleErrorStatus(error);
-
   return Promise.reject(error);
 };
 
