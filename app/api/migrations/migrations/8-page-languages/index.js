@@ -17,7 +17,7 @@ export default {
       const page = await cursor.next();
       const pages = await db.collection('pages').find({ sharedId: page.sharedId }).toArray();
       const defaultLanguagePage = pages.find(p => p.language === defaultLanguage);
-      languages.forEach(async (language) => {
+      await Promise.all(languages.map(async (language) => {
         const pageInTheLanguage = pages.find(p => p.language === language.key);
         if (!pageInTheLanguage) {
           const newPage = Object.assign({}, defaultLanguagePage);
@@ -26,7 +26,7 @@ export default {
           newPage.language = language.key;
           await db.collection('pages').save(newPage);
         }
-      });
+      }));
       process.stdout.write(`processed -> ${index}\r`);
       index += 1;
     }

@@ -1,5 +1,4 @@
-
-const elasticLanguages = {
+const elasticLanguages: { [index: string]: { [index: string]: string | null } } = {
   arb: { franc: 'arb', elastic: 'arabic', ISO639_1: 'ar' },
   bul: { franc: 'bul', elastic: 'bulgarian', ISO639_1: 'bg' },
   cat: { franc: 'cat', elastic: 'catalan', ISO639_1: 'ca' },
@@ -222,15 +221,12 @@ const allLanguages = [
   { label: 'Yiddish', key: 'yi', rtl: true },
   { label: 'Yoruba', key: 'yo' },
   { label: 'Zhuang, Chuang', key: 'za' },
-  { label: 'Zulu', key: 'zu' },
+  { label: 'Zulu', key: 'zu' }
 ];
 
-export default (key, purpose = 'elastic') => {
+export default (key: string, purpose = 'elastic') => {
   const defaultValue = purpose !== 'ISO639_1' ? 'other' : null;
   return elasticLanguages[key] ? elasticLanguages[key][purpose] : defaultValue;
 };
 
-export {
-  elasticLanguages as languages,
-  allLanguages
-};
+export { elasticLanguages as languages, allLanguages };

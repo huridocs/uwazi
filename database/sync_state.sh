@@ -3,6 +3,9 @@
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-echo -e "\n\nDeleting ${1:-uwazi_development} database"
-mongo -host ${2:-127.0.0.1} ${1:-uwazi_development} --eval "db.dropDatabase()"
-mongorestore -h ${2:-127.0.0.1} sync_state/uwazi_development/ --db=${1:-uwazi_development}
+DB=${1:-uwazi_development}
+HOST=${2:-${DBHOST:-127.0.0.1}}
+
+echo -e "\n\nDeleting $DB database on $HOST"
+mongo -host $HOST $DB --eval "db.dropDatabase()"
+mongorestore -h $HOST sync_state/uwazi_development/ --db=$DB
