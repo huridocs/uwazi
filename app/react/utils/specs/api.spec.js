@@ -103,6 +103,11 @@ describe('api', () => {
       }
     }
 
+    function testNotificationDisplayed(message, type = 'danger') {
+      expect(store.dispatch).toHaveBeenCalledWith('notify action');
+      expect(notifyActions.notify).toHaveBeenCalledWith(message, type);
+    }
+
     describe('401', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('unauthorised', () => {
@@ -122,9 +127,7 @@ describe('api', () => {
     describe('network error', () => {
       it('should notify that server is unreachable', async () => {
         await testErrorHandling('network_error', () => {
-          expect(store.dispatch).toHaveBeenCalledWith('notify action');
-          expect(notifyActions.notify)
-          .toHaveBeenCalledWith('Could not reach server. Please try again later.', 'danger');
+          testNotificationDisplayed('Could not reach server. Please try again later.');
         });
       });
     });
@@ -132,17 +135,14 @@ describe('api', () => {
     describe('unknown error', () => {
       it('should show generic error message', async () => {
         await testErrorHandling('unknown_error', () => {
-          expect(store.dispatch).toHaveBeenCalledWith('notify action');
-          expect(notifyActions.notify)
-          .toHaveBeenCalledWith('An error has occurred', 'danger');
+          testNotificationDisplayed('An error has occurred');
         });
       });
     });
 
     it('should notify the user', async () => {
       await testErrorHandling('error_url', () => {
-        expect(store.dispatch).toHaveBeenCalledWith('notify action');
-        expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'danger');
+        testNotificationDisplayed('An error has occurred');
       });
     });
 

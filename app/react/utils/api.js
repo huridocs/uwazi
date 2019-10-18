@@ -16,7 +16,7 @@ const doneLoading = (data) => {
   return data;
 };
 
-const isOtherApiError = error => error.status && ![500, 404, 401].includes(error.status);
+const isNonUsualApiError = error => error.status && ![500, 404, 401].includes(error.status);
 
 const handleErrorStatus = (error) => {
   if (error.status === 401) {
@@ -25,7 +25,7 @@ const handleErrorStatus = (error) => {
     browserHistory.replace('/404');
   } else if (error.status === 500) {
     store.dispatch(notify('An error has occurred', 'danger'));
-  } else if (isOtherApiError(error)) {
+  } else if (isNonUsualApiError(error)) {
     store.dispatch(notify(error.json.error, 'danger'));
   } else if (error instanceof TypeError) {
     store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
