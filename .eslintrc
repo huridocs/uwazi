@@ -11,7 +11,7 @@
   "plugins": ["react", "jasmine", "@typescript-eslint", "prettier"],
 
   "rules": {
-    "prettier/prettier": "warn",
+    "prettier/prettier": ["error", { "requirePragma": true }],
     "indent": [
       "warn",
       2,

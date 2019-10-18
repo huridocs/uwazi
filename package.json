@@ -49,7 +49,8 @@
     "e2e": "jest --projects nightmare/jest.e2e.config.js -i --verbose true",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
-    "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts"
+    "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts",
+    "prettier": "./node_modules/.bin/prettier --loglevel warn --write --require-pragma 'app/**/*.{js,ts}'"
   },
   "dependencies": {
     "@babel/core": "7.4.4",
