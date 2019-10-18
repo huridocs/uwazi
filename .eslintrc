@@ -8,9 +8,10 @@
     "es6": true
   },
 
-  "plugins": ["react", "jasmine", "@typescript-eslint"],
+  "plugins": ["react", "jasmine", "@typescript-eslint", "prettier"],
 
   "rules": {
+    "prettier/prettier": "error",
     "indent": [
       "warn",
       2,
@@ -47,7 +48,7 @@
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
     "arrow-body-style": ["warn"],
-    "arrow-parens": ["warn"],
+    "arrow-parens": ["off"], // handled by prettier
     "prefer-template": ["warn"],
     "no-tabs": ["warn"],
     "object-shorthand": ["warn"],
@@ -73,11 +74,7 @@
     "max-lines": ["warn", 250],
     "max-params": ["warn", 4],
     "max-lines-per-function": "off",
-    "max-statements": [
-      "warn",
-      { "max": 10 },
-      { "ignoreTopLevelFunctions": true }
-    ],
+    "max-statements": ["warn", { "max": 10 }, { "ignoreTopLevelFunctions": true }],
 
     //import
     "import/no-duplicates": ["warn"],
@@ -145,6 +142,40 @@
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"
+      },
+      "rules": {
+        "quotes": "off",
+        "@typescript-eslint/quotes": [
+          "error",
+          "single",
+          {
+            "avoidEscape": true
+          }
+        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "vars": "all",
+            "argsIgnorePattern": "^_",
+            "args": "all",
+            "ignoreRestSiblings": false
+          }
+        ],
+        "@typescript-eslint/no-explicit-any": [
+          "off",
+          {
+            "fixToUnknown": false,
+            "ignoreRestArgs": false
+          }
+        ],
+        "@typescript-eslint/explicit-function-return-type": [
+          "off",
+          {
+            "allowExpressions": true
+          }
+        ],
+        "import/no-extraneous-dependencies": "off"
       }
     }
   ]
