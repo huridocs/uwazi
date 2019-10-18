@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HubRelationshipMetadata should render null if relationship lacks metadata or text 1`] = `""`;
+
+exports[`HubRelationshipMetadata should render the metadata correctly 1`] = `
+<div
+  className="relationship-metadata"
+>
+  <div
+    className="item-metadata"
+  >
+    <dl
+      className="item-property-default"
+      key="propertyA"
+    >
+      <dt>
+        labelA
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyB"
+    >
+      <dt>
+        labelB
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyC"
+    >
+      <dt>
+        labelC
+      </dt>
+      <dd>
+        Value C1, Value C2
+      </dd>
+    </dl>
+  </div>
+</div>
+`;
+
+exports[`HubRelationshipMetadata should render the metadata correctly when text is also present 1`] = `
+<div
+  className="relationship-metadata"
+>
+  <div
+    className="item-metadata"
+  >
+    <dl
+      className="item-property-default"
+      key="propertyA"
+    >
+      <dt>
+        labelA
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyB"
+    >
+      <dt>
+        labelB
+      </dt>
+      <dd>
+        Value B
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="propertyC"
+    >
+      <dt>
+        labelC
+      </dt>
+      <dd>
+        Value C1, Value C2
+      </dd>
+    </dl>
+    <dl
+      className="item-property-default"
+      key="text"
+    >
+      <dt>
+        Text
+      </dt>
+      <dd>
+        <div
+          className="relationship-quote"
+        >
+          <span
+            className="quoteIconStart"
+          >
+            <Connect(Icon)
+              icon="quote-left"
+            />
+          </span>
+          Some quoted text
+          <span
+            className="quoteIconEnd"
+          >
+            <Connect(Icon)
+              icon="quote-right"
+            />
+          </span>
+        </div>
+      </dd>
+    </dl>
+  </div>
+</div>
+`;
+
+exports[`HubRelationshipMetadata should render the text quote correctly 1`] = `
+<div
+  className="relationship-metadata"
+>
+  <div
+    className="relationship-quote"
+  >
+    <span
+      className="quoteIconStart"
+    >
+      <Connect(Icon)
+        icon="quote-left"
+      />
+    </span>
+    Some quoted text
+    <span
+      className="quoteIconEnd"
+    >
+      <Connect(Icon)
+        icon="quote-right"
+      />
+    </span>
+  </div>
+</div>
+`;

@@ -1,0 +1,22 @@
+.feedback {
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  font-size: 0.8em;
+  padding: 1em;
+  font-style: italic;
+
+  .fa {
+    color: #222;
+  }
+
+  &-success {
+    color: green;
+  }
+
+  &-error {
+    color: red;
+  }
+
+
+}

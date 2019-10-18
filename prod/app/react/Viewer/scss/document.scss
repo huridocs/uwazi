@@ -1,0 +1,145 @@
+@import "../../App/scss/config/_colors.scss";
+@import "../../App/scss/config/_materials.scss";
+@import "../../App/scss/config/_typography.scss";
+
+.content-header-document {
+  .content-header-title {
+    position: relative;
+  }
+
+  .btn-default {
+    position: absolute;
+    right: 10px
+  }
+
+  .paginator {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.document {
+  background: $c-white;
+  max-width: 900px;
+  margin: 0 -15px;
+  padding: 15px;
+  
+  @media(min-width: 1024px) {
+    padding: 30px;
+    margin: 0 auto;
+  }
+
+  ::selection {
+    background: saturate(#4888BE, 20%);
+  }
+
+  .fake-selection {
+    color: $c-success;
+    background-color: $c-success-light;
+  }
+
+  b {
+    font-weight: normal;
+    .creation-button {
+      opacity: 0;
+      display: block;
+      position: absolute;
+      background: $c-white;
+      right: 0;
+      width: 31px;
+      height: 31px;
+      line-height: 31px;
+      text-align: center;
+      border-radius: 50%;
+      box-shadow: $box-shadow;
+      border: 1px solid $c-grey;
+      color: $c-grey-dark;
+      transform: translateY(-100%) translateX(50%);
+      font-size: $f-size-sm;
+      cursor: pointer;
+    }
+    &.is-active {
+      background: $c-grey-light;
+      padding: 4px 0 0;
+      span {
+        opacity: 1;
+        background: $c-success-light;
+        color: $c-success;
+        border-color: $c-success;
+      }
+    }
+    &.is-relation {
+      background: #FFFFC5;
+      color: orange;
+      border-color: orange;
+      span {
+        opacity: 1;
+        background: #FFFFC5;
+        color: orange;
+        border-color: orange;
+      }
+    }
+  }
+}
+
+.comments-button {
+  display: block;
+  position: absolute;
+  background: $c-white;
+  right: -35px;
+  width: 31px;
+  height: 31px;
+  line-height: 31px;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: $box-shadow;
+  border: 1px solid $c-grey;
+  color: $c-grey-dark;
+  transform: translateY(-100%) translateX(50%);
+  font-size: $f-size-sm;
+  .fa {
+    margin-right: 2px;
+  }
+}
+
+.sourceDocument,
+.targetDocument {
+  padding: 0;
+  background: transparent;
+}
+
+.page {
+  position: relative;
+  background: $c-white;
+  margin: 0 auto 30px !important;
+  box-shadow: $box-shadow;
+}
+
+.document.targetDocument {
+  padding-top: 54px;
+}
+
+.document.targetDocument._undefined {
+  display: none;
+}
+
+.document-viewer.show-target-document {
+  .sourceDocument {
+    display: none;
+  }
+  .targetDocument {
+    opacity: 1;
+  }
+}
+
+.loadingIcon {
+  width: 100%;
+  height: 150px;
+  background: url('../../../../public/document-loader.gif') center no-repeat;
+}
+
+.textLayer {
+  opacity: 1;
+}
+.textLayer ::selection { background: rgba(0,0,255,0.2); }
+.textLayer ::-moz-selection { background: rgba(0,0,255,0.2); }

@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DateRange should allow using the local timezone 1`] = `
+<div>
+  <div
+    className="DatePicker__From"
+  >
+    <span>
+      From:
+       
+    </span>
+    <DatePicker
+      endOfDay={false}
+      format="DD/MM/YYYY"
+      locale="en"
+      onChange={[Function]}
+      useTimezone={true}
+      value={0}
+    />
+  </div>
+  <div
+    className="DatePicker__To"
+  >
+    <span>
+       
+      To:
+       
+    </span>
+    <DatePicker
+      endOfDay={true}
+      format="DD/MM/YYYY"
+      locale="en"
+      onChange={[Function]}
+      useTimezone={true}
+      value={1}
+    />
+  </div>
+</div>
+`;
+
+exports[`DateRange should render the component 1`] = `
+<div>
+  <div
+    className="DatePicker__From"
+  >
+    <span>
+      From:
+       
+    </span>
+    <DatePicker
+      endOfDay={false}
+      format="DD/MM/YYYY"
+      locale="en"
+      onChange={[Function]}
+      useTimezone={false}
+      value={0}
+    />
+  </div>
+  <div
+    className="DatePicker__To"
+  >
+    <span>
+       
+      To:
+       
+    </span>
+    <DatePicker
+      endOfDay={true}
+      format="DD/MM/YYYY"
+      locale="en"
+      onChange={[Function]}
+      useTimezone={false}
+      value={1}
+    />
+  </div>
+</div>
+`;

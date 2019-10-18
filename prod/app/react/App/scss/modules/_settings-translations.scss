@@ -1,0 +1,25 @@
+.EditTranslationForm {
+  .panel > .list-group .list-group-item {
+    display: block;
+  }
+  .input-group-addon {
+    min-width: 45px;
+    text-transform: uppercase;
+    color: $c-grey-dark;
+  }
+}
+
+.TranslationsList {
+  .item-type {
+    display: inline-block;
+    max-width: 90px;
+    width: auto;
+    margin-right: 15px;
+    position: relative;
+    top: 3px;
+  }
+  .item-type__name {
+    max-width: 100%;
+    margin: 0;
+  }
+}

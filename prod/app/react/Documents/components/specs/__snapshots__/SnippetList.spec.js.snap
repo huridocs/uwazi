@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SnippetList should render metadata snippets and document content snippets components  1`] = `
+<ul
+  className="snippet-list"
+>
+  <MetadataFieldSnippets
+    documentViewUrl="/document/sharedId"
+    fieldSnippets={
+      Immutable.Map {
+        "field": "title",
+        "texts": Immutable.List [
+          "metadata <b>snippet m1</b> found",
+        ],
+      }
+    }
+    key="title"
+    searchTerm="snippet"
+    template={
+      Immutable.Map {
+        "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
+        "properties": Immutable.List [
+          Immutable.Map {
+            "name": "summary",
+            "label": "Summary",
+          },
+        ],
+      }
+    }
+  />
+  <MetadataFieldSnippets
+    documentViewUrl="/document/sharedId"
+    fieldSnippets={
+      Immutable.Map {
+        "field": "metadata.summary",
+        "texts": Immutable.List [
+          "metadata <b>snippet m2</b>",
+        ],
+      }
+    }
+    key="metadata.summary"
+    searchTerm="snippet"
+    template={
+      Immutable.Map {
+        "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
+        "properties": Immutable.List [
+          Immutable.Map {
+            "name": "summary",
+            "label": "Summary",
+          },
+        ],
+      }
+    }
+  />
+  <DocumentContentSnippets
+    documentSnippets={
+      Immutable.List [
+        Immutable.Map {
+          "text": "first <b>snippet 1</b> found",
+          "page": 1,
+        },
+        Immutable.Map {
+          "text": "second <b>snippet 3</b> found",
+          "page": 2,
+        },
+        Immutable.Map {
+          "text": "third <b>snippet 3</b> found",
+          "page": 3,
+        },
+      ]
+    }
+    documentViewUrl="/document/sharedId"
+    searchTerm="snippet"
+    selectSnippet={[MockFunction]}
+    selectedSnippet={
+      Immutable.Map {
+        "text": "first <b>snippet 1</b> found",
+        "page": 1,
+      }
+    }
+  />
+</ul>
+`;
+
+exports[`SnippetList should render only document snippets if there are no metadata snippets 1`] = `
+<ul
+  className="snippet-list"
+>
+  <DocumentContentSnippets
+    documentSnippets={
+      Immutable.List [
+        Immutable.Map {
+          "text": "first <b>snippet 1</b> found",
+          "page": 1,
+        },
+        Immutable.Map {
+          "text": "second <b>snippet 3</b> found",
+          "page": 2,
+        },
+        Immutable.Map {
+          "text": "third <b>snippet 3</b> found",
+          "page": 3,
+        },
+      ]
+    }
+    documentViewUrl="/document/sharedId"
+    searchTerm="snippet"
+    selectSnippet={[MockFunction]}
+    selectedSnippet={
+      Immutable.Map {
+        "text": "first <b>snippet 1</b> found",
+        "page": 1,
+      }
+    }
+  />
+</ul>
+`;
+
+exports[`SnippetList should render only metadata snippets if there are no document snippets 1`] = `
+<ul
+  className="snippet-list"
+>
+  <MetadataFieldSnippets
+    documentViewUrl="/document/sharedId"
+    fieldSnippets={
+      Immutable.Map {
+        "field": "title",
+        "texts": Immutable.List [
+          "metadata <b>snippet m1</b> found",
+        ],
+      }
+    }
+    key="title"
+    searchTerm="snippet"
+    template={
+      Immutable.Map {
+        "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
+        "properties": Immutable.List [
+          Immutable.Map {
+            "name": "summary",
+            "label": "Summary",
+          },
+        ],
+      }
+    }
+  />
+  <MetadataFieldSnippets
+    documentViewUrl="/document/sharedId"
+    fieldSnippets={
+      Immutable.Map {
+        "field": "metadata.summary",
+        "texts": Immutable.List [
+          "metadata <b>snippet m2</b>",
+        ],
+      }
+    }
+    key="metadata.summary"
+    searchTerm="snippet"
+    template={
+      Immutable.Map {
+        "_id": "template",
+        "commonProperties": Immutable.List [
+          Immutable.Map {
+            "name": "title",
+            "label": "Title",
+          },
+        ],
+        "properties": Immutable.List [
+          Immutable.Map {
+            "name": "summary",
+            "label": "Summary",
+          },
+        ],
+      }
+    }
+  />
+</ul>
+`;

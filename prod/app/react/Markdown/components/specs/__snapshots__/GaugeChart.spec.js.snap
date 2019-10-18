@@ -1,0 +1,205 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GaugeChart Markdown component should allow rendering value with prefix, suffix, and personalizing values 1`] = `
+<div
+  className="GaugeChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={300}
+    width="100%"
+  >
+    <PieChart
+      barCategoryGap="10%"
+      barGap={4}
+      cx="50%"
+      cy="50%"
+      endAngle={360}
+      height={600}
+      innerRadius={0}
+      layout="centric"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      outerRadius="80%"
+      reverseStackOrder={false}
+      stackOffset="none"
+      startAngle={0}
+      width={600}
+    >
+      <Pie
+        animationBegin={400}
+        animationDuration={1500}
+        animationEasing="ease"
+        blendStroke={false}
+        cx="50%"
+        cy={300}
+        data={
+          Array [
+            Object {
+              "label": "progress",
+              "results": 4,
+            },
+            Object {
+              "label": "",
+              "results": 8,
+            },
+          ]
+        }
+        dataKey="results"
+        endAngle={0}
+        fill="#8884d8"
+        hide={false}
+        innerRadius={240}
+        isAnimationActive={true}
+        labelLine={false}
+        legendType="rect"
+        minAngle={0}
+        nameKey="name"
+        outerRadius={300}
+        paddingAngle={0}
+        startAngle={180}
+        stroke="#fff"
+      >
+        <Cell
+          fill="#f00"
+          key="0"
+        />
+        <Cell
+          fill="#0f0"
+          key="1"
+        />
+      </Pie>
+      <g>
+        <text
+          dy={-1}
+          fill="#f00"
+          style={
+            Object {
+              "fontSize": "150px",
+            }
+          }
+          textAnchor="middle"
+          x="50%"
+          y={300}
+        >
+          Pre 
+          <div
+            dataset="custom dataset"
+            key=".1"
+            property="progress"
+          />
+           Suf
+        </text>
+      </g>
+    </PieChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`GaugeChart Markdown component should render a placeholder when data is undefined 1`] = `
+<div
+  className="GaugeChart "
+>
+  <Loader />
+</div>
+`;
+
+exports[`GaugeChart Markdown component should render the data passed by mapStateToProps 1`] = `
+<div
+  className="GaugeChart "
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={110}
+    width="100%"
+  >
+    <PieChart
+      barCategoryGap="10%"
+      barGap={4}
+      cx="50%"
+      cy="50%"
+      endAngle={360}
+      height={220}
+      innerRadius={0}
+      layout="centric"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      outerRadius="80%"
+      reverseStackOrder={false}
+      stackOffset="none"
+      startAngle={0}
+      width={220}
+    >
+      <Pie
+        animationBegin={400}
+        animationDuration={1500}
+        animationEasing="ease"
+        blendStroke={false}
+        cx="50%"
+        cy={110}
+        data={
+          Array [
+            Object {
+              "label": "progress",
+              "results": 4,
+            },
+            Object {
+              "label": "",
+              "results": 96,
+            },
+          ]
+        }
+        dataKey="results"
+        endAngle={0}
+        fill="#8884d8"
+        hide={false}
+        innerRadius={88}
+        isAnimationActive={true}
+        labelLine={false}
+        legendType="rect"
+        minAngle={0}
+        nameKey="name"
+        outerRadius={110}
+        paddingAngle={0}
+        startAngle={180}
+        stroke="#fff"
+      >
+        <Cell
+          fill="#000099"
+          key="0"
+        />
+        <Cell
+          fill="#ccc"
+          key="1"
+        />
+      </Pie>
+      <g>
+        <text
+          dy={-1}
+          fill="#000099"
+          style={
+            Object {
+              "fontSize": "55px",
+            }
+          }
+          textAnchor="middle"
+          x="50%"
+          y={110}
+        />
+      </g>
+    </PieChart>
+  </ResponsiveContainer>
+</div>
+`;

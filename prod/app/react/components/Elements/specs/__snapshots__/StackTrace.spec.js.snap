@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StackTrace expanded should display the full message 1`] = `
+<div
+  className="stack-trace"
+  onClick={[Function]}
+>
+  <Connect(Icon)
+    icon="sort"
+  />
+   
+  <span>
+    ValidationError: title: Path \`title\` is required. ...
+  </span>
+</div>
+`;
+
+exports[`StackTrace should display a shortened message 1`] = `
+<div
+  className="stack-trace"
+  onClick={[Function]}
+>
+  <Connect(Icon)
+    icon="sort"
+  />
+   
+  <span>
+    ValidationError: title: Path \`title\` is required. ...
+  </span>
+</div>
+`;

@@ -1,0 +1,727 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BarChart Markdown component should render a placeholder when data is undefined 1`] = `
+<div
+  className="BarChart "
+>
+  <Loader />
+</div>
+`;
+
+exports[`BarChart Markdown component should render the data passed by mapStateToProps 1`] = `
+<div
+  className="BarChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "id": "id2",
+            "label": "label2",
+            "results": 33,
+          },
+          Object {
+            "id": "id1",
+            "label": "label1",
+            "results": 25,
+          },
+          Object {
+            "id": "id3",
+            "label": "label3",
+            "results": 13,
+          },
+          Object {
+            "id": "id4",
+            "label": "label4",
+            "results": 0,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="results"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`BarChart Markdown component when excludeZero should render without zero values 1`] = `
+<div
+  className="BarChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "id": "id2",
+            "label": "label2",
+            "results": 33,
+          },
+          Object {
+            "id": "id1",
+            "label": "label1",
+            "results": 25,
+          },
+          Object {
+            "id": "id3",
+            "label": "label3",
+            "results": 13,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="results"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`BarChart Markdown component when layout is vertical should render axis properly 1`] = `
+<YAxis
+  allowDataOverflow={false}
+  allowDecimals={true}
+  allowDuplicatedCategory={true}
+  dataKey="label"
+  domain={
+    Array [
+      0,
+      "auto",
+    ]
+  }
+  height={0}
+  hide={false}
+  mirror={false}
+  orientation="left"
+  padding={
+    Object {
+      "bottom": 0,
+      "top": 0,
+    }
+  }
+  reversed={false}
+  scale="auto"
+  tickCount={5}
+  type="category"
+  width={200}
+  yAxisId={0}
+/>
+`;
+
+exports[`BarChart Markdown component when layout is vertical should render axis properly 2`] = `
+<XAxis
+  allowDataOverflow={false}
+  allowDecimals={true}
+  allowDuplicatedCategory={true}
+  dataKey="results"
+  domain={
+    Array [
+      0,
+      "auto",
+    ]
+  }
+  height={30}
+  hide={false}
+  mirror={false}
+  orientation="bottom"
+  padding={
+    Object {
+      "left": 0,
+      "right": 0,
+    }
+  }
+  reversed={false}
+  scale="auto"
+  tickCount={5}
+  type="number"
+  width={0}
+  xAxisId={0}
+/>
+`;
+
+exports[`BarChart Markdown component when passing maxCategories should only render the number of categories passed 1`] = `
+<div
+  className="BarChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "id": "id2",
+            "label": "label2",
+            "results": 33,
+          },
+          Object {
+            "id": "id1",
+            "label": "label1",
+            "results": 25,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="results"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;
+
+exports[`BarChart Markdown component when passing maxCategories should render others when passing aggregateOthers 1`] = `
+<div
+  className="BarChart custom-class"
+>
+  <ResponsiveContainer
+    debounce={0}
+    height={320}
+    width="100%"
+  >
+    <BarChart
+      barCategoryGap="10%"
+      barGap={4}
+      data={
+        Array [
+          Object {
+            "id": "id2",
+            "label": "label2",
+            "results": 33,
+          },
+          Object {
+            "id": "others",
+            "label": "others",
+            "others": true,
+            "results": 40,
+          },
+        ]
+      }
+      height={300}
+      layout="horizontal"
+      margin={
+        Object {
+          "bottom": 5,
+          "left": 5,
+          "right": 5,
+          "top": 5,
+        }
+      }
+      reverseStackOrder={false}
+      stackOffset="none"
+    >
+      <XAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        dataKey="label"
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={30}
+        hide={false}
+        label=""
+        mirror={false}
+        orientation="bottom"
+        padding={
+          Object {
+            "left": 0,
+            "right": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="category"
+        width={0}
+        xAxisId={0}
+      />
+      <YAxis
+        allowDataOverflow={false}
+        allowDecimals={true}
+        allowDuplicatedCategory={true}
+        domain={
+          Array [
+            0,
+            "auto",
+          ]
+        }
+        height={0}
+        hide={false}
+        mirror={false}
+        orientation="left"
+        padding={
+          Object {
+            "bottom": 0,
+            "top": 0,
+          }
+        }
+        reversed={false}
+        scale="auto"
+        tickCount={5}
+        type="number"
+        width={60}
+        yAxisId={0}
+      />
+      <CartesianGrid
+        fill="none"
+        horizontal={true}
+        horizontalFill={Array []}
+        horizontalPoints={Array []}
+        stroke="#ccc"
+        strokeDasharray="2 4"
+        vertical={true}
+        verticalFill={Array []}
+        verticalPoints={Array []}
+      />
+      <Tooltip
+        active={false}
+        animationDuration={400}
+        animationEasing="ease"
+        contentStyle={Object {}}
+        coordinate={
+          Object {
+            "x": 0,
+            "y": 0,
+          }
+        }
+        cursor={true}
+        cursorStyle={Object {}}
+        filterNull={true}
+        isAnimationActive={true}
+        itemSorter={[Function]}
+        itemStyle={Object {}}
+        labelStyle={Object {}}
+        offset={10}
+        separator=" : "
+        useTranslate3d={false}
+        viewBox={
+          Object {
+            "x1": 0,
+            "x2": 0,
+            "y1": 0,
+            "y2": 0,
+          }
+        }
+        wrapperStyle={Object {}}
+      />
+      <Bar
+        animationBegin={0}
+        animationDuration={400}
+        animationEasing="ease"
+        data={Array []}
+        dataKey="results"
+        fill="rgb(30, 28, 138)"
+        hide={false}
+        isAnimationActive={true}
+        layout="vertical"
+        legendType="rect"
+        minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
+        stackId="unique"
+        xAxisId={0}
+        yAxisId={0}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+`;

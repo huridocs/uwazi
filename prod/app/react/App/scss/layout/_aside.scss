@@ -1,0 +1,25 @@
+aside,
+.entity-viewer {
+  h2 {
+    font-size: $f-size-sm;
+    padding-left: 15px;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    .property-help {
+      text-transform: none;
+    }
+    small {
+      position: absolute;
+      top: -2px;
+      left: 0;
+      height: 16px;
+      line-height: 15px;
+      border: 1px solid $c-grey;
+      color: $c-grey-dark;
+      width: 16px;
+      text-align: center;
+      border-radius: 50%;
+    }
+  }
+}

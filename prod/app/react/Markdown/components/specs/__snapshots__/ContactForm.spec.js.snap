@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ContactForm should render the ContactForm 1`] = `
+<form
+  className="contact-form"
+  onSubmit={[Function]}
+>
+  <div
+    className="form-group"
+  >
+    <label
+      className="form-group-label"
+      htmlFor="name"
+    >
+      <Connect(Translate)>
+        Name
+      </Connect(Translate)>
+    </label>
+    <input
+      className="form-control"
+      name="name"
+      onChange={[Function]}
+      required={true}
+      value=""
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label
+      className="form-group-label"
+      htmlFor="email"
+    >
+      <Connect(Translate)>
+        Email
+      </Connect(Translate)>
+    </label>
+    <input
+      className="form-control"
+      name="email"
+      onChange={[Function]}
+      required={true}
+      value=""
+    />
+  </div>
+  <div
+    className="form-group"
+  >
+    <label
+      className="form-group-label"
+      htmlFor="message"
+    >
+      <Connect(Translate)>
+        Message
+      </Connect(Translate)>
+    </label>
+    <textarea
+      className="form-control"
+      name="message"
+      onChange={[Function]}
+      required={true}
+      value=""
+    />
+  </div>
+  <button
+    className="btn btn-success"
+    type="submit"
+  >
+    <Connect(Icon)
+      icon="paper-plane"
+    />
+     
+    <span
+      className="btn-label"
+    >
+      <Connect(Translate)>
+        Send
+      </Connect(Translate)>
+    </span>
+  </button>
+</form>
+`;

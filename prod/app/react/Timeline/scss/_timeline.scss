@@ -1,0 +1,187 @@
+$timeline-item-size: 18px;
+.timeline {
+  padding: 0 50px 10px;
+
+  &-track {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+  &-year {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column-reverse;
+    width: 100%;
+    padding-top: 20px;
+  }
+  &-track:first-child &-year {
+    padding-top: 2px;
+  }
+  &-track:last-child &-year{
+    padding-top: 0;
+  }
+  &-track:not(:last-of-type) &-year {
+    border-left: 1px solid $c-grey-light;
+  }
+  &-track:not(:last-of-type) &-year.nth5 {
+    background: lighten($c-grey, 16%);
+  }
+
+  &-year-active {
+    border-bottom: 1px solid $c-primary;
+    padding-bottom: 5px;
+
+    &.type-1  { border-bottom-color: $c-type-1;  }
+    &.type-2  { border-bottom-color: $c-type-2;  }
+    &.type-3  { border-bottom-color: $c-type-3;  }
+    &.type-4  { border-bottom-color: $c-type-4;  }
+    &.type-5  { border-bottom-color: $c-type-5;  }
+    &.type-6  { border-bottom-color: $c-type-6;  }
+    &.type-7  { border-bottom-color: $c-type-7;  }
+    &.type-8  { border-bottom-color: $c-type-8;  }
+    &.type-9  { border-bottom-color: $c-type-9;  }
+    &.type-10 { border-bottom-color: $c-type-10; }
+    &.type-11 { border-bottom-color: $c-type-11; }
+    &.type-12 { border-bottom-color: $c-type-12; }
+    &.type-13 { border-bottom-color: $c-type-13; }
+    &.type-14 { border-bottom-color: $c-type-14; }
+    &.type-15 { border-bottom-color: $c-type-15; }
+    &.type-16 { border-bottom-color: $c-type-16; }
+    &.type-17 { border-bottom-color: $c-type-17; }
+    &.type-18 { border-bottom-color: $c-type-18; }
+  }
+  &-track-label {
+    z-index: 1;
+    background: $c-primary;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    left: -1px;
+    margin: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    max-width: 999px;
+  }
+  &-milestone {
+    position: absolute;
+    top: 0;
+    right: calc(100% + 9px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 1px;
+    white-space: nowrap;
+    font-size: 9px;
+    background: $c-white;
+    color: $c-grey-dark;
+    border: 1px solid $c-grey;
+    border-radius: $border-radius;
+    font-family: $f-mono;
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      display: block;
+      width: 10px;
+      height: 1px;
+      background: $c-grey;
+    }
+  }
+  &-label {
+    position: relative;
+    //width: $timeline-item-size;
+    height: $timeline-item-size;
+  }
+
+  &-label {
+    span {
+      display: none;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      width: 1px;
+      height: 6px;
+      top: 15px;
+      background: #ccc;
+    }
+  }
+
+  &-label-text {
+    display: block;
+    span {
+      display: block;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200%;
+      text-align: center;
+      font-size: $f-size-sm;
+      padding-top: $timeline-item-size;
+      white-space: nowrap;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      width: 1px;
+      height: 10px;
+      top: 13px;
+      background: $c-black;
+    }
+  }
+
+  a.timeline-item,
+  .timeline-item {
+    position: relative;
+    width: 80%;
+    max-width: $timeline-item-size;
+    margin: 1px;
+    text-align: center;
+    background: $c-white;
+    color: $c-white;
+    font-size: $timeline-item-size - 9px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+    border-radius: 50%;
+    border-width: 0;
+
+    &:before {
+      content: '';
+      float: left;
+      padding-top: 100%;
+    }
+
+    &-type-1  { background-color: $c-type-1  };
+    &-type-2  { background-color: $c-type-2  };
+    &-type-3  { background-color: $c-type-3  };
+    &-type-4  { background-color: $c-type-4  };
+    &-type-5  { background-color: $c-type-5  };
+    &-type-6  { background-color: $c-type-6  };
+    &-type-7  { background-color: $c-type-7  };
+    &-type-8  { background-color: $c-type-8  };
+    &-type-9  { background-color: $c-type-9  };
+    &-type-10 { background-color: $c-type-10 };
+    &-type-11 { background-color: $c-type-11 };
+    &-type-12 { background-color: $c-type-12 };
+    &-type-13 { background-color: $c-type-13 };
+    &-type-14 { background-color: $c-type-14 };
+    &-type-15 { background-color: $c-type-15 };
+    &-type-16 { background-color: $c-type-16 };
+    &-type-17 { background-color: $c-type-17 };
+    &-type-18 { background-color: $c-type-18 };
+
+    .fa {
+      position: absolute;
+      top: 47%;
+      left: 47%;
+      transform: translateX(-50%) translateY(-50%);
+    }
+  }
+
+}

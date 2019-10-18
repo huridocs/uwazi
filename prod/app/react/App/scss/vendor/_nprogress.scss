@@ -1,0 +1,13 @@
+#nprogress {
+  transition: all 0ms !important;
+  .bar {
+    height: 4px !important;
+    background: $c-primary !important;
+    position: absolute;
+    top: 50px;
+  }
+
+  .peg {
+    display: none;
+  }
+}

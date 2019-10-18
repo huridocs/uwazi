@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });Object.defineProperty(exports, "api", { enumerable: true, get: function () {return _EntitiesAPI.default;} });var _EntitiesAPI = _interopRequireDefault(require("./EntitiesAPI"));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}

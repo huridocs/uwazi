@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });Object.defineProperty(exports, "model", { enumerable: true, get: function () {return _updatelogsModel.default;} });var _updatelogsModel = _interopRequireDefault(require("./updatelogsModel.js"));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}

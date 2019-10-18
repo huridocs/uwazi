@@ -1,0 +1,277 @@
+@import "../../App/scss/config/_colors.scss";
+@import "../../App/scss/config/_materials.scss";
+@import "../../App/scss/config/_typography.scss";
+@import "../../App/scss/elements/_tooltip.scss";
+
+$c-sidebar: darken($c-background, 0%);
+$c-sidebar: $c-white;
+.side-panel {
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0;
+  top: $header-height + 1;
+  bottom: 0;
+  border-left: 1px solid $c-grey-light;
+  background-color: $c-sidebar;
+  width: calc(100% - #{$header-height});
+  transition: right 300ms;
+  &.is-hidden {
+    right: -100%;
+  }
+  @media(min-width: 454px) {
+    width: 400px;
+    &.is-hidden {
+      right: -400px;
+    }
+  }
+
+
+  h1 {
+    font-size: $f-size-lg;
+  }
+  .item-icon {
+    top: -2px;
+  }
+  .item-icon.item-icon-center {
+    & img {
+      vertical-align: bottom;
+    }
+
+    & i.fa {
+      line-height: 0;
+      margin: 0;
+    }
+  }
+  .item-info .btn-color {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: $f-size-sm;
+  }
+
+  .closeSidepanel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    text-align: center;
+    font-size: $f-size-lg;
+    color: $c-grey;
+    cursor: pointer;
+    z-index: 5;
+    border: 0;
+    background-color: transparent;
+    &:hover {
+      color: $c-grey-dark;
+    }
+  }
+  .form-group {
+    margin: 0;
+    .fa-warning {
+      color: $c-warning;
+    }
+  }
+
+  .sort-by {
+    padding: 5px 15px;
+    height: 30px;
+    margin: 0;
+
+    .Dropdown {
+      right: 15px;
+    }
+  }
+
+  .item-group-header {
+    display: block;
+    width: 100%;
+    padding: 6px 15px;
+    text-align: left;
+    border: 0;
+    background: 0;
+    box-shadow: none;
+    outline: none;
+    background: $c-grey-lighten;
+    margin-bottom: 1px;
+
+    &.is-expanded {
+      border-bottom: 1px solid $c-grey-light;
+      color: $c-primary;
+    }
+
+    .itemGroup-title {
+      font-weight: bold;
+    }
+
+    &:hover .itemGroup-title {
+      text-decoration: underline;
+    }
+
+    &:hover .multiselectItem-action {
+      border-color: $c-primary;
+    }
+
+    .multiselectItem-results {
+    }
+
+    &.is-expanded .multiselectItem-results {
+    }
+
+    .title {
+      position: relative;
+      line-height: 24px;
+    }
+  }
+
+  .item-group {
+    padding: 0px;
+  }
+  .item {
+    transition: all 0ms;
+    width: 100%;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    box-shadow: none;
+    &:before {
+      display: none;
+    }
+
+    &.relationship-hover,
+    &.highlight-hover:hover {
+      box-shadow: inset 0 0 0 1px $c-grey-light;
+    }
+
+    &.relationship-active {
+      box-shadow: inset 0 0 0 1px $c-primary, inset 0 0 0 4px transparentize($c-primary, 0.7);
+    }
+  }
+  @media(min-width: 1024px) {
+    .item-metadata dt {
+      @include tooltip('top-left');
+    }
+  }
+
+  .search-box {
+    width: calc(100% - 30px);
+    max-width: 100%;
+    margin: 15px 15px 30px 15px;
+    z-index: 1;
+
+    .form-control {
+      font-size: $f-size;
+    }
+  }
+}
+
+.sidepanel-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: $f-size-sm;
+
+  & > *:last-child { // firefox hack (related issue #378)
+    padding-bottom: $header-height * 2;
+  }
+}
+
+.sidepanel-header,
+.sidepanel-footer {
+  z-index: 4;
+}
+
+.sidepanel-header {
+  background: $c-sidebar;
+  position: relative;
+  min-height: $header-height;
+  line-height: $header-height;
+  border-bottom: 1px solid $c-grey-light;
+  padding: 0 15px;
+
+  &.no-border {
+    border-bottom: 0;
+  }
+
+  .item-info {
+    padding: 0 0 30px;
+  }
+
+  .nav-tabs {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: $header-height;
+  }
+
+  .fa {
+    font-size: $f-size-lg;
+  }
+}
+.sidepanel-footer {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 0 20px;
+  text-align: center;
+  white-space: nowrap;
+
+  .btn {
+    position: relative;
+    border-radius: 50%;
+    width: $header-height;
+    height: $header-height;
+    line-height: $header-height;
+    font-size: $f-size-lg;
+    padding: 0;
+    margin: 0 6px;
+  }
+
+  .btn-label {
+    color: $c-grey-dark;
+    position: absolute;
+    top: 100%;
+    font-size: $f-size-xs;
+    line-height: 1.5em;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0 5px;
+  }
+
+  .btn:hover .btn-label {
+    color: $c-black;
+  }
+
+  .btn-success {
+    border: 0;
+  }
+
+  .btn:disabled {
+    cursor: default;
+    opacity: .7;
+  }
+  .btn:disabled .btn-label {
+    color: $c-grey !important;
+  }
+}
+
+.sidepanel-title {
+  padding: 15px 15px 0;
+  margin: 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  opacity: .6;
+}
+
+.item.readOnly {
+  cursor: default;
+  &:hover{
+    cursor: default;
+  }
+}

@@ -1,0 +1,755 @@
+$breakpoint: 768px;
+$c-background: #fcfcfc;
+
+.entity-viewer,
+.document-viewer {
+  .search-list.centered,
+  .sort-by.centered {
+    max-width: 910px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.relationships-graph {
+  width: 100%;
+  max-width: 960px;
+  list-style-type: none;
+  padding: 0 25px;
+  margin: auto;
+
+  .expand-section {
+    position: relative;
+    min-height: 45px;
+
+    > button {
+      position: absolute;
+      right: 0;
+      z-index: 2;
+      > .fa {
+        padding-right: 10px;
+      }
+    }
+
+    @media(min-width: $breakpoint) {
+      min-height: 15px;
+    }
+  }
+
+  .metadata-swtich {
+    float: right;
+    margin-top: -47px;
+  }
+
+
+  .item {
+    width: 100%;
+  }
+
+  .connection .connection-data {
+    min-height: 0;
+    padding-bottom: 0;
+
+    .item-info {
+      padding: 5px 15px;
+    }
+  }
+
+  .item-connection {
+    position: relative;
+    border: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    background: transparent;
+
+    dl {
+      margin: 0;
+    }
+  }
+
+  .item-connection,
+  .connection-data {
+    .item-metadata {
+      border: 1px dashed #ccc;
+      border-top: 1px dashed #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      width: calc(100% + 2px);
+      margin: -1px;
+      padding: 2px 15px 7px;
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius: 5px;
+      background: #fefefe;
+    }
+  }
+
+  .group {
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    &:not(:last-child) {
+      border-bottom: 2px dotted #ccc;
+    }
+
+    > div {
+      margin-bottom: 15px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .group-row {
+    position: relative;
+    overflow: hidden;
+    @media(min-width: $breakpoint) {
+      display: flex;
+      align-items: flex-start;
+      & > div {
+        flex: 1;
+        z-index: 2;
+      }
+      .target-connections {
+        z-index: 1;
+      }
+    }
+  }
+  .source {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    @media(min-width: $breakpoint) {
+      padding-right: 50px;
+    }
+  }
+  .source-row,
+  .source-connections-1 {
+    position: relative;
+  }
+
+  .target-connections {
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    @media(min-width: $breakpoint) {
+      margin-left: 0;
+    }
+  }
+
+  .source-connections-1 + .target-connections,
+  .source-row + .target-connections {
+    margin-left: 0;
+  }
+
+  .source-row + .target-connections {
+    opacity: 0;
+  }
+
+  .connection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 15px;
+    padding-right: 0;
+    position: relative;
+
+    &:not(:first-child) {
+      padding-top: 15px;
+    }
+
+    @media(min-width: $breakpoint) {
+      padding-left: 50px;
+    }
+  }
+
+  .connection-data {
+    position: relative;
+    margin: 0 0 5px;
+    border: 1px solid #d7d7dc;
+    border-radius: 5px;
+    background: #eee;
+    width: 100%;
+  }
+
+  .connection-type {
+    width: 100%;
+    padding: 5px 15px;
+    font-size: $f-size-sm;
+    margin: 0;
+    color: #777;
+
+    .fa {
+      margin-right: 5px;
+    }
+  }
+
+  .item-connection {
+    .connection-data {
+      margin: 0;
+      width: 100%;
+    }
+  }
+
+  .item + .item-connection {
+    margin-top: 15px;
+  }
+
+  .connection-type:has(> .fa-exchange-alt) {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .target-connections > div:first-child {
+    margin-top: 15px;
+  }
+
+  @media(min-width: $breakpoint) {
+    .source > div:first-child,
+    .target-connections > div:first-child {
+      margin-top: 30px;
+    }
+  }
+
+  .item-collapsed {
+    padding-bottom: 0;
+    min-height: 0;
+
+    .item-actions {
+      padding: 0 10px 10px;
+      display: -webkit-flex;
+      -webkit-align-items: center;
+      align-items: center;
+      height: auto;
+      position: relative;
+      font-size: $f-size-sm;
+
+      .item-label-group {
+  width: auto;
+      }
+
+      .item-shortcut {
+        display: none;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+    }
+
+    .item-info {
+      padding: 5px 10px;
+    }
+    .item-metadata {
+      display: none;
+    }
+  }
+
+  $hub-size: 16px;
+  .hub {
+    width: $hub-size;
+    height: $hub-size;
+    background: $c-grey-lighten;
+    border: 1px solid $c-grey-light;
+    position: absolute;
+    top: (28px - $hub-size)/2;
+    right: -50px - $hub-size/2;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  .item-connection {
+    &:after {
+      content: '';
+      display: block;
+      background: $c-grey-light;
+      position: absolute;
+      height: 1px;
+      width: 50px;
+      top: 13px;
+      right: -50px;
+    }
+  }
+
+  .target-connections {
+    .connection-data:before, .item.no-connection:before {
+      content: '';
+      display: block;
+      background: $c-grey-light;
+      position: absolute;
+      height: 1px;
+      width: 16px;
+      top: 13px;
+      right: 100%;
+      @media(min-width: $breakpoint) {
+        width: 51px;
+      }
+    }
+  }
+
+  .source:not(.source-row) {
+    & .hub:after {
+      content: '';
+      display: block;
+      width: 1px;
+      top: -100vh;
+      bottom: $hub-size - 1px;
+      background: $c-grey-light;
+      position: absolute;
+      left: 50%;
+    }
+  }
+
+  .target-connections {
+    border-left: 1px solid $c-grey-light;
+
+    .connection:last-child:after {
+      content: '';
+      display: block;
+      width: 14px;
+      background: $c-background;
+      position: absolute;
+      bottom: 0;
+      top: 30px;
+      left: 0px;
+      margin-left: -2px;
+    }
+  }
+
+  .group-row {
+    @media(min-width: $breakpoint) {
+      &:before {
+        content: '';
+        display: block;
+        width: 14px;
+        height: 44px;
+        position: absolute;
+        z-index: 2;
+        margin-left: -2px;
+        left: 50%;
+        z-index: 3;
+      }
+    }
+  }
+
+  .group.group-collapse .target-connections .connection {
+    &.last-of-type:after,
+    &.last-of-type.as-previous:after {
+      content: '';
+      display: block;
+      width: 14px;
+      background: $c-background;
+      position: absolute;
+      bottom: -15px;
+      top: 30px;
+      left: 0px;
+      margin-left: -2px;
+    }
+
+    &.last-of-type.as-previous:after,
+    &.last-of-type:first-child:after {
+      top: 15px;
+    }
+  }
+
+  .target-connections-multiple:before {
+    height: 44px - $hub-size/2;
+  }
+
+  @media(max-width: $breakpoint - 1) {
+    .sticky {
+      position: relative!important;
+      top: 0!important;
+    }
+  }
+
+  $c-type-0:            #C03B22;
+  $c-type-1:            #D9534F;
+  $c-type-2:            #E91E63;
+  $c-type-3:            #A03AB1;
+  $c-type-4:            #6F46B8;
+  $c-type-5:            #3F51B5;
+  $c-type-6:            #2196F3;
+  $c-type-7:            #37BDCf;
+  $c-type-8:            #359990;
+  $c-type-9:            #5CB85C;
+  $c-type-10:           #8BC34A;
+  $c-type-11:           #CDDC39;
+  $c-type-12:           #F7E64E;
+  $c-type-13:           #F0AD4E;
+  $c-type-14:           #EC9920;
+  $c-type-15:           #E46841;
+  $c-type-16:           #795548;
+  $c-type-17:           #9E9E9E;
+  $c-type-18:           #607D8B;
+
+  .connection-type-0 { color: $c-type-0; }
+  .connection-type-1 { color: $c-type-9; }
+  .connection-type-2 { color: $c-type-2; }
+  .connection-type-3 { color: $c-type-15; }
+  .connection-type-4 { color: $c-type-4; }
+  .connection-type-5 { color: $c-type-13; }
+  .connection-type-6 { color: $c-type-6; }
+  .connection-type-7 { color: $c-type-11; }
+  .connection-type-8 { color: $c-type-8; }
+  .connection-type-9 { color: $c-type-1; }
+  .connection-type-10 { color: $c-type-10; }
+  .connection-type-11 { color: $c-type-7; }
+  .connection-type-12 { color: $c-type-12; }
+  .connection-type-13 { color: $c-type-5; }
+  .connection-type-14 { color: $c-type-14; }
+  .connection-type-15 { color: $c-type-3; }
+  .connection-type-16 { color: $c-type-16; }
+  .connection-type-17 { color: $c-type-1; }
+  .connection-type-18 { color: $c-type-18; }
+
+}
+
+$relationship-type-height: 32px;
+
+.relationshipsHub {
+  display: flex;
+  position: relative;
+  margin-bottom: 30px;
+  line-height: 1em;
+
+  @media(max-width: 1023px) {
+    flex-direction: column;
+  }
+
+  .leftRelationshipType .rw-widget {
+    margin-bottom: 10px;
+  }
+
+  .rw-widget-input {
+    background: #EEEEEE;
+    border-radius: 0;
+    padding: 0 5px;
+    box-shadow: none;
+    height: $relationship-type-height;
+    cursor: pointer;
+  }
+
+  .rw-widget-input.no-edit,
+  .rw-input.no-edit, {
+    cursor: default;
+  }
+}
+
+.rounded-icon, .relationships-icon {
+  position: absolute;
+  border: 1px solid $c-grey-light;
+  color: $c-grey;
+  text-align: center;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  padding: 5px;
+}
+
+.rounded-icon-small {
+  position: absolute;
+  border: 1px solid $c-grey;
+  color: $c-grey;
+  text-align: center;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  padding: 3px;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.relationships-icon {
+  .removeHub & {
+    left: -38px;
+  }
+
+  &.moving {
+    border: 1px solid $c-success;
+    color: $c-success;
+  }
+
+  .rightRelationship &,
+  .removeRightRelationshipGroup & {
+    right: -38px;
+  }
+}
+
+.removeRightRelationshipGroup i, .removeHub i{
+  top: 3px;
+}
+
+.insertEntities, .relationships-new {
+  float: left;
+}
+
+.insertEntities {
+  position: relative;
+  right: -5px;
+  top: 7px;
+}
+
+.moveEntity {
+  top: 34px;
+  position: relative;
+}
+
+.relationshipsParent,
+.leftRelationshipType,
+.rightRelationships {
+  position: relative;
+
+  &.deleted {
+    opacity: 0.3;
+  }
+
+  @media(min-width: 1024px) {
+    width: 50%;
+  }
+}
+
+.relationshipsParent,
+.leftRelationshipType {
+  @media(min-width: 1024px) {
+    padding-right: 50px;
+  }
+}
+
+
+.rightRelationships {
+  @media(max-width: 1023px) {
+    margin-left: 10px;
+  }
+
+  &:after {
+    background: $c-grey-light;
+    width: 1px;
+    height: calc(100% - 30px);
+    content: '';
+    display: block;
+    position: absolute;
+    top: 23px;
+    left:0;
+    z-index: 1;
+  }
+
+  .last-of-type:after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    top: 16px;
+    left: 0;
+    width: 1px;
+    background: #fcfcfc;
+    z-index: 2;
+  }
+
+  :first-child .last-of-type:after {
+    top: 23px;
+  }
+}
+
+.relationship-metadata {
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  background-color: #fefefe;
+  margin-top: 5px;
+  position: relative;
+
+  .item-metadata {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .relationship-quote {
+    position: relative;
+    padding: 5px 25px 5px 25px;
+
+    .quoteIconStart {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      color: #aaa;
+    }
+
+    .quoteIconEnd {
+      position: absolute;
+      bottom: 7px;
+      right: 7px;
+      color: #aaa;
+    }
+  }
+}
+
+.leftRelationshipType {
+  margin-bottom: 10px;
+}
+
+.leftRelationshipType .rw-dropdown-list {
+  @media(max-width: 1023px) {
+    margin-bottom: 10px;
+  }
+}
+
+@media(max-width: 1023px) {
+  .leftRelationshipType .rw-dropdown-list:after,
+  .leftDocument.docWithoutRelationshipType > div:after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 35px;
+    background: #d7d7dc;
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    z-index: 1;
+  }
+}
+
+@media(min-width: 1024px) {
+  .leftRelationshipType .rw-dropdown-list:after,
+  .leftDocument.docWithoutRelationshipType > div:after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 1px;
+    background: $c-grey-light;
+    position: absolute;
+    top: 13px;
+    left: 100%;
+  }
+}
+
+.rightRelationships .rw-dropdown-list:after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 1px;
+  background: $c-grey-light;
+  position: absolute;
+  top: calc(50% - 1px);
+  right: 100%;
+}
+
+.rightRelationshipAdd {
+  width: 100%;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.rightRelationshipType {
+    &.last-of-type {
+      .rw-dropdown-list {
+        &:not(.no-edit):after {
+          background: none;
+        }
+      }
+  }
+}
+
+.hubRelationship {
+  z-index: 1;
+
+  @media(max-width: 1023px) {
+    display: none;
+  }
+}
+
+.hubRelationship figure {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: $c-grey-light;
+  border-radius: 50%;
+  transform: translateX(-50%) translateY(7px);
+}
+
+.rightRelationshipsTypeGroup {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  padding-left: 50px;
+
+  &.deleted {
+    opacity: 0.3;
+  }
+}
+
+.rightRelationshipsTypeGroup:before {
+  background: red;
+  width: 20px;
+  height: 20px;
+}
+
+.rightRelationshipsTypeGroup:not(:last-of-type) {
+  padding-bottom: 30px;
+}
+
+.rightRelationship {
+  width: 100%;
+  display: flex;
+  margin: 10px 0 0;
+
+  &.deleted {
+    opacity: 0.3;
+  }
+
+  &.move .item {
+    box-shadow: 4px 3px 20px 0px $c-grey;
+  }
+}
+
+.leftDocument {
+  width: 100%;
+  display: flex;
+  margin: 0;
+
+  &.deleted {
+    opacity: 0.3;
+  }
+
+  & .item {
+    margin-right: 0px;
+    margin-bottom: 0px;
+  }
+}
+
+.rightRelationship .item {
+  margin: 0 !important;
+}
+
+.rightRelationshipType {
+  flex: 1;
+}
+
+.relationships-new {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    padding: 5px 15px;
+    border: 1px dotted $c-grey-light;
+    color: $c-grey-dark;
+    line-height: $relationship-type-height;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .fa {
+        color: $c-success;
+    }
+
+    &:hover {
+        border-color: $c-grey;
+        color: $c-black;
+    }
+
+    &.is-active {
+        border: 1px solid $c-primary;
+        color: $c-black;
+        box-shadow: inset 0 1px 2px $c-grey-lighten, 0 0 0 3px transparentize($c-primary, 0.7);
+    }
+}

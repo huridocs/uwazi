@@ -1,0 +1,60 @@
+"use strict";var _react = _interopRequireDefault(require("react"));
+var _enzyme = require("enzyme");
+
+var _MultiDateRange = _interopRequireDefault(require("../MultiDateRange"));
+var _DatePicker = _interopRequireDefault(require("../DatePicker"));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+describe('MultiDateRange', () => {
+  let component;
+  let props;
+
+  beforeEach(() => {
+    props = {
+      label: 'input label',
+      value: [{ from: 1473984000, to: 1473984001 }, { from: 1474156800, to: 1474156801 }],
+      onChange: jasmine.createSpy('onChange') };
+
+  });
+
+  const render = () => {
+    component = (0, _enzyme.shallow)(_react.default.createElement(_MultiDateRange.default, props));
+  };
+
+  it('should render a pair of DatePickers for each value', () => {
+    render();
+    const datepickers = component.find(_DatePicker.default);
+    expect(datepickers.length).toBe(4);
+  });
+
+  describe('changing a datepicker', () => {
+    it('should call onChange with the new array of values', () => {
+      render();
+      const datepickers = component.find(_DatePicker.default);
+      datepickers.first().simulate('change', 1234);
+      expect(props.onChange).toHaveBeenCalledWith([{ from: 1234, to: 1473984001 }, { from: 1474156800, to: 1474156801 }]);
+    });
+  });
+
+  describe('adding a date', () => {
+    it('should add a value to the state', () => {
+      render();
+      const addButton = component.find('.btn-success');
+      addButton.simulate('click', { preventDefault: () => {} });
+      expect(component.state().values).toEqual([
+      { from: 1473984000, to: 1473984001 },
+      { from: 1474156800, to: 1474156801 },
+      { from: null, to: null }]);
+
+    });
+  });
+
+  describe('removing a date', () => {
+    it('should remove the value from the state', () => {
+      render();
+      const removeButtons = component.find('.react-datepicker__delete-icon');
+      removeButtons.first().simulate('click', { preventDefault: () => {} });
+      expect(component.state().values).toEqual([{ from: 1474156800, to: 1474156801 }]);
+      expect(props.onChange).toHaveBeenCalledWith([{ from: 1474156800, to: 1474156801 }]);
+    });
+  });
+});

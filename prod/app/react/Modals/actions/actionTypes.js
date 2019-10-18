@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.HIDE_MODAL = exports.SHOW_MODAL = void 0;const SHOW_MODAL = 'SHOW_MODAL';exports.SHOW_MODAL = SHOW_MODAL;
+const HIDE_MODAL = 'CLOSE_MODAL';exports.HIDE_MODAL = HIDE_MODAL;

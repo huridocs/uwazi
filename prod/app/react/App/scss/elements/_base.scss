@@ -1,0 +1,39 @@
+body {
+	background-color: $c-background;
+	color: $c-black;
+	font-family: $f-regular;
+	font-size: 13px;
+	overflow: hidden;
+	@include big {
+		font-size: 15px;
+	}
+}
+
+a {
+  color: $c-primary;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: $c-primary-dark;
+  }
+}
+
+img {
+  max-width: 100%;
+}
+
+label {
+  margin: 0;
+	font-weight: normal;
+}
+
+dt {
+  font-weight: normal;
+	font-style: italic;
+  color: $c-grey-dark;
+}
+
+input[type="radio"], input[type="checkbox"] {
+  cursor: pointer;
+}

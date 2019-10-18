@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Map Markdown component renderPopupInfo should have a correct function for rendering popus 1`] = `
+<div>
+  <Connect(TemplateLabel)
+    template="t1"
+  />
+    
+  title
+</div>
+`;
+
+exports[`Map Markdown component renderPopupInfo should have a correct function for rendering popus 2`] = `
+<div>
+  <Connect(TemplateLabel)
+    template="t2"
+  />
+    
+  another title
+</div>
+`;
+
+exports[`Map Markdown component should render a placeholder when data is undefined 1`] = `
+<div
+  className="Map "
+>
+  <Loader />
+</div>
+`;
+
+exports[`Map Markdown component should render the data passed by mapStateToProps 1`] = `
+<div
+  className="Map custom-class"
+>
+  <Connect(MarkersComponent)
+    entities={
+      Immutable.List [
+        "passed entities",
+      ]
+    }
+  />
+</div>
+`;
+
+exports[`Map Markdown component should render the data passed by mapStateToProps 2`] = `
+<Map
+  autoCenter={true}
+  clickOnCluster={[Function]}
+  clickOnMarker={[Function]}
+  cluster={true}
+  height={null}
+  hoverOnMarker={[Function]}
+  latitude={null}
+  longitude={null}
+  markers={
+    Array [
+      Object {
+        "value": "markers",
+      },
+    ]
+  }
+  onClick={[Function]}
+  renderMarker={null}
+  renderPopupInfo={[Function]}
+  scrollZoom={false}
+  showControls={false}
+  width={null}
+  zoom={1}
+/>
+`;

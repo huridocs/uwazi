@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Link should allow nesting children inside 1`] = `
+<Link
+  className=" paypal-donate"
+  href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&source=url"
+  onlyActiveOnIndex={false}
+  rel="noreferrer noopener"
+  style={Object {}}
+  target="_blank"
+>
+  <div>
+    Extra content
+  </div>
+  <span>
+    Label
+  </span>
+</Link>
+`;
+
+exports[`Link should allow to set a custom amount 1`] = `
+<Link
+  className=" paypal-donate"
+  href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&amount=10.15&source=url"
+  onlyActiveOnIndex={false}
+  rel="noreferrer noopener"
+  style={Object {}}
+  target="_blank"
+>
+  label
+</Link>
+`;
+
+exports[`Link should allow to set a custom class to the component 1`] = `
+<Link
+  className=" paypal-donate"
+  href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&source=url"
+  onlyActiveOnIndex={false}
+  rel="noreferrer noopener"
+  style={Object {}}
+  target="_blank"
+>
+  label
+</Link>
+`;
+
+exports[`Link should render a react-router Link with target _blank 1`] = `
+<Link
+  className=" paypal-donate"
+  href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&source=url"
+  onlyActiveOnIndex={false}
+  rel="noreferrer noopener"
+  style={Object {}}
+  target="_blank"
+>
+  label
+</Link>
+`;

@@ -1,0 +1,26 @@
+"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; /* eslint-disable no-await-in-loop */var _default =
+{
+  delta: 15,
+
+  name: 'remove_orphan_relations',
+
+  description: 'remove relationships to entities that no longer exist',
+
+  async up(db) {
+    process.stdout.write(`${this.name}...\r\n`);
+    let index = 0;
+
+    const cursor = db.collection('connections').find();
+    while (await cursor.hasNext()) {
+      const connection = await cursor.next();
+
+      const nonExistent = (await db.collection('entities').find({ sharedId: connection.entity }).toArray()).length === 0;
+
+      if (nonExistent) {
+        await db.collection('connections').remove({ _id: connection._id });
+        index += 1;
+      }
+    }
+    process.stdout.write(`deleted orphan entities -> ${index}\r`);
+    process.stdout.write('\r\n');
+  } };exports.default = _default;

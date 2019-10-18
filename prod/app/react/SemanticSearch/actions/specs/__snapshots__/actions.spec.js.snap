@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Semantic Search actions addSearchResults should add specified documents to current search results 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/search/SET",
+      "value": Immutable.Map {
+        "results": Immutable.List [
+          Immutable.Map {
+            "_id": "search1",
+          },
+          Immutable.Map {
+            "_id": "search2",
+          },
+          Immutable.Map {
+            "_id": "new1",
+          },
+          Immutable.Map {
+            "_id": "new2",
+          },
+        ],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions addSearchResults should not add duplicate documents in search results 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/search/SET",
+      "value": Immutable.Map {
+        "results": Immutable.List [
+          Immutable.Map {
+            "_id": "search1",
+          },
+          Immutable.Map {
+            "_id": "search2",
+          },
+          Immutable.Map {
+            "_id": "new1",
+          },
+          Immutable.Map {
+            "_id": "new2",
+          },
+        ],
+      },
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions fetchSearches should fetch searches from api and dispatch response in store 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/searches/SET",
+      "value": Array [
+        Object {
+          "_id": "search1",
+        },
+        Object {
+          "_id": "search2",
+        },
+      ],
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions hideSemanticSearch should hide semantic search panel 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/showSemanticSearchPanel/SET",
+      "value": false,
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions selectSemanticSearchDocument should set selected semantic search document and select semantic search tab in sidepanel 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/selectedDocument/SET",
+      "value": Object {
+        "sharedId": "document",
+      },
+    },
+  ],
+  Array [
+    Object {
+      "type": "library.sidepanel.tab/SET",
+      "value": "semantic-search-results",
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions showSemanticSearch should show semantic search panel 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/showSemanticSearchPanel/SET",
+      "value": true,
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions unselectSemanticSearchDocument should set the empty object as the selected semantic search document 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/selectedDocument/SET",
+      "value": Object {},
+    },
+  ],
+]
+`;
+
+exports[`Semantic Search actions updateSearch should update specified search in the searches store 1`] = `
+Array [
+  Array [
+    Object {
+      "type": "semanticSearch/searches/UPDATE",
+      "value": Object {
+        "_id": "search",
+        "status": "completed",
+      },
+    },
+  ],
+]
+`;

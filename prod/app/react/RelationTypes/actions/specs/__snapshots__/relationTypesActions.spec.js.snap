@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`relationTypesActions editRelationType should load the relationType in the form model 1`] = `
+Object {
+  "external": true,
+  "load": true,
+  "model": "template.data",
+  "multi": false,
+  "silent": true,
+  "type": "rrf/change",
+  "value": Object {
+    "name": "Secret list of things",
+    "values": Array [],
+  },
+}
+`;

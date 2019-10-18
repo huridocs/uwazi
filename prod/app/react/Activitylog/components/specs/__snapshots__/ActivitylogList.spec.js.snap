@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ActivitylogList should render a table with the activity log entries and more button 1`] = `
+<div
+  className="activity-log-list"
+>
+  <table
+    className="table"
+  >
+    <thead>
+      <tr>
+        <th>
+          Action
+        </th>
+        <th>
+          User
+        </th>
+        <th
+          className="activitylog-description"
+        >
+          Description
+        </th>
+        <th
+          className="activitylog-time"
+        >
+          Time
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ActivitylogRow
+        entry={
+          Immutable.Map {
+            "_id": 1,
+            "method": "POST",
+            "url": "/api/entities",
+            "body": "{\\"title\\":\\"hey\\"}",
+            "query": "{}",
+            "time": "2019-06-17T13:36:12.697Z",
+            "semantic": Immutable.Map {
+              "beautified": true,
+              "description": "created",
+              "name": "Name",
+              "action": "CREATE",
+              "extra": "extra info",
+            },
+          }
+        }
+        key="1"
+      />
+      <ActivitylogRow
+        entry={
+          Immutable.Map {
+            "_id": 2,
+            "method": "GET",
+            "url": "/api/entities",
+            "body": "{}",
+            "query": "{\\"_id\\": \\"123\\"}",
+            "time": "2019-06-17T13:36:12.697Z",
+            "semantic": Immutable.Map {},
+          }
+        }
+        key="2"
+      />
+      <ActivitylogRow
+        entry={
+          Immutable.Map {
+            "_id": 3,
+            "method": "DELETE",
+            "url": "/api/entities",
+            "body": "{\\"_id\\":\\"123\\"}",
+            "query": "{}",
+            "time": "2019-06-17T13:36:12.697Z",
+            "semantic": Immutable.Map {},
+          }
+        }
+        key="3"
+      />
+    </tbody>
+  </table>
+</div>
+`;

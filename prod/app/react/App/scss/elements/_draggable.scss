@@ -1,0 +1,12 @@
+@mixin draggable {
+  .list-group-item {
+    .fa-bars,
+    .fa-lock {
+      margin: 0 15px 0 0;
+      color: $c-grey;
+    }
+    &:hover .fa-bars {
+      color: $c-grey-dark;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = `
+<div
+  className="activity-log"
+>
+  <Connect(ActivitylogForm)>
+    <Connect(ActivityLogList) />
+  </Connect(ActivitylogForm)>
+</div>
+`;
+
+exports[`Activitylog should request the activitylog 1`] = `
+Array [
+  Object {
+    "type": "activitylog/search/SET",
+    "value": Array [
+      Object {
+        "url": "/api/entities",
+      },
+    ],
+  },
+  Object {
+    "type": "activitylog/list/SET",
+    "value": undefined,
+  },
+]
+`;

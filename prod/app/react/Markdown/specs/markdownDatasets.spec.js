@@ -1,0 +1,191 @@
+"use strict";var _immutable = _interopRequireDefault(require("immutable"));
+
+var _RequestParams = require("../../utils/RequestParams");
+var _SearchAPI = _interopRequireDefault(require("../../Search/SearchAPI"));
+var _EntitiesAPI = _interopRequireDefault(require("../../Entities/EntitiesAPI"));
+var _api = _interopRequireDefault(require("../../utils/api"));
+
+var _markdownDatasets = _interopRequireDefault(require("../markdownDatasets"));
+var _fixtures = _interopRequireDefault(require("./fixtures"));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+describe('markdownDatasets', () => {
+  let requestParams;
+
+  const getTestState = method => {
+    const { dataset1, dataset2 } = _fixtures.default[method];
+
+    return {
+      page: {
+        datasets: _immutable.default.fromJS({ default: dataset1, another_dataset: dataset2 }) } };
+
+
+  };
+
+  describe('request', () => {
+    beforeEach(() => {
+      requestParams = new _RequestParams.RequestParams({}, 'headers');
+      spyOn(_SearchAPI.default, 'search').and.callFake(params => Promise.resolve(Object.assign({ isSearch: true, headers: params.headers }, params.data)));
+      spyOn(_EntitiesAPI.default, 'get').and.callFake(params => Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }]));
+      spyOn(_api.default, 'get').and.callFake((url, pasedRequestParams) => Promise.resolve({ json: { url, headers: pasedRequestParams.headers } }));
+    });
+
+    it('should not fetch anything if no datasets defined', async () => {
+      const markdown = 'no datasets defined';
+
+      const datasets = await _markdownDatasets.default.fetch(markdown);
+
+      expect(_SearchAPI.default.search).not.toHaveBeenCalled();
+      expect(datasets).toEqual({});
+    });
+
+    it('should fetch default dataset and return it indexed by "default" key', async () => {
+      const markdown = '<div><Dataset /></div>';
+
+      const datasets = await _markdownDatasets.default.fetch(markdown, requestParams);
+
+      expect(datasets).toEqual({ default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' } });
+    });
+
+    it('should fetch named datasets and return it indexed by name attrib key', async () => {
+      const markdown = `
+      <div>
+        <Dataset />
+        <Dataset url="url?q=(key:value,limit:50)" name="dataset2"/>
+        <Dataset entity="entityId" name="entityDataset"/>
+      </div>
+      <Dataset name="dataset1" url="url2?q=(key:value2)"/>
+      `;
+
+      const datasets = await _markdownDatasets.default.fetch(markdown, requestParams);
+
+      expect(datasets).toEqual({
+        default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
+        dataset1: { key: 'value2', limit: 0, isSearch: true, headers: 'headers' },
+        dataset2: { key: 'value', limit: 0, isSearch: true, headers: 'headers' },
+        entityDataset: { data: { sharedId: 'entityId' }, isEntity: true, headers: 'headers' } });
+
+    });
+
+    it('should allow fetching geolocation data', async () => {
+      const markdown = `
+      <div>
+        <Dataset />
+        <Dataset url="url?q=(key:value,limit:50)" name="dataset2" geolocation="true" />
+      </div>
+      <Dataset name="dataset1" url="url2?q=(key:value2)"/>
+      <Dataset name="dataset3" geolocation="true"/>
+      `;
+
+      const datasets = await _markdownDatasets.default.fetch(markdown, requestParams);
+
+      expect(datasets).toEqual({
+        default: { allAggregations: true, limit: 0, isSearch: true, headers: 'headers' },
+        dataset1: { key: 'value2', limit: 0, isSearch: true, headers: 'headers' },
+        dataset2: { key: 'value', limit: 0, geolocation: true, isSearch: true, headers: 'headers' },
+        dataset3: { allAggregations: true, limit: 0, geolocation: true, isSearch: true, headers: 'headers' } });
+
+    });
+
+    it('should allow query to any api endpoint', async () => {
+      const markdown = `
+      <div>
+        <Query url="users?_id=23234324" name="customQuery"/>
+      </div>
+      `;
+
+      const datasets = await _markdownDatasets.default.fetch(markdown, requestParams);
+
+      expect(datasets).toEqual({
+        customQuery: { url: 'users?_id=23234324', headers: 'headers' } });
+
+    });
+  });
+
+  describe('getRows', () => {
+    const state = getTestState('getRows');
+
+    it('should get the rows for the default dataset', () => {
+      let rows = _markdownDatasets.default.getRows(state, {});
+      expect(rows).toBe('rows dataset 1');
+
+      rows = _markdownDatasets.default.getRows(state, { dataset: 'another_dataset' });
+      expect(rows).toBe('rows dataset 2');
+    });
+
+    it('should return null when dataset do not exists', () => {
+      const rows = _markdownDatasets.default.getRows(state, { dataset: 'non_existent_dataset' });
+      expect(rows).toBeUndefined();
+    });
+  });
+
+  describe('getAggregations', () => {
+    const state = getTestState('getAggregations');
+
+    it('should get the aggregation for the type/property and value', () => {
+      let aggregations = _markdownDatasets.default.getAggregations(state, { property: 'property1' });
+      expect(aggregations).toEqual(_immutable.default.fromJS([
+      { key: 'id3', filtered: { doc_count: 5 } }, { key: 'id4', filtered: { doc_count: 7 } }]));
+
+
+      aggregations = _markdownDatasets.default.getAggregations(state, { property: 'property2' });
+      expect(aggregations).toEqual(_immutable.default.fromJS([
+      { key: 'id5', filtered: { doc_count: 5 } }, { key: 'id6', filtered: { doc_count: 7 } }]));
+
+
+      aggregations = _markdownDatasets.default.getAggregations(state, { property: 'property4', dataset: 'another_dataset' });
+      expect(aggregations).toEqual(_immutable.default.fromJS([{ key: 'id36', filtered: { doc_count: 36 } }]));
+    });
+
+    it('should return null when dataset do not exists', () => {
+      const aggregations = _markdownDatasets.default.getAggregations(state, { dataset: 'non_existent_dataset' });
+      expect(aggregations).toBeUndefined();
+    });
+  });
+
+  describe('getAggregation', () => {
+    const state = getTestState('getAggregation');
+
+    const expectAggregation = options => expect(_markdownDatasets.default.getAggregation(state, options));
+
+    describe('when uniqueValues', () => {
+      it('should return a count of all buckets of the property filtering zeros out', () => {
+        expectAggregation({ property: '_types', uniqueValues: 'true' }).toBe(4);
+      });
+
+      it('should return null when dataset do not exists', () => {
+        const aggregation = _markdownDatasets.default.getAggregation(state, { uniqueValues: 'true', dataset: 'non_existent_dataset' });
+        expect(aggregation).toBeUndefined();
+      });
+    });
+
+    it('should get the aggregation for the type/property and value', () => {
+      expectAggregation({ property: '_types', value: 'id2' }).toBe(25);
+      expectAggregation({ property: 'property1', value: 'id3' }).toBe(5);
+      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5' }).toBe(6);
+    });
+
+    it('should get multiple values, adding them together if value is a list, omitting undefined', () => {
+      expectAggregation({ property: '_types', value: 'id1,id2' }).toBe(26);
+      expectAggregation({ property: '_types', value: 'id4,id3' }).toBe(13.4);
+      expectAggregation({ dataset: 'another_dataset', property: '_types', value: 'id5,id7,id8' }).toBe(82);
+    });
+
+    it('should return null when dataset do not exists', () => {
+      const aggregation = _markdownDatasets.default.getAggregation(state, { dataset: 'non_existent_dataset' });
+      expect(aggregation).toBeUndefined();
+    });
+  });
+
+  describe('getMetadataValue', () => {
+    const state = getTestState('getMetadataValue');
+
+    it('should get the value for the property', () => {
+      expect(_markdownDatasets.default.getMetadataValue(state, { property: 'progress' })).toBe(3.5);
+      expect(_markdownDatasets.default.getMetadataValue(state, { property: 'otherProperty', dataset: 'another_dataset' })).toBe(4);
+    });
+
+    it('should return undefined when dataset does not exist', () => {
+      expect(_markdownDatasets.default.getMetadataValue(state, { dataset: 'non_existent_dataset' })).toBeUndefined();
+    });
+  });
+});

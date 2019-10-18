@@ -1,0 +1,147 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
+<div
+  className="paginator"
+>
+  <withRouter(CurrentLocationLink)
+    className="btn"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 4,
+      }
+    }
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+  <span>
+     5 / 25 
+  </span>
+  <withRouter(CurrentLocationLink)
+    className="btn"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 6,
+      }
+    }
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+</div>
+`;
+
+exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
+<div
+  className="paginator"
+>
+  <withRouter(CurrentLocationLink)
+    className="btn"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 2,
+      }
+    }
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+  <span>
+     3 / 25 
+  </span>
+  <withRouter(CurrentLocationLink)
+    className="btn"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 4,
+      }
+    }
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+</div>
+`;
+
+exports[`Paginator when on first page should disable the prev link 1`] = `
+<div
+  className="paginator"
+>
+  <withRouter(CurrentLocationLink)
+    className="btn disabled"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 1,
+      }
+    }
+    rel="nofollow"
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+  <span>
+     1 / 25 
+  </span>
+  <withRouter(CurrentLocationLink)
+    className="btn"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 2,
+      }
+    }
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+</div>
+`;
+
+exports[`Paginator when on last page should disable the next link 1`] = `
+<div
+  className="paginator"
+>
+  <withRouter(CurrentLocationLink)
+    className="btn"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 24,
+      }
+    }
+  >
+    <Connect(Translate)>
+      Previous
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+  <span>
+     25 / 25 
+  </span>
+  <withRouter(CurrentLocationLink)
+    className="btn disabled"
+    onClick={[Function]}
+    queryParams={
+      Object {
+        "page": 25,
+      }
+    }
+    rel="nofollow"
+  >
+    <Connect(Translate)>
+      Next
+    </Connect(Translate)>
+  </withRouter(CurrentLocationLink)>
+</div>
+`;

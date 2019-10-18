@@ -1,0 +1,127 @@
+nav {
+	display: block;
+	position: fixed !important;
+	top: 0;
+	bottom: 0;
+	right: -80%;
+	width: 80%;
+	z-index: 2;
+	background: $c-grey-light;
+	border-left: 1px solid $c-grey;
+	padding: 15px;
+}
+
+nav h1 {
+	font-weight: bold;
+	font-size: $f-size-lg;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin: 5px 0 30px;
+}
+
+nav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+
+	li {
+		font-size: $f-size-lg;
+		line-height: 40px;
+	}
+	li.active {
+		background: $c-white;
+		color: $c-primary;
+		font-weight: bold;
+		margin-left: -5px;
+		padding: 0 5px;
+	}
+	.fa {
+		margin-right: 15px;
+	}
+	.login {
+		margin-top: 370px;
+		color: $c-grey-dark;
+	}
+}
+
+$nav-height: $header-height;
+
+.nav > li > a {
+  padding: 0px 10px;
+  line-height: $nav-height;
+  border: 0;
+}
+
+.nav .tab-separator {
+  width: 1px;
+  height: $header-height;
+  background-color: $c-grey-light;
+}
+
+.nav-tabs {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+  height: $header-height;
+  margin-top: -1px;
+  text-align: center;
+  border: 0;
+  background-color: transparent;
+}
+
+.nav-tabs>span { // related to DocumentSidePanel.js (row 85 & row 105)
+  display: none;
+}
+
+.nav-tabs>li {
+  display: inline-block;
+  float: none;
+  width: 100%;
+  max-width: $nav-height;
+}
+
+.nav-tabs>li>a, .nav-tabs>li>div {
+  cursor:pointer;
+  line-height: $nav-height;
+  padding: 3px 0 0;
+  background-color: transparent;
+  color: $c-grey-dark;
+  border: 0;
+  border-radius: 0;
+  white-space: nowrap;
+
+  &:hover .tab-link-tooltip{
+    display: block;
+  }
+}
+
+.nav-tabs>li>div.tab-link-active,
+.nav-tabs>li>div.tab-link-active:focus,
+.nav-tabs>li>div.tab-link-active:hover {
+	color: $c-primary;
+
+	&:after {
+	  content: '';
+	  display: block;
+	  position: absolute;
+	  bottom: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 3px;
+	  background: $c-primary;
+	}
+}
+
+.tab-link-tooltip {
+  @include tooltip('bottom');
+}
+
+.connectionsNumber {
+  position: relative;
+  font-size: $f-size-sm;
+  line-height: 1em;
+  margin-left: 5px;
+}

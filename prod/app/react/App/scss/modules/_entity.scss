@@ -1,0 +1,103 @@
+.entity-viewer {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 100px);
+  padding: 15px;
+  background: $c-white;
+  transition: all 500ms;
+  //overflow-x: hidden;
+  //overflow-y: scroll;
+  overflow: auto;
+
+  @media(min-width: 1024px) {
+    height: calc(100% - 51px);
+  }
+
+  @media(min-width: 1024px) {
+    &.with-panel,
+    &.is-active {
+      width: calc(100% - 400px) !important;
+    }
+  }
+
+  .connection-data {
+    cursor: default;
+  }
+
+  .protip {
+    display: none;
+  }
+}
+
+.entity-metadata {
+  max-width: 960px;
+  margin: auto;
+  padding-bottom: 120px;
+}
+
+.entity-connections, .connections-metadata, .entity-create-connection-panel {
+  z-index: 6;
+  top: 0;
+  @media (min-width: 1024px) {
+    top: $header-height + 1 !important;
+  }
+}
+
+.entity-attachments {
+  top: $header-height * 3;
+}
+
+.entity-content {
+  z-index: 3;
+  max-width: 9999px;
+
+  .side-panel {
+    top: $header-height;
+    @media (min-width: 1024px) {
+      top: $header-height + 1;
+    }
+  }
+}
+
+.entities-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li {
+    display: -webkit-flex;
+    display: flex;
+    padding: 7px 15px;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+  }
+  li:not(:last-of-type) {
+    border-bottom: 1px solid $c-grey-light;
+  }
+
+  li:hover {
+    cursor: pointer;
+    background-color: $c-shadow;
+  }
+
+  .fa {
+    position: relative;
+    top: 1px;
+    width: 20px;
+    font-size: $f-size;
+    color: $c-grey-light;
+  }
+
+  .item-type {
+    width: auto;
+    max-width: 75px;
+    margin-left: 15px;
+  }
+}
+
+.create-reference {
+  z-index: 6;
+  @media(max-width: 1023px) {
+    top: 0;
+  }
+}

@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IconField should be open when has value 1`] = `
+<div
+  className="icon-selector"
+>
+  <ToggleDisplay
+    hideLabel={
+      <span>
+        <Connect(Translate)>
+          remove icon
+        </Connect(Translate)>
+        <Connect(Icon)
+          icon="eye-slash"
+        />
+      </span>
+    }
+    onHide={[Function]}
+    open={true}
+    showLabel={
+      <span>
+        <Connect(Translate)>
+          add icon
+        </Connect(Translate)>
+        <Connect(Icon)
+          icon="eye"
+        />
+      </span>
+    }
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label>
+          <Connect(Translate)>
+            Icon
+          </Connect(Translate)>
+           / 
+          <Connect(Translate)>
+            Flag
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <IconSelector
+          model=".icon"
+        />
+      </li>
+    </ul>
+  </ToggleDisplay>
+</div>
+`;
+
+exports[`IconField should render IconSelector with toggleDisplay 1`] = `
+<div
+  className="icon-selector"
+>
+  <ToggleDisplay
+    hideLabel={
+      <span>
+        <Connect(Translate)>
+          remove icon
+        </Connect(Translate)>
+        <Connect(Icon)
+          icon="eye-slash"
+        />
+      </span>
+    }
+    onHide={[Function]}
+    open={false}
+    showLabel={
+      <span>
+        <Connect(Translate)>
+          add icon
+        </Connect(Translate)>
+        <Connect(Icon)
+          icon="eye"
+        />
+      </span>
+    }
+  >
+    <ul
+      className="search__filter"
+    >
+      <li>
+        <label>
+          <Connect(Translate)>
+            Icon
+          </Connect(Translate)>
+           / 
+          <Connect(Translate)>
+            Flag
+          </Connect(Translate)>
+        </label>
+      </li>
+      <li
+        className="wide"
+      >
+        <IconSelector
+          model=".icon"
+        />
+      </li>
+    </ul>
+  </ToggleDisplay>
+</div>
+`;

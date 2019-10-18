@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`relationships routes DELETE should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`relationships routes GET search should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "filter": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "limit": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "order": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "searchTerm": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "sharedId": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "sort": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "treatAs": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`relationships routes POST bulk should have a validation schema 1`] = `undefined`;
+
+exports[`relationships routes POST should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+    "entity": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "hub": Object {
+      "type": "string",
+      "valids": Array [
+        "",
+      ],
+    },
+    "language": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "metadata": Object {
+      "type": "any",
+    },
+    "range": Object {
+      "children": Object {
+        "end": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+        "start": Object {
+          "invalids": Array [
+            Infinity,
+            -Infinity,
+          ],
+          "type": "number",
+        },
+        "text": Object {
+          "invalids": Array [
+            "",
+          ],
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "template": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

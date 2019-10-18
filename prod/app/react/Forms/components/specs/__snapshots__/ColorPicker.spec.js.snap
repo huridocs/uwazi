@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ColorPicker should render ColorPicker button with specified value as color 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="ColorPicker__button"
+    onClick={[Function]}
+    style={
+      Object {
+        "backgroundColor": "#ffffff",
+      }
+    }
+  />
+</div>
+`;
+
+exports[`ColorPicker should show defaultValue color if value is not provided 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="ColorPicker__button"
+    onClick={[Function]}
+    style={
+      Object {
+        "backgroundColor": "#112233",
+      }
+    }
+  />
+</div>
+`;
+
+exports[`ColorPicker when button is clicked should display color picker if hidden 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="ColorPicker__button"
+    onClick={[Function]}
+    style={
+      Object {
+        "backgroundColor": "#112233",
+      }
+    }
+  />
+  <div
+    className="ColorPicker__popover"
+  >
+    <div
+      className="ColorPicker__cover"
+      onClick={[Function]}
+    />
+    <ColorPicker
+      color="#112233"
+      colors={
+        Array [
+          "#C03B22",
+          "#D9534F",
+          "#E91E63",
+          "#A03AB1",
+          "#6F46B8",
+          "#3F51B5",
+          "#2196F3",
+          "#37BDCf",
+          "#359990",
+          "#5CB85C",
+          "#8BC34A",
+          "#CDDC39",
+          "#CCBC2F",
+          "#F0AD4E",
+          "#EC9920",
+          "#E46841",
+          "#795548",
+          "#9E9E9E",
+          "#607D8B",
+        ]
+      }
+      onChangeComplete={[Function]}
+      styles={Object {}}
+      triangle="top-left"
+      width={276}
+    />
+  </div>
+</div>
+`;
+
+exports[`ColorPicker when button is clicked should hide color picker if displayed 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="ColorPicker__button"
+    onClick={[Function]}
+    style={
+      Object {
+        "backgroundColor": "#112233",
+      }
+    }
+  />
+</div>
+`;
+
+exports[`ColorPicker when color picker is displayed should close when clicking outside 1`] = `
+<div
+  className="ColorPicker"
+>
+  <div
+    className="ColorPicker__button"
+    onClick={[Function]}
+    style={
+      Object {
+        "backgroundColor": "#112233",
+      }
+    }
+  />
+</div>
+`;

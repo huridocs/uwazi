@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`relationtypes routes DELETE should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`relationtypes routes GET should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`relationtypes routes POST should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "__v": Object {
+      "invalids": Array [
+        Infinity,
+        -Infinity,
+      ],
+      "type": "number",
+    },
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": Object {
+            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
+          },
+          "name": "regex",
+        },
+      ],
+      "type": "string",
+    },
+    "name": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+    "properties": Object {
+      "flags": Object {
+        "sparse": false,
+      },
+      "items": Array [
+        Object {
+          "children": Object {
+            "__v": Object {
+              "invalids": Array [
+                Infinity,
+                -Infinity,
+              ],
+              "type": "number",
+            },
+            "_id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "content": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "filter": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "id": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "label": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "localID": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "name": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+            "nestedProperties": Object {
+              "flags": Object {
+                "sparse": false,
+              },
+              "type": "array",
+            },
+            "prioritySorting": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "showInCard": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "sortable": Object {
+              "falsy": Array [
+                false,
+              ],
+              "flags": Object {
+                "insensitive": true,
+              },
+              "truthy": Array [
+                true,
+              ],
+              "type": "boolean",
+            },
+            "type": Object {
+              "invalids": Array [
+                "",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;

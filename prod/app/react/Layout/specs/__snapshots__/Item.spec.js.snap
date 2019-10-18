@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Item when doc have snippets should render ItemSnippet including doc, snippets and onSnippetClick props 1`] = `
+<Connect(ItemSnippet)
+  doc={
+    Object {
+      "creationDate": 123,
+      "icon": Object {
+        "_id": "icon",
+        "type": "Icons",
+      },
+      "snippets": Object {
+        "count": 1,
+        "fullText": Array [
+          Object {
+            "page": 1,
+            "text": "<span>snippet!</span>",
+          },
+        ],
+        "metadata": Array [],
+      },
+      "template": "templateId",
+      "title": "doc title",
+      "type": "entity",
+    }
+  }
+  onSnippetClick={[Function]}
+  snippets={
+    Object {
+      "count": 1,
+      "fullText": Array [
+        Object {
+          "page": 1,
+          "text": "<span>snippet!</span>",
+        },
+      ],
+      "metadata": Array [],
+    }
+  }
+/>
+`;

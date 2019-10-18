@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchText blankState when there is no search term should render a blank state message 1`] = `
+<div
+  className="blank-state"
+>
+  <Connect(Icon)
+    icon="search"
+  />
+  <h4>
+    Search text
+  </h4>
+  <p>
+    Search text description
+  </p>
+</div>
+`;
+
+exports[`SearchText blankState when there is search term should render a no matching text message 1`] = `
+<div
+  className="blank-state"
+>
+  <Connect(Icon)
+    icon="search"
+  />
+  <h4>
+    No text match
+  </h4>
+  <p>
+    No text match description
+  </p>
+</div>
+`;
+
+exports[`SearchText should render SnippetList and pass down same props to it 1`] = `
+<Connect(SnippetList)
+  doc={
+    Immutable.Map {
+      "_id": "id",
+      "sharedId": "sharedId",
+      "type": "document",
+    }
+  }
+  documentViewUrl="/entity/sharedId"
+  searchTerm=""
+  selectSnippet={[MockFunction]}
+  snippets={
+    Immutable.Map {
+      "metadata": Immutable.List [
+        Immutable.Map {
+          "field": "title",
+          "texts": Immutable.List [
+            "metadata <b>snippet m1</b> found",
+          ],
+        },
+        Immutable.Map {
+          "field": "metadata.summary",
+          "texts": Immutable.List [
+            "metadata <b>snippets m2</b>",
+          ],
+        },
+      ],
+      "fullText": Immutable.List [
+        Immutable.Map {
+          "text": "first <b>snippet 1</b> found",
+          "page": 1,
+        },
+        Immutable.Map {
+          "text": "second <b>snippet 3</b> found",
+          "page": 2,
+        },
+        Immutable.Map {
+          "text": "third <b>snippet 3</b> found",
+          "page": 3,
+        },
+      ],
+    }
+  }
+/>
+`;
+
+exports[`SearchText should use entity view url if doc type is entity 1`] = `"/entity/sharedId"`;

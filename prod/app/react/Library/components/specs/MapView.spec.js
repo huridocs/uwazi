@@ -1,0 +1,72 @@
+"use strict";var _react = _interopRequireDefault(require("react"));
+var _enzyme = require("enzyme");
+var _Map = require("../../../Map");
+var _immutable = _interopRequireDefault(require("immutable"));
+var _MapView = require("../MapView");function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}
+
+describe('MapView', () => {
+  let component;
+  let props;
+  let instance;
+
+  const documents = {
+    rows: [
+    { template: '1', metadata: { geo_prop: { lat: 1, lon: 2 }, age: '23' }, sharedId: '1' },
+    { template: '1', metadata: { age: '23' }, sharedId: '2' },
+    { template: '2', metadata: { other_geo_prop: { lat: 3, lon: 4 }, age: '23' }, sharedId: '3' },
+    { template: '2', metadata: { other_geo_prop: { lat: 1, lon: 2 }, age: '23' }, sharedId: '4' },
+    { template: '3', metadata: { age: '23' }, sharedId: '4' }] };
+
+
+  const templates = [
+  { _id: '1', properties: [{ name: 'geo_prop', type: 'geolocation' }, { name: 'age', type: 'text' }] },
+  { _id: '2', properties: [{ name: 'other_geo_prop', type: 'geolocation' }, { name: 'age', type: 'text' }] },
+  { _id: '3', properties: [{ name: 'age', type: 'text' }] }];
+
+
+  const render = () => {
+    props = {
+      markers: _immutable.default.fromJS(documents),
+      storeKey: 'library',
+      templates: _immutable.default.fromJS(templates),
+      getAndSelectDocument: jasmine.createSpy('getAndSelectDocument'),
+      selectDocuments: jasmine.createSpy('selectDocuments'),
+      unselectAllDocuments: jasmine.createSpy('unselectAllDocuments') };
+
+    component = (0, _enzyme.shallow)(_react.default.createElement(_MapView.MapView, props));
+    instance = component.instance();
+  };
+
+  beforeEach(render);
+
+  describe('render()', () => {
+    it('should render a map', () => {
+      const map = component.find(_Map.Markers).props().children([{ value: 'markers' }]);
+      expect(map).toMatchSnapshot();
+    });
+
+    it('should pass the entities', () => {
+      expect(component.find(_Map.Markers).props().entities).toMatchSnapshot();
+    });
+  });
+
+  describe('clickOnMarker()', () => {
+    it('should unselect all documents and select the one in the marker', () => {
+      const marker = { latitude: 1, longitude: 2, properties: { entity: documents.rows[2] } };
+      instance.clickOnMarker(marker);
+      expect(props.getAndSelectDocument).toHaveBeenCalledWith(documents.rows[2].sharedId);
+    });
+  });
+
+  describe('clickOnCluster()', () => {
+    it('should unselect all documents and select the documents in the cluster', () => {
+      const cluster = [
+      { latitude: 1, longitude: 2, properties: { entity: documents.rows[2] } },
+      { latitude: 1, longitude: 2, properties: { entity: documents.rows[3] } }];
+
+      instance.clickOnCluster(cluster);
+      expect(props.unselectAllDocuments).toHaveBeenCalled();
+      expect(props.selectDocuments).toHaveBeenCalledWith([documents.rows[2], documents.rows[3]]);
+    });
+  });
+});

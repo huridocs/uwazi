@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Markers component should return processed markers from entities and templates 1`] = `
+Array [
+  "entities",
+  "templates",
+]
+`;

@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Value should render a placeholder when value is "null" 1`] = `"-"`;
+
+exports[`Value should render the value passed by mapStateToProps 1`] = `"some metadata value"`;
+
+exports[`Value when using the context should render the value in the context path 1`] = `
+<span>
+  Bruce Wayne
+</span>
+`;
