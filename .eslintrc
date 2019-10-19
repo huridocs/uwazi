@@ -15,7 +15,7 @@
       "warn",
       2,
       {
-        "MemberExpression": 0,
+        "MemberExpression": 1,
         "CallExpression": { "arguments": "off" },
         "FunctionDeclaration": { "parameters": "off" },
         "FunctionExpression": { "parameters": "off" },
@@ -47,7 +47,7 @@
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
     "arrow-body-style": ["warn"],
-    "arrow-parens": ["warn"],
+    "arrow-parens": ["off"], // handled by prettier
     "prefer-template": ["warn"],
     "no-tabs": ["warn"],
     "object-shorthand": ["warn"],
