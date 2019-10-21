@@ -48,7 +48,7 @@
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
     "arrow-body-style": ["warn"],
-    "arrow-parens": ["off"], // handled by prettier
+    "arrow-parens": ["warn", "as-needed", { "requireForBlockBody": true }],
     "prefer-template": ["warn"],
     "no-tabs": ["warn"],
     "object-shorthand": ["warn"],
@@ -175,6 +175,7 @@
             "allowExpressions": true
           }
         ],
+        // This is broken for ts, but circleci protects us.
         "import/no-extraneous-dependencies": "off"
       }
     }
