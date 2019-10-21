@@ -26,6 +26,11 @@ describe('activitylogMiddleware', () => {
     spyOn(Date, 'now').and.returnValue(1);
   });
 
+  function testActivityLogNotSaved() {
+    activitylogMiddleware(req, res, next);
+    expect(activitylog.save).not.toHaveBeenCalled();
+  }
+
   it('should log api calls', () => {
     activitylogMiddleware(req, res, next);
     expect(activitylog.save).toHaveBeenCalledWith({
@@ -42,23 +47,27 @@ describe('activitylogMiddleware', () => {
 
   it('should ignore NOT api calls', () => {
     req.url = '/entities';
-    activitylogMiddleware(req, res, next);
-    expect(activitylog.save).not.toHaveBeenCalled();
+    testActivityLogNotSaved();
   });
 
   it('should ignore all GET requests', () => {
     req.method = 'GET';
-    activitylogMiddleware(req, res, next);
-    expect(activitylog.save).not.toHaveBeenCalled();
+    testActivityLogNotSaved();
   });
 
   it('should ignore specific api calls', () => {
-    req.url = '/api/login';
-    activitylogMiddleware(req, res, next);
-    expect(activitylog.save).not.toHaveBeenCalled();
+    const urls = [
+      '/api/login',
+      '/api/users',
+      '/api/contact',
+      '/api/unlockaccount',
+      '/api/recoverpassword',
+      '/api/resetpassword'
+    ];
 
-    req.url = '/api/users';
-    activitylogMiddleware(req, res, next);
-    expect(activitylog.save).not.toHaveBeenCalled();
+    urls.forEach((url) => {
+      req.url = url;
+      testActivityLogNotSaved();
+    });
   });
 });
