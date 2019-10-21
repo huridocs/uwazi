@@ -15,7 +15,7 @@
       "warn",
       2,
       {
-        "MemberExpression": 1,
+        "MemberExpression": 0,
         "CallExpression": { "arguments": "off" },
         "FunctionDeclaration": { "parameters": "off" },
         "FunctionExpression": { "parameters": "off" },
@@ -47,7 +47,7 @@
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
     "arrow-body-style": ["warn"],
-    "arrow-parens": ["warn", "as-needed", { "requireForBlockBody": true }],
+    "arrow-parens": ["warn"],
     "prefer-template": ["warn"],
     "no-tabs": ["warn"],
     "object-shorthand": ["warn"],
@@ -73,7 +73,11 @@
     "max-lines": ["warn", 250],
     "max-params": ["warn", 4],
     "max-lines-per-function": "off",
-    "max-statements": ["warn", { "max": 10 }, { "ignoreTopLevelFunctions": true }],
+    "max-statements": [
+      "warn",
+      { "max": 10 },
+      { "ignoreTopLevelFunctions": true }
+    ],
 
     //import
     "import/no-duplicates": ["warn"],
