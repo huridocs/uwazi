@@ -449,15 +449,15 @@ export default {
       });
     const multiSelectQuery = { $or: [] };
     const multiSelectChanges = {};
-    multiSelectQuery.$or = multiselectProperties.filter(p_1 => propertyContent && p_1.content && propertyContent.toString() === p_1.content.toString())
+    multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
       .map((property) => {
-        const p_2 = {};
-        p_2[`metadata.${property.name}`] = sharedId;
+        const p = {};
+        p[`metadata.${property.name}`] = sharedId;
         multiSelectChanges[`metadata.${property.name}`] = sharedId;
-        return p_2;
+        return p;
       });
     if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
-      return Promise.resolve();
+      return;
     }
     const [entitiesWithSelect, entitiesWithMultiSelect] = await Promise.all([
       selectQuery.$or.length ? this.get(selectQuery, { _id: 1 }) : [],
@@ -467,7 +467,7 @@ export default {
       multiSelectQuery.$or.length ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges }) : null
     ]);
     const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-    return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
+    await this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
   },
 
   async createThumbnail(entity) {
