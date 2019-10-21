@@ -1,2 +1,0 @@
-"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.CLOSE_MENU = exports.OPEN_MENU = void 0;const OPEN_MENU = 'OPEN_MENU';exports.OPEN_MENU = OPEN_MENU;
-const CLOSE_MENU = 'CLOSE_MENU';exports.CLOSE_MENU = CLOSE_MENU;

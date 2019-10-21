@@ -1,2 +1,0 @@
-"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.emptyString = exports.unique = void 0;const unique = (v, i, a) => a.indexOf(v) === i;exports.unique = unique;
-const emptyString = v => v.trim() !== '';exports.emptyString = emptyString;

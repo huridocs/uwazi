@@ -1,4 +1,0 @@
-"use strict";Object.defineProperty(exports, "__esModule", { value: true });Object.defineProperty(exports, "documentsApi", { enumerable: true, get: function () {return _DocumentsAPI.default;} });Object.defineProperty(exports, "TocForm", { enumerable: true, get: function () {return _TocForm.default;} });Object.defineProperty(exports, "ShowToc", { enumerable: true, get: function () {return _ShowToc.default;} });Object.defineProperty(exports, "DocumentSidePanel", { enumerable: true, get: function () {return _DocumentSidePanel.default;} });var _DocumentsAPI = _interopRequireDefault(require("./DocumentsAPI"));
-var _TocForm = _interopRequireDefault(require("./components/TocForm"));
-var _ShowToc = _interopRequireDefault(require("./components/ShowToc"));
-var _DocumentSidePanel = _interopRequireDefault(require("./components/DocumentSidePanel"));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}

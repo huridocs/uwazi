@@ -1,2 +1,0 @@
-"use strict";Object.defineProperty(exports, "__esModule", { value: true });exports.REMOVE_NOTIFICATION = exports.NOTIFY = void 0;const NOTIFY = 'NOTIFY';exports.NOTIFY = NOTIFY;
-const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';exports.REMOVE_NOTIFICATION = REMOVE_NOTIFICATION;

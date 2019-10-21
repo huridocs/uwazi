@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`FormValue should call render prop with value selected 1`] = `
-<span>
-  value
-</span>
-`;
