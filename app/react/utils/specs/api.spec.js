@@ -12,6 +12,9 @@ describe('api', () => {
   beforeEach(() => {
     spyOn(loadingBar, 'start');
     spyOn(loadingBar, 'done');
+    spyOn(store, 'dispatch');
+    spyOn(notifyActions, 'notify').and.returnValue('notify action');
+    spyOn(browserHistory, 'replace');
     backend.restore();
     backend
     .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
@@ -20,7 +23,11 @@ describe('api', () => {
     .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
     .get(`${APIURL}unauthorised`, { status: 401, body: {} })
     .get(`${APIURL}notfound`, { status: 404, body: {} })
-    .get(`${APIURL}error_url`, { status: 500, body: {} });
+    .get(`${APIURL}error_url`, { status: 500, body: {} })
+    .get(`${APIURL}network_error`, {
+      throws: new TypeError('Failed to fetch')
+    })
+    .get(`${APIURL}unknown_error`, { throws: new Error('some error') });
   });
 
   afterEach(() => backend.restore());
@@ -87,44 +94,61 @@ describe('api', () => {
   });
 
   describe('error handling', () => {
+    async function testErrorHandling(endpoint, errorCallback) {
+      try {
+        await api.get(endpoint);
+        fail('should throw error');
+      } catch (e) {
+        errorCallback(e);
+      }
+    }
+
+    function testNotificationDisplayed(message, type = 'danger') {
+      expect(store.dispatch).toHaveBeenCalledWith('notify action');
+      expect(notifyActions.notify).toHaveBeenCalledWith(message, type);
+    }
+
     describe('401', () => {
-      it('should redirect to login', (done) => {
-        spyOn(browserHistory, 'replace');
-        api.get('unauthorised')
-        .catch(() => {
+      it('should redirect to login', async () => {
+        await testErrorHandling('unauthorised', () => {
           expect(browserHistory.replace).toHaveBeenCalledWith('/login');
-          done();
         });
       });
     });
 
     describe('404', () => {
-      it('should redirect to login', (done) => {
-        spyOn(browserHistory, 'replace');
-        api.get('notfound')
-        .catch(() => {
+      it('should redirect to login', async () => {
+        await testErrorHandling('notfound', () => {
           expect(browserHistory.replace).toHaveBeenCalledWith('/404');
-          done();
         });
       });
     });
 
-    it('should notify the user', (done) => {
-      spyOn(store, 'dispatch');
-      spyOn(notifyActions, 'notify').and.returnValue('notify action');
-      api.get('error_url')
-      .catch(() => {
-        expect(store.dispatch).toHaveBeenCalledWith('notify action');
-        expect(notifyActions.notify).toHaveBeenCalledWith('An error has occurred', 'danger');
-        done();
+    describe('network error', () => {
+      it('should notify that server is unreachable', async () => {
+        await testErrorHandling('network_error', () => {
+          testNotificationDisplayed('Could not reach server. Please try again later.');
+        });
       });
     });
 
-    it('should end the loading bar', (done) => {
-      api.get('error_url')
-      .catch(() => {
+    describe('unknown error', () => {
+      it('should show generic error message', async () => {
+        await testErrorHandling('unknown_error', () => {
+          testNotificationDisplayed('An error has occurred');
+        });
+      });
+    });
+
+    it('should notify the user', async () => {
+      await testErrorHandling('error_url', () => {
+        testNotificationDisplayed('An error has occurred');
+      });
+    });
+
+    it('should end the loading bar', async () => {
+      await testErrorHandling('error_url', () => {
         expect(loadingBar.done).toHaveBeenCalled();
-        done();
       });
     });
   });
