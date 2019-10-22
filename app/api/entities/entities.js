@@ -448,21 +448,21 @@ export default {
     const selectQuery = { $or: [] };
     const selectChanges = {};
     selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
-      .map((property) => {
-        const p = {};
-        p[`metadata.${property.name}`] = sharedId;
-        selectChanges[`metadata.${property.name}`] = '';
-        return p;
-      });
+    .map((property) => {
+      const p = {};
+      p[`metadata.${property.name}`] = sharedId;
+      selectChanges[`metadata.${property.name}`] = '';
+      return p;
+    });
     const multiSelectQuery = { $or: [] };
     const multiSelectChanges = {};
     multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
-      .map((property) => {
-        const p = {};
-        p[`metadata.${property.name}`] = sharedId;
-        multiSelectChanges[`metadata.${property.name}`] = sharedId;
-        return p;
-      });
+    .map((property) => {
+      const p = {};
+      p[`metadata.${property.name}`] = sharedId;
+      multiSelectChanges[`metadata.${property.name}`] = sharedId;
+      return p;
+    });
     if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
       return;
     }
