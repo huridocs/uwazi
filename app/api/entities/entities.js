@@ -433,47 +433,41 @@ export default {
     .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
-  deleteEntityFromMetadata(sharedId, propertyContent) {
-    return templates.get({ 'properties.content': propertyContent })
-    .then((allTemplates) => {
-      const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-      const selectProperties = allProperties.filter(p => p.type === 'select');
-      const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
-      const selectQuery = { $or: [] };
-      const selectChanges = {};
-      selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
-      .map((property) => {
-        const p = {};
-        p[`metadata.${property.name}`] = sharedId;
-        selectChanges[`metadata.${property.name}`] = '';
-        return p;
-      });
-
-      const multiSelectQuery = { $or: [] };
-      const multiSelectChanges = {};
-      multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
-      .map((property) => {
-        const p = {};
-        p[`metadata.${property.name}`] = sharedId;
-        multiSelectChanges[`metadata.${property.name}`] = sharedId;
-        return p;
-      });
-
-      if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
-        return Promise.resolve();
-      }
-
-      return Promise.all([
-        selectQuery.$or.length ? this.get(selectQuery, { _id: 1 }) : [],
-        multiSelectQuery.$or.length ? this.get(multiSelectQuery, { _id: 1 }) : [],
-        selectQuery.$or.length ? model.db.updateMany(selectQuery, { $set: selectChanges }) : null,
-        multiSelectQuery.$or.length ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges }) : null
-      ])
-      .then(([entitiesWithSelect, entitiesWithMultiSelect]) => {
-        const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-        return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
-      });
+  async deleteEntityFromMetadata(sharedId, propertyContent) {
+    const allTemplates = await templates.get({ 'properties.content': propertyContent });
+    const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
+    const selectProperties = allProperties.filter(p => p.type === 'select');
+    const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
+    const selectQuery = { $or: [] };
+    const selectChanges = {};
+    selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
+    .map((property) => {
+      const p = {};
+      p[`metadata.${property.name}`] = sharedId;
+      selectChanges[`metadata.${property.name}`] = '';
+      return p;
     });
+    const multiSelectQuery = { $or: [] };
+    const multiSelectChanges = {};
+    multiSelectQuery.$or = multiselectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
+    .map((property) => {
+      const p = {};
+      p[`metadata.${property.name}`] = sharedId;
+      multiSelectChanges[`metadata.${property.name}`] = sharedId;
+      return p;
+    });
+    if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
+      return;
+    }
+    const [entitiesWithSelect, entitiesWithMultiSelect] = await Promise.all([
+      selectQuery.$or.length ? this.get(selectQuery, { _id: 1 }) : [],
+      multiSelectQuery.$or.length ? this.get(multiSelectQuery, { _id: 1 }) : []]);
+    await Promise.all([
+      selectQuery.$or.length ? model.db.updateMany(selectQuery, { $set: selectChanges }) : null,
+      multiSelectQuery.$or.length ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges }) : null
+    ]);
+    const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
+    await this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
   },
 
   async createThumbnail(entity) {
