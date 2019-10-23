@@ -45,7 +45,7 @@ export default class CSVLoader extends EventEmitter {
     .read();
 
     if (Object.keys(this._errors).length === 1) {
-      throw this._errors[0];
+      throw this._errors[Object.keys(this._errors)[0]];
     }
 
     if (Object.keys(this._errors).length) {
