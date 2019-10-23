@@ -156,6 +156,16 @@ describe('entities', () => {
       .catch(catchErrors(done));
     });
 
+    it('should return document by id', async () => {
+      const expectedEntity = [{ _id: '123456789012345678901234' }];
+      spyOn(entities, 'get').and.returnValue(Promise.resolve(expectedEntity));
+
+      const response = await routes.get('/api/entities/byid', {_id: '123456789012345678901234'});
+
+      expect(entities.get).toHaveBeenCalledWith({_id: '123456789012345678901234'});
+      expect(response).toEqual({ rows: expectedEntity });
+    });
+
     it('should allow not fetching the relationships', async () => {
       const expectedEntity = { sharedId: 'sharedId', published: true };
 

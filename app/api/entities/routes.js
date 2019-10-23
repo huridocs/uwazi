@@ -88,6 +88,18 @@ export default (app) => {
       .catch(next);
     });
 
+  app.get('/api/entities/byid',
+    validation.validateRequest(Joi.object().keys({
+      _id: Joi.string().required(),
+    }).required(), 'query'),
+    (req, res, next) => {
+      entities.get({ _id: req._id })
+      .then((_entities) => {
+        res.json({ rows: _entities });
+      })
+      .catch(next);
+    });
+
   app.delete('/api/entities',
     needsAuthorization(['admin', 'editor']),
     validation.validateRequest(Joi.object().keys({
