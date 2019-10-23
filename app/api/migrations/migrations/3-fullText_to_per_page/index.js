@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import paths from 'api/config/paths';
 import PDF from 'api/upload/PDF';
 import fs from 'fs';
@@ -8,63 +10,41 @@ export default {
 
   name: 'fullText_to_per_page',
 
-  description: 'change fullText, now text pages will be saved indexed in an object and pseudo formated with pdftotext',
+  description:
+    'change fullText, now text pages will be saved indexed in an object and pseudo formated with pdftotext',
 
-  up(db) {
+  async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
+    let index = 1;
+    const totalDocuments = await db.collection('entities').count({ type: 'document' });
+    if (totalDocuments === 0) {
+      return;
+    }
     const cursor = db.collection('entities').find({ type: 'document' }, { _id: 1, file: 1 });
-    return db.collection('entities').count({ type: 'document' })
-    .then(totalDocuments => new Promise((resolve, reject) => {
-      if (totalDocuments === 0) {
-        return resolve();
+    while (await cursor.hasNext()) {
+      const entity = await cursor.next();
+      if (!entity.file || (entity.file && !entity.file.filename)) {
+        process.stdout.write(`processed (no filename) -> ${index}\r`);
+      } else if (!fs.existsSync(path.join(paths.uploadedDocuments, entity.file.filename))) {
+        process.stdout.write(`processed (no file) -> ${index}\r`);
+      } else {
+        try {
+          const conversion = await new PDF({
+            filename: path.join(paths.uploadedDocuments, entity.file.filename),
+          }).extractText();
+          await db.collection('entities').findOneAndUpdate(entity, { $set: { ...conversion } });
+          process.stdout.write(`processed -> ${index}\r`);
+        } catch (err) {
+          await db
+            .collection('entities')
+            .findOneAndUpdate(entity, { $set: { fullText: { 1: '' } } });
+          process.stdout.write(`processed (${err}) -> ${index}\r`);
+        }
       }
-      let index = 1;
-      cursor.on('data', (entity) => {
-        cursor.pause();
-
-        if (!entity.file || (entity.file && !entity.file.filename)) {
-          process.stdout.write(`processed -> ${index}\r`);
-          index += 1;
-          if (index - 1 === totalDocuments) {
-            return resolve();
-          }
-          cursor.resume();
-          return;
-        }
-
-        if (!fs.existsSync(path.join(paths.uploadedDocuments, entity.file.filename))) {
-          process.stdout.write(`processed -> ${index}\r`);
-          index += 1;
-          if (index - 1 === totalDocuments) {
-            return resolve();
-          }
-          cursor.resume();
-          return;
-        }
-
-        new PDF({ filename: path.join(paths.uploadedDocuments, entity.file.filename) }).extractText()
-        .then((conversion) => {
-          db.collection('entities').findOneAndUpdate(entity, { $set: { ...conversion } }, () => {
-            process.stdout.write(`processed -> ${index}\r`);
-            index += 1;
-            if (index - 1 === totalDocuments) {
-              return resolve();
-            }
-            cursor.resume();
-          });
-        }).catch(() => {
-          db.collection('entities').findOneAndUpdate(entity, { $set: { fullText: { 1: '' } } }, () => {
-            process.stdout.write(`processed -> ${index}\r`);
-            index += 1;
-            if (index - 1 === totalDocuments) {
-              return resolve();
-            }
-            cursor.resume();
-          });
-        });
-      });
-
-      cursor.on('err', reject);
-    }));
-  }
+      index += 1;
+      if (index - 1 === totalDocuments) {
+        return;
+      }
+    }
+  },
 };

@@ -1,3 +1,5 @@
+/** @format */
+
 const elasticLanguages: { [index: string]: { [index: string]: string | null } } = {
   arb: { franc: 'arb', elastic: 'arabic', ISO639_1: 'ar' },
   bul: { franc: 'bul', elastic: 'bulgarian', ISO639_1: 'bg' },
@@ -31,7 +33,7 @@ const elasticLanguages: { [index: string]: { [index: string]: string | null } } 
   spa: { franc: 'spa', elastic: 'spanish', ISO639_1: 'es' },
   swe: { franc: 'swe', elastic: 'swedish', ISO639_1: 'sv' },
   tha: { franc: 'tha', elastic: 'thai', ISO639_1: 'th' },
-  tur: { franc: 'tur', elastic: 'turkish', ISO639_1: 'tr' }
+  tur: { franc: 'tur', elastic: 'turkish', ISO639_1: 'tr' },
 };
 
 const allLanguages = [
@@ -221,7 +223,7 @@ const allLanguages = [
   { label: 'Yiddish', key: 'yi', rtl: true },
   { label: 'Yoruba', key: 'yo' },
   { label: 'Zhuang, Chuang', key: 'za' },
-  { label: 'Zulu', key: 'zu' }
+  { label: 'Zulu', key: 'zu' },
 ];
 
 export default (key: string, purpose = 'elastic') => {
