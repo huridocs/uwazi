@@ -12,20 +12,7 @@
 
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": true }],
-    "indent": [
-      "warn",
-      2,
-      {
-        "MemberExpression": 1,
-        "CallExpression": { "arguments": "off" },
-        "FunctionDeclaration": { "parameters": "off" },
-        "FunctionExpression": { "parameters": "off" },
-        "ignoreComments": true,
-        "ignoredNodes": ["JSXElement *"],
-        "ArrayExpression": "off",
-        "ObjectExpression": "off"
-      }
-    ],
+    "indent": "off", // handled by prettier
     "operator-linebreak": ["warn", "after"],
     "no-mixed-operators": "off",
     "no-underscore-dangle": "off",
@@ -48,7 +35,7 @@
     "consistent-return": ["warn"],
     "prefer-const": ["warn"],
     "arrow-body-style": ["warn"],
-    "arrow-parens": ["warn", "as-needed", { "requireForBlockBody": true }],
+    "arrow-parens": ["off"], // handled by prettier
     "prefer-template": ["warn"],
     "no-tabs": ["warn"],
     "object-shorthand": ["warn"],
