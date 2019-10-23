@@ -107,6 +107,21 @@ describe('csvLoader', () => {
         expect(e).toEqual(new Error('error-title1'));
       }
     });
+    it('should throw the error that occurred even if it was not the first row', async () => {
+      const testingLoader = new CSVLoader();
+
+      await db.clearAllAndLoad(fixtures);
+      jest.spyOn(entities, 'save')
+      .mockImplementationOnce(({ title }) => Promise.resolve(({ title })))
+      .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
+
+      try {
+        await testingLoader.load(csvFile, template1Id);
+        fail('should fail');
+      } catch (e) {
+        expect(e).toEqual(new Error('error-title2'));
+      }
+    });
   });
 
   describe('no stop on errors', () => {
@@ -145,6 +160,7 @@ describe('csvLoader', () => {
         await testingLoader.load(csvFile, template1Id);
         fail('should fail');
       } catch (e) {
+        expect(e.message).toMatch(/multiple errors/i);
         expect(testingLoader.errors()).toEqual({
           0: new Error('error-title1'),
           2: new Error('error-title3'),
