@@ -53,6 +53,13 @@ describe('handleError', () => {
       expect(error.message).toBe('error');
     });
   });
+  describe('when error is undefined', () => {
+    it('should return generate a new error with code 500', () => {
+      const error = handleError();
+      expect(error.code).toBe(500);
+      expect(error.message).toMatch(/undefined error/i);
+    });
+  });
   describe('when error is uncaught', () => {
     it('should append the info into the message', () => {
       const uncaught = true;
