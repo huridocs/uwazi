@@ -51,7 +51,8 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-export default (error, { req = {}, uncaught = false } = {}) => {
+export default (_error, { req = {}, uncaught = false } = {}) => {
+  const error = _error || new Error('undefined error occurred');
   const responseToClientError = error.json;
 
   if (responseToClientError) {
