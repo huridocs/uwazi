@@ -75,8 +75,8 @@ export default (app) => {
       const { omitRelationships, ...query } = req.query;
       const action = omitRelationships ? 'get' : 'getWithRelationships';
       const published = req.user ? {} : { published: true };
-      const language = req.language ? {language: req.language} : {};
-      entities[action]({ ...query, ...published, ...language}, {}, 1)
+      const language = req.language ? { language: req.language } : {};
+      entities[action]({ ...query, ...published, ...language }, {}, 1)
       .then((_entities) => {
         if (!_entities.length) {
           res.status(404);
