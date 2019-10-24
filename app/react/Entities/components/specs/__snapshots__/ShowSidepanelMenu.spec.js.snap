@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ShowSidepanelMenu should show button if panel is not open 1`] = `
+<div
+  className=""
+>
+  <ShowIf
+    if={true}
+  >
+    <div
+      className="btn btn-primary"
+      onClick={[Function]}
+    >
+      <Connect(Icon)
+        icon="chart-bar"
+      />
+    </div>
+  </ShowIf>
+</div>
+`;

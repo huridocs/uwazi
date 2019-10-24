@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Geolocation should hide clear fields button when lat and lon are empty 1`] = `
+exports[`Geolocation should hide clear fields button  when latitude and longitude are empty 1`] = `
 <div
   className="geolocation form-inline"
 >
@@ -59,7 +59,7 @@ exports[`Geolocation should hide clear fields button when lat and lon are empty 
 </div>
 `;
 
-exports[`Geolocation should render button to clear fields 1`] = `
+exports[`Geolocation should render button to clear fields when longitude and latitude not empty 1`] = `
 <div
   className="geolocation form-inline"
 >

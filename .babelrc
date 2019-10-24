@@ -3,7 +3,7 @@
     "targets": {
       "node": "current"
     }
-  }], "@babel/preset-react"],
+  }], "@babel/preset-react", "@babel/preset-typescript"],
   "retainLines": true,
   "env": {
     "production": {
@@ -11,6 +11,10 @@
         "babel-plugin-transform-react-remove-prop-types",
         "@babel/plugin-transform-react-inline-elements"
       ]
+    },
+    "debug": {
+      "sourceMaps": "inline",
+      "retainLines": true
     }
   },
   "plugins": [

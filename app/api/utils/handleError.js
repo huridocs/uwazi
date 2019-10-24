@@ -14,6 +14,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 422, message: error.message, validations: error.errors };
   }
 
+  if (error.name === 'ValidationError') {
+    result = { code: 422, message: error.message, validations: error.properties };
+  }
+
   if (error.name === 'MongoError') {
     result.code = 500;
   }
@@ -47,7 +51,8 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   return result;
 };
 
-export default (error, { req = {}, uncaught = false } = {}) => {
+export default (_error, { req = {}, uncaught = false } = {}) => {
+  const error = _error || new Error('undefined error occurred');
   const responseToClientError = error.json;
 
   if (responseToClientError) {
