@@ -69,11 +69,8 @@ function createEntity(doc, languages, sharedId) {
     if (!lang.default) {
       delete langDoc._id;
     }
-
     langDoc.language = lang.key;
     langDoc.sharedId = sharedId;
-
-
     return langDoc;
   });
 
