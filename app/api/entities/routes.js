@@ -88,14 +88,14 @@ export default (app) => {
       .catch(next);
     });
 
-  app.get('/api/entities/byid',
+  app.get('/api/entities/by_id',
     validation.validateRequest(Joi.object().keys({
       _id: Joi.string().required(),
     }).required(), 'query'),
     (req, res, next) => {
-      entities.get({ _id: req._id })
+      entities.get({ _id: req.query._id })
       .then((_entities) => {
-        res.json({ rows: _entities });
+        res.json(_entities[0]);
       })
       .catch(next);
     });
