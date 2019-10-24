@@ -67,16 +67,20 @@ export default (app) => {
 
   app.get('/api/entities',
     validation.validateRequest(Joi.object().keys({
-      sharedId: Joi.string().required(),
+      sharedId: Joi.string(),
+      _id: Joi.string(),
       omitRelationships: Joi.any()
     }).required(), 'query'),
     (req, res, next) => {
-      const action = req.query.omitRelationships ? 'get' : 'getWithRelationships';
-      entities[action]({ sharedId: req.query.sharedId, language: req.language })
+      const { omitRelationships, ...query } = req.query;
+      const action = omitRelationships ? 'get' : 'getWithRelationships';
+      const published = req.user ? {} : { published: true };
+      const language = req.language ? {language: req.language} : {};
+      entities[action]({ ...query, ...published, ...language}, {}, 1)
       .then((_entities) => {
-        if (!_entities.length || (!_entities[0].published && !req.user)) {
+        if (!_entities.length) {
           res.status(404);
-          res.json({});
+          res.json({ rows: [] });
           return;
         }
         if (!req.user && _entities[0].relationships) {
@@ -84,23 +88,6 @@ export default (app) => {
           entity.relationships = entity.relationships.filter(rel => rel.entityData.published);
         }
         res.json({ rows: _entities });
-      })
-      .catch(next);
-    });
-
-  app.get('/api/entities/by_id',
-    validation.validateRequest(Joi.object().keys({
-      _id: Joi.string().required(),
-    }).required(), 'query'),
-    (req, res, next) => {
-      entities.get({ _id: req.query._id })
-      .then((_entities) => {
-        if (_entities.length === 0) {
-          res.status(404);
-          res.json({});
-          return;
-        }
-        res.json(_entities[0]);
       })
       .catch(next);
     });
