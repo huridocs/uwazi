@@ -30,4 +30,5 @@ services:
       - elasticsearch
     environment:
       - DBHOST=mongo
+      - DATABASE_NAME=uwazi_development
       - ELASTICSEARCH_URL=http://elasticsearch:9200
