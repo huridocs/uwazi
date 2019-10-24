@@ -189,7 +189,7 @@ languages.getAll().forEach((language) => {
     filters.push('arabic_normalization');
     filters.push('persian_normalization');
   }
-  if (language !== 'persian') {
+  if (language !== 'persian' && language !== 'thai') {
     config.settings.analysis.filter[`${language}_stemmer`] = {
       type: 'stemmer',
       language

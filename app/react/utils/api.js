@@ -16,6 +16,24 @@ const doneLoading = (data) => {
   return data;
 };
 
+const isNonUsualApiError = error => error.status && ![500, 404, 401].includes(error.status);
+
+const handleErrorStatus = (error) => {
+  if (error.status === 401) {
+    browserHistory.replace('/login');
+  } else if (error.status === 404) {
+    browserHistory.replace('/404');
+  } else if (error.status === 500) {
+    store.dispatch(notify('An error has occurred', 'danger'));
+  } else if (isNonUsualApiError(error)) {
+    store.dispatch(notify(error.json.error, 'danger'));
+  } else if (error instanceof TypeError) {
+    store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
+  } else {
+    store.dispatch(notify('An error has occurred', 'danger'));
+  }
+};
+
 const handleError = (e, endpoint) => {
   const error = e;
   error.endpoint = endpoint;
@@ -26,22 +44,7 @@ const handleError = (e, endpoint) => {
 
   doneLoading();
 
-  if (error.status === 401) {
-    browserHistory.replace('/login');
-  }
-
-  if (error.status === 404) {
-    browserHistory.replace('/404');
-  }
-
-  if (error.status === 500) {
-    store.dispatch(notify('An error has occurred', 'danger'));
-  }
-
-  if (![500, 404, 401].includes(error.status)) {
-    store.dispatch(notify(error.json.error, 'danger'));
-  }
-
+  handleErrorStatus(error);
   return Promise.reject(error);
 };
 
