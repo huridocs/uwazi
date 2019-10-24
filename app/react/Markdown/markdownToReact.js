@@ -26,7 +26,7 @@ const dynamicCustomContainersConfig = {
 
 
 const markdownIt = instanceMarkdownIt().use(mdContainer, 'dynamic', dynamicCustomContainersConfig);
-const markdownItWithHtml = instanceMarkdownIt({ html: true }).use(mdContainer, 'dynamic', dynamicCustomContainersConfig);
+const markdownItWithHtml = instanceMarkdownIt({ html: true, xhtmlOut: true }).use(mdContainer, 'dynamic', dynamicCustomContainersConfig);
 const customComponentTypeMatcher = /{(.+)}\(/;
 
 const getConfig = (string) => {
