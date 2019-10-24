@@ -95,6 +95,11 @@ export default (app) => {
     (req, res, next) => {
       entities.get({ _id: req.query._id })
       .then((_entities) => {
+        if (_entities.length === 0) {
+          res.status(404);
+          res.json({});
+          return;
+        }
         res.json(_entities[0]);
       })
       .catch(next);
