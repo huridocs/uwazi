@@ -160,7 +160,7 @@ describe('entities', () => {
       const expectedEntity = { _id: '123456789012345678901234', title: 'title' };
       spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
 
-      const response = await routes.get('/api/entities/by_id', { query: {_id: '123456789012345678901234'} });
+      const response = await routes.get('/api/entities/by_id', { query: { _id: '123456789012345678901234' } });
 
       expect(entities.get).toHaveBeenCalledWith({ _id: '123456789012345678901234' });
       expect(response).toEqual(expectedEntity);
@@ -169,7 +169,7 @@ describe('entities', () => {
     it('should return 404 when document by id not found', async () => {
       spyOn(entities, 'get').and.returnValue(Promise.resolve([]));
 
-      const response = await routes.get('/api/entities/by_id', { query: {_id: '123456789012345678901234'} });
+      const response = await routes.get('/api/entities/by_id', { query: { _id: '123456789012345678901234' } });
 
       expect(response.status).toEqual(404);
     });
