@@ -4,18 +4,14 @@ services:
     image: mongo:3.4-xenial
     ports:
       - "27017"
-#  mongo-test:
-#    image: mongo:3.4-xenial
-#    links:
-#      - mongo
-#    depends_on:
-#      - mongo
-#    command: mongo test
+    networks:
+      - uwazi_network
   elasticsearch:
     image: elasticsearch:5.6
     ports:
       - "9200"
-#     - "9300"
+    networks:
+      - uwazi_network
   uwazi:
     build:
       context: .
@@ -25,10 +21,17 @@ services:
     ports:
       - "3000"
       - "8080"
+    networks:
+      uwazi_network:
+        aliases:
+          - uwazi.localdomain
     depends_on:
       - mongo
       - elasticsearch
     environment:
       - DBHOST=mongo
       - DATABASE_NAME=uwazi_development
+      - DOMAIN=uwazi.localdomain
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+networks:
+  uwazi_network:
