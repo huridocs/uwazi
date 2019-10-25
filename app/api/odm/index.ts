@@ -1,5 +1,4 @@
-import model, { generateID } from './model';
-import models from './models';
+/** @format */
 
-export default model;
-export { generateID, models };
+export * from './model';
+export * from './models';

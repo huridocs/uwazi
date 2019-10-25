@@ -1,11 +1,12 @@
+/** @format */
+
 import mongoose from 'mongoose';
 import { ensure } from 'shared/tsUtils';
 import { model as updatelogsModel } from 'api/updatelogs';
-import { UpdateLog } from './../../updatelogs/updatelogsModel';
+import { UpdateLog } from 'api/updatelogs/updatelogsModel';
 import testingDB from 'api/utils/testing_db';
-import odmModel from '../model';
-import models from '../models';
-import { OdmModel } from '../models';
+import { instanceModel } from '../model';
+import { OdmModel, models } from '../models';
 
 const testSchema = new mongoose.Schema({
   name: String,
@@ -28,8 +29,8 @@ describe('ODM Model', () => {
 
   it('should register all the models to the requirable models hashmap', () => {
     expect(models).toEqual({});
-    const model1 = odmModel<TestDoc>('tempSchema', testSchema);
-    const model2 = odmModel<mongoose.Document>(
+    const model1 = instanceModel<TestDoc>('tempSchema', testSchema);
+    const model2 = instanceModel<mongoose.Document>(
       'anotherSchema',
       new mongoose.Schema({ name: String })
     );
@@ -40,7 +41,7 @@ describe('ODM Model', () => {
 
   describe('Save', () => {
     it('should be able to create when passing an _id and it does not exists', async () => {
-      const extendedModel = odmModel('tempSchema', testSchema);
+      const extendedModel = instanceModel('tempSchema', testSchema);
       const id = testingDB.id();
       await extendedModel.save(({
         _id: id,
@@ -58,7 +59,7 @@ describe('ODM Model', () => {
 
     beforeEach(async () => {
       Date.now = () => 1;
-      extendedModel = odmModel('tempSchema', testSchema);
+      extendedModel = instanceModel('tempSchema', testSchema);
       newDocument1 = await extendedModel.save(ensure({ name: 'document 1' }));
       newDocument2 = await extendedModel.save(ensure({ name: 'document 2' }));
     });

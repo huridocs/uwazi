@@ -1,3 +1,5 @@
+/** @format */
+
 import mongoose from 'mongoose';
 
 const updateLogSchema = new mongoose.Schema({
@@ -8,11 +10,10 @@ const updateLogSchema = new mongoose.Schema({
 });
 
 export interface UpdateLog extends mongoose.Document {
-  timestamp: Number,
-  namespace: String,
-  mongoId: mongoose.Schema.Types.ObjectId,
-  deleted: Boolean,
+  timestamp: Number;
+  namespace: String;
+  mongoId: mongoose.Schema.Types.ObjectId;
+  deleted: Boolean;
 }
 
-const Model = mongoose.model<UpdateLog>('updatelogs', updateLogSchema);
-export default Model;
+export const model = mongoose.model<UpdateLog>('updatelogs', updateLogSchema);

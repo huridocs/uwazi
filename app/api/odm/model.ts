@@ -1,15 +1,17 @@
+/** @format */
+
 import mongoose from 'mongoose';
 
 import { model as updatelogsModel } from 'api/updatelogs';
 
-import models from './models';
-import { OdmModel } from './models';
+import { OdmModel, models } from './models';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
 
 class UpdateLogHelper {
   collectionName: string;
+
   constructor(collectionName: string) {
     this.collectionName = collectionName;
   }
@@ -39,7 +41,9 @@ class UpdateLogHelper {
 
 class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
   db: mongoose.Model<T>;
+
   logHelper: UpdateLogHelper;
+
   constructor(logHelper: UpdateLogHelper, db: mongoose.Model<T>) {
     this.db = db;
     this.logHelper = logHelper;
@@ -52,13 +56,13 @@ class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
     const documentExists = await this.db.findById(data._id, '_id');
 
     if (documentExists) {
-      let saved = await this.db.findOneAndUpdate({ _id: data._id }, data, { new: true });
+      const saved = await this.db.findOneAndUpdate({ _id: data._id }, data, { new: true });
       if (saved === null) {
         throw Error('mongoose findOneAndUpdate should never return null!');
       }
       return saved.toObject();
     }
-    let saved = await this.db.create(data);
+    const saved = await this.db.create(data);
     return saved.toObject();
   }
 
@@ -95,11 +99,14 @@ class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
   }
 }
 
-export default <T extends mongoose.Document>(collectionName: string, schema: mongoose.Schema) => {
+export function instanceModel<T extends mongoose.Document>(
+  collectionName: string,
+  schema: mongoose.Schema
+) {
   const logHelper = new UpdateLogHelper(collectionName);
   schema.post('save', logHelper.upsertLogOne.bind(logHelper));
   schema.post('findOneAndUpdate', logHelper.upsertLogOne.bind(logHelper));
-  schema.post('updateMany', async function updateMany(this: any, doc, next) {
+  schema.post('updateMany', async function updateMany(this: any, _doc, next) {
     const affectedIds = await logHelper.getAffectedIds(this._conditions);
     await logHelper.upsertLogMany(affectedIds);
     next();
@@ -108,4 +115,4 @@ export default <T extends mongoose.Document>(collectionName: string, schema: mon
   // Store a 'generic' model for use in /api/async (where the collection name is passed as request paramter).
   models[collectionName] = new OdmModelImpl<mongoose.Document>(logHelper, model.db);
   return model;
-};
+}

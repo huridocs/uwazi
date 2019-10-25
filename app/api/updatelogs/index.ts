@@ -1,6 +1,3 @@
-import model from './updatelogsModel';
+/** @format */
 
-export {
-  model
-};
-
+export * from './updatelogsModel';
