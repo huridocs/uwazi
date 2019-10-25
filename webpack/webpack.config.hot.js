@@ -7,6 +7,8 @@ const config = require('./config')();
 const rootPath = `${__dirname}/../`;
 const RtlCssPlugin = require("rtlcss-webpack-plugin");
 
+const DOMAIN = process.env.DOMAIN || 'locahost';
+
 config.plugins = config.plugins.filter(plugin => !(plugin instanceof RtlCssPlugin));
 config.plugins = config.plugins.concat([
   new webpack.HotModuleReplacementPlugin(),
@@ -21,15 +23,15 @@ config.plugins = config.plugins.concat([
 ]);
 
 config.output = {
-  publicPath: 'http://localhost:8080/',
+  publicPath: `http://${DOMAIN}:8080/`,
   filename: '[name].js'
 };
 
 config.entry['pdf.worker'] = 'pdfjs-dist/build/pdf.worker.entry';
-  
+
 config.entry.main = [
   'react-hot-loader/patch',
-  'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
+  `webpack-hot-middleware/client?path=//${DOMAIN}:8080/__webpack_hmr`,
   path.join(rootPath, 'app/react/index.js')
 ];
 

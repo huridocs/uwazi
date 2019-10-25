@@ -21,6 +21,7 @@ import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
 import handleError from '../api/utils/handleError';
+import { DOMAIN } from './config';
 
 let assets = {};
 
@@ -283,7 +284,7 @@ function ServerRouter(req, res) {
   }
 
   const { PORT } = process.env;
-  api.APIURL(`http://localhost:${PORT || 3000}/api/`);
+  api.APIURL(`http://${DOMAIN}:${PORT || 3000}/api/`);
 
   const location = req.url;
 

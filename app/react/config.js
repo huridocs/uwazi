@@ -1,3 +1,5 @@
 const APIURL = process.env.API_URL || '/api/';
-export default { APIURL };
-export { APIURL };
+const DOMAIN = process.env.DOMAIN || 'locahost';
+
+export default { APIURL, DOMAIN };
+export { APIURL, DOMAIN };
