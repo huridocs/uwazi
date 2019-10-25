@@ -6,9 +6,7 @@ import { allLanguages as languagesList } from 'shared/languagesList';
 
 import { DOMAIN } from '../config';
 
-const determineHotAssets = query => {
-  console.log('DOMAIN:', DOMAIN);
-  return ({
+const determineHotAssets = query => ({
   JS: [
     `http://${DOMAIN}:8080/pdfjs-dist.js`,
     `http://${DOMAIN}:8080/nprogress.js`,
@@ -20,7 +18,7 @@ const determineHotAssets = query => {
     `http://${DOMAIN}:8080/CSS/main.css${query}`,
     `http://${DOMAIN}:8080/pdfjs-dist.css`,
   ]
-});}
+});
 
 const determineAssets = (assets, languageData) => ({
   JS: [
