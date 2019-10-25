@@ -1,3 +1,5 @@
+/** @format */
+
 import multer from 'multer';
 
 import { models } from 'api/odm';
@@ -17,7 +19,7 @@ const storage = multer.diskStorage({
   },
 });
 
-export default (app) => {
+export default app => {
   const upload = multer({ storage });
 
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
