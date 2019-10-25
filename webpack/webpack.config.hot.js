@@ -7,7 +7,7 @@ const config = require('./config')();
 const rootPath = `${__dirname}/../`;
 const RtlCssPlugin = require("rtlcss-webpack-plugin");
 
-const DOMAIN = process.env.DOMAIN || 'locahost';
+const DOMAIN = process.env.DOMAIN || 'localhost';
 
 config.plugins = config.plugins.filter(plugin => !(plugin instanceof RtlCssPlugin));
 config.plugins = config.plugins.concat([
