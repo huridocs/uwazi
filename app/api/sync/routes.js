@@ -28,11 +28,10 @@ export default app => {
         const [settings] = await models.settings.get({});
         req.body.data._id = settings._id;
       }
-      if (Array.isArray(req.body.data)) {
-        await Promise.all(req.body.data.map(doc => models[req.body.namespace].save(doc)));
-      } else {
-        await models[req.body.namespace].save(req.body.data);
-      }
+      const saver = Array.isArray(req.body.data)
+        ? models[req.body.namespace].saveMultiple(req.body.data)
+        : models[req.body.namespace].save(req.body.data);
+      await saver;
 
       if (req.body.namespace === 'entities') {
         await entities.indexEntities({ _id: req.body.data._id }, '+fullText');
