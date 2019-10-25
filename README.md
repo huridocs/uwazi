@@ -162,7 +162,7 @@ Podman:
     $ podman-compose up
     $ podman exec -it uwazi_uwazi_1 bash
 
-Docker (you may need to sudo this, depending on your installation):
+Docker (you may need to sudo these, depending on your installation):
 
     $ docker-compose build
     $ docker-compose up
@@ -173,13 +173,13 @@ and now inside the container you can do, as above:
     $ yarn install
     $ yarn blank-state
 
-To setup the system, and then
+to setup the system.  Then
 
     $ yarn hot
 
-To bring the UWAZI application up.
+to bring the UWAZI application up.
 
-Then you will need to map uwazi.localdomain to the uwazi_uwazi_1 container's IP (most likely in the /etc/hosts file).
+Then you will need to map `uwazi.localdomain` to the uwazi_uwazi_1 container's IP (most likely in the /etc/hosts file).
 
 After that you will be able to to access Uwazi on http://uwazi.localdomain:3000 on your host.
 
