@@ -73,7 +73,7 @@ $ yarn install
 $ yarn production-build
 ```
 
-The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running. 
+The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running.
 ```
 $ yarn blank-state
 ```
@@ -96,7 +96,7 @@ $ yarn migrate
 $ yarn production-build
 $ yarn run-production
 ```
-- If you are not using git, just download and overwrite the code in the Uwazi directory. 
+- If you are not using git, just download and overwrite the code in the Uwazi directory.
 - 'yarn install' will automatically add, remove or replace any changes in module dependecies.
 - 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
 
@@ -148,7 +148,7 @@ Note that if you already have an instance running, this will likely throw an err
 
 E2E Tests depend on electron.  If something appears to not be working, please run `node_modules/electron/dist/electron --help` to check for problems.
 
-#### Development Docker
+### Development Docker
 
 This project includes a [`Dockerfile`](Dockerfile-devshell) to build a "dev container" which already includes the required dependencies (as above).  This simplifies setting up your development environment, and guarantees a uniform environment by avoiding subtle differences between individual developers' machines.  Once you have a container runtime installed (e.g.
 [Podman](https://github.com/containers/libpod) via `dnf install podman-docker` or
@@ -156,16 +156,32 @@ This project includes a [`Dockerfile`](Dockerfile-devshell) to build a "dev cont
 (e.g. [Podman Compose](https://github.com/containers/podman-compose/) via `pip3 install podman-compose`
 or [Docker Compose](https://docs.docker.com/compose/install/), you can simply use:
 
-    podman-compose build
-    podman-compose up
-    podman exec -it uwazi_uwazi_1 bash
+Podman:
+
+    $ podman-compose build
+    $ podman-compose up
+    $ podman exec -it uwazi_uwazi_1 bash
+
+Docker (you may need to sudo this, depending on your installation):
+
+    $ docker-compose build
+    $ docker-compose up
+    $ docker exec -it uwazi_uwazi_1 bash
 
 and now inside the container you can do, as above:
 
-    yarn blank-state
-    yarn hot
+    $ yarn install
+    $ yarn blank-state
 
-and then will be able to to access Uwazi on http://localhost:3000 on your host.
+To setup the system, and then
+
+    $ yarn hot
+
+To bring the UWAZI application up.
+
+Then you will need to map uwazi.localdomain to the uwazi_uwazi_1 container's IP (most likely in the /etc/hosts file).
+
+After that you will be able to to access Uwazi on http://uwazi.localdomain:3000 on your host.
 
 The source files from your host are mounted into the container.  This is known to be somewhat of
 a PITA, and there are several ways of dealing with related UID mapping problems, but they can differ
@@ -174,7 +190,7 @@ between Podman and (original) Docker, including:
 1. Not sharing the source files between container and host is the simplest solution.
    This can be inconvenient if you would like to e.g. use IDEs on the host.
 
-1. If one simply avoids `useradd` and `USER` in the `Dockerfile`,
+2. If one simply avoids `useradd` and `USER` in the `Dockerfile`,
    then the _in-container_ `id` will be `uid=0(root) gid=0(root) groups=0(root)`.
    Podman (on Fedora) maps this to the _host uid_ of the user using Podman,
    which contrary to Docker is typically not `root`.
