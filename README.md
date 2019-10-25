@@ -28,7 +28,8 @@ Intallation guide
     * [Testing](#testing)
       * [Unit and Integration tests](#unit-and-integration-tests)
       * [End to End (e2e)](#end-to-end-e2e)
-    * [Docker](#development-docker)
+    * [Development Docker](#development-docker)
+  * [Docker](#docker)
 
 # Dependencies
 
