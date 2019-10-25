@@ -66,7 +66,7 @@ function updateEntity(entity, _template) {
 function createEntity(doc, languages, sharedId) {
   const docs = languages.map((lang) => {
     const langDoc = Object.assign({}, doc);
-    const avoidIdDuplication = docs._id && !lang.default;
+    const avoidIdDuplication = doc._id && !lang.default;
     if (avoidIdDuplication) {
       delete langDoc._id;
     }
