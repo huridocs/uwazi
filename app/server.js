@@ -1,4 +1,9 @@
-/* eslint-disable no-console */
+/**
+ * /* eslint-disable no-console
+ *
+ * @format
+ */
+
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
@@ -34,7 +39,7 @@ app.use(helmet());
 
 const http = Server(app);
 
-const uncaughtError = (error) => {
+const uncaughtError = error => {
   handleError(error, { uncaught: true });
   process.exit(1);
 };
@@ -64,7 +69,6 @@ app.use('/assets', express.static(paths.customUploads));
 // retained for backwards compatibility
 app.use('/uploaded_documents', express.static(paths.customUploads));
 
-
 apiRoutes(app, http);
 
 serverRenderingRoutes(app);
@@ -81,9 +85,8 @@ if (process.env.DBUSER) {
   };
 }
 
-console.info("==> Connecting to", dbConfig[app.get('env')]);
-mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
-.then(async () => {
+console.info('==> Connecting to', dbConfig[app.get('env')]);
+mongoose.connect(dbConfig[app.get('env')], { ...dbAuth }).then(async () => {
   console.info('==> Processing system keys...');
   await translations.processSystemKeys(systemKeys);
 
@@ -95,7 +98,7 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
 
   const port = ports[app.get('env')];
 
-  const bindAddress = ({ true: 'localhost' })[process.env.LOCALHOST_ONLY];
+  const bindAddress = { true: 'localhost' }[process.env.LOCALHOST_ONLY];
 
   semanticSearchManager.start();
 
@@ -105,13 +108,14 @@ mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
     const { evidencesVault } = await settings.get();
     if (evidencesVault && evidencesVault.token && evidencesVault.template) {
       console.info('==> 📥 evidences vault config detected, started sync ....');
-      repeater.start(
-        () => vaultSync.sync(evidencesVault.token, evidencesVault.template),
-        10000
-      );
+      repeater.start(() => vaultSync.sync(evidencesVault.token, evidencesVault.template), 10000);
     }
 
-    console.info('==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.', port, port);
+    console.info(
+      '==> 🌎 Listening on port %s. Open up http://localhost:%s/ in your browser.',
+      port,
+      port
+    );
     if (process.env.HOT) {
       console.info('');
       console.info('==> 📦 webpack is watching...');
