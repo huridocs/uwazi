@@ -139,7 +139,6 @@ export default class Map extends Component {
     this.zoomIn = () => this.zoom(+1);
     this.zoomOut = () => this.zoom(-1);
 
-    // this.interactiveLayerIds = ['clusters'];
     this.interactiveLayerIds = [];
     if (this.mapStyle.has('layers')) {
       this.interactiveLayerIds = this.mapStyle.get('layers')
