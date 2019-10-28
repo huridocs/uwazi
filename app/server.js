@@ -81,6 +81,7 @@ if (process.env.DBUSER) {
   };
 }
 
+console.info("==> Connecting to", dbConfig[app.get('env')]);
 mongoose.connect(dbConfig[app.get('env')], { ...dbAuth })
 .then(async () => {
   console.info('==> Processing system keys...');
