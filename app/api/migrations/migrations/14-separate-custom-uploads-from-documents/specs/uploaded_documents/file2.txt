@@ -1,0 +1,1 @@
+contents for file file2.txt
