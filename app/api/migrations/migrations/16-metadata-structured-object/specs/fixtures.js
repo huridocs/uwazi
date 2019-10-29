@@ -6,6 +6,7 @@ const [t1] = [db.id()];
 const [dc, di] = [db.id(), db.id()];
 const [c1, c2] = ['123-c1', '234-c2'];
 const [i1, i2] = ['345-i1', '456-i2'];
+const [e1, e2] = [db.id(), db.id()];
 
 export default {
   templates: [
@@ -29,6 +30,12 @@ export default {
           type: 'multiselect',
           name: 'issues',
           content: di,
+        },
+        {
+          label: 'Friends',
+          type: 'relationship',
+          name: 'friends',
+          content: t1,
         },
       ],
     },
@@ -55,22 +62,28 @@ export default {
 
   entities: [
     {
-      _id: db.id(),
+      _id: e1,
       title: 'e1',
+      language: 'en',
+      sharedId: 'shared-e1',
       template: t1,
       metadata: {
         country: c1,
         current_address_geolocation: [{ lat: 1, lng: 2, label: 'a' }],
         issues: [i1],
+        friends: 'shared-e2',
       },
     },
     {
-      _id: db.id(),
+      _id: e2,
       title: 'e2',
+      language: 'en',
       template: t1,
+      sharedId: 'shared-e2',
       metadata: {
         country: c2,
         issues: [i1, i2],
+        friends: ['shared-e1'],
       },
     },
   ],

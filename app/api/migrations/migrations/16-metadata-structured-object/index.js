@@ -3,6 +3,8 @@
  */
 /* eslint-disable no-await-in-loop */
 
+import entities from 'api/entities';
+
 export default {
   delta: 16,
 
@@ -35,32 +37,9 @@ export default {
     const cursor = db.collection('entities').find();
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
-      if (entity.metadata) {
-        const newMetadata = Object.keys(entity.metadata).reduce((metadata, property) => {
-          const propertyData = templatesByKey[entity.template.toString()].properties.find(
-            p => p.name === property && p.content
-          );
-          let value = entity.metadata[property];
-          if (!Array.isArray(value)) {
-            value = [value];
-          }
-          const newValue = value.map(elem => {
-            const mo = { value: elem };
-            if (propertyData && propertyData.content) {
-              if (dictionariesByKey[propertyData.content]) {
-                const dictElem = dictionariesByKey[propertyData.content.toString()].values.find(
-                  v => v.id === elem
-                );
-                if (dictElem) {
-                  mo.label = dictElem.label;
-                }
-              }
-            }
-            return mo;
-          });
-          return Object.assign({}, metadata, { [property]: newValue });
-        }, {});
-
+      const template = templatesByKey[entity.template.toString()];
+      if (entity.metadata && template) {
+        const newMetadata = await entities.expandMetadata(template, dictionariesByKey, entity);
         await db
           .collection('entities')
           .update({ _id: entity._id }, { $set: { metadata: newMetadata } });
