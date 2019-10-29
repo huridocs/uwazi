@@ -45,7 +45,7 @@ export default {
             value = [value];
           }
           const newValue = value.map(elem => {
-            const mo = { id: elem };
+            const mo = { value: elem };
             if (propertyData && propertyData.content) {
               if (dictionariesByKey[propertyData.content]) {
                 const dictElem = dictionariesByKey[propertyData.content.toString()].values.find(
