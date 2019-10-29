@@ -5,7 +5,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import templates from '../../templates/templates';
 import thesauris from '../../thesauris/thesauris';
-import fixtures, { templateId } from './fixtures.js';
+import fixtures, { templateId, unpublishedDocId, batmanFinishesId } from './fixtures.js';
 
 describe('entities', () => {
   let routes;
@@ -171,6 +171,7 @@ describe('entities', () => {
     it('should have a validation schema', () => {
       expect(routes.get.validation('/api/entities')).toMatchSnapshot();
     });
+
     it('should return matching document', (done) => {
       const expectedEntity = [{
         sharedId: 'sharedId',
@@ -195,33 +196,21 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should not return unpublished documents when user not logged in', async () => {
-      spyOn(entities, 'get').and.returnValue(Promise.resolve([]));
-
-      await routes.get('/api/entities', { query: { _id: 'unpublished_document_id', omitRelationships: true } });
-
-      expect(entities.get).toHaveBeenCalledWith({ _id: 'unpublished_document_id', published: true }, {}, 1);
-    });
-
     it('should return document by id', async () => {
-      const expectedEntity = {
-        _id: '123456789012345678901234',
-        title: 'title'
-      };
-      spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
+      const expectedEntity = fixtures.entities[0];
+      delete expectedEntity.fullText;
 
-      const response = await routes.get('/api/entities', { query: { _id: '123456789012345678901234', omitRelationships: true } });
+      const response = await routes.get('/api/entities', { query: { _id: batmanFinishesId, omitRelationships: true } });
 
-      expect(entities.get).toHaveBeenCalledWith({ _id: '123456789012345678901234', published: true }, {}, 1);
-      expect(response).toEqual({ rows: [expectedEntity] });
+      expect(response.rows.length).toEqual(1);
+      expect(response.rows[0]).toEqual(expectedEntity);
     });
 
-    it('should return 404 when no documents found', async () => {
-      spyOn(entities, 'get').and.returnValue(Promise.resolve([]));
-
-      const response = await routes.get('/api/entities', { query: { _id: '123456789012345678901234' } });
+    it('should not return unpublished documents when user not logged in', async () => {
+      const response = await routes.get('/api/entities', { query: { _id: unpublishedDocId, omitRelationships: true } });
 
       expect(response.status).toEqual(404);
+      expect(response.rows).toEqual([]);
     });
 
     it('should allow not fetching the relationships', async () => {
