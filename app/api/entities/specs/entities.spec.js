@@ -77,6 +77,18 @@ describe('entities', () => {
       expect(createdDocumentEn.creationDate).toEqual(universalTime);
     });
 
+    it('should create a new entity for each language when passing an _id', async () => {
+      const universalTime = 1;
+      spyOn(date, 'currentUTC').and.returnValue(universalTime);
+      const doc = { _id: '123456789012345678901234', title: 'Batman begins', language: 'es' };
+      const user = { _id: db.id() };
+
+      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
+
+      expect(createdDocumentEs._id.toString()).toBe('123456789012345678901234');
+      expect(createdDocumentEn._id.toString()).not.toBe('123456789012345678901234');
+    });
+
     it('should create a new entity, preserving template if passed', async () => {
       const doc = { title: 'The Dark Knight', template: templateId };
       const user = { _id: db.id() };
