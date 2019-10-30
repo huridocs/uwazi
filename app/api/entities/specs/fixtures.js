@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
 
+
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
 const templateId = db.id();
@@ -23,6 +24,7 @@ const hub5 = db.id();
 
 const docId1 = db.id();
 const docId2 = db.id();
+const unpublishedDocId = db.id('123456789012345678901234');
 
 export default {
   entities: [
@@ -48,7 +50,7 @@ export default {
     },
     { _id: docId1, sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }], fullText: { 1: 'text' } },
     { _id: docId2, sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
-    { _id: db.id(), sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: { property1: 'value1' } },
+    { _id: unpublishedDocId, sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: { property1: 'value1' } },
     //select/multiselect/date sync
     { _id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' } },
     { _id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' }, fullText: { 1: 'text' } },
@@ -148,5 +150,6 @@ export {
   docId1,
   docId2,
   c1,
-  c2
+  c2,
+  unpublishedDocId,
 };

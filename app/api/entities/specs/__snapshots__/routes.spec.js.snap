@@ -51,13 +51,16 @@ Object {
 exports[`entities GET should have a validation schema 1`] = `
 Object {
   "children": Object {
+    "_id": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "omitRelationships": Object {
       "type": "any",
     },
     "sharedId": Object {
-      "flags": Object {
-        "presence": "required",
-      },
       "invalids": Array [
         "",
       ],
