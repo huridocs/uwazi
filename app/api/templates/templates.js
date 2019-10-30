@@ -3,10 +3,12 @@ import request from 'shared/JSONRequest.js';
 import translations from 'api/i18n/translations';
 import validateTemplate from 'api/templates/validateTemplate';
 import createError from 'api/utils/Error';
+import { wrapValidation } from 'api/utils/wrapValidation';
 
 import { db_url as dbURL } from '../config/database.js';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
 import model from './templatesModel.js';
+import validator from './templateValidator';
 
 const checkDuplicated = template => model.get()
 .then((templates) => {
@@ -62,7 +64,7 @@ const updateTranslation = (currentTemplate, template) => {
   return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, 'Entity');
 };
 
-export default {
+const templates = {
   save(template, language) {
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
@@ -173,3 +175,9 @@ export default {
     return model.count({ 'properties.content': thesauriId });
   }
 };
+
+export {
+  templates
+};
+
+export default wrapValidation(validator, templates);

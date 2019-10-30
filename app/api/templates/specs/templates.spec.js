@@ -4,8 +4,9 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
-import templates from 'api/templates/templates.js';
+import validatedTemplates, { templates } from 'api/templates/templates.js';
 import translations from 'api/i18n/translations';
+import templatesValidator from 'api/templates/templateValidator';
 
 import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents, swapTemplate } from './fixtures.js';
 
@@ -425,4 +426,15 @@ describe('templates', () => {
       .catch(catchErrors(done));
     });
   });
+
+  describe('validation', () => {
+    it('should validate on save', async () => {
+      jest.spyOn(templates, 'save').mockResolvedValue({});
+      jest.spyOn(templatesValidator, 'save').mockReturnValue(true);
+      
+      const tpl = { name: 'Test' };
+      await validatedTemplates.save(tpl, 'en');
+      expect(templatesValidator.save).toHaveBeenCalledWith(tpl, 'en');
+    });
+  })
 });
