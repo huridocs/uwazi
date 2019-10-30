@@ -28,6 +28,7 @@ Intallation guide
     * [Testing](#testing)
       * [Unit and Integration tests](#unit-and-integration-tests)
       * [End to End (e2e)](#end-to-end-e2e)
+  * [Docker](#docker)
 
 # Dependencies
 
@@ -152,3 +153,7 @@ E2E Tests depend on electron.  If something appears to not be working, please ru
 The application's default log in is admin / change this password now 
 
 Note the subtle nudge ;)
+
+# Docker
+
+https://github.com/fititnt/uwazi-docker is a project with a Docker containerized version of Uwazi.

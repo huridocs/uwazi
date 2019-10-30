@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 export default {
   delta: 2,
 
@@ -5,20 +6,14 @@ export default {
 
   description: 'Delete empty geolocation properties',
 
-  up(db) {
+  async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    return new Promise((resolve, reject) => {
-      const cursor = db.collection('entities').find();
-      let index = 1;
-      cursor.on('data', (entity) => {
-        cursor.pause();
-        if (!entity.metadata) {
-          process.stdout.write(`processed -> ${index}\r`);
-          index += 1;
-          cursor.resume();
-          return;
-        }
+    let index = 1;
 
+    const cursor = db.collection('entities').find();
+    while (await cursor.hasNext()) {
+      const entity = await cursor.next();
+      if (entity.metadata) {
         const metadataProperties = Object.keys(entity.metadata);
         const metadata = metadataProperties.reduce((_metadata, k) => {
           const isGeolocation = k.indexOf('_geolocation') > -1;
@@ -31,18 +26,11 @@ export default {
           _metadata[k] = entity.metadata[k];
           return _metadata;
         }, {});
-        db.collection('entities').findOneAndUpdate(entity, { $set: { metadata } }, () => {
-          process.stdout.write(`processed -> ${index}\r`);
-          index += 1;
-          cursor.resume();
-        });
-      });
-
-      cursor.on('err', reject);
-      cursor.on('end', () => {
-        process.stdout.write(`processed -> ${index}\r\n`);
-        resolve();
-      });
-    });
-  }
+        await db.collection('entities').findOneAndUpdate(entity, { $set: { metadata } });
+      }
+      process.stdout.write(`processed -> ${index}\r`);
+      index += 1;
+    }
+    process.stdout.write('\r\n');
+  },
 };

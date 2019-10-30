@@ -13,11 +13,11 @@ import fixtures, { batmanFinishesId, templateId, templateChangingNames,
   syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';
 
 describe('entities', () => {
-  beforeEach((done) => {
+  beforeEach(async () => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await db.clearAllAndLoad(fixtures);
   });
 
   afterAll((done) => {
@@ -74,6 +74,18 @@ describe('entities', () => {
       expect(createdDocumentEn.user.equals(user._id)).toBe(true);
       expect(createdDocumentEn.published).toBe(false);
       expect(createdDocumentEn.creationDate).toEqual(universalTime);
+    });
+
+    it('should create a new entity for each language when passing an _id', async () => {
+      const universalTime = 1;
+      spyOn(date, 'currentUTC').and.returnValue(universalTime);
+      const doc = { _id: '123456789012345678901234', title: 'Batman begins', language: 'es' };
+      const user = { _id: db.id() };
+
+      const { createdDocumentEs, createdDocumentEn } = await saveDoc(doc, user);
+
+      expect(createdDocumentEs._id.toString()).toBe('123456789012345678901234');
+      expect(createdDocumentEn._id.toString()).not.toBe('123456789012345678901234');
     });
 
     it('should create a new entity, preserving template if passed', async () => {
@@ -810,17 +822,13 @@ describe('entities', () => {
     });
 
     describe('when entity is being used as thesauri', () => {
-      it('should delete the entity id on all entities using it from select/multiselect values', (done) => {
-        entities.delete('shared')
-        .then(() => {
-          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
-          expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
-          expect(documentsToIndex[2].metadata.select).toBe('');
-          expect(documentsToIndex[3].metadata.select2).toBe('');
-          done();
-        })
-        .catch(catchErrors(done));
+      it('should delete the entity id on all entities using it from select/multiselect values', async () => {
+        await entities.delete('shared');
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+        expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
+        expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
+        expect(documentsToIndex[2].metadata.select).toBe('');
+        expect(documentsToIndex[3].metadata.select2).toBe('');
       });
 
       describe('when there is no multiselects but there is selects', () => {
@@ -832,14 +840,10 @@ describe('entities', () => {
       });
 
       describe('when there is no selects but there is multiselects', () => {
-        it('should only delete multiselects and not throw an error', (done) => {
-          entities.delete('multiselect')
-          .then(() => {
-            const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-            expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
-            done();
-          })
-          .catch(catchErrors(done));
+        it('should only delete multiselects and not throw an error', async () => {
+          await entities.delete('multiselect');
+          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+          expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
         });
       });
     });
