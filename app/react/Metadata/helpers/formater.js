@@ -1,3 +1,5 @@
+/** @format */
+
 import moment from 'moment';
 import React from 'react';
 import { advancedSort } from 'app/utils/advancedSort';
@@ -7,39 +9,44 @@ import t from 'app/I18N/t';
 
 const getOption = (thesauri, id) => thesauri.get('values').get(id);
 
-const addSortedProperty = (templates, sortedProperty) => templates.reduce((_property, template) => {
-  if (!template.get('properties')) {
-    return _property;
-  }
-
-  let matchProp = template.get('properties').find(prop => `metadata.${prop.get('name')}` === sortedProperty);
-
-  if (matchProp) {
-    matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
-  }
-
-  return _property || matchProp;
-}, false);
-
-const formatMetadataSortedProperty = (metadata, sortedProperty) => metadata.map((prop) => {
-  const newProp = Object.assign({}, prop);
-  newProp.sortedBy = false;
-  if (sortedProperty === `metadata.${prop.name}`) {
-    newProp.sortedBy = true;
-    if (!prop.value) {
-      newProp.value = 'No value';
-      newProp.translateContext = 'System';
+const addSortedProperty = (templates, sortedProperty) =>
+  templates.reduce((_property, template) => {
+    if (!template.get('properties')) {
+      return _property;
     }
-  }
-  return newProp;
-});
 
-const addCreationDate = (result, doc) => result.push({
-  value: moment.utc(doc.creationDate).format('ll'),
-  label: 'Date added',
-  translateContext: 'System',
-  sortedBy: true
-});
+    let matchProp = template
+      .get('properties')
+      .find(prop => `metadata.${prop.get('name')}` === sortedProperty);
+
+    if (matchProp) {
+      matchProp = matchProp.set('type', null).set('translateContext', template.get('_id'));
+    }
+
+    return _property || matchProp;
+  }, false);
+
+const formatMetadataSortedProperty = (metadata, sortedProperty) =>
+  metadata.map(prop => {
+    const newProp = Object.assign({}, prop);
+    newProp.sortedBy = false;
+    if (sortedProperty === `metadata.${prop.name}`) {
+      newProp.sortedBy = true;
+      if (!prop.value) {
+        newProp.value = 'No value';
+        newProp.translateContext = 'System';
+      }
+    }
+    return newProp;
+  });
+
+const addCreationDate = (result, doc) =>
+  result.push({
+    value: moment.utc(doc.creationDate).format('ll'),
+    label: 'Date added',
+    translateContext: 'System',
+    sortedBy: true,
+  });
 
 const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
   const sortPropertyInMetadata = metadata.find(p => sortedProperty === `metadata.${p.name}`);
@@ -57,15 +64,14 @@ const conformSortedProperty = (metadata, templates, doc, sortedProperty) => {
 };
 
 export default {
-
-  formatDateRange(daterange) {
+  formatDateRange(daterange = {}) {
     let from = '';
     let to = '';
-    if (daterange.from) {
-      from = moment.utc(daterange.from, 'X').format('ll');
+    if (daterange.value.from) {
+      from = moment.utc(daterange.value.from, 'X').format('ll');
     }
-    if (daterange.to) {
-      to = moment.utc(daterange.to, 'X').format('ll');
+    if (daterange.value.to) {
+      to = moment.utc(daterange.value.to, 'X').format('ll');
     }
     return `${from} ~ ${to}`;
   },
@@ -87,7 +93,7 @@ export default {
     return { value, url, icon };
   },
 
-  multimedia(property, value, type) {
+  multimedia(property, [{ value }], type) {
     return {
       type,
       label: property.get('label'),
@@ -98,17 +104,30 @@ export default {
     };
   },
 
-  date(property, timestamp) {
+  date(property, date = [{}]) {
+    const timestamp = date[0].value;
     const value = moment.utc(timestamp, 'X').format('ll');
-    return { label: property.get('label'), name: property.get('name'), value, timestamp };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value,
+      timestamp: timestamp,
+    };
   },
 
   daterange(property, daterange) {
-    return { label: property.get('label'), name: property.get('name'), value: this.formatDateRange(daterange) };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value: this.formatDateRange(daterange[0]),
+    };
   },
 
   multidate(property, timestamps = []) {
-    const value = timestamps.map(timestamp => ({ timestamp, value: moment.utc(timestamp, 'X').format('ll') }));
+    const value = timestamps.map(timestamp => ({
+      timestamp: timestamp.value,
+      value: moment.utc(timestamp.value, 'X').format('ll'),
+    }));
     return { label: property.get('label'), name: property.get('name'), value };
   },
 
@@ -123,7 +142,11 @@ export default {
 
   preview(property, value, thesauris, { doc }) {
     const reloadHack = doc.file && doc.file.filename ? doc.file.filename : '';
-    return this.multimedia(property, `/api/attachment/${doc._id}.jpg${reloadHack ? `?r=${reloadHack}` : ''}`, 'image');
+    return this.multimedia(
+      property,
+      [{ value: `/api/attachment/${doc._id}.jpg${reloadHack ? `?r=${reloadHack}` : ''}` }],
+      'image'
+    );
   },
 
   media(property, value) {
@@ -131,17 +154,30 @@ export default {
   },
 
   link(property, value) {
-    const link = <a href={value.url} target="_blank" rel="noopener noreferrer">{value.label}</a>;
+    const link = (
+      <a href={value.url} target="_blank" rel="noopener noreferrer">
+        {value.label}
+      </a>
+    );
     return { label: property.get('label'), name: property.get('name'), value: link };
   },
 
   geolocation(property, value, thesauris, { onlyForCards }) {
-    return { label: property.get('label'), name: property.get('name'), value, onlyForCards: Boolean(onlyForCards), type: 'geolocation' };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value: value.map(geolocation => geolocation.value),
+      onlyForCards: Boolean(onlyForCards),
+      type: 'geolocation',
+    };
   },
 
-  select(property, thesauriValue, thesauris) {
+  select(property, [thesauriValue], thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-    const { value, url, icon } = this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri);
+    const { value, url, icon } = this.getSelectOptions(
+      getOption(thesauri, thesauriValue.value),
+      thesauri
+    );
     return { label: property.get('label'), name: property.get('name'), value, icon, url };
   },
 
@@ -153,11 +189,15 @@ export default {
 
   inherit(property, thesauriValues = [], thesauris, options, templates, relationships) {
     const template = templates.find(templ => templ.get('_id') === property.get('content'));
-    const inheritedProperty = template.get('properties').find(p => p.get('_id') === property.get('inheritProperty'));
+    const inheritedProperty = template
+      .get('properties')
+      .find(p => p.get('_id') === property.get('inheritProperty'));
     const type = inheritedProperty.get('type');
-    let value = thesauriValues.map((referencedEntityId) => {
+    let value = thesauriValues.map(referencedEntity => {
       const name = inheritedProperty.get('name');
-      const reference = relationships.toJS().find(r => r.entity === referencedEntityId) || { entityData: { metadata: {} } };
+      const reference = relationships.toJS().find(r => r.entity === referencedEntity.value) || {
+        entityData: { metadata: {} },
+      };
       const metadata = reference.entityData.metadata ? reference.entityData.metadata : {};
       if (this[type] && (metadata[name] || type === 'preview')) {
         return this[type](inheritedProperty, metadata[name], thesauris, options, templates);
@@ -168,7 +208,9 @@ export default {
 
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
-      const templateThesauris = thesauris.find(_thesauri => _thesauri.get('_id') === template.get('_id'));
+      const templateThesauris = thesauris.find(
+        _thesauri => _thesauri.get('_id') === template.get('_id')
+      );
       propType = type;
       value = this.flattenInheritedMultiValue(value, type, thesauriValues, templateThesauris);
     }
@@ -190,8 +232,14 @@ export default {
       if (relationshipValue.value) {
         let { value } = relationshipValue;
         if (type === 'geolocation') {
-          const entityLabel = this.getSelectOptions(getOption(templateThesauris, thesauriValues[index]), templateThesauris).value;
-          value = value.map(v => ({ ...v, label: `${entityLabel}${v.label ? ` (${v.label})` : ''}` }));
+          const entityLabel = this.getSelectOptions(
+            getOption(templateThesauris, thesauriValues[index].value),
+            templateThesauris
+          ).value;
+          value = value.map(v => ({
+            ...v,
+            label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
+          }));
         }
         return result.concat(value);
       }
@@ -201,16 +249,28 @@ export default {
 
   relationship(property, thesauriValues, thesauris) {
     const allEntitiesThesauriValues = thesauris
-    .filter(_thesauri => _thesauri.get('type') === 'template')
-    .reduce((result, _thesauri) => result.concat(this.getThesauriValues(thesauriValues, _thesauri)), []);
+      .filter(_thesauri => _thesauri.get('type') === 'template')
+      .reduce(
+        (result, _thesauri) => result.concat(this.getThesauriValues(thesauriValues, _thesauri)),
+        []
+      );
 
     const sortedValues = advancedSort(allEntitiesThesauriValues, { property: 'value' });
 
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
-  markdown(property, value, thesauris, { type }) {
-    return { label: property.get('label'), name: property.get('name'), value, type: type || 'markdown' };
+  markdown(property, [{ value }], thesauris, { type }) {
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value,
+      type: type || 'markdown',
+    };
+  },
+
+  text(property, value = [{}]) {
+    return value[0];
   },
 
   nested(property, rows, thesauris) {
@@ -219,24 +279,37 @@ export default {
     }
 
     const { locale } = store.getState();
-    const keys = Object.keys(rows[0]).sort();
-    const translatedKeys = keys.map(key => nestedProperties[key.toLowerCase()] ? nestedProperties[key.toLowerCase()][`key_${locale}`] : key);
+    const keys = Object.keys(rows[0].value).sort();
+    const translatedKeys = keys.map(key =>
+      nestedProperties[key.toLowerCase()]
+        ? nestedProperties[key.toLowerCase()][`key_${locale}`]
+        : key
+    );
     let result = `| ${translatedKeys.join(' | ')}|\n`;
     result += `| ${keys.map(() => '-').join(' | ')}|\n`;
-    result += `${rows.map(row => `| ${keys.map(key => (row[key] || []).join(', ')).join(' | ')}`).join('|\n')}|`;
+    result += `${rows
+      .map(row => `| ${keys.map(key => (row.value[key] || []).join(', ')).join(' | ')}`)
+      .join('|\n')}|`;
 
     return this.markdown(property, result, thesauris, { type: 'markdown' });
   },
 
   getThesauriValues(thesauriValues, thesauri) {
     return advancedSort(
-      thesauriValues.map(thesauriValue => this.getSelectOptions(getOption(thesauri, thesauriValue), thesauri)).filter(v => v.value),
+      thesauriValues
+        .map(thesauriValue =>
+          this.getSelectOptions(getOption(thesauri, thesauriValue.value), thesauri)
+        )
+        .filter(v => v.value),
       { property: 'value' }
     );
   },
 
   prepareMetadataForCard(doc, templates, thesauris, sortedProperty) {
-    return this.prepareMetadata(doc, templates, thesauris, null, { onlyForCards: true, sortedProperty });
+    return this.prepareMetadata(doc, templates, thesauris, null, {
+      onlyForCards: true,
+      sortedProperty,
+    });
   },
 
   prepareMetadata(_doc, templates, thesauris, relationships, options = {}) {
@@ -251,8 +324,20 @@ export default {
       doc.metadata = {};
     }
 
-    let metadata = this.filterProperties(template, options.onlyForCards, options.sortedProperty)
-    .map(property => this.applyTransformation(property, { doc, thesauris, options, template, templates, relationships }));
+    let metadata = this.filterProperties(
+      template,
+      options.onlyForCards,
+      options.sortedProperty
+    ).map(property =>
+      this.applyTransformation(property, {
+        doc,
+        thesauris,
+        options,
+        template,
+        templates,
+        relationships,
+      })
+    );
 
     metadata = conformSortedProperty(metadata, templates, doc, options.sortedProperty);
 
@@ -265,7 +350,14 @@ export default {
 
     const type = property.get('type');
     if (property.get('inherit') && relationships) {
-      return this.inherit(property, value, thesauris, { ...options, doc }, templates, relationships);
+      return this.inherit(
+        property,
+        value,
+        thesauris,
+        { ...options, doc },
+        templates,
+        relationships
+      );
     }
 
     if (this[type] && (value || type === 'preview')) {
@@ -276,12 +368,17 @@ export default {
       );
     }
 
-    return { label: property.get('label'), name: property.get('name'), value, showInCard, translateContext: template.get('_id') };
+    return {
+      label: property.get('label'),
+      name: property.get('name'),
+      value,
+      showInCard,
+      translateContext: template.get('_id'),
+    };
   },
 
   filterProperties(template, onlyForCards, sortedProperty) {
-    return template.get('properties')
-    .filter((p) => {
+    return template.get('properties').filter(p => {
       if (!onlyForCards) {
         return true;
       }
@@ -291,5 +388,5 @@ export default {
       }
       return false;
     });
-  }
+  },
 };

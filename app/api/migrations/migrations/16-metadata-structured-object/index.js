@@ -14,7 +14,7 @@ export default {
 
   async expandMetadata(template, dictionariesByKey, entity) {
     const resolveProp = async (key, value) => {
-      if(value === null || value === undefined) {
+      if (value === null || value === undefined) {
         value = [];
       }
       if (!Array.isArray(value)) {
@@ -30,7 +30,11 @@ export default {
           }
           if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
             if (dictionariesByKey[prop.content]) {
-              const flattenValues = dictionariesByKey[prop.content].values.reduce((result, value) => value.values ? result.concat(value.values) : result.concat([value]), [])
+              const flattenValues = dictionariesByKey[prop.content].values.reduce(
+                (result, value) =>
+                  value.values ? result.concat(value.values) : result.concat([value]),
+                []
+              );
               const dictElem = flattenValues.find(v => v.id === elem);
               if (dictElem) {
                 mo.label = dictElem.label;
