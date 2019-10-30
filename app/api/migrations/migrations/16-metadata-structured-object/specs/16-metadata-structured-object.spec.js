@@ -6,7 +6,6 @@ import fixtures, { i2 } from './fixtures';
 
 describe('migration metadata-structured-object', () => {
   beforeEach(async () => {
-    //spyOn(process.stdout, 'write');
     await testingDB.clearAllAndLoad(fixtures);
   });
 
@@ -18,7 +17,7 @@ describe('migration metadata-structured-object', () => {
     expect(migration.delta).toBe(16);
   });
 
-  it('should remove connections that have entities that no longer exists', async () => {
+  it('should add related entities title to the relationship value', async () => {
     await migration.up(testingDB.mongodb);
     const entities = await testingDB.mongodb
       .collection('entities')
@@ -30,5 +29,7 @@ describe('migration metadata-structured-object', () => {
       value: { lat: 1, lng: 2, label: 'a' },
     });
     expect(entities[1].metadata.issues[1]).toEqual({ value: i2, label: 'Kidnapping' });
+    expect(entities[2].metadata.friends[0]).toEqual({ value: 'shared-e1', label: 'e1' });
+    expect(entities[2].metadata.friends[1]).toEqual({ value: 'shared-e2', label: 'e2' });
   });
 });

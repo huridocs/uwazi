@@ -644,44 +644,5 @@ export default {
       .then(() => search.deleteLanguage(locale));
   },
 
-  async expandMetadata(template, dictionariesByKey, entity) {
-    const resolveProp = async (key, value) => {
-      if (!Array.isArray(value)) {
-        value = [value];
-      }
-      const prop = template.properties.find(p => p.name === key && p.content);
-      return Promise.all(
-        value.map(async elem => {
-          // Preserve elem if it already has value, but recompute label.
-          const mo = elem.value ? elem : { value: elem };
-          if (!prop) {
-            return mo;
-          }
-          if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
-            if (dictionariesByKey[prop.content]) {
-              const dictElem = dictionariesByKey[prop.content].values.find(v => v.id === elem);
-              if (dictElem) {
-                mo.label = dictElem.label;
-              }
-            }
-          } else if (prop.type === 'relationship') {
-            const partner = await this.get({ sharedId: mo.value, language: entity.language });
-            if (partner && partner[0] && partner[0].title) {
-              mo.label = partner[0].title;
-            }
-          }
-          return mo;
-        })
-      );
-    };
-    return Object.keys(entity.metadata).reduce(
-      async (meta, prop) => ({
-        ...(await meta),
-        [prop]: await resolveProp(prop, entity.metadata[prop]),
-      }),
-      Promise.resolve({})
-    );
-  },
-
   count: model.count,
 };

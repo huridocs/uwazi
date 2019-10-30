@@ -11,6 +11,10 @@ const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
 
+const dictionary = db.id();
+const c1 = db.id();
+const c2 = db.id();
+
 const hub1 = db.id();
 const hub2 = db.id();
 const hub3 = db.id();
@@ -71,13 +75,13 @@ export default {
       name: 'template_test',
       properties: [
         { type: 'text', name: 'text' },
-        { type: 'select', name: 'select' },
-        { type: 'multiselect', name: 'multiselect' },
+        { type: 'select', name: 'select', content: dictionary },
+        { type: 'multiselect', name: 'multiselect', content: dictionary },
         { type: 'date', name: 'date' },
         { type: 'multidate', name: 'multidate' },
         { type: 'multidaterange', name: 'multidaterange' },
         { type: 'daterange', name: 'daterange' },
-        { type: 'relationship', name: 'friends', relationType: 'relation1' },
+        { type: 'relationship', name: 'friends', relationType: 'relation1'},
         { type: 'numeric', name: 'numeric' }
       ] },
     { _id: templateWithOnlyMultiselect,
@@ -122,6 +126,16 @@ export default {
     { entity: 'shared1', template: 'relation2', hub: hub4 },
     { entity: 'shared1', template: 'relation2', hub: hub5 },
     { entity: 'shared', template: 'relation2', hub: hub5 }
+  ],
+  dictionaries: [
+    {
+      _id: dictionary,
+      name: 'Countries',
+      values: [
+        { _id: db.id(), id: 'country_one', label: 'Country1' },
+        { _id: db.id(), id: 'country_two', label: 'Country2' },
+      ],
+    },
   ]
 };
 
@@ -133,4 +147,6 @@ export {
   templateWithEntityAsThesauri,
   docId1,
   docId2,
+  c1,
+  c2
 };

@@ -11,6 +11,7 @@ import path from 'path';
 import entities from '../entities.js';
 import fixtures, { batmanFinishesId, templateId, templateChangingNames,
   syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';
+import { template1Id } from 'api/csv/specs/fixtures.js';
 
 describe('entities', () => {
   beforeEach(async () => {

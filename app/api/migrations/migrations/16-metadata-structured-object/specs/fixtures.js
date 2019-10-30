@@ -5,8 +5,8 @@ import db from 'api/utils/testing_db';
 const [t1] = [db.id()];
 const [dc, di] = [db.id(), db.id()];
 const [c1, c2] = ['123-c1', '234-c2'];
-const [i1, i2] = ['345-i1', '456-i2'];
-const [e1, e2] = [db.id(), db.id()];
+const [i1, i2, i3] = ['345-i1', '456-i2', '789-i3'];
+const [e1, e2, e3] = [db.id(), db.id(), db.id()];
 
 export default {
   templates: [
@@ -55,7 +55,9 @@ export default {
       name: 'Issues',
       values: [
         { _id: db.id(), id: i1, label: 'Murder' },
-        { _id: db.id(), id: i2, label: 'Kidnapping' },
+        { _id: db.id(), id: i3, label: 'Others', values: [
+          { _id: db.id(), id: i2, label: 'Kidnapping' }
+        ] },
       ],
     },
   ],
@@ -84,6 +86,18 @@ export default {
         country: c2,
         issues: [i1, i2],
         friends: ['shared-e1'],
+      },
+    },
+    {
+      _id: e3,
+      title: 'e3',
+      language: 'en',
+      template: t1,
+      sharedId: 'shared-e3',
+      metadata: {
+        country: null,
+        issues: [i1, i2],
+        friends: ['shared-e1', 'shared-e2'],
       },
     },
   ],
