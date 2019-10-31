@@ -1,5 +1,6 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
+import model from 'api/templates/templatesModel';
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
@@ -18,6 +19,23 @@ const DATA_TYPES = [
   'text'
 ];
 
+ajv.addKeyword('uniqueName', {
+  async: true,
+  errors: false,
+  type: 'object',
+  validate: async (schema, data) => {
+    if (!schema) {
+      return true;
+    }
+    const regex = new RegExp(`^${data.name}$`, 'i');
+    const [similarTemplate] = await model.get({ _id: { $ne: data._id }, name: regex });
+    if (similarTemplate) {
+      return false;
+    }
+    return true;
+  }
+});
+
 ajv.addKeyword('uniquePropertyFields', {
   errors: false,
   type: 'object',
@@ -28,7 +46,7 @@ ajv.addKeyword('uniquePropertyFields', {
     const fieldCaches = fields.reduce((memo, field) => ({ ...memo, [field]: new Set() }), {});
     for (let property of [...data.properties, ...data.commonProperties]) {
       for (let field of fields) {
-        const value = property[field] && property[field].toLowerCase();
+        const value = property[field] && property[field].toLowerCase().trim();
         if (value && fieldCaches[field].has(value)) {
           return false;
         }
@@ -84,6 +102,7 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
 
 const schema = {
   $schema: 'http://json-schema.org/schema#',
+  $async: true,
   definitions: {
     property: {
       type: 'object',
@@ -119,6 +138,7 @@ const schema = {
     }
   },
   type: 'object',
+  uniqueName: true,
   required: ['name', 'commonProperties', 'properties'],
   uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
   properties: {
