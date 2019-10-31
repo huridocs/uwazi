@@ -8,7 +8,7 @@ import { wrapValidation } from 'api/utils/wrapValidation';
 import { db_url as dbURL } from '../config/database.js';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
 import model from './templatesModel.js';
-import validator from './templateValidator';
+import validator from './templatesValidator';
 
 const checkDuplicated = template => model.get()
 .then((templates) => {

@@ -6,7 +6,7 @@ import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
 import validatedTemplates, { templates } from 'api/templates/templates.js';
 import translations from 'api/i18n/translations';
-import templatesValidator from 'api/templates/templateValidator';
+import templatesValidator from 'api/templates/templatesValidator';
 
 import fixtures, { templateToBeEditedId, templateToBeDeleted, templateWithContents, swapTemplate } from './fixtures.js';
 
