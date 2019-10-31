@@ -225,7 +225,7 @@ export default {
       metadata: { multiselect: [{ value: 'value1' }, { value: 'multiselect' }] },
       file: { filename: '123.pdf' },
     },
-    { sharedId: 'shared2', language: 'en' },
+    { sharedId: 'shared2', language: 'en', title: 'shared2title' },
     { sharedId: 'source2', language: 'en' },
   ],
   settings: [

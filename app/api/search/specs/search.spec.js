@@ -69,7 +69,7 @@ describe('search', () => {
           const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
           const fieldSnippet = snippets.metadata.find(snippet => snippet.field === 'metadata.field1');
           expect(snippets.count).toBe(3);
-          expect(snippets.metadata.length).toBe(2);
+          expect(snippets.metadata.length).toEqual([{ value: 2 }]);
           expect(titleSnippet.texts.length).toBe(1);
           expect(titleSnippet.texts[0]).toMatch('gargoyles');
           expect(fieldSnippet.texts.length).toBe(1);

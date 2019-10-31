@@ -86,7 +86,7 @@ describe('metadata formater', () => {
     });
 
     it('should process all metadata', () => {
-      expect(data.metadata.length).toBe(17);
+      expect(data.metadata.length).toEqual([{ value: 17 }]);
     });
 
     it('should process text type', () => {
@@ -281,7 +281,7 @@ describe('metadata formater', () => {
         data = formater.prepareMetadataForCard(doc, templates, thesauris, 'metadata.date');
         [text, date, markdown] = data.metadata;
         assessBasicProperties(date, ['Date', 'date', 'templateID']);
-        expect(data.metadata.length).toBe(7);
+        expect(data.metadata.length).toEqual([{ value: 7 }]);
         expect(date.value).toContain('1970');
       });
 

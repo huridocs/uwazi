@@ -18,6 +18,9 @@ import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(entity, template = undefined, dictionariesByKey = undefined) {
+  if (!entity.metadata) {
+    return entity.metadata;
+  }
   const resolveProp = async (key, value) => {
     if (!Array.isArray(value)) {
       throw new Error('denormalizeMetadata received non-array prop!');
@@ -41,7 +44,7 @@ async function denormalizeMetadata(entity, template = undefined, dictionariesByK
               []
             );
             const dictElem = flattenValues.find(v => v.id === elem.value);
-            if (dictElem) {
+            if (dictElem && dictElem.label) {
               elem.label = dictElem.label;
             }
           }
@@ -57,6 +60,9 @@ async function denormalizeMetadata(entity, template = undefined, dictionariesByK
   };
   if (!template) {
     template = await templates.getById(entity.template);
+    if (!template) {
+      return entity.metadata;
+    }
   }
   return Object.keys(entity.metadata).reduce(
     async (meta, prop) => ({
@@ -91,11 +97,10 @@ async function updateEntity(entity, _template) {
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
-        if (currentDoc.title !== entity.title) {
+        if (entity.title && currentDoc.title !== entity.title) {
           await this.renameRelatedEntityInMetadata(entity);
         }
-        model.save(entity);
-        return;
+        return model.save(entity);
       }
       if (!d.metadata) {
         d.metadata = entity.metadata;
@@ -103,7 +108,7 @@ async function updateEntity(entity, _template) {
 
       if (entity.metadata) {
         toSyncProperties.forEach(p => {
-          d.metadata[p] = entity.metadata[p];
+          d.metadata[p] = entity.metadata[p] || [];
         });
         d.metadata = await denormalizeMetadata(d, template);
       }
@@ -119,7 +124,7 @@ async function updateEntity(entity, _template) {
       if (typeof entity.template !== 'undefined') {
         d.template = entity.template;
       }
-      model.save(d);
+      return model.save(d);
     })
   );
 }
@@ -136,7 +141,7 @@ async function createEntity(doc, languages, sharedId) {
       langDoc.language = lang.key;
       langDoc.sharedId = sharedId;
       langDoc.metadata = await denormalizeMetadata(langDoc, template);
-      model.save(langDoc);
+      return model.save(langDoc);
     })
   );
 }
@@ -173,13 +178,13 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if (type === 'multiselect' || type === 'relationship') {
+    if (['multiselect', 'relationship'].includes(type) && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, {
         [name]: sanitizedMetadata[name].filter(uniqueMetadataObject),
       });
     }
 
-    if (type === 'multidate' && sanitizedMetadata[name]) {
+    if (['date', 'multidate'].includes(type) && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, {
         [name]: sanitizedMetadata[name].filter(value => value.value),
       });
@@ -191,7 +196,7 @@ function sanitize(doc, template) {
       });
     }
 
-    if (type === 'select' && !sanitizedMetadata[name]) {
+    if (type === 'select' && (!sanitizedMetadata[name] || !sanitizedMetadata[name][0].value)) {
       return Object.assign(sanitizedMetadata, { [name]: [] });
     }
 
@@ -207,7 +212,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(_doc, { user, language }, updateRelationships = true, index = true) {
+  async save(_doc, { user, language }, updateRelationships = true, index = true) {
     const doc = _doc;
     if (!doc.sharedId) {
       doc.user = user._id;
@@ -216,36 +221,30 @@ export default {
     }
 
     const sharedId = doc.sharedId || ID();
-    return Promise.all([
+    const [{ languages }, template, [defaultTemplate]] = await Promise.all([
       settings.get(),
       this.getEntityTemplate(doc, language),
       templates.get({ default: true }),
-    ])
-      .then(([{ languages }, template, [defaultTemplate]]) => {
-        let docTemplate = template;
-        if (doc.sharedId) {
-          return this.updateEntity(this.sanitize(doc, template), template);
-        }
-
-        if (!doc.template) {
-          doc.template = defaultTemplate._id;
-          doc.metadata = {};
-          docTemplate = defaultTemplate;
-        }
-
-        return this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
-      })
-      .then(() => this.getWithRelationships({ sharedId, language }))
-      .then(([entity]) => {
-        if (updateRelationships) {
-          return Promise.all([entity, relationships.saveEntityBasedReferences(entity, language)]);
-        }
-
-        return [entity];
-      })
-      .then(([entity]) =>
-        index ? this.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity
-      );
+    ]);
+    let docTemplate = template;
+    if (doc.sharedId) {
+      await this.updateEntity(this.sanitize(doc, template), template);
+    } else {
+      if (!doc.template) {
+        doc.template = defaultTemplate._id;
+        doc.metadata = {};
+        docTemplate = defaultTemplate;
+      }
+      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId);
+    }
+    const [entity] = await this.getWithRelationships({ sharedId, language });
+    if (updateRelationships) {
+      await relationships.saveEntityBasedReferences(entity, language);
+    }
+    if (index) {
+      await this.indexEntities({ sharedId }, '+fullText');
+    }
+    return entity;
   },
 
   /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
@@ -294,17 +293,13 @@ export default {
   },
 
   async getWithRelationships(query, select, pagination) {
-    const _entities = await model.get(query, select, pagination).then(entities =>
-      Promise.all(
-        entities.map(entity =>
-          relationships.getByDocument(entity.sharedId, entity.language).then(relations => {
-            entity.relationships = relations;
-            return entity;
-          })
-        )
-      )
+    const entities = await model.get(query, select, pagination);
+    return Promise.all(
+      entities.map(async entity => {
+        entity.relations = await relationships.getByDocument(entity.sharedId, entity.language);
+        return entity;
+      })
     );
-    return _entities;
   },
 
   async getById(sharedId, language) {
@@ -533,7 +528,7 @@ export default {
       changes[`metadata.${prop}`] = properties[prop];
     });
 
-    const [entitiesToReindex] = await this.get(query, { _id: 1 });
+    const entitiesToReindex = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $set: changes });
     return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
   },
@@ -570,7 +565,11 @@ export default {
 
   /** Propagate the deletion of a related entity to all entity metadata. */
   async deleteRelatedEntityFromMetadata(deletedEntity) {
-    await this.deleteFromMetadata(deletedEntity.sharedId, deletedEntity.template, ['relationship']);
+    await this.deleteFromMetadata(deletedEntity.sharedId, deletedEntity.template, [
+      'select',
+      'multiselect',
+      'relationship',
+    ]);
   },
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
@@ -612,7 +611,7 @@ export default {
       relatedEntity.sharedId,
       relatedEntity.title,
       relatedEntity.template,
-      ['relationship'],
+      ['select', 'multiselect', 'relationship'],
       relatedEntity.language
     );
   },

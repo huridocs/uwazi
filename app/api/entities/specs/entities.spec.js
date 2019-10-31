@@ -30,8 +30,8 @@ describe('entities', () => {
     await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('save', () => {
@@ -72,8 +72,16 @@ describe('entities', () => {
         .save(entity, { user, language: 'es' })
         .then(e => entities.getById(e._id))
         .then(createdEntity => {
-          expect(createdEntity.metadata.multiselect).toEqual(['id1', 'id2', 'id3']);
-          expect(createdEntity.metadata.friends).toEqual(['id1', 'id2', 'id3']);
+          expect(createdEntity.metadata.multiselect).toEqual([
+            { value: 'id1' },
+            { value: 'id2' },
+            { value: 'id3' },
+          ]);
+          expect(createdEntity.metadata.friends).toEqual([
+            { value: 'id1' },
+            { value: 'id2' },
+            { value: 'id3' },
+          ]);
           done();
         })
         .catch(catchErrors(done));
@@ -188,7 +196,7 @@ describe('entities', () => {
         .then(() => entities.getById(batmanFinishesId))
         .then(savedEntity => {
           expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual({ property1: 'value1' });
+          expect(savedEntity.metadata).toEqual({ property1: [{ value: 'value1' }] });
           expect(entities.indexEntities).toHaveBeenCalled();
           done();
         })
@@ -219,9 +227,9 @@ describe('entities', () => {
             expect(docES.published).toBe(true);
             expect(docPT.published).toBe(true);
 
-            expect(docEN.metadata.text).toBe('newMetadata');
-            expect(docES.metadata.text).toBe('newMetadata');
-            expect(docPT.metadata.text).toBe('test');
+            expect(docEN.metadata.text).toEqual([{ value: 'newMetadata' }]);
+            expect(docES.metadata.text).toEqual([{ value: 'newMetadata' }]);
+            expect(docPT.metadata.text).toEqual([{ value: 'test' }]);
             done();
           })
           .catch(catchErrors(done));
@@ -323,29 +331,29 @@ describe('entities', () => {
           ]);
         })
         .then(([docEN, docES, docPT]) => {
-          expect(docEN.metadata.text).toBe('changedText');
-          expect(docEN.metadata.select).toBe('select');
-          expect(docEN.metadata.multiselect).toBe('multiselect');
-          expect(docEN.metadata.date).toBe('date');
-          expect(docEN.metadata.multidate).toEqual([1234]);
-          expect(docEN.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
-          expect(docEN.metadata.numeric).toEqual(100);
+          expect(docEN.metadata.text).toEqual([{ value: 'changedText' }]);
+          expect(docEN.metadata.select).toEqual([{ value: 'select' }]);
+          expect(docEN.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
+          expect(docEN.metadata.date).toEqual([{ value: 'date' }]);
+          expect(docEN.metadata.multidate).toEqual([{ value: 1234 }]);
+          expect(docEN.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
+          expect(docEN.metadata.numeric).toEqual([{ value: 100 }]);
 
-          expect(docES.metadata.property1).toBe('text');
-          expect(docES.metadata.select).toBe('select');
-          expect(docES.metadata.multiselect).toBe('multiselect');
-          expect(docES.metadata.date).toBe('date');
-          expect(docES.metadata.multidate).toEqual([1234]);
-          expect(docES.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
-          expect(docES.metadata.numeric).toEqual(100);
+          expect(docES.metadata.property1).toEqual([{ value: 'text' }]);
+          expect(docES.metadata.select).toEqual([{ value: 'select' }]);
+          expect(docES.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
+          expect(docES.metadata.date).toEqual([{ value: 'date' }]);
+          expect(docES.metadata.multidate).toEqual([{ value: 1234 }]);
+          expect(docES.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
+          expect(docES.metadata.numeric).toEqual([{ value: 100 }]);
 
-          expect(docPT.metadata.property1).toBe('text');
-          expect(docPT.metadata.select).toBe('select');
-          expect(docPT.metadata.multiselect).toBe('multiselect');
-          expect(docPT.metadata.date).toBe('date');
-          expect(docPT.metadata.multidate).toEqual([1234]);
-          expect(docPT.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
-          expect(docPT.metadata.numeric).toEqual(100);
+          expect(docPT.metadata.property1).toEqual([{ value: 'text' }]);
+          expect(docPT.metadata.select).toEqual([{ value: 'select' }]);
+          expect(docPT.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
+          expect(docPT.metadata.date).toEqual([{ value: 'date' }]);
+          expect(docPT.metadata.multidate).toEqual([{ value: 1234 }]);
+          expect(docPT.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
+          expect(docPT.metadata.numeric).toEqual([{ value: 100 }]);
           done();
         })
         .catch(catchErrors(done));
@@ -391,7 +399,9 @@ describe('entities', () => {
         .updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
         .then(() => entities.getById('shared', 'en'))
         .then(updatedEntity => {
-          expect(updatedEntity.metadata.friends).toEqual(['shared2']);
+          expect(updatedEntity.metadata.friends).toEqual([
+            { label: 'shared2title', value: 'shared2' },
+          ]);
           done();
         });
     });
@@ -404,14 +414,14 @@ describe('entities', () => {
       await entities.updateMetdataFromRelationships([newEntity.sharedId], 'es');
       const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
       expect(updatedEntity.metadata).toEqual({
-        date: null,
-        daterange: null,
+        date: [],
+        daterange: [],
         friends: [],
-        multidate: null,
-        multidaterange: null,
-        multiselect: null,
-        select: null,
-        numeric: null,
+        multidate: [],
+        multidaterange: [],
+        multiselect: [],
+        select: [],
+        numeric: [],
       });
     });
   });
@@ -422,12 +432,7 @@ describe('entities', () => {
         _id: batmanFinishesId,
         sharedId: 'shared',
         metadata: {
-          multidate: [
-            { value: { value: null } },
-            { value: 1234 },
-            { value: { value: null } },
-            { value: 5678 },
-          ],
+          multidate: [{ value: null }, { value: 1234 }, { value: null }, { value: 5678 }],
         },
         published: false,
         template: templateId,
@@ -440,8 +445,8 @@ describe('entities', () => {
           return Promise.all([entities.getById('shared', 'es'), entities.getById('shared', 'en')]);
         })
         .then(([docES, docEN]) => {
-          expect(docES.metadata.multidate).toEqual([1234, 5678]);
-          expect(docEN.metadata.multidate).toEqual([1234, 5678]);
+          expect(docES.metadata.multidate).toEqual([{ value: 1234 }, { value: 5678 }]);
+          expect(docEN.metadata.multidate).toEqual([{ value: 1234 }, { value: 5678 }]);
           done();
         })
         .catch(catchErrors(done));
@@ -451,7 +456,7 @@ describe('entities', () => {
       const doc = {
         _id: batmanFinishesId,
         sharedId: 'shared',
-        metadata: { select: [{ value: { value: '' } }] },
+        metadata: { select: [{ value: '' }] },
         published: false,
         template: templateId,
       };
@@ -463,8 +468,8 @@ describe('entities', () => {
           return Promise.all([entities.getById('shared', 'es'), entities.getById('shared', 'en')]);
         })
         .then(([docES, docEN]) => {
-          expect(docES.metadata.select).toEqual(null);
-          expect(docEN.metadata.select).toEqual(null);
+          expect(docES.metadata.select).toEqual([]);
+          expect(docEN.metadata.select).toEqual([]);
           done();
         })
         .catch(catchErrors(done));
@@ -517,7 +522,7 @@ describe('entities', () => {
             .then(() => entities.getById('shared', 'en'));
         })
         .then(doc => {
-          expect(doc.metadata.daterange).not.toBeDefined();
+          expect(doc.metadata.daterange).toEqual([]);
           done();
         })
         .catch(catchErrors(done));
@@ -548,14 +553,14 @@ describe('entities', () => {
         })
         .then(([docES, docEN]) => {
           expect(docES.metadata.multidaterange).toEqual([
-            { from: 1, to: 2 },
-            { from: null, to: 2 },
-            { from: 2, to: null },
+            { value: { from: 1, to: 2 } },
+            { value: { from: null, to: 2 } },
+            { value: { from: 2, to: null } },
           ]);
           expect(docEN.metadata.multidaterange).toEqual([
-            { from: 1, to: 2 },
-            { from: null, to: 2 },
-            { from: 2, to: null },
+            { value: { from: 1, to: 2 } },
+            { value: { from: null, to: 2 } },
+            { value: { from: 2, to: null } },
           ]);
           done();
         })
@@ -707,7 +712,7 @@ describe('entities', () => {
 
           expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
           expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual({ property1: 'value1' });
+          expect(savedEntity.metadata).toEqual({ property1: [{ value: 'value1' }] });
           expect(entities.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
           done();
         })
@@ -761,15 +766,15 @@ describe('entities', () => {
           ])
         )
         .then(([docs, docDiferentTemplate]) => {
-          expect(docs[0].metadata.new_name1).toBe('value1');
-          expect(docs[0].metadata.new_name2).toBe('value2');
-          expect(docs[0].metadata.property3).toBe('value3');
+          expect(docs[0].metadata.new_name1).toEqual([{ value: 'value1' }]);
+          expect(docs[0].metadata.new_name2).toEqual([{ value: 'value2' }]);
+          expect(docs[0].metadata.property3).toEqual([{ value: 'value3' }]);
 
-          expect(docs[1].metadata.new_name1).toBe('value1');
-          expect(docs[1].metadata.new_name2).toBe('value2');
-          expect(docs[1].metadata.property3).toBe('value3');
+          expect(docs[1].metadata.new_name1).toEqual([{ value: 'value1' }]);
+          expect(docs[1].metadata.new_name2).toEqual([{ value: 'value2' }]);
+          expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
 
-          expect(docDiferentTemplate.metadata.property1).toBe('value1');
+          expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
           expect(entities.indexEntities).toHaveBeenCalledWith(
             { template: template._id },
             null,
@@ -791,12 +796,12 @@ describe('entities', () => {
         .then(() => entities.get({ template: templateChangingNames }))
         .then(docs => {
           expect(docs[0].metadata.property1).not.toBeDefined();
-          expect(docs[0].metadata.new_name).toBe('value2');
+          expect(docs[0].metadata.new_name).toEqual([{ value: 'value2' }]);
           expect(docs[0].metadata.property2).not.toBeDefined();
           expect(docs[0].metadata.property3).not.toBeDefined();
 
           expect(docs[1].metadata.property1).not.toBeDefined();
-          expect(docs[1].metadata.new_name).toBe('value2');
+          expect(docs[1].metadata.new_name).toEqual([{ value: 'value2' }]);
           expect(docs[1].metadata.property2).not.toBeDefined();
           expect(docs[1].metadata.property3).not.toBeDefined();
           done();
@@ -976,17 +981,17 @@ describe('entities', () => {
       it('should delete the entity id on all entities using it from select/multiselect values', async () => {
         await entities.delete('shared');
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
-        expect(documentsToIndex[1].metadata.multiselect2).toEqual(['value2']);
-        expect(documentsToIndex[2].metadata.select).toBe('');
-        expect(documentsToIndex[3].metadata.select2).toBe('');
+        expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
+        expect(documentsToIndex[1].metadata.multiselect2).toEqual([{ value: 'value2' }]);
+        expect(documentsToIndex[2].metadata.select).toEqual([]);
+        expect(documentsToIndex[3].metadata.select2).toEqual([]);
       });
 
       describe('when there is no multiselects but there is selects', () => {
         it('should only delete selects and not throw an error', async () => {
           await entities.delete('shared10');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].metadata.select).toBe('');
+          expect(documentsToIndex[0].metadata.select).toEqual([]);
         });
       });
 
@@ -994,7 +999,7 @@ describe('entities', () => {
         it('should only delete multiselects and not throw an error', async () => {
           await entities.delete('multiselect');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
+          expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
         });
       });
     });
