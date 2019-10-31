@@ -4,6 +4,7 @@
 import paths from 'api/config/paths';
 import fs from 'fs';
 import path from 'path';
+import index from './index';
 
 function walk(dir: string, callback: (file: string, stats: fs.Stats) => void) {
   fs.readdir(dir, (err, files) => {
@@ -38,19 +39,6 @@ function extractBracketLength(contents: string, pos: number): number {
   return endPos - pos;
 }
 
-function transformData(data: { [index: string]: any }): { [index: string]: any } {
-  const expandProp = (value: any) => {
-    if (!Array.isArray(value)) {
-      value = [value];
-    }
-    return value.map((elem: any) => (elem && elem.value ? elem : { value: elem }));
-  };
-  return Object.keys(data).reduce(
-    (meta, prop) => ({ ...meta, [prop]: expandProp(data[prop]) }),
-    {}
-  );
-}
-
 function handleFile(file: string, _stats: fs.Stats): void {
   if (/.*migrations.*/.test(file) || !/.*js/.test(file)) {
     return;
@@ -68,7 +56,7 @@ function handleFile(file: string, _stats: fs.Stats): void {
     if (len > 2) {
       try {
         const data = eval(`(${contents.substr(pos, len)})`);
-        const newStr = JSON.stringify(transformData(data));
+        const newStr = JSON.stringify(index.expandMetadata(data));
         console.info(`Match in ${file} at ${pos}: ${newStr}`);
         contents = contents.substr(0, pos) + newStr + contents.substr(pos + len);
         changed = true;

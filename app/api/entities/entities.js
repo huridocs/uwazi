@@ -1,4 +1,5 @@
 /** @format */
+/* eslint-disable no-param-reassign */
 
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
@@ -10,81 +11,134 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
-
+import dictionariesModel from 'api/thesauris/dictionariesModel.js';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import settings from '../settings';
 
-function updateEntity(entity, _template) {
-  return this.getAllLanguages(entity.sharedId)
-    .then(docLanguages => {
-      if (
-        docLanguages[0].template &&
-        entity.template &&
-        docLanguages[0].template.toString() !== entity.template.toString()
-      ) {
-        return Promise.all([
-          this.deleteEntityFromMetadata(docLanguages[0].sharedId, docLanguages[0].template),
-          relationships.delete({ entity: entity.sharedId }, null, false),
-        ]).then(() => docLanguages);
-      }
-      return docLanguages;
-    })
-    .then(docLanguages => {
-      const template = _template || { properties: [] };
-      const toSyncProperties = template.properties
-        .filter(p =>
-          p.type.match(
-            'select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation|numeric'
-          )
-        )
-        .map(p => p.name);
-      const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
-      const docs = docLanguages.map(d => {
-        if (d._id.toString() === entity._id.toString()) {
-          return entity;
+/** Repopulate metadata object .label from thesauri and relationships. */
+async function denormalizeMetadata(entity, template = undefined, dictionariesByKey = undefined) {
+  const resolveProp = async (key, value) => {
+    if (!Array.isArray(value)) {
+      throw new Error('denormalizeMetadata received non-array prop!');
+    }
+    const prop = template.properties.find(p => p.name === key && p.content);
+    return Promise.all(
+      value.map(async elem => {
+        if (!elem.hasOwnProperty('value')) {
+          throw new Error('denormalizeMetadata received non-value prop!');
         }
-        if (!d.metadata) {
-          d.metadata = entity.metadata;
+        if (!prop) {
+          return elem;
         }
-
-        if (entity.metadata) {
-          toSyncProperties.forEach(p => {
-            d.metadata[p] = entity.metadata[p];
-          });
+        if (prop.content && ['select', 'multiselect'].includes(prop.type)) {
+          const dict = dictionariesByKey
+            ? dictionariesByKey[prop.content]
+            : await dictionariesModel.getById(prop.content);
+          if (dict) {
+            const flattenValues = dict.values.reduce(
+              (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([value])),
+              []
+            );
+            const dictElem = flattenValues.find(v => v.id === elem.value);
+            if (dictElem) {
+              elem.label = dictElem.label;
+            }
+          }
+        } else if (prop.type === 'relationship') {
+          const partner = await model.get({ sharedId: elem.value, language: entity.language });
+          if (partner && partner[0] && partner[0].title) {
+            elem.label = partner[0].title;
+          }
         }
-
-        if (typeof entity.published !== 'undefined') {
-          d.published = entity.published;
-        }
-
-        if (entity.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
-          d.toc = entity.toc;
-        }
-
-        if (typeof entity.template !== 'undefined') {
-          d.template = entity.template;
-        }
-        return d;
-      });
-
-      return Promise.all(docs.map(d => model.save(d)));
-    });
+        return elem;
+      })
+    );
+  };
+  if (!template) {
+    template = await templates.getById(entity.template);
+  }
+  return Object.keys(entity.metadata).reduce(
+    async (meta, prop) => ({
+      ...(await meta),
+      [prop]: await resolveProp(prop, entity.metadata[prop]),
+    }),
+    Promise.resolve({})
+  );
 }
 
-function createEntity(doc, languages, sharedId) {
-  const docs = languages.map(lang => {
-    const langDoc = Object.assign({}, doc);
-    const avoidIdDuplication = doc._id && !lang.default;
-    if (avoidIdDuplication) {
-      delete langDoc._id;
-    }
-    langDoc.language = lang.key;
-    langDoc.sharedId = sharedId;
-    return langDoc;
-  });
+async function updateEntity(entity, _template) {
+  const docLanguages = await this.getAllLanguages(entity.sharedId);
+  if (
+    docLanguages[0].template &&
+    entity.template &&
+    docLanguages[0].template.toString() !== entity.template.toString()
+  ) {
+    await Promise.all([
+      this.deleteRelatedEntityFromMetadata(docLanguages[0]),
+      relationships.delete({ entity: entity.sharedId }, null, false),
+    ]);
+  }
+  const template = _template || { properties: [] };
+  const toSyncProperties = template.properties
+    .filter(p =>
+      p.type.match(
+        'select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation|numeric'
+      )
+    )
+    .map(p => p.name);
+  const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
+  return Promise.all(
+    docLanguages.map(async d => {
+      if (d._id.toString() === entity._id.toString()) {
+        if (currentDoc.title !== entity.title) {
+          await this.renameRelatedEntityInMetadata(entity);
+        }
+        model.save(entity);
+        return;
+      }
+      if (!d.metadata) {
+        d.metadata = entity.metadata;
+      }
 
-  return model.save(docs);
+      if (entity.metadata) {
+        toSyncProperties.forEach(p => {
+          d.metadata[p] = entity.metadata[p];
+        });
+        d.metadata = await denormalizeMetadata(d, template);
+      }
+
+      if (typeof entity.published !== 'undefined') {
+        d.published = entity.published;
+      }
+
+      if (entity.toc && currentDoc.file && d.file.filename === currentDoc.file.filename) {
+        d.toc = entity.toc;
+      }
+
+      if (typeof entity.template !== 'undefined') {
+        d.template = entity.template;
+      }
+      model.save(d);
+    })
+  );
+}
+
+async function createEntity(doc, languages, sharedId) {
+  const template = await templates.getById(doc.template);
+  return Promise.all(
+    languages.map(async lang => {
+      const langDoc = Object.assign({}, doc);
+      const avoidIdDuplication = doc._id && !lang.default;
+      if (avoidIdDuplication) {
+        delete langDoc._id;
+      }
+      langDoc.language = lang.key;
+      langDoc.sharedId = sharedId;
+      langDoc.metadata = await denormalizeMetadata(langDoc, template);
+      model.save(langDoc);
+    })
+  );
 }
 
 function getEntityTemplate(doc, language) {
@@ -106,12 +160,12 @@ function getEntityTemplate(doc, language) {
   });
 }
 
-const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
+const uniqueMetadataObject = (elem, pos, arr) =>
+  elem.value && arr.findIndex(e => e.value === elem.value) === pos;
 
 function sanitize(doc, template) {
-  let undefinedValue;
   if (!template) {
-    return Object.assign(doc, { metadata: undefinedValue });
+    return Object.assign(doc, { metadata: undefined });
   }
 
   if (!doc.metadata) {
@@ -119,35 +173,26 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if (
-      (type === 'multiselect' || type === 'relationship') &&
-      Array.isArray(sanitizedMetadata[name])
-    ) {
-      return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
+    if (type === 'multiselect' || type === 'relationship') {
+      return Object.assign(sanitizedMetadata, {
+        [name]: sanitizedMetadata[name].filter(uniqueMetadataObject),
+      });
     }
 
     if (type === 'multidate' && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, {
-        [name]: sanitizedMetadata[name].filter(value => value),
+        [name]: sanitizedMetadata[name].filter(value => value.value),
       });
     }
 
-    if (type === 'multidaterange' && sanitizedMetadata[name]) {
+    if (['daterange', 'multidaterange'].includes(type) && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, {
-        [name]: sanitizedMetadata[name].filter(value => value.from || value.to),
+        [name]: sanitizedMetadata[name].filter(value => value.value.from || value.value.to),
       });
     }
 
     if (type === 'select' && !sanitizedMetadata[name]) {
-      return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
-    }
-
-    if (type === 'daterange' && sanitizedMetadata[name]) {
-      const value = sanitizedMetadata[name];
-      if (!value.to && !value.from) {
-        const { [name]: dateRange, ...withoutDateRange } = sanitizedMetadata;
-        return withoutDateRange;
-      }
+      return Object.assign(sanitizedMetadata, { [name]: [] });
     }
 
     return sanitizedMetadata;
@@ -157,6 +202,7 @@ function sanitize(doc, template) {
 }
 
 export default {
+  denormalizeMetadata,
   sanitize,
   updateEntity,
   createEntity,
@@ -202,19 +248,19 @@ export default {
       );
   },
 
-  bulkProcessMetadataFromRelationships(query, language, limit = 200) {
-    const process = (offset, totalRows) => {
+  /** Bulk rebuild relationship-based metadata objects as {value = id, label: title}. */
+  async bulkUpdateMetadataFromRelationships(query, language, limit = 200) {
+    const process = async (offset, totalRows) => {
       if (offset >= totalRows) {
-        return Promise.resolve();
+        return;
       }
 
-      return this.get(query, 'sharedId', { skip: offset, limit })
-        .then(entities =>
-          this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language)
-        )
-        .then(() => process(offset + limit, totalRows));
+      const entities = await this.get(query, 'sharedId', { skip: offset, limit });
+      await this.updateMetdataFromRelationships(entities.map(entity => entity.sharedId), language);
+      await process(offset + limit, totalRows);
     };
-    return this.count(query).then(totalRows => process(0, totalRows));
+    const totalRows = await this.count(query);
+    await process(0, totalRows);
   },
 
   indexEntities(query, select, limit = 200, batchCallback = () => {}) {
@@ -271,16 +317,10 @@ export default {
     return doc;
   },
 
-  saveMultiple(docs) {
-    return model
-      .save(docs)
-      .then(response =>
-        Promise.all(
-          response,
-          this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText')
-        )
-      )
-      .then(response => response);
+  async saveMultiple(docs) {
+    const response = await model.save(docs);
+    await this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
+    return response;
   },
 
   multipleUpdate(ids, values, params) {
@@ -321,52 +361,46 @@ export default {
     return model.get(query, ['title', 'icon', 'file', 'sharedId']);
   },
 
-  updateMetdataFromRelationships(entities, language) {
+  /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
+  async updateMetdataFromRelationships(entities, language) {
     const entitiesToReindex = [];
-    return templates
-      .get()
-      .then(_templates =>
-        Promise.all(
-          entities.map(entityId =>
-            Promise.all([
-              this.getById(entityId, language),
-              relationships.getByDocument(entityId, language),
-            ]).then(([entity, relations]) => {
-              if (entity) {
-                entity.metadata = entity.metadata || {};
-                const template = _templates.find(
-                  t => t._id.toString() === entity.template.toString()
-                );
-                const relationshipProperties = template.properties.filter(
-                  p => p.type === 'relationship'
-                );
-                relationshipProperties.forEach(property => {
-                  const relationshipsGoingToThisProperty = relations.filter(
-                    r =>
-                      r.template &&
-                      r.template.toString() === property.relationType &&
-                      (!property.content || r.entityData.template.toString() === property.content)
-                  );
-                  entity.metadata[property.name] = relationshipsGoingToThisProperty.map(
-                    r => r.entity
-                  ); //eslint-disable-line
-                });
-                if (relationshipProperties.length) {
-                  entitiesToReindex.push(entity.sharedId);
-                  return this.updateEntity(this.sanitize(entity, template), template);
-                }
-              }
-              return Promise.resolve(entity);
-            })
-          )
-        )
-      )
-      .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
+    const _templates = await templates.get();
+    await Promise.all(
+      entities.map(async entityId => {
+        const [entity, relations] = await Promise.all([
+          this.getById(entityId, language),
+          relationships.getByDocument(entityId, language),
+        ]);
+        if (entity) {
+          entity.metadata = entity.metadata || {};
+          const template = _templates.find(t => t._id.toString() === entity.template.toString());
+          const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
+          relationshipProperties.forEach(property => {
+            const relationshipsGoingToThisProperty = relations.filter(
+              r =>
+                r.template &&
+                r.template.toString() === property.relationType &&
+                (!property.content || r.entityData.template.toString() === property.content)
+            );
+            entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
+              value: r.entity,
+              label: r.entityData.title,
+            }));
+          });
+          if (relationshipProperties.length) {
+            entitiesToReindex.push(entity.sharedId);
+            await this.updateEntity(this.sanitize(entity, template), template);
+          }
+        }
+      })
+    );
+    await this.indexEntities({ sharedId: { $in: entitiesToReindex } });
   },
 
-  updateMetadataProperties(template, currentTemplate, language) {
+  /** Handle property deletion and renames. */
+  async updateMetadataProperties(template, currentTemplate, language) {
     const actions = { $rename: {}, $unset: {} };
-    template.properties = generateNamesAndIds(template.properties); //eslint-disable-line
+    template.properties = generateNamesAndIds(template.properties);
     template.properties.forEach(property => {
       const currentProperty = currentTemplate.properties.find(p => p.id === property.id);
       if (currentProperty && currentProperty.name !== property.name) {
@@ -391,19 +425,14 @@ export default {
 
     let dbUpdate = Promise.resolve();
     if (actions.$unset || actions.$rename) {
-      dbUpdate = model.db.updateMany({ template }, actions);
+      dbUpdate = model.db.updateMany({ template: template._id }, actions);
     }
 
-    return dbUpdate.then(() => {
-      if (!template.properties.find(p => p.type === 'relationship')) {
-        return this.indexEntities({ template: template._id }, null, 1000);
-      }
-
-      return this.bulkProcessMetadataFromRelationships(
-        { template: template._id, language },
-        language
-      );
-    });
+    await dbUpdate;
+    if (!template.properties.find(p => p.type === 'relationship')) {
+      return this.indexEntities({ template: template._id }, null, 1000);
+    }
+    return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
   },
 
   deleteFiles(deletedDocs) {
@@ -474,7 +503,7 @@ export default {
         Promise.all([
           relationships.delete({ entity: sharedId }, null, false),
           this.deleteFiles(docs),
-          this.deleteEntityFromMetadata(docs[0].sharedId, docs[0].template),
+          this.deleteRelatedEntityFromMetadata(docs[0]),
         ]).then(() => docs)
       );
   },
@@ -493,7 +522,7 @@ export default {
     return entity.fullText[pageNumber].replace(pageNumberMatch, '');
   },
 
-  removeValuesFromEntities(properties, template) {
+  async removeValuesFromEntities(properties, template) {
     const query = { template, $or: [] };
     const changes = {};
 
@@ -504,61 +533,87 @@ export default {
       changes[`metadata.${prop}`] = properties[prop];
     });
 
-    return Promise.all([
-      this.get(query, { _id: 1 }),
-      model.db.updateMany(query, { $set: changes }),
-    ]).then(([entitiesToReindex]) =>
-      this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } })
-    );
+    const [entitiesToReindex] = await this.get(query, { _id: 1 });
+    await model.db.updateMany(query, { $set: changes });
+    return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
   },
 
-  async deleteEntityFromMetadata(sharedId, propertyContent) {
+  /** Propagate the deletion metadata.value id to all entity metadata. */
+  async deleteFromMetadata(deletedId, propertyContent, propTypes) {
     const allTemplates = await templates.get({ 'properties.content': propertyContent });
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-    const selectProperties = allProperties.filter(p => p.type === 'select');
-    const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
-    const selectQuery = { $or: [] };
-    const selectChanges = {};
-    selectQuery.$or = selectProperties
+    const properties = allProperties.filter(p => propTypes.includes(p.type));
+    const query = { $or: [] };
+    const changes = {};
+    query.$or = properties
       .filter(
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
       )
       .map(property => {
         const p = {};
-        p[`metadata.${property.name}`] = sharedId;
-        selectChanges[`metadata.${property.name}`] = '';
+        p[`metadata.${property.name}.value`] = deletedId;
+        changes[`metadata.${property.name}`] = { value: deletedId };
         return p;
       });
-    const multiSelectQuery = { $or: [] };
-    const multiSelectChanges = {};
-    multiSelectQuery.$or = multiselectProperties
-      .filter(
-        p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
-      )
-      .map(property => {
-        const p = {};
-        p[`metadata.${property.name}`] = sharedId;
-        multiSelectChanges[`metadata.${property.name}`] = sharedId;
-        return p;
-      });
-    if (!selectQuery.$or.length && !multiSelectQuery.$or.length) {
+    if (!query.$or.length) {
       return;
     }
-    const [entitiesWithSelect, entitiesWithMultiSelect] = await Promise.all([
-      selectQuery.$or.length ? this.get(selectQuery, { _id: 1 }) : [],
-      multiSelectQuery.$or.length ? this.get(multiSelectQuery, { _id: 1 }) : [],
-    ]);
-    await Promise.all([
-      selectQuery.$or.length ? model.db.updateMany(selectQuery, { $set: selectChanges }) : null,
-      multiSelectQuery.$or.length
-        ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges })
-        : null,
-    ]);
-    const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-    await this.indexEntities(
-      { _id: { $in: entitiesToReindex.map(e => e._id.toString()) } },
-      null,
-      1000
+    const entities = await this.get(query, { _id: 1 });
+    await model.db.updateMany(query, { $pull: changes });
+    await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+  },
+
+  /** Propagate the deletion of a thesaurus entry to all entity metadata. */
+  async deleteThesaurusFromMetadata(deletedId, thesaurusId) {
+    await this.deleteFromMetadata(deletedId, thesaurusId, ['select', 'multiselect']);
+  },
+
+  /** Propagate the deletion of a related entity to all entity metadata. */
+  async deleteRelatedEntityFromMetadata(deletedEntity) {
+    await this.deleteFromMetadata(deletedEntity.sharedId, deletedEntity.template, ['relationship']);
+  },
+
+  /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
+  async renameInMetadata(valueId, newLabel, propertyContent, propTypes, restrictLanguage = null) {
+    const allTemplates = await templates.get({ 'properties.content': propertyContent });
+    const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
+    const properties = allProperties.filter(p => propTypes.includes(p.type));
+    let query = { $or: [] };
+    const changes = {};
+    query.$or = properties
+      .filter(
+        p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
+      )
+      .map(property => {
+        const p = {};
+        p[`metadata.${property.name}.value`] = valueId;
+        changes[`metadata.${property.name}.$[].label`] = newLabel;
+        return p;
+      });
+    if (!query.$or.length) {
+      return;
+    }
+    if (restrictLanguage) {
+      query = { $and: [{ language: restrictLanguage }, query] };
+    }
+    const entities = await this.get(query, { _id: 1 });
+    await model.db.updateMany(query, { $set: changes });
+    await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+  },
+
+  /** Propagate the change of a thesaurus label to all entity metadata. */
+  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId) {
+    await this.renameInMetadata(valueId, newLabel, thesaurusId, ['select', 'multiselect']);
+  },
+
+  /** Propagate the title change of a related entity to all entity metadata. */
+  async renameRelatedEntityInMetadata(relatedEntity) {
+    await this.renameInMetadata(
+      relatedEntity.sharedId,
+      relatedEntity.title,
+      relatedEntity.template,
+      ['relationship'],
+      relatedEntity.language
     );
   },
 
@@ -581,18 +636,21 @@ export default {
       }
     }
     if (entity.file) {
-      return deleteFiles(filesToDelete);
+      await deleteFiles(filesToDelete);
     }
   },
 
-  generateNewEntitiesForLanguage(entities, language) {
-    return entities.map(_entity => {
-      const entity = Object.assign({}, _entity);
-      delete entity._id;
-      delete entity.__v;
-      entity.language = language;
-      return entity;
-    });
+  async generateNewEntitiesForLanguage(entities, language) {
+    return Promise.all(
+      entities.map(async _entity => {
+        const entity = Object.assign({}, _entity);
+        delete entity._id;
+        delete entity.__v;
+        entity.language = language;
+        entity.metadata = await this.denormalizeMetadata(entity);
+        return entity;
+      })
+    );
   },
 
   async addLanguage(language, limit = 100) {
@@ -600,35 +658,35 @@ export default {
       limit: 1,
     });
     if (lanuageTranslationAlreadyExists) {
-      return Promise.resolve();
+      return;
     }
 
     const { languages } = await settings.get();
 
     const defaultLanguage = languages.find(l => l.default).key;
-    const duplicate = (offset, totalRows) => {
+    const duplicate = async (offset, totalRows) => {
       if (offset >= totalRows) {
-        return Promise.resolve();
+        return;
       }
 
-      return this.get({ language: defaultLanguage }, '+fullText', { skip: offset, limit })
-        .then(entities => {
-          const newLanguageEntities = this.generateNewEntitiesForLanguage(entities, language);
-          return this.saveMultiple(newLanguageEntities);
-        })
-        .then(async newEntities => {
-          await newEntities.reduce(async (previous, entity) => {
-            await previous;
-            if (entity.file) {
-              return this.createThumbnail(entity);
-            }
-            return Promise.resolve();
-          }, Promise.resolve());
-          return duplicate(offset + limit, totalRows);
-        });
+      const entities = await this.get({ language: defaultLanguage }, '+fullText', {
+        skip: offset,
+        limit,
+      });
+      const newLanguageEntities = await this.generateNewEntitiesForLanguage(entities, language);
+      const newSavedEntities = await this.saveMultiple(newLanguageEntities);
+      await newSavedEntities.reduce(async (previous, entity) => {
+        await previous;
+        if (entity.file) {
+          return this.createThumbnail(entity);
+        }
+        return Promise.resolve();
+      }, Promise.resolve());
+      await duplicate(offset + limit, totalRows);
     };
 
-    return this.count({ language: defaultLanguage }).then(totalRows => duplicate(0, totalRows));
+    const totalRows = await this.count({ language: defaultLanguage });
+    await duplicate(0, totalRows);
   },
 
   async removeLanguage(locale) {

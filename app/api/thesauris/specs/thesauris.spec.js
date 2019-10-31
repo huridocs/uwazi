@@ -207,7 +207,7 @@ describe('thesauris', () => {
       });
 
       it('should remove deleted values from entities', async () => {
-        spyOn(entities, 'deleteEntityFromMetadata');
+        spyOn(entities, 'deleteThesaurusFromMetadata');
         const data = {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
@@ -215,21 +215,21 @@ describe('thesauris', () => {
         };
 
         await thesauris.save(data);
-        expect(entities.deleteEntityFromMetadata.calls.count()).toBe(1);
-        expect(entities.deleteEntityFromMetadata).toHaveBeenCalledWith(
+        expect(entities.deleteThesaurusFromMetadata.calls.count()).toBe(1);
+        expect(entities.deleteThesaurusFromMetadata).toHaveBeenCalledWith(
           '2',
           dictionaryIdToTranslate
         );
       });
 
       it('should properly delete values when thesauris have subgroups', async () => {
-        spyOn(entities, 'deleteEntityFromMetadata');
+        spyOn(entities, 'deleteThesaurusFromMetadata');
         const thesauri = await thesauris.getById(dictionaryWithValueGroups);
         thesauri.values = thesauri.values.filter(value => value.id !== '3');
 
         await thesauris.save(thesauri);
 
-        const deletedValuesFromEntities = entities.deleteEntityFromMetadata
+        const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata
         .calls.allArgs().map(args => args[0]);
 
         expect(deletedValuesFromEntities).toEqual(['3']);
