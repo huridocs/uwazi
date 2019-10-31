@@ -24,17 +24,18 @@ describe('template validator', () => {
         properties: [
           makeProperty('geolocation', 'geolocation'),
           makeProperty('image', 'image'),
-          makeProperty('markdown', 'markdown'),
-          makeProperty('media', 'media'),
+          makeProperty('markdown', 'markdown', { required: true }),
+          makeProperty('media', 'media', { fullWidth: true }),
           makeProperty('multidate', 'multidate'),
           makeProperty('multidaterange', 'multidaterange'),
-          makeProperty('multiselect', 'multiselect', { content: 'content' }),
-          makeProperty('numeric', 'numeric'),
+          makeProperty('multiselect', 'multiselect', { content: 'content', filter: true }),
+          makeProperty('numeric', 'numeric', { showInCard: true, defaultfilter: true }),
           makeProperty('relationship', 'relationship', { content: 'content', relationType: 'rel' }),
           makeProperty('inherited_rel', 'relationship', {
             content: 'content', relationType: 'otherRel', inherit: true, inheritProperty: 'prop'
           }),
           makeProperty('select', 'select', { content: 'content' }),
+          makeProperty('text', 'text', { sortable: true })
         ]
       };
     });

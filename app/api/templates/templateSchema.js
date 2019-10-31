@@ -100,7 +100,21 @@ const schema = {
         prioritySorting: { type: 'boolean' },
         content: { type: 'string', minLength: 1 },
         inherit: { type: 'boolean' },
-        inheritProperty: { type: 'string', minLength: 1 }
+        inheritProperty: { type: 'string', minLength: 1 },
+        filter: { type: 'boolean' },
+        noLabel: { type: 'boolean' },
+        fullWidth: { type: 'boolean' },
+        defaultfilter: { type: 'boolean' },
+        required: { type: 'boolean' },
+        sortable: { type: 'boolean' },
+        showInCard: { type: 'boolean' },
+        style: { type: 'string' },
+        nestedProperties: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        }
       }
     }
   },
