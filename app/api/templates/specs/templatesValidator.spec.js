@@ -35,17 +35,19 @@ describe('template validator', () => {
         name: 'Test',
         commonProperties: [makeProperty('title', 'text'), makeProperty('creationDate', 'date')],
         properties: [
+          makeProperty('daterange', 'daterange'),
           makeProperty('geolocation', 'geolocation'),
           makeProperty('image', 'image'),
+          makeProperty('link', 'link'),
           makeProperty('markdown', 'markdown', { required: true }),
           makeProperty('media', 'media', { fullWidth: true }),
           makeProperty('multidate', 'multidate'),
           makeProperty('multidaterange', 'multidaterange'),
           makeProperty('multiselect', 'multiselect', { content: 'content', filter: true }),
           makeProperty('numeric', 'numeric', { showInCard: true, defaultfilter: true }),
-          makeProperty('relationship', 'relationship', { content: 'content', relationType: 'rel' }),
+          makeProperty('preview', 'preview'),
+          makeProperty('relationship', 'relationship', { relationType: 'rel' }),
           makeProperty('inherited_rel', 'relationship', {
-            content: 'content',
             relationType: 'otherRel',
             inherit: true,
             inheritProperty: 'prop',
@@ -111,11 +113,6 @@ describe('template validator', () => {
 
       it('invalid if multiselect property does not have a content field', async () => {
         template.properties.push(makeProperty('foo', 'multiselect'));
-        await testInvalid();
-      });
-
-      it('invalid if relationship property does not have a content field', async () => {
-        template.properties.push(makeProperty('foo', 'relationship', { relationType: 'aRel' }));
         await testInvalid();
       });
 

@@ -6,14 +6,17 @@ const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
 const DATA_TYPES = [
   'date',
+  'daterange',
   'geolocation',
   'image',
+  'link',
   'markdown',
   'media',
   'multidate',
   'multidaterange',
   'multiselect',
   'numeric',
+  'preview',
   'relationship',
   'select',
   'text'
@@ -64,7 +67,7 @@ ajv.addKeyword('requireContentForSelectFields', {
     if (!schema) {
       return true;
     }
-    if (['multiselect', 'relationship', 'select'].includes(data.type)) {
+    if (['multiselect', 'select'].includes(data.type)) {
       return !!(data.content && data.content.length);
     }
 
