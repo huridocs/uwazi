@@ -1,16 +1,19 @@
+/** @format */
+
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import validator from '../templatesValidator';
 import fixtures, { templateId } from './validatorFixtures';
 
-
 describe('template validator', () => {
-  beforeEach((done) => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(done => {
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -24,16 +27,13 @@ describe('template validator', () => {
       label: name,
       isCommonProperty: false,
       prioritySorting: false,
-      ...args
+      ...args,
     });
 
     beforeEach(() => {
       template = {
         name: 'Test',
-        commonProperties: [
-          makeProperty('title', 'text'),
-          makeProperty('creationDate', 'date')
-        ],
+        commonProperties: [makeProperty('title', 'text'), makeProperty('creationDate', 'date')],
         properties: [
           makeProperty('geolocation', 'geolocation'),
           makeProperty('image', 'image'),
@@ -45,11 +45,14 @@ describe('template validator', () => {
           makeProperty('numeric', 'numeric', { showInCard: true, defaultfilter: true }),
           makeProperty('relationship', 'relationship', { content: 'content', relationType: 'rel' }),
           makeProperty('inherited_rel', 'relationship', {
-            content: 'content', relationType: 'otherRel', inherit: true, inheritProperty: 'prop'
+            content: 'content',
+            relationType: 'otherRel',
+            inherit: true,
+            inheritProperty: 'prop',
           }),
           makeProperty('select', 'select', { content: 'content' }),
-          makeProperty('text', 'text', { sortable: true })
-        ]
+          makeProperty('text', 'text', { sortable: true }),
+        ],
       };
     });
 
@@ -59,7 +62,7 @@ describe('template validator', () => {
       try {
         await validator.save(template, 'en');
         fail('should throw error');
-      } catch(e) {
+      } catch (e) {
         expect(e).toBeInstanceOf(Ajv.ValidationError);
       }
     };
@@ -73,7 +76,7 @@ describe('template validator', () => {
         await testValid();
       });
       it('should not throw error if updating same template with same name', async () => {
-        template.name = 'DuplicateName',
+        template.name = 'DuplicateName';
         template._id = templateId.toString();
         await testValid();
       });
@@ -122,15 +125,23 @@ describe('template validator', () => {
       });
 
       it('invalid if relationship properties have same relationType', async () => {
-        template.properties.push(makeProperty('foo', 'relationship', { content: 'content', relationType: 'rel1' }));
-        template.properties.push(makeProperty('bar', 'relationship', { content: 'content', relationType: 'rel1' }));
+        template.properties.push(
+          makeProperty('foo', 'relationship', { content: 'content', relationType: 'rel1' })
+        );
+        template.properties.push(
+          makeProperty('bar', 'relationship', { content: 'content', relationType: 'rel1' })
+        );
         await testInvalid();
       });
 
       it('invalid if inherited relationship properties do not specify field to inherit', async () => {
-        template.properties.push(makeProperty('foo', 'relationship', {
-          content: 'content', relationType: 'rel1', inherit: true
-        }));
+        template.properties.push(
+          makeProperty('foo', 'relationship', {
+            content: 'content',
+            relationType: 'rel1',
+            inherit: true,
+          })
+        );
         await testInvalid();
       });
 

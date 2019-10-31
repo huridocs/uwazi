@@ -1,3 +1,5 @@
+/** @format */
+
 import { wrapValidation } from '../wrapValidation';
 
 describe('wrapValidation', () => {
@@ -8,11 +10,13 @@ describe('wrapValidation', () => {
     model = {
       foo: jest.fn(),
       bar: jest.fn().mockReturnValue(10),
-      baz: jest.fn().mockReturnValue(20)
+      baz: jest.fn().mockReturnValue(20),
     };
     validator = {
-      foo() { throw new Error('error'); },
-      bar() {}
+      foo() {
+        throw new Error('error');
+      },
+      bar() {},
     };
   });
 
@@ -39,9 +43,13 @@ describe('wrapValidation', () => {
 
     it('should support async validator functions', async () => {
       validator = {
-        foo() { return Promise.reject(new Error('error')); },
-        bar() { return Promise.resolve(); }
-      }
+        foo() {
+          return Promise.reject(new Error('error'));
+        },
+        bar() {
+          return Promise.resolve();
+        },
+      };
       const validated = wrapValidation(validator, model);
 
       try {
@@ -65,8 +73,13 @@ describe('wrapValidation', () => {
       model = {
         val: 5,
         foo: jest.fn().mockReturnValue(10),
-        bar(arg) { this.val += 1; return this.val + this.foo(arg); },
-        baz(arg) { return 2 * this.bar(arg); }
+        bar(arg) {
+          this.val += 1;
+          return this.val + this.foo(arg);
+        },
+        baz(arg) {
+          return 2 * this.bar(arg);
+        },
       };
       const validated = wrapValidation(validator, model);
 
