@@ -46,14 +46,14 @@ ajv.addKeyword('uniquePropertyFields', {
     if (!fields.length) {
       return true;
     }
-    const fieldCaches = fields.reduce((memo, field) => ({ ...memo, [field]: new Set() }), {});
+    const uniqueValues = fields.reduce((memo, field) => ({ ...memo, [field]: new Set() }), {});
     for (let property of [...data.properties, ...data.commonProperties]) {
       for (let field of fields) {
         const value = property[field] && property[field].toLowerCase().trim();
-        if (value && fieldCaches[field].has(value)) {
+        if (value && uniqueValues[field].has(value)) {
           return false;
         }
-        fieldCaches[field].add(value);
+        uniqueValues[field].add(value);
       }
     }
     return true;
