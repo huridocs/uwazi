@@ -1,3 +1,5 @@
+/** @format */
+
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documentRoutes from '../routes.js';
@@ -10,12 +12,14 @@ import fixtures, { templateId, unpublishedDocId, batmanFinishesId } from './fixt
 describe('entities', () => {
   let routes;
 
-  beforeEach((done) => {
+  beforeEach(done => {
     routes = instrumentRoutes(documentRoutes);
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    db.clearAllAndLoad(fixtures)
+      .then(done)
+      .catch(catchErrors(done));
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -25,16 +29,15 @@ describe('entities', () => {
       req = {
         body: {
           title: 'Batman begins',
-          template: templateId
+          template: templateId,
         },
         user: { username: 'admin' },
         language: 'lang',
         io: {
           sockets: {
-            emit: () => {
-            }
-          }
-        }
+            emit: () => {},
+          },
+        },
       };
     });
 
@@ -46,31 +49,32 @@ describe('entities', () => {
       expect(routes.post.validation('/api/entities')).toMatchSnapshot();
     });
 
-    it('should create a new document with current user', (done) => {
+    it('should create a new document with current user', done => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
-      spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise(resolve => resolve('document')));
+      spyOn(thesauris, 'templateToThesauri').and.returnValue(
+        new Promise(resolve => resolve('document'))
+      );
 
-      routes.post('/api/entities', req)
-        .then((document) => {
-          expect(document).toBe('entity');
-          expect(entities.save).toHaveBeenCalledWith(req.body, {
-            user: req.user,
-            language: 'lang'
-          });
-          done();
+      routes.post('/api/entities', req).then(document => {
+        expect(document).toBe('entity');
+        expect(entities.save).toHaveBeenCalledWith(req.body, {
+          user: req.user,
+          language: 'lang',
         });
+        done();
+      });
     });
 
-    it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
+    it('should emit thesauriChange socket event with the modified thesauri based on the entity template', done => {
       const user = {
         _id: 'c08ef2532f0bd008ac5174b45e033c93',
-        username: 'admin'
+        username: 'admin',
       };
       req = {
         body: {
           title: 'Batman begins',
-          template: 'template'
+          template: 'template',
         },
         user,
         language: 'lang',
@@ -85,17 +89,20 @@ describe('entities', () => {
               } catch (err) {
                 done.fail(err);
               }
-            })
-          }
-        }
+            }),
+          },
+        },
       };
 
       spyOn(entities, 'save').and.returnValue(Promise.resolve({ _id: 'id' }));
-      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(['entityWithRelationShips']));
+      spyOn(entities, 'getWithRelationships').and.returnValue(
+        Promise.resolve(['entityWithRelationShips'])
+      );
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve('template')));
-      spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise(resolve => resolve('templateTransformed')));
-      routes.post('/api/entities', req)
-        .catch(catchErrors(done));
+      spyOn(thesauris, 'templateToThesauri').and.returnValue(
+        new Promise(resolve => resolve('templateTransformed'))
+      );
+      routes.post('/api/entities', req).catch(catchErrors(done));
     });
 
     describe('get_raw_page', () => {
@@ -109,9 +116,9 @@ describe('entities', () => {
         const request = {
           query: {
             sharedId: 'sharedId',
-            pageNumber: 2
+            pageNumber: 2,
           },
-          language: 'lang'
+          language: 'lang',
         };
 
         const response = await routes.get('/api/entities/get_raw_page', request);
@@ -125,13 +132,13 @@ describe('entities', () => {
         req = {
           body: {
             ids: ['1', '2'],
-            values: { metadata: { text: 'new text' } }
+            values: { metadata: { text: [{ value: 'new text' }] } },
           },
           user: {
             _id: 'c08ef2532f0bd008ac5174b45e033c93',
-            username: 'admin'
+            username: 'admin',
           },
-          language: 'lang'
+          language: 'lang',
         };
       });
 
@@ -143,22 +150,24 @@ describe('entities', () => {
         expect(routes.post.validation('/api/entities/multipleupdate')).toMatchSnapshot();
       });
 
-      it('should call multipleUpdate with the ids and the metadata in the body', (done) => {
-        spyOn(entities, 'multipleUpdate').and.returnValue(new Promise(resolve => resolve([{ sharedId: '1' }, { sharedId: '2' }])));
-        routes.post('/api/entities/multipleupdate', req)
-          .then((response) => {
-            expect(entities.multipleUpdate)
-              .toHaveBeenCalledWith(
-                ['1', '2'],
-                { metadata: { text: 'new text' } },
-                {
-                  user: {
-                    _id: 'c08ef2532f0bd008ac5174b45e033c93',
-                    username: 'admin'
-                  },
-                  language: 'lang'
-                }
-              );
+      it('should call multipleUpdate with the ids and the metadata in the body', done => {
+        spyOn(entities, 'multipleUpdate').and.returnValue(
+          new Promise(resolve => resolve([{ sharedId: '1' }, { sharedId: '2' }]))
+        );
+        routes
+          .post('/api/entities/multipleupdate', req)
+          .then(response => {
+            expect(entities.multipleUpdate).toHaveBeenCalledWith(
+              ['1', '2'],
+              { metadata: { text: [{ value: 'new text' }] } },
+              {
+                user: {
+                  _id: 'c08ef2532f0bd008ac5174b45e033c93',
+                  username: 'admin',
+                },
+                language: 'lang',
+              }
+            );
             expect(response).toEqual(['1', '2']);
             done();
           })
@@ -172,24 +181,31 @@ describe('entities', () => {
       expect(routes.get.validation('/api/entities')).toMatchSnapshot();
     });
 
-    it('should return matching document', (done) => {
-      const expectedEntity = [{
-        sharedId: 'sharedId',
-        published: true
-      }];
+    it('should return matching document', done => {
+      const expectedEntity = [
+        {
+          sharedId: 'sharedId',
+          published: true,
+        },
+      ];
       spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
       const req = {
         query: { sharedId: 'sharedId' },
-        language: 'lang'
+        language: 'lang',
       };
 
-      routes.get('/api/entities', req)
-        .then((response) => {
-          expect(entities.getWithRelationships).toHaveBeenCalledWith({
-            sharedId: 'sharedId',
-            language: 'lang',
-            published: true
-          }, {}, 1);
+      routes
+        .get('/api/entities', req)
+        .then(response => {
+          expect(entities.getWithRelationships).toHaveBeenCalledWith(
+            {
+              sharedId: 'sharedId',
+              language: 'lang',
+              published: true,
+            },
+            {},
+            1
+          );
           expect(response).toEqual({ rows: expectedEntity });
           done();
         })
@@ -200,14 +216,18 @@ describe('entities', () => {
       const expectedEntity = fixtures.entities[0];
       delete expectedEntity.fullText;
 
-      const response = await routes.get('/api/entities', { query: { _id: batmanFinishesId, omitRelationships: true } });
+      const response = await routes.get('/api/entities', {
+        query: { _id: batmanFinishesId, omitRelationships: true },
+      });
 
       expect(response.rows.length).toEqual(1);
       expect(response.rows[0]).toEqual(expectedEntity);
     });
 
     it('should not return unpublished documents when user not logged in', async () => {
-      const response = await routes.get('/api/entities', { query: { _id: unpublishedDocId, omitRelationships: true } });
+      const response = await routes.get('/api/entities', {
+        query: { _id: unpublishedDocId, omitRelationships: true },
+      });
 
       expect(response.status).toEqual(404);
       expect(response.rows).toEqual([]);
@@ -216,7 +236,7 @@ describe('entities', () => {
     it('should allow not fetching the relationships', async () => {
       const expectedEntity = {
         sharedId: 'sharedId',
-        published: true
+        published: true,
       };
 
       spyOn(entities, 'getWithRelationships');
@@ -225,31 +245,38 @@ describe('entities', () => {
       const req = {
         query: {
           sharedId: 'sharedId',
-          omitRelationships: true
+          omitRelationships: true,
         },
-        language: 'lang'
+        language: 'lang',
       };
 
-      const { rows: [result] } = await routes.get('/api/entities', req);
+      const {
+        rows: [result],
+      } = await routes.get('/api/entities', req);
       expect(result).toBe(expectedEntity);
       expect(entities.getWithRelationships).not.toHaveBeenCalled();
-      expect(entities.get).toHaveBeenCalledWith({
-        sharedId: 'sharedId',
-        language: 'lang',
-        published: true
-      }, {}, 1);
+      expect(entities.get).toHaveBeenCalledWith(
+        {
+          sharedId: 'sharedId',
+          language: 'lang',
+          published: true,
+        },
+        {},
+        1
+      );
     });
 
     describe('when the document does not exist', () => {
-      it('should retunr a 404', (done) => {
+      it('should retunr a 404', done => {
         spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([]));
         const req = {
           query: { sharedId: 'idontexist' },
-          language: 'en'
+          language: 'en',
         };
 
-        routes.get('/api/entities', req)
-          .then((response) => {
+        routes
+          .get('/api/entities', req)
+          .then(response => {
             expect(response.status).toBe(404);
             done();
           })
@@ -259,39 +286,43 @@ describe('entities', () => {
 
     describe('when the document has unpublished relationships and the user is unauthenticated', () => {
       it('should remove private relationships from response', async () => {
-        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([
-          {
-            sharedId: 'e1',
-            published: true,
-            relationships: [
-              {
-                entityData: {
-                  sharedId: 'e1',
-                  published: true
-                }
-              },
-              {
-                entityData: {
-                  sharedId: 'e2',
-                  published: false
-                }
-              },
-              {
-                entityData: {
-                  sharedId: 'e3',
-                  published: true
-                }
-              }
-            ]
-          }
-        ]));
+        spyOn(entities, 'getWithRelationships').and.returnValue(
+          Promise.resolve([
+            {
+              sharedId: 'e1',
+              published: true,
+              relationships: [
+                {
+                  entityData: {
+                    sharedId: 'e1',
+                    published: true,
+                  },
+                },
+                {
+                  entityData: {
+                    sharedId: 'e2',
+                    published: false,
+                  },
+                },
+                {
+                  entityData: {
+                    sharedId: 'e3',
+                    published: true,
+                  },
+                },
+              ],
+            },
+          ])
+        );
 
         const req = {
           query: { sharedId: 'sharedId' },
-          language: 'lang'
+          language: 'lang',
         };
 
-        const { rows: [result] } = await routes.get('/api/entities', req);
+        const {
+          rows: [result],
+        } = await routes.get('/api/entities', req);
         expect(result).toEqual({
           sharedId: 'e1',
           published: true,
@@ -299,16 +330,16 @@ describe('entities', () => {
             {
               entityData: {
                 sharedId: 'e1',
-                published: true
-              }
+                published: true,
+              },
             },
             {
               entityData: {
                 sharedId: 'e3',
-                published: true
-              }
-            }
-          ]
+                published: true,
+              },
+            },
+          ],
         });
       });
     });
@@ -330,12 +361,13 @@ describe('entities', () => {
     it('should have a validation schema', () => {
       expect(routes.get.validation('/api/entities/count_by_template')).toMatchSnapshot();
     });
-    it('should return count of entities using a specific template', (done) => {
+    it('should return count of entities using a specific template', done => {
       spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
       const req = { query: { templateId: 'templateId' } };
 
-      routes.get('/api/entities/count_by_template', req)
-        .then((response) => {
+      routes
+        .get('/api/entities/count_by_template', req)
+        .then(response => {
           expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
           expect(response).toEqual(2);
           done();
@@ -353,14 +385,15 @@ describe('entities', () => {
       expect(routes.delete.validation('/api/entities')).toMatchSnapshot();
     });
 
-    it('should use entities to delete it', (done) => {
+    it('should use entities to delete it', done => {
       const req = {
         query: {
           sharedId: 123,
-          _rev: 456
-        }
+          _rev: 456,
+        },
       };
-      return routes.delete('/api/entities', req)
+      return routes
+        .delete('/api/entities', req)
         .then(() => {
           expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
           done();
@@ -378,9 +411,10 @@ describe('entities', () => {
       expect(routes.post.validation('/api/entities/bulkdelete')).toMatchSnapshot();
     });
 
-    it('should use entities to delete it', (done) => {
+    it('should use entities to delete it', done => {
       const req = { body: { sharedIds: [123, 456] } };
-      return routes.post('/api/entities/bulkdelete', req)
+      return routes
+        .post('/api/entities/bulkdelete', req)
         .then(() => {
           expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
           done();

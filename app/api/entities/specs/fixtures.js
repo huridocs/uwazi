@@ -1,6 +1,7 @@
+/** @format */
+
 /* eslint-disable max-len */
 import db from 'api/utils/testing_db';
-
 
 const batmanFinishesId = db.id();
 const syncPropertiesEntityId = db.id();
@@ -41,39 +42,198 @@ export default {
         2: 'page[[2]] 2[[2]]',
         3: '',
       },
-      metadata: {
-        property1: 'value1'
-      },
+      metadata: { property1: [{ value: 'value1' }] },
       file: {
-        filename: '8202c463d6158af8065022d9b5014cc1.pdf'
-      }
+        filename: '8202c463d6158af8065022d9b5014cc1.pdf',
+      },
     },
-    { _id: docId1, sharedId: 'shared', type: 'entity', language: 'es', title: 'Penguin almost done', creationDate: 1, published: true, file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' }, attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }], fullText: { 1: 'text' } },
-    { _id: docId2, sharedId: 'shared', type: 'entity', language: 'pt', title: 'Penguin almost done', creationDate: 1, published: true, metadata: { text: 'test' }, file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' } },
-    { _id: unpublishedDocId, sharedId: 'other', type: 'entity', template: templateId, language: 'en', title: 'Unpublished entity', published: false, metadata: { property1: 'value1' } },
+    {
+      _id: docId1,
+      sharedId: 'shared',
+      type: 'entity',
+      language: 'es',
+      title: 'Penguin almost done',
+      creationDate: 1,
+      published: true,
+      file: { filename: '8202c463d6158af8065022d9b5014ccb.pdf' },
+      attachments: [{ filename: '8202c463d6158af8065022d9b5014ccc.pdf' }],
+      fullText: { 1: 'text' },
+    },
+    {
+      _id: docId2,
+      sharedId: 'shared',
+      type: 'entity',
+      language: 'pt',
+      title: 'Penguin almost done',
+      creationDate: 1,
+      published: true,
+      metadata: { text: [{ value: 'test' }] },
+      file: { filename: '8202c463d6158af8065022d9b5014cc1.pdf' },
+    },
+    {
+      _id: unpublishedDocId,
+      sharedId: 'other',
+      type: 'entity',
+      template: templateId,
+      language: 'en',
+      title: 'Unpublished entity',
+      published: false,
+      metadata: { property1: [{ value: 'value1' }] },
+    },
     //select/multiselect/date sync
-    { _id: syncPropertiesEntityId, template: templateId, sharedId: 'shared1', type: 'entity', language: 'en', title: 'EN', published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' } },
-    { _id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'es', title: 'ES', creationDate: 1, published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' }, fullText: { 1: 'text' } },
-    { _id: db.id(), template: templateId, sharedId: 'shared1', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: { property1: 'text' }, file: { filename: 'nonexistent.pdf' } },
+    {
+      _id: syncPropertiesEntityId,
+      template: templateId,
+      sharedId: 'shared1',
+      type: 'entity',
+      language: 'en',
+      title: 'EN',
+      published: true,
+      metadata: { property1: [{ value: 'text' }] },
+      file: { filename: 'nonexistent.pdf' },
+    },
+    {
+      _id: db.id(),
+      template: templateId,
+      sharedId: 'shared1',
+      type: 'entity',
+      language: 'es',
+      title: 'ES',
+      creationDate: 1,
+      published: true,
+      metadata: { property1: [{ value: 'text' }] },
+      file: { filename: 'nonexistent.pdf' },
+      fullText: { 1: 'text' },
+    },
+    {
+      _id: db.id(),
+      template: templateId,
+      sharedId: 'shared1',
+      type: 'entity',
+      language: 'pt',
+      title: 'PT',
+      creationDate: 1,
+      published: true,
+      metadata: { property1: [{ value: 'text' }] },
+      file: { filename: 'nonexistent.pdf' },
+    },
     //docs to change metadata property names
-    { _id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: { property1: 'value1', property2: 'value2', property3: 'value3' }, file: { filename: '123.pdf' } },
-    { _id: db.id(), template: templateChangingNames, sharedId: 'shared10', type: 'entity', language: 'pt', title: 'PT', creationDate: 1, published: true, metadata: { property1: 'value1', property2: 'value2', property3: 'value3' }, file: { filename: '123.pdf' } },
+    {
+      _id: db.id(),
+      template: templateChangingNames,
+      sharedId: 'shared10',
+      type: 'entity',
+      language: 'pt',
+      title: 'PT',
+      creationDate: 1,
+      published: true,
+      metadata: {
+        property1: [{ value: 'value1' }],
+        property2: [{ value: 'value2' }],
+        property3: [{ value: 'value3' }],
+      },
+      file: { filename: '123.pdf' },
+    },
+    {
+      _id: db.id(),
+      template: templateChangingNames,
+      sharedId: 'shared10',
+      type: 'entity',
+      language: 'pt',
+      title: 'PT',
+      creationDate: 1,
+      published: true,
+      metadata: {
+        property1: [{ value: 'value1' }],
+        property2: [{ value: 'value2' }],
+        property3: [{ value: 'value3' }],
+      },
+      file: { filename: '123.pdf' },
+    },
     //docs using entity as thesauri
-    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'multiselect', type: 'entity', language: 'en', metadata: { multiselect: ['shared', 'value1'] }, file: { filename: '123.pdf' } },
-    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'multiselect', type: 'entity', language: 'es', metadata: { multiselect2: ['shared', 'value2'] }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri, sharedId: 'select', type: 'entity', language: 'en', metadata: { select: 'shared' }, file: { filename: '123.pdf' } },
-    { title: 'title', _id: db.id(), template: templateWithEntityAsThesauri2, sharedId: 'select', type: 'entity', language: 'es', metadata: { select2: 'shared' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { title: 'title', _id: db.id(), template: db.id(), sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { select2: 'value' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { title: 'title', _id: db.id(), template: templateWithOnlySelect, sharedId: 'otherTemplateWithSelect', type: 'entity', language: 'es', metadata: { select: 'shared10' }, file: { filename: '123.pdf' }, fullText: { 1: 'text' } },
-    { title: 'title', _id: db.id(), template: templateWithOnlyMultiselect, sharedId: 'otherTemplateWithMultiselect', type: 'entity', language: 'es', metadata: { multiselect: ['value1', 'multiselect'] }, file: { filename: '123.pdf' } },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: templateWithEntityAsThesauri,
+      sharedId: 'multiselect',
+      type: 'entity',
+      language: 'en',
+      metadata: { multiselect: [{ value: 'shared' }, { value: 'value1' }] },
+      file: { filename: '123.pdf' },
+    },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: templateWithEntityAsThesauri2,
+      sharedId: 'multiselect',
+      type: 'entity',
+      language: 'es',
+      metadata: { multiselect2: [{ value: 'shared' }, { value: 'value2' }] },
+      file: { filename: '123.pdf' },
+      fullText: { 1: 'text' },
+    },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: templateWithEntityAsThesauri,
+      sharedId: 'select',
+      type: 'entity',
+      language: 'en',
+      metadata: { select: [{ value: 'shared' }] },
+      file: { filename: '123.pdf' },
+    },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: templateWithEntityAsThesauri2,
+      sharedId: 'select',
+      type: 'entity',
+      language: 'es',
+      metadata: { select2: [{ value: 'shared' }] },
+      file: { filename: '123.pdf' },
+      fullText: { 1: 'text' },
+    },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: db.id(),
+      sharedId: 'otherTemplateWithMultiselect',
+      type: 'entity',
+      language: 'es',
+      metadata: { select2: [{ value: 'value' }] },
+      file: { filename: '123.pdf' },
+      fullText: { 1: 'text' },
+    },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: templateWithOnlySelect,
+      sharedId: 'otherTemplateWithSelect',
+      type: 'entity',
+      language: 'es',
+      metadata: { select: [{ value: 'shared10' }] },
+      file: { filename: '123.pdf' },
+      fullText: { 1: 'text' },
+    },
+    {
+      title: 'title',
+      _id: db.id(),
+      template: templateWithOnlyMultiselect,
+      sharedId: 'otherTemplateWithMultiselect',
+      type: 'entity',
+      language: 'es',
+      metadata: { multiselect: [{ value: 'value1' }, { value: 'multiselect' }] },
+      file: { filename: '123.pdf' },
+    },
     { sharedId: 'shared2', language: 'en' },
-    { sharedId: 'source2', language: 'en' }
+    { sharedId: 'source2', language: 'en' },
   ],
   settings: [
-    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] }
+    { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
   ],
   templates: [
-    { _id: templateId,
+    {
+      _id: templateId,
       name: 'template_test',
       properties: [
         { type: 'text', name: 'text' },
@@ -83,39 +243,52 @@ export default {
         { type: 'multidate', name: 'multidate' },
         { type: 'multidaterange', name: 'multidaterange' },
         { type: 'daterange', name: 'daterange' },
-        { type: 'relationship', name: 'friends', relationType: 'relation1'},
-        { type: 'numeric', name: 'numeric' }
-      ] },
-    { _id: templateWithOnlyMultiselect,
+        { type: 'relationship', name: 'friends', relationType: 'relation1' },
+        { type: 'numeric', name: 'numeric' },
+      ],
+    },
+    {
+      _id: templateWithOnlyMultiselect,
       name: 'templateWithOnlyMultiSelectSelect',
       properties: [
-        { type: 'multiselect', name: 'multiselect', content: templateWithEntityAsThesauri.toString() }
-      ] },
-    { _id: templateWithOnlySelect,
+        {
+          type: 'multiselect',
+          name: 'multiselect',
+          content: templateWithEntityAsThesauri.toString(),
+        },
+      ],
+    },
+    {
+      _id: templateWithOnlySelect,
       name: 'templateWithOnlySelect',
-      properties: [
-        { type: 'select', name: 'select', content: templateChangingNames.toString() }
-      ] },
-    { _id: templateWithEntityAsThesauri,
+      properties: [{ type: 'select', name: 'select', content: templateChangingNames.toString() }],
+    },
+    {
+      _id: templateWithEntityAsThesauri,
       name: 'template_with_thesauri_as_template',
       properties: [
         { type: 'select', name: 'select', content: templateId.toString() },
-        { type: 'multiselect', name: 'multiselect', content: templateId.toString() }
-      ] },
-    { _id: templateWithEntityAsThesauri2,
+        { type: 'multiselect', name: 'multiselect', content: templateId.toString() },
+      ],
+    },
+    {
+      _id: templateWithEntityAsThesauri2,
       name: 'template_with_thesauri_as_template',
       properties: [
         { type: 'select', name: 'select2', content: templateId.toString() },
-        { type: 'multiselect', name: 'multiselect2', content: templateId.toString() }
-      ] },
-    { _id: templateChangingNames,
+        { type: 'multiselect', name: 'multiselect2', content: templateId.toString() },
+      ],
+    },
+    {
+      _id: templateChangingNames,
       name: 'template_changing_names',
       default: true,
       properties: [
         { id: '1', type: 'text', name: 'property1' },
         { id: '2', type: 'text', name: 'property2' },
-        { id: '3', type: 'text', name: 'property3' }
-      ] }
+        { id: '3', type: 'text', name: 'property3' },
+      ],
+    },
   ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1 },
@@ -127,7 +300,7 @@ export default {
     { entity: 'shared', template: 'relation2', hub: hub4 },
     { entity: 'shared1', template: 'relation2', hub: hub4 },
     { entity: 'shared1', template: 'relation2', hub: hub5 },
-    { entity: 'shared', template: 'relation2', hub: hub5 }
+    { entity: 'shared', template: 'relation2', hub: hub5 },
   ],
   dictionaries: [
     {
@@ -138,7 +311,7 @@ export default {
         { _id: db.id(), id: 'country_two', label: 'Country2' },
       ],
     },
-  ]
+  ],
 };
 
 export {

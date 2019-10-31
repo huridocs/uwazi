@@ -1,3 +1,5 @@
+/** @format */
+
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -15,20 +17,36 @@ describe('EntitiesAPI', () => {
   beforeEach(() => {
     backend.restore();
     backend
-    .get(`${APIURL}entities?param=1`, { body: JSON.stringify({ rows: arrayResponse }) })
-    .get(`${APIURL}entities/search`, { body: JSON.stringify(searchResponse) })
-    .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=2`, { body: JSON.stringify(page2Text) })
-    .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=1`, { body: JSON.stringify(page1Text) })
-    .get(`${APIURL}entities/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
-    .get(`${APIURL}entities/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
-    .get(`${APIURL}entities/match_title?searchTerm=term`, { body: JSON.stringify(searchResponse) })
-    .get(`${APIURL}entities/search?searchTerm=Batman&joker=true`, { body: JSON.stringify(filteredSearchResult) })
-    .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
-    .get(`${APIURL}entities?param1=1&_id=documentId`, { body: JSON.stringify({ rows: paramedResponse }) })
-    .delete(`${APIURL}entities?sharedId=id`, { body: JSON.stringify({ backednResponse: 'testdelete' }) })
-    .post(`${APIURL}entities/bulkdelete`, { body: JSON.stringify({ backednResponse: 'testdeleteMultiple' }) })
-    .post(`${APIURL}entities`, { body: JSON.stringify({ backednResponse: 'test' }) })
-    .post(`${APIURL}entities/multipleupdate`, { body: JSON.stringify({ backednResponse: 'test multiple' }) });
+      .get(`${APIURL}entities?param=1`, { body: JSON.stringify({ rows: arrayResponse }) })
+      .get(`${APIURL}entities/search`, { body: JSON.stringify(searchResponse) })
+      .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=2`, {
+        body: JSON.stringify(page2Text),
+      })
+      .get(`${APIURL}entities/get_raw_page?sharedId=sharedId&pageNumber=1`, {
+        body: JSON.stringify(page1Text),
+      })
+      .get(`${APIURL}entities/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
+      .get(`${APIURL}entities/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
+      .get(`${APIURL}entities/match_title?searchTerm=term`, {
+        body: JSON.stringify(searchResponse),
+      })
+      .get(`${APIURL}entities/search?searchTerm=Batman&joker=true`, {
+        body: JSON.stringify(filteredSearchResult),
+      })
+      .get(`${APIURL}entities?_id=documentId`, { body: JSON.stringify({ rows: singleResponse }) })
+      .get(`${APIURL}entities?param1=1&_id=documentId`, {
+        body: JSON.stringify({ rows: paramedResponse }),
+      })
+      .delete(`${APIURL}entities?sharedId=id`, {
+        body: JSON.stringify({ backednResponse: 'testdelete' }),
+      })
+      .post(`${APIURL}entities/bulkdelete`, {
+        body: JSON.stringify({ backednResponse: 'testdeleteMultiple' }),
+      })
+      .post(`${APIURL}entities`, { body: JSON.stringify({ backednResponse: 'test' }) })
+      .post(`${APIURL}entities/multipleupdate`, {
+        body: JSON.stringify({ backednResponse: 'test multiple' }),
+      });
   });
 
   afterEach(() => backend.restore());
@@ -121,12 +139,15 @@ describe('EntitiesAPI', () => {
 
   describe('multipleUpdate()', () => {
     it('should post the ids and metadata to /entities/multipleupdate', async () => {
-      const values = { metadata: { text: 'document text' } };
+      const values = { metadata: { text: [{ value: 'document text' }] } };
       const ids = ['1', '2'];
       const request = new RequestParams({ values, ids });
       const response = await entitiesAPI.multipleUpdate(request);
 
-      expect(JSON.parse(backend.lastOptions(`${APIURL}entities/multipleupdate`).body)).toEqual({ ids, values });
+      expect(JSON.parse(backend.lastOptions(`${APIURL}entities/multipleupdate`).body)).toEqual({
+        ids,
+        values,
+      });
       expect(response).toEqual({ backednResponse: 'test multiple' });
     });
   });

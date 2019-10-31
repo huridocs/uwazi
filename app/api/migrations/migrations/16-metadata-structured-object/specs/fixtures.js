@@ -55,9 +55,12 @@ export default {
       name: 'Issues',
       values: [
         { _id: db.id(), id: i1, label: 'Murder' },
-        { _id: db.id(), id: i3, label: 'Others', values: [
-          { _id: db.id(), id: i2, label: 'Kidnapping' }
-        ] },
+        {
+          _id: db.id(),
+          id: i3,
+          label: 'Others',
+          values: [{ _id: db.id(), id: i2, label: 'Kidnapping' }],
+        },
       ],
     },
   ],

@@ -1,3 +1,5 @@
+/** @format */
+
 import * as reactReduxForm from 'react-redux-form';
 import Immutable from 'immutable';
 import superagent from 'superagent';
@@ -24,16 +26,38 @@ describe('Metadata Actions', () => {
     it('should request the document and load with default metadata properties if not present', async () => {
       spyOn(reactReduxForm.actions, 'load').and.returnValue('formload');
       const dispatch = jasmine.createSpy('dispatch');
-      const doc = { sharedId: '1', title: 'updated title', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      const doc = {
+        sharedId: '1',
+        title: 'updated title',
+        template: 'templateId',
+        metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
+      };
       api.get.and.returnValue(Promise.resolve([doc]));
-      const templates = [{ _id: 'templateId', properties: [{ name: 'test' }, { name: 'newProp' }, { name: 'testRelation', type: 'relationship' }] }];
+      const templates = [
+        {
+          _id: 'templateId',
+          properties: [
+            { name: 'test' },
+            { name: 'newProp' },
+            { name: 'testRelation', type: 'relationship' },
+          ],
+        },
+      ];
 
-      await actions.loadInReduxForm('formNamespace', { sharedId: '1', title: 'old title' }, templates)(dispatch);
+      await actions.loadInReduxForm(
+        'formNamespace',
+        { sharedId: '1', title: 'old title' },
+        templates
+      )(dispatch);
       const expectedDoc = {
         sharedId: '1',
         title: 'updated title',
         template: 'templateId',
-        metadata: { test: 'test', newProp: '', testRelation: [] }
+        metadata: {
+          test: [{ value: 'test' }],
+          newProp: [{ value: { value: '' } }],
+          testRelation: [],
+        },
       };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
@@ -50,27 +74,30 @@ describe('Metadata Actions', () => {
         spyOn(reactReduxForm.actions, 'reset').and.returnValue('formreset');
         dispatch = jasmine.createSpy('dispatch');
         doc = { title: 'test' };
-        templates = [{
-          _id: 'templateId1',
-          name: 'first',
-          default: true,
-          properties: [
-            { name: 'test' },
-            { name: 'newProp' },
-            { name: 'date', type: 'date' },
-            { name: 'multi', type: 'multiselect' },
-            { name: 'geolocation', type: 'geolocation' }
-          ]
-        }, {
-          _id: 'templateId2',
-          name: 'last',
-          properties: [
-            { name: 'test' },
-            { name: 'newProp' },
-            { name: 'date', type: 'date' },
-            { name: 'multi', type: 'multiselect' }
-          ]
-        }];
+        templates = [
+          {
+            _id: 'templateId1',
+            name: 'first',
+            default: true,
+            properties: [
+              { name: 'test' },
+              { name: 'newProp' },
+              { name: 'date', type: 'date' },
+              { name: 'multi', type: 'multiselect' },
+              { name: 'geolocation', type: 'geolocation' },
+            ],
+          },
+          {
+            _id: 'templateId2',
+            name: 'last',
+            properties: [
+              { name: 'test' },
+              { name: 'newProp' },
+              { name: 'date', type: 'date' },
+              { name: 'multi', type: 'multiselect' },
+            ],
+          },
+        ];
       });
 
       it('should set the first template', async () => {
@@ -78,8 +105,12 @@ describe('Metadata Actions', () => {
 
         const expectedDoc = {
           title: 'test',
-          metadata: { test: '', newProp: '', multi: [] },
-          template: 'templateId1'
+          metadata: {
+            test: [{ value: { value: '' } }],
+            newProp: [{ value: { value: '' } }],
+            multi: [],
+          },
+          template: 'templateId1',
         };
         expect(dispatch).toHaveBeenCalledWith('formreset');
         expect(dispatch).toHaveBeenCalledWith('formload');
@@ -94,7 +125,11 @@ describe('Metadata Actions', () => {
     let state;
 
     beforeEach(() => {
-      const doc = { title: 'test', template: 'templateId', metadata: { test: 'test', test2: 'test2' } };
+      const doc = {
+        title: 'test',
+        template: 'templateId',
+        metadata: { test: [{ value: 'test' }], test2: [{ value: 'test2' }] },
+      };
       spyOn(reactReduxForm, 'getModel').and.returnValue(doc);
       jasmine.clock().install();
 
@@ -103,12 +138,15 @@ describe('Metadata Actions', () => {
 
       dispatch = jasmine.createSpy('dispatch');
 
-      const template = { _id: 'newTemplate', properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }] };
+      const template = {
+        _id: 'newTemplate',
+        properties: [{ name: 'test' }, { name: 'newProp', type: 'nested' }],
+      };
       state = {
         templates: Immutable.fromJS([
           template,
-          { _id: 'templateId', properties: [{ name: 'test' }, { name: 'test2' }] }
-        ])
+          { _id: 'templateId', properties: [{ name: 'test' }, { name: 'test2' }] },
+        ]),
       };
     });
 
@@ -122,7 +160,11 @@ describe('Metadata Actions', () => {
       actions.changeTemplate('formNamespace', 'newTemplate')(dispatch, getState);
       expect(reactReduxForm.getModel).toHaveBeenCalledWith(state, 'formNamespace');
 
-      const expectedDoc = { title: 'test', template: 'newTemplate', metadata: { test: 'test', newProp: [] } };
+      const expectedDoc = {
+        title: 'test',
+        template: 'newTemplate',
+        metadata: { test: [{ value: 'test' }], newProp: [] },
+      };
       expect(dispatch).toHaveBeenCalledWith('formReset');
       expect(reactReduxForm.actions.reset).toHaveBeenCalledWith('formNamespace');
 
@@ -143,18 +185,18 @@ describe('Metadata Actions', () => {
           { name: 'year', type: 'numeric' },
           { name: 'powers', content: '1', type: 'multiselect' },
           { name: 'enemies', content: '2', type: 'multiselect' },
-          { name: 'color', type: 'text', required: true }
-        ]
+          { name: 'color', type: 'text', required: true },
+        ],
       };
 
       const expectedModel = {
         template: '1',
         metadata: {
-          year: '',
+          year: [{ value: { value: '' } }],
           powers: [],
           enemies: [],
-          color: ''
-        }
+          color: [{ value: { value: '' } }],
+        },
       };
 
       const dispatch = jasmine.createSpy('dispatch');
@@ -164,7 +206,7 @@ describe('Metadata Actions', () => {
   });
 
   describe('multipleUpdate', () => {
-    it('should update selected entities with the given metadata and template', (done) => {
+    it('should update selected entities with the given metadata and template', done => {
       mockID();
       spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
       const entities = Immutable.fromJS([{ sharedId: '1' }, { sharedId: '2' }]);
@@ -172,18 +214,19 @@ describe('Metadata Actions', () => {
       const template = 'template';
 
       const store = mockStore({});
-      store.dispatch(actions.multipleUpdate(entities, { template, metadata }))
-      .then((docs) => {
-        expect(api.multipleUpdate).toHaveBeenCalledWith(
-          new RequestParams({ ids: ['1', '2'], values: { template, metadata } })
-        );
-        expect(docs[0].metadata).toEqual(metadata);
-        expect(docs[0].template).toEqual('template');
-        expect(docs[1].metadata).toEqual(metadata);
-        expect(docs[1].template).toEqual('template');
-      })
-      .then(done)
-      .catch(done.fail);
+      store
+        .dispatch(actions.multipleUpdate(entities, { template, metadata }))
+        .then(docs => {
+          expect(api.multipleUpdate).toHaveBeenCalledWith(
+            new RequestParams({ ids: ['1', '2'], values: { template, metadata } })
+          );
+          expect(docs[0].metadata).toEqual(metadata);
+          expect(docs[0].template).toEqual('template');
+          expect(docs[1].metadata).toEqual(metadata);
+          expect(docs[1].template).toEqual('template');
+        })
+        .then(done)
+        .catch(done.fail);
     });
   });
 
@@ -205,8 +248,12 @@ describe('Metadata Actions', () => {
       file = isChrome ? new File([], 'filename') : { name: 'filename' };
       // ------------------------------------------------
 
-      jest.spyOn(routeActions, 'requestViewerState').mockImplementation(() => Promise.resolve({ documentViewer: { doc: 'doc' } }));
-      jest.spyOn(routeActions, 'setViewerState').mockImplementation(() => ({ type: 'setViewerState' }));
+      jest
+        .spyOn(routeActions, 'requestViewerState')
+        .mockImplementation(() => Promise.resolve({ documentViewer: { doc: 'doc' } }));
+      jest
+        .spyOn(routeActions, 'setViewerState')
+        .mockImplementation(() => ({ type: 'setViewerState' }));
       store = mockStore({ locale: 'es', templates: 'immutableTemplates' });
     });
 
@@ -217,7 +264,12 @@ describe('Metadata Actions', () => {
         { type: types.START_REUPLOAD_DOCUMENT, doc: 'abc1' },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 55 },
         { type: types.REUPLOAD_PROGRESS, doc: 'abc1', progress: 65 },
-        { type: types.REUPLOAD_COMPLETE, doc: 'abc1', file: { filename: 'filename', size: 34, originalname: 'name' }, __reducerKey: 'storeKey' }
+        {
+          type: types.REUPLOAD_COMPLETE,
+          doc: 'abc1',
+          file: { filename: 'filename', size: 34, originalname: 'name' },
+          __reducerKey: 'storeKey',
+        },
       ];
 
       expect(mockUpload.set).toHaveBeenCalledWith('Content-Language', 'es');
@@ -226,7 +278,9 @@ describe('Metadata Actions', () => {
 
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
-      mockUpload.emit('response', { body: { filename: 'filename', size: 34, originalname: 'name' } });
+      mockUpload.emit('response', {
+        body: { filename: 'filename', size: 34, originalname: 'name' },
+      });
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
