@@ -98,28 +98,6 @@ describe('templates', () => {
       });
     });
 
-    it('should validate properties not having repeated names and return an error', done => {
-      const newTemplate = {
-        name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [
-          { label: 'label 1' },
-          { label: 'label 1' },
-          { label: 'Label 2' },
-          { label: 'label 2' },
-          { label: 'label 3' },
-        ],
-      };
-
-      templates
-        .save(newTemplate)
-        .then(() => done.fail('properties have repeated names, should have failed with an error'))
-        .catch(error => {
-          expect(error).toEqual({ code: 400, message: 'duplicated_labels: label 1, label 2' });
-          done();
-        });
-    });
-
     it('should not allow changing names to existing ones (swap)', done => {
       const changedTemplate = {
         _id: swapTemplate,
@@ -136,80 +114,6 @@ describe('templates', () => {
         .then(() => done.fail('properties have swaped names, should have failed with an error'))
         .catch(error => {
           expect(error).toEqual({ code: 400, message: "Properties can't swap names: text" });
-          done();
-        });
-    });
-
-    it('should validate properties not having the same label as the title', done => {
-      const newTemplate = {
-        name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Name' }],
-        properties: [{ label: 'Label1' }, { label: 'name' }],
-      };
-
-      templates
-        .save(newTemplate)
-        .then(() =>
-          done.fail('properties have conflicting label with the title, should throw error')
-        )
-        .catch(err => {
-          expect(err).toEqual({ code: 400, message: 'duplicated_labels: name' });
-          done();
-        });
-    });
-
-    it('should validate properties not having repeated relationship fields', done => {
-      const newTemplate = {
-        name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [
-          { _id: 1, label: 'label 1', type: 'relationship', relationType: '1', content: '1' },
-          { _id: 2, label: 'label 2', type: 'relationship', relationType: '1', content: '1' },
-          { _id: 3, label: 'label 3', type: 'relationship', relationType: '1', content: '2' },
-          { _id: 4, label: 'label 4', type: 'relationship', relationType: '2', content: '1' },
-          { _id: 5, label: 'label 5', type: 'relationship', relationType: '3', content: '1' },
-          { _id: 6, label: 'label 6', type: 'relationship', relationType: '3', content: '' },
-        ],
-      };
-
-      templates
-        .save(newTemplate)
-        .then(() =>
-          done.fail('properties have repeated relationships, should have failed with an error')
-        )
-        .catch(error => {
-          expect(error).toEqual({
-            code: 400,
-            message: 'duplicated_relationships: label 1, label 2, label 5, label 6',
-          });
-          done();
-        });
-    });
-
-    it('should validate required inherited property', done => {
-      const newTemplate = {
-        name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [
-          {
-            _id: 1,
-            label: 'label 1',
-            type: 'relationship',
-            relationType: '1',
-            inherit: true,
-            content: '',
-            inheritProperty: '',
-          },
-        ],
-      };
-
-      templates
-        .save(newTemplate)
-        .then(() =>
-          done.fail('properties have repeated relationships, should have failed with an error')
-        )
-        .catch(error => {
-          expect(error).toEqual({ code: 400, message: 'required_inherited_property: label 1' });
           done();
         });
     });
@@ -388,24 +292,6 @@ describe('templates', () => {
             done();
           })
           .catch(done.fail);
-      });
-    });
-
-    describe('when the template name exists', () => {
-      it('should return the error', done => {
-        const template = {
-          name: 'duplicated name',
-          commonProperties: [{ name: 'title', label: 'Title' }],
-        };
-        templates
-          .save(template)
-          .then(() => {
-            done.fail('should return an error');
-          })
-          .catch(error => {
-            expect(error.json).toBe('duplicated_entry');
-            done();
-          });
       });
     });
   });
