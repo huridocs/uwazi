@@ -24,19 +24,7 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
   const resetedMetadata = {};
   template.properties.forEach((property) => {
     const resetValue = options.resetExisting || !propertyExists(property, previousTemplate) || !metadata[property.name];
-    const { type, name } = property;
-    if (!resetValue) {
-      resetedMetadata[property.name] = metadata[property.name];
-    }
-    if (resetValue && !['date', 'geolocation', 'link'].includes(type)) {
-      resetedMetadata[name] = '';
-    }
-    if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = {};
-    }
-    if (resetValue && ['multiselect', 'relationship', 'nested', 'multidate', 'multidaterange'].includes(type)) {
-      resetedMetadata[name] = [];
-    }
+    resetedMetadata[property.name] = resetValue ? [] : metadata[property.name];
   });
   return resetedMetadata;
 };

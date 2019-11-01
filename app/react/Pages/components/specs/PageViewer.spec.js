@@ -19,7 +19,7 @@ describe('PageViewer', () => {
       page: Immutable({
         _id: 1,
         title: 'Page 1',
-        metadata: { content: [{ value: 'MarkdownContent' }], script: [{ value: 'JSScript' }] },
+        metadata: /*non-metadata-object*/ { content: 'MarkdownContent', script: 'JSScript' },
       }),
       itemLists: Immutable([{ item: 'item' }]),
     };

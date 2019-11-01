@@ -158,19 +158,21 @@ describe('map helper', () => {
           .setIn(
             [0, 'metadata', 'inheritedGeo1'],
             Immutable.fromJS([
-              { entity: 'e5', inherit_geolocation: [{ lat: 23, lon: 1946 }] },
+              { value: 'e5', inherit_geolocation: [{ value: { lat: 23, lon: 1946 } }] },
               {
-                entity: 'e4',
+                value: 'e4',
                 inherit_geolocation: [
-                  { lat: 2018, lon: 6 },
-                  { lat: 1977, lon: 1982, label: 'inherited label' },
+                  { value: { lat: 2018, lon: 6 } },
+                  { value: { lat: 1977, lon: 1982, label: 'inherited label' } },
                 ],
               },
             ])
           )
           .setIn(
             [0, 'metadata', 'inheritedGeo2'],
-            Immutable.fromJS([{ entity: 'e5', inherit_geolocation: [{ lat: 23, lon: 1946 }] }])
+            Immutable.fromJS([
+              { value: 'e5', inherit_geolocation: [{ value: { lat: 23, lon: 1946 } }] },
+            ])
           )
           .push(
             Immutable.fromJS({
@@ -185,10 +187,8 @@ describe('map helper', () => {
               metadata: {
                 anotherInheritedGeo: [
                   {
-                    value: {
-                      entity: 'e1',
-                      inherit_geolocation: [{ lat: 13, lon: 7, label: 'home' }],
-                    },
+                    value: 'e1',
+                    inherit_geolocation: [{ value: { lat: 13, lon: 7, label: 'home' } }],
                   },
                 ],
               },

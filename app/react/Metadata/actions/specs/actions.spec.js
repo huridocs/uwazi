@@ -55,7 +55,7 @@ describe('Metadata Actions', () => {
         template: 'templateId',
         metadata: {
           test: [{ value: 'test' }],
-          newProp: [{ value: { value: '' } }],
+          newProp: [{ value: '' }],
           testRelation: [],
         },
       };
@@ -106,8 +106,8 @@ describe('Metadata Actions', () => {
         const expectedDoc = {
           title: 'test',
           metadata: {
-            test: [{ value: { value: '' } }],
-            newProp: [{ value: { value: '' } }],
+            test: [{ value: '' }],
+            newProp: [{ value: '' }],
             multi: [],
           },
           template: 'templateId1',
@@ -192,10 +192,10 @@ describe('Metadata Actions', () => {
       const expectedModel = {
         template: '1',
         metadata: {
-          year: [{ value: { value: '' } }],
+          year: [{ value: '' }],
           powers: [],
           enemies: [],
-          color: [{ value: { value: '' } }],
+          color: [{ value: '' }],
         },
       };
 

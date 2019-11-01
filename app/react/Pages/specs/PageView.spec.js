@@ -78,7 +78,7 @@ describe('PageView', () => {
     const page = {
       _id: 'abc2',
       title: 'Page 1',
-      metadata: { content: [{ value: 'originalContent' }] },
+      metadata: /*non-metadata-object*/ { content: 'originalContent' },
     };
 
     let data;

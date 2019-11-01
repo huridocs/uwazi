@@ -10,7 +10,7 @@ export default combineReducers({
   pageView: createReducer('page/pageView', {}),
   datasets: createReducer('page/datasets', {}),
   itemLists: createReducer('page/itemLists', []),
-  data: modelReducer('page.data', { title: '', metadata: { content: [{ value: { value: '' } }] } }),
+  data: modelReducer('page.data', { title: '', metadata: /*non-metadata-object*/ { content: '' } }),
   formState: formReducer('page.data'),
   uiState: ui,
 });

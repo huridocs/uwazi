@@ -54,7 +54,7 @@ describe('Repeat', () => {
             Name: <Value store={store} path="title" />
           </span>
           <span>
-            Age: <Value store={store} path="metadata.age" />
+            Age: <Value store={store} path="metadata.age.0.value" />
           </span>
         </Repeat>
       </PagesContext.Provider>

@@ -120,7 +120,7 @@ describe('SelectMultiplePanel', () => {
       instance
         .save({
           icon: 'doc-icon',
-          metadata: { title: [{ value: 'new title' }], date: [{ value: { value: '' } }] },
+          metadata: { title: [{ value: 'new title' }], date: [{ value: '' }] },
         })
         .then(() => {
           expect(props.multipleUpdate).toHaveBeenCalledWith(props.entitiesSelected, {
