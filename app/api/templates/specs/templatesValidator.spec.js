@@ -44,6 +44,7 @@ describe('template validator', () => {
           makeProperty('multidate', 'multidate'),
           makeProperty('multidaterange', 'multidaterange'),
           makeProperty('multiselect', 'multiselect', { content: 'content', filter: true }),
+          makeProperty('nested', 'nested'),
           makeProperty('numeric', 'numeric', { showInCard: true, defaultfilter: true }),
           makeProperty('preview', 'preview'),
           makeProperty('relationship', 'relationship', { relationType: 'rel' }),

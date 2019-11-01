@@ -1,26 +1,11 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
+import { templateTypes } from 'shared/templateTypes';
 import model from 'api/templates/templatesModel';
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
-const DATA_TYPES = [
-  'date',
-  'daterange',
-  'geolocation',
-  'image',
-  'link',
-  'markdown',
-  'media',
-  'multidate',
-  'multidaterange',
-  'multiselect',
-  'numeric',
-  'preview',
-  'relationship',
-  'select',
-  'text'
-];
+const fieldTypes = Object.values(templateTypes);
 
 ajv.addKeyword('uniqueName', {
   async: true,
@@ -118,7 +103,7 @@ const schema = {
         label: { type: 'string', minLength: 1 },
         name: { type: 'string', minLength: 1 },
         isCommonProperty: { type: 'boolean' },
-        type: { type: 'string', enum: DATA_TYPES },
+        type: { type: 'string', enum: fieldTypes },
         prioritySorting: { type: 'boolean' },
         content: { type: 'string', minLength: 1 },
         inherit: { type: 'boolean' },
