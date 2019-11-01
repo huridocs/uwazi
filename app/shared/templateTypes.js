@@ -7,7 +7,7 @@ const templateTypes = {
   markdown: 'markdown',
   media: 'media',
   multidate: 'multidate',
-  mulitdaterange: 'multidaterange',
+  multidaterange: 'multidaterange',
   multiselect: 'multiselect',
   nested: 'nested',
   numeric: 'numeric',

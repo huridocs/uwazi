@@ -1,7 +1,7 @@
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
-import { templateTypes } from 'shared/templateTypes.js';
-import date from 'api/utils/date.js';
+import { templateTypes } from 'shared/templateTypes';
+import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
 import createError from 'api/utils/Error';
 import search from 'api/search/search';
@@ -10,7 +10,7 @@ import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
 
-import { deleteFiles } from '../utils/files.js';
+import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
 import settings from '../settings';
 
@@ -19,7 +19,7 @@ const FIELD_TYPES_TO_SYNC = [
   templateTypes.multiselect,
   templateTypes.date,
   templateTypes.multidate,
-  templateTypes.mulitdaterange,
+  templateTypes.multidaterange,
   templateTypes.nested,
   templateTypes.relationship,
   templateTypes.relationship,
@@ -133,7 +133,7 @@ function sanitize(doc, template) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value) });
     }
 
-    if (type === templateTypes.mulitdaterange && sanitizedMetadata[name]) {
+    if (type === templateTypes.multidaterange && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
 
