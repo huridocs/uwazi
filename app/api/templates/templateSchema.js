@@ -27,7 +27,7 @@ ajv.addKeyword('uniqueName', {
 ajv.addKeyword('requireTitleProperty', {
   errors: false,
   type: 'array',
-  validate:(schema, properties) {
+  validate(schema, properties) {
     return properties.some(prop => prop.name === 'title');
   }
 });

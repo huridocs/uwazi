@@ -5,6 +5,7 @@ const ajv = Ajv({ allErrors: true });
 const schema = {
   $schema: 'http://json-schema.org/schema#',
   type: 'object',
+  required: ['title'],
   properties: {
     _id: { type: 'string' },
     sharedId: { type: 'string' },
@@ -67,9 +68,35 @@ const schema = {
     processed: { type: 'boolean' },
     uploaded: { type: 'boolean' },
     published: { type: 'boolean' },
-    metadata: { type: 'object' },
     pdfInfo: { type: 'object' },
-    user: { type: 'string' }
+    user: { type: 'string' },
+    metadata: {
+      type: 'object',
+      additionalProperties: {
+        oneOf: [
+          { type: 'string' },
+          { type: 'number' },
+          {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          },
+          {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['lon', 'lat'],
+              properties: {
+                label: { type: 'string' },
+                lat: { type: 'number', minimum: -90, maximum: 90 },
+                lon: { type: 'number', minimum: -180, maximum: 180 }
+              }
+            }
+          }
+        ]
+      }
+    },
   }
 };
 
