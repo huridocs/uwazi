@@ -1,3 +1,5 @@
+/** @format */
+
 import moment from 'moment';
 
 import db from 'api/utils/testing_db';
@@ -14,7 +16,7 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'text_prop' };
       const rawEntity = { text_prop: 'text' };
 
-      expect(await typeParsers.default(rawEntity, templateProp)).toBe('text');
+      expect(await typeParsers.default(rawEntity, templateProp)).toEqual([{ value: 'text' }]);
     });
   });
 
@@ -23,7 +25,7 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'text_prop' };
       const rawEntity = { text_prop: 'text' };
 
-      expect(await typeParsers.text(rawEntity, templateProp)).toBe('text');
+      expect(await typeParsers.text(rawEntity, templateProp)).toEqual([{ value: 'text' }]);
     });
   });
 
@@ -32,10 +34,14 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'link_prop' };
       const rawEntity = { link_prop: 'http://www.url.com' };
 
-      expect(await typeParsers.link(rawEntity, templateProp)).toEqual({
-        label: 'http://www.url.com',
-        url: 'http://www.url.com',
-      });
+      expect(await typeParsers.link(rawEntity, templateProp)).toEqual([
+        {
+          value: {
+            label: 'http://www.url.com',
+            url: 'http://www.url.com',
+          },
+        },
+      ]);
     });
 
     it('should return null if url is not valid', async () => {
@@ -49,10 +55,14 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'link_prop' };
       const rawEntity = { link_prop: 'label|http://www.url.com' };
 
-      expect(await typeParsers.link(rawEntity, templateProp)).toEqual({
-        label: 'label',
-        url: 'http://www.url.com',
-      });
+      expect(await typeParsers.link(rawEntity, templateProp)).toEqual([
+        {
+          value: {
+            label: 'label',
+            url: 'http://www.url.com',
+          },
+        },
+      ]);
     });
   });
 
@@ -61,16 +71,16 @@ describe('csvLoader typeParsers', () => {
       const templateProp = { name: 'date_prop' };
 
       let expected = await typeParsers.date({ date_prop: '2014' }, templateProp);
-      expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('01-01-2014');
+      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('01-01-2014');
 
       expected = await typeParsers.date({ date_prop: '2014 11 6' }, templateProp);
-      expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('06-11-2014');
+      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('06-11-2014');
 
       expected = await typeParsers.date({ date_prop: '1/1/1996 00:00:00' }, templateProp);
-      expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
+      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
 
       expected = await typeParsers.date({ date_prop: '1/1/1996 23:59:59' }, templateProp);
-      expect(moment.utc(expected, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
+      expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual('01-01-1996');
     });
   });
 });

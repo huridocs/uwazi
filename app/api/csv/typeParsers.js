@@ -1,3 +1,5 @@
+/** @format */
+
 import url from 'url';
 
 import geolocation from './typeParsers/geolocation.js';
@@ -16,11 +18,11 @@ export default {
   },
 
   async text(entityToImport, templateProperty) {
-    return entityToImport[templateProperty.name];
+    return [{ value: entityToImport[templateProperty.name] }];
   },
 
   async date(entityToImport, templateProperty) {
-    return new Date(`${entityToImport[templateProperty.name]} UTC`).getTime() / 1000;
+    return [{ value: new Date(`${entityToImport[templateProperty.name]} UTC`).getTime() / 1000 }];
   },
 
   async link(entityToImport, templateProperty) {
@@ -35,9 +37,13 @@ export default {
       return null;
     }
 
-    return {
-      label,
-      url: linkUrl,
-    };
+    return [
+      {
+        value: {
+          label,
+          url: linkUrl,
+        },
+      },
+    ];
   },
 };

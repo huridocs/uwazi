@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import path from 'path';
@@ -11,10 +13,6 @@ import typeParsers from '../typeParsers';
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
   const loader = new CSVLoader();
-
-  typeParsers.select = () => Promise.resolve('thesauri');
-  typeParsers.text = () => Promise.resolve('text');
-  typeParsers.default = () => Promise.resolve('default');
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
@@ -35,7 +33,7 @@ describe('csvLoader', () => {
     const events = [];
 
     beforeAll(async () => {
-      loader.on('entityLoaded', (entity) => {
+      loader.on('entityLoaded', entity => {
         events.push(entity.title);
       });
 
@@ -48,7 +46,6 @@ describe('csvLoader', () => {
       imported = await entities.get();
     });
 
-
     it('should load title', () => {
       const textValues = imported.map(i => i.title);
       expect(textValues).toEqual(['title1', 'title2', 'title3']);
@@ -60,34 +57,28 @@ describe('csvLoader', () => {
 
     it('should only import valid metadata', () => {
       const metadataImported = Object.keys(imported[0].metadata);
-      expect(metadataImported).toEqual([
-        'text_label',
-        'select_label',
-        'not_defined_type'
-      ]);
+      expect(metadataImported).toEqual(['text_label', 'select_label', 'not_defined_type']);
     });
 
     it('should ignore properties not configured in the template', () => {
-      const textValues = imported
-      .map(i => i.metadata.non_configured)
-      .filter(i => i);
+      const textValues = imported.map(i => i.metadata.non_configured).filter(i => i);
 
       expect(textValues.length).toEqual(0);
     });
 
     describe('metadata parsing', () => {
       it('should parse metadata properties by type using typeParsers', () => {
-        const textValues = imported.map(i => i.metadata.text_label);
-        expect(textValues).toEqual(['text', 'text', 'text']);
+        const textValues = imported.map(i => i.metadata.text_label[0].value);
+        expect(textValues).toEqual(['text value 1', 'text value 2', 'text value 3']);
 
-        const thesauriValues = imported.map(i => i.metadata.select_label);
-        expect(thesauriValues).toEqual(['thesauri', 'thesauri', 'thesauri']);
+        const thesauriValues = imported.map(i => i.metadata.select_label[0].value);
+        expect(thesauriValues.length).toEqual(3);
       });
 
       describe('when parser not defined', () => {
         it('should use default parser', () => {
-          const noTypeValues = imported.map(i => i.metadata.not_defined_type);
-          expect(noTypeValues).toEqual(['default', 'default', 'default']);
+          const noTypeValues = imported.map(i => i.metadata.not_defined_type[0].value);
+          expect(noTypeValues).toEqual(['notType1', 'notType2', 'notType3']);
         });
       });
     });
@@ -98,7 +89,9 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader();
 
       await db.clearAllAndLoad(fixtures);
-      spyOn(entities, 'save').and.callFake(entity => Promise.reject(new Error(`error-${entity.title}`)));
+      spyOn(entities, 'save').and.callFake(entity =>
+        Promise.reject(new Error(`error-${entity.title}`))
+      );
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -111,22 +104,23 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader();
 
       await db.clearAllAndLoad(fixtures);
-      jest.spyOn(entities, 'save')
-      .mockImplementationOnce(({ title }) => Promise.resolve(({ title })))
-      .mockImplementationOnce(({ title }) => Promise.reject(new Error(`error-${title}`)));
+      jest
+        .spyOn(entities, 'save')
+        .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
+        .mockImplementationOnce(() => Promise.reject(new Error('error')));
 
       try {
         await testingLoader.load(csvFile, template1Id);
         fail('should fail');
       } catch (e) {
-        expect(e).toEqual(new Error('error-title2'));
+        expect(e).toEqual(new Error('error'));
       }
     });
   });
 
   describe('no stop on errors', () => {
     beforeAll(async () => {
-      spyOn(entities, 'save').and.callFake((entity) => {
+      spyOn(entities, 'save').and.callFake(entity => {
         if (entity.title === 'title1' || entity.title === 'title3') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
@@ -170,7 +164,7 @@ describe('csvLoader', () => {
 
     it('should fail when parsing throws an error', async () => {
       entities.save.and.callFake(() => Promise.resolve({}));
-      spyOn(typeParsers, 'text').and.callFake((entity) => {
+      spyOn(typeParsers, 'text').and.callFake(entity => {
         if (entity.title === 'title2') {
           return Promise.reject(new Error(`error-${entity.title}`));
         }
@@ -205,7 +199,7 @@ describe('csvLoader', () => {
 
       const [expected] = await entities.get({
         sharedId: entity.sharedId,
-        language: 'en'
+        language: 'en',
       });
       expect(expected.title).toBe('new title');
     });

@@ -120,8 +120,8 @@ describe('semanticSearch helpers', () => {
       expect(contents).toEqual({
         1: 'page 1',
         2: 'page 2',
-        description: 'a description',
-        bio: 'a bio',
+        bio: { value: 'a bio' },
+        description: { value: 'a description' },
       });
     });
 
@@ -136,8 +136,8 @@ describe('semanticSearch helpers', () => {
       delete doc.fullText;
       const contents = await helpers.extractDocumentContent(doc);
       expect(contents).toEqual({
-        description: 'a description',
-        bio: 'a bio',
+        bio: { value: 'a bio' },
+        description: { value: 'a description' },
       });
     });
 

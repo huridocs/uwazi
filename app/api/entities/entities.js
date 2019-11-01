@@ -196,7 +196,10 @@ function sanitize(doc, template) {
       });
     }
 
-    if (type === 'select' && (!sanitizedMetadata[name] || !sanitizedMetadata[name][0].value)) {
+    if (
+      type === 'select' &&
+      (!sanitizedMetadata[name] || !sanitizedMetadata[name][0] || !sanitizedMetadata[name][0].value)
+    ) {
       return Object.assign(sanitizedMetadata, { [name]: [] });
     }
 
