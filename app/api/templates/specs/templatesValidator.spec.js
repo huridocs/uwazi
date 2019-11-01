@@ -78,6 +78,12 @@ describe('template validator', () => {
         template.properties = [];
         await testValid();
       });
+      it('should not require properties to have a name', async () => {
+        const prop = makeProperty('nameless', 'text');
+        delete prop.name;
+        template.properties.push(prop);
+        await testValid();
+      });
       it('should not throw error if updating same template with same name', async () => {
         template.name = 'DuplicateName';
         template._id = templateId.toString();

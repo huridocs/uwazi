@@ -102,7 +102,7 @@ const schema = {
   definitions: {
     property: {
       type: 'object',
-      required: ['label', 'name', 'type'],
+      required: ['label', 'type'],
       requireContentForSelectFields: true,
       requireRelationTypeForRelationship: true,
       requireInheritPropertyForInheritingRelationship: true,
