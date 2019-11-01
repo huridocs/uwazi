@@ -91,6 +91,11 @@ describe('template validator', () => {
         await testInvalid();
       });
 
+      it('invalid if title property does not exist', async () => {
+        template.commonProperties = [makeProperty('creationDate', 'date')];
+        await testInvalid();
+      });
+
       it('invalid when property has unknown data type', async () => {
         template.properties[0].type = 'unknown';
         await testInvalid();

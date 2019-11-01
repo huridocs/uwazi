@@ -24,6 +24,14 @@ ajv.addKeyword('uniqueName', {
   }
 });
 
+ajv.addKeyword('requireTitleProperty', {
+  errors: false,
+  type: 'array',
+  validate: function (schema, properties) {
+    return properties.some(prop => prop.name === 'title');
+  }
+});
+
 ajv.addKeyword('uniquePropertyFields', {
   errors: false,
   type: 'object',
@@ -32,7 +40,7 @@ ajv.addKeyword('uniquePropertyFields', {
       return true;
     }
     const uniqueValues = fields.reduce((memo, field) => ({ ...memo, [field]: new Set() }), {});
-    for (let property of [...data.properties, ...data.commonProperties]) {
+    for (let property of [...data.properties || [], ...data.commonProperties || []]) {
       for (let field of fields) {
         const value = property[field] && property[field].toLowerCase().trim();
         if (value && uniqueValues[field].has(value)) {
@@ -136,6 +144,7 @@ const schema = {
     default: { type: 'boolean', default: false },
     commonProperties: {
       type: 'array',
+      requireTitleProperty: true,
       minItems: 1,
       items: {
         $ref: '#/definitions/property',
