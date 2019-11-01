@@ -11,7 +11,7 @@ ajv.addKeyword('uniqueName', {
   async: true,
   errors: false,
   type: 'object',
-  validate: async (schema, data) => {
+  async validate(schema, data) {
     if (!schema) {
       return true;
     }
@@ -27,7 +27,7 @@ ajv.addKeyword('uniqueName', {
 ajv.addKeyword('requireTitleProperty', {
   errors: false,
   type: 'array',
-  validate: function (schema, properties) {
+  validate:(schema, properties) {
     return properties.some(prop => prop.name === 'title');
   }
 });
@@ -35,7 +35,7 @@ ajv.addKeyword('requireTitleProperty', {
 ajv.addKeyword('uniquePropertyFields', {
   errors: false,
   type: 'object',
-  validate: function (fields, data) {
+  validate(fields, data) {
     if (!fields.length) {
       return true;
     }
@@ -61,7 +61,7 @@ ajv.addKeyword('uniquePropertyFields', {
 ajv.addKeyword('requireContentForSelectFields', {
   errors: false,
   type: 'object',
-  validate: function (schema, data) {
+  validate(schema, data) {
     if (!schema) {
       return true;
     }
@@ -76,7 +76,7 @@ ajv.addKeyword('requireContentForSelectFields', {
 ajv.addKeyword('requireRelationTypeForRelationship', {
   errors: false,
   type: 'object',
-  validate: function (schema, data) {
+  validate(schema, data) {
     if (!schema) {
       return true;
     }
@@ -90,7 +90,7 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
 ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
   errors: false,
   type: 'object',
-  validate: function (schema, data) {
+  validate(schema, data) {
     if (!schema) {
       return true;
     }
