@@ -14,11 +14,10 @@ export default (elasticIndex) => {
       }))
       .then(() => null);
     },
-    reindex() {
-      return this.resetIndex()
-      .then(() => entities.indexEntities({}, '+fullText'))
-      .then(() => elastic.indices.refresh({ index: elasticIndex }))
-      .then(() => null);
+    async reindex() {
+      await this.resetIndex();
+      await entities.indexEntities({}, '+fullText');
+      await elastic.indices.refresh({ index: elasticIndex });
     },
 
     refresh() {

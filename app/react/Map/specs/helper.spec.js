@@ -126,7 +126,7 @@ describe('map helper', () => {
           template: 't1',
           metadata: {
             geoProperty: [{ value: { lat: 5, lon: 22 } }],
-            secondGeoProperty: [{ value: { value: null } }],
+            secondGeoProperty: [{ value: null }],
           },
         },
         { template: 't3', metadata: { notGeo: [{ value: { lat: 1977, lon: 7 } }] } },

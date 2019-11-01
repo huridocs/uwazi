@@ -97,7 +97,7 @@ export default {
       template: template2,
       language: 'en',
       title: 'Country A en',
-      metadata: { country_geolocation: [{ value: { value: null } }] },
+      metadata: { country_geolocation: [{ value: null }] },
       published: true,
       user: userId,
     },
@@ -121,8 +121,8 @@ export default {
         text: [{ value: 'Text content' }],
         regular_geolocation_geolocation: [{ value: { lat: 18, lon: 7 } }],
         regular_relationship: [{ value: 'entity02' }],
-        inhertied_country: [{ value: 'entity06' }],
-        inhertied_home: [
+        inherited_country: [{ value: 'entity06' }],
+        inherited_home: [
           { value: 'entity01' },
           { value: 'entity03' },
           { value: 'entity04' },
@@ -140,7 +140,7 @@ export default {
       title: 'Simple inherited entity en',
       metadata: {
         text: [{ value: 'Text content' }],
-        inhertied_home: [{ value: 'entity02' }, { value: 'noExiste' }],
+        inherited_home: [{ value: 'entity02' }, { value: 'noExiste' }],
       },
       published: true,
       user: userId,
@@ -153,8 +153,8 @@ export default {
       title: 'Inheriting private country',
       metadata: {
         text: [{ value: 'Text content' }],
-        null_geolocation_geolocation: [{ value: { value: null } }],
-        inhertied_country: [{ value: 'entityPrivate01' }],
+        null_geolocation_geolocation: [{ value: null }],
+        inherited_country: [{ value: 'entityPrivate01' }],
       },
       published: true,
       user: userId,
@@ -175,7 +175,7 @@ export default {
       template: template4,
       language: 'en',
       title: 'Entity with other property inherited en',
-      metadata: { text: [{ value: 'Text content' }], inhertied_work: [{ value: 'entity01' }] },
+      metadata: { text: [{ value: 'Text content' }], inherited_work: [{ value: 'entity01' }] },
       published: true,
       user: userId,
     },
@@ -185,7 +185,7 @@ export default {
       template: template4,
       language: 'en',
       title: 'Entity linking a null en',
-      metadata: { inhertied_work: [{ value: 'entity06' }] },
+      metadata: { inherited_work: [{ value: 'entity06' }] },
       published: true,
       user: userId,
     },
@@ -255,7 +255,7 @@ export default {
         },
         {
           _id: db.id(),
-          name: 'inhertied_country',
+          name: 'inherited_country',
           type: 'relationship',
           relationType: relationType1,
           content: template2,
@@ -264,7 +264,7 @@ export default {
         },
         {
           _id: db.id(),
-          name: 'inhertied_home',
+          name: 'inherited_home',
           type: 'relationship',
           relationType: relationType1,
           content: template1,
@@ -278,7 +278,7 @@ export default {
       properties: [
         {
           _id: db.id(),
-          name: 'inhertied_work',
+          name: 'inherited_work',
           type: 'relationship',
           relationType: relationType1,
           content: template1,

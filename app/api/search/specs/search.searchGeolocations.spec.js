@@ -13,8 +13,8 @@ describe('search.searchGeolocations', () => {
     await elasticTesting.reindex();
   });
 
-  afterAll((done) => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   const cleanResults = results => results.rows.reduce((_memo, row) => {

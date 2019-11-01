@@ -4,7 +4,7 @@ exports[`search.searchGeolocations should allow filtering as in normal search 1`
 Array [
   Object {
     "metadata": Object {
-      "inhertied_country": Array [
+      "inherited_country": Array [
         Object {
           "entity": "entity06",
           "inherit_geolocation": Array [
@@ -12,7 +12,7 @@ Array [
           ],
         },
       ],
-      "inhertied_home": Array [
+      "inherited_home": Array [
         Object {
           "entity": "entity01",
           "inherit_geolocation": Array [
@@ -53,7 +53,7 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_home": Array [
+      "inherited_home": Array [
         Object {
           "entity": "entity02",
           "inherit_geolocation": Array [
@@ -74,7 +74,7 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_country": Array [
+      "inherited_country": Array [
         Object {
           "entity": "entityPrivate01",
           "inherit_geolocation": Array [
@@ -159,13 +159,13 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_country": Array [
+      "inherited_country": Array [
         Object {
           "entity": "entity06",
           "inherit_geolocation": Array [],
         },
       ],
-      "inhertied_home": Array [
+      "inherited_home": Array [
         Object {
           "entity": "entity01",
           "inherit_geolocation": Array [
@@ -206,7 +206,7 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_home": Array [
+      "inherited_home": Array [
         Object {
           "entity": "entity02",
           "inherit_geolocation": Array [
@@ -227,7 +227,7 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_work": Array [
+      "inherited_work": Array [
         Object {
           "entity": "entity01",
           "inherit_geolocation": Array [
@@ -244,7 +244,7 @@ Array [
   },
   Object {
     "metadata": Object {
-      "inhertied_country": Array [
+      "inherited_country": Array [
         Object {
           "entity": "entityPrivate01",
           "inherit_geolocation": Array [
