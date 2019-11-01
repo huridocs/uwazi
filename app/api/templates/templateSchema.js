@@ -43,8 +43,8 @@ ajv.addKeyword('uniquePropertyFields', {
     const properties = data.properties || [];
     const commonProperties = data.commonProperties || [];
     const allProperties = properties.concat(commonProperties);
-    for (let propIndex = 0; propIndex < allProperties.length; propIndex++) {
-      for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
+    for (let propIndex = 0; propIndex < allProperties.length; propIndex += 1) {
+      for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex += 1) {
         const property = allProperties[propIndex];
         const field = fields[fieldIndex];
         const value = property[field] && property[field].toLowerCase().trim();
