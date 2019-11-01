@@ -126,7 +126,7 @@ const limitRelationshipResults = (results, entitySharedId, hubsLimit) => {
 const determinePropertyValues = (entity, propertyName) => {
   const metadata = entity.metadata || {};
   const propertyValues = metadata[propertyName] || [];
-  return (typeof propertyValues === 'string') ? [propertyValues] : propertyValues;
+  return propertyValues.map(mo => mo.value);
 };
 
 const getHub = (propertyRelationType, hubs, sharedId) => {

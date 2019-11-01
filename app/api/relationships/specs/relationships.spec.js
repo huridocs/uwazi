@@ -409,7 +409,7 @@ describe('relationships', () => {
     };
 
     it('should create connections based on properties', async () => {
-      await saveReferencesChangingMetadataTo({ friend: ['robin'] });
+      await saveReferencesChangingMetadataTo({ friend: [{ value: 'robin' }] });
       const connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.find(connection => connection.entity === 'bruceWayne')).toBeDefined();
       expect(connections.find(connection => connection.entity === 'robin')).toBeDefined();
@@ -446,12 +446,18 @@ describe('relationships', () => {
     it('should delete connections based on properties', async () => {
       await relationships.saveEntityBasedReferences(entity, 'en');
 
-      await saveReferencesChangingMetadataTo({ family: ['thomasWayne'], friend: ['alfred'] });
+      await saveReferencesChangingMetadataTo({
+        family: [{ value: 'thomasWayne' }],
+        friend: [{ value: 'alfred' }],
+      });
       let connections = await relationships.getByDocument('bruceWayne', 'en');
       expect(connections.length).toBe(6);
       expect(connections.find(c => c.entity === 'robin')).not.toBeDefined();
 
-      await saveReferencesChangingMetadataTo({ family: ['alfred'], friend: ['robin'] });
+      await saveReferencesChangingMetadataTo({
+        family: [{ value: 'alfred' }],
+        friend: [{ value: 'robin' }],
+      });
       connections = await relationships.getByDocument('bruceWayne', 'en');
 
       expect(connections.find(c => c.entity === 'thomasWayne')).not.toBeDefined();
