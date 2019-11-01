@@ -40,8 +40,13 @@ ajv.addKeyword('uniquePropertyFields', {
       return true;
     }
     const uniqueValues = fields.reduce((memo, field) => ({ ...memo, [field]: new Set() }), {});
-    for (let property of [...data.properties || [], ...data.commonProperties || []]) {
-      for (let field of fields) {
+    const properties = data.properties || [];
+    const commonProperties = data.commonProperties || [];
+    const allProperties = properties.concat(commonProperties);
+    for (let propIndex = 0; propIndex < allProperties.length; propIndex++) {
+      for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
+        const property = allProperties[propIndex];
+        const field = fields[fieldIndex];
         const value = property[field] && property[field].toLowerCase().trim();
         if (value && uniqueValues[field].has(value)) {
           return false;
@@ -106,7 +111,7 @@ const schema = {
       requireContentForSelectFields: true,
       requireRelationTypeForRelationship: true,
       requireInheritPropertyForInheritingRelationship: true,
-      properties: { 
+      properties: {
         id: { type: 'string' },
         label: { type: 'string', minLength: 1 },
         name: { type: 'string', minLength: 1 },

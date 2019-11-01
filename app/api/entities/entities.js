@@ -125,7 +125,7 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if ((type === templateTypes.multiselect|| type === templateTypes.relationship) && Array.isArray(sanitizedMetadata[name])) {
+    if ((type === templateTypes.multiselect || type === templateTypes.relationship) && Array.isArray(sanitizedMetadata[name])) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
 
