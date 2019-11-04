@@ -4,6 +4,7 @@ const ajv = Ajv({ allErrors: true });
 
 const schema = {
   $schema: 'http://json-schema.org/schema#',
+  $async: true,
   type: 'object',
   required: ['title'],
   properties: {
@@ -16,16 +17,21 @@ const schema = {
     file: {
       type: 'object',
       properties: {
-        originalname: 'string',
-        filename: 'string',
-        mimetype: 'string',
-        size: 'number',
-        timestamp: 'number',
-        language: 'string'
+        originalname: { type: 'string' },
+        filename: { type: 'string' },
+        mimetype: { type: 'string' },
+        size: { type: 'number' },
+        timestamp: { type: 'number' },
+        language: { type: 'string' }
       }
     },
-    fullText: { type: 'object' },
-    totalPage: { type: 'number' },
+    fullText: {
+      type: 'object',
+      patternProperties: {
+        '^[0-9]+$': { type: 'string' }
+      }
+    },
+    totalPages: { type: 'number' },
     icon: {
       type: 'object',
       properties: {
@@ -68,7 +74,17 @@ const schema = {
     processed: { type: 'boolean' },
     uploaded: { type: 'boolean' },
     published: { type: 'boolean' },
-    pdfInfo: { type: 'object' },
+    pdfInfo: {
+      type: 'object',
+      patternProperties: {
+        '^[0-9]+$': {
+          type: 'object',
+          properties: {
+            chars: { type: 'number' }
+          }
+        }
+      }
+    },
     user: { type: 'string' },
     metadata: {
       type: 'object',
