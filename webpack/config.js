@@ -26,7 +26,7 @@ module.exports = function(production) {
 
   return {
     context: rootPath,
-    devtool: "#eval-source-map",
+    devtool: "eval-source-map",
     mode: "development",
     entry: {
       main: path.join(rootPath, "app/react/index.js"),

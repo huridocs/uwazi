@@ -1,26 +1,14 @@
 /** @format */
-
+import ShowIf from 'app/App/ShowIf';
+import { t } from 'app/I18N';
+import { Icon as CustomIcon } from 'app/Layout/Icon';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { Icon as CustomIcon } from 'app/Layout/Icon';
 import { Icon } from 'UI';
-import { t } from 'app/I18N';
-import ShowIf from 'app/App/ShowIf';
-
 import { filterOptions } from '../utils/optionsUtils';
+import { UnwrapMOs, WrapMOs } from './MetadataUtil';
 
 const isNotAnEmptyGroup = option => !option.options || option.options.length;
-
-function unwrapMOs(value) {
-  return value.map(v => v.value);
-}
-
-function wrapMOs(value) {
-  return value.map(v => ({
-    value: v,
-  }));
-}
 
 export default class MultiSelect extends Component {
   constructor(props) {
@@ -35,7 +23,7 @@ export default class MultiSelect extends Component {
   }
 
   changeGroup(group, e) {
-    const selectedItems = unwrapMOs(this.props.value);
+    const selectedItems = UnwrapMOs(this.props.value);
     if (e.target.checked) {
       group.options.forEach(_item => {
         if (!this.checked(_item)) {
@@ -52,7 +40,7 @@ export default class MultiSelect extends Component {
         }
       });
     }
-    this.props.onChange(wrapMOs(selectedItems));
+    this.props.onChange(WrapMOs(selectedItems));
   }
 
   checked(option) {
@@ -63,11 +51,11 @@ export default class MultiSelect extends Component {
     if (option.options) {
       return option.options.reduce(
         (allIncluded, _option) =>
-          allIncluded && unwrapMOs(this.props.value).includes(_option[this.props.optionsValue]),
+          allIncluded && UnwrapMOs(this.props.value).includes(_option[this.props.optionsValue]),
         true
       );
     }
-    return unwrapMOs(this.props.value).includes(option[this.props.optionsValue]);
+    return UnwrapMOs(this.props.value).includes(option[this.props.optionsValue]);
   }
 
   anyChildChecked(parent) {
@@ -75,15 +63,15 @@ export default class MultiSelect extends Component {
   }
 
   change(value) {
-    let newValues = this.props.value ? unwrapMOs(this.props.value) : [];
+    let newValues = this.props.value ? UnwrapMOs(this.props.value) : [];
     if (newValues.includes(value)) {
       newValues = newValues.filter(val => val !== value);
-      this.props.onChange(wrapMOs(newValues));
+      this.props.onChange(WrapMOs(newValues));
       return;
     }
 
     newValues.push(value);
-    this.props.onChange(wrapMOs(newValues));
+    this.props.onChange(WrapMOs(newValues));
   }
 
   filter(e) {

@@ -38,7 +38,8 @@ class DatePicker extends Component {
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
     let { value } = UnwrapMetadataObject(this.props);
-    value = moment.utc(value, 'X');
+    value = value ? moment.utc(value, 'X') : null;
+    console.log(value);
 
     return (
       <DatePickerComponent
@@ -57,7 +58,6 @@ class DatePicker extends Component {
 }
 
 DatePicker.defaultProps = {
-  onChange: () => {},
   value: undefined,
   endOfDay: false,
   locale: undefined,
@@ -66,7 +66,7 @@ DatePicker.defaultProps = {
 };
 
 DatePicker.propTypes = {
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
   value: AllowMoType(PropTypes.number),
   endOfDay: PropTypes.bool,
   locale: PropTypes.string,

@@ -20,7 +20,7 @@ class DateRange extends Component {
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
     const { value } = UnwrapMetadataObject(this.props);
-    const { from: stateFrom, to: stateTo } = value;
+    const { from: stateFrom, to: stateTo } = value || { from: null, to: null };
 
     return (
       <div>

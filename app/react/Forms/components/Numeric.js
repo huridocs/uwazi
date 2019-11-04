@@ -1,35 +1,34 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { UnwrapMetadataObject } from './MetadataUtil';
 
 export default class Numeric extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { value: props.value || '' };
-  }
-
   onChange(e) {
     const { value } = e.target;
-    this.setState({ value });
+    const { onChange } = UnwrapMetadataObject(this.props);
     if (!value) {
-      return this.props.onChange(null);
+      return onChange('');
     }
 
     const numericValue = parseFloat(value);
-    this.props.onChange(numericValue);
+    return onChange(numericValue);
   }
 
   render() {
+    const { value } = UnwrapMetadataObject(this.props);
     return (
-      <input
-        className="form-control"
-        onChange={this.onChange.bind(this)}
-        value={this.state.value}
-      />
+      <input className="form-control" onChange={this.onChange.bind(this)} value={value || ''} />
     );
   }
 }
 
+Numeric.defaultProps = {
+  value: '',
+};
+
 Numeric.propTypes = {
-  onChange: PropTypes.func,
-  value: PropTypes.any
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.any,
 };
