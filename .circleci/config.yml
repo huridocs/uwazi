@@ -33,6 +33,7 @@ jobs:
             - ~/.mongodb-binaries
           key: v1-yarn-dependencies-{{ checksum "package.json" }}
 
+      - run: rm -fR ./node_modules/.cache/@babel
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
       # run tests!
