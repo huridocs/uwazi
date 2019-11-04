@@ -1,20 +1,16 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from 'app/I18N';
 import DatePicker from './DatePicker';
+import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 class DateRange extends Component {
-  constructor(props) {
-    super(props);
-    const value = props.value || {};
-    this.state = { from: value.from, to: value.to };
-  }
-
-  onChange(prop, value) {
-    const { onChange } = this.props;
-    const state = Object.assign({}, this.state);
-    state[prop] = value;
-    this.setState(state);
+  onChange(prop, propValue) {
+    const { value, onChange } = UnwrapMetadataObject(this.props);
+    const state = Object.assign({}, value);
+    state[prop] = propValue;
     onChange(state);
   }
 
@@ -23,7 +19,8 @@ class DateRange extends Component {
     let { locale, format } = this.props;
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
-    const { from: stateFrom, to: stateTo } = this.state;
+    const { value } = UnwrapMetadataObject(this.props);
+    const { from: stateFrom, to: stateTo } = value;
 
     return (
       <div>
@@ -58,11 +55,11 @@ DateRange.defaultProps = {
   onChange: () => {},
   locale: undefined,
   format: undefined,
-  useTimezone: false
+  useTimezone: false,
 };
 
 DateRange.propTypes = {
-  value: PropTypes.shape({ from: PropTypes.number, to: PropTypes.number }),
+  value: AllowMoType(PropTypes.shape({ from: PropTypes.number, to: PropTypes.number })),
   onChange: PropTypes.func,
   locale: PropTypes.string,
   format: PropTypes.string,

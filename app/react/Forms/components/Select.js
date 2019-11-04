@@ -1,8 +1,9 @@
 /** @format */
 
+import { advancedSort } from 'app/utils/advancedSort';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { advancedSort } from 'app/utils/advancedSort';
+import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 export default class Select extends Component {
   render() {
@@ -12,10 +13,11 @@ export default class Select extends Component {
       const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
       _options = sortRoot ? advancedSort(options, { property: optionsLabel }) : options;
     }
+    const { value, onChange } = UnwrapMetadataObject(this.props);
 
     const disbaled = Boolean(required);
     return (
-      <select className="form-control" onChange={this.props.onChange} value={this.props.value}>
+      <select className="form-control" onChange={onChange} value={value}>
         <option disbaled={disbaled.toString()} value="">
           {placeholder}
         </option>
@@ -62,7 +64,7 @@ Select.defaultProps = {
 Select.propTypes = {
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  value: PropTypes.shape([{ value: PropTypes.string }]),
+  value: AllowMoType(PropTypes.string),
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
