@@ -52,7 +52,7 @@ if (app.get('env') === 'production') {
 
 app.use(compression());
 app.use(express.static(path.resolve(__dirname, '../dist'), { maxage }));
-app.use('/public', express.static(path.resolve(__dirname, '../public')));
+app.use('/public', express.static(paths.publicAssets));
 
 app.use(/\/((?!remotepublic).)*/, bodyParser.json({ limit: '1mb' }));
 
