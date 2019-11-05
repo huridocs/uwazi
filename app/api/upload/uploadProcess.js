@@ -29,7 +29,7 @@ const processFile = async (docs, file) => {
   const convertedDocs = docs.map(doc => ({ ...doc, ...conversion }));
   await Promise.all(docs.map(doc => pdf.createThumbnail(doc._id.toString())));
 
-  return entitiesModel.save(
+  return entitiesModel.saveMultiple(
     convertedDocs.map(doc => ({
       ...doc,
       file: { ...doc.file, timestamp: Date.now() }

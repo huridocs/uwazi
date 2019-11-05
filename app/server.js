@@ -1,8 +1,6 @@
-/**
- * /* eslint-disable no-console
- *
- * @format
- */
+/** @format */
+
+/* eslint-disable no-console */
 
 import bodyParser from 'body-parser';
 import compression from 'compression';

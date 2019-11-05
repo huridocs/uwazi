@@ -316,7 +316,7 @@ export default {
   },
 
   async saveMultiple(docs) {
-    const response = await model.save(docs);
+    const response = await model.saveMultiple(docs);
     await this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
     return response;
   },
@@ -709,5 +709,5 @@ export default {
       .then(() => search.deleteLanguage(locale));
   },
 
-  count: model.count,
+  count: model.count.bind(model),
 };

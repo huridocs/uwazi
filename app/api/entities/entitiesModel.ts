@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose';
 
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 export interface DateRange {
   from: number | null;
@@ -84,7 +84,6 @@ const Model = instanceModel('entities', entitySchema);
 Model.db.collection.dropIndex('title_text', () => {
   Model.db.ensureIndexes();
 });
-const { save } = Model;
 const suportedLanguages = [
   'da',
   'nl',
@@ -116,12 +115,7 @@ const setMongoLanguage = (doc: any) => {
   return Object.assign({}, doc, { mongoLanguage });
 };
 
-Model.save = data => {
-  if (Array.isArray(data)) {
-    return save(data.map(setMongoLanguage));
-  }
-
-  return save(setMongoLanguage(data));
-};
+const modelSaveRaw = Model.save.bind(Model);
+Model.save = doc => modelSaveRaw(setMongoLanguage(doc));
 
 export default Model;

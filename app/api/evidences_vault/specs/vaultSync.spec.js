@@ -210,7 +210,7 @@ describe('vaultSync', () => {
   });
 
   it('should not import already imported evidences', async () => {
-    await vaultEvidencesModel.save([{ request: '1' }, { request: '3' }]);
+    await vaultEvidencesModel.saveMultiple([{ request: '1' }, { request: '3' }]);
     const evidences = [
       { listItem: { request: '1', filename: 'package1.zip' }, jsonInfo: { title: 'title1' } },
       { listItem: { request: '3', filename: 'package3.zip' }, jsonInfo: { title: 'title3' } },
