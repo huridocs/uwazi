@@ -495,7 +495,7 @@ const search = {
       delete doc.pdfInfo;
 
       let action = {};
-      action[_action] = { _index: elasticIndexes.index, _type: type, _id: id };
+      action[_action] = { _index: elasticIndexes.index, _id: id };
       if (_action === 'update') {
         _doc = { doc: _doc };
       }
@@ -509,13 +509,11 @@ const search = {
         action = {};
         action[_action] = {
           _index: elasticIndexes.index,
-          _type: 'fullText',
-          parent: id,
           _id: `${id}_fullText`,
+          routing: id,
         };
         body.push(action);
 
-        const fullTextQuery = {};
         let language;
         if (!doc.file || (doc.file && !doc.file.language)) {
           language = languagesUtil.detect(fullText);
@@ -523,8 +521,11 @@ const search = {
         if (doc.file && doc.file.language) {
           language = languages(doc.file.language);
         }
-        fullTextQuery[`fullText_${language}`] = fullText;
-        body.push(fullTextQuery);
+        const fullTextObject = {
+          [`fullText_${language}`]: fullText,
+          fullText: { name: 'fullText', parent: id },
+        };
+        body.push(fullTextObject);
         delete doc.fullText;
       }
     });

@@ -4,7 +4,7 @@ const elasticLanguages: { [index: string]: { [index: string]: string | null } } 
   arb: { franc: 'arb', elastic: 'arabic', ISO639_1: 'ar' },
   bul: { franc: 'bul', elastic: 'bulgarian', ISO639_1: 'bg' },
   cat: { franc: 'cat', elastic: 'catalan', ISO639_1: 'ca' },
-  cjk: { franc: 'cjk', elastic: 'cjk', ISO639_1: null },
+  // cjk: { franc: 'cjk', elastic: 'cjk', ISO639_1: null },
   ckb: { franc: 'ckb', elastic: 'sorani', ISO639_1: null },
   ces: { franc: 'ces', elastic: 'czech', ISO639_1: 'cs' },
   dan: { franc: 'dan', elastic: 'danish', ISO639_1: 'da' },
