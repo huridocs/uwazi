@@ -25,7 +25,7 @@ export default {
         return langDoc;
       });
 
-      return model.save(docs)
+      return model.saveMultiple(docs)
       .then(() => this.getById(sharedId, language));
     });
   },
@@ -81,5 +81,5 @@ export default {
     return model.delete({ language });
   },
 
-  count: model.count
+  count: model.count.bind(model)
 };

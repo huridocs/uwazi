@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 const entitySchema = new mongoose.Schema({
   language: { type: String, index: true },
@@ -51,7 +51,6 @@ entitySchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
 const Model = instanceModel('entities', entitySchema);
 Model.db.collection.dropIndex('title_text', () => { Model.db.ensureIndexes(); });
-const { save } = Model;
 const suportedLanguages = ['da', 'nl', 'en', 'fi', 'fr', 'de', 'hu', 'it', 'nb', 'pt', 'ro', 'ru', 'es', 'sv', 'tr'];
 
 const setMongoLanguage = (doc) => {
@@ -67,12 +66,7 @@ const setMongoLanguage = (doc) => {
   return Object.assign({}, doc, { mongoLanguage });
 };
 
-Model.save = (data) => {
-  if (Array.isArray(data)) {
-    return save(data.map(setMongoLanguage));
-  }
-
-  return save(setMongoLanguage(data));
-};
+Model.saveRaw = Model.save.bind(Model);
+Model.save = doc => Model.saveRaw(setMongoLanguage(doc));
 
 export default Model;

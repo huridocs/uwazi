@@ -13,7 +13,7 @@
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": true }],
     "indent": "off", // handled by prettier
-    "operator-linebreak": ["warn", "after"],
+    "operator-linebreak": "off", // handled by prettier
     "no-mixed-operators": "off",
     "no-underscore-dangle": "off",
     "comma-dangle": "off",
@@ -125,7 +125,7 @@
       }
     },
     {
-      "files": ["app/**/*.ts"],
+      "files": ["app/**/*.ts*"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"
