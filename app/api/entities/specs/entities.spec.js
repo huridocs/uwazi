@@ -8,7 +8,7 @@ import relationships from 'api/relationships';
 import search from 'api/search/search';
 import paths from 'api/config/paths';
 import path from 'path';
-import wrappedEntities, { entities } from '../entities.js';
+import wrappedEntities, { entitiesRepository as entities } from '../entities.js';
 import entitiesValidator from '../entitiesValidator';
 import fixtures, { batmanFinishesId, templateId, templateChangingNames,
   syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';

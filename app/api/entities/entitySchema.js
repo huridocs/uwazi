@@ -52,7 +52,7 @@ const validateMultiDateProperty = (property, value) => {
     return Array.isArray(value) && value.every(isNumber);
   }
   return true;
-}
+};
 
 const validateDateRangeProperty = (property, value) => {
   if (property.type === templateTypes.daterange) {
@@ -118,7 +118,7 @@ const validateMetadataField = (property, entity) => {
     validateGeolocationProperty
   ];
   return propertyValidators.every(validate => validate(property, value));
-}
+};
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
   async: true,

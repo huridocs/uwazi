@@ -9,7 +9,7 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
-import { wrapValidation } from 'api/utils/wrapValidation'
+import { wrapValidation } from 'api/utils/wrapValidation';
 
 import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
@@ -156,7 +156,7 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-const entities = {
+const entitiesRepository = {
   sanitize,
   updateEntity,
   createEntity,
@@ -574,7 +574,7 @@ const entities = {
 };
 
 export {
-  entities
+  entitiesRepository
 };
 
-export default wrapValidation(validator, entities);
+export default wrapValidation(validator, entitiesRepository);

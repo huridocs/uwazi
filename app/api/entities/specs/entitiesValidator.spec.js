@@ -1,3 +1,5 @@
+/** @format */
+
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
@@ -5,7 +7,6 @@ import validator from '../entitiesValidator';
 import fixtures, { templateId, nonExistentId } from './validatorFixtures';
 
 describe('entitiesValidator', () => {
-
   beforeEach(done => {
     db.clearAllAndLoad(fixtures)
       .then(done)
@@ -15,7 +16,7 @@ describe('entitiesValidator', () => {
   afterAll(done => {
     db.disconnect().then(done);
   });
-  
+
   describe('save', () => {
     let entity;
 
@@ -33,7 +34,7 @@ describe('entitiesValidator', () => {
           mimetype: 'pdf',
           size: 100,
           timestamp: 100,
-          language: 'en'
+          language: 'en',
         },
         attachments: [
           {
@@ -41,17 +42,17 @@ describe('entitiesValidator', () => {
             filename: 'att',
             mimetype: 'doc',
             timestamp: 100,
-            size: 100
-          }
+            size: 100,
+          },
         ],
         icon: {
           _id: 'icon',
           type: 'icon',
-          label: 'Icon'
+          label: 'Icon',
         },
         totalPages: 11,
         fullText: {
-          1: 'this is[[1]] a test[[1]]'
+          1: 'this is[[1]] a test[[1]]',
         },
         creationDate: 100,
         processed: true,
@@ -59,14 +60,14 @@ describe('entitiesValidator', () => {
         published: false,
         pdfInfo: {
           1: {
-            chars: 20
-          }
+            chars: 20,
+          },
         },
         user: 'user',
         metadata: {
           name: 'test',
           markdown: 'rich text',
-          // image: 'image',
+          image: 'image',
           media: 'https://youtube.com/foo',
           numeric: 100,
           date: 100,
@@ -78,9 +79,9 @@ describe('entitiesValidator', () => {
           multiselect: ['one', 'two'],
           relationship: ['rel1', 'rel2'],
           link: { label: 'label', url: 'url' },
-          preview: ''
-        }
-      }
+          preview: '',
+        },
+      };
     });
 
     const testValid = () => validator.save(entity, 'en');
@@ -202,13 +203,11 @@ describe('entitiesValidator', () => {
           await testInvalid();
         });
         it('should fail if from and to are not numbers', async () => {
-          entity.metadata.daterange.from = 'test',
-          entity.metadata.daterange.to = 'test';
+          (entity.metadata.daterange.from = 'test'), (entity.metadata.daterange.to = 'test');
           await testInvalid();
         });
         it('should fail if from is greater than to', async () => {
-          entity.metadata.daterange.from = 100,
-          entity.metadata.daterange.to = 50;
+          (entity.metadata.daterange.from = 100), (entity.metadata.daterange.to = 50);
           await testInvalid();
         });
       });
@@ -314,7 +313,6 @@ describe('entitiesValidator', () => {
           await testInvalid();
         });
       });
-
     });
   });
 });

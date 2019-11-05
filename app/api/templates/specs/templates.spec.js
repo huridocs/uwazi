@@ -217,9 +217,13 @@ describe('templates', () => {
           .catch(catchErrors(done));
       });
 
-      it('should edit an existing one', async (done) => {
+      it('should edit an existing one', async done => {
         spyOn(translations, 'updateContext');
-        const toSave = { _id: templateToBeEditedId, name: 'changed name', commonProperties: [{ name: 'title', label: 'Title' }] };
+        const toSave = {
+          _id: templateToBeEditedId,
+          name: 'changed name',
+          commonProperties: [{ name: 'title', label: 'Title' }],
+        };
         try {
           await templates.save(toSave);
           const [edited] = await templates.get(templateToBeEditedId);
