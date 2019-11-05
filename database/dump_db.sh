@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ -f ".env" ]] && source ".env"
+
 OLDWD=$( cd "$(dirname "${BASH_SOURCE[0]}")"/.. ; pwd -P )
 cd /tmp
 
