@@ -249,116 +249,20 @@ Object {
       "patterns": Array [
         Object {
           "rule": Object {
-            "alternatives": Array [
-              Object {
-                "invalids": Array [
-                  Infinity,
-                  -Infinity,
-                ],
-                "type": "number",
-                "valids": Array [
-                  "",
-                  null,
-                ],
-              },
-              Object {
-                "type": "string",
-                "valids": Array [
-                  "",
-                  null,
-                ],
-              },
-              Object {
-                "children": Object {
-                  "from": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                    "valids": Array [
-                      null,
-                    ],
-                  },
-                  "to": Object {
-                    "invalids": Array [
-                      Infinity,
-                      -Infinity,
-                    ],
-                    "type": "number",
-                    "valids": Array [
-                      null,
-                    ],
-                  },
-                },
-                "type": "object",
-                "valids": Array [
-                  "",
-                ],
-              },
-              Object {
-                "flags": Object {
-                  "sparse": false,
-                },
-                "items": Array [
-                  Object {
-                    "children": Object {
-                      "label": Object {
-                        "type": "string",
-                        "valids": Array [
-                          null,
-                          "",
-                        ],
-                      },
-                      "lat": Object {
-                        "invalids": Array [
-                          Infinity,
-                          -Infinity,
-                        ],
-                        "type": "number",
-                      },
-                      "lon": Object {
-                        "invalids": Array [
-                          Infinity,
-                          -Infinity,
-                        ],
-                        "type": "number",
-                      },
-                    },
-                    "type": "object",
-                  },
-                ],
-                "type": "array",
-                "valids": Array [
-                  "",
-                ],
-              },
+            "flags": Object {
+              "sparse": false,
+            },
+            "items": Array [
               Object {
                 "children": Object {
                   "label": Object {
-                    "invalids": Array [
+                    "type": "string",
+                    "valids": Array [
+                      null,
                       "",
                     ],
-                    "type": "string",
                   },
-                  "url": Object {
-                    "invalids": Array [
-                      "",
-                    ],
-                    "type": "string",
-                  },
-                },
-                "type": "object",
-                "valids": Array [
-                  "",
-                ],
-              },
-              Object {
-                "flags": Object {
-                  "sparse": false,
-                },
-                "items": Array [
-                  Object {
+                  "value": Object {
                     "alternatives": Array [
                       Object {
                         "invalids": Array [
@@ -366,9 +270,6 @@ Object {
                           -Infinity,
                         ],
                         "type": "number",
-                        "valids": Array [
-                          null,
-                        ],
                       },
                       Object {
                         "invalids": Array [
@@ -400,65 +301,64 @@ Object {
                           },
                         },
                         "type": "object",
-                        "valids": Array [
-                          "",
-                        ],
+                      },
+                      Object {
+                        "children": Object {
+                          "label": Object {
+                            "type": "string",
+                            "valids": Array [
+                              null,
+                              "",
+                            ],
+                          },
+                          "lat": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                          "lon": Object {
+                            "invalids": Array [
+                              Infinity,
+                              -Infinity,
+                            ],
+                            "type": "number",
+                          },
+                        },
+                        "type": "object",
+                      },
+                      Object {
+                        "children": Object {
+                          "label": Object {
+                            "invalids": Array [
+                              "",
+                            ],
+                            "type": "string",
+                          },
+                          "url": Object {
+                            "invalids": Array [
+                              "",
+                            ],
+                            "type": "string",
+                          },
+                        },
+                        "type": "object",
                       },
                     ],
                     "type": "alternatives",
                   },
-                ],
-                "type": "array",
-                "valids": Array [
-                  "",
-                ],
-              },
-              Object {
-                "flags": Object {
-                  "sparse": false,
                 },
-                "items": Array [
-                  Object {
-                    "patterns": Array [
-                      Object {
-                        "rule": Object {
-                          "flags": Object {
-                            "sparse": false,
-                          },
-                          "items": Array [
-                            Object {
-                              "invalids": Array [
-                                "",
-                              ],
-                              "type": "string",
-                            },
-                          ],
-                          "type": "array",
-                        },
-                        "schema": Object {
-                          "invalids": Array [
-                            "",
-                          ],
-                          "type": "string",
-                        },
-                      },
-                    ],
-                    "type": "object",
-                  },
-                ],
-                "type": "array",
-                "valids": Array [
-                  "",
-                ],
+                "type": "object",
               },
             ],
-            "type": "alternatives",
+            "type": "array",
           },
           "schema": Object {
-            "type": "string",
-            "valids": Array [
+            "invalids": Array [
               "",
             ],
+            "type": "string",
           },
         },
       ],
