@@ -5,7 +5,6 @@ import validator from '../entitiesValidator';
 import fixtures, { templateId, nonExistentId } from './validatorFixtures';
 
 describe('entitiesValidator', () => {
-  let entity;
 
   beforeEach(done => {
     db.clearAllAndLoad(fixtures)

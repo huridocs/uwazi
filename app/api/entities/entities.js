@@ -9,9 +9,11 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
+import { wrapValidation } from 'api/utils/wrapValidation'
 
 import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
+import validator from './entitiesValidator';
 import settings from '../settings';
 
 const FIELD_TYPES_TO_SYNC = [
@@ -155,7 +157,7 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-export default {
+const entities = {
   sanitize,
   updateEntity,
   createEntity,
@@ -572,3 +574,9 @@ export default {
 
   count: model.count
 };
+
+export {
+  entities
+};
+
+export default wrapValidation(validator, entities);

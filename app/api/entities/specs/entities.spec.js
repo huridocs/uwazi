@@ -8,7 +8,8 @@ import relationships from 'api/relationships';
 import search from 'api/search/search';
 import paths from 'api/config/paths';
 import path from 'path';
-import entities from '../entities.js';
+import wrappedEntities, { entities } from '../entities.js';
+import entitiesValidator from '../entitiesValidator';
 import fixtures, { batmanFinishesId, templateId, templateChangingNames,
   syncPropertiesEntityId, templateWithEntityAsThesauri, docId1, docId2 } from './fixtures.js';
 
@@ -891,6 +892,17 @@ describe('entities', () => {
 
       expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
       expect(newEntities.length).toBe(0);
+    });
+  });
+
+  describe('validation', () => {
+    it('should validate on save', async () => {
+      jest.spyOn(entities, 'save').mockResolvedValue({});
+      jest.spyOn(entitiesValidator, 'save').mockReturnValue(true);
+
+      const tpl = { name: 'Test' };
+      await wrappedEntities.save(tpl, 'en');
+      expect(entitiesValidator.save).toHaveBeenCalledWith(tpl, 'en');
     });
   });
 });
