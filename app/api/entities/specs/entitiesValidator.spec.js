@@ -203,11 +203,11 @@ describe('entitiesValidator', () => {
           await testInvalid();
         });
         it('should fail if from and to are not numbers', async () => {
-          (entity.metadata.daterange.from = 'test'), (entity.metadata.daterange.to = 'test');
+          entity.metadata.daterange = { from: 'test', to : 'test' };
           await testInvalid();
         });
         it('should fail if from is greater than to', async () => {
-          (entity.metadata.daterange.from = 100), (entity.metadata.daterange.to = 50);
+          entity.metadata.daterange = { from: 100, to: 50 };
           await testInvalid();
         });
       });
