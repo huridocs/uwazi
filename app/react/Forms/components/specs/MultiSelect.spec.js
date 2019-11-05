@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -15,21 +17,22 @@ describe('MultiSelect', () => {
       options: [
         { label: 'Option1', value: 'option1', results: 5 },
         { label: 'Option2', value: 'option2', results: 4 },
-        { label: 'Sub Group',
+        {
+          label: 'Sub Group',
           value: 'Group',
           results: 3,
           options: [
             { label: 'Group option1', value: 'group-option1', results: 2 },
-            { label: 'Group option2', value: 'group-option2', results: 1 }
-          ]
+            { label: 'Group option2', value: 'group-option2', results: 1 },
+          ],
         },
       ],
-      onChange: jasmine.createSpy('onChange')
+      onChange: jasmine.createSpy('onChange'),
     };
   });
 
   const render = () => {
-    component = shallow(<MultiSelect {...props}/>);
+    component = shallow(<MultiSelect {...props} />);
     instance = component.instance();
   };
 
@@ -46,7 +49,9 @@ describe('MultiSelect', () => {
   it('should not render aggregations on the groups when not defined', () => {
     delete props.options[2].results;
     render();
-    const groupAggregation = component.find('.multiselect-group .multiselectItem .multiselectItem-results');
+    const groupAggregation = component.find(
+      '.multiselect-group .multiselectItem .multiselectItem-results'
+    );
     expect(groupAggregation.at(0)).toMatchSnapshot();
   });
 
@@ -66,21 +71,30 @@ describe('MultiSelect', () => {
   describe('when checking an option', () => {
     it('should call onChange with the new value', () => {
       render();
-      component.find('input[type="checkbox"]').at(0).simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith(['option1']);
+      component
+        .find('input[type="checkbox"]')
+        .at(0)
+        .simulate('change');
+      expect(props.onChange).toHaveBeenCalledWith([{ value: 'option1' }]);
     });
 
     it('it should handle multiple options selected', () => {
-      props.value = ['option1'];
+      props.value = [{ value: 'option1' }];
       render();
-      component.find('input[type="checkbox"]').at(1).simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith(['option1', 'option2']);
+      component
+        .find('input[type="checkbox"]')
+        .at(1)
+        .simulate('change');
+      expect(props.onChange).toHaveBeenCalledWith([{ value: 'option1' }, { value: 'option2' }]);
     });
 
     it('it should remove options that were selected', () => {
-      props.value = ['option1'];
+      props.value = [{ value: 'option1' }];
       render();
-      component.find('input[type="checkbox"]').at(0).simulate('change');
+      component
+        .find('input[type="checkbox"]')
+        .at(0)
+        .simulate('change');
       expect(props.onChange).toHaveBeenCalledWith([]);
     });
   });
@@ -88,9 +102,18 @@ describe('MultiSelect', () => {
   describe('checking a group', () => {
     it('should modify all options of that group', () => {
       render();
-      component.find('.group-checkbox').first().simulate('change', { target: { checked: true } });
-      expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
-      component.find('.group-checkbox').first().simulate('change', { target: { checked: false } });
+      component
+        .find('.group-checkbox')
+        .first()
+        .simulate('change', { target: { checked: true } });
+      expect(props.onChange).toHaveBeenCalledWith([
+        { value: 'group-option1' },
+        { value: 'group-option2' },
+      ]);
+      component
+        .find('.group-checkbox')
+        .first()
+        .simulate('change', { target: { checked: false } });
       expect(props.onChange).toHaveBeenCalledWith([]);
     });
   });
@@ -98,7 +121,10 @@ describe('MultiSelect', () => {
   describe('toggleOptions', () => {
     it('should toggle a flag in the state to show or not group sub options', () => {
       render();
-      component.find('.multiselectItem-action').first().simulate('click', { preventDefault: () => {} });
+      component
+        .find('.multiselectItem-action')
+        .first()
+        .simulate('click', { preventDefault: () => {} });
       expect(component.state().ui).toEqual({ Group: true });
     });
   });
@@ -111,16 +137,17 @@ describe('MultiSelect', () => {
         options: [
           { label: 'Option1', value: 'option1', results: 5 },
           { label: 'Option2', value: 'option2', results: 4 },
-          { label: 'Sub Group',
+          {
+            label: 'Sub Group',
             value: 'Group',
             results: 3,
             options: [
               { label: 'Group option', value: 'group-option1', results: 2 },
-              { label: 'Group option2', value: 'group-option2', results: 1 }
-            ]
-          }
+              { label: 'Group option2', value: 'group-option2', results: 1 },
+            ],
+          },
         ],
-        onChange: jasmine.createSpy('onChange')
+        onChange: jasmine.createSpy('onChange'),
       };
     });
     it('should render only options matching the filter', () => {
@@ -149,11 +176,11 @@ describe('MultiSelect', () => {
         options: [
           { name: 'Option1', id: 'option1', results: 4 },
           { name: 'Option3', id: 'option3', results: 3 },
-          { name: 'Option2', id: 'option2', results: 2 }
+          { name: 'Option2', id: 'option2', results: 2 },
         ],
         optionsValue: 'id',
         optionsLabel: 'name',
-        onChange: jasmine.createSpy('onChange')
+        onChange: jasmine.createSpy('onChange'),
       };
     });
 
@@ -185,9 +212,9 @@ describe('MultiSelect', () => {
         options: [
           { label: 'D', value: 'option1', results: 2 },
           { label: 'A', value: 'option2', results: 1 },
-          { label: 'C', value: 'option3', results: 4 }
+          { label: 'C', value: 'option3', results: 4 },
         ],
-        onChange: jasmine.createSpy('onChange')
+        onChange: jasmine.createSpy('onChange'),
       };
     });
     describe('when prop.sort is false', () => {

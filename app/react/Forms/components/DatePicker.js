@@ -39,7 +39,6 @@ class DatePicker extends Component {
     format = format || 'DD/MM/YYYY';
     let { value } = UnwrapMetadataObject(this.props);
     value = value ? moment.utc(value, 'X') : null;
-    console.log(value);
 
     return (
       <DatePickerComponent

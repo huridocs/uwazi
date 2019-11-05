@@ -9,8 +9,7 @@ import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 class DateRange extends Component {
   onChange(prop, propValue) {
     const { value, onChange } = UnwrapMetadataObject(this.props);
-    const state = Object.assign({}, value);
-    state[prop] = propValue;
+    const state = Object.assign({}, value, { [prop]: propValue });
     onChange(state);
   }
 
