@@ -5,7 +5,7 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import entities from '../entities';
 import templates from '../../templates/templates';
 import thesauris from '../../thesauris/thesauris';
-import fixtures, { templateId } from './fixtures.js';
+import fixtures, { templateId, unpublishedDocId, batmanFinishesId } from './fixtures.js';
 
 describe('entities', () => {
   let routes;
@@ -23,10 +23,18 @@ describe('entities', () => {
     let req;
     beforeEach(() => {
       req = {
-        body: { title: 'Batman begins', template: templateId },
+        body: {
+          title: 'Batman begins',
+          template: templateId
+        },
         user: { username: 'admin' },
         language: 'lang',
-        io: { sockets: { emit: () => {} } }
+        io: {
+          sockets: {
+            emit: () => {
+            }
+          }
+        }
       };
     });
 
@@ -44,17 +52,26 @@ describe('entities', () => {
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise(resolve => resolve('document')));
 
       routes.post('/api/entities', req)
-      .then((document) => {
-        expect(document).toBe('entity');
-        expect(entities.save).toHaveBeenCalledWith(req.body, { user: req.user, language: 'lang' });
-        done();
-      });
+        .then((document) => {
+          expect(document).toBe('entity');
+          expect(entities.save).toHaveBeenCalledWith(req.body, {
+            user: req.user,
+            language: 'lang'
+          });
+          done();
+        });
     });
 
     it('should emit thesauriChange socket event with the modified thesauri based on the entity template', (done) => {
-      const user = { _id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin' };
+      const user = {
+        _id: 'c08ef2532f0bd008ac5174b45e033c93',
+        username: 'admin'
+      };
       req = {
-        body: { title: 'Batman begins', template: 'template' },
+        body: {
+          title: 'Batman begins',
+          template: 'template'
+        },
         user,
         language: 'lang',
         io: {
@@ -78,7 +95,7 @@ describe('entities', () => {
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve('template')));
       spyOn(thesauris, 'templateToThesauri').and.returnValue(new Promise(resolve => resolve('templateTransformed')));
       routes.post('/api/entities', req)
-      .catch(catchErrors(done));
+        .catch(catchErrors(done));
     });
 
     describe('get_raw_page', () => {
@@ -90,7 +107,10 @@ describe('entities', () => {
         spyOn(entities, 'getRawPage').and.returnValue(Promise.resolve('page text'));
 
         const request = {
-          query: { sharedId: 'sharedId', pageNumber: 2 },
+          query: {
+            sharedId: 'sharedId',
+            pageNumber: 2
+          },
           language: 'lang'
         };
 
@@ -103,8 +123,14 @@ describe('entities', () => {
     describe('/entities/multipleupdate', () => {
       beforeEach(() => {
         req = {
-          body: { ids: ['1', '2'], values: { metadata: { text: 'new text' } } },
-          user: { _id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin' },
+          body: {
+            ids: ['1', '2'],
+            values: { metadata: { text: 'new text' } }
+          },
+          user: {
+            _id: 'c08ef2532f0bd008ac5174b45e033c93',
+            username: 'admin'
+          },
           language: 'lang'
         };
       });
@@ -120,17 +146,23 @@ describe('entities', () => {
       it('should call multipleUpdate with the ids and the metadata in the body', (done) => {
         spyOn(entities, 'multipleUpdate').and.returnValue(new Promise(resolve => resolve([{ sharedId: '1' }, { sharedId: '2' }])));
         routes.post('/api/entities/multipleupdate', req)
-        .then((response) => {
-          expect(entities.multipleUpdate)
-          .toHaveBeenCalledWith(
-            ['1', '2'],
-            { metadata: { text: 'new text' } },
-            { user: { _id: 'c08ef2532f0bd008ac5174b45e033c93', username: 'admin' }, language: 'lang' }
-          );
-          expect(response).toEqual(['1', '2']);
-          done();
-        })
-        .catch(catchErrors(done));
+          .then((response) => {
+            expect(entities.multipleUpdate)
+              .toHaveBeenCalledWith(
+                ['1', '2'],
+                { metadata: { text: 'new text' } },
+                {
+                  user: {
+                    _id: 'c08ef2532f0bd008ac5174b45e033c93',
+                    username: 'admin'
+                  },
+                  language: 'lang'
+                }
+              );
+            expect(response).toEqual(['1', '2']);
+            done();
+          })
+          .catch(catchErrors(done));
       });
     });
   });
@@ -139,8 +171,12 @@ describe('entities', () => {
     it('should have a validation schema', () => {
       expect(routes.get.validation('/api/entities')).toMatchSnapshot();
     });
+
     it('should return matching document', (done) => {
-      const expectedEntity = [{ sharedId: 'sharedId', published: true }];
+      const expectedEntity = [{
+        sharedId: 'sharedId',
+        published: true
+      }];
       spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
       const req = {
         query: { sharedId: 'sharedId' },
@@ -148,29 +184,60 @@ describe('entities', () => {
       };
 
       routes.get('/api/entities', req)
-      .then((response) => {
-        expect(entities.getWithRelationships).toHaveBeenCalledWith({ sharedId: 'sharedId', language: 'lang' });
-        expect(response).toEqual({ rows: expectedEntity });
-        done();
-      })
-      .catch(catchErrors(done));
+        .then((response) => {
+          expect(entities.getWithRelationships).toHaveBeenCalledWith({
+            sharedId: 'sharedId',
+            language: 'lang',
+            published: true
+          }, {}, 1);
+          expect(response).toEqual({ rows: expectedEntity });
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should return document by id', async () => {
+      const expectedEntity = fixtures.entities[0];
+      delete expectedEntity.fullText;
+
+      const response = await routes.get('/api/entities', { query: { _id: batmanFinishesId, omitRelationships: true } });
+
+      expect(response.rows.length).toEqual(1);
+      expect(response.rows[0]).toEqual(expectedEntity);
+    });
+
+    it('should not return unpublished documents when user not logged in', async () => {
+      const response = await routes.get('/api/entities', { query: { _id: unpublishedDocId, omitRelationships: true } });
+
+      expect(response.status).toEqual(404);
+      expect(response.rows).toEqual([]);
     });
 
     it('should allow not fetching the relationships', async () => {
-      const expectedEntity = { sharedId: 'sharedId', published: true };
+      const expectedEntity = {
+        sharedId: 'sharedId',
+        published: true
+      };
 
       spyOn(entities, 'getWithRelationships');
       spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
 
       const req = {
-        query: { sharedId: 'sharedId', omitRelationships: true },
+        query: {
+          sharedId: 'sharedId',
+          omitRelationships: true
+        },
         language: 'lang'
       };
 
       const { rows: [result] } = await routes.get('/api/entities', req);
       expect(result).toBe(expectedEntity);
       expect(entities.getWithRelationships).not.toHaveBeenCalled();
-      expect(entities.get).toHaveBeenCalledWith({ sharedId: 'sharedId', language: 'lang' });
+      expect(entities.get).toHaveBeenCalledWith({
+        sharedId: 'sharedId',
+        language: 'lang',
+        published: true
+      }, {}, 1);
     });
 
     describe('when the document does not exist', () => {
@@ -182,28 +249,11 @@ describe('entities', () => {
         };
 
         routes.get('/api/entities', req)
-        .then((response) => {
-          expect(response.status).toBe(404);
-          done();
-        })
-        .catch(catchErrors(done));
-      });
-    });
-
-    describe('when the document is unpublished and not loged in', () => {
-      it('should return a 404', (done) => {
-        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([{ published: false }]));
-        const req = {
-          query: { sharedId: 'unpublished' },
-          language: 'en'
-        };
-
-        routes.get('/api/entities', req)
-        .then((response) => {
-          expect(response.status).toBe(404);
-          done();
-        })
-        .catch(catchErrors(done));
+          .then((response) => {
+            expect(response.status).toBe(404);
+            done();
+          })
+          .catch(catchErrors(done));
       });
     });
 
@@ -214,9 +264,24 @@ describe('entities', () => {
             sharedId: 'e1',
             published: true,
             relationships: [
-              { entityData: { sharedId: 'e1', published: true } },
-              { entityData: { sharedId: 'e2', published: false } },
-              { entityData: { sharedId: 'e3', published: true } }
+              {
+                entityData: {
+                  sharedId: 'e1',
+                  published: true
+                }
+              },
+              {
+                entityData: {
+                  sharedId: 'e2',
+                  published: false
+                }
+              },
+              {
+                entityData: {
+                  sharedId: 'e3',
+                  published: true
+                }
+              }
             ]
           }
         ]));
@@ -231,28 +296,35 @@ describe('entities', () => {
           sharedId: 'e1',
           published: true,
           relationships: [
-            { entityData: { sharedId: 'e1', published: true } },
-            { entityData: { sharedId: 'e3', published: true } }
+            {
+              entityData: {
+                sharedId: 'e1',
+                published: true
+              }
+            },
+            {
+              entityData: {
+                sharedId: 'e3',
+                published: true
+              }
+            }
           ]
         });
       });
     });
   });
 
-  // describe('/api/entities/get_raw_page', () => {
-  //   it('should return formattedPlainTextPages page requested', (done) => {
-  //     spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
-  //     const req = { query: { templateId: 'templateId' } };
+  describe('/api/entities/get_raw_page', () => {
+    it('should return formattedPlainTextPages page requested', async () => {
+      spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
+      const req = { query: { templateId: 'templateId' } };
 
-  //     routes.get('/api/entities/count_by_template', req)
-  //     .then((response) => {
-  //       expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
-  //       expect(response).toEqual(2);
-  //       done();
-  //     })
-  //     .catch(catchErrors(done));
-  //   });
-  // });
+      const response = await routes.get('/api/entities/count_by_template', req);
+
+      expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
+      expect(response).toEqual(2);
+    });
+  });
 
   describe('/api/entities/count_by_template', () => {
     it('should have a validation schema', () => {
@@ -263,12 +335,12 @@ describe('entities', () => {
       const req = { query: { templateId: 'templateId' } };
 
       routes.get('/api/entities/count_by_template', req)
-      .then((response) => {
-        expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
-        expect(response).toEqual(2);
-        done();
-      })
-      .catch(catchErrors(done));
+        .then((response) => {
+          expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
+          expect(response).toEqual(2);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -282,13 +354,18 @@ describe('entities', () => {
     });
 
     it('should use entities to delete it', (done) => {
-      const req = { query: { sharedId: 123, _rev: 456 } };
+      const req = {
+        query: {
+          sharedId: 123,
+          _rev: 456
+        }
+      };
       return routes.delete('/api/entities', req)
-      .then(() => {
-        expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
-        done();
-      })
-      .catch(catchErrors(done));
+        .then(() => {
+          expect(entities.delete).toHaveBeenCalledWith(req.query.sharedId);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 
@@ -304,11 +381,11 @@ describe('entities', () => {
     it('should use entities to delete it', (done) => {
       const req = { body: { sharedIds: [123, 456] } };
       return routes.post('/api/entities/bulkdelete', req)
-      .then(() => {
-        expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
-        done();
-      })
-      .catch(catchErrors(done));
+        .then(() => {
+          expect(entities.deleteMultiple).toHaveBeenCalledWith([123, 456]);
+          done();
+        })
+        .catch(catchErrors(done));
     });
   });
 });
