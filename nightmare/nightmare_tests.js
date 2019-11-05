@@ -1,5 +1,5 @@
 /* eslint-disable */
-require('babel-core/register')();
+require('babel-core/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
 
 var Jasmine = require('jasmine');
 var jasmine = new Jasmine();
