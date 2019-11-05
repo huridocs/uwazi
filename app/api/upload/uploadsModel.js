@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import date from 'api/utils/date.js';
 
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 const uploadSchema = new mongoose.Schema({
   originalname: String,

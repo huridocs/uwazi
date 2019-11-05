@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 const propertiesSchema = new mongoose.Schema({
   id: String,
