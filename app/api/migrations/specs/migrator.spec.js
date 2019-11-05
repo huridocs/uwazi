@@ -76,7 +76,7 @@ describe('migrator', () => {
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel.save([{ delta: 1 }, { delta: 2 }])
+      migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }])
       .then(() => migrator.migrate())
       .then(() => {
         expect(migration1.up).not.toHaveBeenCalled();
@@ -92,7 +92,7 @@ describe('migrator', () => {
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel.save([{ delta: 10 }])
+      migrationsModel.saveMultiple([{ delta: 10 }])
       .then(() => migrator.migrate())
       .then(() => {
         expect(migration1.up).not.toHaveBeenCalled();

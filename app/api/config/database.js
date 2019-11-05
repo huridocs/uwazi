@@ -1,8 +1,10 @@
 const { DBHOST } = process.env;
 const { DATABASE_NAME } = process.env;
+
+// Keep in sync with elasticindexes.js!
 export default {
   demo: 'mongodb://localhost/uwazi_demo',
-  development: DBHOST ? `mongodb://${DBHOST}/${DATABASE_NAME}` : 'mongodb://localhost/uwazi_development',
-  testing: DBHOST ? `mongodb://${DBHOST}/${DATABASE_NAME}` : 'mongodb://localhost/uwazi_testing',
-  production: DBHOST ? `mongodb://${DBHOST}/${DATABASE_NAME}` : 'mongodb://localhost/uwazi_development'
+  development: `mongodb://${DBHOST || 'localhost'}/${DATABASE_NAME || 'uwazi_development'}`,
+  testing: `mongodb://${DBHOST || 'localhost'}/${DATABASE_NAME || 'uwazi_testing'}`,
+  production: `mongodb://${DBHOST || 'localhost'}/${DATABASE_NAME || 'uwazi_development'}`
 };

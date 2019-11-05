@@ -260,17 +260,17 @@ describe('templates', () => {
         .catch(catchErrors(done));
       });
 
-      it('should edit an existing one', (done) => {
+      it('should edit an existing one', async (done) => {
         spyOn(translations, 'updateContext');
         const toSave = { _id: templateToBeEditedId, name: 'changed name', commonProperties: [{ name: 'title', label: 'Title' }] };
-        templates.save(toSave)
-        .then(templates.get)
-        .then((allTemplates) => {
-          const edited = allTemplates.find(template => template._id.toString() === templateToBeEditedId.toString());
+        try {
+          await templates.save(toSave);
+          const [edited] = await templates.get(templateToBeEditedId);
           expect(edited.name).toBe('changed name');
           done();
-        })
-        .catch(catchErrors(done));
+        } catch (error) {
+          catchErrors(done)(error);
+        }
       });
 
       it('should update the translation context for it', (done) => {
