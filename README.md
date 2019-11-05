@@ -102,10 +102,12 @@ $ yarn run-production
 
 ### Environment Variables
 
-Uwazi supports the following environment variables to customize its deployment:
+Uwazi supports the following environment variables to customize its deployment
+(`.env` is supported but not stored in the repository):
 
 * `DBHOST`: MongoDB hostname (default: `localhost`)
-* `DATABASE_NAME`: MongoDB instance name
+* `DATABASE_NAME`: MongoDB instance name (default: `uwazi_development`)
+* `INDEX_NAME`: Elastic search index name (default: `DATABASE_NAME`)
 * `ELASTICSEARCH_URL`: ElasticSearch connection URL (default: `http://localhost:9200`)
 * `UPLOADS_FOLDER`: Folder on local filesystem where uploaded PDF and other files are written to (_TODO temporarily or permanently?_)
 
