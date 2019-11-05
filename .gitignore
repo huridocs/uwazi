@@ -7,6 +7,7 @@ coverage
 /prod
 /build
 *.log
+*.tar.gz
 npm-debug
 uploads/*
 uwazi-fixtures
@@ -24,4 +25,5 @@ custom_uploads/*
 !attachments/index.html
 !custom_uploads/index.html
 .idea
+.env
 test

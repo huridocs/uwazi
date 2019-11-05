@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 const relationshipsSchema = new mongoose.Schema({
   entity: { type: String, index: true },

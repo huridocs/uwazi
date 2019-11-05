@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 const searchSchema = new mongoose.Schema({
   language: String,
