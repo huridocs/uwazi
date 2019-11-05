@@ -8,6 +8,8 @@
     "moduleResolution": "node",
     "isolatedModules": true,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "strict": true,
     "baseUrl": ".",
     "paths": {

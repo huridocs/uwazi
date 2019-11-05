@@ -2,11 +2,13 @@
 
 import Joi from 'joi';
 
+// Must match entitiesModel.js interfaces!
 const dateRangeSchema = Joi.object().keys({
   from: Joi.number().allow(null),
   to: Joi.number().allow(null),
 });
 
+// Must match entitiesModel.js interfaces!
 const metadataSchema = Joi.object()
   .keys()
   .pattern(
