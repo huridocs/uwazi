@@ -5,14 +5,18 @@ import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
 
 const ajv = Ajv({ allErrors: true });
 
+const isEmpty = (value) => isNull(value) || isUndefined(value) || !value.length;
+
+const isNonArrayObject = (value) => isObject(value) && !Array.isArray(value);
+
 const isValidDateRange = (value) => {
-  if (!isObject(value)) {
+  if (!isNonArrayObject(value)) {
     return false;
   }
   if (isNumber(value.from) && isNumber(value.to)) {
     return value.from <= value.to;
   }
-  return Boolean(value.from || value.to);
+  return true;
 };
 
 const isValidSelect = value => isString(value) && value;
@@ -21,13 +25,13 @@ const isValidGeolocation = value => isString(value.label) && isNumber(value.lat)
 
 const validateRequiredProperty = (property, value) => {
   if (property.required) {
-    return !isUndefined(value);
+    return !isEmpty(value);
   }
   return true;
 };
 
 const validateTextProperty = (property, value) => {
-  if ([templateTypes.text, templateTypes.markdown, templateTypes.media, templateTypes.image].includes(property.type)) {
+  if ([templateTypes.text, templateTypes.markdown, templateTypes.media, templateTypes.image, templateTypes.select].includes(property.type)) {
     return isString(value);
   }
   return true;
@@ -35,7 +39,7 @@ const validateTextProperty = (property, value) => {
 
 const validateNumericProperty = (property, value) => {
   if (property.type === templateTypes.numeric) {
-    return isNumber(value);
+    return isNumber(value) || value === '';
   }
   return true;
 };
@@ -64,13 +68,6 @@ const validateDateRangeProperty = (property, value) => {
 const validateMultiDateRangeProperty = (property, value) => {
   if (property.type === templateTypes.multidaterange) {
     return value.every(isValidDateRange);
-  }
-  return true;
-};
-
-const validateSelectProperty = (property, value) => {
-  if (property.type === templateTypes.select) {
-    return isValidSelect(value);
   }
   return true;
 };
@@ -112,7 +109,6 @@ const validateMetadataField = (property, entity) => {
     validateMultiDateRangeProperty,
     validateTextProperty,
     validateNumericProperty,
-    validateSelectProperty,
     validateMultiSelectProperty,
     validateLinkProperty,
     validateGeolocationProperty
@@ -125,6 +121,9 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   errors: false,
   type: 'object',
   async validate(schema, entity) {
+    if (!entity.template) {
+      return true;
+    }
     const [template] = await templatesModel.get({ _id: entity.template });
     if (!template) {
       return false;
@@ -136,7 +135,7 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
 
 const objectIdSchema = {
   oneOf: [
-    { type: 'string', minLength: 1 },
+    { type: 'string' },
     { type: 'object' }
   ]
 };
@@ -150,37 +149,54 @@ const linkSchema = {
   }
 };
 
+const dateRangeSchema = {
+  type: 'object',
+  properties: {
+    from: {
+      oneOf: [{ type: 'number' }, { type: 'null' }]
+    },
+    to: {
+      oneOf: [{ type: 'number' }, { type: 'null' }]
+    },
+  },
+  additionalProperties: false
+};
+
+const latLonSchema = {
+  type: 'object',
+  required: ['lon', 'lat'],
+  properties: {
+    label: { type: 'string' },
+    lat: { type: 'number', minimum: -90, maximum: 90 },
+    lon: { type: 'number', minimum: -180, maximum: 180 }
+  }
+};
+
+const geolocationSchema = {
+  type: 'array',
+  items: latLonSchema
+};
+
+const tocSchema = {
+  type: 'object',
+  properties: {
+    range: {
+      type: 'object',
+      properties: {
+        start: { type: 'number' },
+        end: { type: 'number' }
+      }
+    },
+    label: { type: 'string' },
+    indentation: { type: 'number' }
+  }
+};
+
 const schema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
-  required: ['title'],
   metadataMatchesTemplateProperties: true,
-  definitions: {
-    dateRange: {
-      type: 'object',
-      oneOf: [
-        {
-          properties: {
-            from: { type: 'number' },
-            to: { type: 'number' }
-          }
-        },
-        {
-          properties: {
-            from: { type: 'null' },
-            to: { type: 'number' }
-          }
-        },
-        {
-          properties: {
-            from: { type: 'number' },
-            to: { type: 'null' }
-          }
-        }
-      ]
-    }
-  },
   properties: {
     _id: objectIdSchema,
     sharedId: { type: 'string', minLength: 1 },
@@ -259,11 +275,16 @@ const schema = {
         }
       }
     },
-    user: { type: 'string' },
+    toc: {
+      type: 'array',
+      items: tocSchema
+    },
+    user: objectIdSchema,
     metadata: {
       type: 'object',
       additionalProperties: {
-        oneOf: [
+        anyOf: [
+          { type: 'null' },
           { type: 'string' },
           { type: 'number' },
           {
@@ -278,28 +299,13 @@ const schema = {
               type: 'number'
             }
           },
-          {
-            $ref: '#/definitions/dateRange'
-          },
+          dateRangeSchema,
           {
             type: 'array',
-            items: {
-              $ref: '#/definitions/dateRange'
-            }
+            items: dateRangeSchema
           },
           linkSchema,
-          {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['lon', 'lat'],
-              properties: {
-                label: { type: 'string' },
-                lat: { type: 'number', minimum: -90, maximum: 90 },
-                lon: { type: 'number', minimum: -180, maximum: 180 }
-              }
-            }
-          }
+          geolocationSchema
         ]
       }
     },

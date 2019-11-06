@@ -6,7 +6,7 @@ import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import validator from '../entitiesValidator';
-import fixtures, { templateId, nonExistentId } from './validatorFixtures';
+import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 describe('entitiesValidator', () => {
   beforeEach(done => {
@@ -65,6 +65,13 @@ describe('entitiesValidator', () => {
             chars: 20,
           },
         },
+        toc: [
+          {
+            range: { start: 100, end: 200 },
+            label: 'Label',
+            indentation: 0,
+          }
+        ],
         user: 'user',
         metadata: {
           name: 'test',
@@ -79,6 +86,7 @@ describe('entitiesValidator', () => {
           geolocation: [{ lat: 80, lon: 76, label: '' }],
           select: 'value',
           multiselect: ['one', 'two'],
+          required_multiselect: ['one'],
           relationship: ['rel1', 'rel2'],
           link: { label: 'label', url: 'url' },
           preview: '',
@@ -97,12 +105,17 @@ describe('entitiesValidator', () => {
       }
     };
 
-    it('should validate entity', async () => {
+    it('should allow ObjectId for _id fields', async () => {
+      entity._id = db.id();
+      entity.user = db.id();
+      entity.template = templateId;
       await testValid();
     });
 
-    it('should allow ObjextId as template value', async () => {
-      entity.template = templateId;
+    it('should allow template to be missing', async () => {
+      delete entity.template;
+      await testValid();
+      entity.template = '';
       await testValid();
     });
 
@@ -111,29 +124,50 @@ describe('entitiesValidator', () => {
       await testInvalid();
     });
 
-    it('should fail if title is not a non-empty string', async () => {
-      delete entity.title;
-      await testInvalid();
-      entity.title = '';
+    it('should fail if title is not a string', async () => {
+      entity.title = {};
       await testInvalid();
       entity.title = 10;
       await testInvalid();
     });
 
-    describe('metadata', () => {
-      it('should fail if metadata has unsupported value type', async () => {
-        entity.metadata.test = [false, true];
-        await testInvalid();
-      });
+    it('should allow title to be missing', async () => {
+      delete entity.title;
+      await testValid();
+    });
 
+    describe('metadata', () => {
       it('should allow non-required properties to be missing', async () => {
         delete entity.metadata.geolocation;
         await testValid();
+        delete entity.metadata.date;
+        await testValid();
+      });
+
+      describe('if no property is required', () => {
+        it('should allow metadata object to be missing if there are not required properties', async () => {
+          entity.template = simpleTemplateId;
+          delete entity.metadata;
+          await testValid();
+        });
+
+        it('should allow metadata object to be empty', async () => {
+          entity.template = simpleTemplateId;
+          entity.metadata = {};
+          await testValid();
+        });
       });
 
       describe('if property is required', () => {
         it('should fail if field does not exist', async () => {
           delete entity.metadata.name;
+          await testInvalid();
+          entity.metadata.name = '';
+          await testInvalid();
+          entity.metadata.name = null;
+          await testInvalid();
+          entity.metadata.name = 'name';
+          entity.metadata.required_multiselect = [];
           await testInvalid();
         });
       });
@@ -171,6 +205,10 @@ describe('entitiesValidator', () => {
           entity.metadata.numeric = 'test';
           await testInvalid();
         });
+        it('should allow value to be empty string', async () => {
+          entity.metadata.numeric = '';
+          await testValid();
+        });
       });
 
       describe('date property', () => {
@@ -179,6 +217,10 @@ describe('entitiesValidator', () => {
           await testInvalid();
           entity.metadata.date = -100;
           await testInvalid();
+        });
+        it('should allow value to be null if property is not required', async () => {
+          entity.metadata.date = null;
+          await testValid();
         });
       });
 
@@ -201,13 +243,17 @@ describe('entitiesValidator', () => {
           await testInvalid();
         });
 
-        it('should allow either from or to to be null but not both', async () => {
+        it('should allow either from or to to be null', async () => {
           entity.metadata.daterange = { from: null, to: 100 };
           await testValid();
           entity.metadata.daterange = { from: 100, to: null };
           await testValid();
           entity.metadata.daterange = { from: null, to: null };
-          await testInvalid();
+          await testValid();
+        });
+        it('should allow value to be an empty object', async () => {
+          entity.metadata.daterange = {};
+          await testValid();
         });
         it('should fail if from and to are not numbers', async () => {
           entity.metadata.daterange = { from: 'test', to: 'test' };
@@ -236,8 +282,10 @@ describe('entitiesValidator', () => {
           await testInvalid();
           entity.metadata.select = ['test'];
           await testInvalid();
+        });
+        it('should allow empty string if property is not required', async () => {
           entity.metadata.select = '';
-          await testInvalid();
+          await testValid();
         });
       });
 
@@ -247,6 +295,10 @@ describe('entitiesValidator', () => {
           await testInvalid();
           entity.metadata.multiselect = ['one', '', 'two'];
           await testInvalid();
+        });
+        it('should allow value to be an empty array', async () => {
+          entity.metadata.multiselect = [];
+          await testValid();
         });
       });
 

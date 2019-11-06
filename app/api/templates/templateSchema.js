@@ -101,43 +101,42 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
   }
 });
 
+const propertySchema = {
+  type: 'object',
+  required: ['label', 'type'],
+  requireContentForSelectFields: true,
+  requireRelationTypeForRelationship: true,
+  requireInheritPropertyForInheritingRelationship: true,
+  properties: {
+    id: { type: 'string' },
+    label: { type: 'string', minLength: 1 },
+    name: { type: 'string', minLength: 1 },
+    isCommonProperty: { type: 'boolean' },
+    type: { type: 'string', enum: fieldTypes },
+    prioritySorting: { type: 'boolean' },
+    content: { type: 'string', minLength: 1 },
+    inherit: { type: 'boolean' },
+    inheritProperty: { type: 'string', minLength: 1 },
+    filter: { type: 'boolean' },
+    noLabel: { type: 'boolean' },
+    fullWidth: { type: 'boolean' },
+    defaultfilter: { type: 'boolean' },
+    required: { type: 'boolean' },
+    sortable: { type: 'boolean' },
+    showInCard: { type: 'boolean' },
+    style: { type: 'string' },
+    nestedProperties: {
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    }
+  }
+};
+
 const schema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
-  definitions: {
-    property: {
-      type: 'object',
-      required: ['label', 'type'],
-      requireContentForSelectFields: true,
-      requireRelationTypeForRelationship: true,
-      requireInheritPropertyForInheritingRelationship: true,
-      properties: {
-        id: { type: 'string' },
-        label: { type: 'string', minLength: 1 },
-        name: { type: 'string', minLength: 1 },
-        isCommonProperty: { type: 'boolean' },
-        type: { type: 'string', enum: fieldTypes },
-        prioritySorting: { type: 'boolean' },
-        content: { type: 'string', minLength: 1 },
-        inherit: { type: 'boolean' },
-        inheritProperty: { type: 'string', minLength: 1 },
-        filter: { type: 'boolean' },
-        noLabel: { type: 'boolean' },
-        fullWidth: { type: 'boolean' },
-        defaultfilter: { type: 'boolean' },
-        required: { type: 'boolean' },
-        sortable: { type: 'boolean' },
-        showInCard: { type: 'boolean' },
-        style: { type: 'string' },
-        nestedProperties: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  },
   type: 'object',
   uniqueName: true,
   required: ['name', 'commonProperties', 'properties'],
@@ -151,15 +150,11 @@ const schema = {
       type: 'array',
       requireTitleProperty: true,
       minItems: 1,
-      items: {
-        $ref: '#/definitions/property',
-      }
+      items: propertySchema
     },
     properties: {
       type: 'array',
-      items: {
-        $ref: '#/definitions/property'
-      }
+      items: propertySchema
     }
   }
 };

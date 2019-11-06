@@ -1,6 +1,7 @@
 import db from 'api/utils/testing_db';
 
 const templateId = db.id();
+const simpleTemplateId = db.id();
 const nonExistentId = db.id();
 
 export default {
@@ -22,7 +23,14 @@ export default {
         { name: 'image', type: 'image' },
         { name: 'link', type: 'link' },
         { name: 'preview', type: 'preview' },
-        { name: 'geolocation', type: 'geolocation' }
+        { name: 'geolocation', type: 'geolocation' },
+        { name: 'required_multiselect', type: 'multiselect', required: true }
+      ]
+    },
+    {
+      _id: simpleTemplateId,
+      properties: [
+        { name: 'markdown', type: 'markdown' }
       ]
     }
   ]
@@ -30,5 +38,6 @@ export default {
 
 export {
   templateId,
-  nonExistentId
+  simpleTemplateId,
+  nonExistentId,
 };
