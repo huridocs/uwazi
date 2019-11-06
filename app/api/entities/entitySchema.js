@@ -230,23 +230,6 @@ const schema = {
         type: { type: 'string' }
       }
     },
-    toc: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          label: { type: 'string' },
-          indentation: { type: 'number' },
-          range: {
-            type: 'object',
-            properties: {
-              start: { type: 'number' },
-              end: { type: 'number' }
-            }
-          }
-        }
-      }
-    },
     attachments: {
       type: 'array',
       items: {
