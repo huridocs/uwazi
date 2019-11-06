@@ -2,6 +2,7 @@
  * @format
  */
 /* eslint-disable no-await-in-loop */
+/* eslint-disable max-statements */
 
 import entities from 'api/entities';
 
@@ -56,7 +57,7 @@ export default {
     const cursor = db.collection('entities').find();
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
-      const template = templatesByKey[entity.template.toString()];
+      const template = templatesByKey[entity.template ? entity.template.toString() : null];
       if (entity.metadata && template) {
         entity.metadata = this.expandMetadata(entity.metadata);
         entity.metadata = await entities.denormalizeMetadata(entity, template, dictionariesByKey);

@@ -103,6 +103,9 @@ export default {
         friends: ['shared-e1', 'shared-e2'],
       },
     },
+    {
+      _id: db._id,
+    },
   ],
 };
 
