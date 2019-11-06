@@ -96,8 +96,8 @@ onHover(e) {
     const { markers, cluster } = this.props;
     const { selectedMarker } = this.state;
     let feature = null;
-    
-    if(e.features){
+
+    if (e.features) {
       feature = e.features.find(f => f.layer.id === 'unclustered-point');
       if (feature) {
         this.hoverOnMarker(markers[feature.properties.index]);
