@@ -70,6 +70,7 @@ describe('wrapValidation', () => {
     });
 
     it('should support models that use `this` keyword or mutate their own data', () => {
+      validator.foo = () => {};
       model = {
         val: 5,
         foo: jest.fn().mockReturnValue(10),

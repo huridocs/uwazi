@@ -394,10 +394,12 @@ describe('templates', () => {
 
   describe('validation', () => {
     it('should validate on save', async () => {
-      jest.spyOn(templates, 'save').mockResolvedValue({});
       jest.spyOn(templatesValidator, 'save').mockReturnValue(true);
 
-      const tpl = { name: 'Test' };
+      const tpl = {
+        name: 'Test',
+        commonProperties: [{ name: 'title' }],
+      };
       await validatedTemplates.save(tpl, 'en');
       expect(templatesValidator.save).toHaveBeenCalledWith(tpl, 'en');
     });

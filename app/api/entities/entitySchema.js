@@ -98,7 +98,7 @@ const validateLinkProperty = (property, value) => {
 
 
 const validateMetadataField = (property, entity) => {
-  const value = entity.metadata[property.name];
+  const value = entity.metadata && entity.metadata[property.name];
   if (!validateRequiredProperty(property, value)) {
     return false;
   }
@@ -134,6 +134,22 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   }
 });
 
+const objectIdSchema = {
+  oneOf: [
+    { type: 'string', minLength: 1 },
+    { type: 'object' }
+  ]
+};
+
+const linkSchema = {
+  type: 'object',
+  required: ['label', 'url'],
+  properties: {
+    label: { type: 'string', minLength: 1 },
+    url: { type: 'string', minLength: 1 }
+  }
+};
+
 const schema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -166,12 +182,12 @@ const schema = {
     }
   },
   properties: {
-    _id: { type: 'string', minLength: 1 },
+    _id: objectIdSchema,
     sharedId: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
     mongoLanguage: { type: 'string' },
     title: { type: 'string', minLength: 1 },
-    template: { type: 'string', minLength: 1 },
+    template: objectIdSchema,
     file: {
       type: 'object',
       properties: {
@@ -271,14 +287,7 @@ const schema = {
               $ref: '#/definitions/dateRange'
             }
           },
-          {
-            type: 'object',
-            required: ['label', 'url'],
-            properties: {
-              label: { type: 'string', minLength: 1 },
-              url: { type: 'string', minLength: 1 }
-            }
-          },
+          linkSchema,
           {
             type: 'array',
             items: {

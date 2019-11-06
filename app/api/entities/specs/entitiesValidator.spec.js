@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 /** @format */
 
 import Ajv from 'ajv';
@@ -96,6 +98,11 @@ describe('entitiesValidator', () => {
     };
 
     it('should validate entity', async () => {
+      await testValid();
+    });
+
+    it('should allow ObjextId as template value', async () => {
+      entity.template = templateId;
       await testValid();
     });
 

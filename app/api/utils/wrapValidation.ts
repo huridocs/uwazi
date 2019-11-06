@@ -2,13 +2,13 @@ export function wrapValidation<V extends any, M extends any>(validator: V, model
   const wrappedModel = { ...model };
   Object.keys(wrappedModel).forEach((fnName) => {
     if (fnName in validator) {
+      const modelFn = model[fnName].bind(wrappedModel);
       wrappedModel[fnName] = (...args: any[]) => {
-        const validatorFn = validator[fnName].bind(validator);
-        const res = validatorFn(...args);
+        const res = validator[fnName](...args);
         if (res && res.then) {
-          return res.then(() => model[fnName](...args));
+          return res.then(() => modelFn(...args));
         }
-        return model[fnName](...args);
+        return modelFn(...args);
       };
     }
   });

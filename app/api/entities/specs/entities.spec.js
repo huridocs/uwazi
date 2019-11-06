@@ -897,12 +897,12 @@ describe('entities', () => {
 
   describe('validation', () => {
     it('should validate on save', async () => {
-      jest.spyOn(entities, 'save').mockResolvedValue({});
       jest.spyOn(entitiesValidator, 'save').mockReturnValue(true);
 
-      const tpl = { name: 'Test' };
-      await wrappedEntities.save(tpl, 'en');
-      expect(entitiesValidator.save).toHaveBeenCalledWith(tpl, 'en');
+      const entity = { title: 'Test' };
+      const options = { user: { _id: db.id() }, language: 'en' };
+      await wrappedEntities.save(entity, options);
+      expect(entitiesValidator.save).toHaveBeenCalledWith(entity, options);
     });
   });
 });
