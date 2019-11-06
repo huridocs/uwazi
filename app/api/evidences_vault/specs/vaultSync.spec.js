@@ -168,7 +168,7 @@ describe('vaultSync', () => {
         listItem: { request: '2', filename: 'package2.zip', status: '201' }
       }
     ];
-    try {
+
     await mockVault(evidences);
     await vaultSync.sync(token, templateId);
     const imported = await entities.get();
@@ -202,7 +202,6 @@ describe('vaultSync', () => {
         filename: '2.zip'
       })
     ]);
-  } catch (e) { console.log('ERROR', e); }
   });
 
   it('should not import already imported evidences', async () => {
