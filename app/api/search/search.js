@@ -292,6 +292,8 @@ const mainSearch = (query, language, user) => {
       if (query.geolocation) {
         searchGeolocation(documentsQuery, filteringTypes, templates);
       }
+      console.log(JSON.stringify(documentsQuery.query(), null, 4));
+
       return elastic
         .search({ index: elasticIndexes.index, body: documentsQuery.query() })
         .then(processResponse)
@@ -488,20 +490,21 @@ const search = {
     const type = 'entity';
     const body = [];
     docs.forEach(doc => {
-      let _doc = doc;
+      let docBody = Object.assign({}, doc);
+      docBody.fullText = 'entity';
       const id = doc._id.toString();
-      delete doc._id;
-      delete doc._rev;
-      delete doc.pdfInfo;
+      delete docBody._id;
+      delete docBody._rev;
+      delete docBody.pdfInfo;
 
       let action = {};
-      action[_action] = { _index: elasticIndexes.index, _id: id };
+      action[_action] = { _index: elasticIndexes.index, _id: id, routing: id };
       if (_action === 'update') {
-        _doc = { doc: _doc };
+        docBody = { doc: docBody };
       }
 
       body.push(action);
-      body.push(_doc);
+      body.push(docBody);
 
       if (doc.fullText) {
         const fullText = Object.values(doc.fullText).join('\f');
