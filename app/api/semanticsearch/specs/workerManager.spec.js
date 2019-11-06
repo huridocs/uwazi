@@ -117,6 +117,18 @@ describe('WorkerManager', () => {
         testWorkerDeletedAndReplaced(manager, searchId);
       });
     });
+
+    describe('handling worker stopped event', () => {
+      it('should replace worker', () => {
+        const manager = createManager();
+        const searchId = 'search';
+        manager.notifyNewSearch(searchId);
+        const eventCall = mockWorkerOnFn.mock.calls.find(([event]) => event === 'stopped');
+        const handler = eventCall[1];
+        handler();
+        testWorkerDeletedAndReplaced(manager, searchId);
+      });
+    });
   });
 
   describe('startNewSearchIfFree', () => {

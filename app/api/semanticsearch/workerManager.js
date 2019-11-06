@@ -37,6 +37,7 @@ export class WorkerManager extends EventEmitter {
     if (this.canAddWorker) {
       const worker = new Worker(searchId);
       worker.on('done', () => this.onWorkerDone(searchId));
+      worker.on('stopped', () => this.onWorkerStopped(searchId));
       worker.on('update', update => this.onWorkerUpdate(searchId, update));
       worker.on('error', error => this.onWorkerError(searchId, error));
       this.workers[searchId] = worker;
@@ -46,6 +47,10 @@ export class WorkerManager extends EventEmitter {
 
   async onWorkerDone(searchId) {
     this.emit('searchDone', searchId);
+    this.deleteAndReplaceWorker(searchId);
+  }
+
+  async onWorkerStopped(searchId) {
     this.deleteAndReplaceWorker(searchId);
   }
 
