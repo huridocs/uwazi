@@ -165,6 +165,17 @@ describe('MarkdownViewer', () => {
       expect(component).toMatchSnapshot();
     });
 
+    it('should render single tags as self closing', () => {
+      props.html = true;
+      props.markdown = '' +
+        'test\n\n' +
+        '***\n' +
+        'test';
+
+      render();
+      expect(component).toMatchSnapshot();
+    });
+
     it('should render properly a selfclosing XML tags', () => {
       props.html = true;
       props.markdown = '' +
