@@ -34,8 +34,8 @@ describe('SemanticSearchMultieditPanel', () => {
         ]),
         multipleEditForm: {
           metadata: {
-            unchangedField: [{ value: { pristine: true } }],
-            changedField: [{ value: { pristine: false } }],
+            unchangedField: { pristine: true },
+            changedField: { pristine: false },
           },
         },
       },

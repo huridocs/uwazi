@@ -66,7 +66,10 @@ module.exports = function(production) {
           test: /\.(js|jsx|ts|tsx)$/,
           loader: "babel-loader?cacheDirectory",
           include: path.join(rootPath, "app"),
-          exclude: /node_modules/
+          exclude: /node_modules/,
+          options: {
+            sourceMap: process.env.BABEL_ENV === 'debug'
+          }
         },
         {
           test: /\.s?[ac]ss$/,

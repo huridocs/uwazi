@@ -172,10 +172,10 @@ export default {
     };
   },
 
-  select(property, [thesauriValue], thesauris) {
+  select(property, [{ value: thesauriValue }], thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
     const { value, url, icon } = this.getSelectOptions(
-      getOption(thesauri, thesauriValue.value),
+      getOption(thesauri, thesauriValue),
       thesauri
     );
     return { label: property.get('label'), name: property.get('name'), value, icon, url };
@@ -360,7 +360,7 @@ export default {
       );
     }
 
-    if (this[type] && (value || type === 'preview')) {
+    if (this[type] && ((value && value.length) || type === 'preview')) {
       return Object.assign(
         {},
         { translateContext: template.get('_id'), ...property.toJS() },
