@@ -92,13 +92,16 @@ export default class Map extends Component {
     onClick(e);
   }
 
-  onHover(e) {
+onHover(e) {
     const { markers, cluster } = this.props;
     const { selectedMarker } = this.state;
-
-    const feature = e.features.find(f => f.layer.id === 'unclustered-point');
-    if (feature) {
-      this.hoverOnMarker(markers[feature.properties.index]);
+    let feature = null;
+    
+    if(e.features){
+      feature = e.features.find(f => f.layer.id === 'unclustered-point');
+      if (feature) {
+        this.hoverOnMarker(markers[feature.properties.index]);
+      }
     }
     if (!feature && selectedMarker && cluster) {
       this.setState({ selectedMarker: null });
