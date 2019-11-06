@@ -49,7 +49,7 @@ describe('WorkerManager', () => {
       }));
     });
     function createManager() {
-      const manager = new WorkerManager();
+      const manager = new WorkerManager({ errorDelayMilliseconds: 500 });
       jest.spyOn(manager, 'startNewSearchIfFree').mockImplementation(() => {});
       jest.spyOn(manager, 'emit');
       return manager;
@@ -58,8 +58,19 @@ describe('WorkerManager', () => {
       expect(searchId in _manager.workers).toBe(false);
       expect(_manager.startNewSearchIfFree).toHaveBeenCalled();
     }
+
+    function testWorkerDeletedAndReplacedWithDelay(_manager, searchId, done) {
+      _manager.startNewSearchIfFree.mockClear();
+      expect(searchId in _manager.workers).toBe(false);
+      expect(_manager.startNewSearchIfFree).not.toHaveBeenCalled();
+      setTimeout(() => {
+        expect(_manager.startNewSearchIfFree).toHaveBeenCalled();
+        done();
+      }, _manager.errorDelayMilliseconds + 100);
+    }
+
     describe('handling worker error event', () => {
-      it('should replace worker and emit searchError event', () => {
+      it('emit searchError event and replace worker after delay', (done) => {
         const manager = createManager();
         const searchId = 'search';
         const error = new Error('test error');
@@ -68,7 +79,7 @@ describe('WorkerManager', () => {
         const handler = eventCall[1];
         handler(error);
         expect(manager.emit).toHaveBeenCalledWith('searchError', searchId, error);
-        testWorkerDeletedAndReplaced(manager, searchId);
+        testWorkerDeletedAndReplacedWithDelay(manager, searchId, done);
       });
     });
     describe('handling worker update event', () => {

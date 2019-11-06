@@ -4,11 +4,13 @@ import { IN_PROGRESS, PENDING } from './statuses';
 import searchModel from './model';
 
 const NUM_WORKERS = 3;
+const DEFAULT_ERROR_DELAY_MILLISECONDS = 10000;
 
 export class WorkerManager extends EventEmitter {
-  constructor() {
+  constructor(opts = { errorDelayMilliseconds: DEFAULT_ERROR_DELAY_MILLISECONDS }) {
     super();
     this.workers = {};
+    this.errorDelayMilliseconds = opts.errorDelayMilliseconds;
   }
 
   get currentWorkersCount() {
@@ -49,16 +51,20 @@ export class WorkerManager extends EventEmitter {
 
   async onWorkerError(searchId, error) {
     this.emit('searchError', searchId, error);
-    this.deleteAndReplaceWorker(searchId);
+    this.deleteAndReplaceWorker(searchId, false);
   }
 
   onWorkerUpdate(searchId, update) {
     this.emit('searchUpdated', searchId, update);
   }
 
-  deleteAndReplaceWorker(searchId) {
+  deleteAndReplaceWorker(searchId, replaceImmediately = true) {
     delete this.workers[searchId];
-    this.startNewSearchIfFree();
+    if (replaceImmediately) {
+      this.startNewSearchIfFree();
+      return;
+    }
+    setTimeout(() => this.startNewSearchIfFree(), this.errorDelayMilliseconds);
   }
 
   async startNewSearchIfFree() {
