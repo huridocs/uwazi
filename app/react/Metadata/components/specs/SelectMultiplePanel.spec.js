@@ -112,8 +112,8 @@ describe('SelectMultiplePanel', () => {
       props.formState = {
         icon: { pristine: false },
         metadata: {
-          title: [{ value: { pristine: false } }],
-          date: [{ value: { pristine: true } }],
+          title: { pristine: false },
+          date: { pristine: true },
         },
       };
       render();
