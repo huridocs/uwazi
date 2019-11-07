@@ -1,5 +1,6 @@
-/* eslint-disable max-statements */
 /** @format */
+
+/* eslint-disable max-statements */
 
 import Immutable from 'immutable';
 

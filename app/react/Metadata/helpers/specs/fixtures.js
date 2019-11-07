@@ -28,11 +28,14 @@ export const doc = {
     select: [{ value: 'value5', label: 'Value 5' }],
     image: [{ value: 'imageURL' }],
     media: [{ value: 'mediaURL' }],
-    relationship1: [{ value: 'value1', label: 'Value 1' }, { value: 'value2', label: 'Value 2' }],
+    relationship1: [
+      { type: 'document', value: 'value1', label: 'Value 1' },
+      { type: 'document', value: 'value2', label: 'Value 2' },
+    ],
     relationship2: [
-      { value: 'value1', label: 'Value 1' },
-      { value: 'value2', label: 'Value 2' },
-      { value: 'value4', label: 'Value 4' },
+      { type: 'document', value: 'value1', label: 'Value 1' },
+      { type: 'document', value: 'value2', label: 'Value 2' },
+      { type: 'entity', value: 'value4', label: 'Value 4' },
     ],
     relationship3: [
       { value: 'value1', label: 'Value 1' },
@@ -153,33 +156,18 @@ export const thesauris = Immutable.fromJS([
     _id: 'thesauriId',
     name: 'Multiselect',
     type: 'template',
-    values: [
-      { label: 'Value 1', id: 'value1', _id: 'value1', type: 'document' },
-      { label: 'Value 2', id: 'value2', _id: 'value2', type: 'document' },
-      {
-        label: 'Value 3',
-        id: 'value3',
-        _id: 'value3',
-        values: [
-          { label: 'Value 5', id: 'value5', _id: 'value5', type: 'document' },
-          { label: 'Value 6', id: 'value6', _id: 'value6', type: 'document' },
-        ],
-      },
-    ],
+    values: [],
   },
   {
     _id: 'thesauriId2',
     name: 'Multiselect2',
     type: 'template',
-    values: [{ label: 'Value 4', id: 'value4', _id: 'value4', type: 'entity' }],
+    values: [],
   },
   {
     _id: 'template2',
     name: 'Geolocations',
     type: 'template',
-    values: [
-      { label: 'Entity 1 Title', id: 'linkedEntity1', _id: 'linkedEntity1', type: 'entity' },
-      { label: 'Entity 2 Title', id: 'linkedEntity2', _id: 'linkedEntity2', type: 'entity' },
-    ],
+    values: [],
   },
 ]);
