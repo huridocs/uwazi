@@ -51,12 +51,14 @@ export class SemanticSearchSidePanel extends Component {
     const { open } = this.props;
     return (
       <SidePanel open={open} className="metadata-sidepanel semantic-search">
-        <button type="button" className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
-          <Icon icon="times" />
-        </button>
+        <div className="sidepanel-header">
+          <button type="button" className="closeSidepanel close-modal" onClick={this.props.hideSemanticSearch}>
+            <Icon icon="times"/>
+          </button>
+        </div>
         <div className="sidepanel-body">
           <ShowIf if={!!searches}>
-            <SearchList searches={searches} />
+            <SearchList searches={searches}/>
           </ShowIf>
         </div>
       </SidePanel>

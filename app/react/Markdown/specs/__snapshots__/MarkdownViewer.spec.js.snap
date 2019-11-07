@@ -397,6 +397,32 @@ exports[`MarkdownViewer render should render properly a selfclosing XML tags 1`]
 </div>
 `;
 
+exports[`MarkdownViewer render should render single tags as self closing 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p
+    key="0"
+  >
+    test
+  </p>
+  
+
+  <hr
+    key="2"
+  />
+  
+
+  <p
+    key="4"
+  >
+    test
+  </p>
+  
+
+</div>
+`;
+
 exports[`MarkdownViewer render should support containers with custom classNames 1`] = `
 <div
   className="markdown-viewer"

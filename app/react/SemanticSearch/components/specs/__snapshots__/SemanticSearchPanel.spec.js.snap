@@ -5,15 +5,19 @@ exports[`SemanticSearchPanel should render SearchList with searches from the sta
   className="metadata-sidepanel semantic-search"
   open={true}
 >
-  <button
-    className="closeSidepanel close-modal"
-    onClick={[Function]}
-    type="button"
+  <div
+    className="sidepanel-header"
   >
-    <Connect(Icon)
-      icon="times"
-    />
-  </button>
+    <button
+      className="closeSidepanel close-modal"
+      onClick={[Function]}
+      type="button"
+    >
+      <Connect(Icon)
+        icon="times"
+      />
+    </button>
+  </div>
   <div
     className="sidepanel-body"
   >
