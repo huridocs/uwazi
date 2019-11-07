@@ -1,25 +1,13 @@
 import entities from 'api/entities';
 import request from 'shared/JSONRequest.js';
 import translations from 'api/i18n/translations';
-import validateTemplate from 'api/templates/validateTemplate';
 import createError from 'api/utils/Error';
+import { wrapValidation } from 'api/utils/wrapValidation';
 
 import { db_url as dbURL } from '../config/database.js';
 import { generateNamesAndIds, getUpdatedNames, getDeletedProperties } from './utils';
 import model from './templatesModel.js';
-
-const checkDuplicated = template => model.get()
-.then((templates) => {
-  const duplicated = templates.find((entry) => {
-    const sameEntity = entry._id.equals(template._id);
-    const sameName = entry.name.trim().toLowerCase() === template.name.trim().toLowerCase();
-    return sameName && !sameEntity;
-  });
-
-  if (duplicated) {
-    return Promise.reject({ json: 'duplicated_entry' });
-  }
-});
+import validator from './templatesValidator';
 
 const removePropsWithUnexistentId = async (unexistentId) => {
   const relatedTemplates = await model.get({ 'properties.content': unexistentId });
@@ -62,20 +50,17 @@ const updateTranslation = (currentTemplate, template) => {
   return translations.updateContext(currentTemplate._id, template.name, updatedLabels, deletedPropertiesByLabel, context, 'Entity');
 };
 
-export default {
+const templates = {
   save(template, language) {
     template.properties = template.properties || [];
     template.properties = generateNamesAndIds(template.properties);
-    return checkDuplicated(template)
-    .then(() => validateTemplate(template))
-    .then(() => {
-      if (template._id) {
-        return this._update(template, language);
-      }
-      return model.save(template)
-      .then(newTemplate => addTemplateTranslation(newTemplate)
-      .then(() => newTemplate));
-    });
+
+    if (template._id) {
+      return this._update(template, language);
+    }
+    return model.save(template)
+    .then(newTemplate => addTemplateTranslation(newTemplate)
+    .then(() => newTemplate));
   },
 
   _update(template, language) {
@@ -173,3 +158,9 @@ export default {
     return model.count({ 'properties.content': thesauriId });
   }
 };
+
+export {
+  templates
+};
+
+export default wrapValidation(validator, templates);
