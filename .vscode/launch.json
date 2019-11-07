@@ -32,6 +32,18 @@
       "env": {
         "BABEL_ENV": "debug"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "debug-this-file",
+      "program": "${file}",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "BABEL_ENV": "debug"
+      }
     }
   ]
 }

@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { templateTypes } from 'shared/templateTypes';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
+import { objectIdSchema } from 'api/entities/commonSchema';
 
 const ajv = Ajv({ allErrors: true });
 
@@ -143,11 +144,7 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
-const objectIdSchema = {
-  oneOf: [{ type: 'string' }, { type: 'object' }],
-};
-
-const linkSchema = {
+export const linkSchema = {
   type: 'object',
   required: ['label', 'url'],
   additionalProperties: false,
@@ -157,7 +154,7 @@ const linkSchema = {
   },
 };
 
-const dateRangeSchema = {
+export const dateRangeSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
@@ -170,7 +167,7 @@ const dateRangeSchema = {
   },
 };
 
-const latLonSchema = {
+export const latLonSchema = {
   type: 'object',
   required: ['lon', 'lat'],
   additionalProperties: false,
@@ -181,12 +178,12 @@ const latLonSchema = {
   },
 };
 
-const geolocationSchema = {
+export const geolocationSchema = {
   type: 'array',
   items: latLonSchema,
 };
 
-const tocSchema = {
+export const tocSchema = {
   type: 'object',
   title: 'TableOfContents',
   additionalProperties: false,
@@ -211,7 +208,7 @@ export const entitySchema = {
   metadataMatchesTemplateProperties: true,
   additionalProperties: false,
   definitions: {
-    objectIdSchema,
+    objectIdSchema: objectIdSchema,
     linkSchema,
     dateRangeSchema,
     latLonSchema,
