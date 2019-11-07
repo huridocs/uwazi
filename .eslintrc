@@ -16,6 +16,7 @@
     "operator-linebreak": "off", // handled by prettier
     "no-mixed-operators": "off",
     "no-underscore-dangle": "off",
+    "space-before-function-paren": "off",
     "comma-dangle": "off",
     "spaced-comment": "off",
     "object-curly-newline": "off",
