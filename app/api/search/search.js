@@ -123,7 +123,7 @@ function snippetsFromSearchHit(hit) {
   return snippets;
 }
 
-function searchGeolocation(documentsQuery, filteringTypes, templates) {
+function searchGeolocation(documentsQuery, templates) {
   documentsQuery.limit(9999);
   const geolocationProperties = [];
 
@@ -184,7 +184,7 @@ const processResponse = response => {
     }
   });
 
-  return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
+  return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
 };
 
 const mainSearch = (query, language, user) => {
@@ -290,9 +290,8 @@ const mainSearch = (query, language, user) => {
       documentsQuery.aggregations(aggregations, dictionaries);
 
       if (query.geolocation) {
-        searchGeolocation(documentsQuery, filteringTypes, templates);
+        searchGeolocation(documentsQuery, templates);
       }
-      console.log(JSON.stringify(documentsQuery.query(), null, 4));
 
       return elastic
         .search({ index: elasticIndexes.index, body: documentsQuery.query() })
@@ -353,8 +352,8 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
-  Promise.all(
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
+  return Promise.all(
     Object.keys(toFetchByTemplate).map(t => {
       const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
       if (!user) {
@@ -369,6 +368,7 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
       });
     })
   );
+};
 
 const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
@@ -487,7 +487,6 @@ const search = {
   },
 
   bulkIndex(docs, _action = 'index') {
-    const type = 'entity';
     const body = [];
     docs.forEach(doc => {
       let docBody = Object.assign({}, doc);
@@ -498,7 +497,7 @@ const search = {
       delete docBody.pdfInfo;
 
       let action = {};
-      action[_action] = { _index: elasticIndexes.index, _id: id, routing: id };
+      action[_action] = { _index: elasticIndexes.index, _id: id };
       if (_action === 'update') {
         docBody = { doc: docBody };
       }

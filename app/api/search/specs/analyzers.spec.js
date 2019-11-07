@@ -1,3 +1,5 @@
+/** @format */
+
 import instanceElasticTesting from 'api/utils/elastic_testing';
 
 import elastic from '../elastic';
@@ -20,10 +22,8 @@ describe('custom language analyzers', () => {
 
       await elastic.index({
         index: elasticIndex,
-        type: 'fullText',
         body: { fullText_persian: persianText },
         id: '123_whatever',
-        parent: 123
       });
     });
   });
