@@ -7,7 +7,7 @@
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import propertyToAggregation from './metadataAggregations';
 
-export default function () {
+export default function() {
   const baseQuery = {
     explain: true,
     _source: {
@@ -203,7 +203,8 @@ export default function () {
         type: 'string',
         script: {
           params: { keys },
-          source: `try {params.keys[doc['${property}.sort'].value] != null ? params.keys[doc['${property}.sort'].value] : '|'}catch(Exception e){'|'}`,
+          source: `try {params.keys[doc['${property}.sort'].value] != null ?
+          params.keys[doc['${property}.sort'].value] : '|'}catch(Exception e){'|'}`,
         },
       };
       baseQuery.sort.push(sort);
