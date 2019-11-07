@@ -9,7 +9,6 @@ export default class LinkField extends Component {
     super(props);
     this.urlChange = this.urlChange.bind(this);
     this.labelChange = this.labelChange.bind(this);
-    this.mapClick = this.mapClick.bind(this);
   }
 
   onChange(diffValue) {
@@ -28,10 +27,6 @@ export default class LinkField extends Component {
     this.onChange({ url });
   }
 
-  mapClick(event) {
-    this.onChange({ label: event.lngLat[1], url: event.lngLat[0] });
-  }
-
   render() {
     const { value } = UnwrapMetadataObject(this.props);
     const { label, url } = value || { label: '', url: '' };
@@ -45,7 +40,7 @@ export default class LinkField extends Component {
               onChange={this.urlChange}
               className="form-control"
               id="label"
-              value={label}
+              value={label || ''}
               step="any"
             />
           </div>
@@ -55,7 +50,7 @@ export default class LinkField extends Component {
               onChange={this.labelChange}
               className="form-control"
               id="url"
-              value={url}
+              value={url || ''}
               step="any"
             />
           </div>
