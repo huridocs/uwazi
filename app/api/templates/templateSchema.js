@@ -1,3 +1,5 @@
+/** @format */
+
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import { templateTypes } from 'shared/templateTypes';
@@ -21,7 +23,7 @@ ajv.addKeyword('uniqueName', {
       return false;
     }
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireTitleProperty', {
@@ -29,7 +31,7 @@ ajv.addKeyword('requireTitleProperty', {
   type: 'array',
   validate(schema, properties) {
     return properties.some(prop => prop.name === 'title');
-  }
+  },
 });
 
 ajv.addKeyword('uniquePropertyFields', {
@@ -55,7 +57,7 @@ ajv.addKeyword('uniquePropertyFields', {
       }
     }
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireContentForSelectFields', {
@@ -70,7 +72,7 @@ ajv.addKeyword('requireContentForSelectFields', {
     }
 
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireRelationTypeForRelationship', {
@@ -84,7 +86,7 @@ ajv.addKeyword('requireRelationTypeForRelationship', {
       return !!(data.relationType && data.relationType.length);
     }
     return true;
-  }
+  },
 });
 
 ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
@@ -98,7 +100,7 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
       return !!data.inheritProperty;
     }
     return true;
-  }
+  },
 });
 
 const propertySchema = {
@@ -107,6 +109,7 @@ const propertySchema = {
   requireContentForSelectFields: true,
   requireRelationTypeForRelationship: true,
   requireInheritPropertyForInheritingRelationship: true,
+  additionalProperties: false,
   properties: {
     id: { type: 'string' },
     label: { type: 'string', minLength: 1 },
@@ -128,19 +131,20 @@ const propertySchema = {
     nestedProperties: {
       type: 'array',
       items: {
-        type: 'string'
-      }
-    }
-  }
+        type: 'string',
+      },
+    },
+  },
 };
 
-const schema = {
+export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   uniqueName: true,
   required: ['name', 'commonProperties', 'properties'],
   uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
+  definitions: { propertySchema },
   properties: {
     _id: { type: 'string' },
     name: { type: 'string', minLength: 1 },
@@ -150,17 +154,13 @@ const schema = {
       type: 'array',
       requireTitleProperty: true,
       minItems: 1,
-      items: propertySchema
+      items: propertySchema,
     },
     properties: {
       type: 'array',
-      items: propertySchema
-    }
-  }
+      items: propertySchema,
+    },
+  },
 };
 
-const validateTemplate = ajv.compile(schema);
-
-export {
-  validateTemplate
-};
+export const validateTemplate = ajv.compile(templateSchema);

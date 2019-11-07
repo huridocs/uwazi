@@ -1,3 +1,5 @@
+/** @format */
+
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { templateTypes } from 'shared/templateTypes';
@@ -5,11 +7,11 @@ import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
 
 const ajv = Ajv({ allErrors: true });
 
-const isEmpty = (value) => isNull(value) || isUndefined(value) || !value.length;
+const isEmpty = value => isNull(value) || isUndefined(value) || !value.length;
 
-const isNonArrayObject = (value) => isObject(value) && !Array.isArray(value);
+const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
 
-const isValidDateRange = (value) => {
+const isValidDateRange = value => {
   if (!isNonArrayObject(value)) {
     return false;
   }
@@ -21,7 +23,8 @@ const isValidDateRange = (value) => {
 
 const isValidSelect = value => isString(value) && value;
 
-const isValidGeolocation = value => isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
+const isValidGeolocation = value =>
+  isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
 
 const validateRequiredProperty = (property, value) => {
   if (property.required) {
@@ -31,7 +34,15 @@ const validateRequiredProperty = (property, value) => {
 };
 
 const validateTextProperty = (property, value) => {
-  if ([templateTypes.text, templateTypes.markdown, templateTypes.media, templateTypes.image, templateTypes.select].includes(property.type)) {
+  if (
+    [
+      templateTypes.text,
+      templateTypes.markdown,
+      templateTypes.media,
+      templateTypes.image,
+      templateTypes.select,
+    ].includes(property.type)
+  ) {
     return isString(value);
   }
   return true;
@@ -93,7 +104,6 @@ const validateLinkProperty = (property, value) => {
   return true;
 };
 
-
 const validateMetadataField = (property, entity) => {
   const value = entity.metadata && entity.metadata[property.name];
   if (!validateRequiredProperty(property, value)) {
@@ -111,7 +121,7 @@ const validateMetadataField = (property, entity) => {
     validateNumericProperty,
     validateMultiSelectProperty,
     validateLinkProperty,
-    validateGeolocationProperty
+    validateGeolocationProperty,
   ];
   return propertyValidators.every(validate => validate(property, value));
 };
@@ -129,74 +139,85 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
       return false;
     }
 
-    return template.properties.every((property) => validateMetadataField(property, entity));
-  }
+    return template.properties.every(property => validateMetadataField(property, entity));
+  },
 });
 
 const objectIdSchema = {
-  oneOf: [
-    { type: 'string' },
-    { type: 'object' }
-  ]
+  oneOf: [{ type: 'string' }, { type: 'object' }],
 };
 
 const linkSchema = {
   type: 'object',
   required: ['label', 'url'],
+  additionalProperties: false,
   properties: {
     label: { type: 'string', minLength: 1 },
-    url: { type: 'string', minLength: 1 }
-  }
+    url: { type: 'string', minLength: 1 },
+  },
 };
 
 const dateRangeSchema = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     from: {
-      oneOf: [{ type: 'number' }, { type: 'null' }]
+      oneOf: [{ type: 'number' }, { type: 'null' }],
     },
     to: {
-      oneOf: [{ type: 'number' }, { type: 'null' }]
+      oneOf: [{ type: 'number' }, { type: 'null' }],
     },
   },
-  additionalProperties: false
 };
 
 const latLonSchema = {
   type: 'object',
   required: ['lon', 'lat'],
+  additionalProperties: false,
   properties: {
     label: { type: 'string' },
     lat: { type: 'number', minimum: -90, maximum: 90 },
-    lon: { type: 'number', minimum: -180, maximum: 180 }
-  }
+    lon: { type: 'number', minimum: -180, maximum: 180 },
+  },
 };
 
 const geolocationSchema = {
   type: 'array',
-  items: latLonSchema
+  items: latLonSchema,
 };
 
 const tocSchema = {
   type: 'object',
+  title: 'TableOfContents',
+  additionalProperties: false,
   properties: {
     range: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         start: { type: 'number' },
-        end: { type: 'number' }
-      }
+        end: { type: 'number' },
+      },
     },
     label: { type: 'string' },
-    indentation: { type: 'number' }
-  }
+    indentation: { type: 'number' },
+  },
 };
 
-const schema = {
+export const entitySchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   metadataMatchesTemplateProperties: true,
+  additionalProperties: false,
+  definitions: {
+    objectIdSchema,
+    linkSchema,
+    dateRangeSchema,
+    latLonSchema,
+    geolocationSchema,
+    tocSchema,
+  },
   properties: {
     _id: objectIdSchema,
     sharedId: { type: 'string', minLength: 1 },
@@ -206,42 +227,46 @@ const schema = {
     template: objectIdSchema,
     file: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         originalname: { type: 'string' },
         filename: { type: 'string' },
         mimetype: { type: 'string' },
         size: { type: 'number' },
         timestamp: { type: 'number' },
-        language: { type: 'string' }
-      }
+        language: { type: 'string' },
+      },
     },
     fullText: {
       type: 'object',
+      additionalProperties: false,
       patternProperties: {
-        '^[0-9]+$': { type: 'string' }
-      }
+        '^[0-9]+$': { type: 'string' },
+      },
     },
     totalPages: { type: 'number' },
     icon: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         _id: { type: 'string' },
         label: { type: 'string' },
-        type: { type: 'string' }
-      }
+        type: { type: 'string' },
+      },
     },
     attachments: {
       type: 'array',
       items: {
         type: 'object',
+        additionalProperties: false,
         properties: {
           originalname: { type: 'string' },
           filename: { type: 'string' },
           mimetype: { type: 'string' },
           timestamp: { type: 'number' },
-          size: { type: 'number' }
-        }
-      }
+          size: { type: 'number' },
+        },
+      },
     },
     creationDate: { type: 'number' },
     processed: { type: 'boolean' },
@@ -249,18 +274,20 @@ const schema = {
     published: { type: 'boolean' },
     pdfInfo: {
       type: 'object',
+      additionalProperties: false,
       patternProperties: {
         '^[0-9]+$': {
           type: 'object',
+          additionalProperties: false,
           properties: {
-            chars: { type: 'number' }
-          }
-        }
-      }
+            chars: { type: 'number' },
+          },
+        },
+      },
     },
     toc: {
       type: 'array',
-      items: tocSchema
+      items: tocSchema,
     },
     user: objectIdSchema,
     metadata: {
@@ -273,30 +300,26 @@ const schema = {
           {
             type: 'array',
             items: {
-              type: 'string'
-            }
+              type: 'string',
+            },
           },
           {
             type: 'array',
             items: {
-              type: 'number'
-            }
+              type: 'number',
+            },
           },
           dateRangeSchema,
           {
             type: 'array',
-            items: dateRangeSchema
+            items: dateRangeSchema,
           },
           linkSchema,
-          geolocationSchema
-        ]
-      }
+          geolocationSchema,
+        ],
+      },
     },
-  }
+  },
 };
 
-const validateEntity = ajv.compile(schema);
-
-export {
-  validateEntity
-};
+export const validateEntity = ajv.compile(entitySchema);

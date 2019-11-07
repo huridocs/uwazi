@@ -1,6 +1,6 @@
 /** @format */
 
-export default {
+export const thesaurusSchema = {
   $async: true,
   title: 'Thesaurus',
   type: 'object',
@@ -17,8 +17,8 @@ export default {
         type: 'object',
         required: ['label'],
         properties: {
-          label: {
-            type: 'id',
+          id: {
+            type: 'string',
             minLength: 1,
           },
           label: {
