@@ -69,7 +69,7 @@ jobs:
     docker:
       - image: circleci/node:8.11.3-browsers
       - image: circleci/mongo:4.0.3
-      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+      - image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
         environment:
           - discovery.type=single-node
           - http.host=0.0.0.0

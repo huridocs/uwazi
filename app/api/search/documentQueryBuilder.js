@@ -7,7 +7,7 @@
 import filterToMatch, { multiselectFilter } from './metadataMatchers';
 import propertyToAggregation from './metadataAggregations';
 
-export default function() {
+export default function () {
   const baseQuery = {
     explain: true,
     _source: {
