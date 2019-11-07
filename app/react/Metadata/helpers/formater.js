@@ -2,12 +2,10 @@
 
 import moment from 'moment';
 import React from 'react';
+import Immutable from 'immutable';
 import { advancedSort } from 'app/utils/advancedSort';
 import { store } from 'app/store';
 import nestedProperties from 'app/Templates/components/ViolatedArticlesNestedProperties';
-import t from 'app/I18N/t';
-
-const getOption = (thesauri, id) => thesauri.get('values').get(id);
 
 const addSortedProperty = (templates, sortedProperty) =>
   templates.reduce((_property, template) => {
@@ -78,16 +76,16 @@ export default {
 
   getSelectOptions(option, thesauri) {
     let value = '';
-    let icon;
+    const { icon } = option;
+
     if (option) {
-      value = t(thesauri.get('_id'), option.get('label'), null, false);
-      icon = option.get('icon');
+      value = option.label;
     }
 
     let url;
     if (option && thesauri.get('type') === 'template') {
-      const type = option.get('type');
-      url = `/${type}/${option.get('id')}`;
+      const { type } = option;
+      url = `/${type}/${option.value}`;
     }
 
     return { value, url, icon };
@@ -172,12 +170,9 @@ export default {
     };
   },
 
-  select(property, [{ value: thesauriValue }], thesauris) {
+  select(property, [metadataValue], thesauris) {
     const thesauri = thesauris.find(thes => thes.get('_id') === property.get('content'));
-    const { value, url, icon } = this.getSelectOptions(
-      getOption(thesauri, thesauriValue),
-      thesauri
-    );
+    const { value, url, icon } = this.getSelectOptions(metadataValue, thesauri);
     return { label: property.get('label'), name: property.get('name'), value, icon, url };
   },
 
@@ -232,10 +227,7 @@ export default {
       if (relationshipValue.value) {
         let { value } = relationshipValue;
         if (type === 'geolocation') {
-          const entityLabel = this.getSelectOptions(
-            getOption(templateThesauris, thesauriValues[index].value),
-            templateThesauris
-          ).value;
+          const entityLabel = this.getSelectOptions(thesauriValues[index], templateThesauris).value;
           value = value.map(v => ({
             ...v,
             label: `${entityLabel}${v.label ? ` (${v.label})` : ''}`,
@@ -248,15 +240,12 @@ export default {
   },
 
   relationship(property, thesauriValues, thesauris) {
-    const allEntitiesThesauriValues = thesauris
-      .filter(_thesauri => _thesauri.get('type') === 'template')
-      .reduce(
-        (result, _thesauri) => result.concat(this.getThesauriValues(thesauriValues, _thesauri)),
-        []
-      );
-
-    const sortedValues = advancedSort(allEntitiesThesauriValues, { property: 'value' });
-
+    const thesauri =
+      thesauris.find(thes => thes.get('_id') === property.get('content')) ||
+      Immutable.fromJS({
+        type: 'template',
+      });
+    const sortedValues = this.getThesauriValues(thesauriValues, thesauri);
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 
@@ -297,9 +286,7 @@ export default {
   getThesauriValues(thesauriValues, thesauri) {
     return advancedSort(
       thesauriValues
-        .map(thesauriValue =>
-          this.getSelectOptions(getOption(thesauri, thesauriValue.value), thesauri)
-        )
+        .map(thesauriValue => this.getSelectOptions(thesauriValue, thesauri))
         .filter(v => v.value),
       { property: 'value' }
     );
