@@ -1,7 +1,8 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { templateTypes } from 'shared/templateTypes';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
+import { objectIdSchema, linkSchema, dateRangeSchema, geolocationSchema, tocSchema } from 'api/utils/jsonSchemas';
+import { templateTypes } from 'shared/templateTypes';
 
 const ajv = Ajv({ allErrors: true });
 
@@ -139,65 +140,6 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
     return template.properties.every((property) => validateMetadataField(property, entity));
   }
 });
-
-const objectIdSchema = {
-  oneOf: [
-    { type: 'string' },
-    { type: 'object' }
-  ]
-};
-
-const linkSchema = {
-  type: 'object',
-  required: ['label', 'url'],
-  properties: {
-    label: { type: 'string', minLength: 1 },
-    url: { type: 'string', minLength: 1 }
-  }
-};
-
-const dateRangeSchema = {
-  type: 'object',
-  properties: {
-    from: {
-      oneOf: [{ type: 'number' }, { type: 'null' }]
-    },
-    to: {
-      oneOf: [{ type: 'number' }, { type: 'null' }]
-    },
-  },
-  additionalProperties: false
-};
-
-const latLonSchema = {
-  type: 'object',
-  required: ['lon', 'lat'],
-  properties: {
-    label: { type: 'string' },
-    lat: { type: 'number', minimum: -90, maximum: 90 },
-    lon: { type: 'number', minimum: -180, maximum: 180 }
-  }
-};
-
-const geolocationSchema = {
-  type: 'array',
-  items: latLonSchema
-};
-
-const tocSchema = {
-  type: 'object',
-  properties: {
-    range: {
-      type: 'object',
-      properties: {
-        start: { type: 'number' },
-        end: { type: 'number' }
-      }
-    },
-    label: { type: 'string' },
-    indentation: { type: 'number' }
-  }
-};
 
 const schema = {
   $schema: 'http://json-schema.org/schema#',
