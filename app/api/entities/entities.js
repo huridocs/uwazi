@@ -40,7 +40,7 @@ async function denormalizeMetadata(entity, template = undefined, dictionariesByK
             : await dictionariesModel.getById(prop.content);
           if (dict) {
             const flattenValues = dict.values.reduce(
-              (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([value])),
+              (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
               []
             );
             const dictElem = flattenValues.find(v => v.id === elem.value);
