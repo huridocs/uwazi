@@ -2,7 +2,7 @@
 import autobind from 'autobind-decorator';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { MetadataObject } from '../../../api/entities/entitiesModel';
+import { MetadataObject } from 'api/entities';
 import DatePicker from './DatePicker';
 
 export interface MultiDateProps {

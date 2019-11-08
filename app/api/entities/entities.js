@@ -12,7 +12,7 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
-import dictionariesModel from 'api/thesauris/dictionariesModel.js';
+import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import { validateEntity } from './entitySchema';

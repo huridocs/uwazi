@@ -2,7 +2,12 @@
 
 import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
+import { MetadataObjectSchema, PropertyValueSchema } from 'shared/commonTypes';
 import { EntitySchema } from './entityType';
+
+export interface MetadataObject<T extends PropertyValueSchema> extends MetadataObjectSchema {
+  value: T | null;
+}
 
 const mongoSchema = new mongoose.Schema(
   {
