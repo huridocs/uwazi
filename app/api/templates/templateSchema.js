@@ -101,6 +101,13 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
   }
 });
 
+const objectIdSchema = {
+  oneOf: [
+    { type: 'string' },
+    { type: 'object' }
+  ]
+};
+
 const propertySchema = {
   type: 'object',
   required: ['label', 'type'],
@@ -139,10 +146,10 @@ const schema = {
   $async: true,
   type: 'object',
   uniqueName: true,
-  required: ['name', 'commonProperties', 'properties'],
+  required: ['name', 'commonProperties'],
   uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
   properties: {
-    _id: { type: 'string' },
+    _id: objectIdSchema,
     name: { type: 'string', minLength: 1 },
     color: { type: 'string', default: '' },
     default: { type: 'boolean', default: false },
