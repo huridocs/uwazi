@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 import model from 'api/templates/templatesModel';
-import { objectIdSchema, propertySchema } from 'api/utils/jsonSchemas'
+import { objectIdSchema, propertySchema } from 'api/utils/jsonSchemas';
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
