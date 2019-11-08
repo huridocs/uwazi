@@ -69,6 +69,10 @@ export default {
     {
       _id: e1,
       title: 'e1',
+      icon: {
+        type: 'icon1',
+      },
+      file: 'hasFile',
       language: 'en',
       sharedId: 'shared-e1',
       template: t1,
@@ -82,6 +86,10 @@ export default {
     {
       _id: e2,
       title: 'e2',
+      file: null,
+      icon: {
+        type: 'icon2',
+      },
       language: 'en',
       template: t1,
       sharedId: 'shared-e2',

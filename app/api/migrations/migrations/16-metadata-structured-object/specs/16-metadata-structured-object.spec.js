@@ -24,12 +24,27 @@ describe('migration metadata-structured-object', () => {
       .find()
       .toArray();
 
-    expect(entities[0].metadata.friends[0]).toEqual({ value: 'shared-e2', label: 'e2' });
+    expect(entities[0].metadata.friends[0]).toEqual({
+      value: 'shared-e2',
+      label: 'e2',
+      icon: { type: 'icon2' },
+      type: 'entity',
+    });
     expect(entities[0].metadata.current_address_geolocation[0]).toEqual({
       value: { lat: 1, lng: 2, label: 'a' },
     });
     expect(entities[1].metadata.issues[1]).toEqual({ value: i2, label: 'Kidnapping' });
-    expect(entities[2].metadata.friends[0]).toEqual({ value: 'shared-e1', label: 'e1' });
-    expect(entities[2].metadata.friends[1]).toEqual({ value: 'shared-e2', label: 'e2' });
+    expect(entities[2].metadata.friends[0]).toEqual({
+      value: 'shared-e1',
+      label: 'e1',
+      icon: { type: 'icon1' },
+      type: 'document',
+    });
+    expect(entities[2].metadata.friends[1]).toEqual({
+      value: 'shared-e2',
+      label: 'e2',
+      icon: { type: 'icon2' },
+      type: 'entity',
+    });
   });
 });
