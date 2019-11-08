@@ -25,6 +25,7 @@
   "scripts": {
     "check-types": "tsc --noEmit --pretty",
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
+    "emit-types": "node emitSchemaTypes.js",
     "production-build": "export NODE_ENV=production; rm -rf prod/* && webpack --config ./webpack.production.config.js --progress --profile --colors && babel -D -d prod/app --extensions .js,.ts,.tsx app && babel -D -d prod/ message.js",
     "run-production": "export NODE_ENV=production; node server.js",
     "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --watch 'app/react/ServerRouter.js' --watch 'app/react/App/Root.js' --ext 'ts js tsx'",
@@ -118,6 +119,8 @@
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
     "json-loader": "^0.5.4",
+    "json-schema-to-mongoose": "^0.2.2",
+    "json-schema-to-typescript": "^7.1.0",
     "jvent": "1.0.2",
     "macaddress": "0.2.9",
     "mark.js": "^8.11.1",

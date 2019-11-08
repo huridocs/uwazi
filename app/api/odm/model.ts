@@ -39,12 +39,12 @@ class UpdateLogHelper {
   }
 }
 
-class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
-  db: mongoose.Model<T>;
+class OdmModelImpl<T extends { _id?: any }> implements OdmModel<T> {
+  db: mongoose.Model<T & mongoose.Document>;
 
   logHelper: UpdateLogHelper;
 
-  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<T>) {
+  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<T & mongoose.Document>) {
     this.db = db;
     this.logHelper = logHelper;
   }
@@ -60,10 +60,10 @@ class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
       if (saved === null) {
         throw Error('mongoose findOneAndUpdate should never return null!');
       }
-      return saved.toObject();
+      return saved.toObject() as T;
     }
     const saved = await this.db.create(data);
-    return saved.toObject();
+    return saved.toObject() as T;
   }
 
   saveMultiple(data: T[]) {
@@ -99,20 +99,22 @@ class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
   }
 }
 
-export function instanceModel<T extends mongoose.Document>(
+export function instanceModel<T extends { _id?: any }>(
   collectionName: string,
   schema: mongoose.Schema
 ) {
   const logHelper = new UpdateLogHelper(collectionName);
   schema.post('save', logHelper.upsertLogOne.bind(logHelper));
   schema.post('findOneAndUpdate', logHelper.upsertLogOne.bind(logHelper));
-  schema.post('updateMany', async function updateMany(this: any, _doc, next) {
+  schema.post('updateMany', async function updateMany(this: any, _doc: any, next: any) {
     const affectedIds = await logHelper.getAffectedIds(this._conditions);
     await logHelper.upsertLogMany(affectedIds);
     next();
   });
-  const model = new OdmModelImpl(logHelper, mongoose.model<T>(collectionName, schema));
-  // Store a 'generic' model for use in /api/async (where the collection name is passed as request paramter).
-  models[collectionName] = new OdmModelImpl<mongoose.Document>(logHelper, model.db);
+  const model = new OdmModelImpl<T>(
+    logHelper,
+    mongoose.model<T & mongoose.Document>(collectionName, schema)
+  );
+  models[collectionName] = model;
   return model;
 }

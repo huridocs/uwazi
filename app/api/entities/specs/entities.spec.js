@@ -1,6 +1,7 @@
 /** @format */
 
 /* eslint-disable max-nested-callbacks, max-statements */
+import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
@@ -354,6 +355,61 @@ describe('entities', () => {
           expect(docPT.metadata.multidate).toEqual([{ value: 1234 }]);
           expect(docPT.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
           expect(docPT.metadata.numeric).toEqual([{ value: 100 }]);
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+
+    it('should sync select/multiselect/dates/multidate/multidaterange/numeric', done => {
+      const doc = {
+        _id: syncPropertiesEntityId,
+        sharedId: 'shared1',
+        template: templateId,
+        metadata: {
+          text: [{ value: 'changedText' }],
+          select: [{ value: 'select' }],
+          multiselect: [{ value: 'multiselect' }],
+          date: [{ value: 1234 }],
+          multidate: [{ value: 1234 }],
+          multidaterange: [{ value: { from: 1, to: 2 } }],
+          numeric: [{ value: 100 }],
+        },
+      };
+
+      entities
+        .save(doc, { language: 'en' })
+        .then(updatedDoc => {
+          expect(updatedDoc.language).toBe('en');
+          return Promise.all([
+            entities.getById('shared1', 'en'),
+            entities.getById('shared1', 'es'),
+            entities.getById('shared1', 'pt'),
+          ]);
+        })
+        .then(([docEN, docES, docPT]) => {
+          expect(docEN.metadata.text[0].value).toBe('changedText');
+          expect(docEN.metadata.select[0].value).toBe('select');
+          expect(docEN.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
+          expect(docEN.metadata.date[0].value).toBe(1234);
+          expect(docEN.metadata.multidate).toEqual([{ value: 1234 }]);
+          expect(docEN.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
+          expect(docEN.metadata.numeric[0].value).toEqual(100);
+
+          expect(docES.metadata.property1[0].value).toBe('text');
+          expect(docES.metadata.select[0].value).toBe('select');
+          expect(docES.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
+          expect(docES.metadata.date[0].value).toBe(1234);
+          expect(docES.metadata.multidate).toEqual([{ value: 1234 }]);
+          expect(docES.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
+          expect(docES.metadata.numeric[0].value).toEqual(100);
+
+          expect(docPT.metadata.property1[0].value).toBe('text');
+          expect(docPT.metadata.select[0].value).toBe('select');
+          expect(docPT.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
+          expect(docPT.metadata.date[0].value).toBe(1234);
+          expect(docPT.metadata.multidate).toEqual([{ value: 1234 }]);
+          expect(docPT.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
+          expect(docPT.metadata.numeric[0].value).toEqual(100);
           done();
         })
         .catch(catchErrors(done));
@@ -1050,6 +1106,29 @@ describe('entities', () => {
 
       expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
       expect(newEntities.length).toBe(0);
+    });
+  });
+
+  describe('validation', () => {
+    it('should validate on save', async () => {
+      const entity = {
+        title: 'Test',
+        template: templateId,
+        metadata: {
+          date: 'invalid date',
+        },
+      };
+      const options = { user: { _id: db.id() }, language: 'en' };
+
+      try {
+        await entities.save(entity, options);
+        fail('should throw validation error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Ajv.ValidationError);
+        expect(
+          error.errors.some(e => e.params.keyword === 'metadataMatchesTemplateProperties')
+        ).toBe(true);
+      }
     });
   });
 });

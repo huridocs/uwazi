@@ -71,19 +71,15 @@ describe('documents', () => {
       .catch(catchErrors(done));
     });
 
-    it('should assign unique ids to toc entries', (done) => {
+    it('should assign unique ids to toc entries', async () => {
       spyOn(date, 'currentUTC').and.returnValue(1);
       const doc = { title: 'Batman begins', toc: [{}, {}], template: templateId };
       const user = { _id: db.id() };
 
-      documents.save(doc, { user, language: 'es' })
-      .then(() => documents.getById('unique_id', 'es'))
-      .then((result) => {
-        expect(result.toc[0]._id.toString()).toBeDefined();
-        expect(result.toc[1]._id).toBeDefined();
-        done();
-      })
-      .catch(catchErrors(done));
+      await documents.save(doc, { user, language: 'es' });
+      const result = await documents.getById('unique_id', 'es');
+      expect(result.toc[0]._id.toString()).toBeDefined();
+      expect(result.toc[1]._id).toBeDefined();
     });
   });
 

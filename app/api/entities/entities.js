@@ -3,7 +3,8 @@
 
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
-import date from 'api/utils/date.js';
+import { propertyTypes } from 'shared/propertyTypes';
+import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
 import createError from 'api/utils/Error';
 import search from 'api/search/search';
@@ -14,6 +15,7 @@ import paths from 'api/config/paths';
 import dictionariesModel from 'api/thesauris/dictionariesModel.js';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
+import { validateEntity } from './entitySchema';
 import settings from '../settings';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
@@ -73,6 +75,19 @@ async function denormalizeMetadata(entity, template = undefined, dictionariesByK
   );
 }
 
+const FIELD_TYPES_TO_SYNC = [
+  propertyTypes.select,
+  propertyTypes.multiselect,
+  propertyTypes.date,
+  propertyTypes.multidate,
+  propertyTypes.multidaterange,
+  propertyTypes.nested,
+  propertyTypes.relationship,
+  propertyTypes.relationship,
+  propertyTypes.geolocation,
+  propertyTypes.numeric,
+];
+
 async function updateEntity(entity, _template) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
   if (
@@ -87,11 +102,7 @@ async function updateEntity(entity, _template) {
   }
   const template = _template || { properties: [] };
   const toSyncProperties = template.properties
-    .filter(p =>
-      p.type.match(
-        'select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation|numeric'
-      )
-    )
+    .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   return Promise.all(
@@ -178,26 +189,32 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if (['multiselect', 'relationship'].includes(type) && sanitizedMetadata[name]) {
+    if (
+      [propertyTypes.multiselect, propertyTypes.relationship].includes(type) &&
+      sanitizedMetadata[name]
+    ) {
       return Object.assign(sanitizedMetadata, {
         [name]: sanitizedMetadata[name].filter(uniqueMetadataObject),
       });
     }
 
-    if (['date', 'multidate'].includes(type) && sanitizedMetadata[name]) {
+    if ([propertyTypes.date, propertyTypes.multidate].includes(type) && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, {
         [name]: sanitizedMetadata[name].filter(value => value.value),
       });
     }
 
-    if (['daterange', 'multidaterange'].includes(type) && sanitizedMetadata[name]) {
+    if (
+      [propertyTypes.daterange, propertyTypes.multidaterange].includes(type) &&
+      sanitizedMetadata[name]
+    ) {
       return Object.assign(sanitizedMetadata, {
         [name]: sanitizedMetadata[name].filter(value => value.value.from || value.value.to),
       });
     }
 
     if (
-      type === 'select' &&
+      type === propertyTypes.select &&
       (!sanitizedMetadata[name] || !sanitizedMetadata[name][0] || !sanitizedMetadata[name][0].value)
     ) {
       return Object.assign(sanitizedMetadata, { [name]: [] });
@@ -216,6 +233,7 @@ export default {
   createEntity,
   getEntityTemplate,
   async save(_doc, { user, language }, updateRelationships = true, index = true) {
+    await validateEntity(_doc);
     const doc = _doc;
     if (!doc.sharedId) {
       doc.user = user._id;
@@ -427,7 +445,7 @@ export default {
     }
 
     await dbUpdate;
-    if (!template.properties.find(p => p.type === 'relationship')) {
+    if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
       return this.indexEntities({ template: template._id }, null, 1000);
     }
     return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
@@ -563,15 +581,18 @@ export default {
 
   /** Propagate the deletion of a thesaurus entry to all entity metadata. */
   async deleteThesaurusFromMetadata(deletedId, thesaurusId) {
-    await this.deleteFromMetadata(deletedId, thesaurusId, ['select', 'multiselect']);
+    await this.deleteFromMetadata(deletedId, thesaurusId, [
+      propertyTypes.select,
+      propertyTypes.multiselect,
+    ]);
   },
 
   /** Propagate the deletion of a related entity to all entity metadata. */
   async deleteRelatedEntityFromMetadata(deletedEntity) {
     await this.deleteFromMetadata(deletedEntity.sharedId, deletedEntity.template, [
-      'select',
-      'multiselect',
-      'relationship',
+      propertyTypes.select,
+      propertyTypes.multiselect,
+      propertyTypes.relationship,
     ]);
   },
 
@@ -605,7 +626,10 @@ export default {
 
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId) {
-    await this.renameInMetadata(valueId, newLabel, thesaurusId, ['select', 'multiselect']);
+    await this.renameInMetadata(valueId, newLabel, thesaurusId, [
+      propertyTypes.select,
+      propertyTypes.multiselect,
+    ]);
   },
 
   /** Propagate the title change of a related entity to all entity metadata. */
@@ -614,7 +638,7 @@ export default {
       relatedEntity.sharedId,
       relatedEntity.title,
       relatedEntity.template,
-      ['select', 'multiselect', 'relationship'],
+      [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
       relatedEntity.language
     );
   },
