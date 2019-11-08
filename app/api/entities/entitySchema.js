@@ -3,13 +3,7 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
-import {
-  objectIdSchema,
-  linkSchema,
-  dateRangeSchema,
-  geolocationSchema,
-  tocSchema,
-} from 'shared/commonSchemas';
+import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 import { wrapValidator } from 'shared/tsUtils';
 
@@ -159,9 +153,7 @@ export const entitySchema = {
   metadataMatchesTemplateProperties: true,
   definitions: {
     objectIdSchema,
-    linkSchema,
-    dateRangeSchema,
-    geolocationSchema,
+    metadataSchema,
     tocSchema,
   },
   properties: {
@@ -235,50 +227,7 @@ export const entitySchema = {
       items: tocSchema,
     },
     user: objectIdSchema,
-    metadata: {
-      type: 'object',
-      additionalProperties: {
-        anyOf: [
-          { type: 'null' },
-          { type: 'string' },
-          { type: 'number' },
-          {
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          {
-            type: 'array',
-            items: {
-              type: 'number',
-            },
-          },
-          {
-            type: 'array',
-            items: {
-              oneOf: [{ type: 'number' }, { type: 'null' }],
-            },
-          },
-          {
-            type: 'array',
-            items: {
-              oneOf: [
-                { type: 'number' },
-                { type: 'null' }
-              ],
-            }
-          },
-          dateRangeSchema,
-          {
-            type: 'array',
-            items: dateRangeSchema,
-          },
-          linkSchema,
-          geolocationSchema,
-        ],
-      },
-    },
+    metadata: metadataSchema,
   },
 };
 

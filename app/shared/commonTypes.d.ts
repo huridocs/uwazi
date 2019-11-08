@@ -23,7 +23,17 @@ export interface LatLonSchema {
   lon: number;
 }
 
-export type GeolocationSchema = LatLonSchema[];
+export type PropertyValueSchema = null | string | number | LinkSchema | DateRangeSchema | LatLonSchema;
+
+export interface MetadataObjectSchema {
+  value: PropertyValueSchema;
+  label?: string;
+  [k: string]: any | undefined;
+}
+
+export interface MetadataSchema {
+  [k: string]: MetadataObjectSchema[] | undefined;
+}
 
 export interface TocSchema {
   range?: {

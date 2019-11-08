@@ -44,10 +44,34 @@ export const latLonSchema = {
   },
 };
 
-export const geolocationSchema = {
-  type: 'array',
-  definitions: { latLonSchema },
-  items: latLonSchema,
+export const propertyValueSchema = {
+  definitions: { linkSchema, dateRangeSchema, latLonSchema },
+  oneOf: [
+    { type: 'null' },
+    { type: 'string' },
+    { type: 'number' },
+    linkSchema,
+    dateRangeSchema,
+    latLonSchema,
+  ],
+};
+
+export const metadataObjectSchema = {
+  type: 'object',
+  definitions: { propertyValueSchema },
+  required: ['value'],
+  properties: {
+    value: propertyValueSchema,
+    label: { type: 'string' },
+  },
+};
+
+export const metadataSchema = {
+  definitions: { metadataObjectSchema },
+  type: 'object',
+  additionalProperties: {
+    anyOf: [{ type: 'array', items: metadataObjectSchema }],
+  },
 };
 
 export const tocSchema = {

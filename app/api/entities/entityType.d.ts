@@ -1,13 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emitTypes to update.*/
 
-import {
-  ObjectIdSchema,
-  LinkSchema,
-  DateRangeSchema,
-  GeolocationSchema,
-  TocSchema,
-} from 'shared/commonTypes';
+import { ObjectIdSchema, MetadataSchema, TocSchema } from 'shared/commonTypes';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;
@@ -60,20 +54,6 @@ export interface EntitySchema {
   };
   toc?: TocSchema[];
   user?: ObjectIdSchema;
-  metadata?: {
-    [k: string]:
-      | (
-          | null
-          | string
-          | number
-          | string[]
-          | number[]
-          | (number | null)[]
-          | DateRangeSchema
-          | DateRangeSchema[]
-          | LinkSchema
-          | GeolocationSchema)
-      | undefined;
-  };
+  metadata?: MetadataSchema;
   [k: string]: any | undefined;
 }
