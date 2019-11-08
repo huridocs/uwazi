@@ -1,28 +1,39 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { actions } from 'app/BasicReducer';
+import QRCode from 'qrcode.react';
 
+import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
-
+import Auth2faAPI from 'app/Auth2fa/Auth2faAPI';
 
 export class AccountSettings extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = { email: props.user.email || '', password: '', repeatPassword: '' };
+    this.state = {
+      email: props.user.email || '',
+      password: '',
+      repeatPassword: '',
+      otpauth: '',
+    };
+
+    this.getQR = this.getQR.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState({ email: props.user.email || '' });
   }
 
-  emailChange(e) {
-    this.setState({ email: e.target.value });
+  async getQR() {
+    const otpauth = await Auth2faAPI.getQR();
+    this.setState({ otpauth });
   }
 
   passwordChange(e) {
@@ -41,8 +52,7 @@ export class AccountSettings extends Component {
 
     e.preventDefault();
     const userData = Object.assign({}, user, { email });
-    UsersAPI.save(new RequestParams(userData))
-    .then((result) => {
+    UsersAPI.save(new RequestParams(userData)).then(result => {
       notify(t('System', 'Email updated', null, false), 'success');
       setUser(Object.assign(userData, { _rev: result.rev }));
     });
@@ -61,37 +71,49 @@ export class AccountSettings extends Component {
       return;
     }
 
-    UsersAPI.save(new RequestParams(Object.assign({}, user, { password })))
-    .then((result) => {
+    UsersAPI.save(new RequestParams(Object.assign({}, user, { password }))).then(result => {
       notify(t('System', 'Password updated', null, false), 'success');
       setUser(Object.assign(user, { _rev: result.rev }));
     });
     this.setState({ password: '', repeatPassword: '' });
   }
 
+  emailChange(e) {
+    this.setState({ email: e.target.value });
+  }
+
   render() {
-    const { email, password, repeatPassword, passwordError } = this.state;
+    const { email, password, repeatPassword, passwordError, otpauth } = this.state;
 
     return (
       <div className="account-settings">
         <div className="panel panel-default">
-          <div className="panel-heading">
-            {t('System', 'Account')}
-          </div>
+          <div className="panel-heading">{t('System', 'Account')}</div>
           <div className="panel-body">
             <h5>{t('System', 'Email address')}</h5>
             <form onSubmit={this.updateEmail.bind(this)}>
               <div className="form-group">
-                <label className="form-group-label" htmlFor="collection_name">{t('System', 'Email')}</label>
-                <input type="email" onChange={this.emailChange.bind(this)} value={email} className="form-control"/>
+                <label className="form-group-label" htmlFor="collection_name">
+                  {t('System', 'Email')}
+                </label>
+                <input
+                  type="email"
+                  onChange={this.emailChange.bind(this)}
+                  value={email}
+                  className="form-control"
+                />
               </div>
-              <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
+              <button type="submit" className="btn btn-success">
+                {t('System', 'Update')}
+              </button>
             </form>
             <hr />
             <h5>{t('System', 'Change password')}</h5>
             <form onSubmit={this.updatePassword.bind(this)}>
               <div className={`form-group${passwordError ? ' has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="password">{t('System', 'New password')}</label>
+                <label className="form-group-label" htmlFor="password">
+                  {t('System', 'New password')}
+                </label>
                 <input
                   type="password"
                   onChange={this.passwordChange.bind(this)}
@@ -101,7 +123,9 @@ export class AccountSettings extends Component {
                 />
               </div>
               <div className={`form-group${passwordError ? ' has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="repeatPassword">{t('System', 'Confirm new password')}</label>
+                <label className="form-group-label" htmlFor="repeatPassword">
+                  {t('System', 'Confirm new password')}
+                </label>
                 <input
                   type="password"
                   onChange={this.repeatPasswordChange.bind(this)}
@@ -117,8 +141,22 @@ export class AccountSettings extends Component {
                   {t('System', 'Password Error')}
                 </div>
               )}
-              <button type="submit" className="btn btn-success">{t('System', 'Update')}</button>
+              <button type="submit" className="btn btn-success">
+                {t('System', 'Update')}
+              </button>
             </form>
+            <hr />
+            <h5>{t('System', 'Two factor authentication')}</h5>
+            <button type="button" onClick={this.getQR}>
+              Generate QR
+            </button>
+            <p>
+              Scan this QR Code image with Google Authenticator to begin using 2FA or &quot;two
+              factor authentication&quot;
+            </p>
+            <div>
+              <QRCode value={otpauth} level="Q" includeMargin={false} renderAs="svg" />
+            </div>
           </div>
         </div>
         <div className="settings-footer">
@@ -147,7 +185,13 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ setUser: actions.set.bind(null, 'auth/user'), notify: notifyAction }, dispatch);
+  return bindActionCreators(
+    { setUser: actions.set.bind(null, 'auth/user'), notify: notifyAction },
+    dispatch
+  );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountSettings);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AccountSettings);
