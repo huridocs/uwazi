@@ -123,7 +123,7 @@ function snippetsFromSearchHit(hit) {
   return snippets;
 }
 
-function searchGeolocation(documentsQuery, templates) {
+function searchGeolocation(documentsQuery, filteringTypes, templates) {
   documentsQuery.limit(9999);
   const geolocationProperties = [];
 
@@ -368,7 +368,6 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
       });
     })
   );
-};
 
 const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
