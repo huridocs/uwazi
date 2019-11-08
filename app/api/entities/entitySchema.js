@@ -31,7 +31,14 @@ const validateRequiredProperty = (property, value) => {
 };
 
 const validateTextProperty = (property, value) => {
-  if ([templateTypes.text, templateTypes.markdown, templateTypes.media, templateTypes.image, templateTypes.select].includes(property.type)) {
+  const textProperties = [
+    templateTypes.text,
+    templateTypes.markdown,
+    templateTypes.media,
+    templateTypes.image,
+    templateTypes.select
+  ];
+  if (textProperties.includes(property.type)) {
     return isString(value);
   }
   return true;
@@ -53,7 +60,7 @@ const validateDateProperty = (property, value) => {
 
 const validateMultiDateProperty = (property, value) => {
   if (property.type === templateTypes.multidate) {
-    return Array.isArray(value) && value.every(isNumber);
+    return Array.isArray(value) && value.every(item => isNumber(item) || isNull(item));
   }
   return true;
 };
@@ -280,6 +287,15 @@ const schema = {
             type: 'array',
             items: {
               type: 'number'
+            }
+          },
+          {
+            type: 'array',
+            items: {
+              oneOf: [
+                { type: 'number' },
+                { type: 'null' }
+              ],
             }
           },
           dateRangeSchema,

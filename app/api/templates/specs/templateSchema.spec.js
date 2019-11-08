@@ -6,7 +6,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import { validateTemplate } from '../templateSchema';
 import fixtures, { templateId } from './validatorFixtures';
 
-describe('template validator', () => {
+describe('template schema', () => {
   beforeEach(done => {
     db.clearAllAndLoad(fixtures)
       .then(done)

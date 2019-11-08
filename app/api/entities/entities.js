@@ -9,11 +9,10 @@ import templates from 'api/templates/templates';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
-import { wrapValidation } from 'api/utils/wrapValidation';
 
 import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
-import validator from './entitiesValidator';
+import { validateEntity } from './entitySchema';
 import settings from '../settings';
 
 const FIELD_TYPES_TO_SYNC = [
@@ -156,12 +155,13 @@ function sanitize(doc, template) {
   return Object.assign(doc, { metadata });
 }
 
-const entitiesRepository = {
+export default {
   sanitize,
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(_doc, { user, language }, updateRelationships = true, index = true) {
+  async save(_doc, { user, language }, updateRelationships = true, index = true) {
+    await validateEntity(_doc);
     const doc = _doc;
     if (!doc.sharedId) {
       doc.user = user._id;
@@ -573,8 +573,3 @@ const entitiesRepository = {
   count: model.count.bind(model)
 };
 
-export {
-  entitiesRepository
-};
-
-export default wrapValidation(validator, entitiesRepository);

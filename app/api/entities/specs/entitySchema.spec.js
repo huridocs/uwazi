@@ -5,10 +5,10 @@
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import validator from '../entitiesValidator';
+import { validateEntity } from '../entitySchema';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
-describe('entitiesValidator', () => {
+describe('entity schema', () => {
   beforeEach(done => {
     db.clearAllAndLoad(fixtures)
       .then(done)
@@ -19,7 +19,7 @@ describe('entitiesValidator', () => {
     db.disconnect().then(done);
   });
 
-  describe('save', () => {
+  describe('validateEntity', () => {
     let entity;
 
     beforeEach(() => {
@@ -94,11 +94,11 @@ describe('entitiesValidator', () => {
       };
     });
 
-    const testValid = () => validator.save(entity, 'en');
+    const testValid = () => validateEntity(entity);
 
     const testInvalid = async () => {
       try {
-        await validator.save(entity, 'en');
+        await validateEntity(entity);
         fail('should throw error');
       } catch (e) {
         expect(e).toBeInstanceOf(Ajv.ValidationError);
@@ -232,6 +232,10 @@ describe('entitiesValidator', () => {
           await testInvalid();
           entity.metadata.multidate = 100;
           await testInvalid();
+        });
+        it('should allow null items', async () => {
+          entity.metadata.multidate = [100, null, 200, null];
+          await testValid();
         });
       });
 
