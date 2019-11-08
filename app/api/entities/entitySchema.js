@@ -25,7 +25,7 @@ const isValidDateRange = value => {
   return true;
 };
 
-const isValidSelect = value => isString(value) && value;
+const isValidSelect = value => isString(value);
 
 const isValidGeolocation = value =>
   isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
@@ -37,75 +37,35 @@ const validateRequiredProperty = (property, value) => {
   return true;
 };
 
-const validateTextProperty = (property, value) => {
-  const textProperties = [
-    propertyTypes.text,
-    propertyTypes.markdown,
-    propertyTypes.media,
-    propertyTypes.image,
-    propertyTypes.select,
-  ];
-  if (textProperties.includes(property.type)) {
-    return isString(value);
+const validateSingleWrappedValue = validationFn => value => {
+  if (!Array.isArray(value)) {
+    return false;
   }
-  return true;
+  if (value.length !== 1) {
+    return !value.length;
+  }
+  const [{ value: pureValue }] = value;
+  return validationFn(pureValue);
 };
 
-const validateNumericProperty = (property, value) => {
-  if (property.type === propertyTypes.numeric) {
-    return isNumber(value) || value === '';
-  }
-  return true;
-};
+const validateNumericProperty = value => isNumber(value) || value === '';
 
-const validateDateProperty = (property, value) => {
-  if (property.type === propertyTypes.date) {
-    return isNumber(value) && value >= 0;
-  }
-  return true;
-};
+const validateDateProperty = value => isNumber(value) && value >= 0;
 
-const validateMultiDateProperty = (property, value) => {
-  if (property.type === propertyTypes.multidate) {
-    return Array.isArray(value) && value.every(item => isNumber(item) || isNull(item));
-  }
-  return true;
-};
+const validateMultiDateProperty = value =>
+  Array.isArray(value) && value.every(item => isNumber(item.value) || isNull(item.value));
 
-const validateDateRangeProperty = (property, value) => {
-  if (property.type === propertyTypes.daterange) {
-    return isValidDateRange(value);
-  }
-  return true;
-};
+const validateMultiDateRangeProperty = value =>
+  Array.isArray(value) && value.every(item => isValidDateRange(item.value));
 
-const validateMultiDateRangeProperty = (property, value) => {
-  if (property.type === propertyTypes.multidaterange) {
-    return value.every(isValidDateRange);
-  }
-  return true;
-};
+const validateGeolocationProperty = value =>
+  Array.isArray(value) && value.every(item => isValidGeolocation(item.value));
 
-const validateGeolocationProperty = (property, value) => {
-  if (property.type === propertyTypes.geolocation) {
-    return Array.isArray(value) && value.every(isValidGeolocation);
-  }
-  return true;
-};
+const validateMultiSelectProperty = value =>
+  Array.isArray(value) && value.every(item => isValidSelect(item.value));
 
-const validateMultiSelectProperty = (property, value) => {
-  if ([propertyTypes.multiselect, propertyTypes.relationship].includes(property.type)) {
-    return Array.isArray(value) && value.every(isValidSelect);
-  }
-  return true;
-};
-
-const validateLinkProperty = (property, value) => {
-  if (property.type === propertyTypes.link) {
-    return isString(value.label) && value.label && isString(value.url) && value.url;
-  }
-  return true;
-};
+const isValidLinkField = value =>
+  isString(value.label) && value.label && isString(value.url) && value.url;
 
 const validateMetadataField = (property, entity) => {
   const value = entity.metadata && entity.metadata[property.name];
@@ -115,18 +75,28 @@ const validateMetadataField = (property, entity) => {
   if (isUndefined(value) || isNull(value)) {
     return true;
   }
-  const propertyValidators = [
-    validateDateProperty,
-    validateMultiDateProperty,
-    validateDateRangeProperty,
-    validateMultiDateRangeProperty,
-    validateTextProperty,
-    validateNumericProperty,
-    validateMultiSelectProperty,
-    validateLinkProperty,
-    validateGeolocationProperty,
-  ];
-  return propertyValidators.every(validate => validate(property, value));
+  const propertyValidators = {
+    [propertyTypes.date]: validateSingleWrappedValue(validateDateProperty),
+    [propertyTypes.multidate]: validateMultiDateProperty,
+    [propertyTypes.daterange]: validateSingleWrappedValue(isValidDateRange),
+    [propertyTypes.multidaterange]: validateMultiDateRangeProperty,
+    [propertyTypes.text]: validateSingleWrappedValue(isString),
+    [propertyTypes.markdown]: validateSingleWrappedValue(isString),
+    [propertyTypes.media]: validateSingleWrappedValue(isString),
+    [propertyTypes.image]: validateSingleWrappedValue(isString),
+    [propertyTypes.select]: validateSingleWrappedValue(isValidSelect),
+    [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
+    [propertyTypes.multiselect]: validateMultiSelectProperty,
+    [propertyTypes.relationship]: validateMultiSelectProperty,
+    [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
+    [propertyTypes.geolocation]: validateGeolocationProperty,
+  };
+  const validator = propertyValidators[property.type];
+  const result = validator ? validator(value) : true;
+  if (result) {
+    return true;
+  }
+  return false;
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {

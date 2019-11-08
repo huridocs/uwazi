@@ -135,7 +135,7 @@ describe('entities', () => {
     it('should return the newly created document for the passed language', done => {
       const doc = {
         title: 'the dark knight',
-        fullText: 'the full text!',
+        fullText: { 0: 'the full text!' },
         metadata: { data: [{ value: 'should not be here' }] },
       };
       const user = { _id: db.id() };
@@ -157,7 +157,7 @@ describe('entities', () => {
     it('should return updated entity', done => {
       const doc = {
         title: 'the dark knight',
-        fullText: 'the full text!',
+        fullText: { 0: 'the full text!' },
         metadata: { data: [{ value: 'should not be here' }] },
       };
       const user = { _id: db.id() };
@@ -313,7 +313,7 @@ describe('entities', () => {
           text: [{ value: 'changedText' }],
           select: [{ value: 'select' }],
           multiselect: [{ value: 'multiselect' }],
-          date: [{ value: 'date' }],
+          date: [{ value: 1234 }],
           multidate: [{ value: 1234 }],
           multidaterange: [{ value: { from: 1, to: 2 } }],
           numeric: [{ value: 100 }],
@@ -334,7 +334,7 @@ describe('entities', () => {
           expect(docEN.metadata.text).toEqual([{ value: 'changedText' }]);
           expect(docEN.metadata.select).toEqual([{ value: 'select' }]);
           expect(docEN.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
-          expect(docEN.metadata.date).toEqual([{ value: 'date' }]);
+          expect(docEN.metadata.date).toEqual([{ value: 1234 }]);
           expect(docEN.metadata.multidate).toEqual([{ value: 1234 }]);
           expect(docEN.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
           expect(docEN.metadata.numeric).toEqual([{ value: 100 }]);
@@ -342,7 +342,7 @@ describe('entities', () => {
           expect(docES.metadata.property1).toEqual([{ value: 'text' }]);
           expect(docES.metadata.select).toEqual([{ value: 'select' }]);
           expect(docES.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
-          expect(docES.metadata.date).toEqual([{ value: 'date' }]);
+          expect(docES.metadata.date).toEqual([{ value: 1234 }]);
           expect(docES.metadata.multidate).toEqual([{ value: 1234 }]);
           expect(docES.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
           expect(docES.metadata.numeric).toEqual([{ value: 100 }]);
@@ -350,7 +350,7 @@ describe('entities', () => {
           expect(docPT.metadata.property1).toEqual([{ value: 'text' }]);
           expect(docPT.metadata.select).toEqual([{ value: 'select' }]);
           expect(docPT.metadata.multiselect).toEqual([{ value: 'multiselect' }]);
-          expect(docPT.metadata.date).toEqual([{ value: 'date' }]);
+          expect(docPT.metadata.date).toEqual([{ value: 1234 }]);
           expect(docPT.metadata.multidate).toEqual([{ value: 1234 }]);
           expect(docPT.metadata.multidaterange).toEqual([{ value: { from: 1, to: 2 } }]);
           expect(docPT.metadata.numeric).toEqual([{ value: 100 }]);
