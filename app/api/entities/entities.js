@@ -52,6 +52,8 @@ async function denormalizeMetadata(entity, template = undefined, dictionariesByK
           const partner = await model.get({ sharedId: elem.value, language: entity.language });
           if (partner && partner[0] && partner[0].title) {
             elem.label = partner[0].title;
+            elem.icon = partner[0].icon;
+            elem.type = partner[0].file ? 'document' : 'entity';
           }
         }
         return elem;
