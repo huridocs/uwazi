@@ -21,7 +21,6 @@ import fixtures, {
   docId1,
   docId2,
 } from './fixtures.js';
-import { template1Id } from 'api/csv/specs/fixtures.js';
 
 describe('entities', () => {
   beforeEach(async () => {
@@ -1114,9 +1113,7 @@ describe('entities', () => {
       const entity = {
         title: 'Test',
         template: templateId,
-        metadata: {
-          date: 'invalid date',
-        },
+        metadata: { date: [{ value: 'invalid date' }] },
       };
       const options = { user: { _id: db.id() }, language: 'en' };
 

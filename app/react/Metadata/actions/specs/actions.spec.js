@@ -53,11 +53,7 @@ describe('Metadata Actions', () => {
         sharedId: '1',
         title: 'updated title',
         template: 'templateId',
-        metadata: {
-          test: [{ value: 'test' }],
-          newProp: [],
-          testRelation: [],
-        },
+        metadata: { test: [{ value: 'test' }], newProp: [], testRelation: [] },
       };
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
@@ -105,13 +101,7 @@ describe('Metadata Actions', () => {
 
         const expectedDoc = {
           title: 'test',
-          metadata: {
-            test: [],
-            newProp: [],
-            multi: [],
-            date: [],
-            geolocation: [],
-          },
+          metadata: { test: [], newProp: [], multi: [], date: [], geolocation: [] },
           template: 'templateId1',
         };
         expect(dispatch).toHaveBeenCalledWith('formreset');
@@ -193,12 +183,7 @@ describe('Metadata Actions', () => {
 
       const expectedModel = {
         template: '1',
-        metadata: {
-          year: [],
-          powers: [],
-          enemies: [],
-          color: [],
-        },
+        metadata: { year: [], powers: [], enemies: [], color: [] },
       };
 
       const dispatch = jasmine.createSpy('dispatch');

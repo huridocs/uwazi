@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
+/* eslint-disable max-lines,max-statements */
 /** @format */
 
 import Ajv from 'ajv';
@@ -70,26 +69,26 @@ describe('entity schema', () => {
             range: { start: 100, end: 200 },
             label: 'Label',
             indentation: 0,
-          }
+          },
         ],
         user: 'user',
         metadata: {
-          name: 'test',
-          markdown: 'rich text',
-          image: 'image',
-          media: 'https://youtube.com/foo',
-          numeric: 100,
-          date: 100,
-          multidate: [100, 200],
-          daterange: { from: 100, to: 200 },
-          multidaterange: [{ from: 100, to: 200 }, { from: 1000, to: 2000 }],
-          geolocation: [{ lat: 80, lon: 76, label: '' }],
-          select: 'value',
-          multiselect: ['one', 'two'],
-          required_multiselect: ['one'],
-          relationship: ['rel1', 'rel2'],
-          link: { label: 'label', url: 'url' },
-          preview: '',
+          name: [{ value: 'test' }],
+          markdown: [{ value: 'rich text' }],
+          image: [{ value: 'image' }],
+          media: [{ value: 'https://youtube.com/foo' }],
+          numeric: [{ value: 100 }],
+          date: [{ value: 100 }],
+          multidate: [{ value: 100 }, { value: 200 }],
+          daterange: [{ value: { from: 100, to: 200 } }],
+          multidaterange: [{ value: { from: 100, to: 200 } }, { value: { from: 1000, to: 2000 } }],
+          geolocation: [{ value: { lat: 80, lon: 76, label: '' } }],
+          select: [{ value: 'value' }],
+          multiselect: [{ value: 'one' }, { value: 'two' }],
+          required_multiselect: [{ value: 'one' }],
+          relationship: [{ value: 'rel1' }, { value: 'rel2' }],
+          link: [{ value: { label: 'label', url: 'url' } }],
+          preview: [{ value: '' }],
         },
       };
     });
