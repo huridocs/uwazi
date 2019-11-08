@@ -1,21 +1,11 @@
 /** @format */
 import { instanceModel } from 'api/odm';
-import createMongooseSchema from 'json-schema-to-mongoose';
 import mongoose from 'mongoose';
+import { ThesaurusSchema } from './dictionariesType';
 
-import schema from './dictionariesSchema';
-import { Thesaurus } from './dictionariesType';
+const mongoSchema = new mongoose.Schema({
+  name: mongoose.Schema.Types.Mixed,
+  values: mongoose.Schema.Types.Mixed,
+});
 
-// const dictionarySchema = new mongoose.Schema({
-//   name: String,
-//   values: [
-//     {
-//       id: String,
-//       label: { type: String },
-//       values: mongoose.Schema.Types.Mixed,
-//     },
-//   ],
-// });
-
-export interface ThesaurusDocument extends mongoose.Document, Thesaurus {}
-export default instanceModel<ThesaurusDocument>('dictionaries', createMongooseSchema({}, schema));
+export default instanceModel<ThesaurusSchema>('dictionaries', mongoSchema);

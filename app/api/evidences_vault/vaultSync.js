@@ -2,7 +2,7 @@ import 'isomorphic-fetch';
 import mongoose from 'mongoose';
 import { isNumber } from 'util';
 
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 
 import entities from 'api/entities';
 import templates from 'api/templates';
@@ -13,16 +13,16 @@ import vaultEvidencesModel from './vaultEvidencesModel';
 
 
 const linkProp = template =>
-  template.properties.find(p => p.type === templateTypes.link).name;
+  template.properties.find(p => p.type === propertyTypes.link).name;
 
 const mediaProp = template =>
-  template.properties.find(p => p.type === templateTypes.media).name;
+  template.properties.find(p => p.type === propertyTypes.media).name;
 
 const imageProp = template =>
-  template.properties.find(p => p.type === templateTypes.image).name;
+  template.properties.find(p => p.type === propertyTypes.image).name;
 
 const dateProp = template =>
-  template.properties.find(p => p.type === templateTypes.date).name;
+  template.properties.find(p => p.type === propertyTypes.date).name;
 
 const createEntityFromEvidence = async (evidence, template) => {
   const _id = mongoose.Types.ObjectId();

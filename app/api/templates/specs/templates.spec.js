@@ -5,13 +5,13 @@
  */
 
 /* eslint-disable max-statements */
+import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
-import validatedTemplates, { templates } from 'api/templates/templates.js';
+import templates from 'api/templates/templates.js';
 import translations from 'api/i18n/translations';
-import templatesValidator from 'api/templates/templatesValidator';
 
 import fixtures, {
   templateToBeEditedId,
@@ -36,8 +36,8 @@ describe('templates', () => {
     it('should return the saved template', done => {
       const newTemplate = {
         name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [{ label: 'fieldLabel' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [{ label: 'fieldLabel', type: 'text' }],
       };
 
       templates
@@ -53,8 +53,8 @@ describe('templates', () => {
     it('should create a template', done => {
       const newTemplate = {
         name: 'created_template',
-        properties: [{ label: 'fieldLabel' }],
-        commonProperties: [{ name: 'title', label: 'Title' }],
+        properties: [{ label: 'fieldLabel', type: 'text' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
 
       templates
@@ -78,7 +78,7 @@ describe('templates', () => {
         const changedTemplate = {
           _id: templateWithContents,
           name: 'changed',
-          commonProperties: [{ name: 'title', label: 'Title' }],
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [
             { id: '1', type: 'select', content: 'new_thesauri', label: 'select' },
             { id: '2', type: 'multiselect', content: 'new_thesauri', label: 'multiselect' },
@@ -102,10 +102,10 @@ describe('templates', () => {
       const changedTemplate = {
         _id: swapTemplate,
         name: 'swap names template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { id: '1', type: 'text', name: 'text', label: 'Select' },
-          { id: '2', type: 'select', name: 'select', label: 'Text' },
+          { id: '2', type: 'select', name: 'select', label: 'Text', content: 'a' },
         ],
       };
 
@@ -121,8 +121,8 @@ describe('templates', () => {
     it('should add it to translations with Entity type', done => {
       const newTemplate = {
         name: 'created template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
-        properties: [{ label: 'label 1' }, { label: 'label 2' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }],
       };
 
       templates.save(newTemplate).then(response => {
@@ -146,10 +146,10 @@ describe('templates', () => {
     it('should assign a safe property name based on the label ', done => {
       const newTemplate = {
         name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'select' },
+          { label: 'label 2', type: 'select', content: 's' },
           { label: 'label 3', type: 'image' },
           { label: 'label 4', name: 'name', type: 'text' },
           { label: 'label 5', type: 'geolocation' },
@@ -172,21 +172,15 @@ describe('templates', () => {
         .catch(catchErrors(done));
     });
 
-    it('should set a default value of [] to properties', done => {
+    it('should set a default value of [] to properties', async () => {
       const newTemplate = {
         name: 'created_template',
-        commonProperties: [{ name: 'title', label: 'Title' }],
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
-      templates
-        .save(newTemplate)
-        .then(templates.get)
-        .then(allTemplates => {
-          const newDoc = allTemplates.find(template => template.name === 'created_template');
-
-          expect(newDoc.properties).toEqual([]);
-          done();
-        })
-        .catch(done.fail);
+      await templates.save(newTemplate);
+      const allTemplates = await templates.get();
+      const newDoc = allTemplates.find(template => template.name === 'created_template');
+      expect(newDoc.properties).toEqual([]);
     });
 
     describe('when passing _id', () => {
@@ -199,13 +193,13 @@ describe('templates', () => {
         const template = {
           _id: templateToBeEditedId,
           name: 'template to be edited',
-          commonProperties: [{ name: 'title', label: 'Title' }],
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [],
           default: true,
         };
         const toSave = {
           _id: templateToBeEditedId,
-          commonProperties: [{ name: 'title', label: 'Title' }],
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           name: 'changed name',
         };
         templates
@@ -222,7 +216,7 @@ describe('templates', () => {
         const toSave = {
           _id: templateToBeEditedId,
           name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title' }],
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         };
         try {
           await templates.save(toSave);
@@ -237,7 +231,7 @@ describe('templates', () => {
       it('should update the translation context for it', done => {
         const newTemplate = {
           name: 'created template',
-          commonProperties: [{ name: 'title', label: 'Title' }],
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           properties: [{ label: 'label 1', type: 'text' }, { label: 'label 2', type: 'text' }],
         };
         spyOn(translations, 'updateContext');
@@ -280,7 +274,7 @@ describe('templates', () => {
         const edited = {
           _id: templateToBeEditedId,
           name: 'changed name',
-          commonProperties: [{ name: 'title', label: 'Title' }],
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         };
         return templates
           .save(edited)
@@ -394,14 +388,21 @@ describe('templates', () => {
 
   describe('validation', () => {
     it('should validate on save', async () => {
-      jest.spyOn(templatesValidator, 'save').mockReturnValue(true);
-
       const tpl = {
         name: 'Test',
-        commonProperties: [{ name: 'title' }],
+        commonProperties: [{ name: 'title', type: 'text' }],
+        properties: [{ label: 'Select', type: 'select' }],
       };
-      await validatedTemplates.save(tpl, 'en');
-      expect(templatesValidator.save).toHaveBeenCalledWith(tpl, 'en');
+      try {
+        await templates.save(tpl, 'en');
+        fail('should throw validation error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Ajv.ValidationError);
+        expect(error.errors.some(e => e.params.missingProperty === 'label')).toBe(true);
+        expect(error.errors.some(e => e.params.keyword === 'requireContentForSelectFields')).toBe(
+          true
+        );
+      }
     });
   });
 });

@@ -2,12 +2,13 @@
 
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
-import { templateTypes } from 'shared/templateTypes';
 import model from 'api/templates/templatesModel';
+import { objectIdSchema, propertySchema } from 'shared/commonSchemas';
+import { wrapValidator } from 'shared/tsUtils';
+
+export const emitSchemaTypes = true;
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
-
-const fieldTypes = Object.values(templateTypes);
 
 ajv.addKeyword('uniqueName', {
   async: true,
@@ -103,50 +104,16 @@ ajv.addKeyword('requireInheritPropertyForInheritingRelationship', {
   },
 });
 
-const propertySchema = {
-  type: 'object',
-  required: ['label', 'type'],
-  requireContentForSelectFields: true,
-  requireRelationTypeForRelationship: true,
-  requireInheritPropertyForInheritingRelationship: true,
-  additionalProperties: false,
-  properties: {
-    id: { type: 'string' },
-    label: { type: 'string', minLength: 1 },
-    name: { type: 'string', minLength: 1 },
-    isCommonProperty: { type: 'boolean' },
-    type: { type: 'string', enum: fieldTypes },
-    prioritySorting: { type: 'boolean' },
-    content: { type: 'string', minLength: 1 },
-    inherit: { type: 'boolean' },
-    inheritProperty: { type: 'string', minLength: 1 },
-    filter: { type: 'boolean' },
-    noLabel: { type: 'boolean' },
-    fullWidth: { type: 'boolean' },
-    defaultfilter: { type: 'boolean' },
-    required: { type: 'boolean' },
-    sortable: { type: 'boolean' },
-    showInCard: { type: 'boolean' },
-    style: { type: 'string' },
-    nestedProperties: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-    },
-  },
-};
-
 export const templateSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   uniqueName: true,
-  required: ['name', 'commonProperties', 'properties'],
+  required: ['name', 'commonProperties'],
   uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
-  definitions: { propertySchema },
+  definitions: { objectIdSchema, propertySchema },
   properties: {
-    _id: { type: 'string' },
+    _id: objectIdSchema,
     name: { type: 'string', minLength: 1 },
     color: { type: 'string', default: '' },
     default: { type: 'boolean', default: false },
@@ -163,4 +130,4 @@ export const templateSchema = {
   },
 };
 
-export const validateTemplate = ajv.compile(templateSchema);
+export const validateTemplate = wrapValidator(ajv.compile(templateSchema));

@@ -2,9 +2,18 @@
 
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
-import { templateTypes } from 'shared/templateTypes';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
-import { objectIdSchema } from 'api/entities/commonSchema';
+import {
+  objectIdSchema,
+  linkSchema,
+  dateRangeSchema,
+  geolocationSchema,
+  tocSchema,
+} from 'shared/commonSchemas';
+import { propertyTypes } from 'shared/propertyTypes';
+import { wrapValidator } from 'shared/tsUtils';
+
+export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
@@ -35,71 +44,70 @@ const validateRequiredProperty = (property, value) => {
 };
 
 const validateTextProperty = (property, value) => {
-  if (
-    [
-      templateTypes.text,
-      templateTypes.markdown,
-      templateTypes.media,
-      templateTypes.image,
-      templateTypes.select,
-    ].includes(property.type)
-  ) {
+  const textProperties = [
+    propertyTypes.text,
+    propertyTypes.markdown,
+    propertyTypes.media,
+    propertyTypes.image,
+    propertyTypes.select,
+  ];
+  if (textProperties.includes(property.type)) {
     return isString(value);
   }
   return true;
 };
 
 const validateNumericProperty = (property, value) => {
-  if (property.type === templateTypes.numeric) {
+  if (property.type === propertyTypes.numeric) {
     return isNumber(value) || value === '';
   }
   return true;
 };
 
 const validateDateProperty = (property, value) => {
-  if (property.type === templateTypes.date) {
+  if (property.type === propertyTypes.date) {
     return isNumber(value) && value >= 0;
   }
   return true;
 };
 
 const validateMultiDateProperty = (property, value) => {
-  if (property.type === templateTypes.multidate) {
-    return Array.isArray(value) && value.every(isNumber);
+  if (property.type === propertyTypes.multidate) {
+    return Array.isArray(value) && value.every(item => isNumber(item) || isNull(item));
   }
   return true;
 };
 
 const validateDateRangeProperty = (property, value) => {
-  if (property.type === templateTypes.daterange) {
+  if (property.type === propertyTypes.daterange) {
     return isValidDateRange(value);
   }
   return true;
 };
 
 const validateMultiDateRangeProperty = (property, value) => {
-  if (property.type === templateTypes.multidaterange) {
+  if (property.type === propertyTypes.multidaterange) {
     return value.every(isValidDateRange);
   }
   return true;
 };
 
 const validateGeolocationProperty = (property, value) => {
-  if (property.type === templateTypes.geolocation) {
+  if (property.type === propertyTypes.geolocation) {
     return Array.isArray(value) && value.every(isValidGeolocation);
   }
   return true;
 };
 
 const validateMultiSelectProperty = (property, value) => {
-  if ([templateTypes.multiselect, templateTypes.relationship].includes(property.type)) {
+  if ([propertyTypes.multiselect, propertyTypes.relationship].includes(property.type)) {
     return Array.isArray(value) && value.every(isValidSelect);
   }
   return true;
 };
 
 const validateLinkProperty = (property, value) => {
-  if (property.type === templateTypes.link) {
+  if (property.type === propertyTypes.link) {
     return isString(value.label) && value.label && isString(value.url) && value.url;
   }
   return true;
@@ -144,74 +152,15 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
   },
 });
 
-export const linkSchema = {
-  type: 'object',
-  required: ['label', 'url'],
-  additionalProperties: false,
-  properties: {
-    label: { type: 'string', minLength: 1 },
-    url: { type: 'string', minLength: 1 },
-  },
-};
-
-export const dateRangeSchema = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    from: {
-      oneOf: [{ type: 'number' }, { type: 'null' }],
-    },
-    to: {
-      oneOf: [{ type: 'number' }, { type: 'null' }],
-    },
-  },
-};
-
-export const latLonSchema = {
-  type: 'object',
-  required: ['lon', 'lat'],
-  additionalProperties: false,
-  properties: {
-    label: { type: 'string' },
-    lat: { type: 'number', minimum: -90, maximum: 90 },
-    lon: { type: 'number', minimum: -180, maximum: 180 },
-  },
-};
-
-export const geolocationSchema = {
-  type: 'array',
-  items: latLonSchema,
-};
-
-export const tocSchema = {
-  type: 'object',
-  title: 'TableOfContents',
-  additionalProperties: false,
-  properties: {
-    range: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        start: { type: 'number' },
-        end: { type: 'number' },
-      },
-    },
-    label: { type: 'string' },
-    indentation: { type: 'number' },
-  },
-};
-
 export const entitySchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
   type: 'object',
   metadataMatchesTemplateProperties: true,
-  additionalProperties: false,
   definitions: {
-    objectIdSchema: objectIdSchema,
+    objectIdSchema,
     linkSchema,
     dateRangeSchema,
-    latLonSchema,
     geolocationSchema,
     tocSchema,
   },
@@ -255,7 +204,6 @@ export const entitySchema = {
       type: 'array',
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: {
           originalname: { type: 'string' },
           filename: { type: 'string' },
@@ -306,6 +254,12 @@ export const entitySchema = {
               type: 'number',
             },
           },
+          {
+            type: 'array',
+            items: {
+              oneOf: [{ type: 'number' }, { type: 'null' }],
+            },
+          },
           dateRangeSchema,
           {
             type: 'array',
@@ -319,4 +273,4 @@ export const entitySchema = {
   },
 };
 
-export const validateEntity = ajv.compile(entitySchema);
+export const validateEntity = wrapValidator(ajv.compile(entitySchema));

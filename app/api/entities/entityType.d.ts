@@ -1,38 +1,13 @@
 /* eslint-disable */
-/**AUTO-GENERATED. RUN yarn build_schema to update.*/
+/**AUTO-GENERATED. RUN yarn emitTypes to update.*/
 
-import { ObjectIdSchema } from 'api/entities/commonType';
-
-export interface LinkSchema {
-  label: string;
-  url: string;
-}
-
-export interface DateRangeSchema {
-  from?: number | null;
-  to?: number | null;
-}
-
-export interface LatLonSchema {
-  label?: string;
-  lat: number;
-  lon: number;
-}
-
-export type GeolocationSchema = {
-  label?: string;
-  lat: number;
-  lon: number;
-}[];
-
-export interface TableOfContents {
-  range?: {
-    start?: number;
-    end?: number;
-  };
-  label?: string;
-  indentation?: number;
-}
+import {
+  ObjectIdSchema,
+  LinkSchema,
+  DateRangeSchema,
+  GeolocationSchema,
+  TocSchema,
+} from 'shared/commonTypes';
 
 export interface EntitySchema {
   _id?: ObjectIdSchema;
@@ -68,6 +43,7 @@ export interface EntitySchema {
     mimetype?: string;
     timestamp?: number;
     size?: number;
+    [k: string]: any | undefined;
   }[];
   creationDate?: number;
   processed?: boolean;
@@ -82,7 +58,7 @@ export interface EntitySchema {
       chars?: number;
     };
   };
-  toc?: TableOfContents[];
+  toc?: TocSchema[];
   user?: ObjectIdSchema;
   metadata?: {
     [k: string]:
@@ -92,11 +68,12 @@ export interface EntitySchema {
           | number
           | string[]
           | number[]
+          | (number | null)[]
           | DateRangeSchema
           | DateRangeSchema[]
           | LinkSchema
           | GeolocationSchema)
       | undefined;
   };
+  [k: string]: any | undefined;
 }
-

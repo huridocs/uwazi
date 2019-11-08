@@ -3,10 +3,10 @@
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import { catchErrors } from 'api/utils/jasmineHelpers';
-import validator from '../templatesValidator';
+import { validateTemplate } from '../templateSchema';
 import fixtures, { templateId } from './validatorFixtures';
 
-describe('template validator', () => {
+describe('template schema', () => {
   beforeEach(done => {
     db.clearAllAndLoad(fixtures)
       .then(done)
@@ -17,7 +17,7 @@ describe('template validator', () => {
     db.disconnect().then(done);
   });
 
-  describe('save', () => {
+  describe('validateTemplate', () => {
     let template;
 
     const makeProperty = (name, type, args) => ({
@@ -59,11 +59,11 @@ describe('template validator', () => {
       };
     });
 
-    const testValid = () => validator.save(template, 'en');
+    const testValid = () => validateTemplate(template);
 
     const testInvalid = async () => {
       try {
-        await validator.save(template, 'en');
+        await validateTemplate(template);
         fail('should throw error');
       } catch (e) {
         expect(e).toBeInstanceOf(Ajv.ValidationError);

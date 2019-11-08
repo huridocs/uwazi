@@ -1,5 +1,5 @@
 import db from 'api/utils/testing_db';
-import { templateTypes } from 'shared/templateTypes';
+import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 
 const template1Id = db.id();
@@ -19,12 +19,12 @@ export default {
       name: 'base template',
       properties: [
         {
-          type: templateTypes.text,
+          type: propertyTypes.text,
           label: 'text label',
           name: templateUtils.safeName('text label'),
         },
         {
-          type: templateTypes.select,
+          type: propertyTypes.select,
           label: 'select label',
           name: templateUtils.safeName('select label'),
           content: thesauri1Id,
@@ -35,7 +35,7 @@ export default {
           name: templateUtils.safeName('not defined type'),
         },
         {
-          type: templateTypes.text,
+          type: propertyTypes.text,
           label: 'not configured on csv',
           name: templateUtils.safeName('not configured on csv'),
         },

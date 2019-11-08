@@ -4,9 +4,10 @@
 
 import Ajv from 'ajv';
 import ajvKeywords from 'ajv-keywords';
+import { wrapValidator } from 'shared/tsUtils';
 import model from './dictionariesModel';
-import schema from './dictionariesSchema';
-import { Thesaurus } from './dictionariesType';
+import { thesaurusSchema } from './dictionariesSchema';
+import { ThesaurusSchema } from './dictionariesType';
 
 const ajv = ajvKeywords(Ajv({ allErrors: true }), ['uniqueItemProperties']);
 
@@ -17,7 +18,7 @@ ajv.addKeyword('uniqueName', {
     _value: any,
     _propertySchema: any,
     _property: any,
-    thesauri: Thesaurus
+    thesauri: ThesaurusSchema
   ) => {
     const [duplicated] = await model.get({
       _id: { $ne: thesauri._id },
@@ -31,4 +32,4 @@ ajv.addKeyword('uniqueName', {
   },
 });
 
-export const validateThesauri = ajv.compile(schema);
+export const validateThesauri = wrapValidator(ajv.compile(thesaurusSchema));
