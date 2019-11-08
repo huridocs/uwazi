@@ -260,6 +260,15 @@ export const entitySchema = {
               oneOf: [{ type: 'number' }, { type: 'null' }],
             },
           },
+          {
+            type: 'array',
+            items: {
+              oneOf: [
+                { type: 'number' },
+                { type: 'null' }
+              ],
+            }
+          },
           dateRangeSchema,
           {
             type: 'array',
