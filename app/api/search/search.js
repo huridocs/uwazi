@@ -123,8 +123,8 @@ function snippetsFromSearchHit(hit) {
   return snippets;
 }
 
-function searchGeolocation(documentsQuery, filteringTypes, templates) {
-   documentsQuery.limit(9999);
+function searchGeolocation(documentsQuery, templates) {
+  documentsQuery.limit(9999);
   const geolocationProperties = [];
 
   templates.forEach(template => {
@@ -142,25 +142,7 @@ function searchGeolocation(documentsQuery, filteringTypes, templates) {
           geolocationProperties.push(prop.name);
         }
       }
-    }); documentsQuery.limit(9999);
-    const geolocationProperties = [];
-  
-    templates.forEach(template => {
-      template.properties.forEach(prop => {
-        if (prop.type === 'geolocation') {
-          geolocationProperties.push(prop.name);
-        }
-  
-        if (prop.type === 'relationship' && prop.inherit) {
-          const contentTemplate = templates.find(t => t._id.toString() === prop.content.toString());
-          const inheritedProperty = contentTemplate.properties.find(
-            p => p._id.toString() === prop.inheritProperty.toString()
-          );
-          if (inheritedProperty.type === 'geolocation') {
-            geolocationProperties.push(prop.name);
-          }
-        }
-      });
+    });
   });
 
   documentsQuery.hasMetadataProperties(geolocationProperties);
