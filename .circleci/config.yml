@@ -1,3 +1,5 @@
+# @format
+
 version: 2.0
 parallelism: 3
 jobs:
@@ -7,7 +9,7 @@ jobs:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
     docker:
       - image: circleci/node:8.11.3-browsers
-      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+      - image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
         environment:
           - discovery.type=single-node
           - http.host=0.0.0.0
@@ -21,9 +23,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-yarn-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-yarn-dependencies-
+            - v1-yarn-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-yarn-dependencies-
 
       - run: yarn install
       - run: sudo apt-get install poppler-utils
@@ -49,9 +51,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-yarn-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-yarn-dependencies-
+            - v1-yarn-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-yarn-dependencies-
 
       - run: yarn install
       - save_cache:
@@ -67,7 +69,7 @@ jobs:
     docker:
       - image: circleci/node:8.11.3-browsers
       - image: circleci/mongo:4.0.3
-      - image: docker.elastic.co/elasticsearch/elasticsearch:5.5.1
+      - image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
         environment:
           - discovery.type=single-node
           - http.host=0.0.0.0
@@ -80,9 +82,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-yarn-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v2-yarn-dependencies-
+            - v2-yarn-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v2-yarn-dependencies-
 
       - run: yarn install
       - run: sudo apt-get install mongodb-clients
@@ -105,6 +107,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - "unit_tests"
-      - "e2e_tests"
-      - "eslint"
+      - 'unit_tests'
+      - 'e2e_tests'
+      - 'eslint'

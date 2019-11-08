@@ -123,7 +123,7 @@ function snippetsFromSearchHit(hit) {
   return snippets;
 }
 
-function searchGeolocation(documentsQuery, filteringTypes, templates) {
+function searchGeolocation(documentsQuery, templates) {
   documentsQuery.limit(9999);
   const geolocationProperties = [];
 
@@ -184,7 +184,7 @@ const processResponse = response => {
     }
   });
 
-  return { rows, totalRows: response.hits.total, aggregations: response.aggregations };
+  return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
 };
 
 const mainSearch = (query, language, user) => {
@@ -290,8 +290,9 @@ const mainSearch = (query, language, user) => {
       documentsQuery.aggregations(aggregations, dictionaries);
 
       if (query.geolocation) {
-        searchGeolocation(documentsQuery, filteringTypes, templates);
+        searchGeolocation(documentsQuery, templates);
       }
+
       return elastic
         .search({ index: elasticIndexes.index, body: documentsQuery.query() })
         .then(processResponse)
@@ -351,8 +352,8 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
-  Promise.all(
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
+  return Promise.all(
     Object.keys(toFetchByTemplate).map(t => {
       const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
       if (!user) {
@@ -367,6 +368,7 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
       });
     })
   );
+};
 
 const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();
@@ -485,23 +487,23 @@ const search = {
   },
 
   bulkIndex(docs, _action = 'index') {
-    const type = 'entity';
     const body = [];
     docs.forEach(doc => {
-      let _doc = doc;
+      let docBody = Object.assign({}, doc);
+      docBody.fullText = 'entity';
       const id = doc._id.toString();
-      delete doc._id;
-      delete doc._rev;
-      delete doc.pdfInfo;
+      delete docBody._id;
+      delete docBody._rev;
+      delete docBody.pdfInfo;
 
       let action = {};
-      action[_action] = { _index: elasticIndexes.index, _type: type, _id: id };
+      action[_action] = { _index: elasticIndexes.index, _id: id };
       if (_action === 'update') {
-        _doc = { doc: _doc };
+        docBody = { doc: docBody };
       }
 
       body.push(action);
-      body.push(_doc);
+      body.push(docBody);
 
       if (doc.fullText) {
         const fullText = Object.values(doc.fullText).join('\f');
@@ -509,13 +511,11 @@ const search = {
         action = {};
         action[_action] = {
           _index: elasticIndexes.index,
-          _type: 'fullText',
-          parent: id,
           _id: `${id}_fullText`,
+          routing: id,
         };
         body.push(action);
 
-        const fullTextQuery = {};
         let language;
         if (!doc.file || (doc.file && !doc.file.language)) {
           language = languagesUtil.detect(fullText);
@@ -523,8 +523,11 @@ const search = {
         if (doc.file && doc.file.language) {
           language = languages(doc.file.language);
         }
-        fullTextQuery[`fullText_${language}`] = fullText;
-        body.push(fullTextQuery);
+        const fullTextObject = {
+          [`fullText_${language}`]: fullText,
+          fullText: { name: 'fullText', parent: id },
+        };
+        body.push(fullTextObject);
         delete doc.fullText;
       }
     });
@@ -565,5 +568,4 @@ const search = {
     return elastic.deleteByQuery({ index: elasticIndexes.index, body: query });
   },
 };
-
 export default search;
