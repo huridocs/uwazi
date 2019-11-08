@@ -1,4 +1,9 @@
-/* eslint-disable max-lines,max-statements */
+/**
+ * /* eslint-disable max-lines,max-statements
+ *
+ * @format
+ */
+
 /** @format */
 
 import Ajv from 'ajv';
@@ -171,123 +176,139 @@ describe('entity schema', () => {
         });
       });
 
+      describe('any property', () => {
+        it('should fail if value is not an array', async () => {
+          entity.metadata.name = { value: 10 };
+          await testInvalid();
+        });
+      });
+
       describe('text property', () => {
         it('should fail if value is not a string', async () => {
-          entity.metadata.name = 10;
+          entity.metadata.name = [{ value: 10 }];
+          await testInvalid();
+        });
+        it('should fail if value is not a single string', async () => {
+          entity.metadata.name = [{ value: 'a' }, { value: 'b' }];
           await testInvalid();
         });
       });
 
       describe('markdown property', () => {
         it('should fail if value is not a string', async () => {
-          entity.metadata.markdown = {};
+          entity.metadata.markdown = [{ value: {} }];
           await testInvalid();
         });
       });
 
       describe('media property', () => {
         it('should fail if value is not a string', async () => {
-          entity.metadata.media = 10;
+          entity.metadata.media = [{ value: 10 }];
           await testInvalid();
         });
       });
 
       describe('image property', () => {
         it('should fail if value is not a string', async () => {
-          entity.metadata.image = 10;
+          entity.metadata.image = [{ value: 10 }];
           await testInvalid();
         });
       });
 
       describe('numeric property', () => {
         it('should fail if value is not a number', async () => {
-          entity.metadata.numeric = 'test';
+          entity.metadata.numeric = [{ value: 'test' }];
           await testInvalid();
         });
         it('should allow value to be empty string', async () => {
-          entity.metadata.numeric = '';
+          entity.metadata.numeric = [{ value: '' }];
           await testValid();
         });
       });
 
       describe('date property', () => {
         it('should fail if value is not a positive number', async () => {
-          entity.metadata.date = 'test';
+          entity.metadata.date = [{ value: 'test' }];
           await testInvalid();
-          entity.metadata.date = -100;
+          entity.metadata.date = [{ value: -100 }];
           await testInvalid();
         });
         it('should allow value to be null if property is not required', async () => {
-          entity.metadata.date = null;
+          entity.metadata.date = [{ value: null }];
           await testValid();
         });
       });
 
       describe('multidate property', () => {
         it('should fail if value is not an array of numbers', async () => {
-          entity.metadata.multidate = [100, '200'];
+          entity.metadata.multidate = [{ value: 100 }, { value: '200' }];
           await testInvalid();
-          entity.metadata.multidate = ['100'];
+          entity.metadata.multidate = [{ value: '100' }];
           await testInvalid();
-          entity.metadata.multidate = 100;
+          entity.metadata.multidate = { value: 100 };
           await testInvalid();
         });
         it('should allow null items', async () => {
-          entity.metadata.multidate = [100, null, 200, null];
+          entity.metadata.multidate = [
+            { value: 100 },
+            { value: null },
+            { value: 200 },
+            { value: null },
+          ];
           await testValid();
         });
       });
 
       describe('daterange property', () => {
         it('should fail if value is not an object', async () => {
-          entity.metadata.daterange = 'dates';
+          entity.metadata.daterange = [{ value: 'dates' }];
           await testInvalid();
-          entity.metadata.daterange = [100, 200];
+          entity.metadata.daterange = [{ value: 100 }, { value: 200 }];
           await testInvalid();
         });
 
         it('should allow either from or to to be null', async () => {
-          entity.metadata.daterange = { from: null, to: 100 };
+          entity.metadata.daterange = [{ value: { from: null, to: 100 } }];
           await testValid();
-          entity.metadata.daterange = { from: 100, to: null };
+          entity.metadata.daterange = [{ value: { from: 100, to: null } }];
           await testValid();
-          entity.metadata.daterange = { from: null, to: null };
+          entity.metadata.daterange = [{ value: { from: null, to: null } }];
           await testValid();
         });
         it('should allow value to be an empty object', async () => {
-          entity.metadata.daterange = {};
+          entity.metadata.daterange = [{ value: {} }];
           await testValid();
         });
         it('should fail if from and to are not numbers', async () => {
-          entity.metadata.daterange = { from: 'test', to: 'test' };
+          entity.metadata.daterange = [{ value: { from: 'test', to: 'test' } }];
           await testInvalid();
         });
         it('should fail if from is greater than to', async () => {
-          entity.metadata.daterange = { from: 100, to: 50 };
+          entity.metadata.daterange = [{ value: { from: 100, to: 50 } }];
           await testInvalid();
         });
       });
 
       describe('multidaterange property', () => {
         it('should fail if value is not array of date ranges', async () => {
-          entity.metadata.multidaterange = [{ from: 100, to: '200' }];
+          entity.metadata.multidaterange = [{ value: { from: 100, to: '200' } }];
           await testInvalid();
-          entity.metadata.multidaterange = [100, 200];
+          entity.metadata.multidaterange = [{ value: 100 }, { value: 200 }];
           await testInvalid();
-          entity.metadata.multidaterange = [{ from: 200, to: 100 }];
+          entity.metadata.multidaterange = [{ value: { from: 200, to: 100 } }];
           await testInvalid();
         });
       });
 
       describe('select property', () => {
         it('should fail if value is not a non-empty string', async () => {
-          entity.metadata.select = 10;
+          entity.metadata.select = [{ value: 10 }];
           await testInvalid();
-          entity.metadata.select = ['test'];
+          entity.metadata.select = [{ value: ['test'] }];
           await testInvalid();
         });
         it('should allow empty string if property is not required', async () => {
-          entity.metadata.select = '';
+          entity.metadata.select = [{ value: '' }];
           await testValid();
         });
       });

@@ -16,7 +16,14 @@ const mongoSchema = new mongoose.Schema(
     sharedId: { type: String, index: true },
     title: { type: String, required: true },
     template: { type: mongoose.Schema.Types.ObjectId, ref: 'templates', index: true },
-    file: mongoose.Schema.Types.Mixed,
+    file: {
+      originalname: String,
+      filename: String,
+      mimetype: String,
+      size: Number,
+      timestamp: Number,
+      language: String,
+    },
     fullText: { type: mongoose.Schema.Types.Mixed, select: false },
     totalPages: Number,
     icon: new mongoose.Schema({
