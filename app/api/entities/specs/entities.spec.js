@@ -1089,7 +1089,7 @@ describe('entities', () => {
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
-      expect(entities.createThumbnail.calls.count()).toBe(6);
+      expect(entities.createThumbnail.calls.count()).toBe(7);
       expect(newEntities[0].fullText).toEqual({ 1: 'text' });
       expect(newEntities.length).toBe(7);
     });

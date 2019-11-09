@@ -60,10 +60,10 @@ class OdmModelImpl<T extends { _id?: any }> implements OdmModel<T> {
       if (saved === null) {
         throw Error('mongoose findOneAndUpdate should never return null!');
       }
-      return saved.toObject() as T;
+      return saved;
     }
     const saved = await this.db.create(data);
-    return saved.toObject() as T;
+    return saved;
   }
 
   saveMultiple(data: T[]) {
