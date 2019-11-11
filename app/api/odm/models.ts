@@ -5,11 +5,10 @@ import { DeleteWriteOpResultObject } from 'mongodb';
 
 export interface OdmModel<T extends { _id?: any }> {
   db: Model<T & Document>;
-  // returns T.toObject().
-  save: (data: T) => Promise<T>;
-  saveMultiple: (data: T[]) => Promise<T[]>;
+  save: (data: T) => Promise<T & Document>;
+  saveMultiple: (data: T[]) => Promise<(T & Document)[]>;
 
-  getById: (id: any | string | number) => Promise<T | null>;
+  getById: (id: any | string | number) => Promise<(T & Document) | null>;
   get: (
     query: any,
     select?: string,
