@@ -389,9 +389,10 @@ export default {
           this.getById(entityId, language),
           relationships.getByDocument(entityId, language),
         ]);
-        if (entity) {
+        if (entity && entity.template) {
           entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
+
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach(property => {
             const relationshipsGoingToThisProperty = relations.filter(

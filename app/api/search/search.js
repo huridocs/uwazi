@@ -43,6 +43,7 @@ function processFiltes(filters, properties) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
     }
+    property.name = property.name + '.value';
     return Object.assign(property, { value, type });
   });
 }
@@ -223,8 +224,12 @@ const mainSearch = (query, language, user) => {
       const textFieldsToSearch =
         query.fields ||
         propertiesHelper
-          .textFields(templates)
-          .map(prop => `metadata.${prop.name}.value`)
+          .allUniqueProperties(templates)
+          .map(prop =>
+            ['text', 'markdown'].includes(prop.type)
+              ? `metadata.${prop.name}.value`
+              : `metadata.${prop.name}.label`
+          )
           .concat(['title', 'fullText']);
       const documentsQuery = documentQueryBuilder()
         .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
@@ -279,13 +284,13 @@ const mainSearch = (query, language, user) => {
 
       const aggregations = agregationProperties(properties);
       const filters = processFiltes(query.filters, properties);
-      const textSearchFilters = filtersBasedOnSearchTerm(
-        allUniqueProps,
-        entitiesMatchedByTitle,
-        dictionariesMatchByLabel
-      );
+      // const textSearchFilters = filtersBasedOnSearchTerm(
+      //   allUniqueProps,
+      //   entitiesMatchedByTitle,
+      //   dictionariesMatchByLabel
+      // );
 
-      documentsQuery.filterMetadataByFullText(textSearchFilters);
+      // documentsQuery.filterMetadataByFullText(textSearchFilters);
       documentsQuery.filterMetadata(filters);
       documentsQuery.aggregations(aggregations, dictionaries);
 

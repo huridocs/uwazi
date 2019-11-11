@@ -76,30 +76,10 @@ describe('search', () => {
           .then(snippets => {
             const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
             const fieldSnippet = snippets.metadata.find(
-              snippet => snippet.field === 'metadata.field1'
+              snippet => snippet.field === 'metadata.field1.value'
             );
             expect(snippets.count).toBe(3);
-            expect(snippets.metadata.length).toEqual([{ value: 2 }]);
-            expect(titleSnippet.texts.length).toBe(1);
-            expect(titleSnippet.texts[0]).toMatch('gargoyles');
-            expect(fieldSnippet.texts.length).toBe(1);
-            expect(fieldSnippet.texts[0]).toMatch('gargoyles');
-            expect(snippets.fullText.length).toBe(1);
-            done();
-          })
-          .catch(catchErrors(done));
-      });
-
-      it('perform a search on metadata and fullText and return the snippets', done => {
-        search
-          .searchSnippets('gargoyles', ids.metadataSnippets, 'en')
-          .then(snippets => {
-            const titleSnippet = snippets.metadata.find(snippet => snippet.field === 'title');
-            const fieldSnippet = snippets.metadata.find(
-              snippet => snippet.field === 'metadata.field1'
-            );
-            expect(snippets.count).toBe(3);
-            expect(snippets.metadata.length).toBe(2);
+            expect(snippets.metadata.length).toEqual(2);
             expect(titleSnippet.texts.length).toBe(1);
             expect(titleSnippet.texts[0]).toMatch('gargoyles');
             expect(fieldSnippet.texts.length).toBe(1);
@@ -244,22 +224,18 @@ describe('search', () => {
       });
     });
 
-    it('should match entities related somehow with other entities with a title that is the search term', done => {
-      search
-        .search({ searchTerm: 'egypt' }, 'en')
-        .then(({ rows }) => {
-          expect(rows.length).toBe(3);
-          const country = rows.find(_result => _result.sharedId === 'abc123');
-          const entityWithEgypt = rows.find(_result => _result.sharedId === 'entityWithEgypt');
-          const entityWithEgyptDictionary = rows.find(
-            _result => _result.sharedId === 'entityWithEgyptDictionary'
-          );
-          expect(country).toBeDefined();
-          expect(entityWithEgypt).toBeDefined();
-          expect(entityWithEgyptDictionary).toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should match entities related somehow with other entities with a title that is the search term', async () => {
+      const { rows } = await search.search({ searchTerm: 'egypt' }, 'en');
+
+      expect(rows.length).toBe(3);
+      const country = rows.find(_result => _result.sharedId === 'abc123');
+      const entityWithEgypt = rows.find(_result => _result.sharedId === 'entityWithEgypt');
+      const entityWithEgyptDictionary = rows.find(
+        _result => _result.sharedId === 'entityWithEgyptDictionary'
+      );
+      expect(country).toBeDefined();
+      expect(entityWithEgypt).toBeDefined();
+      expect(entityWithEgyptDictionary).toBeDefined();
     });
 
     it('should limit the results', done => {
@@ -477,7 +453,7 @@ describe('search', () => {
       });
     });
 
-    describe('multiselect aggregations', () => {
+    fdescribe('multiselect aggregations', () => {
       it('should return aggregations of multiselect fields', done => {
         Promise.all([
           search.search({ types: [ids.templateMetadata1] }, 'en'),
@@ -521,7 +497,7 @@ describe('search', () => {
       });
 
       describe('allAggregations', () => {
-        fit('should return all aggregations', async () => {
+        it('should return all aggregations', async () => {
           const allAggregations = await search.search({ allAggregations: true }, 'en');
           const aggregationsIncluded = Object.keys(allAggregations.aggregations.all);
           expect(aggregationsIncluded).toMatchSnapshot();
@@ -732,76 +708,30 @@ describe('search', () => {
         .catch(catchErrors(done));
     });
 
-    it('should allow including unpublished documents if user', done => {
-      spyOn(elastic, 'search').and.returnValue(new Promise(resolve => resolve(result)));
-      search
-        .search(
-          {
-            searchTerm: 'searchTerm',
-            includeUnpublished: true,
-          },
-          'es',
-          'user'
-        )
-        .then(() => {
-          const expectedQuery = documentQueryBuilder()
-            .fullTextSearch(
-              'searchTerm',
-              [
-                'metadata.field1',
-                'metadata.field2',
-                'metadata.rich_text',
-                'metadata.field3',
-                'title',
-                'fullText',
-              ],
-              2
-            )
-            .includeUnpublished()
-            .language('es')
-            .query();
-
-          expect(elastic.search).toHaveBeenCalledWith({
-            index: elasticIndexes.index,
-            body: expectedQuery,
-          });
-          done();
-        });
+    it('should allow including unpublished documents if user', async () => {
+      const { rows } = await search.search(
+        {
+          searchTerm: '',
+          includeUnpublished: true,
+        },
+        'es',
+        'user'
+      );
+      expect(rows.length).toBe(5);
     });
 
-    it('should not include unpublished documents if no user', done => {
-      spyOn(elastic, 'search').and.returnValue(new Promise(resolve => resolve(result)));
-      search
-        .search(
-          {
-            searchTerm: 'searchTerm',
-            includeUnpublished: true,
-          },
-          'es'
-        )
-        .then(() => {
-          const expectedQuery = documentQueryBuilder()
-            .fullTextSearch(
-              'searchTerm',
-              [
-                'metadata.field1',
-                'metadata.field2',
-                'metadata.rich_text',
-                'metadata.field3',
-                'title',
-                'fullText',
-              ],
-              2
-            )
-            .language('es')
-            .query();
+    it('should not include unpublished documents if no user', async () => {
+      const { rows } = await search.search(
+        {
+          searchTerm: '',
+          includeUnpublished: true,
+        },
+        'es'
+      );
 
-          expect(elastic.search).toHaveBeenCalledWith({
-            index: elasticIndexes.index,
-            body: expectedQuery,
-          });
-          done();
-        });
+      expect(
+        rows.reduce((allArePublished, entity) => allArePublished && entity.published, true)
+      ).toBe(true);
     });
   });
 });

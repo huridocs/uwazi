@@ -33,21 +33,16 @@ describe('templates', () => {
   });
 
   describe('save', () => {
-    it('should return the saved template', done => {
+    it('should return the saved template', async () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [{ label: 'fieldLabel', type: 'text' }],
       };
 
-      templates
-        .save(newTemplate)
-        .then(template => {
-          expect(template._id).toBeDefined();
-          expect(template.name).toBe('created_template');
-          done();
-        })
-        .catch(done.fail);
+      const template = await templates.save(newTemplate);
+      expect(template._id).toBeDefined();
+      expect(template.name).toBe('created_template');
     });
 
     it('should create a template', done => {

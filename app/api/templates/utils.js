@@ -10,7 +10,9 @@ export const safeName = label =>
 
 export const generateName = property => {
   const name = property.label ? safeName(property.label) : property.name;
-  return property.type === 'geolocation' ? `${name}_geolocation` : name;
+  return property.type === 'geolocation' || property.type === 'nested'
+    ? `${name}_${property.type}`
+    : name;
 };
 
 export function generateNames(properties) {

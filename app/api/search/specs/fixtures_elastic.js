@@ -223,7 +223,7 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: [{ value: 'abc123' }] },
+      metadata: { multiselect1: [{ value: 'abc123', label: 'Country Egypt' }] },
     },
     {
       _id: db.id(),
@@ -233,7 +233,9 @@ export default {
       title: 'Something',
       published: true,
       user: userId,
-      metadata: { multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83' }] },
+      metadata: {
+        multiselect1: [{ value: '35ae6c24-9f4c-4017-9f01-2bc42ff7ad83', label: 'Egypt' }],
+      },
     },
     {
       _id: db.id(),
