@@ -10,7 +10,7 @@ import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import Auth2faAPI from 'app/Auth2fa/Auth2faAPI';
 
@@ -21,18 +21,19 @@ export class AccountSettings extends Component {
       email: props.user.email || '',
       password: '',
       repeatPassword: '',
+      using2fa: props.user.using2fa,
       otpauth: '',
     };
 
-    this.getQR = this.getQR.bind(this);
+    this.getSecret = this.getSecret.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState({ email: props.user.email || '' });
   }
 
-  async getQR() {
-    const otpauth = await Auth2faAPI.getQR();
+  async getSecret() {
+    const { otpauth } = await Auth2faAPI.getSecret();
     this.setState({ otpauth });
   }
 
@@ -83,7 +84,7 @@ export class AccountSettings extends Component {
   }
 
   render() {
-    const { email, password, repeatPassword, passwordError, otpauth } = this.state;
+    const { email, password, repeatPassword, passwordError, otpauth, using2fa } = this.state;
 
     return (
       <div className="account-settings">
@@ -146,8 +147,31 @@ export class AccountSettings extends Component {
               </button>
             </form>
             <hr />
-            <h5>{t('System', 'Two factor authentication')}</h5>
-            <button type="button" onClick={this.getQR}>
+            <h5>{t('System', 'Two-step verification')}</h5>
+            {using2fa && (
+              <div className="alert alert-info">
+                <Icon icon="check" size="2x" />
+                <div className="force-ltr">
+                  Your account is protected by 2fa. Congratulations!!!
+                </div>
+              </div>
+            )}
+            {!using2fa && (
+              <div>
+                <div className="alert alert-warning">
+                  <Icon icon="exclamation-triangle" size="2x" />
+                  <div className="force-ltr">
+                    You should activate this feature for enhanced account security
+                  </div>
+                </div>
+                <div>
+                  <I18NLink to="/settings/2fa" className="btn btn-success">
+                    {t('System', 'Protect your account')}
+                  </I18NLink>
+                </div>
+              </div>
+            )}
+            <button type="button" onClick={this.getSecret}>
               Generate QR
             </button>
             <p>

@@ -1,9 +1,16 @@
 /** @format */
-/* TEST!!! */
+// TEST!!!
 import api from 'app/utils/api';
 
+interface Secret {
+  otpauth: string;
+  secret: string;
+}
+
 export default {
-  getQR(requestParams: {} | undefined) {
-    return api.get('auth2fa-QR', requestParams).then((response: { json: any }) => response.json);
+  getSecret(requestParams: import('../utils/RequestParams').RequestParams): Secret {
+    return api
+      .get('auth2fa-secret', requestParams)
+      .then((response: { json: any }) => response.json);
   },
 };
