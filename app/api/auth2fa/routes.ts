@@ -1,4 +1,5 @@
 /** @format */
+// TEST!!!
 
 import * as otplib from 'otplib';
 import needsAuthorization from 'api/auth/authMiddleware';
@@ -10,17 +11,9 @@ export default (app: {
     arg2: (req: any, res: any, next: any) => void
   ) => void;
 }) => {
-  // app.get(
-  //   '/api/auth2fa-secret',
-  //   needsAuthorization(['admin', 'editor']),
-  //   (req: any, res: any, next: any) => {
-  //     console.log('Route!');
-  //   }
-  // );
-
-  app.get('/api/auth2fa-QR', needsAuthorization(['admin', 'editor']), (req: any, res: any) => {
+  app.get('/api/auth2fa-secret', needsAuthorization(['admin', 'editor']), (req: any, res: any) => {
     const secret = otplib.authenticator.generateSecret();
     const otpauth = otplib.authenticator.keyuri(req.user.username, 'Uwazi', secret);
-    res.json(otpauth);
+    res.json({ otpauth, secret });
   });
 };
