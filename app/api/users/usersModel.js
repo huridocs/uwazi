@@ -1,3 +1,5 @@
+/** @format */
+
 import mongoose from 'mongoose';
 
 import { instanceModel } from 'api/odm';
@@ -9,7 +11,9 @@ const userSchema = new mongoose.Schema({
   role: { type: String, unique: false, required: true },
   failedLogins: { type: Number, required: false, select: false },
   accountLocked: { type: Boolean, select: false },
-  accountUnlockCode: { type: String, select: false }
+  accountUnlockCode: { type: String, select: false },
+  using2fa: Boolean,
+  secret: { type: String, select: false },
 });
 
 export default instanceModel('users', userSchema);
