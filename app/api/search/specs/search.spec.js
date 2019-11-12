@@ -344,6 +344,7 @@ describe('search', () => {
       );
       expect(response.rows.length).toBe(2);
       const matchesAggs = response.aggregations.all.status;
+
       const openValueAggregation = matchesAggs.buckets[0].filtered.doc_count;
       const closedValueAggregation = matchesAggs.buckets[1].filtered.doc_count;
       expect(openValueAggregation).toBe(2);
@@ -453,7 +454,7 @@ describe('search', () => {
       });
     });
 
-    fdescribe('multiselect aggregations', () => {
+    describe('multiselect aggregations', () => {
       it('should return aggregations of multiselect fields', done => {
         Promise.all([
           search.search({ types: [ids.templateMetadata1] }, 'en'),
@@ -468,7 +469,7 @@ describe('search', () => {
           ),
         ])
           .then(([template1, template2, both, filtered]) => {
-            const template1Aggs = template1.aggregations.all.multiselect1.buckets;
+            const template1Aggs = template1.aggregations.all['multiselect1'].buckets;
             expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
             expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
 
@@ -548,13 +549,14 @@ describe('search', () => {
             search.search(
               {
                 types: [ids.templateMetadata1, ids.templateMetadata2],
-                filters: { nestedField: { properties: { nested1: { any: true } } } },
+                filters: { nestedField_nested: { properties: { nested1: { any: true } } } },
               },
               'en'
             ),
           ])
             .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
-              const nestedAggs = template2NestedAggs.aggregations.all.nestedField.nested1.buckets;
+              const nestedAggs =
+                template2NestedAggs.aggregations.all.nestedField_nested.nested1.buckets;
               expect(template2NestedAggs.rows.length).toBe(2);
               expect(nestedAggs.find(a => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
               expect(nestedAggs.find(a => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
@@ -563,7 +565,7 @@ describe('search', () => {
               expect(nestedAggs.find(a => a.key === '5').filtered.total.filtered.doc_count).toBe(2);
 
               const bothTemplatesAggs =
-                nestedSearchFirstLevel.aggregations.all.nestedField.nested1.buckets;
+                nestedSearchFirstLevel.aggregations.all.nestedField_nested.nested1.buckets;
               expect(nestedSearchFirstLevel.rows.length).toBe(3);
               expect(
                 bothTemplatesAggs.find(a => a.key === '1').filtered.total.filtered.doc_count
@@ -597,7 +599,7 @@ describe('search', () => {
               {
                 types: [ids.templateMetadata1, ids.templateMetadata2],
                 filters: {
-                  nestedField: { properties: { nested1: { values: ['1'] } } },
+                  nestedField_nested: { properties: { nested1: { values: ['1'] } } },
                 },
               },
               'en'
@@ -606,7 +608,7 @@ describe('search', () => {
               {
                 types: [ids.templateMetadata1, ids.templateMetadata2],
                 filters: {
-                  nestedField: { properties: { nested1: { values: ['2'] } } },
+                  nestedField_nested: { properties: { nested1: { values: ['2'] } } },
                 },
               },
               'en'
@@ -615,7 +617,7 @@ describe('search', () => {
               {
                 types: [ids.templateMetadata1, ids.templateMetadata2],
                 filters: {
-                  nestedField: { properties: { nested1: { values: ['3'] } } },
+                  nestedField_nested: { properties: { nested1: { values: ['3'] } } },
                 },
               },
               'en'
@@ -624,7 +626,7 @@ describe('search', () => {
               {
                 types: [ids.templateMetadata1, ids.templateMetadata2],
                 filters: {
-                  nestedField: { properties: { nested1: { values: ['3', '5'] } } },
+                  nestedField_nested: { properties: { nested1: { values: ['3', '5'] } } },
                 },
               },
               'en'
@@ -656,7 +658,10 @@ describe('search', () => {
                 {
                   types: [ids.templateMetadata1, ids.templateMetadata2],
                   filters: {
-                    nestedField: { properties: { nested1: { values: ['1', '5'] } }, strict: true },
+                    nestedField_nested: {
+                      properties: { nested1: { values: ['1', '5'] } },
+                      strict: true,
+                    },
                   },
                 },
                 'en'
@@ -665,7 +670,10 @@ describe('search', () => {
                 {
                   types: [ids.templateMetadata1, ids.templateMetadata2],
                   filters: {
-                    nestedField: { properties: { nested1: { values: ['1', '2'] } }, strict: true },
+                    nestedField_nested: {
+                      properties: { nested1: { values: ['1', '2'] } },
+                      strict: true,
+                    },
                   },
                 },
                 'en'

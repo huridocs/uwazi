@@ -4,11 +4,11 @@ exports[`search search multiselect aggregations allAggregations should return al
 Array [
   "meta",
   "doc_count",
-  "select1",
-  "multiselect1",
   "groupedDictionary",
-  "nestedField",
+  "nestedField_nested",
+  "select1",
   "_types",
+  "multiselect1",
   "nested2",
   "nested1",
 ]

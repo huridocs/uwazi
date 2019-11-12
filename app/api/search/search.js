@@ -43,8 +43,17 @@ function processFiltes(filters, properties) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
     }
-    property.name = property.name + '.value';
-    return Object.assign(property, { value, type });
+
+    if (property.type === 'relationshipfilter') {
+      return {
+        ...property,
+        value,
+        type,
+        filters: property.filters.map(f => ({ ...f, name: `${f.name}.value` })),
+      };
+    }
+
+    return { ...property, value, type, name: `${property.name}.value` };
   });
 }
 
@@ -64,14 +73,24 @@ function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionari
 }
 
 function agregationProperties(properties) {
-  return properties.filter(
-    property =>
-      property.type === 'select' ||
-      property.type === 'multiselect' ||
-      property.type === 'relationship' ||
-      property.type === 'relationshipfilter' ||
-      property.type === 'nested'
-  );
+  return properties
+    .filter(
+      property =>
+        property.type === 'select' ||
+        property.type === 'multiselect' ||
+        property.type === 'relationship' ||
+        property.type === 'relationshipfilter' ||
+        property.type === 'nested'
+    )
+    .map(property => {
+      if (property.type === 'relationshipfilter') {
+        return {
+          ...property,
+          filters: property.filters.map(f => ({ ...f, name: `${f.name}.value` })),
+        };
+      }
+      return { ...property, name: `${property.name}.value` };
+    });
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -163,6 +182,7 @@ const processResponse = response => {
     result._id = hit._id;
     return result;
   });
+
   Object.keys(response.aggregations.all).forEach(aggregationKey => {
     const aggregation = response.aggregations.all[aggregationKey];
     if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
@@ -179,12 +199,22 @@ const processResponse = response => {
           const buckets = aggregation[key].buckets.map(option =>
             Object.assign({ key: option.key }, option.filtered.total)
           );
-          response.aggregations.all[key] = { doc_count: aggregation[key].doc_count, buckets };
+          response.aggregations.all[key] = {
+            doc_count: aggregation[key].doc_count,
+            buckets,
+          };
         }
       });
     }
   });
 
+  response.aggregations.all = Object.keys(response.aggregations.all).reduce(
+    (allAgregations, key) => {
+      allAgregations[key.replace('.value', '')] = response.aggregations.all[key];
+      return allAgregations;
+    },
+    {}
+  );
   return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
 };
 

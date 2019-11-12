@@ -121,6 +121,12 @@ const config = {
         },
       },
       {
+        relationships_fields: {
+          path_match: 'relationships',
+          mapping: { type: 'nested' },
+        },
+      },
+      {
         geo_point_fields: {
           match: '*_geolocation',
           path_match: 'metadata.*',
@@ -130,7 +136,7 @@ const config = {
       {
         nested_fields: {
           match_mapping_type: 'object',
-          path_match: '*_nested',
+          path_match: '*_nested.value',
           mapping: { type: 'nested' },
         },
       },
@@ -139,12 +145,6 @@ const config = {
           match_mapping_type: 'object',
           path_match: 'metadata.*',
           mapping: { type: 'object' },
-        },
-      },
-      {
-        relationships_fields: {
-          path_match: 'relationships',
-          mapping: { type: 'nested' },
         },
       },
     ],
