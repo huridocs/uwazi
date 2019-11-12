@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import QRCode from 'qrcode.react';
 
 import { actions } from 'app/BasicReducer';
 import UsersAPI from 'app/Users/UsersAPI';
@@ -171,16 +170,6 @@ export class AccountSettings extends Component {
                 </div>
               </div>
             )}
-            <button type="button" onClick={this.getSecret}>
-              Generate QR
-            </button>
-            <p>
-              Scan this QR Code image with Google Authenticator to begin using 2FA or &quot;two
-              factor authentication&quot;
-            </p>
-            <div>
-              <QRCode value={otpauth} level="Q" includeMargin={false} renderAs="svg" />
-            </div>
           </div>
         </div>
         <div className="settings-footer">
