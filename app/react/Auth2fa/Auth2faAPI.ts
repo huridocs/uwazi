@@ -8,9 +8,8 @@ interface Secret {
 }
 
 export default {
-  getSecret(requestParams: import('../utils/RequestParams').RequestParams): Secret {
-    return api
-      .get('auth2fa-secret', requestParams)
-      .then((response: { json: any }) => response.json);
+  async getSecret(requestParams: import('../utils/RequestParams').RequestParams): Promise<Secret> {
+    const response = await api.get('auth2fa-secret', requestParams);
+    return response.json;
   },
 };
