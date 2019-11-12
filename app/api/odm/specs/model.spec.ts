@@ -12,6 +12,7 @@ const testSchema = new mongoose.Schema({
   name: String,
 });
 interface TestDoc extends mongoose.Document {
+  _id: String;
   name: String;
 }
 
@@ -78,11 +79,17 @@ describe('ODM Model', () => {
 
     it('should update the log when updating (not creating a new entry)', async () => {
       Date.now = () => 2;
+      console.log({
+        ...newDocument1,
+        name: 'edited name',
+      });
+
       await extendedModel.save(({
         ...newDocument1,
         name: 'edited name',
       } as unknown) as TestDoc);
       const logEntries = await updatelogsModel.find({});
+
       expect(logEntries.length).toBe(2);
       expect(
         ensure<UpdateLog>(

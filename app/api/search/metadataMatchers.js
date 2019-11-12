@@ -10,6 +10,7 @@ const rangeFilter = (filter, path = 'metadata') => {
   return match;
 };
 
+// eslint-disable-next-line max-statements
 const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
   const { values = [] } = filterValue;

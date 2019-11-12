@@ -25,14 +25,10 @@ function processFiltes(filters, properties) {
     const property = properties.find(p => p.name === propertyName);
     let { type } = property;
     const value = filters[property.name];
-    if (property.type === 'date' || property.type === 'multidate' || property.type === 'numeric') {
+    if (['date', 'multidate', 'numeric'].includes(property.type)) {
       type = 'range';
     }
-    if (
-      property.type === 'select' ||
-      property.type === 'multiselect' ||
-      property.type === 'relationship'
-    ) {
+    if (['select', 'multiselect', 'relationship'].includes(property.type)) {
       type = 'multiselect';
     }
     if (property.type === 'multidaterange' || property.type === 'daterange') {
@@ -55,21 +51,6 @@ function processFiltes(filters, properties) {
 
     return { ...property, value, type, name: `${property.name}.value` };
   });
-}
-
-function filtersBasedOnSearchTerm(properties, entitiesMatchedByTitle, dictionariesMatchByLabel) {
-  if (!entitiesMatchedByTitle.length && !dictionariesMatchByLabel.length) {
-    return [];
-  }
-  let values = entitiesMatchedByTitle.map(item => item.sharedId);
-  values = values.concat(dictionariesMatchByLabel.map(dictionary => dictionary.values.id));
-  return properties
-    .map(prop => {
-      if (prop.type === 'select' || prop.type === 'multiselect') {
-        return { name: prop.name, value: { values }, type: 'multiselect' };
-      }
-    })
-    .filter(f => f);
 }
 
 function agregationProperties(properties) {
@@ -150,7 +131,7 @@ function searchGeolocation(documentsQuery, templates) {
   templates.forEach(template => {
     template.properties.forEach(prop => {
       if (prop.type === 'geolocation') {
-        geolocationProperties.push(prop.name);
+        geolocationProperties.push(`${prop.name}`);
       }
 
       if (prop.type === 'relationship' && prop.inherit) {
@@ -159,7 +140,7 @@ function searchGeolocation(documentsQuery, templates) {
           p => p._id.toString() === prop.inheritProperty.toString()
         );
         if (inheritedProperty.type === 'geolocation') {
-          geolocationProperties.push(prop.name);
+          geolocationProperties.push(`${prop.name}`);
         }
       }
     });
@@ -218,125 +199,88 @@ const processResponse = response => {
   return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
 };
 
-const mainSearch = (query, language, user) => {
-  let searchEntitiesbyTitle = Promise.resolve([]);
-  let searchDictionariesByTitle = Promise.resolve([]);
-  if (query.searchTerm) {
-    searchEntitiesbyTitle = entities.get(
-      { $text: { $search: query.searchTerm }, language },
-      'sharedId',
-      { limit: 5 }
-    );
-    const regexp = `.*${query.searchTerm}.*`;
-    searchDictionariesByTitle = dictionariesModel.db.aggregate([
-      { $match: { 'values.label': { $regex: regexp, $options: 'i' } } },
-      { $unwind: '$values' },
-      { $match: { 'values.label': { $regex: regexp, $options: 'i' } } },
-    ]);
-  }
-
-  return Promise.all([
+const mainSearch = (query, language, user) =>
+  Promise.all([
     templatesModel.get(),
-    searchEntitiesbyTitle,
-    searchDictionariesByTitle,
     dictionariesModel.get(),
     relationtypes.get(),
     translations.get(),
-  ]).then(
-    ([
-      templates,
-      entitiesMatchedByTitle,
-      dictionariesMatchByLabel,
-      dictionaries,
-      relationTypes,
-      _translations,
-    ]) => {
-      const textFieldsToSearch =
-        query.fields ||
-        propertiesHelper
-          .allUniqueProperties(templates)
-          .map(prop =>
-            ['text', 'markdown'].includes(prop.type)
-              ? `metadata.${prop.name}.value`
-              : `metadata.${prop.name}.label`
-          )
-          .concat(['title', 'fullText']);
-      const documentsQuery = documentQueryBuilder()
-        .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
-        .filterByTemplate(query.types)
-        .filterById(query.ids)
-        .language(language);
+  ]).then(([templates, dictionaries, relationTypes, _translations]) => {
+    const textFieldsToSearch =
+      query.fields ||
+      propertiesHelper
+        .allUniqueProperties(templates)
+        .map(prop =>
+          ['text', 'markdown'].includes(prop.type)
+            ? `metadata.${prop.name}.value`
+            : `metadata.${prop.name}.label`
+        )
+        .concat(['title', 'fullText']);
+    const documentsQuery = documentQueryBuilder()
+      .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+      .filterByTemplate(query.types)
+      .filterById(query.ids)
+      .language(language);
 
-      if (query.from) {
-        documentsQuery.from(query.from);
-      }
-
-      if (query.limit) {
-        documentsQuery.limit(query.limit);
-      }
-
-      if (query.includeUnpublished && user) {
-        documentsQuery.includeUnpublished();
-      }
-
-      if (query.unpublished && user) {
-        documentsQuery.unpublished();
-      }
-
-      const allTemplates = templates.map(t => t._id);
-      const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
-      const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-      let properties = propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
-      properties =
-        !query.types || !query.types.length
-          ? propertiesHelper.defaultFilters(templates)
-          : properties;
-
-      if (query.sort) {
-        const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
-        if (sortingProp && sortingProp.type === 'select') {
-          const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-          const translation = getLocaleTranslation(_translations, language);
-          const context = getContext(translation, dictionary._id.toString());
-          const keys = dictionary.values.reduce((result, value) => {
-            result[value.id] = translate(context, value.label, value.label);
-            return result;
-          }, {});
-          documentsQuery.sortByForeignKey(query.sort, keys, query.order);
-        } else {
-          documentsQuery.sort(query.sort, query.order);
-        }
-      }
-
-      if (query.allAggregations) {
-        properties = allUniqueProps;
-      }
-
-      const aggregations = agregationProperties(properties);
-      const filters = processFiltes(query.filters, properties);
-      // const textSearchFilters = filtersBasedOnSearchTerm(
-      //   allUniqueProps,
-      //   entitiesMatchedByTitle,
-      //   dictionariesMatchByLabel
-      // );
-
-      // documentsQuery.filterMetadataByFullText(textSearchFilters);
-      documentsQuery.filterMetadata(filters);
-      documentsQuery.aggregations(aggregations, dictionaries);
-
-      if (query.geolocation) {
-        searchGeolocation(documentsQuery, templates);
-      }
-
-      return elastic
-        .search({ index: elasticIndexes.index, body: documentsQuery.query() })
-        .then(processResponse)
-        .catch(e => {
-          throw createError(e.message, 400);
-        });
+    if (query.from) {
+      documentsQuery.from(query.from);
     }
-  );
-};
+
+    if (query.limit) {
+      documentsQuery.limit(query.limit);
+    }
+
+    if (query.includeUnpublished && user) {
+      documentsQuery.includeUnpublished();
+    }
+
+    if (query.unpublished && user) {
+      documentsQuery.unpublished();
+    }
+
+    const allTemplates = templates.map(t => t._id);
+    const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
+    const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
+    let properties = propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
+    properties =
+      !query.types || !query.types.length ? propertiesHelper.defaultFilters(templates) : properties;
+
+    if (query.sort) {
+      const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+      if (sortingProp && sortingProp.type === 'select') {
+        const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
+        const translation = getLocaleTranslation(_translations, language);
+        const context = getContext(translation, dictionary._id.toString());
+        const keys = dictionary.values.reduce((result, value) => {
+          result[value.id] = translate(context, value.label, value.label);
+          return result;
+        }, {});
+        documentsQuery.sortByForeignKey(query.sort, keys, query.order);
+      } else {
+        documentsQuery.sort(query.sort, query.order);
+      }
+    }
+
+    if (query.allAggregations) {
+      properties = allUniqueProps;
+    }
+
+    const aggregations = agregationProperties(properties);
+    const filters = processFiltes(query.filters, properties);
+    documentsQuery.filterMetadata(filters);
+    documentsQuery.aggregations(aggregations, dictionaries);
+
+    if (query.geolocation) {
+      searchGeolocation(documentsQuery, templates);
+    }
+
+    return elastic
+      .search({ index: elasticIndexes.index, body: documentsQuery.query() })
+      .then(processResponse)
+      .catch(e => {
+        throw createError(e.message, 400);
+      });
+  });
 
 const determineInheritedProperties = templates =>
   templates.reduce((memo, template) => {
@@ -387,8 +331,8 @@ const whatToFetchByTemplate = (baseResults, templatesInheritedProperties) => {
   return toFetchByTemplate;
 };
 
-const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
-  return Promise.all(
+const getInheritedEntitiesData = async (toFetchByTemplate, language, user) =>
+  Promise.all(
     Object.keys(toFetchByTemplate).map(t => {
       const query = { language, sharedId: { $in: toFetchByTemplate[t].entities } };
       if (!user) {
@@ -403,7 +347,6 @@ const getInheritedEntitiesData = async (toFetchByTemplate, language, user) => {
       });
     })
   );
-};
 
 const getInheritedEntities = async (results, language, user) => {
   const templates = await templatesModel.get();

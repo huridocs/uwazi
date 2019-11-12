@@ -6,46 +6,50 @@ Array [
     "metadata": Object {
       "inherited_country": Array [
         Object {
-          "entity": "entity06",
-          "inherit_geolocation": Array [
-            null,
-          ],
+          "inherit_geolocation": Array [],
+          "value": "entity06",
         },
       ],
       "inherited_home": Array [
         Object {
-          "entity": "entity01",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
+          "value": "entity01",
         },
         Object {
-          "entity": "entity03",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 5,
-              "lon": 10,
+              "value": Object {
+                "label": "",
+                "lat": 5,
+                "lon": 10,
+              },
             },
           ],
+          "value": "entity03",
         },
         Object {
-          "entity": "entity04",
           "inherit_geolocation": Array [],
+          "value": "entity04",
         },
         Object {
-          "entity": "entity04.1",
           "inherit_geolocation": Array [],
+          "value": "entity04.1",
         },
       ],
       "regular_geolocation_geolocation": Array [
         Object {
-          "lat": 18,
-          "lon": 7,
+          "value": Object {
+            "lat": 18,
+            "lon": 7,
+          },
         },
       ],
     },
@@ -55,18 +59,20 @@ Array [
     "metadata": Object {
       "inherited_home": Array [
         Object {
-          "entity": "entity02",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 111,
-              "lon": 222,
+              "value": Object {
+                "label": "",
+                "lat": 111,
+                "lon": 222,
+              },
             },
           ],
+          "value": "entity02",
         },
         Object {
-          "entity": "noExiste",
           "inherit_geolocation": Array [],
+          "value": "noExiste",
         },
       ],
     },
@@ -76,17 +82,19 @@ Array [
     "metadata": Object {
       "inherited_country": Array [
         Object {
-          "entity": "entityPrivate01",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 24,
-              "lon": 8,
+              "value": Object {
+                "label": "",
+                "lat": 24,
+                "lon": 8,
+              },
             },
           ],
+          "value": "entityPrivate01",
         },
       ],
-      "null_geolocation_geolocation": null,
+      "null_geolocation_geolocation": Array [],
     },
     "sharedId": "entity_isLinkedToPrivateEntity",
   },
@@ -99,16 +107,20 @@ Array [
     "metadata": Object {
       "home_geolocation": Array [
         Object {
-          "label": "",
-          "lat": 13,
-          "lon": 7,
+          "value": Object {
+            "label": "",
+            "lat": 13,
+            "lon": 7,
+          },
         },
       ],
       "work_geolocation": Array [
         Object {
-          "label": "",
-          "lat": 23,
-          "lon": 8,
+          "value": Object {
+            "label": "",
+            "lat": 23,
+            "lon": 8,
+          },
         },
       ],
     },
@@ -118,16 +130,20 @@ Array [
     "metadata": Object {
       "home_geolocation": Array [
         Object {
-          "label": "",
-          "lat": 111,
-          "lon": 222,
+          "value": Object {
+            "label": "",
+            "lat": 111,
+            "lon": 222,
+          },
         },
       ],
       "work_geolocation": Array [
         Object {
-          "label": "",
-          "lat": 333,
-          "lon": 444,
+          "value": Object {
+            "label": "",
+            "lat": 333,
+            "lon": 444,
+          },
         },
       ],
     },
@@ -137,9 +153,11 @@ Array [
     "metadata": Object {
       "home_geolocation": Array [
         Object {
-          "label": "",
-          "lat": 5,
-          "lon": 10,
+          "value": Object {
+            "label": "",
+            "lat": 5,
+            "lon": 10,
+          },
         },
       ],
     },
@@ -149,9 +167,11 @@ Array [
     "metadata": Object {
       "country_geolocation": Array [
         Object {
-          "label": "",
-          "lat": 23,
-          "lon": 7,
+          "value": Object {
+            "label": "",
+            "lat": 23,
+            "lon": 7,
+          },
         },
       ],
     },
@@ -161,44 +181,50 @@ Array [
     "metadata": Object {
       "inherited_country": Array [
         Object {
-          "entity": "entity06",
           "inherit_geolocation": Array [],
+          "value": "entity06",
         },
       ],
       "inherited_home": Array [
         Object {
-          "entity": "entity01",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 13,
-              "lon": 7,
+              "value": Object {
+                "label": "",
+                "lat": 13,
+                "lon": 7,
+              },
             },
           ],
+          "value": "entity01",
         },
         Object {
-          "entity": "entity03",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 5,
-              "lon": 10,
+              "value": Object {
+                "label": "",
+                "lat": 5,
+                "lon": 10,
+              },
             },
           ],
+          "value": "entity03",
         },
         Object {
-          "entity": "entity04",
           "inherit_geolocation": Array [],
+          "value": "entity04",
         },
         Object {
-          "entity": "entity04.1",
           "inherit_geolocation": Array [],
+          "value": "entity04.1",
         },
       ],
       "regular_geolocation_geolocation": Array [
         Object {
-          "lat": 18,
-          "lon": 7,
+          "value": Object {
+            "lat": 18,
+            "lon": 7,
+          },
         },
       ],
     },
@@ -208,18 +234,20 @@ Array [
     "metadata": Object {
       "inherited_home": Array [
         Object {
-          "entity": "entity02",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 111,
-              "lon": 222,
+              "value": Object {
+                "label": "",
+                "lat": 111,
+                "lon": 222,
+              },
             },
           ],
+          "value": "entity02",
         },
         Object {
-          "entity": "noExiste",
           "inherit_geolocation": Array [],
+          "value": "noExiste",
         },
       ],
     },
@@ -229,14 +257,16 @@ Array [
     "metadata": Object {
       "inherited_work": Array [
         Object {
-          "entity": "entity01",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 23,
-              "lon": 8,
+              "value": Object {
+                "label": "",
+                "lat": 23,
+                "lon": 8,
+              },
             },
           ],
+          "value": "entity01",
         },
       ],
     },
@@ -246,17 +276,19 @@ Array [
     "metadata": Object {
       "inherited_country": Array [
         Object {
-          "entity": "entityPrivate01",
           "inherit_geolocation": Array [
             Object {
-              "label": "",
-              "lat": 24,
-              "lon": 8,
+              "value": Object {
+                "label": "",
+                "lat": 24,
+                "lon": 8,
+              },
             },
           ],
+          "value": "entityPrivate01",
         },
       ],
-      "null_geolocation_geolocation": null,
+      "null_geolocation_geolocation": Array [],
     },
     "sharedId": "entity_isLinkedToPrivateEntity",
   },
