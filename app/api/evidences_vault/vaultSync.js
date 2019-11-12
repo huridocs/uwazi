@@ -29,10 +29,6 @@ const createEntityFromEvidence = async (evidence, template) => {
     _id,
     title: json.title,
     metadata: {
-      [linkProp(template)]: [{ value: { label: evidence.url, url: evidence.url } }],
-      [dateProp(template)]: [
-        { value: dateHelper.stringDateToUTCTimestamp(evidence.time_of_request) },
-      ],
       [mediaProp(template)]: [
         {
           value: video ? `/api/attachments/download?_id=${_id}&file=${evidence.request}.mp4` : '',
@@ -66,10 +62,10 @@ const createEntityFromEvidence = async (evidence, template) => {
   const timeOfRequest = dateHelper.stringDateToUTCTimestamp(evidence.time_of_request);
   // eslint-disable-next-line no-restricted-globals
   if (isNumber(timeOfRequest) && !isNaN(timeOfRequest)) {
-    entity.metadata[dateProp(template)] = timeOfRequest;
+    entity.metadata[dateProp(template)] = [{ value: timeOfRequest }];
   }
   if (evidence.url) {
-    entity.metadata[linkProp(template)] = { label: evidence.url, url: evidence.url };
+    entity.metadata[linkProp(template)] = [{ value: { label: evidence.url, url: evidence.url } }];
   }
 
   await entities.save(entity, { language: 'en', user: {} });

@@ -11,7 +11,8 @@ export const emitSchemaTypes = true;
 
 const ajv = Ajv({ allErrors: true });
 
-const isEmpty = value => isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
+const isEmpty = value =>
+  isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
 
 const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
 
