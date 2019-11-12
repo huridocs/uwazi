@@ -72,6 +72,12 @@ const sendAccountLockedEmail = (user, domain) => {
   return mailer.send(mailOptions);
 };
 
+const checkUserExists = user => {
+  if (!user) {
+    throw createError('User not found', 403);
+  }
+};
+
 export default {
   async save(user, currentUser) {
     const [userInTheDatabase] = await model.get({ _id: user._id }, '+password');
@@ -88,8 +94,10 @@ export default {
       return Promise.reject(createError('Unauthorized', 403));
     }
 
+    const { using2fa, secret, ...userToSave } = user;
+
     return model.save({
-      ...user,
+      ...userToSave,
       password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
     });
   },
@@ -105,7 +113,12 @@ export default {
     if (emailMatch.length) {
       return Promise.reject(createError('Email already exists', 409));
     }
-    const _user = await model.save({ ...user, password: await encryptPassword(random()) });
+    const _user = await model.save({
+      ...user,
+      password: await encryptPassword(random()),
+      using2fa: undefined,
+      secret: undefined,
+    });
     await this.recoverPassword(user.email, domain, { newUser: true });
     return _user;
   },
@@ -227,10 +240,17 @@ export default {
 
   async setSecret(secret, currentUser) {
     const [user] = await model.get({ _id: currentUser._id });
+    checkUserExists(user);
     if (!user.using2fa) {
       return model.save({ _id: user._id, secret });
     }
 
     return user;
+  },
+
+  async enable2fa(currentUser) {
+    const [user] = await model.get({ _id: currentUser._id });
+    checkUserExists(user);
+    return model.save({ _id: user._id, using2fa: true });
   },
 };

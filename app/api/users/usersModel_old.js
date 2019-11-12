@@ -1,8 +1,12 @@
 /** @format */
 
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 import { instanceModel } from 'api/odm';
+
+export interface User extends Document {
+  secret: string;
+}
 
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },

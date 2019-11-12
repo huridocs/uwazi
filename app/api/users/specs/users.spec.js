@@ -48,6 +48,14 @@ describe('Users', () => {
       expect(updatedUser.password.toString()).toBe(userInDb.password.toString());
     });
 
+    it('should not change the "using2fa" or "secret" properties through this method', async () => {
+      const user = { _id: recoveryUserId, using2fa: true, secret: 'UNAUTHORIZED ENTRY POINT' };
+      await users.save(user, { _id: userId, role: 'admin' });
+      const [updatedUser] = await usersModel.get({ _id: recoveryUserId }, '+secret');
+      expect(updatedUser.using2fa).toBe(false);
+      expect(updatedUser.secret).toBeUndefined();
+    });
+
     describe('when you try to change role', () => {
       it('should be an admin', done => {
         currentUser = { _id: userId, role: 'editor' };
@@ -131,6 +139,24 @@ describe('Users', () => {
             expect(error).toEqual(createError('Email already exists', 409));
             done();
           });
+      });
+
+      it('should not allow sending two-step verification data on creation', async () => {
+        await users.newUser(
+          {
+            username: 'without2fa',
+            email: 'another@email.com',
+            role: 'editor',
+            using2fa: true,
+            secret: 'UNAUTHORIZED SECRET',
+          },
+          currentUser,
+          domain
+        );
+
+        const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
+        expect(createdUser.using2fa).toBe(false);
+        expect(createdUser.secret).toBeUndefined();
       });
     });
   });
@@ -500,6 +526,32 @@ describe('Users', () => {
       await users.setSecret('NEWSECRET', { _id: userId });
       const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
       expect(secretedUser.secret).toBe('OLDSECRET');
+    });
+
+    it('should throw if user not found', async () => {
+      try {
+        await users.setSecret('NEWSECRET', { _id: db.id() });
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('User not found', 403));
+      }
+    });
+  });
+
+  describe('enable2fa', () => {
+    it('set "using2fa" to true', async () => {
+      await users.enable2fa({ _id: userId });
+      const [enabledUser] = await usersModel.get({ _id: userId });
+      expect(enabledUser.using2fa).toBe(true);
+    });
+
+    it('should throw if user not found', async () => {
+      try {
+        await users.enable2fa({ _id: db.id() });
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('User not found', 403));
+      }
     });
   });
 });
