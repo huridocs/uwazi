@@ -24,5 +24,6 @@ Object {
   "email": "someuser1@mailer.com",
   "role": "admin",
   "username": "someuser1",
+  "using2fa": false,
 }
 `;

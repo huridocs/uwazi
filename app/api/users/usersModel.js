@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   failedLogins: { type: Number, required: false, select: false },
   accountLocked: { type: Boolean, select: false },
   accountUnlockCode: { type: String, select: false },
-  using2fa: Boolean,
+  using2fa: { type: Boolean, default: false },
   secret: { type: String, select: false },
 });
 
