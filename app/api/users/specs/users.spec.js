@@ -487,4 +487,19 @@ describe('Users', () => {
         });
     });
   });
+
+  describe('setSecret', () => {
+    it("should save the secret string on a non-previously-2fa'd user", async () => {
+      await users.setSecret('NEWSECRET', { _id: userId });
+      const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
+      expect(secretedUser.secret).toBe('NEWSECRET');
+    });
+
+    it("should not change a secret on a previously-2fa'd user", async () => {
+      await usersModel.save({ _id: userId, using2fa: true, secret: 'OLDSECRET' });
+      await users.setSecret('NEWSECRET', { _id: userId });
+      const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
+      expect(secretedUser.secret).toBe('OLDSECRET');
+    });
+  });
 });

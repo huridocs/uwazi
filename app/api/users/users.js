@@ -190,6 +190,7 @@ export default {
       failedLogins: false,
     });
   },
+
   recoverPassword(email, domain, options = {}) {
     const key = SHA256(email + Date.now()).toString();
     return Promise.all([model.get({ email }), settings.get()]).then(([_user, _settings]) => {
@@ -222,5 +223,14 @@ export default {
       ]);
     }
     throw createError('key not found', 403);
+  },
+
+  async setSecret(secret, currentUser) {
+    const [user] = await model.get({ _id: currentUser._id });
+    if (!user.using2fa) {
+      return model.save({ _id: user._id, secret });
+    }
+
+    return user;
   },
 };
