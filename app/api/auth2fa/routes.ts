@@ -12,6 +12,17 @@ export default (app: {
   ) => void;
 }) => {
   app.get('/api/auth2fa-secret', needsAuthorization(['admin', 'editor']), (req: any, res: any) => {
+    if (req.user.usingf2a) {
+      res.status(401);
+      res.json({ status: 'Unauthorized' });
+      return;
+    }
+    const secret = otplib.authenticator.generateSecret();
+    const otpauth = otplib.authenticator.keyuri(req.user.username, 'Uwazi', secret);
+    res.json({ otpauth, secret });
+  });
+
+  app.post('/api/auth2fa-secret', needsAuthorization(['admin', 'editor']), (req: any, res: any) => {
     const secret = otplib.authenticator.generateSecret();
     const otpauth = otplib.authenticator.keyuri(req.user.username, 'Uwazi', secret);
     res.json({ otpauth, secret });
