@@ -79,10 +79,6 @@ describe('ODM Model', () => {
 
     it('should update the log when updating (not creating a new entry)', async () => {
       Date.now = () => 2;
-      console.log({
-        ...newDocument1,
-        name: 'edited name',
-      });
 
       await extendedModel.save(({
         ...newDocument1,

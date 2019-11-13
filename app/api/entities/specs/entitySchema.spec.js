@@ -1,26 +1,19 @@
-/**
- * /* eslint-disable max-lines,max-statements
- *
- * @format
- */
-
 /** @format */
+
+/* eslint-disable max-lines,max-statements */
 
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import { validateEntity } from '../entitySchema';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 describe('entity schema', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('validateEntity', () => {
@@ -166,11 +159,11 @@ describe('entity schema', () => {
         it('should fail if field does not exist', async () => {
           delete entity.metadata.name;
           await testInvalid();
-          entity.metadata.name = '';
+          entity.metadata.name = [{ value: '' }];
           await testInvalid();
-          entity.metadata.name = null;
+          entity.metadata.name = [{ value: null }];
           await testInvalid();
-          entity.metadata.name = 'name';
+          entity.metadata.name = [{ value: 'name' }];
           entity.metadata.required_multiselect = [];
           await testInvalid();
         });
@@ -368,31 +361,31 @@ describe('entity schema', () => {
           await testInvalid();
         });
         it('should fail if lat or lon are not numbers', async () => {
-          entity.metadata.geolocation = [{ lat: '', lon: 80, label: '' }];
+          entity.metadata.geolocation = [{ value: { lat: '', lon: 80, label: '' } }];
           await testInvalid();
-          entity.metadata.geolocation = [{ lat: 80, lon: '', label: '' }];
+          entity.metadata.geolocation = [{ value: { lat: 80, lon: '', label: '' } }];
           await testInvalid();
         });
         it('should fail if label is not a string', async () => {
-          entity.metadata.geolocation[0].label = 10;
+          entity.metadata.geolocation[0].value.label = 10;
           await testInvalid();
         });
         it('should fail if lat or lon is missing', async () => {
-          entity.metadata.geolocation = [{ lon: 80, label: '' }];
+          entity.metadata.geolocation = [{ value: { lon: 80, label: '' } }];
           await testInvalid();
-          entity.metadata.geolocation = [{ lat: 80, label: '' }];
+          entity.metadata.geolocation = [{ value: { lat: 80, label: '' } }];
           await testInvalid();
         });
         it('should fail if lat is not within range -90 - 90', async () => {
-          entity.metadata.geolocation[0].lat = -91;
+          entity.metadata.geolocation[0].value.lat = -91;
           await testInvalid();
-          entity.metadata.geolocation[0].lat = 91;
+          entity.metadata.geolocation[0].value.lat = 91;
           await testInvalid();
         });
         it('should fail if lon is not within range -180 - 180', async () => {
-          entity.metadata.geolocation[0].lon = -181;
+          entity.metadata.geolocation[0].value.lon = -181;
           await testInvalid();
-          entity.metadata.geolocation[0].lon = 181;
+          entity.metadata.geolocation[0].value.lon = 181;
           await testInvalid();
         });
       });

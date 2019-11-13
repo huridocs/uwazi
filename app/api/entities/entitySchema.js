@@ -45,6 +45,11 @@ const validateSingleWrappedValue = validationFn => value => {
   if (value.length !== 1) {
     return !value.length;
   }
+
+  if (value[0].value === null) {
+    return true;
+  }
+
   const [{ value: pureValue }] = value;
   return validationFn(pureValue);
 };
@@ -93,11 +98,7 @@ const validateMetadataField = (property, entity) => {
     [propertyTypes.geolocation]: validateGeolocationProperty,
   };
   const validator = propertyValidators[property.type];
-  const result = validator ? validator(value) : true;
-  if (result) {
-    return true;
-  }
-  return false;
+  return validator ? validator(value) : true;
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
