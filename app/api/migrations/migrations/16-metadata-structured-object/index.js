@@ -52,22 +52,37 @@ export default {
       {}
     );
 
-    let index = 0;
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+      try {
+        let index = 0;
 
-    const cursor = db.collection('entities').find();
-    while (await cursor.hasNext()) {
-      const entity = await cursor.next();
-      const template = templatesByKey[entity.template ? entity.template.toString() : null];
-      if (entity.metadata && template) {
-        entity.metadata = this.expandMetadata(entity.metadata);
-        entity.metadata = await entities.denormalizeMetadata(entity, template, dictionariesByKey);
-        await db
+        const cursor = db
           .collection('entities')
-          .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });
-        index += 1;
+          .find({}, null, { noCursorTimeout: true, batchSize: 100, lean: true });
+        while (await cursor.hasNext()) {
+          const entity = await cursor.next();
+          const template = templatesByKey[entity.template ? entity.template.toString() : null];
+          if (entity.metadata && template) {
+            entity.metadata = this.expandMetadata(entity.metadata);
+            entity.metadata = await entities.denormalizeMetadata(
+              entity,
+              template,
+              dictionariesByKey
+            );
+            await db
+              .collection('entities')
+              .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });
+            index += 1;
+          }
+        }
+        process.stdout.write(`Converted entities.metadata -> ${index}\r`);
+        process.stdout.write('\r\n');
+        break;
+      } catch (err) {
+        process.stdout.write(
+          `Encountered error, but trying several times to increase the chance of success!\r\n${err}.\r\n`
+        );
       }
     }
-    process.stdout.write(`Converted entities.metadata -> ${index}\r`);
-    process.stdout.write('\r\n');
   },
 };
