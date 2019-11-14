@@ -150,9 +150,7 @@ export class AccountSettings extends Component {
             {using2fa && (
               <div className="alert alert-info">
                 <Icon icon="check" size="2x" />
-                <div className="force-ltr">
-                  Your account is protected by 2fa. Congratulations!!!
-                </div>
+                <div className="force-ltr">Your account is protected by 2fa.</div>
               </div>
             )}
             {!using2fa && (

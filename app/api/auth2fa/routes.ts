@@ -49,9 +49,14 @@ export default (app: {
 
       if (!isValid) {
         res.status(409);
-        res.json({ status: 'Conflict' });
+        res.json({
+          status: 'Conflict',
+          error: 'The token does not validate against the secret key!',
+        });
         return;
       }
+
+      await users.enable2fa(req.user);
 
       res.json({ success: true });
     }
