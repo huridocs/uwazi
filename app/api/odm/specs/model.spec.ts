@@ -12,7 +12,7 @@ const testSchema = new mongoose.Schema({
   name: String,
 });
 interface TestDoc {
-  _id?: any;
+  _id: any;
   name: String;
 }
 
@@ -31,7 +31,7 @@ describe('ODM Model', () => {
   it('should register all the models to the requirable models hashmap', () => {
     expect(models).toEqual({});
     const model1 = instanceModel<TestDoc>('tempSchema', testSchema);
-    const model2 = instanceModel<any>('anotherSchema', new mongoose.Schema({ name: String }));
+    const model2 = instanceModel('anotherSchema', new mongoose.Schema({ name: String }));
 
     expect(models.tempSchema.db).toBe(model1.db);
     expect(models.anotherSchema.db).toBe(model2.db);
