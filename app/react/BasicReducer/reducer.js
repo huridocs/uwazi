@@ -3,6 +3,7 @@
 import Immutable from 'immutable';
 
 const SET = 'SET';
+const SET_IN = 'SET_IN';
 const UPDATE = 'UPDATE';
 const UPDATE_IN = 'UPDATE_IN';
 const UNSET = 'UNSET';
@@ -18,6 +19,9 @@ export default function createReducer(namespace, defaultValue) {
     switch (action.type) {
       case `${namespace}/${SET}`:
         return Immutable.fromJS(action.value);
+
+      case `${namespace}/${SET_IN}`:
+        return currentState.set(action.key, Immutable.fromJS(action.value));
 
       case `${namespace}/${UNSET}`:
         return Immutable.fromJS(defaultValue);
@@ -82,6 +86,14 @@ export function set(namespace, value) {
   };
 }
 
+export function setIn(namespace, key, value) {
+  return {
+    type: `${namespace}/${SET_IN}`,
+    key,
+    value,
+  };
+}
+
 export function unset(namespace) {
   return {
     type: `${namespace}/${UNSET}`,
@@ -121,6 +133,7 @@ export const actions = {
   update,
   updateIn,
   set,
+  setIn,
   unset,
   push,
   concat,

@@ -101,6 +101,32 @@ describe('BasicReducer', () => {
     });
   });
 
+  describe('Set In', () => {
+    it('should set specific keys passed on the same namespace', () => {
+      const reducer1 = createReducer('1');
+      const reducer2 = createReducer('2');
+
+      const newState1 = reducer1(
+        Immutable({ oldProperty: 'old' }),
+        actions.setIn('1', 'newProperty', 'new')
+      );
+      const newState2 = reducer2(
+        Immutable({ oldProperty: 'old' }),
+        actions.setIn('1', 'newProperty', 'new')
+      );
+
+      expect(newState1.toJS()).toEqual({ oldProperty: 'old', newProperty: 'new' });
+      expect(newState2.toJS()).toEqual({ oldProperty: 'old' });
+
+      const newState3 = reducer1(
+        Immutable({ oldProperty: 'old' }),
+        actions.setIn('1', 'oldProperty', 'new')
+      );
+
+      expect(newState3.toJS()).toEqual({ oldProperty: 'new' });
+    });
+  });
+
   describe('Unset', () => {
     it('should set value passed on the same namespace', () => {
       const reducer1 = createReducer('1', {});
