@@ -1,3 +1,5 @@
+/** @format */
+
 import Immutable from 'immutable';
 
 const SET = 'SET';
@@ -14,40 +16,46 @@ export default function createReducer(namespace, defaultValue) {
     let index;
 
     switch (action.type) {
-    case `${namespace}/${SET}`:
-      return Immutable.fromJS(action.value);
+      case `${namespace}/${SET}`:
+        return Immutable.fromJS(action.value);
 
-    case `${namespace}/${UNSET}`:
-      return Immutable.fromJS(defaultValue);
+      case `${namespace}/${UNSET}`:
+        return Immutable.fromJS(defaultValue);
 
-    case `${namespace}/${PUSH}`:
-      return currentState.push(Immutable.fromJS(action.value));
-
-    case `${namespace}/${CONCAT}`:
-      return currentState.concat(Immutable.fromJS(action.value));
-
-    case `${namespace}/${CONCAT_IN}`:
-      return currentState.updateIn(action.key, collection => collection.concat(Immutable.fromJS(action.value)));
-
-    case `${namespace}/${REMOVE}`:
-      return Immutable.fromJS(currentState).filter(object => object.get('_id') !== action.value._id);
-
-    case `${namespace}/${UPDATE}`:
-      index = currentState.findIndex(o => o.get('_id') === action.value._id);
-      if (index === -1) {
+      case `${namespace}/${PUSH}`:
         return currentState.push(Immutable.fromJS(action.value));
-      }
-      return currentState.set(index, Immutable.fromJS(action.value));
 
-    case `${namespace}/${UPDATE_IN}`:
-      index = currentState.getIn(action.key).findIndex(o => o.get('_id') === action.value._id);
-      if (index === -1) {
-        return currentState.updateIn(action.key, collection => collection.push(Immutable.fromJS(action.value)));
-      }
-      return currentState.setIn([...action.key, index], Immutable.fromJS(action.value));
+      case `${namespace}/${CONCAT}`:
+        return currentState.concat(Immutable.fromJS(action.value));
 
-    default:
-      return Immutable.fromJS(currentState);
+      case `${namespace}/${CONCAT_IN}`:
+        return currentState.updateIn(action.key, collection =>
+          collection.concat(Immutable.fromJS(action.value))
+        );
+
+      case `${namespace}/${REMOVE}`:
+        return Immutable.fromJS(currentState).filter(
+          object => object.get('_id') !== action.value._id
+        );
+
+      case `${namespace}/${UPDATE}`:
+        index = currentState.findIndex(o => o.get('_id') === action.value._id);
+        if (index === -1) {
+          return currentState.push(Immutable.fromJS(action.value));
+        }
+        return currentState.set(index, Immutable.fromJS(action.value));
+
+      case `${namespace}/${UPDATE_IN}`:
+        index = currentState.getIn(action.key).findIndex(o => o.get('_id') === action.value._id);
+        if (index === -1) {
+          return currentState.updateIn(action.key, collection =>
+            collection.push(Immutable.fromJS(action.value))
+          );
+        }
+        return currentState.setIn([...action.key, index], Immutable.fromJS(action.value));
+
+      default:
+        return Immutable.fromJS(currentState);
     }
   };
 }
@@ -55,7 +63,7 @@ export default function createReducer(namespace, defaultValue) {
 export function update(namespace, value) {
   return {
     type: `${namespace}/${UPDATE}`,
-    value
+    value,
   };
 }
 
@@ -63,34 +71,34 @@ export function updateIn(namespace, key, value) {
   return {
     type: `${namespace}/${UPDATE_IN}`,
     key,
-    value
+    value,
   };
 }
 
 export function set(namespace, value) {
   return {
     type: `${namespace}/${SET}`,
-    value
+    value,
   };
 }
 
 export function unset(namespace) {
   return {
-    type: `${namespace}/${UNSET}`
+    type: `${namespace}/${UNSET}`,
   };
 }
 
 export function push(namespace, value) {
   return {
     type: `${namespace}/${PUSH}`,
-    value
+    value,
   };
 }
 
 export function concat(namespace, value) {
   return {
     type: `${namespace}/${CONCAT}`,
-    value
+    value,
   };
 }
 
@@ -98,14 +106,14 @@ export function concatIn(namespace, key, value) {
   return {
     type: `${namespace}/${CONCAT_IN}`,
     key,
-    value
+    value,
   };
 }
 
 export function remove(namespace, value) {
   return {
     type: `${namespace}/${REMOVE}`,
-    value
+    value,
   };
 }
 
@@ -117,5 +125,5 @@ export const actions = {
   push,
   concat,
   concatIn,
-  remove
+  remove,
 };
