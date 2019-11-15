@@ -58,15 +58,14 @@ export default (app) => {
     (req, res, next) => {
       templates.save(req.body, req.language)
       .then((response) => {
-        res.json(response);
         req.io.sockets.emit('templateChange', response);
-        return response;
+        return Promise.all([response, settings.updateFilterName(response._id.toString(), response.name)]);
       })
-      .then(response => settings.updateFilterName(response._id.toString(), response.name))
-      .then((updatedSettings) => {
+      .then(([response, updatedSettings]) => {
         if (updatedSettings) {
           req.io.sockets.emit('updateSettings', updatedSettings);
         }
+        res.json(response);
       })
       .catch(next);
     }

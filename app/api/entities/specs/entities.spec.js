@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks, max-statements */
+import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
@@ -98,7 +99,7 @@ describe('entities', () => {
     });
 
     it('should return the newly created document for the passed language', (done) => {
-      const doc = { title: 'the dark knight', fullText: 'the full text!', metadata: { data: 'should not be here' } };
+      const doc = { title: 'the dark knight', fullText: { 1: 'the full text!' }, metadata: { data: 'should not be here' } };
       const user = { _id: db.id() };
 
       entities.save(doc, { user, language: 'en' })
@@ -115,7 +116,7 @@ describe('entities', () => {
     });
 
     it('should return updated entity', (done) => {
-      const doc = { title: 'the dark knight', fullText: 'the full text!', metadata: { data: 'should not be here' } };
+      const doc = { title: 'the dark knight', fullText: { 1: 'the full text!' }, metadata: { data: 'should not be here' } };
       const user = { _id: db.id() };
 
       entities.save(doc, { user, language: 'en' })
@@ -248,8 +249,8 @@ describe('entities', () => {
         metadata: {
           text: 'changedText',
           select: 'select',
-          multiselect: 'multiselect',
-          date: 'date',
+          multiselect: ['multiselect'],
+          date: 1234,
           multidate: [1234],
           multidaterange: [{ from: 1, to: 2 }],
           numeric: 100
@@ -268,16 +269,16 @@ describe('entities', () => {
       .then(([docEN, docES, docPT]) => {
         expect(docEN.metadata.text).toBe('changedText');
         expect(docEN.metadata.select).toBe('select');
-        expect(docEN.metadata.multiselect).toBe('multiselect');
-        expect(docEN.metadata.date).toBe('date');
+        expect(docEN.metadata.multiselect).toEqual(['multiselect']);
+        expect(docEN.metadata.date).toBe(1234);
         expect(docEN.metadata.multidate).toEqual([1234]);
         expect(docEN.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
         expect(docEN.metadata.numeric).toEqual(100);
 
         expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
-        expect(docES.metadata.multiselect).toBe('multiselect');
-        expect(docES.metadata.date).toBe('date');
+        expect(docES.metadata.multiselect).toEqual(['multiselect']);
+        expect(docES.metadata.date).toBe(1234);
         expect(docES.metadata.multidate).toEqual([1234]);
         expect(docES.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
         expect(docES.metadata.numeric).toEqual(100);
@@ -285,8 +286,8 @@ describe('entities', () => {
 
         expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
-        expect(docPT.metadata.multiselect).toBe('multiselect');
-        expect(docPT.metadata.date).toBe('date');
+        expect(docPT.metadata.multiselect).toEqual(['multiselect']);
+        expect(docPT.metadata.date).toBe(1234);
         expect(docPT.metadata.multidate).toEqual([1234]);
         expect(docPT.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
         expect(docPT.metadata.numeric).toEqual(100);
@@ -891,6 +892,27 @@ describe('entities', () => {
 
       expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
       expect(newEntities.length).toBe(0);
+    });
+  });
+
+  describe('validation', () => {
+    it('should validate on save', async () => {
+      const entity = {
+        title: 'Test',
+        template: templateId,
+        metadata: {
+          date: 'invalid date'
+        }
+      };
+      const options = { user: { _id: db.id() }, language: 'en' };
+
+      try {
+        await entities.save(entity, options);
+        fail('should throw validation error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Ajv.ValidationError);
+        expect(error.errors.some(e => e.params.keyword === 'metadataMatchesTemplateProperties')).toBe(true);
+      }
     });
   });
 });
