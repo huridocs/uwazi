@@ -16,16 +16,18 @@ describe('csvLoader', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
+    spyOn(entities, 'indexEntities').and.returnValue({});
+    spyOn(translations, 'updateContext').and.returnValue({});
   });
 
   afterAll(async () => db.disconnect());
 
-  it('should use the passed user', async () => {
-    spyOn(entities, 'save').and.returnValue(Promise.resolve({}));
-    await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
-    expect(entities.save.calls.argsFor(0)[1].user).toEqual({ username: 'user' });
+  describe('user', () => {
+    it('should use the passed user', async () => {
+      spyOn(entities, 'save').and.callFake(e => e);
+      await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
+      expect(entities.save.calls.argsFor(0)[1].user).toEqual({ username: 'user' });
+    });
   });
 
   describe('load', () => {
@@ -89,9 +91,9 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader();
 
       await db.clearAllAndLoad(fixtures);
-      spyOn(entities, 'save').and.callFake(entity =>
-        Promise.reject(new Error(`error-${entity.title}`))
-      );
+      spyOn(entities, 'save').and.callFake(entity => {
+        throw new Error(`error-${entity.title}`);
+      });
 
       try {
         await testingLoader.load(csvFile, template1Id);
@@ -106,14 +108,17 @@ describe('csvLoader', () => {
       await db.clearAllAndLoad(fixtures);
       jest
         .spyOn(entities, 'save')
-        .mockImplementationOnce(({ title }) => Promise.resolve({ title }))
-        .mockImplementationOnce(() => Promise.reject(new Error('error')));
+        .mockImplementationOnce(e => e)
+        .mockImplementationOnce(({ title }) => {
+          throw new Error(`error-${title}`);
+        })
+        .mockImplementationOnce(e => e);
 
       try {
         await testingLoader.load(csvFile, template1Id);
         fail('should fail');
       } catch (e) {
-        expect(e).toEqual(new Error('error'));
+        expect(e).toEqual(new Error('error-title2'));
       }
     });
   });
@@ -122,9 +127,9 @@ describe('csvLoader', () => {
     beforeAll(async () => {
       spyOn(entities, 'save').and.callFake(entity => {
         if (entity.title === 'title1' || entity.title === 'title3') {
-          return Promise.reject(new Error(`error-${entity.title}`));
+          throw new Error(`error-${entity.title}`);
         }
-        return Promise.resolve({});
+        return entity;
       });
       await db.clearAllAndLoad(fixtures);
     });
@@ -163,12 +168,11 @@ describe('csvLoader', () => {
     });
 
     it('should fail when parsing throws an error', async () => {
-      entities.save.and.callFake(() => Promise.resolve({}));
+      entities.save.and.callFake(e => e);
       spyOn(typeParsers, 'text').and.callFake(entity => {
         if (entity.title === 'title2') {
-          return Promise.reject(new Error(`error-${entity.title}`));
+          throw new Error(`error-${entity.title}`);
         }
-        return Promise.resolve({});
       });
 
       const testingLoader = new CSVLoader({ stopOnError: false });
@@ -186,8 +190,9 @@ describe('csvLoader', () => {
 
   describe('when sharedId is provided', () => {
     it('should update the entitiy', async () => {
+      entities.save.mockRestore();
       const entity = await entities.save(
-        { title: 'entity', template: template1Id },
+        { title: 'entity4444', template: template1Id },
         { user: {}, language: 'en' }
       );
       const csv = `id                , title    ,
