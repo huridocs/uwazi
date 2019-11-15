@@ -6,11 +6,11 @@ import { DeleteWriteOpResultObject } from 'mongodb';
 /** WithId<T> represents objects received from MongoDB, which are guaranteed to have
  *  the _id field populated, even though T always has _id? optional for validation reasons.
  */
-export type WithId<T extends { _id?: any }> = Omit<T, '_id'> & {
-  _id: T['_id'] | Schema.Types.ObjectId;
+export type WithId<T> = Omit<T, '_id'> & {
+  _id: Schema.Types.ObjectId;
 };
 
-export interface OdmModel<T extends { _id?: any }> {
+export interface OdmModel<T> {
   db: Model<WithId<T> & Document>;
   save: (data: Readonly<Partial<T>>) => Promise<WithId<T>>;
   saveMultiple: (data: Readonly<Partial<T>>[]) => Promise<WithId<T>[]>;

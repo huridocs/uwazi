@@ -6,16 +6,15 @@ import { model as updatelogsModel } from 'api/updatelogs';
 import { UpdateLog } from 'api/updatelogs/updatelogsModel';
 import testingDB from 'api/utils/testing_db';
 import { instanceModel } from '../model';
-import { OdmModel, models } from '../models';
+import { OdmModel, WithId, models } from '../models';
 
 const testSchema = new mongoose.Schema({
   name: String,
   value: String,
 });
 interface TestDoc {
-  _id: String;
-  name: String;
-  value?: String;
+  name: string;
+  value?: string;
 }
 
 describe('ODM Model', () => {
@@ -42,7 +41,7 @@ describe('ODM Model', () => {
   describe('Save', () => {
     it('should be able to create when passing an _id and it does not exists', async () => {
       const extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
-      const id = testingDB.id();
+      const id: mongoose.Schema.Types.ObjectId = testingDB.id();
       const savedDoc = await extendedModel.save({
         _id: id,
         name: 'document 1',
@@ -62,8 +61,8 @@ describe('ODM Model', () => {
 
   describe('Logging functionality', () => {
     let extendedModel: OdmModel<TestDoc>;
-    let newDocument1: TestDoc;
-    let newDocument2: TestDoc;
+    let newDocument1: WithId<TestDoc>;
+    let newDocument2: WithId<TestDoc>;
 
     beforeEach(async () => {
       Date.now = () => 1;

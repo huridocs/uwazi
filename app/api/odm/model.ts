@@ -39,7 +39,7 @@ class UpdateLogHelper {
   }
 }
 
-class OdmModelImpl<T extends { _id?: any }> implements OdmModel<T> {
+class OdmModelImpl<T> implements OdmModel<T> {
   db: mongoose.Model<WithId<T> & mongoose.Document>;
 
   logHelper: UpdateLogHelper;
@@ -49,7 +49,7 @@ class OdmModelImpl<T extends { _id?: any }> implements OdmModel<T> {
     this.logHelper = logHelper;
   }
 
-  async save(data: Readonly<Partial<T>>) {
+  async save(data: Readonly<Partial<T>> & { _id?: any }) {
     if (Array.isArray(data)) {
       throw new TypeError('Model.save array input no longer supported - use .saveMultiple!');
     }
@@ -99,10 +99,7 @@ class OdmModelImpl<T extends { _id?: any }> implements OdmModel<T> {
   }
 }
 
-export function instanceModel<T extends { _id?: any } = any>(
-  collectionName: string,
-  schema: mongoose.Schema
-) {
+export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
   const logHelper = new UpdateLogHelper(collectionName);
   schema.post('save', logHelper.upsertLogOne.bind(logHelper));
   schema.post('findOneAndUpdate', logHelper.upsertLogOne.bind(logHelper));
