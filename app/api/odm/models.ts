@@ -1,19 +1,26 @@
 /** @format */
 
-import { Document, DocumentQuery, Model } from 'mongoose';
+import { Document, DocumentQuery, Model, Schema } from 'mongoose';
 import { DeleteWriteOpResultObject } from 'mongodb';
 
-export interface OdmModel<T extends { _id: any }> {
-  db: Model<T & Document>;
-  save: (data: Readonly<Partial<T>>) => Promise<T>;
-  saveMultiple: (data: Readonly<Partial<T>>[]) => Promise<T[]>;
+/** WithId<T> represents objects received from MongoDB, which are guaranteed to have
+ *  the _id field populated, even though T always has _id? optional for validation reasons.
+ */
+export type WithId<T extends { _id?: any }> = Omit<T, '_id'> & {
+  _id: T['_id'] | Schema.Types.ObjectId;
+};
 
-  getById: (id: any | string | number) => Promise<T | null>;
+export interface OdmModel<T extends { _id?: any }> {
+  db: Model<WithId<T> & Document>;
+  save: (data: Readonly<Partial<T>>) => Promise<WithId<T>>;
+  saveMultiple: (data: Readonly<Partial<T>>[]) => Promise<WithId<T>[]>;
+
+  getById: (id: any | string | number) => Promise<WithId<T> | null>;
   get: (
     query: any,
     select?: string,
     pagination?: {}
-  ) => DocumentQuery<(T & Document)[], T & Document>;
+  ) => DocumentQuery<(WithId<T> & Document)[], WithId<T> & Document>;
 
   count: (condition: any) => Promise<number>;
   delete: (condition: any) => Promise<DeleteWriteOpResultObject['result']>;

@@ -13,7 +13,7 @@ const testSchema = new mongoose.Schema({
   value: String,
 });
 interface TestDoc {
-  _id: any;
+  _id: String;
   name: String;
   value?: String;
 }

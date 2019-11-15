@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 import { model as updatelogsModel } from 'api/updatelogs';
 
-import { OdmModel, models } from './models';
+import { OdmModel, WithId, models } from './models';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
@@ -39,12 +39,12 @@ class UpdateLogHelper {
   }
 }
 
-class OdmModelImpl<T extends { _id: any }> implements OdmModel<T> {
-  db: mongoose.Model<T & mongoose.Document>;
+class OdmModelImpl<T extends { _id?: any }> implements OdmModel<T> {
+  db: mongoose.Model<WithId<T> & mongoose.Document>;
 
   logHelper: UpdateLogHelper;
 
-  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<T & mongoose.Document>) {
+  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<WithId<T> & mongoose.Document>) {
     this.db = db;
     this.logHelper = logHelper;
   }
@@ -60,10 +60,10 @@ class OdmModelImpl<T extends { _id: any }> implements OdmModel<T> {
       if (saved === null) {
         throw Error('mongoose findOneAndUpdate should never return null!');
       }
-      return saved.toObject() as T;
+      return saved.toObject() as WithId<T>;
     }
     const saved = await this.db.create(data);
-    return saved.toObject() as T;
+    return saved.toObject() as WithId<T>;
   }
 
   saveMultiple(data: Readonly<Partial<T>>[]) {
@@ -99,7 +99,7 @@ class OdmModelImpl<T extends { _id: any }> implements OdmModel<T> {
   }
 }
 
-export function instanceModel<T extends { _id: any } = any>(
+export function instanceModel<T extends { _id?: any } = any>(
   collectionName: string,
   schema: mongoose.Schema
 ) {
@@ -113,7 +113,7 @@ export function instanceModel<T extends { _id: any } = any>(
   });
   const model = new OdmModelImpl<T>(
     logHelper,
-    mongoose.model<T & mongoose.Document>(collectionName, schema)
+    mongoose.model<WithId<T> & mongoose.Document>(collectionName, schema)
   );
   models[collectionName] = model;
   return model;
