@@ -8,17 +8,16 @@ import loadable from '@loadable/component';
 
 import { Icon } from 'UI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { t } from 'app/I18N';
+import { t, I18NLink } from 'app/I18N';
 import Auth2faAPI from './Auth2faAPI';
 
 const QRCode = loadable(() => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
 
 type Configure2faProps = {
-  user: { using2fa: boolean };
+  userUsing2fa: boolean;
 };
 
 type State = {
-  using2fa: boolean;
   conflict: boolean;
   otpauth: string;
   secret: string;
@@ -30,7 +29,6 @@ class Configure2fa extends Component<Configure2faProps, State> {
   constructor(props: Configure2faProps) {
     super(props);
     this.state = {
-      using2fa: props.user.using2fa || false,
       conflict: false,
       otpauth: '',
       secret: '',
@@ -40,8 +38,8 @@ class Configure2fa extends Component<Configure2faProps, State> {
   }
 
   async componentDidMount() {
-    const { using2fa } = this.state;
-    if (!using2fa) {
+    const { userUsing2fa } = this.props;
+    if (!userUsing2fa) {
       await this.setSecret();
     }
   }
@@ -55,7 +53,7 @@ class Configure2fa extends Component<Configure2faProps, State> {
     const { token } = values;
     try {
       const { success } = await Auth2faAPI.enable(new RequestParams({ token }));
-      this.setState({ using2fa: Boolean(success) });
+      // this.setState({ using2fa: Boolean(success) });
     } catch (err) {
       if (err.status === 409) {
         this.setState({ conflict: true });
@@ -64,14 +62,15 @@ class Configure2fa extends Component<Configure2faProps, State> {
   }
 
   render() {
-    const { using2fa, otpauth, secret, conflict } = this.state;
+    const { otpauth, secret, conflict } = this.state;
+    const { userUsing2fa } = this.props;
 
     return (
       <div className="configure2fa-settings">
         <div className="panel panel-default">
           <div className="panel-heading">{t('System', 'Two-step verification')}</div>
           <div className="panel-body">
-            {using2fa && (
+            {userUsing2fa && (
               <div className="alert alert-success">
                 <Icon icon="check" />
                 <div className="force-ltr">
@@ -81,7 +80,7 @@ class Configure2fa extends Component<Configure2faProps, State> {
                 </div>
               </div>
             )}
-            {!using2fa && (
+            {!userUsing2fa && (
               <div>
                 <p>Activate this feature for enhanced account security</p>
                 <h3>Using Google Authenticator</h3>
@@ -114,9 +113,9 @@ class Configure2fa extends Component<Configure2faProps, State> {
                     </li>
                   </ol>
                   <p>
-                    <button type="button" className="btn btn-default">
-                      Cancel
-                    </button>
+                    <I18NLink to="/settings/account" className="btn btn-default">
+                      {t('System', 'Cancel')}
+                    </I18NLink>
                     <input type="submit" className="btn btn-success" value="Confirm" />
                   </p>
                 </LocalForm>
@@ -130,11 +129,11 @@ class Configure2fa extends Component<Configure2faProps, State> {
 }
 
 Configure2fa.defaultProps = {
-  user: { using2fa: false },
+  userUsing2fa: false,
 };
 
 export function mapStateToProps(state: any) {
-  return { user: state.user.toJS() };
+  return { userUsing2fa: state.user.toJS().using2fa };
 }
 
 export default connect(mapStateToProps)(Configure2fa);
