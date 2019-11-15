@@ -22,6 +22,7 @@ describe('custom language analyzers', () => {
 
       await elastic.index({
         index: elasticIndex,
+        type: '_doc',
         body: { fullText_persian: persianText },
         id: '123_whatever',
       });
