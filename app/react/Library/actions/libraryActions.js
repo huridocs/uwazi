@@ -246,6 +246,9 @@ export function multipleUpdate(entities, values) {
       if (values.icon) {
         entity.icon = values.icon;
       }
+      if (values.template) {
+        entity.template = values.template;
+      }
       return entity;
     });
 

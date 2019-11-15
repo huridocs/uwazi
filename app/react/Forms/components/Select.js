@@ -6,6 +6,25 @@ import React, { Component } from 'react';
 import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 export default class Select extends Component {
+  /** If we're in metadata-object mode, extract the label: component from options. */
+  onChange(event) {
+    const newValue = event.hasOwnProperty('target') && event.target ? event.target.value : event;
+    const { onChange, isMo } = UnwrapMetadataObject(this.props);
+    if (!newValue || !isMo) {
+      return onChange(event);
+    }
+    const { options, optionsValue, optionsLabel } = this.props;
+    const moValue = { value: newValue };
+    moValue.label = (options
+      .reduce(
+        (result, option) =>
+          option.options ? result.concat(option.options) : result.concat([option]),
+        []
+      )
+      .find(o => o[optionsValue] === newValue) || { [optionsLabel]: undefined })[optionsLabel];
+    return onChange(moValue);
+  }
+
   render() {
     const { options, optionsValue, optionsLabel, required, placeholder, sort } = this.props;
     let _options = options;
@@ -13,11 +32,11 @@ export default class Select extends Component {
       const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
       _options = sortRoot ? advancedSort(options, { property: optionsLabel }) : options;
     }
-    const { value, onChange } = UnwrapMetadataObject(this.props);
+    const { value } = UnwrapMetadataObject(this.props);
 
     const disbaled = Boolean(required);
     return (
-      <select className="form-control" onChange={onChange} value={value}>
+      <select className="form-control" onChange={this.onChange.bind(this)} value={value}>
         <option disbaled={disbaled.toString()} value="">
           {placeholder}
         </option>

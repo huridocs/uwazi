@@ -6,9 +6,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { filterOptions } from '../utils/optionsUtils';
-import { UnwrapMOs, WrapMOs } from './MetadataUtil';
 
 const isNotAnEmptyGroup = option => !option.options || option.options.length;
+
+function unwrapMOs(value) {
+  return value.map(v => v.value);
+}
 
 export default class MultiSelect extends Component {
   constructor(props) {
@@ -22,8 +25,22 @@ export default class MultiSelect extends Component {
     }
   }
 
+  wrapMOs(value) {
+    const { options, optionsValue, optionsLabel } = this.props;
+    return value.map(newValue => ({
+      value: newValue,
+      label: (options
+        .reduce(
+          (result, option) =>
+            option.options ? result.concat(option.options) : result.concat([option]),
+          []
+        )
+        .find(o => o[optionsValue] === newValue) || { [optionsLabel]: undefined })[optionsLabel],
+    }));
+  }
+
   changeGroup(group, e) {
-    const selectedItems = UnwrapMOs(this.props.value);
+    const selectedItems = unwrapMOs(this.props.value);
     if (e.target.checked) {
       group.options.forEach(_item => {
         if (!this.checked(_item)) {
@@ -40,7 +57,7 @@ export default class MultiSelect extends Component {
         }
       });
     }
-    this.props.onChange(WrapMOs(selectedItems));
+    this.props.onChange(this.wrapMOs(selectedItems));
   }
 
   checked(option) {
@@ -51,11 +68,11 @@ export default class MultiSelect extends Component {
     if (option.options) {
       return option.options.reduce(
         (allIncluded, _option) =>
-          allIncluded && UnwrapMOs(this.props.value).includes(_option[this.props.optionsValue]),
+          allIncluded && unwrapMOs(this.props.value).includes(_option[this.props.optionsValue]),
         true
       );
     }
-    return UnwrapMOs(this.props.value).includes(option[this.props.optionsValue]);
+    return unwrapMOs(this.props.value).includes(option[this.props.optionsValue]);
   }
 
   anyChildChecked(parent) {
@@ -63,15 +80,15 @@ export default class MultiSelect extends Component {
   }
 
   change(value) {
-    let newValues = this.props.value ? UnwrapMOs(this.props.value) : [];
+    let newValues = this.props.value ? unwrapMOs(this.props.value) : [];
     if (newValues.includes(value)) {
       newValues = newValues.filter(val => val !== value);
-      this.props.onChange(WrapMOs(newValues));
+      this.props.onChange(this.wrapMOs(newValues));
       return;
     }
 
     newValues.push(value);
-    this.props.onChange(WrapMOs(newValues));
+    this.props.onChange(this.wrapMOs(newValues));
   }
 
   filter(e) {

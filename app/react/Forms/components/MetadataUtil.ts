@@ -4,35 +4,26 @@ import { PropertyValueSchema } from 'shared/commonTypes';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-export function UnwrapMOs<T extends PropertyValueSchema>(value: MetadataObject<T>[]) {
-  return value.map(v => v.value);
-}
-
-export function WrapMOs<T extends PropertyValueSchema>(value: (T | null)[]) {
-  return value.map(v => ({
-    value: v,
-  }));
-}
-
 export function AllowMoType<T>(propType: PropTypes.Requireable<T>) {
   return PropTypes.oneOfType([propType, PropTypes.arrayOf(PropTypes.shape({ value: propType }))]);
 }
 
 export interface Props<T extends PropertyValueSchema> {
-  value: MetadataObject<T>[] | T | undefined;
+  value: MetadataObject<T>[] | T | undefined | string;
   onChange: (event: any) => void;
 }
 
 export function UnwrapMetadataObject<T extends PropertyValueSchema>(props: Props<T>) {
   const { value, onChange } = props;
   if (!Array.isArray(value)) {
-    return { value, onChange };
+    return { value, onChange, isMo: false };
   }
   const unpackedValue = value.length && value[0].value ? value[0].value : undefined;
   const packingOnChange = (event: any) => {
-    onChange([{ value: event.hasOwnProperty('target') ? event.target.value : event }]);
+    const newValue = event.hasOwnProperty('target') ? event.target.value : event;
+    onChange(newValue.hasOwnProperty('value') ? [newValue] : [{ value: newValue }]);
   };
-  return { value: unpackedValue, onChange: packingOnChange };
+  return { value: unpackedValue, onChange: packingOnChange, isMo: true };
 }
 
 export class WrappedControl<T extends PropertyValueSchema> extends Component<Props<T>, {}> {
@@ -43,7 +34,7 @@ export class WrappedControl<T extends PropertyValueSchema> extends Component<Pro
       if (!React.isValidElement<Props<T>>(c)) {
         return c;
       }
-      return React.cloneElement(c, { ...c.props, value, onChange });
+      return React.cloneElement(c, { ...c.props, value: value || '', onChange });
     });
   }
 }
