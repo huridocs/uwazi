@@ -197,7 +197,7 @@ export default {
 
       return [entity];
     })
-    .then(([entity]) => index ? this.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity);
+    .then(([entity]) => index ? search.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity);
   },
 
   bulkProcessMetadataFromRelationships(query, language, limit = 200) {
@@ -212,25 +212,6 @@ export default {
     };
     return this.count(query)
     .then(totalRows => process(0, totalRows));
-  },
-
-  indexEntities(query, select, limit = 200, batchCallback = () => {}) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return this.get(query, select, { skip: offset, limit })
-      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId })
-      .then((relations) => {
-        entity.relationships = relations || [];
-        return entity;
-      }))))
-      .then(entities => search.bulkIndex(entities).then(() => batchCallback(entities.length, totalRows)))
-      .then(() => index(offset + limit, totalRows));
-    };
-    return this.count(query)
-    .then(totalRows => index(0, totalRows));
   },
 
   async get(query, select, pagination) {
@@ -260,7 +241,7 @@ export default {
 
   async saveMultiple(docs) {
     const response = await model.saveMultiple(docs);
-    return Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText'));
+    return Promise.all(response, search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText'));
   },
 
   multipleUpdate(ids, values, params) {
@@ -278,7 +259,7 @@ export default {
       }
       return this.save(entity, params, true, false);
     }), Promise.resolve())
-    .then(() => this.indexEntities({ sharedId: { $in: ids } }))
+    .then(() => search.indexEntities({ sharedId: { $in: ids } }))
     .then(() => ids);
   },
 
@@ -317,7 +298,7 @@ export default {
         }
         return Promise.resolve(entity);
       }))))
-    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
+    .then(() => search.indexEntities({ sharedId: { $in: entitiesToReindex } }));
   },
 
   updateMetadataProperties(template, currentTemplate, language) {
@@ -353,7 +334,7 @@ export default {
     return dbUpdate
     .then(() => {
       if (!template.properties.find(p => p.type === templateTypes.relationship)) {
-        return this.indexEntities({ template: template._id }, null, 1000);
+        return search.indexEntities({ template: template._id }, null, 1000);
       }
 
       return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
@@ -411,7 +392,7 @@ export default {
     .then(docs => deleteIndex ? Promise.all(docs.map(doc => search.delete(doc))).then(() => docs) : Promise.resolve(docs))
     .then(docs => model.delete({ sharedId })
     .then(() => docs)
-    .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
+    .catch(e => search.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
     .then(docs => Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
       this.deleteFiles(docs),
@@ -449,7 +430,7 @@ export default {
       this.get(query, { _id: 1 }),
       model.db.updateMany(query, { $set: changes })
     ])
-    .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
+    .then(([entitiesToReindex]) => search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
   async deleteEntityFromMetadata(sharedId, propertyContent) {
@@ -486,7 +467,7 @@ export default {
       multiSelectQuery.$or.length ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges }) : null
     ]);
     const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-    await this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
+    await search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
   },
 
   async createThumbnail(entity) {
