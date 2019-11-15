@@ -341,29 +341,28 @@ export default {
     return response;
   },
 
-  multipleUpdate(ids, values, params) {
-    return ids
-      .reduce(
-        (previousPromise, id) =>
-          previousPromise
-            .then(() => this.getById(id, params.language))
-            .then(entity => {
-              entity.metadata = Object.assign({}, entity.metadata, values.metadata);
-              if (values.icon) {
-                entity.icon = values.icon;
-              }
-              if (values.template) {
-                entity.template = values.template;
-              }
-              if (values.published !== undefined) {
-                entity.published = values.published;
-              }
-              return this.save(entity, params, true, false);
-            }),
-        Promise.resolve()
-      )
-      .then(() => this.indexEntities({ sharedId: { $in: ids } }))
-      .then(() => ids);
+  async multipleUpdate(ids, values, params) {
+    await Promise.all(
+      ids.map(async id => {
+        const entity = await this.getById(id, params.language);
+        if (!entity) {
+          return;
+        }
+        entity.metadata = Object.assign({}, entity.metadata, values.metadata);
+        if (values.icon) {
+          entity.icon = values.icon;
+        }
+        if (values.template) {
+          entity.template = values.template;
+        }
+        if (values.published !== undefined) {
+          entity.published = values.published;
+        }
+        await this.save(entity, params, true, false);
+      })
+    );
+    await this.indexEntities({ sharedId: { $in: ids } });
+    return ids;
   },
 
   getAllLanguages(sharedId) {
@@ -505,26 +504,25 @@ export default {
     );
   },
 
-  delete(sharedId, deleteIndex = true) {
-    return this.get({ sharedId })
-      .then(docs =>
-        deleteIndex
-          ? Promise.all(docs.map(doc => search.delete(doc))).then(() => docs)
-          : Promise.resolve(docs)
-      )
-      .then(docs =>
-        model
-          .delete({ sharedId })
-          .then(() => docs)
-          .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e)))
-      )
-      .then(docs =>
-        Promise.all([
-          relationships.delete({ entity: sharedId }, null, false),
-          this.deleteFiles(docs),
-          this.deleteRelatedEntityFromMetadata(docs[0]),
-        ]).then(() => docs)
-      );
+  async delete(sharedId, deleteIndex = true) {
+    const docs = await this.get({ sharedId });
+    if (!docs.length) {
+      return docs;
+    }
+    if (deleteIndex) {
+      await Promise.all(docs.map(doc => search.delete(doc)));
+    }
+    try {
+      await model.delete({ sharedId });
+    } catch (e) {
+      await this.indexEntities({ sharedId }, '+fullText');
+    }
+    await Promise.all([
+      relationships.delete({ entity: sharedId }, null, false),
+      this.deleteFiles(docs),
+      this.deleteRelatedEntityFromMetadata(docs[0]),
+    ]);
+    return docs;
   },
 
   async getRawPage(sharedId, language, pageNumber) {
