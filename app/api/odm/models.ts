@@ -3,10 +3,10 @@
 import { Document, DocumentQuery, Model } from 'mongoose';
 import { DeleteWriteOpResultObject } from 'mongodb';
 
-export interface OdmModel<T extends { _id?: any }> {
+export interface OdmModel<T extends { _id: any }> {
   db: Model<T & Document>;
-  save: (data: T) => Promise<T>;
-  saveMultiple: (data: T[]) => Promise<T[]>;
+  save: (data: Readonly<Partial<T>>) => Promise<T>;
+  saveMultiple: (data: Readonly<Partial<T>>[]) => Promise<T[]>;
 
   getById: (id: any | string | number) => Promise<T | null>;
   get: (

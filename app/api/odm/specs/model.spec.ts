@@ -10,10 +10,12 @@ import { OdmModel, models } from '../models';
 
 const testSchema = new mongoose.Schema({
   name: String,
+  value: String,
 });
 interface TestDoc {
-  _id?: any;
+  _id: any;
   name: String;
+  value?: String;
 }
 
 describe('ODM Model', () => {
@@ -31,7 +33,7 @@ describe('ODM Model', () => {
   it('should register all the models to the requirable models hashmap', () => {
     expect(models).toEqual({});
     const model1 = instanceModel<TestDoc>('tempSchema', testSchema);
-    const model2 = instanceModel<any>('anotherSchema', new mongoose.Schema({ name: String }));
+    const model2 = instanceModel('anotherSchema', new mongoose.Schema({ name: String }));
 
     expect(models.tempSchema.db).toBe(model1.db);
     expect(models.anotherSchema.db).toBe(model2.db);
@@ -39,14 +41,22 @@ describe('ODM Model', () => {
 
   describe('Save', () => {
     it('should be able to create when passing an _id and it does not exists', async () => {
-      const extendedModel = instanceModel('tempSchema', testSchema);
+      const extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
       const id = testingDB.id();
-      await extendedModel.save(({
+      const savedDoc = await extendedModel.save({
         _id: id,
         name: 'document 1',
-      } as unknown) as TestDoc);
-      const [createdDocument] = await extendedModel.get({ _id: id });
+      });
+      expect(savedDoc._id).toEqual(id);
+      const [createdDocument] = await extendedModel.get({ _id: savedDoc._id });
       expect(createdDocument).toBeDefined();
+      expect(createdDocument.name).toEqual('document 1');
+
+      await extendedModel.save({ _id: id, value: 'abc' });
+      const [updatedDoc] = await extendedModel.get({ _id: savedDoc._id });
+      expect(updatedDoc).toBeDefined();
+      expect(updatedDoc.name).toEqual('document 1');
+      expect(updatedDoc.value).toEqual('abc');
     });
   });
 
@@ -57,7 +67,7 @@ describe('ODM Model', () => {
 
     beforeEach(async () => {
       Date.now = () => 1;
-      extendedModel = instanceModel('tempSchema', testSchema);
+      extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
       newDocument1 = await extendedModel.save({ name: 'document 1' });
       newDocument2 = await extendedModel.save({ name: 'document 2' });
     });
