@@ -1,3 +1,5 @@
+/** @format */
+
 import { fromJS as Immutable } from 'immutable';
 
 import createReducer, * as actions from 'app/BasicReducer/reducer';
@@ -16,7 +18,10 @@ describe('BasicReducer', () => {
       const reducer1 = createReducer('1', []);
       const reducer2 = createReducer('2', []);
 
-      const state1 = reducer1({}, actions.set('1', [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }]));
+      const state1 = reducer1(
+        {},
+        actions.set('1', [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }])
+      );
       const state2 = reducer2({}, actions.set('2', [{ _id: 2, title: 'test2' }]));
 
       const newState1 = reducer1(state1, actions.update('1', { _id: 2, title: 'updated' }));
@@ -31,13 +36,20 @@ describe('BasicReducer', () => {
         const reducer1 = createReducer('1', []);
         const reducer2 = createReducer('2', []);
 
-        const state1 = reducer1({}, actions.set('1', [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }]));
+        const state1 = reducer1(
+          {},
+          actions.set('1', [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }])
+        );
         const state2 = reducer2({}, actions.set('2', [{ _id: 2, title: 'test2' }]));
 
         const newState1 = reducer1(state1, actions.update('1', { _id: 3, title: 'created' }));
         const newState2 = reducer1(state2, actions.update('2', { _id: 3, title: 'not created' }));
 
-        expect(newState1.toJS()).toEqual([{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }, { _id: 3, title: 'created' }]);
+        expect(newState1.toJS()).toEqual([
+          { _id: 1, title: 'test' },
+          { _id: 2, title: 'test2' },
+          { _id: 3, title: 'created' },
+        ]);
         expect(newState2.toJS()).toEqual([{ _id: 2, title: 'test2' }]);
       });
     });
@@ -48,17 +60,30 @@ describe('BasicReducer', () => {
     let state;
     beforeEach(() => {
       reducer = createReducer('1', { nested: { key: [] } });
-      state = Immutable({ nested: { key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }] } });
+      state = Immutable({
+        nested: { key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }] },
+      });
     });
     it('should update passed value in a list in a nested key at the namespace', () => {
-      const newState = reducer(state, actions.updateIn('1', ['nested', 'key'], { _id: 1, title: 'changed test' }));
-      expect(newState.toJS()).toEqual({ nested: { key: [{ _id: 1, title: 'changed test' }, { _id: 2, title: 'test2' }] } });
+      const newState = reducer(
+        state,
+        actions.updateIn('1', ['nested', 'key'], { _id: 1, title: 'changed test' })
+      );
+      expect(newState.toJS()).toEqual({
+        nested: { key: [{ _id: 1, title: 'changed test' }, { _id: 2, title: 'test2' }] },
+      });
     });
     describe('when value does not exist', () => {
       it('should push it to the collection at the specified key path', () => {
-        const newState = reducer(state, actions.updateIn('1', ['nested', 'key'], { _id: 3, title: 'new' }));
-        expect(newState.toJS()).toEqual(
-          { nested: { key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }, { _id: 3, title: 'new' }] } });
+        const newState = reducer(
+          state,
+          actions.updateIn('1', ['nested', 'key'], { _id: 3, title: 'new' })
+        );
+        expect(newState.toJS()).toEqual({
+          nested: {
+            key: [{ _id: 1, title: 'test' }, { _id: 2, title: 'test2' }, { _id: 3, title: 'new' }],
+          },
+        });
       });
     });
   });
@@ -94,8 +119,14 @@ describe('BasicReducer', () => {
       const reducer1 = createReducer('namespace1', []);
       const reducer2 = createReducer('namespace2', []);
 
-      const newState1 = reducer1(Immutable([{ _id: '1' }]), actions.push('namespace1', { _id: '2' }));
-      const newState2 = reducer2(Immutable([{ _id: '1' }]), actions.push('namespace1', { _id: '2' }));
+      const newState1 = reducer1(
+        Immutable([{ _id: '1' }]),
+        actions.push('namespace1', { _id: '2' })
+      );
+      const newState2 = reducer2(
+        Immutable([{ _id: '1' }]),
+        actions.push('namespace1', { _id: '2' })
+      );
 
       expect(newState1.toJS()).toEqual([{ _id: '1' }, { _id: '2' }]);
       expect(newState1.get(1).toJS()).toEqual({ _id: '2' });
@@ -122,8 +153,14 @@ describe('BasicReducer', () => {
       const reducer2 = createReducer('2', {});
 
       const initial = { nested: { key: [1, 2] } };
-      const newState1 = reducer1(Immutable(initial), actions.concatIn('1', ['nested', 'key'], [3, 4]));
-      const newState2 = reducer2(Immutable(initial), actions.concatIn('1', ['nested', 'key'], [3, 4]));
+      const newState1 = reducer1(
+        Immutable(initial),
+        actions.concatIn('1', ['nested', 'key'], [3, 4])
+      );
+      const newState2 = reducer2(
+        Immutable(initial),
+        actions.concatIn('1', ['nested', 'key'], [3, 4])
+      );
 
       expect(newState1.toJS().nested.key).toEqual([1, 2, 3, 4]);
       expect(newState2.toJS().nested.key).toEqual([1, 2]);
@@ -135,7 +172,10 @@ describe('BasicReducer', () => {
       const reducer1 = createReducer('namespace1', []);
       const reducer2 = createReducer('namespace2', []);
 
-      const newState1 = reducer1([{ _id: '1' }, { _id: '2' }, { _id: '3' }], actions.remove('namespace1', { _id: '2' }));
+      const newState1 = reducer1(
+        [{ _id: '1' }, { _id: '2' }, { _id: '3' }],
+        actions.remove('namespace1', { _id: '2' })
+      );
       const newState2 = reducer2([{ _id: '2' }], actions.remove('namespace1', { _id: '2' }));
 
       expect(newState1.toJS()).toEqual([{ _id: '1' }, { _id: '3' }]);
