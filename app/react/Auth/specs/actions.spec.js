@@ -44,6 +44,17 @@ describe('auth actions', () => {
     });
   });
 
+  describe('enable2fa', () => {
+    it('should set the using2fa value of the user to "true"', () => {
+      const expectedActions = [{ type: 'auth/user/SET_IN', key: 'using2fa', value: true }];
+
+      const store = mockStore({});
+
+      store.dispatch(actions.enable2fa());
+      expect(store.getActions()).toEqual(expectedActions);
+    });
+  });
+
   describe('recoverPassword', () => {
     it('should post to recoverPassword with the email', done => {
       spyOn(notifications, 'notify');

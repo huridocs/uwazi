@@ -14,6 +14,10 @@ export function login(credentials) {
   };
 }
 
+export function enable2fa() {
+  return actions.setIn('auth/user', 'using2fa', true);
+}
+
 export function recoverPassword(email) {
   const request = new RequestParams({ email });
   return dispatch =>
