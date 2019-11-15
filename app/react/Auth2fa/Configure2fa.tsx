@@ -4,12 +4,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { LocalForm, Control } from 'react-redux-form';
-import QRCode from 'qrcode.react';
+import loadable from '@loadable/component';
 
 import { Icon } from 'UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t } from 'app/I18N';
 import Auth2faAPI from './Auth2faAPI';
+
+const QRCode = loadable(() => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
 
 type Configure2faProps = {
   user: { using2fa: boolean };
