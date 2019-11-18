@@ -11,11 +11,14 @@ const checkUserExists = (user: User) => {
   }
 };
 
-export const setSecret = async (user: User) => {
-  const [dbUser] = await usersModel.get({ _id: user._id });
-
+const getUser = async (user: User, options?: string) => {
+  const [dbUser] = await usersModel.get({ _id: user._id }, options);
   checkUserExists(dbUser);
+  return dbUser;
+};
 
+export const setSecret = async (user: User) => {
+  const dbUser = await getUser({ _id: user._id });
   const secret = otplib.authenticator.generateSecret();
   const otpauth = otplib.authenticator.keyuri(dbUser.username || '', 'Uwazi', secret);
 
@@ -28,10 +31,7 @@ export const setSecret = async (user: User) => {
 };
 
 export const enable2fa = async (user: User, token: string) => {
-  const [dbUser] = await usersModel.get({ _id: user._id }, '+secret');
-
-  checkUserExists(dbUser);
-
+  const dbUser = await getUser({ _id: user._id }, '+secret');
   const isValid = otplib.authenticator.verify({ token, secret: dbUser.secret });
 
   if (isValid) {
