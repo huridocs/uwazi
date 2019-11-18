@@ -2,6 +2,7 @@
 // TEST!!!
 
 import React, { Component } from 'react';
+import { Dispatch, bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import { LocalForm, Control } from 'react-redux-form';
 import loadable from '@loadable/component';
@@ -9,12 +10,14 @@ import loadable from '@loadable/component';
 import { Icon } from 'UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink } from 'app/I18N';
+import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 
 const QRCode = loadable(() => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'));
 
 type Configure2faProps = {
   userUsing2fa: boolean;
+  enable2fa: () => enable2faType | void;
 };
 
 type State = {
@@ -51,9 +54,12 @@ class Configure2fa extends Component<Configure2faProps, State> {
 
   async enable2fa(values: { token: string }) {
     const { token } = values;
+    const { enable2fa } = this.props;
     try {
       const { success } = await Auth2faAPI.enable(new RequestParams({ token }));
-      // this.setState({ using2fa: Boolean(success) });
+      if (success) {
+        enable2fa();
+      }
     } catch (err) {
       if (err.status === 409) {
         this.setState({ conflict: true });
@@ -130,10 +136,17 @@ class Configure2fa extends Component<Configure2faProps, State> {
 
 Configure2fa.defaultProps = {
   userUsing2fa: false,
+  enable2fa: () => {},
 };
 
 export function mapStateToProps(state: any) {
   return { userUsing2fa: state.user.toJS().using2fa };
 }
 
-export default connect(mapStateToProps)(Configure2fa);
+export const mapDispatchToProps = (dispatch: Dispatch<enable2faType>) =>
+  bindActionCreators<ActionCreatorsMapObject>({ enable2fa: enable2faAction }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Configure2fa);
