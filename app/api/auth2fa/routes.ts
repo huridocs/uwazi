@@ -1,11 +1,8 @@
 /** @format */
 // TEST!!!
 
-import * as otplib from 'otplib';
 import needsAuthorization from 'api/auth/authMiddleware';
-import users from 'api/users/users';
 import * as usersUtils from 'api/auth2fa/usersUtils';
-import { nonExistentId } from 'api/activitylog/specs/fixturesParser';
 
 interface User {
   secret: string;
@@ -17,11 +14,6 @@ export default (app: {
       arg0: string,
       arg1: (req: any, res: any, next: any) => any,
       arg2: (req: any, res: any, next: any) => Promise<void>
-    ): void;
-    (
-      arg0: string,
-      arg1: (req: any, res: any, next: any) => any,
-      arg2: (req: any, res: any) => void
     ): void;
   };
 }) => {
