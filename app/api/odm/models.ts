@@ -1,16 +1,26 @@
 /** @format */
 
-import { Document, DocumentQuery, Model } from 'mongoose';
+import { Document, DocumentQuery, Model, Schema } from 'mongoose';
 import { DeleteWriteOpResultObject } from 'mongodb';
 
-export interface OdmModel<T extends Document> {
-  db: Model<T>;
-  // returns T.toObject().
-  save: (data: T) => Promise<any>;
-  saveMultiple: (data: T[]) => Promise<any[]>;
+/** WithId<T> represents objects received from MongoDB, which are guaranteed to have
+ *  the _id field populated, even though T always has _id? optional for validation reasons.
+ */
+export type WithId<T> = Omit<T, '_id'> & {
+  _id: Schema.Types.ObjectId;
+};
 
-  getById: (id: any | string | number) => Promise<T | null>;
-  get: (query: any, select?: string, pagination?: {}) => DocumentQuery<T[], T>;
+export interface OdmModel<T> {
+  db: Model<WithId<T> & Document>;
+  save: (data: Readonly<Partial<T>>) => Promise<WithId<T>>;
+  saveMultiple: (data: Readonly<Partial<T>>[]) => Promise<WithId<T>[]>;
+
+  getById: (id: any | string | number) => Promise<WithId<T> | null>;
+  get: (
+    query: any,
+    select?: string,
+    pagination?: {}
+  ) => DocumentQuery<(WithId<T> & Document)[], WithId<T> & Document>;
 
   count: (condition: any) => Promise<number>;
   delete: (condition: any) => Promise<DeleteWriteOpResultObject['result']>;
@@ -19,4 +29,4 @@ export interface OdmModel<T extends Document> {
 // models are accessed in api/sync, which cannot be type-safe since the document
 // type is a request parameter. Thus, we store all OdmModels as type Document.
 // eslint-disable-next-line
-export let models: { [index: string]: OdmModel<Document> } = {};
+export let models: { [index: string]: OdmModel<any> } = {};

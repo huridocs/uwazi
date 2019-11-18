@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 
 import { model as updatelogsModel } from 'api/updatelogs';
 
-import { OdmModel, models } from './models';
+import { OdmModel, WithId, models } from './models';
 
 const generateID = mongoose.Types.ObjectId;
 export { generateID };
@@ -39,17 +39,17 @@ class UpdateLogHelper {
   }
 }
 
-class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
-  db: mongoose.Model<T>;
+class OdmModelImpl<T> implements OdmModel<T> {
+  db: mongoose.Model<WithId<T> & mongoose.Document>;
 
   logHelper: UpdateLogHelper;
 
-  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<T>) {
+  constructor(logHelper: UpdateLogHelper, db: mongoose.Model<WithId<T> & mongoose.Document>) {
     this.db = db;
     this.logHelper = logHelper;
   }
 
-  async save(data: T) {
+  async save(data: Readonly<Partial<T>> & { _id?: any }) {
     if (Array.isArray(data)) {
       throw new TypeError('Model.save array input no longer supported - use .saveMultiple!');
     }
@@ -60,13 +60,13 @@ class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
       if (saved === null) {
         throw Error('mongoose findOneAndUpdate should never return null!');
       }
-      return saved.toObject();
+      return saved.toObject() as WithId<T>;
     }
     const saved = await this.db.create(data);
-    return saved.toObject();
+    return saved.toObject() as WithId<T>;
   }
 
-  saveMultiple(data: T[]) {
+  saveMultiple(data: Readonly<Partial<T>>[]) {
     return Promise.all(data.map(d => this.save(d)));
   }
 
@@ -99,20 +99,19 @@ class OdmModelImpl<T extends mongoose.Document> implements OdmModel<T> {
   }
 }
 
-export function instanceModel<T extends mongoose.Document>(
-  collectionName: string,
-  schema: mongoose.Schema
-) {
+export function instanceModel<T = any>(collectionName: string, schema: mongoose.Schema) {
   const logHelper = new UpdateLogHelper(collectionName);
   schema.post('save', logHelper.upsertLogOne.bind(logHelper));
   schema.post('findOneAndUpdate', logHelper.upsertLogOne.bind(logHelper));
-  schema.post('updateMany', async function updateMany(this: any, _doc, next) {
+  schema.post('updateMany', async function updateMany(this: any, _doc: any, next: any) {
     const affectedIds = await logHelper.getAffectedIds(this._conditions);
     await logHelper.upsertLogMany(affectedIds);
     next();
   });
-  const model = new OdmModelImpl(logHelper, mongoose.model<T>(collectionName, schema));
-  // Store a 'generic' model for use in /api/async (where the collection name is passed as request paramter).
-  models[collectionName] = new OdmModelImpl<mongoose.Document>(logHelper, model.db);
+  const model = new OdmModelImpl<T>(
+    logHelper,
+    mongoose.model<WithId<T> & mongoose.Document>(collectionName, schema)
+  );
+  models[collectionName] = model;
   return model;
 }
