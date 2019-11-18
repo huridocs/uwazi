@@ -54,10 +54,11 @@ describe('Auth Routes', () => {
     });
 
     it('should login succesfully with bcrypt', async () => {
-      await request(app)
+      const res = await request(app)
         .post('/api/login')
-        .send({ username: 'newUser', password: 'newPassword' })
-        .expect(200);
+        .send({ username: 'newUser', password: 'newPassword' });
+
+      expect(res.statusCode).toBe(200);
     });
 
     it('should fail properly with bcrypt', async () => {
@@ -79,6 +80,18 @@ describe('Auth Routes', () => {
         expect(passwordHasBeenChanged).toBe(true);
       });
     });
+
+    // describe('when user has 2fa enabled', () => {
+    //   it('should not login the user but reply a "tokenRequired" step', async () => {
+    //     const res = await request(app)
+    //       .post('/api/login')
+    //       .send({ username: 'two-step-user', password: '2fapassword' });
+
+    //     expect(res.statusCode).toBe(200);
+    //     expect(res.body.success).toBe(false);
+    //     expect(res.body.tokenRequired).toBe(true);
+    //   });
+    // });
   });
 
   describe('/captcha', () => {

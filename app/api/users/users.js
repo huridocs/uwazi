@@ -72,9 +72,54 @@ const sendAccountLockedEmail = (user, domain) => {
   return mailer.send(mailOptions);
 };
 
-const checkUserExists = user => {
+const validateUserStatus = user => {
   if (!user) {
-    throw createError('User not found', 403);
+    throw createError('Invalid username or password', 401);
+  }
+  if (user.accountLocked) {
+    throw createError('Account locked. Check your email to unlock.', 403);
+  }
+};
+
+const updateOldPassword = async (user, password) => {
+  await model.save({ _id: user._id, password: await encryptPassword(password) });
+};
+
+const blockAccount = async (user, domain) => {
+  const accountUnlockCode = generateUnlockCode();
+  const lockedUser = await model.db.findOneAndUpdate(
+    { _id: user._id },
+    { $set: { accountLocked: true, accountUnlockCode } },
+    { new: true, fields: '+accountUnlockCode' }
+  );
+  await sendAccountLockedEmail(lockedUser, domain);
+};
+
+const validateUserPassword = async (user, password, domain) => {
+  const passwordValidated = await comparePasswords(password, user.password);
+  const oldPasswordValidated = user.password === SHA256(password).toString();
+
+  if (oldPasswordValidated) {
+    await updateOldPassword(user, password);
+  }
+
+  if (!oldPasswordValidated && !passwordValidated) {
+    const updatedUser = await model.db.findOneAndUpdate(
+      { _id: user._id },
+      { $inc: { failedLogins: 1 } },
+      { new: true, fields: '+failedLogins' }
+    );
+    if (updatedUser.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      await blockAccount(user, domain);
+      throw createError('Account locked. Check your email to unlock.', 403);
+    }
+    throw createError('Invalid username or password', 401);
+  }
+};
+
+const validate2fa = async user => {
+  if (user.using2fa) {
+    throw createError('Two-step verification token required', 409);
   }
 };
 
@@ -150,38 +195,11 @@ export default {
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
-    if (!user) {
-      throw createError('Invalid username or password', 401);
-    }
-    if (user.accountLocked) {
-      throw createError('Account locked. Check your email to unlock.', 403);
-    }
 
-    const passwordValidated = await comparePasswords(password, user.password);
-    const oldPasswordValidated = user.password === SHA256(password).toString();
+    validateUserStatus(user);
+    await validateUserPassword(user, password, domain);
+    await validate2fa(user);
 
-    if (oldPasswordValidated) {
-      await model.save({ _id: user._id, password: await encryptPassword(password) });
-    }
-
-    if (!oldPasswordValidated && !passwordValidated) {
-      const updatedUser = await model.db.findOneAndUpdate(
-        { _id: user._id },
-        { $inc: { failedLogins: 1 } },
-        { new: true, fields: '+failedLogins' }
-      );
-      if (updatedUser.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
-        const accountUnlockCode = generateUnlockCode();
-        const lockedUser = await model.db.findOneAndUpdate(
-          { _id: user._id },
-          { $set: { accountLocked: true, accountUnlockCode } },
-          { new: true, fields: '+accountUnlockCode' }
-        );
-        await sendAccountLockedEmail(lockedUser, domain);
-        throw createError('Account locked. Check your email to unlock.', 403);
-      }
-      throw createError('Invalid username or password', 401);
-    }
     await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
     delete user.password;
     delete user.accountLocked;
@@ -189,6 +207,7 @@ export default {
     delete user.accountUnlockCode;
     return user;
   },
+
   async unlockAccount({ username, code }) {
     const [user] = await model.get({ username, accountUnlockCode: code }, '_id');
 
@@ -236,21 +255,5 @@ export default {
       ]);
     }
     throw createError('key not found', 403);
-  },
-
-  async setSecret(secret, currentUser) {
-    const [user] = await model.get({ _id: currentUser._id });
-    checkUserExists(user);
-    if (!user.using2fa) {
-      return model.save({ _id: user._id, secret });
-    }
-
-    return user;
-  },
-
-  async enable2fa(currentUser) {
-    const [user] = await model.get({ _id: currentUser._id });
-    checkUserExists(user);
-    return model.save({ _id: user._id, using2fa: true });
   },
 };

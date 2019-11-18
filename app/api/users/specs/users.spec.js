@@ -1,4 +1,5 @@
 /** @format */
+/* eslint-disable max-statements */
 
 import { createError } from 'api/utils';
 import SHA256 from 'crypto-js/sha256';
@@ -11,7 +12,7 @@ import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
-import usersModel from '../usersModel.js';
+import usersModel from '../usersModel';
 
 describe('Users', () => {
   beforeEach(done => {
@@ -164,6 +165,7 @@ describe('Users', () => {
   describe('login', () => {
     let testUser;
     const codeBuffer = Buffer.from('code');
+
     beforeEach(async () => {
       testUser = {
         username: 'someuser1',
@@ -174,27 +176,33 @@ describe('Users', () => {
       jest.spyOn(crypto, 'randomBytes').mockReturnValue(codeBuffer);
       jest.spyOn(mailer, 'send').mockResolvedValue();
     });
+
     afterEach(() => {
       crypto.randomBytes.mockRestore();
       mailer.send.mockRestore();
     });
+
     const testLogin = async (username, password) =>
       users.login({ username, password }, 'http://host.domain');
+
     const createUserAndTestLogin = async (username, password) => {
       await usersModel.save(testUser);
       return testLogin(username, password);
     };
+
     it('should return user with matching username and password', async () => {
       const user = await createUserAndTestLogin('someuser1', 'password');
       delete user._id;
       expect(user).toMatchSnapshot();
     });
+
     it('should reset failedLogins counter when login is successful', async () => {
       testUser.failedLogins = 5;
       await createUserAndTestLogin('someuser1', 'password');
       const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
       expect(user.failedLogins).toBeFalsy();
     });
+
     it('should throw error if username does not exist', async () => {
       try {
         await createUserAndTestLogin('unknownuser1', 'password');
@@ -203,6 +211,7 @@ describe('Users', () => {
         expect(e).toEqual(createError('Invalid username or password', 401));
       }
     });
+
     it('should throw error if password is incorrect and increment failedLogins', async () => {
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
@@ -219,6 +228,7 @@ describe('Users', () => {
         expect(user.failedLogins).toEqual(2);
       }
     });
+
     it('should lock account after sixth failed login attempt and generate unlock code', async () => {
       testUser.failedLogins = 5;
       try {
@@ -235,16 +245,17 @@ describe('Users', () => {
         expect(crypto.randomBytes).toHaveBeenCalledWith(32);
       }
     });
+
     it('after locking account, it should send user and email with the unlock link', async () => {
       testUser.failedLogins = 5;
       try {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
       } catch (e) {
-        // const [user] = await users.get({ username: 'someuser1' }, '+failedLogins +accountLocked +accountUnlockCode');
         expect(mailer.send.mock.calls[0]).toMatchSnapshot();
       }
     });
+
     it('should prevent login if account is locked when credentials are correct', async () => {
       testUser.accountLocked = true;
       try {
@@ -255,6 +266,7 @@ describe('Users', () => {
         expect(e.code).toBe(403);
       }
     });
+
     it('should prevent login if account is locked when credentials are not correct', async () => {
       testUser.accountLocked = true;
       try {
@@ -263,6 +275,17 @@ describe('Users', () => {
       } catch (e) {
         expect(e.message).toMatch(/account locked/i);
         expect(e.code).toBe(403);
+      }
+    });
+
+    it('should prevent login if account requires 2fa', async () => {
+      testUser.using2fa = true;
+      try {
+        await createUserAndTestLogin('someuser1', 'password');
+        fail('should throw error');
+      } catch (e) {
+        expect(e.message).toMatch(/two-step verification token required/i);
+        expect(e.code).toBe(409);
       }
     });
   });
@@ -342,8 +365,7 @@ describe('Users', () => {
             from: '"Uwazi" <no-reply@uwazi.io>',
             to: 'test@email.com',
             subject: 'Password set',
-            text:
-              'To set your password click on the following link:\n' + `domain/setpassword/${key}`,
+            text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
           };
           expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
           done();
@@ -377,8 +399,7 @@ describe('Users', () => {
             from: '"Uwazi" <no-reply@uwazi.io>',
             to: 'peter@parker.com',
             subject: 'Welcome to Uwazi instance',
-            text:
-              'To set your password click on the following link:\n' + `domain/setpassword/${key}`,
+            text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
           };
           expect(mailer.send.calls.mostRecent().args[0].from).toBe(expectedMailOptions.from);
           expect(mailer.send.calls.mostRecent().args[0].to).toBe(expectedMailOptions.to);
@@ -511,47 +532,6 @@ describe('Users', () => {
           expect(user).not.toBe(null);
           done();
         });
-    });
-  });
-
-  describe('setSecret', () => {
-    it("should save the secret string on a non-previously-2fa'd user", async () => {
-      await users.setSecret('NEWSECRET', { _id: userId });
-      const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
-      expect(secretedUser.secret).toBe('NEWSECRET');
-    });
-
-    it("should not change a secret on a previously-2fa'd user", async () => {
-      await usersModel.save({ _id: userId, using2fa: true, secret: 'OLDSECRET' });
-      await users.setSecret('NEWSECRET', { _id: userId });
-      const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
-      expect(secretedUser.secret).toBe('OLDSECRET');
-    });
-
-    it('should throw if user not found', async () => {
-      try {
-        await users.setSecret('NEWSECRET', { _id: db.id() });
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toEqual(createError('User not found', 403));
-      }
-    });
-  });
-
-  describe('enable2fa', () => {
-    it('set "using2fa" to true', async () => {
-      await users.enable2fa({ _id: userId });
-      const [enabledUser] = await usersModel.get({ _id: userId });
-      expect(enabledUser.using2fa).toBe(true);
-    });
-
-    it('should throw if user not found', async () => {
-      try {
-        await users.enable2fa({ _id: db.id() });
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toEqual(createError('User not found', 403));
-      }
     });
   });
 });

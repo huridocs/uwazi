@@ -5,15 +5,15 @@ import mongoose, { Document } from 'mongoose';
 import { instanceModel } from 'api/odm';
 
 export interface User extends Document {
-  username: string;
-  password: string;
-  email: string;
-  role: string;
-  failedLogins: number;
-  accountLocked: boolean;
-  accountUnlockCode: string;
-  using2fa: boolean;
-  secret: string;
+  username?: string;
+  password?: string;
+  email?: string;
+  role?: string;
+  failedLogins?: number;
+  accountLocked?: boolean;
+  accountUnlockCode?: string;
+  using2fa?: boolean;
+  secret?: string;
 }
 
 const userSchema = new mongoose.Schema({
