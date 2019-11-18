@@ -28,10 +28,15 @@ describe('auth2fa userUtils', () => {
     });
 
     it("should not change a secret on a previously-2fa'd user", async () => {
-      await usersModel.save({ _id: userId, using2fa: true, secret: 'OLDSECRET' });
-      const { secret } = await usersUtils.setSecret({ _id: userId });
-      const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
-      expect(secretedUser.secret).toBe('OLDSECRET');
+      try {
+        await usersModel.save({ _id: userId, using2fa: true, secret: 'OLDSECRET' });
+        await usersUtils.setSecret({ _id: userId });
+        fail('Should throw error');
+      } catch (e) {
+        const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
+        expect(secretedUser.secret).toBe('OLDSECRET');
+        expect(e).toEqual(createError('Unauthorized', 401));
+      }
     });
 
     it('should throw if user not found', async () => {

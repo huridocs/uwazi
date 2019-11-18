@@ -21,12 +21,6 @@ export default (app: {
     '/api/auth2fa-secret',
     needsAuthorization(['admin', 'editor']),
     async (req: any, res: any, next: any) => {
-      if (req.user.usingf2a) {
-        res.status(401);
-        res.json({ status: 'Unauthorized' });
-        return;
-      }
-
       try {
         const { otpauth, secret } = await usersUtils.setSecret(req.user);
         res.json({ otpauth, secret });

@@ -21,9 +21,10 @@ export const setSecret = async (user: User) => {
 
   if (!dbUser.using2fa) {
     await usersModel.save({ _id: dbUser._id, secret });
+    return { secret, otpauth };
   }
 
-  return { secret, otpauth };
+  throw createError('Unauthorized', 401);
 };
 
 export const enable2fa = async (user: User, token: string) => {
