@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import { browserHistory } from 'react-router';
@@ -39,20 +41,21 @@ export class Login extends RouteHandler {
   }
 
   login(credentials) {
-    return this.props.login(credentials)
-    .then(() => {
-      if (this.props.private) {
+    return this.props
+      .login(credentials)
+      .then(() => {
+        if (this.props.private) {
+          browserHistory.push('/');
+          reloadHome();
+          return;
+        }
+        reconnectSocket();
+        this.props.reloadThesauris();
         browserHistory.push('/');
-        reloadHome();
-        return;
-      }
-      reconnectSocket();
-      this.props.reloadThesauris();
-      browserHistory.push('/');
-    })
-    .catch(() => {
-      this.setState({ error: true });
-    });
+      })
+      .catch(() => {
+        this.setState({ error: true });
+      });
   }
 
   setRecoverPassword() {
@@ -71,7 +74,7 @@ export class Login extends RouteHandler {
         <div className="row">
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
             <h1 className="login-title">
-              <img src="/public/logo.svg" title="uwazi" alt="uwazi"/>
+              <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
             </h1>
             <Form onSubmit={this.submit} model="login.form">
               <div className={`form-group login-email${this.state.error ? ' has-error' : ''}`}>
@@ -79,36 +82,46 @@ export class Login extends RouteHandler {
                   <label className="form-group-label" htmlFor="username">
                     {this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}
                   </label>
-                  <input type="text" name="username" id="username" className="form-control"/>
+                  <input type="text" name="username" id="username" className="form-control" />
                 </Field>
               </div>
-              <div className={`form-group login-password ${this.state.error ? 'has-error' : ''}${this.state.recoverPassword ? ' is-hidden' : ''}`}>
-                <label className="form-group-label" htmlFor="password">{t('System', 'Password')}</label>
+              <div
+                className={`form-group login-password ${this.state.error ? 'has-error' : ''}${
+                  this.state.recoverPassword ? ' is-hidden' : ''
+                }`}
+              >
+                <label className="form-group-label" htmlFor="password">
+                  {t('System', 'Password')}
+                </label>
                 <Field model="login.form.password">
-                  <input type="password" name="password" id="password" className="form-control"/>
+                  <input type="password" name="password" id="password" className="form-control" />
                 </Field>
                 <div className="form-text">
                   {this.state.error && <span>{t('System', 'Login failed')} - </span>}
                   <a
                     title={t('System', 'Forgot Password?', null, false)}
                     onClick={this.setRecoverPassword.bind(this)}
-                    className={(this.state.error ? 'label-danger' : '')}
+                    className={this.state.error ? 'label-danger' : ''}
                   >
                     {t('System', 'Forgot Password?')}
                   </a>
                 </div>
               </div>
               <p>
-                <button type="submit" className={`btn btn-block btn-lg ${this.state.recoverPassword ? 'btn-success' : 'btn-primary'}`}>
-                  {this.state.recoverPassword ? t('System', 'Send recovery email') : t('System', 'Login button', 'Login')}
+                <button
+                  type="submit"
+                  className={`btn btn-block btn-lg ${
+                    this.state.recoverPassword ? 'btn-success' : 'btn-primary'
+                  }`}
+                >
+                  {this.state.recoverPassword
+                    ? t('System', 'Send recovery email')
+                    : t('System', 'Login button', 'Login')}
                 </button>
               </p>
               <ShowIf if={this.state.recoverPassword}>
                 <div className="form-text">
-                  <a
-                    title={t('System', 'Cancel', null, false)}
-                    onClick={this.setLogin.bind(this)}
-                  >
+                  <a title={t('System', 'Cancel', null, false)} onClick={this.setLogin.bind(this)}>
                     {t('System', 'Cancel')}
                   </a>
                 </div>
@@ -124,22 +137,28 @@ export class Login extends RouteHandler {
 Login.propTypes = {
   login: PropTypes.func,
   recoverPassword: PropTypes.func,
-  reloadThesauris: PropTypes.func
+  reloadThesauris: PropTypes.func,
 };
 
 export function mapStateToProps({ settings }) {
   return {
-    private: settings.collection.get('private')
+    private: settings.collection.get('private'),
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    login: auth.actions.login,
-    recoverPassword: auth.actions.recoverPassword,
-    reset: formActions.reset,
-    reloadThesauris
-  }, dispatch);
+  return bindActionCreators(
+    {
+      login: auth.actions.login,
+      recoverPassword: auth.actions.recoverPassword,
+      reset: formActions.reset,
+      reloadThesauris,
+    },
+    dispatch
+  );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);
