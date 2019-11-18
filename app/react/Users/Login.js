@@ -22,7 +22,7 @@ const reloadHome = () => {
 export class Login extends RouteHandler {
   constructor(props, context) {
     super(props, context);
-    this.state = { error: false, recoverPassword: false };
+    this.state = { error: false, recoverPassword: false, tokenRequired: false };
     this.submit = this.submit.bind(this);
     this.setLogin = this.setLogin.bind(this);
   }
@@ -45,22 +45,30 @@ export class Login extends RouteHandler {
     return this.props.recoverPassword(email);
   }
 
-  login(credentials) {
-    return this.props
-      .login(credentials)
-      .then(() => {
-        if (this.props.private) {
-          browserHistory.push('/');
-          reloadHome();
-          return;
-        }
-        reconnectSocket();
-        this.props.reloadThesauris();
-        browserHistory.push('/');
-      })
-      .catch(() => {
+  resolveSuccessfulLogin() {
+    if (this.props.private) {
+      browserHistory.push('/');
+      reloadHome();
+      return;
+    }
+    reconnectSocket();
+    this.props.reloadThesauris();
+    browserHistory.push('/');
+  }
+
+  async login(credentials) {
+    try {
+      await this.props.login(credentials);
+      this.resolveSuccessfulLogin();
+    } catch (err) {
+      // TEST for err 409
+      if (!this.state.tokenRequired && err.status === 409) {
+        this.setState({ tokenRequired: true });
+      } else {
         this.setState({ error: true });
-      });
+        this.setState({ tokenRequired: false });
+      }
+    }
   }
 
   setRecoverPassword() {
@@ -74,6 +82,14 @@ export class Login extends RouteHandler {
   }
 
   render() {
+    let submitLabel = this.state.recoverPassword
+      ? t('System', 'Send recovery email')
+      : t('System', 'Login button', 'Login');
+
+    if (this.state.tokenRequired) {
+      submitLabel = t('System', 'Verify');
+    }
+
     return (
       <div className="content login-content">
         <div className="row">
@@ -88,36 +104,64 @@ export class Login extends RouteHandler {
                 this.formDispatch = dispatch;
               }}
             >
-              <div className={`form-group login-email${this.state.error ? ' has-error' : ''}`}>
-                <Field model=".username">
-                  <label className="form-group-label" htmlFor="username">
-                    {this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}
-                  </label>
-                  <input type="text" name="username" id="username" className="form-control" />
-                </Field>
-              </div>
-              <div
-                className={`form-group login-password ${this.state.error ? 'has-error' : ''}${
-                  this.state.recoverPassword ? ' is-hidden' : ''
-                }`}
-              >
-                <label className="form-group-label" htmlFor="password">
-                  {t('System', 'Password')}
-                </label>
-                <Field model=".password">
-                  <input type="password" name="password" id="password" className="form-control" />
-                </Field>
-                <div className="form-text">
-                  {this.state.error && <span>{t('System', 'Login failed')} - </span>}
-                  <span
-                    title={t('System', 'Forgot Password?', null, false)}
-                    onClick={this.setRecoverPassword.bind(this)}
-                    className={`button forgot-password ${this.state.error ? 'label-danger' : ''}`}
+              {!this.state.tokenRequired && (
+                <React.Fragment>
+                  <div className={`form-group login-email${this.state.error ? ' has-error' : ''}`}>
+                    <Field model=".username">
+                      <label className="form-group-label" htmlFor="username">
+                        {this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}
+                      </label>
+                      <input type="text" name="username" id="username" className="form-control" />
+                    </Field>
+                  </div>
+                  <div
+                    className={`form-group login-password ${this.state.error ? 'has-error' : ''}${
+                      this.state.recoverPassword ? ' is-hidden' : ''
+                    }`}
                   >
-                    {t('System', 'Forgot Password?')}
-                  </span>
+                    <label className="form-group-label" htmlFor="password">
+                      {t('System', 'Password')}
+                    </label>
+                    <Field model=".password">
+                      <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        className="form-control"
+                      />
+                    </Field>
+                    <div className="form-text">
+                      {this.state.error && <span>{t('System', 'Login failed')} - </span>}
+                      <span
+                        title={t('System', 'Forgot Password?', null, false)}
+                        onClick={this.setRecoverPassword.bind(this)}
+                        className={`button forgot-password ${
+                          this.state.error ? 'label-danger' : ''
+                        }`}
+                      >
+                        {t('System', 'Forgot Password?')}
+                      </span>
+                    </div>
+                  </div>
+                </React.Fragment>
+              )}
+              {this.state.tokenRequired && (
+                <div className="form-group login-token">
+                  <h5>{t('System', 'Two-step verification')}</h5>
+                  <Field model=".token">
+                    <label className="form-group-label" htmlFor="token">
+                      {t('System', 'Authentication code')}
+                    </label>
+                    <input type="text" name="token" id="token" className="form-control" />
+                    <div className="form-text">
+                      <p>
+                        Open the two-factor Authenticator app on your device <br />
+                        to view your authentication code and verify your identity.
+                      </p>
+                    </div>
+                  </Field>
                 </div>
-              </div>
+              )}
               <p>
                 <button
                   type="submit"
@@ -125,9 +169,7 @@ export class Login extends RouteHandler {
                     this.state.recoverPassword ? 'btn-success' : 'btn-primary'
                   }`}
                 >
-                  {this.state.recoverPassword
-                    ? t('System', 'Send recovery email')
-                    : t('System', 'Login button', 'Login')}
+                  {submitLabel}
                 </button>
               </p>
               <ShowIf if={this.state.recoverPassword}>

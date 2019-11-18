@@ -34,7 +34,11 @@ describe('Login', () => {
 
   describe('on instance', () => {
     it('should set state', () => {
-      expect(instance.state).toEqual({ error: false, recoverPassword: false });
+      expect(instance.state).toEqual({
+        error: false,
+        recoverPassword: false,
+        tokenRequired: false,
+      });
     });
   });
 
@@ -99,7 +103,9 @@ describe('Login', () => {
 
     describe('on response failure', () => {
       it('should set error true', done => {
-        props.login = jasmine.createSpy('login').and.returnValue(Promise.reject());
+        props.login = jasmine
+          .createSpy('login')
+          .and.returnValue(Promise.reject(new Error({ status: 123 })));
         render();
 
         instance
