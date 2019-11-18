@@ -1,3 +1,5 @@
+/** @format */
+
 .login-content {
   display: flex;
   flex-direction: column;
@@ -21,7 +23,7 @@
   transition: max-height 300ms, padding 300ms;
   overflow: hidden;
 
-  &.is-hidden{
+  &.is-hidden {
     max-height: 0;
     padding-bottom: 0;
   }
@@ -34,7 +36,8 @@
     margin: 0;
     position: static;
   }
-  a {
+  a,
+  span.button {
     cursor: pointer;
     text-decoration: underline;
     color: $c-grey-dark;

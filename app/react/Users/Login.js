@@ -5,7 +5,7 @@ import React from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Field, Form, actions as formActions } from 'react-redux-form';
+import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 
 import { t } from 'app/I18N';
 import { reconnectSocket } from 'app/socket';
@@ -24,6 +24,11 @@ export class Login extends RouteHandler {
     super(props, context);
     this.state = { error: false, recoverPassword: false };
     this.submit = this.submit.bind(this);
+    this.setLogin = this.setLogin.bind(this);
+  }
+
+  attachDispatch(dispatch) {
+    this.formDispatch = dispatch;
   }
 
   submit(credentials) {
@@ -36,7 +41,7 @@ export class Login extends RouteHandler {
 
   recoverPassword(email) {
     this.setState({ recoverPassword: false, error: false });
-    this.props.reset('login.form');
+    this.formDispatch(formActions.reset('loginForm'));
     return this.props.recoverPassword(email);
   }
 
@@ -59,12 +64,12 @@ export class Login extends RouteHandler {
   }
 
   setRecoverPassword() {
-    this.props.reset('login.form');
+    this.formDispatch(formActions.reset('loginForm'));
     this.setState({ recoverPassword: true, error: false });
   }
 
   setLogin() {
-    this.props.reset('login.form');
+    this.formDispatch(formActions.reset('loginForm'));
     this.setState({ recoverPassword: false, error: false });
   }
 
@@ -76,9 +81,15 @@ export class Login extends RouteHandler {
             <h1 className="login-title">
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
             </h1>
-            <Form onSubmit={this.submit} model="login.form">
+            <LocalForm
+              onSubmit={this.submit}
+              model="loginForm"
+              getDispatch={dispatch => {
+                this.formDispatch = dispatch;
+              }}
+            >
               <div className={`form-group login-email${this.state.error ? ' has-error' : ''}`}>
-                <Field model="login.form.username">
+                <Field model=".username">
                   <label className="form-group-label" htmlFor="username">
                     {this.state.recoverPassword ? t('System', 'Email') : t('System', 'User')}
                   </label>
@@ -93,18 +104,18 @@ export class Login extends RouteHandler {
                 <label className="form-group-label" htmlFor="password">
                   {t('System', 'Password')}
                 </label>
-                <Field model="login.form.password">
+                <Field model=".password">
                   <input type="password" name="password" id="password" className="form-control" />
                 </Field>
                 <div className="form-text">
                   {this.state.error && <span>{t('System', 'Login failed')} - </span>}
-                  <a
+                  <span
                     title={t('System', 'Forgot Password?', null, false)}
                     onClick={this.setRecoverPassword.bind(this)}
-                    className={this.state.error ? 'label-danger' : ''}
+                    className={`button forgot-password ${this.state.error ? 'label-danger' : ''}`}
                   >
                     {t('System', 'Forgot Password?')}
-                  </a>
+                  </span>
                 </div>
               </div>
               <p>
@@ -121,12 +132,16 @@ export class Login extends RouteHandler {
               </p>
               <ShowIf if={this.state.recoverPassword}>
                 <div className="form-text">
-                  <a title={t('System', 'Cancel', null, false)} onClick={this.setLogin.bind(this)}>
+                  <span
+                    title={t('System', 'Cancel', null, false)}
+                    onClick={this.setLogin}
+                    className="button cancel"
+                  >
                     {t('System', 'Cancel')}
-                  </a>
+                  </span>
                 </div>
               </ShowIf>
-            </Form>
+            </LocalForm>
           </div>
         </div>
       </div>
@@ -151,7 +166,6 @@ function mapDispatchToProps(dispatch) {
     {
       login: auth.actions.login,
       recoverPassword: auth.actions.recoverPassword,
-      reset: formActions.reset,
       reloadThesauris,
     },
     dispatch
