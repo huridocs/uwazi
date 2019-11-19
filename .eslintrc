@@ -126,7 +126,7 @@
       }
     },
     {
-      "files": ["app/**/*.ts*"],
+      "files": ["app/**/*.ts*", "database/**/*.ts"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"

@@ -310,9 +310,8 @@ export default {
     return this.count(query).then(totalRows => index(0, totalRows));
   },
 
-  async get(query, select, pagination) {
-    const entities = await model.get(query, select, pagination);
-    return entities;
+  get(query, select, pagination) {
+    return model.get(query, select, pagination);
   },
 
   async getWithRelationships(query, select, pagination) {
