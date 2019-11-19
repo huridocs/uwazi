@@ -174,7 +174,7 @@ exports[`UsersList render should render a list with all users names, edit and de
           </span>
              
           <span>
-            Reflects a user using two-step or two-factor authentication login.
+            Reflects the user is using two-step (two-factor) authentication login.
           </span>
         </p>
         <p>
@@ -188,7 +188,7 @@ exports[`UsersList render should render a list with all users names, edit and de
           </span>
              
           <span>
-            Reflects a user that has not yet configured two-step or two-factor authentication.
+            Reflects the user has not yet configured two-step (two-factor) authentication.
           </span>
         </p>
       </div>

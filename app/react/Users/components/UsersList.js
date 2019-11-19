@@ -66,7 +66,7 @@ export class UsersList extends Component {
                   <Icon icon="check" /> 2fa
                 </span>
                 &nbsp;&nbsp;&nbsp;
-                <span>Reflects a user using two-step or two-factor authentication login.</span>
+                <span>Reflects the user is using two-step (two-factor) authentication login.</span>
               </p>
               <p>
                 <span className="btn-color btn-color-1">
@@ -74,7 +74,7 @@ export class UsersList extends Component {
                 </span>
                 &nbsp;&nbsp;&nbsp;
                 <span>
-                  Reflects a user that has not yet configured two-step or two-factor authentication.
+                  Reflects the user has not yet configured two-step (two-factor) authentication.
                 </span>
               </p>
             </div>
