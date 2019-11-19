@@ -5,8 +5,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { I18NLink } from 'app/I18N';
 import { bindActionCreators } from 'redux';
+import { List } from 'immutable';
 
-import { deleteUser } from 'app/Users/actions/actions';
+import { deleteUser as deleteUserAction } from 'app/Users/actions/actions';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
@@ -23,14 +24,19 @@ export class UsersList extends Component {
 
   render() {
     const { users } = this.props;
-
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Users')}</div>
         <ul className="list-group users">
-          {users.map((user, index) => (
-            <li key={index} className="list-group-item">
-              <span>{user.get('username')}</span>
+          {users.map(user => (
+            <li key={user.get('_id')} className="list-group-item">
+              <div>
+                <span>{user.get('username')}</span>
+                &nbsp;&nbsp;&nbsp;
+                <span className={`btn-color btn-color-${user.get('using2fa') ? '9' : '1'}`}>
+                  <Icon icon={user.get('using2fa') ? 'check' : 'times'} /> 2fa
+                </span>
+              </div>
               <div className="list-group-item-actions">
                 <I18NLink
                   to={`/settings/users/edit/${user.get('_id')}`}
@@ -40,17 +46,39 @@ export class UsersList extends Component {
                   &nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <a
+                <button
+                  type="button"
                   onClick={this.deleteUser.bind(this, user)}
                   className="btn btn-danger btn-xs template-remove"
                 >
                   <Icon icon="trash-alt" />
                   &nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </a>
+                </button>
               </div>
             </li>
           ))}
+          <li className="list-group-item">
+            <div>
+              <h5>{t('System', 'Legend')}</h5>
+              <p>
+                <span className="btn-color btn-color-9">
+                  <Icon icon="check" /> 2fa
+                </span>
+                &nbsp;&nbsp;&nbsp;
+                <span>Reflects a user using two-step or two-factor authentication login.</span>
+              </p>
+              <p>
+                <span className="btn-color btn-color-1">
+                  <Icon icon="times" /> 2fa
+                </span>
+                &nbsp;&nbsp;&nbsp;
+                <span>
+                  Reflects a user that has not yet configured two-step or two-factor authentication.
+                </span>
+              </p>
+            </div>
+          </li>
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/users/new" className="btn btn-success">
@@ -63,9 +91,13 @@ export class UsersList extends Component {
   }
 }
 
+UsersList.defaultProps = {
+  users: List(),
+};
+
 UsersList.propTypes = {
-  users: PropTypes.object,
-  deleteUser: PropTypes.func,
+  users: PropTypes.instanceOf(List),
+  deleteUser: PropTypes.func.isRequired,
 };
 
 UsersList.contextTypes = {
@@ -77,7 +109,7 @@ export function mapStateToProps({ users }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ deleteUser }, dispatch);
+  return bindActionCreators({ deleteUser: deleteUserAction }, dispatch);
 }
 
 export default connect(

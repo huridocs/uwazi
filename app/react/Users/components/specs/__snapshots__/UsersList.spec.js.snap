@@ -1,0 +1,215 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UsersList render should render a list with all users names, edit and delete buttons and global add button 1`] = `
+<div
+  className="panel panel-default"
+>
+  <div
+    className="panel-heading"
+  >
+    Users
+  </div>
+  <ul
+    className="list-group users"
+  >
+    <li
+      className="list-group-item"
+      key="1"
+    >
+      <div>
+        <span>
+          User 1
+        </span>
+           
+        <span
+          className="btn-color btn-color-1"
+        >
+          <Connect(Icon)
+            icon="times"
+          />
+           2fa
+        </span>
+      </div>
+      <div
+        className="list-group-item-actions"
+      >
+        <Connect(I18NLink)
+          className="btn btn-default btn-xs"
+          to="/settings/users/edit/1"
+        >
+          <Connect(Icon)
+            icon="pencil-alt"
+          />
+           
+          <span>
+            Edit
+          </span>
+        </Connect(I18NLink)>
+        <button
+          className="btn btn-danger btn-xs template-remove"
+          onClick={[Function]}
+          type="button"
+        >
+          <Connect(Icon)
+            icon="trash-alt"
+          />
+           
+          <span>
+            Delete
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="2"
+    >
+      <div>
+        <span>
+          User 2
+        </span>
+           
+        <span
+          className="btn-color btn-color-9"
+        >
+          <Connect(Icon)
+            icon="check"
+          />
+           2fa
+        </span>
+      </div>
+      <div
+        className="list-group-item-actions"
+      >
+        <Connect(I18NLink)
+          className="btn btn-default btn-xs"
+          to="/settings/users/edit/2"
+        >
+          <Connect(Icon)
+            icon="pencil-alt"
+          />
+           
+          <span>
+            Edit
+          </span>
+        </Connect(I18NLink)>
+        <button
+          className="btn btn-danger btn-xs template-remove"
+          onClick={[Function]}
+          type="button"
+        >
+          <Connect(Icon)
+            icon="trash-alt"
+          />
+           
+          <span>
+            Delete
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+      key="3"
+    >
+      <div>
+        <span>
+          User 3
+        </span>
+           
+        <span
+          className="btn-color btn-color-1"
+        >
+          <Connect(Icon)
+            icon="times"
+          />
+           2fa
+        </span>
+      </div>
+      <div
+        className="list-group-item-actions"
+      >
+        <Connect(I18NLink)
+          className="btn btn-default btn-xs"
+          to="/settings/users/edit/3"
+        >
+          <Connect(Icon)
+            icon="pencil-alt"
+          />
+           
+          <span>
+            Edit
+          </span>
+        </Connect(I18NLink)>
+        <button
+          className="btn btn-danger btn-xs template-remove"
+          onClick={[Function]}
+          type="button"
+        >
+          <Connect(Icon)
+            icon="trash-alt"
+          />
+           
+          <span>
+            Delete
+          </span>
+        </button>
+      </div>
+    </li>
+    <li
+      className="list-group-item"
+    >
+      <div>
+        <h5>
+          Legend
+        </h5>
+        <p>
+          <span
+            className="btn-color btn-color-9"
+          >
+            <Connect(Icon)
+              icon="check"
+            />
+             2fa
+          </span>
+             
+          <span>
+            Reflects a user using two-step or two-factor authentication login.
+          </span>
+        </p>
+        <p>
+          <span
+            className="btn-color btn-color-1"
+          >
+            <Connect(Icon)
+              icon="times"
+            />
+             2fa
+          </span>
+             
+          <span>
+            Reflects a user that has not yet configured two-step or two-factor authentication.
+          </span>
+        </p>
+      </div>
+    </li>
+  </ul>
+  <div
+    className="settings-footer"
+  >
+    <Connect(I18NLink)
+      className="btn btn-success"
+      to="/settings/users/new"
+    >
+      <Connect(Icon)
+        icon="plus"
+      />
+      <span
+        className="btn-label"
+      >
+        Add user
+      </span>
+    </Connect(I18NLink)>
+  </div>
+</div>
+`;
