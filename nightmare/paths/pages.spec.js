@@ -7,11 +7,15 @@ import { loginAsAdminAndGoToSettings } from '../helpers/commonTests';
 const localSelectors = {
   pagesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(5)',
   createNewPageButton: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
+  savePageButton: '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button.save-template',
+  backButton: '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > a',
   pageTitleInput: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
   pageContentsInput: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea'
 };
 
 const nightmare = createNightmare();
+
+const graph = '</p><Dataset /> <BarChart property="super_powers" context="58ad7d240d44252fee4e6208" />';
 
 describe('pages path', () => {
   beforeAll(async () => insertFixtures());
@@ -41,6 +45,16 @@ describe('pages path', () => {
       .catch(catchErrors(done));
     });
 
+    it('should insert graph in created page', (done) => {
+      nightmare
+      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value = "")
+      .write(localSelectors.pageContentsInput, graph)
+      .write(localSelectors.pageContentsInput, "\n" + 'Page contents')
+      .waitToClick(localSelectors.savePageButton)
+      .then(() => { done(); })
+      .catch(catchErrors(done));
+    });
+
     it('should navigate to page URL', (done) => {
       nightmare
       .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div.alert.alert-info a').href)
@@ -53,6 +67,11 @@ describe('pages path', () => {
         .getInnerText('#app > div.content > div > div > main div.markdown-viewer')
         .then((text) => {
           expect(text).toContain('Page contents');
+          return nightmare.getInnerHtml('#app > div.content > div > div > main div.markdown-viewer');
+        })
+        .then((html) => {
+          expect(html).toContain('class="BarChart "');
+          expect(html).toContain('class="recharts-responsive-container"');
         });
       })
       .then(() => { done(); })
