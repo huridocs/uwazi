@@ -3,13 +3,12 @@
 import { advancedSort } from 'app/utils/advancedSort';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 export default class Select extends Component {
   /** If we're in metadata-object mode, extract the label: component from options. */
   onChange(event) {
     const newValue = event.hasOwnProperty('target') && event.target ? event.target.value : event;
-    const { onChange, isMo } = UnwrapMetadataObject(this.props);
+    const { onChange, isMo } = this.props;
     if (!newValue || !isMo) {
       return onChange(event);
     }
@@ -32,7 +31,7 @@ export default class Select extends Component {
       const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
       _options = sortRoot ? advancedSort(options, { property: optionsLabel }) : options;
     }
-    const { value } = UnwrapMetadataObject(this.props);
+    const { value, onChange } = this.props;
 
     const disbaled = Boolean(required);
     return (
@@ -83,7 +82,7 @@ Select.defaultProps = {
 Select.propTypes = {
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  value: AllowMoType(PropTypes.string),
+  value: PropTypes.string,
   placeholder: PropTypes.string,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,

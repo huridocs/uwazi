@@ -312,6 +312,35 @@ export default {
       ],
     },
   ],
+  translations: [
+    {
+      locale: 'en',
+      contexts: [
+        {
+          id: dictionary,
+          values: [{ key: 'Country1', value: 'Country1' }, { key: 'Country2', value: 'Country2' }],
+        },
+      ],
+    },
+    {
+      locale: 'es',
+      contexts: [
+        {
+          id: dictionary,
+          values: [{ key: 'Country1', value: 'Pais1' }, { key: 'Country2', value: 'Pais2' }],
+        },
+      ],
+    },
+    {
+      locale: 'pt',
+      contexts: [
+        {
+          id: dictionary,
+          values: [{ key: 'Country1', value: 'Pais1_pt' }, { key: 'Country2', value: 'Pais2_pt' }],
+        },
+      ],
+    },
+  ],
 };
 
 export {

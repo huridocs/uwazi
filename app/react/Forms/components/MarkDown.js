@@ -4,12 +4,11 @@ import MarkdownViewer from 'app/Markdown';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { TabContent, TabLink, Tabs } from 'react-tabs-redux';
-import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 export default class MarkDown extends Component {
   render() {
     const { rows } = this.props;
-    const { value, onChange } = UnwrapMetadataObject(this.props);
+    const { value, onChange } = this.props;
     return (
       <Tabs renderActiveTabContentOnly className="markdownEditor">
         <div className="tab-nav">
@@ -45,7 +44,7 @@ MarkDown.defaultProps = {
 
 MarkDown.propTypes = {
   onChange: PropTypes.func.isRequired,
-  value: AllowMoType(PropTypes.string),
+  value: PropTypes.string,
   rows: PropTypes.number,
   htmlOnViewer: PropTypes.bool,
 };

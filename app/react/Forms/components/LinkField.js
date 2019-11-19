@@ -2,7 +2,6 @@
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 export default class LinkField extends Component {
   constructor(props) {
@@ -12,7 +11,7 @@ export default class LinkField extends Component {
   }
 
   onChange(diffValue) {
-    const { value, onChange } = UnwrapMetadataObject(this.props);
+    const { value, onChange } = this.props;
     const newValue = Object.assign({}, value, diffValue);
     onChange(newValue);
   }
@@ -28,7 +27,7 @@ export default class LinkField extends Component {
   }
 
   render() {
-    const { value } = UnwrapMetadataObject(this.props);
+    const { value } = this.props;
     const { label, url } = value || { label: '', url: '' };
 
     return (
@@ -65,6 +64,6 @@ LinkField.defaultProps = {
 };
 
 LinkField.propTypes = {
-  value: AllowMoType(PropTypes.shape({ label: PropTypes.string, url: PropTypes.string })),
+  value: PropTypes.shape({ label: PropTypes.string, url: PropTypes.string }),
   onChange: PropTypes.func.isRequired,
 };
