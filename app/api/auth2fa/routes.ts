@@ -42,4 +42,17 @@ export default (app: {
       }
     }
   );
+
+  app.post(
+    '/api/auth2fa-reset',
+    needsAuthorization(['admin']),
+    async (req: any, res: any, next: any) => {
+      try {
+        await usersUtils.reset2fa(req.body.user);
+        res.json({ success: true });
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
 };

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth2fa userUtils reset2fa should set "using2fa" to false, and delete secret for sent user 1`] = `
+Object {
+  "email": "another@email.com",
+  "role": "admin",
+  "username": "otheruser",
+  "using2fa": false,
+}
+`;

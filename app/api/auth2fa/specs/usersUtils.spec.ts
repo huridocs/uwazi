@@ -17,6 +17,33 @@ describe('auth2fa userUtils', () => {
     await db.disconnect();
   });
 
+  const verifyUserNotFound = async (method: string) => {
+    let action;
+
+    switch (method) {
+      case 'verifyToken':
+        action = usersUtils.verifyToken;
+        break;
+      case 'enable2fa':
+        action = usersUtils.enable2fa;
+        break;
+      case 'reset2fa':
+        action = usersUtils.reset2fa;
+        break;
+      case 'setSecret':
+      default:
+        action = usersUtils.verifyToken;
+        break;
+    }
+
+    try {
+      await action({ _id: db.id() }, 'any token');
+      fail('should throw error');
+    } catch (e) {
+      expect(e).toEqual(createError('User not found', 403));
+    }
+  };
+
   const verifyTokenMock = (params: { token: string; secret: string }) => {
     if (params.token === 'correctToken' && params.secret === 'correctSecret') {
       return true;
@@ -35,8 +62,8 @@ describe('auth2fa userUtils', () => {
     });
 
     it("should not change a secret on a previously-2fa'd user", async () => {
+      await usersModel.save({ _id: userId, using2fa: true, secret: 'OLDSECRET' });
       try {
-        await usersModel.save({ _id: userId, using2fa: true, secret: 'OLDSECRET' });
         await usersUtils.setSecret({ _id: userId });
         fail('Should throw error');
       } catch (e) {
@@ -47,12 +74,7 @@ describe('auth2fa userUtils', () => {
     });
 
     it('should throw if user not found', async () => {
-      try {
-        await usersUtils.setSecret({ _id: db.id() });
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toEqual(createError('User not found', 403));
-      }
+      await verifyUserNotFound('setSecret');
     });
   });
 
@@ -77,12 +99,7 @@ describe('auth2fa userUtils', () => {
     });
 
     it('should throw if user not found', async () => {
-      try {
-        await usersUtils.verifyToken({ _id: db.id() }, 'any token');
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toEqual(createError('User not found', 403));
-      }
+      await verifyUserNotFound('verifyToken');
     });
   });
 
@@ -109,12 +126,41 @@ describe('auth2fa userUtils', () => {
     });
 
     it('should throw if user not found', async () => {
-      try {
-        await usersUtils.enable2fa({ _id: db.id() }, 'any token');
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toEqual(createError('User not found', 403));
-      }
+      await verifyUserNotFound('enable2fa');
     });
+  });
+
+  describe('reset2fa', () => {
+    it('should set "using2fa" to false, and delete secret for sent user', async () => {
+      await usersModel.save({ _id: secretedUserId, using2fa: true });
+      const { _id, ...response } = await usersUtils.reset2fa({ _id: secretedUserId }); // eslint-disable-line
+      const [resetUser] = await usersModel.get({ _id: secretedUserId }, '+secret');
+      expect(response).toMatchSnapshot();
+      expect(resetUser.using2fa).toBe(false);
+      expect(resetUser.secret).toBe(null);
+    });
+
+    it('should throw if user not found', async () => {
+      await verifyUserNotFound('reset2fa');
+    });
+
+    // it('should not set "using2fa" and throw if token does not match', async () => {
+    //   try {
+    //     await usersUtils.enable2fa({ _id: secretedUserId }, 'incorrectToken');
+    //     fail('Should throw an error');
+    //   } catch (e) {
+    //     expect(e.code).toBe(409);
+    //     expect(e.message).toMatch(/token does not validate/i);
+    //   }
+    // });
+
+    // it('should throw if user not found', async () => {
+    //   try {
+    //     await usersUtils.enable2fa({ _id: db.id() }, 'any token');
+    //     fail('should throw error');
+    //   } catch (e) {
+    //     expect(e).toEqual(createError('User not found', 403));
+    //   }
+    // });
   });
 });
