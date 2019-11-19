@@ -35,6 +35,17 @@ describe('Auth Routes', () => {
       authRoutes(app);
     });
 
+    const expectNextOnError = async username => {
+      const req = { body: { username, password: 'badPassword' }, get: () => {} };
+      const next = jasmine.createSpy('next');
+      try {
+        await routes.post('/api/login', req, {}, next);
+      } catch (err) {
+        expect(next.calls.mostRecent().args[0].code).toBe(401);
+        expect(next.calls.mostRecent().args[0].message).toMatch(/invalid username or password/i);
+      }
+    };
+
     it('should have a validation schema', () => {
       expect(routes.post.validation('/api/login')).toMatchSnapshot();
     });
@@ -47,10 +58,7 @@ describe('Auth Routes', () => {
     });
 
     it('should fail properly with sha256', async () => {
-      await request(app)
-        .post('/api/login')
-        .send({ username: 'oldUser', password: 'badPassword' })
-        .expect(401);
+      await expectNextOnError('oldUser');
     });
 
     it('should login succesfully with bcrypt', async () => {
@@ -62,10 +70,7 @@ describe('Auth Routes', () => {
     });
 
     it('should fail properly with bcrypt', async () => {
-      await request(app)
-        .post('/api/login')
-        .send({ username: 'newUser', password: 'badPassword' })
-        .expect(401);
+      await expectNextOnError('newUser');
     });
 
     describe('when loging in with old encryption', () => {
@@ -80,18 +85,6 @@ describe('Auth Routes', () => {
         expect(passwordHasBeenChanged).toBe(true);
       });
     });
-
-    // describe('when user has 2fa enabled', () => {
-    //   it('should not login the user but reply a "tokenRequired" step', async () => {
-    //     const res = await request(app)
-    //       .post('/api/login')
-    //       .send({ username: 'two-step-user', password: '2fapassword' });
-
-    //     expect(res.statusCode).toBe(200);
-    //     expect(res.body.success).toBe(false);
-    //     expect(res.body.tokenRequired).toBe(true);
-    //   });
-    // });
   });
 
   describe('/captcha', () => {
