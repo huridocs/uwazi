@@ -48,7 +48,7 @@ export default (app: {
     needsAuthorization(['admin']),
     async (req: any, res: any, next: any) => {
       try {
-        await usersUtils.reset2fa(req.body.user);
+        await usersUtils.reset2fa({ _id: req.body._id });
         res.json({ success: true });
       } catch (err) {
         next(err);

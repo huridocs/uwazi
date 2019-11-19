@@ -81,6 +81,15 @@ exports[`UsersList render should render a list with all users names, edit and de
       <div
         className="list-group-item-actions"
       >
+        <button
+          className="btn btn-info btn-xs"
+          onClick={[Function]}
+          type="button"
+        >
+          <span>
+            Reset 2fa
+          </span>
+        </button>
         <Connect(I18NLink)
           className="btn btn-default btn-xs"
           to="/settings/users/edit/2"

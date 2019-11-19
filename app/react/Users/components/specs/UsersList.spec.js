@@ -19,6 +19,7 @@ describe('UsersList', () => {
         { _id: 3, username: 'User 3', sharedId: 'a3' },
       ]),
       deleteUser: jasmine.createSpy('deleteUser').and.returnValue(Promise.resolve()),
+      reset2fa: jasmine.createSpy('reset2fa').and.returnValue(Promise.resolve()),
     };
 
     context = {

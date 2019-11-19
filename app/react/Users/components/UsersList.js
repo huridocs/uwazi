@@ -3,22 +3,39 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink } from 'app/I18N';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
 
 import { deleteUser as deleteUserAction } from 'app/Users/actions/actions';
-import { t } from 'app/I18N';
+import { reset2fa as reset2faAction } from 'app/Auth2fa/actions/actions';
+import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 
 export class UsersList extends Component {
   deleteUser(user) {
-    return this.context.confirm({
+    const { confirm } = this.context;
+    const { deleteUser } = this.props;
+    return confirm({
       accept: () => {
-        this.props.deleteUser({ _id: user.get('_id'), sharedId: user.get('sharedId') });
+        deleteUser({ _id: user.get('_id'), sharedId: user.get('sharedId') });
       },
       title: `Confirm delete user: ${user.get('username')}`,
       message: 'Are you sure you want to delete this user?',
+    });
+  }
+
+  // TEST!!!
+  reset2fa(user) {
+    const { confirm } = this.context;
+    const { reset2fa } = this.props;
+    return confirm({
+      accept: () => {
+        reset2fa(user.toJS());
+      },
+      title: `Confirm resetting 2fa for user: ${user.get('username')}`,
+      message:
+        'Are you sure you want to reset two-step authentication for this user? ' +
+        'The account will be more vulnerable and the user will need to reconfigure his credentials.',
     });
   }
 
@@ -38,6 +55,15 @@ export class UsersList extends Component {
                 </span>
               </div>
               <div className="list-group-item-actions">
+                {user.get('using2fa') && (
+                  <button
+                    type="button"
+                    onClick={this.reset2fa.bind(this, user)}
+                    className="btn btn-info btn-xs"
+                  >
+                    <span>{t('System', 'Reset 2fa')}</span>
+                  </button>
+                )}
                 <I18NLink
                   to={`/settings/users/edit/${user.get('_id')}`}
                   className="btn btn-default btn-xs"
@@ -98,6 +124,7 @@ UsersList.defaultProps = {
 UsersList.propTypes = {
   users: PropTypes.instanceOf(List),
   deleteUser: PropTypes.func.isRequired,
+  reset2fa: PropTypes.func.isRequired,
 };
 
 UsersList.contextTypes = {
@@ -109,7 +136,7 @@ export function mapStateToProps({ users }) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ deleteUser: deleteUserAction }, dispatch);
+  return bindActionCreators({ deleteUser: deleteUserAction, reset2fa: reset2faAction }, dispatch);
 }
 
 export default connect(
