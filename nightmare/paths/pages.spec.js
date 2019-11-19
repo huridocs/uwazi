@@ -8,7 +8,6 @@ const localSelectors = {
   pagesButton: '#app > div.content > div > div > div.settings-navigation > div > div:nth-child(1) > div.list-group > a:nth-child(5)',
   createNewPageButton: '#app > div.content > div > div > div.settings-content > div > div.settings-footer > a',
   savePageButton: '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > button.save-template',
-  backButton: '#app > div.content > div > div > div.settings-content > div > form > div.settings-footer > a',
   pageTitleInput: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.metadataTemplate-heading.panel-heading > div > div > input',
   pageContentsInput: '#app > div.content > div > div > div.settings-content > div > form > div.panel.panel-default > div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea'
 };
