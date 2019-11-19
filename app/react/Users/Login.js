@@ -22,9 +22,10 @@ const reloadHome = () => {
 export class Login extends RouteHandler {
   constructor(props, context) {
     super(props, context);
-    this.state = { error: false, recoverPassword: false, tokenRequired: false };
+    this.state = { error: false, error2fa: false, recoverPassword: false, tokenRequired: false };
     this.submit = this.submit.bind(this);
     this.setLogin = this.setLogin.bind(this);
+    this.setRecoverPassword = this.setRecoverPassword.bind(this);
   }
 
   attachDispatch(dispatch) {
@@ -65,10 +66,12 @@ export class Login extends RouteHandler {
       if (!this.state.tokenRequired && err.status === 409) {
         this.setState({ tokenRequired: true });
       } else {
-        // TEST for reseting token
+        // TEST!!!
+        const { tokenRequired } = this.state;
         this.formDispatch(formActions.change('loginForm.token', undefined));
-        this.setState({ error: true });
-        this.setState({ tokenRequired: false });
+        const error2fa = tokenRequired;
+        this.setState({ error: true, tokenRequired: false, error2fa });
+        // -------
       }
     }
   }
@@ -133,10 +136,15 @@ export class Login extends RouteHandler {
                       />
                     </Field>
                     <div className="form-text">
-                      {this.state.error && <span>{t('System', 'Login failed')} - </span>}
+                      {this.state.error && !this.state.error2fa && (
+                        <span>{t('System', 'Login failed')} - </span>
+                      )}
+                      {this.state.error && this.state.error2fa && (
+                        <span>{t('System', 'Two-factor verification failed')} - </span>
+                      )}
                       <span
                         title={t('System', 'Forgot Password?', null, false)}
-                        onClick={this.setRecoverPassword.bind(this)}
+                        onClick={this.setRecoverPassword}
                         className={`button forgot-password ${
                           this.state.error ? 'label-danger' : ''
                         }`}

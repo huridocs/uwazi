@@ -36,6 +36,7 @@ describe('Login', () => {
     it('should set state', () => {
       expect(instance.state).toEqual({
         error: false,
+        error2fa: false,
         recoverPassword: false,
         tokenRequired: false,
       });
