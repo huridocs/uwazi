@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -8,7 +10,6 @@ import { deleteUser } from 'app/Users/actions/actions';
 import { t } from 'app/I18N';
 import { Icon } from 'UI';
 
-
 export class UsersList extends Component {
   deleteUser(user) {
     return this.context.confirm({
@@ -16,7 +17,7 @@ export class UsersList extends Component {
         this.props.deleteUser({ _id: user.get('_id'), sharedId: user.get('sharedId') });
       },
       title: `Confirm delete user: ${user.get('username')}`,
-      message: 'Are you sure you want to delete this user?'
+      message: 'Are you sure you want to delete this user?',
     });
   }
 
@@ -31,18 +32,25 @@ export class UsersList extends Component {
             <li key={index} className="list-group-item">
               <span>{user.get('username')}</span>
               <div className="list-group-item-actions">
-                <I18NLink to={`/settings/users/edit/${user.get('_id')}`} className="btn btn-default btn-xs">
-                  <Icon icon="pencil-alt" />&nbsp;
+                <I18NLink
+                  to={`/settings/users/edit/${user.get('_id')}`}
+                  className="btn btn-default btn-xs"
+                >
+                  <Icon icon="pencil-alt" />
+                  &nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <a onClick={this.deleteUser.bind(this, user)} className="btn btn-danger btn-xs template-remove">
-                  <Icon icon="trash-alt" />&nbsp;
+                <a
+                  onClick={this.deleteUser.bind(this, user)}
+                  className="btn btn-danger btn-xs template-remove"
+                >
+                  <Icon icon="trash-alt" />
+                  &nbsp;
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
             </li>
-)
-          )}
+          ))}
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/users/new" className="btn btn-success">
@@ -57,11 +65,11 @@ export class UsersList extends Component {
 
 UsersList.propTypes = {
   users: PropTypes.object,
-  deleteUser: PropTypes.func
+  deleteUser: PropTypes.func,
 };
 
 UsersList.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 export function mapStateToProps({ users }) {
@@ -72,4 +80,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ deleteUser }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UsersList);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UsersList);
