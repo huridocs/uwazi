@@ -143,24 +143,5 @@ describe('auth2fa userUtils', () => {
     it('should throw if user not found', async () => {
       await verifyUserNotFound('reset2fa');
     });
-
-    // it('should not set "using2fa" and throw if token does not match', async () => {
-    //   try {
-    //     await usersUtils.enable2fa({ _id: secretedUserId }, 'incorrectToken');
-    //     fail('Should throw an error');
-    //   } catch (e) {
-    //     expect(e.code).toBe(409);
-    //     expect(e.message).toMatch(/token does not validate/i);
-    //   }
-    // });
-
-    // it('should throw if user not found', async () => {
-    //   try {
-    //     await usersUtils.enable2fa({ _id: db.id() }, 'any token');
-    //     fail('should throw error');
-    //   } catch (e) {
-    //     expect(e).toEqual(createError('User not found', 403));
-    //   }
-    // });
   });
 });
