@@ -22,10 +22,9 @@ exports[`UsersList render should render a list with all users names, edit and de
         </span>
            
         <span
-          className="btn-color btn-color-1"
+          className="btn-xs btn-color btn-color-1"
         >
           <Connect(Icon)
-            fixedWidth={true}
             icon="times"
           />
            2fa
@@ -71,10 +70,9 @@ exports[`UsersList render should render a list with all users names, edit and de
         </span>
            
         <span
-          className="btn-color btn-color-9"
+          className="btn-xs btn-color btn-color-9"
         >
           <Connect(Icon)
-            fixedWidth={true}
             icon="check"
           />
            2fa
@@ -129,10 +127,9 @@ exports[`UsersList render should render a list with all users names, edit and de
         </span>
            
         <span
-          className="btn-color btn-color-1"
+          className="btn-xs btn-color btn-color-1"
         >
           <Connect(Icon)
-            fixedWidth={true}
             icon="times"
           />
            2fa
@@ -177,7 +174,7 @@ exports[`UsersList render should render a list with all users names, edit and de
         </h5>
         <p>
           <span
-            className="btn-color btn-color-9"
+            className="btn-xs btn-color btn-color-9"
           >
             <Connect(Icon)
               fixedWidth={true}
@@ -192,7 +189,7 @@ exports[`UsersList render should render a list with all users names, edit and de
         </p>
         <p>
           <span
-            className="btn-color btn-color-1"
+            className="btn-xs btn-color btn-color-1"
           >
             <Connect(Icon)
               fixedWidth={true}
