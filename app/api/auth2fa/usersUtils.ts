@@ -30,13 +30,24 @@ export const setSecret = async (user: User) => {
   throw createError('Unauthorized', 401);
 };
 
-export const enable2fa = async (user: User, token: string) => {
+export const verifyToken = async (user: User, token: string) => {
   const dbUser = await getUser({ _id: user._id }, '+secret');
-  const isValid = otplib.authenticator.verify({ token, secret: dbUser.secret });
-
-  if (isValid) {
-    return usersModel.save({ _id: dbUser._id, using2fa: true });
+  if (otplib.authenticator.verify({ token, secret: dbUser.secret })) {
+    return { validToken: true, dbUser };
   }
 
-  throw createError('The token does not validate against the secret key!', 409);
+  throw createError('Two-factor authentication failed.', 401);
+};
+
+export const enable2fa = async (user: User, token: string) => {
+  try {
+    const { dbUser } = await verifyToken(user, token);
+    return usersModel.save({ _id: dbUser._id, using2fa: true });
+  } catch (err) {
+    if (err.code === 401) {
+      throw createError('The token does not validate against the secret key!', 409);
+    }
+
+    throw err;
+  }
 };
