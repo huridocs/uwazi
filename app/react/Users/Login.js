@@ -65,6 +65,8 @@ export class Login extends RouteHandler {
       if (!this.state.tokenRequired && err.status === 409) {
         this.setState({ tokenRequired: true });
       } else {
+        // TEST for reseting token
+        this.formDispatch(formActions.change('loginForm.token', undefined));
         this.setState({ error: true });
         this.setState({ tokenRequired: false });
       }
