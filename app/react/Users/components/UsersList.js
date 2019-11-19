@@ -51,7 +51,7 @@ export class UsersList extends Component {
                 <span>{user.get('username')}</span>
                 &nbsp;&nbsp;&nbsp;
                 <span className={`btn-color btn-color-${user.get('using2fa') ? '9' : '1'}`}>
-                  <Icon icon={user.get('using2fa') ? 'check' : 'times'} /> 2fa
+                  <Icon icon={user.get('using2fa') ? 'check' : 'times'} fixedWidth /> 2fa
                 </span>
               </div>
               <div className="list-group-item-actions">
@@ -89,14 +89,14 @@ export class UsersList extends Component {
               <h5>{t('System', 'Legend')}</h5>
               <p>
                 <span className="btn-color btn-color-9">
-                  <Icon icon="check" /> 2fa
+                  <Icon icon="check" fixedWidth /> 2fa
                 </span>
                 &nbsp;&nbsp;&nbsp;
                 <span>Reflects the user is using two-step (two-factor) authentication login.</span>
               </p>
               <p>
                 <span className="btn-color btn-color-1">
-                  <Icon icon="times" /> 2fa
+                  <Icon icon="times" fixedWidth /> 2fa
                 </span>
                 &nbsp;&nbsp;&nbsp;
                 <span>
