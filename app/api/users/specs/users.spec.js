@@ -9,6 +9,7 @@ import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
+import * as usersUtils from 'api/auth2fa/usersUtils';
 import fixtures, { userId, expectedKey, recoveryUserId } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
@@ -182,12 +183,20 @@ describe('Users', () => {
       mailer.send.mockRestore();
     });
 
-    const testLogin = async (username, password) =>
-      users.login({ username, password }, 'http://host.domain');
+    const testLogin = async (username, password, token) =>
+      users.login({ username, password, token }, 'http://host.domain');
 
-    const createUserAndTestLogin = async (username, password) => {
+    const createUserAndTestLogin = async (username, password, token) => {
       await usersModel.save(testUser);
-      return testLogin(username, password);
+      return testLogin(username, password, token);
+    };
+
+    const assessFailedLogins = async (operator, value) => {
+      const [dbUser] = await usersModel.get({ username: 'someuser1' }, '+failedLogins');
+      if (!value) {
+        expect(dbUser.failedLogins)[operator]();
+      }
+      expect(dbUser.failedLogins)[operator](value);
     };
 
     it('should return user with matching username and password', async () => {
@@ -199,8 +208,7 @@ describe('Users', () => {
     it('should reset failedLogins counter when login is successful', async () => {
       testUser.failedLogins = 5;
       await createUserAndTestLogin('someuser1', 'password');
-      const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
-      expect(user.failedLogins).toBeFalsy();
+      await assessFailedLogins('toBeFalsy');
     });
 
     it('should throw error if username does not exist', async () => {
@@ -217,15 +225,13 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
       } catch (e) {
-        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
-        expect(user.failedLogins).toEqual(1);
+        await assessFailedLogins('toBe', 1);
       }
       try {
         await testLogin('someuser1', 'incorrect again');
         fail('should throw error');
       } catch (e) {
-        const [user] = await users.get({ username: 'someuser1' }, '+failedLogins');
-        expect(user.failedLogins).toEqual(2);
+        await assessFailedLogins('toBe', 2);
       }
     });
 
@@ -238,7 +244,7 @@ describe('Users', () => {
         expect(e).toEqual(createError('Account locked. Check your email to unlock.', 403));
         const [user] = await users.get(
           { username: 'someuser1' },
-          '+failedLogins +accountLocked +accountUnlockCode'
+          '+accountLocked +accountUnlockCode'
         );
         expect(user.accountLocked).toBe(true);
         expect(user.accountUnlockCode).toBe(codeBuffer.toString('hex'));
@@ -278,15 +284,47 @@ describe('Users', () => {
       }
     });
 
-    it('should prevent login if account requires 2fa', async () => {
-      testUser.using2fa = true;
-      try {
-        await createUserAndTestLogin('someuser1', 'password');
-        fail('should throw error');
-      } catch (e) {
-        expect(e.message).toMatch(/two-step verification token required/i);
-        expect(e.code).toBe(409);
-      }
+    describe('2fa', () => {
+      beforeEach(() => {
+        testUser.using2fa = true;
+        testUser.failedLogins = 4;
+
+        spyOn(usersUtils, 'verifyToken').and.callFake((user, token) => {
+          if (token === 'correctToken') {
+            return Promise.resolve({ validToken: true });
+          }
+
+          return Promise.reject(createError('two-factor-failed', 401));
+        });
+      });
+
+      it('should login if account requires 2fa and correct token sent', async () => {
+        const user = await createUserAndTestLogin('someuser1', 'password', 'correctToken');
+        delete user._id;
+        expect(user).toMatchSnapshot();
+        await assessFailedLogins('toBeFalsy');
+      });
+
+      it('should prevent login if account requires 2fa and no token found, not affecting failed logins', async () => {
+        try {
+          await createUserAndTestLogin('someuser1', 'password');
+          fail('should throw error');
+        } catch (e) {
+          expect(e.message).toMatch(/two-step verification token required/i);
+          expect(e.code).toBe(409);
+          await assessFailedLogins('toBe', 4);
+        }
+      });
+
+      it('should not login if account requires 2fa and incorrect token sent, incrementing the failed logins', async () => {
+        try {
+          await createUserAndTestLogin('someuser1', 'password', 'incorrectToken');
+          fail('Should throw error');
+        } catch (e) {
+          expect(e.message).toBe('two-factor-failed');
+          await assessFailedLogins('toBe', 5);
+        }
+      });
     });
   });
 

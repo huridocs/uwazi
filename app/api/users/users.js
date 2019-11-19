@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
+import * as usersUtils from 'api/auth2fa/usersUtils';
 
 import mailer from '../utils/mailer';
 import model from './usersModel';
@@ -95,6 +96,18 @@ const blockAccount = async (user, domain) => {
   await sendAccountLockedEmail(lockedUser, domain);
 };
 
+const newFailedLogin = async (user, domain) => {
+  const updatedUser = await model.db.findOneAndUpdate(
+    { _id: user._id },
+    { $inc: { failedLogins: 1 } },
+    { new: true, fields: '+failedLogins' }
+  );
+  if (updatedUser.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
+    await blockAccount(user, domain);
+    throw createError('Account locked. Check your email to unlock.', 403);
+  }
+};
+
 const validateUserPassword = async (user, password, domain) => {
   const passwordValidated = await comparePasswords(password, user.password);
   const oldPasswordValidated = user.password === SHA256(password).toString();
@@ -104,23 +117,29 @@ const validateUserPassword = async (user, password, domain) => {
   }
 
   if (!oldPasswordValidated && !passwordValidated) {
-    const updatedUser = await model.db.findOneAndUpdate(
-      { _id: user._id },
-      { $inc: { failedLogins: 1 } },
-      { new: true, fields: '+failedLogins' }
-    );
-    if (updatedUser.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
-      await blockAccount(user, domain);
-      throw createError('Account locked. Check your email to unlock.', 403);
-    }
+    await newFailedLogin(user, domain);
     throw createError('Invalid username or password', 401);
   }
 };
 
-const validate2fa = async user => {
+const validate2fa = async (user, token, domain) => {
   if (user.using2fa) {
-    throw createError('Two-step verification token required', 409);
+    if (!token) {
+      throw createError('Two-step verification token required', 409);
+    }
+
+    try {
+      await usersUtils.verifyToken(user, token);
+    } catch (err) {
+      await newFailedLogin(user, domain);
+      throw err;
+    }
   }
+};
+
+const sanitizeUser = user => {
+  const { password, accountLocked, failedLogins, accountUnlockCode, ...sanitizedUser } = user;
+  return sanitizedUser;
 };
 
 export default {
@@ -190,7 +209,7 @@ export default {
     });
   },
 
-  async login({ username, password }, domain) {
+  async login({ username, password, token }, domain) {
     const [user] = await this.get(
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
@@ -198,14 +217,10 @@ export default {
 
     validateUserStatus(user);
     await validateUserPassword(user, password, domain);
-    await validate2fa(user);
-
+    await validate2fa(user, token, domain);
     await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
-    delete user.password;
-    delete user.accountLocked;
-    delete user.failedLogins;
-    delete user.accountUnlockCode;
-    return user;
+
+    return sanitizeUser(user);
   },
 
   async unlockAccount({ username, code }) {
