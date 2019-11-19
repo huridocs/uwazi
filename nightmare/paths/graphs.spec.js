@@ -93,7 +93,7 @@ describe('pages path', () => {
       .evaluate(() => document.querySelector('div.settings-content > div.panel-default > ul.pages > li:nth-child(1) > a').text)
       .then((pageTitle) => {
         expect(pageTitle).toBe('Page data viz');
-        return nightmare.evaluate(() => document.querySelector('div.settings-content > div.panel-default > ul.pages > li:nth-child(1) > a').href)
+        return nightmare.evaluate(() => document.querySelector('div.settings-content > div.panel-default > ul.pages > li:nth-child(1) > a').href);
       })
       .then((link) => {
         expect(link).toContain('/pages/edit/');
@@ -105,7 +105,7 @@ describe('pages path', () => {
 
     it('should insert Pie chart graph in page', (done) => {
       nightmare
-      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value = "")
+      .evaluate(() => document.querySelector('div.panel-body.page-viewer.document-viewer > div > div.tab-content.tab-content-visible > textarea').value = '')
       .write(localSelectors.pageContentsInput, '</p><Dataset />')
       .write(localSelectors.pageContentsInput, graphs.pieChart)
       .waitToClick(localSelectors.savePageButton)
