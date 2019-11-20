@@ -3,12 +3,12 @@
 import api from 'app/utils/api';
 import { RequestParams } from '../utils/RequestParams';
 
-interface Secret {
+export interface Secret {
   otpauth: string;
   secret: string;
 }
 
-interface Success {
+export interface Success {
   success: boolean;
 }
 

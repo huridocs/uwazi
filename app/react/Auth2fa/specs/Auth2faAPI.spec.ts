@@ -3,7 +3,7 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
-import Auth2faAPI from '../Auth2faAPI';
+import Auth2faAPI, { Secret, Success } from '../Auth2faAPI';
 
 function hasKey<O>(obj: O, key: keyof any): key is keyof O {
   return key in obj;
@@ -14,11 +14,11 @@ describe('Auth2faAPI', () => {
 
   beforeEach(() => {
     request = new RequestParams();
-    spyOn(api, 'post').and.callFake((path, params) =>
-      Promise.resolve({
-        json: path === 'auth2fa-secret' ? { otpauth: 'url', secret: 'secret' } : { success: true },
-      })
-    );
+    spyOn(api, 'post').and.callFake((path, params) => {
+      const json: Secret | Success =
+        path === 'auth2fa-secret' ? { otpauth: 'url', secret: 'secret' } : { success: true };
+      return Promise.resolve({ json });
+    });
   });
 
   const testApiResponse = async (method: string, apiUrl: string, expectedResponse: {}) => {
