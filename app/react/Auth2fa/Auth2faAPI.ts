@@ -1,5 +1,5 @@
 /** @format */
-// TEST!!!
+
 import api from 'app/utils/api';
 import { RequestParams } from '../utils/RequestParams';
 
