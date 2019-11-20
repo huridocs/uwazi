@@ -8,6 +8,10 @@ import { createError } from 'api/utils';
 import * as usersUtils from '../usersUtils';
 import fixtures, { userId, secretedUserId } from './fixtures';
 
+function hasKey<O>(obj: O, key: keyof any): key is keyof O {
+  return key in obj;
+}
+
 describe('auth2fa userUtils', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
@@ -18,29 +22,15 @@ describe('auth2fa userUtils', () => {
   });
 
   const verifyUserNotFound = async (method: string) => {
-    let action;
-
-    switch (method) {
-      case 'verifyToken':
-        action = usersUtils.verifyToken;
-        break;
-      case 'enable2fa':
-        action = usersUtils.enable2fa;
-        break;
-      case 'reset2fa':
-        action = usersUtils.reset2fa;
-        break;
-      case 'setSecret':
-      default:
-        action = usersUtils.verifyToken;
-        break;
-    }
-
-    try {
-      await action({ _id: db.id() }, 'any token');
-      fail('should throw error');
-    } catch (e) {
-      expect(e).toEqual(createError('User not found', 403));
+    if (hasKey(usersUtils, method)) {
+      try {
+        await usersUtils[method]({ _id: db.id() }, 'any token');
+        fail('should throw error');
+      } catch (e) {
+        expect(e).toEqual(createError('User not found', 403));
+      }
+    } else {
+      fail('No such method');
     }
   };
 
