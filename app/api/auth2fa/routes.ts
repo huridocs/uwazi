@@ -1,25 +1,24 @@
 /** @format */
 // TEST!!!
+import Joi from 'joi';
 
 import needsAuthorization from 'api/auth/authMiddleware';
 import * as usersUtils from 'api/auth2fa/usersUtils';
+import { validation } from 'api/utils';
 
-interface User {
-  secret: string;
-}
+/**
+ * This will probably not be required once express types
+ * are passed down through a .ts APP or SERVER
+ */
+type Middleware = (req: any, res: any, next: any) => Promise<void> | void;
+type Post = { (arg0: string, arg1: Middleware, arg2: Middleware, arg3?: Middleware): void };
+type App = { post: Post };
 
-export default (app: {
-  post: {
-    (
-      arg0: string,
-      arg1: (req: any, res: any, next: any) => any,
-      arg2: (req: any, res: any, next: any) => Promise<void>
-    ): void;
-  };
-}) => {
+export default (app: App) => {
   app.post(
     '/api/auth2fa-secret',
     needsAuthorization(['admin', 'editor']),
+    validation.validateRequest(Joi.object().keys({})),
     async (req: any, res: any, next: any) => {
       try {
         const { otpauth, secret } = await usersUtils.setSecret(req.user);
@@ -33,6 +32,13 @@ export default (app: {
   app.post(
     '/api/auth2fa-enable',
     needsAuthorization(['admin', 'editor']),
+    validation.validateRequest(
+      Joi.object()
+        .keys({
+          token: Joi.string().required(),
+        })
+        .required()
+    ),
     async (req: any, res: any, next: any) => {
       try {
         await usersUtils.enable2fa(req.user, req.body.token);
@@ -46,6 +52,16 @@ export default (app: {
   app.post(
     '/api/auth2fa-reset',
     needsAuthorization(['admin']),
+    validation.validateRequest(
+      Joi.object()
+        .keys({
+          _id: Joi.string()
+            .length(24)
+            .alphanum()
+            .required(),
+        })
+        .required()
+    ),
     async (req: any, res: any, next: any) => {
       try {
         await usersUtils.reset2fa({ _id: req.body._id });
