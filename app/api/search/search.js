@@ -529,16 +529,15 @@ const search = {
   },
 
   bulkDelete(docs) {
-    const type = 'entity';
     const body = docs.map(doc => ({
-      delete: { _index: elasticIndexes.index, _type: type, _id: doc._id },
+      delete: { _index: elasticIndexes.index, _id: doc._id },
     }));
     return elastic.bulk({ body });
   },
 
   delete(entity) {
     const id = entity._id.toString();
-    return elastic.delete({ index: elasticIndexes.index, type: 'entity', id });
+    return elastic.delete({ index: elasticIndexes.index, id });
   },
 
   deleteLanguage(language) {
