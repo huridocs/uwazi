@@ -11,7 +11,6 @@ import { notify as notifyAction } from 'app/Notifications/actions/notificationsA
 import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
-import Auth2faAPI from 'app/Auth2fa/Auth2faAPI';
 
 export class AccountSettings extends Component {
   constructor(props, context) {
@@ -21,19 +20,11 @@ export class AccountSettings extends Component {
       password: '',
       repeatPassword: '',
       using2fa: props.user.using2fa,
-      otpauth: '',
     };
-
-    this.getSecret = this.getSecret.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState({ email: props.user.email || '' });
-  }
-
-  async getSecret() {
-    const { otpauth } = await Auth2faAPI.getSecret();
-    this.setState({ otpauth });
   }
 
   passwordChange(e) {
@@ -83,7 +74,7 @@ export class AccountSettings extends Component {
   }
 
   render() {
-    const { email, password, repeatPassword, passwordError, otpauth, using2fa } = this.state;
+    const { email, password, repeatPassword, passwordError, using2fa } = this.state;
 
     return (
       <div className="account-settings">
