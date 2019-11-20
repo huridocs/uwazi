@@ -53,4 +53,19 @@ describe('UsersList', () => {
       expect(props.deleteUser).toHaveBeenCalledWith({ _id: 3, sharedId: 'a3' });
     });
   });
+
+  describe('reset2fa', () => {
+    let user;
+    beforeEach(() => {
+      user = { _id: 3, title: 'Judge', sharedId: 'a3' };
+      render();
+      component.instance().reset2fa(Map(user));
+    });
+
+    it('should confirm calling on reset2fa if confirmed', () => {
+      expect(context.confirm).toHaveBeenCalled();
+      context.confirm.calls.argsFor(0)[0].accept();
+      expect(props.reset2fa).toHaveBeenCalledWith(user);
+    });
+  });
 });

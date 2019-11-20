@@ -24,7 +24,6 @@ export class UsersList extends Component {
     });
   }
 
-  // TEST!!!
   reset2fa(user) {
     const { confirm } = this.context;
     const { reset2fa } = this.props;
@@ -35,7 +34,7 @@ export class UsersList extends Component {
       title: `Confirm resetting 2fa for user: ${user.get('username')}`,
       message:
         'Are you sure you want to reset two-step authentication for this user? ' +
-        'The account will be more vulnerable and the user will need to reconfigure his credentials.',
+        'The account will be less secure and the user will need to reconfigure his credentials.',
     });
   }
 
@@ -49,17 +48,21 @@ export class UsersList extends Component {
             <li key={user.get('_id')} className="list-group-item">
               <div>
                 <span>{user.get('username')}</span>
-                &nbsp;&nbsp;&nbsp;
-                <span className={`btn-xs btn-color btn-color-${user.get('using2fa') ? '9' : '1'}`}>
-                  <Icon icon={user.get('using2fa') ? 'check' : 'times'} /> 2fa
-                </span>
+                {user.get('using2fa') && (
+                  <React.Fragment>
+                    &nbsp;&nbsp;&nbsp;
+                    <span className="btn-xs btn-color btn-color-9">
+                      <Icon icon="check" /> 2fa
+                    </span>
+                  </React.Fragment>
+                )}
               </div>
               <div className="list-group-item-actions">
                 {user.get('using2fa') && (
                   <button
                     type="button"
                     onClick={this.reset2fa.bind(this, user)}
-                    className="btn btn-info btn-xs"
+                    className="btn btn-color btn-color-8 btn-xs"
                   >
                     <span>{t('System', 'Reset 2fa')}</span>
                   </button>
@@ -89,19 +92,10 @@ export class UsersList extends Component {
               <h5>{t('System', 'Legend')}</h5>
               <p>
                 <span className="btn-xs btn-color btn-color-9">
-                  <Icon icon="check" fixedWidth /> 2fa
+                  <Icon icon="check" /> 2fa
                 </span>
                 &nbsp;&nbsp;&nbsp;
-                <span>Reflects the user is using two-step (two-factor) authentication login.</span>
-              </p>
-              <p>
-                <span className="btn-xs btn-color btn-color-1">
-                  <Icon icon="times" fixedWidth /> 2fa
-                </span>
-                &nbsp;&nbsp;&nbsp;
-                <span>
-                  Reflects the user has not yet configured two-step (two-factor) authentication.
-                </span>
+                <span>The user is using two-step (two-factor) authentication login.</span>
               </p>
             </div>
           </li>
