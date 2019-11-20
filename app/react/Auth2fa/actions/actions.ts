@@ -22,7 +22,7 @@ export function enable2fa(): enable2faType {
 
 export function reset2fa(user: User) {
   return async (dispatch: Dispatch<{}>) => {
-    await Auth2faAPI.reset2fa(new RequestParams(user));
+    await Auth2faAPI.reset2fa(new RequestParams({ _id: user._id }));
     dispatch(actions.update('users', { ...user, using2fa: false }));
     dispatch(notificationActions.notify('Deleted successfully.', 'success'));
   };

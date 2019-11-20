@@ -35,7 +35,7 @@ describe('Auth2fa Actions', () => {
 
   describe('reset2fa', () => {
     beforeEach(async () => {
-      const action = actions.reset2fa({ _id: '231' });
+      const action = actions.reset2fa({ _id: '231', email: 'some@email.com' });
       await action(dispatch);
     });
 
@@ -45,7 +45,11 @@ describe('Auth2fa Actions', () => {
 
     describe('upon success', () => {
       it('should update user', () => {
-        expect(basicActions.update).toHaveBeenCalledWith('users', { _id: '231', using2fa: false });
+        expect(basicActions.update).toHaveBeenCalledWith('users', {
+          _id: '231',
+          email: 'some@email.com',
+          using2fa: false,
+        });
         expect(dispatch).toHaveBeenCalledWith('USER UPDATED');
         expect(dispatch).toHaveBeenCalledWith('NOTIFIED');
       });
