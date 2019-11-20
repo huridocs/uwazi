@@ -32,7 +32,7 @@ async function denormalizeMetadata(entity, template, dictionariesByKey) {
     if (!Array.isArray(value)) {
       throw new Error('denormalizeMetadata received non-array prop!');
     }
-    const prop = template.properties.find(p => p.name === key && p.content);
+    const prop = template.properties.find(p => p.name === key);
     return Promise.all(
       value.map(async _elem => {
         const elem = { ..._elem };
@@ -62,6 +62,7 @@ async function denormalizeMetadata(entity, template, dictionariesByKey) {
 
         if (prop.type === 'relationship') {
           const partner = await model.get({ sharedId: elem.value, language: entity.language });
+
           if (partner && partner[0] && partner[0].title) {
             elem.label = partner[0].title;
             elem.icon = partner[0].icon;
@@ -395,22 +396,22 @@ export default {
     const _templates = await templates.get();
     await Promise.all(
       entities.map(async entityId => {
-        const [entity, relations] = await Promise.all([
-          this.getById(entityId, language),
-          relationships.getByDocument(entityId, language),
-        ]);
+        const entity = await this.getById(entityId, language);
+        const relations = await relationships.getByDocument(entityId, language);
+
         if (entity && entity.template) {
           entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
 
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach(property => {
-            const relationshipsGoingToThisProperty = relations.filter(
-              r =>
+            const relationshipsGoingToThisProperty = relations.filter(r => {
+              return (
                 r.template &&
-                r.template.toString() === property.relationType &&
+                r.template.toString() === property.relationType.toString() &&
                 (!property.content || r.entityData.template.toString() === property.content)
-            );
+              );
+            });
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
               value: r.entity,
               label: r.entityData.title,

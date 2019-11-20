@@ -62,7 +62,7 @@ function findPropertyHub(propertyRelationType, hubs, entitySharedId) {
   }, null);
 }
 
-// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!
+// Code mostly copied from react/Relationships/reducer/hubsReducer.js, abstract this QUICKLY!!!
 const conformRelationships = (rows, parentEntitySharedId) => {
   let order = -1;
   const hubsObject = fromJS(rows).reduce((hubs, row) => {
@@ -255,7 +255,7 @@ export default {
     return saves.concat(deletions);
   },
 
-  async save(_relationships, language) {
+  async save(_relationships, language, updateEntities = true) {
     if (!language) {
       throw createError('Language cant be undefined');
     }
@@ -293,14 +293,16 @@ export default {
       })
     );
 
-    await this.updateEntitiesMetadataByHub(hub, language);
+    if (updateEntities) {
+      await this.updateEntitiesMetadataByHub(hub, language);
+    }
     return result;
   },
 
-  updateEntitiesMetadataByHub(hubId, language) {
-    return this.getHub(hubId).then(hub =>
-      entities.updateMetdataFromRelationships(hub.map(r => r.entity), language)
-    );
+  async updateEntitiesMetadataByHub(hubId, language) {
+    const hub = await this.getHub(hubId);
+    const entitiesIds = hub.map(r => r.entity);
+    return entities.updateMetdataFromRelationships(entitiesIds, language);
   },
 
   updateEntitiesMetadata(entitiesIds, language) {

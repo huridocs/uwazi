@@ -21,12 +21,13 @@ import fixtures, {
   docId1,
   docId2,
 } from './fixtures.js';
+import { entity1 } from 'api/migrations/migrations/10-sync-starting-point/specs/fixtures.js';
 
 describe('entities', () => {
   beforeEach(async () => {
-    spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
+    spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
     await db.clearAllAndLoad(fixtures);
   });
 
@@ -44,17 +45,18 @@ describe('entities', () => {
       };
     };
 
-    it('should uniq the values on multiselect and relationship fields', done => {
+    it('should uniq the values on multiselect and relationship fields', async () => {
       const entity = {
         title: 'Batman begins',
         template: templateId,
+        language: 'es',
         metadata: {
           multiselect: [
-            { value: 'id1' },
-            { value: 'id2' },
-            { value: 'id2' },
-            { value: 'id1' },
-            { value: 'id3' },
+            { value: 'country_one' },
+            { value: 'country_one' },
+            { value: 'country_two' },
+            { value: 'country_two' },
+            { value: 'country_two' },
           ],
           friends: [
             { value: 'id1' },
@@ -68,23 +70,17 @@ describe('entities', () => {
       };
       const user = {};
 
-      entities
-        .save(entity, { user, language: 'es' })
-        .then(e => entities.getById(e._id))
-        .then(createdEntity => {
-          expect(createdEntity.metadata.multiselect).toEqual([
-            { value: 'id1' },
-            { value: 'id2' },
-            { value: 'id3' },
-          ]);
-          expect(createdEntity.metadata.friends).toEqual([
-            { value: 'id1' },
-            { value: 'id2' },
-            { value: 'id3' },
-          ]);
-          done();
-        })
-        .catch(catchErrors(done));
+      const createdEntity = await entities.save(entity, { user, language: 'es' });
+
+      expect(createdEntity.metadata.multiselect.sort((a, b) => b.value < a.value)).toEqual([
+        { value: 'country_one', label: 'Pais1' },
+        { value: 'country_two', label: 'Pais2' },
+      ]);
+      expect(createdEntity.metadata.friends.sort((a, b) => b.value < a.value)).toEqual([
+        { value: 'id1', label: 'entity one', type: 'entity' },
+        { value: 'id2', label: 'entity two', type: 'entity' },
+        { value: 'id3', label: 'entity three', type: 'entity' },
+      ]);
     });
 
     it('should create a new entity for each language in settings with a language property, a shared id, and default template', async () => {
@@ -201,7 +197,10 @@ describe('entities', () => {
         .then(() => entities.getById(batmanFinishesId))
         .then(savedEntity => {
           expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual({ property1: [{ value: 'value1' }] });
+          expect(savedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
+          expect(savedEntity.metadata.friends).toEqual([
+            { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+          ]);
           expect(entities.indexEntities).toHaveBeenCalled();
           done();
         })
@@ -380,21 +379,60 @@ describe('entities', () => {
         .catch(catchErrors(done));
     });
 
-    it('should saveEntityBasedReferences', done => {
+    it('should saveEntityBasedReferences', async () => {
       spyOn(date, 'currentUTC').and.returnValue(1);
-      const doc = { title: 'Batman begins', template: templateId };
+      const entity = {
+        title: 'Batman begins',
+        template: templateId,
+        language: 'es',
+        metadata: {
+          friends: [{ value: 'id1' }, { value: 'id2' }, { value: 'id3' }],
+        },
+      };
       const user = { _id: db.id() };
 
-      entities
-        .save(doc, { user, language: 'es' })
-        .then(() => {
-          expect(relationships.saveEntityBasedReferences.calls.argsFor(0)[0].title).toBe(
-            'Batman begins'
-          );
-          expect(relationships.saveEntityBasedReferences.calls.argsFor(0)[0]._id).toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
+      const createdEntity = await entities.save(entity, { user, language: 'es' });
+      const createdRelationships = await relationships.getByDocument(createdEntity.sharedId, 'es');
+      expect(createdRelationships.length).toBe(4);
+      expect(createdRelationships.map(r => r.entityData.title).sort()).toEqual([
+        'Batman begins',
+        'entity one',
+        'entity three',
+        'entity two',
+      ]);
+    });
+
+    it('should not cirlce back to updateMetdataFromRelationships', async () => {
+      spyOn(date, 'currentUTC').and.returnValue(1);
+      spyOn(entities, 'updateMetdataFromRelationships');
+      const doc = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        type: 'entity',
+        template: templateId,
+        language: 'en',
+        title: 'Batman finishes',
+        published: true,
+        fullText: {
+          1: 'page[[1]] 1[[1]]',
+          2: 'page[[2]] 2[[2]]',
+          3: '',
+        },
+        metadata: {
+          property1: [{ value: 'value1' }],
+          friends: [],
+        },
+        file: {
+          filename: '8202c463d6158af8065022d9b5014cc1.pdf',
+        },
+      };
+      batmanFinishesId;
+      const user = { _id: db.id() };
+
+      await entities.save(doc, { user, language: 'es' });
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const [updatedEntity] = await entities.get({ sharedId: 'shared' });
+      expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
     describe('when document have _id', () => {
@@ -415,16 +453,12 @@ describe('entities', () => {
   });
 
   describe('updateMetdataFromRelationships', () => {
-    it('should update the metdata based on the entity relationships', done => {
-      entities
-        .updateMetdataFromRelationships(['shared', 'missingEntity'], 'en')
-        .then(() => entities.getById('shared', 'en'))
-        .then(updatedEntity => {
-          expect(updatedEntity.metadata.friends).toEqual([
-            { label: 'shared2title', value: 'shared2' },
-          ]);
-          done();
-        });
+    it('should update the metdata based on the entity relationships', async () => {
+      await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
+      const updatedEntity = await entities.getById('shared', 'en');
+      expect(updatedEntity.metadata.friends).toEqual([
+        { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
+      ]);
     });
 
     it('should not fail on newly created documents (without metadata)', async () => {
@@ -700,7 +734,11 @@ describe('entities', () => {
   describe('multipleUpdate()', () => {
     it('should save() all the entities with the new metadata', done => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve());
-      const metadata = { property1: 'new text', description: 'yeah!' };
+      const metadata = {
+        property1: 'new text',
+        description: 'yeah!',
+        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+      };
       entities
         .multipleUpdate(['shared', 'shared1'], { metadata }, { language: 'en' })
         .then(() => {
@@ -733,7 +771,10 @@ describe('entities', () => {
 
           expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
           expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual({ property1: [{ value: 'value1' }] });
+          expect(savedEntity.metadata).toEqual({
+            property1: [{ value: 'value1' }],
+            friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+          });
           expect(entities.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
           done();
         })
@@ -1059,7 +1100,7 @@ describe('entities', () => {
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
       expect(newEntities[0].fullText).toEqual({ 1: 'text' });
-      expect(newEntities.length).toBe(7);
+      expect(newEntities.length).toBe(10);
     });
   });
 
