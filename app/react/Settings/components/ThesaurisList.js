@@ -41,6 +41,7 @@ export class ThesaurisList extends Component {
   }
 
   enableClassification(thesauri) {
+    console.log(this.props);
     return this.props
       .checkThesauriCanBeClassified(thesauri)
       .then(this.props.enableClassification(thesauri))
@@ -125,8 +126,13 @@ export function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    { notify: notificationActions.notify, deleteThesauri, checkThesauriCanBeDeleted },
-    { notify: notificationActions.notify, enableClassification, checkThesauriCanBeClassified },
+    {
+      notify: notificationActions.notify,
+      deleteThesauri,
+      checkThesauriCanBeDeleted,
+      enableClassification,
+      checkThesauriCanBeClassified,
+    },
     dispatch
   );
 }
