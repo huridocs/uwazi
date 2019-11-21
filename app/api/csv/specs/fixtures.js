@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
@@ -12,7 +14,7 @@ export default {
     {
       _id: templateToRelateId,
       name: 'template to relate',
-      properties: []
+      properties: [],
     },
     {
       _id: template1Id,
@@ -39,7 +41,7 @@ export default {
           label: 'not configured on csv',
           name: templateUtils.safeName('not configured on csv'),
         },
-      ]
+      ],
     },
   ],
 
@@ -47,10 +49,12 @@ export default {
     {
       _id: thesauri1Id,
       name: 'thesauri1',
-      values: [{
-        label: ' value4 ',
-        id: db.id().toString(),
-      }],
+      values: [
+        {
+          label: ' value4 ',
+          id: db.id().toString(),
+        },
+      ],
     },
   ],
 
@@ -58,10 +62,8 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [
-        { key: 'en', label: 'English', default: true },
-      ]
-    }
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
   ],
 
   translations: [
@@ -69,13 +71,13 @@ export default {
       _id: db.id(),
       locale: 'en',
       contexts: [],
-    }
-  ]
+    },
+    {
+      _id: db.id(),
+      locale: 'es',
+      contexts: [],
+    },
+  ],
 };
 
-export {
-  template1Id,
-  thesauri1Id,
-  thesauri2Id,
-  templateToRelateId
-};
+export { template1Id, thesauri1Id, thesauri2Id, templateToRelateId };

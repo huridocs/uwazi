@@ -1,3 +1,5 @@
+/** @format */
+
 import { Form, Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -22,8 +24,7 @@ const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 
 const selectTemplateOptions = createSelector(
   s => s.templates,
-  templates => templates
-  .map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
+  templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
 export class MetadataForm extends Component {
@@ -33,8 +34,21 @@ export class MetadataForm extends Component {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  onSubmit(metadata) {
-    this.props.onSubmit(entitiesUtil.filterBaseProperties(metadata), this.props.model);
+  wrapEntityMetadata(entity) {
+    const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
+      wrappedMo[key] = Array.isArray(entity.metadata[key])
+        ? entity.metadata[key].map(v => ({ value: v }))
+        : [{ value: entity.metadata[key] }];
+      return wrappedMo;
+    }, {});
+    return { ...entity, metadata };
+  }
+
+  onSubmit(entity) {
+    this.props.onSubmit(
+      this.wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      this.props.model
+    );
   }
 
   onSubmitFailed() {
@@ -46,13 +60,15 @@ export class MetadataForm extends Component {
       return (
         <FormGroup>
           <ul className="search__filter">
-            <li><label>{t('System', 'Type')}</label></li>
+            <li>
+              <label>{t('System', 'Type')}</label>
+            </li>
             <li className="wide">
               <SimpleSelect
                 className="form-control"
                 value={template.get('_id')}
                 options={templateOptions.toJS()}
-                onChange={(e) => {
+                onChange={e => {
                   this.props.changeTemplate(this.props.model, e.target.value);
                 }}
               />
@@ -67,7 +83,7 @@ export class MetadataForm extends Component {
         <div className="text-center protip">
           <Icon icon="lightbulb" /> <b>ProTip!</b>
           <span>
-          You can create metadata templates in <I18NLink to="/settings">settings</I18NLink>.
+            You can create metadata templates in <I18NLink to="/settings">settings</I18NLink>.
           </span>
         </div>
       </ul>
@@ -81,9 +97,12 @@ export class MetadataForm extends Component {
       return <div />;
     }
 
-    const titleLabel = template.get('commonProperties') ?
-      template.get('commonProperties').find(p => p.get('name') === 'title').get('label') :
-      'Title';
+    const titleLabel = template.get('commonProperties')
+      ? template
+          .get('commonProperties')
+          .find(p => p.get('name') === 'title')
+          .get('label')
+      : 'Title';
 
     return (
       <Form
@@ -96,19 +115,29 @@ export class MetadataForm extends Component {
         {!multipleEdition && (
           <FormGroup model=".title">
             <ul className="search__filter">
-              <li><label><Translate context={template.get('_id')}>{titleLabel}</Translate> <span className="required">*</span></label></li>
+              <li>
+                <label>
+                  <Translate context={template.get('_id')}>{titleLabel}</Translate>{' '}
+                  <span className="required">*</span>
+                </label>
+              </li>
               <li className="wide">
                 <Field model=".title">
-                  <textarea className="form-control"/>
+                  <textarea className="form-control" />
                 </Field>
               </li>
-              <IconField model={model}/>
+              <IconField model={model} />
             </ul>
           </FormGroup>
         )}
 
         {this.renderTemplateSelect(templateOptions, template)}
-        <MetadataFormFields multipleEdition={multipleEdition} thesauris={this.props.thesauris} model={model} template={template} />
+        <MetadataFormFields
+          multipleEdition={multipleEdition}
+          thesauris={this.props.thesauris}
+          model={model}
+          template={template}
+        />
       </Form>
     );
   }
@@ -116,7 +145,7 @@ export class MetadataForm extends Component {
 
 MetadataForm.defaultProps = {
   id: 'metadataForm',
-  multipleEdition: false
+  multipleEdition: false,
 };
 
 MetadataForm.propTypes = {
@@ -136,8 +165,14 @@ function mapDispatchToProps(dispatch) {
 }
 
 export const mapStateToProps = (state, ownProps) => ({
-  template: ownProps.template ? ownProps.template : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) || immutableDefaultTemplate,
-  templateOptions: selectTemplateOptions(state)
+  template: ownProps.template
+    ? ownProps.template
+    : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
+      immutableDefaultTemplate,
+  templateOptions: selectTemplateOptions(state),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MetadataForm);

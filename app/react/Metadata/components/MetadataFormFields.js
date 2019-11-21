@@ -1,13 +1,12 @@
 /** @format */
 
 import { FormGroup } from 'app/Forms';
-import { WrappedControl } from 'app/Forms/components/MetadataUtil';
 import t from 'app/I18N/t';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Control } from 'react-redux-form';
+import { Field } from 'react-redux-form';
 import {
   DatePicker,
   DateRange,
@@ -92,9 +91,9 @@ export class MetadataFormFields extends Component {
       case 'image':
         return (
           <div>
-            <Control model={_model} component={WrappedControl}>
+            <Field model={_model}>
               <textarea rows="6" className="form-control" />
-            </Control>
+            </Field>
             &nbsp;<em>URL (address for image or media file)</em>
           </div>
         );
@@ -106,9 +105,9 @@ export class MetadataFormFields extends Component {
         );
       case 'text':
         return (
-          <Control model={_model} component={WrappedControl}>
+          <Field model={_model}>
             <input type="text" className="form-control" />
-          </Control>
+          </Field>
         );
       default:
         return false;

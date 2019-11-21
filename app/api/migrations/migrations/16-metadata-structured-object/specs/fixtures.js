@@ -115,6 +115,18 @@ export default {
       _id: db._id,
     },
   ],
+  translations: [
+    {
+      _id: db.id(),
+      locale: 'en',
+      contexts: [],
+    },
+    {
+      _id: db.id(),
+      locale: 'es',
+      contexts: [],
+    },
+  ],
 };
 
 export { t1, c1, c2, i1, i2 };

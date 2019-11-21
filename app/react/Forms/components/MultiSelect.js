@@ -1,17 +1,16 @@
 /** @format */
-import ShowIf from 'app/App/ShowIf';
-import { t } from 'app/I18N';
-import { Icon as CustomIcon } from 'app/Layout/Icon';
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+
+import { Icon as CustomIcon } from 'app/Layout/Icon';
 import { Icon } from 'UI';
+import { t } from 'app/I18N';
+import ShowIf from 'app/App/ShowIf';
+
 import { filterOptions } from '../utils/optionsUtils';
 
 const isNotAnEmptyGroup = option => !option.options || option.options.length;
-
-function unwrapMOs(value) {
-  return value.map(v => v.value);
-}
 
 export default class MultiSelect extends Component {
   constructor(props) {
@@ -25,22 +24,8 @@ export default class MultiSelect extends Component {
     }
   }
 
-  wrapMOs(value) {
-    const { options, optionsValue, optionsLabel } = this.props;
-    return value.map(newValue => ({
-      value: newValue,
-      label: (options
-        .reduce(
-          (result, option) =>
-            option.options ? result.concat(option.options) : result.concat([option]),
-          []
-        )
-        .find(o => o[optionsValue] === newValue) || { [optionsLabel]: undefined })[optionsLabel],
-    }));
-  }
-
   changeGroup(group, e) {
-    const selectedItems = unwrapMOs(this.props.value);
+    const selectedItems = this.props.value.slice(0);
     if (e.target.checked) {
       group.options.forEach(_item => {
         if (!this.checked(_item)) {
@@ -57,7 +42,7 @@ export default class MultiSelect extends Component {
         }
       });
     }
-    this.props.onChange(this.wrapMOs(selectedItems));
+    this.props.onChange(selectedItems);
   }
 
   checked(option) {
@@ -68,11 +53,11 @@ export default class MultiSelect extends Component {
     if (option.options) {
       return option.options.reduce(
         (allIncluded, _option) =>
-          allIncluded && unwrapMOs(this.props.value).includes(_option[this.props.optionsValue]),
+          allIncluded && this.props.value.includes(_option[this.props.optionsValue]),
         true
       );
     }
-    return unwrapMOs(this.props.value).includes(option[this.props.optionsValue]);
+    return this.props.value.includes(option[this.props.optionsValue]);
   }
 
   anyChildChecked(parent) {
@@ -80,15 +65,15 @@ export default class MultiSelect extends Component {
   }
 
   change(value) {
-    let newValues = this.props.value ? unwrapMOs(this.props.value) : [];
+    let newValues = this.props.value ? this.props.value.slice(0) : [];
     if (newValues.includes(value)) {
       newValues = newValues.filter(val => val !== value);
-      this.props.onChange(this.wrapMOs(newValues));
+      this.props.onChange(newValues);
       return;
     }
 
     newValues.push(value);
-    this.props.onChange(this.wrapMOs(newValues));
+    this.props.onChange(newValues);
   }
 
   filter(e) {
@@ -104,7 +89,7 @@ export default class MultiSelect extends Component {
     this.setState({ showAll: !this.state.showAll });
   }
 
-  sort(options, _optionsValue, optionsLabel, isSubGroup = false) {
+  sort(options, optionsValue, optionsLabel, isSubGroup = false) {
     const sortedOptions = options.sort((a, b) => {
       let sorting = 0;
       if (!this.state.showAll) {
@@ -118,7 +103,7 @@ export default class MultiSelect extends Component {
       }
 
       const showingAll = this.state.showAll || options.length < this.props.optionsToShow;
-      if (sorting === 0 || showingAll || this.props.sortbyLabel || isSubGroup) {
+      if (sorting === 0 || showingAll || this.state.sortbyLabel || isSubGroup) {
         sorting = a[optionsLabel] < b[optionsLabel] ? -1 : 1;
       }
 
@@ -389,7 +374,7 @@ MultiSelect.defaultProps = {
 MultiSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
   options: PropTypes.array,
-  value: PropTypes.arrayOf(PropTypes.shape({ value: PropTypes.string })),
+  value: PropTypes.array,
   optionsValue: PropTypes.string,
   optionsLabel: PropTypes.string,
   filter: PropTypes.string,

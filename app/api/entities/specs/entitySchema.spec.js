@@ -353,6 +353,16 @@ describe('entity schema', () => {
         });
       });
 
+      describe('nested property', () => {
+        it('should allow nested values', async () => {
+          entity.metadata.field_nested = [
+            { value: { cadh: ['1.1', '25.1'], cipst: [], cbdp: [], cidfp: [] } },
+            { value: { cadh: ['1.1', '21.1', '21.2', '25', '1'], cipst: [], cbdp: [], cidfp: [] } },
+          ];
+          await testValid();
+        });
+      });
+
       describe('geolocation property', () => {
         it('should fail if value is not an array of lat/lon object', async () => {
           entity.metadata.geolocation = { lat: 80, lon: 80, label: '' };

@@ -123,12 +123,32 @@ describe('MetadataForm', () => {
   });
 
   describe('submit', () => {
-    it('should call onSubmit with the values', () => {
-      spyOn(entitiesUtils, 'filterBaseProperties').and.returnValue('filteredProperties');
+    it('should call onSubmit with the values wrapped', () => {
       render();
-      component.find(Form).simulate('submit', 'values');
-      expect(entitiesUtils.filterBaseProperties).toHaveBeenCalledWith('values');
-      expect(props.onSubmit).toHaveBeenCalledWith('filteredProperties', 'metadata');
+      const UnwrapedEntity = {
+        _id: '123',
+        template: '456',
+        language: 'en',
+        metadata: {
+          prop_one: ['one', 'two', 'three'],
+          prop_two: 'Doctor who?',
+          prop_three: null,
+        },
+        file: {},
+        fullText: [],
+      };
+      const WrapedEntity = {
+        _id: '123',
+        template: '456',
+        language: 'en',
+        metadata: {
+          prop_one: [{ value: 'one' }, { value: 'two' }, { value: 'three' }],
+          prop_two: [{ value: 'Doctor who?' }],
+          prop_three: [{ value: null }],
+        },
+      };
+      component.find(Form).simulate('submit', UnwrapedEntity);
+      expect(props.onSubmit).toHaveBeenCalledWith(WrapedEntity, 'metadata');
     });
   });
 

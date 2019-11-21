@@ -26,6 +26,9 @@ const hub5 = db.id();
 const docId1 = db.id();
 const docId2 = db.id();
 const unpublishedDocId = db.id('123456789012345678901234');
+const relationType1 = db.id();
+const relationType2 = db.id();
+const relationType3 = db.id();
 
 export default {
   entities: [
@@ -42,7 +45,10 @@ export default {
         2: 'page[[2]] 2[[2]]',
         3: '',
       },
-      metadata: { property1: [{ value: 'value1' }] },
+      metadata: {
+        property1: [{ value: 'value1' }],
+        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+      },
       file: {
         filename: '8202c463d6158af8065022d9b5014cc1.pdf',
       },
@@ -225,8 +231,23 @@ export default {
       metadata: { multiselect: [{ value: 'value1' }, { value: 'multiselect' }] },
       file: { filename: '123.pdf' },
     },
-    { sharedId: 'shared2', language: 'en', title: 'shared2title' },
+    { sharedId: 'shared2', language: 'en', title: 'shared2title', metadata: {} },
     { sharedId: 'source2', language: 'en' },
+    {
+      title: 'entity one',
+      sharedId: 'id1',
+      language: 'es',
+    },
+    {
+      title: 'entity two',
+      sharedId: 'id2',
+      language: 'es',
+    },
+    {
+      title: 'entity three',
+      sharedId: 'id3',
+      language: 'es',
+    },
   ],
   settings: [
     { _id: db.id(), languages: [{ key: 'es', default: true }, { key: 'pt' }, { key: 'en' }] },
@@ -243,7 +264,7 @@ export default {
         { type: 'multidate', name: 'multidate' },
         { type: 'multidaterange', name: 'multidaterange' },
         { type: 'daterange', name: 'daterange' },
-        { type: 'relationship', name: 'friends', relationType: 'relation1' },
+        { type: 'relationship', name: 'friends', relationType: relationType1 },
         { type: 'numeric', name: 'numeric' },
       ],
     },
@@ -291,16 +312,16 @@ export default {
     },
   ],
   connections: [
-    { _id: referenceId, entity: 'shared', template: null, hub: hub1 },
-    { entity: 'shared2', template: 'relation1', hub: hub1 },
-    { entity: 'shared', template: null, hub: hub2 },
-    { entity: 'source2', template: 'relation2', hub: hub2 },
-    { entity: 'another', template: 'relation3', hub: hub3 },
-    { entity: 'document', template: 'relation3', hub: hub3 },
-    { entity: 'shared', template: 'relation2', hub: hub4 },
-    { entity: 'shared1', template: 'relation2', hub: hub4 },
-    { entity: 'shared1', template: 'relation2', hub: hub5 },
-    { entity: 'shared', template: 'relation2', hub: hub5 },
+    { _id: referenceId, entity: 'shared', template: null, hub: hub1, entityData: {} },
+    { entity: 'shared2', template: relationType1, hub: hub1, entityData: {} },
+    { entity: 'shared', template: null, hub: hub2, entityData: {} },
+    { entity: 'source2', template: relationType2, hub: hub2, entityData: {} },
+    { entity: 'another', template: relationType3, hub: hub3, entityData: {} },
+    { entity: 'document', template: relationType3, hub: hub3, entityData: {} },
+    { entity: 'shared', template: relationType2, hub: hub4, entityData: {} },
+    { entity: 'shared1', template: relationType2, hub: hub4, entityData: {} },
+    { entity: 'shared1', template: relationType2, hub: hub5, entityData: {} },
+    { entity: 'shared', template: relationType2, hub: hub5, entityData: {} },
   ],
   dictionaries: [
     {
@@ -309,6 +330,35 @@ export default {
       values: [
         { _id: db.id(), id: 'country_one', label: 'Country1' },
         { _id: db.id(), id: 'country_two', label: 'Country2' },
+      ],
+    },
+  ],
+  translations: [
+    {
+      locale: 'en',
+      contexts: [
+        {
+          id: dictionary,
+          values: [{ key: 'Country1', value: 'Country1' }, { key: 'Country2', value: 'Country2' }],
+        },
+      ],
+    },
+    {
+      locale: 'es',
+      contexts: [
+        {
+          id: dictionary,
+          values: [{ key: 'Country1', value: 'Pais1' }, { key: 'Country2', value: 'Pais2' }],
+        },
+      ],
+    },
+    {
+      locale: 'pt',
+      contexts: [
+        {
+          id: dictionary,
+          values: [{ key: 'Country1', value: 'Pais1_pt' }, { key: 'Country2', value: 'Pais2_pt' }],
+        },
       ],
     },
   ],

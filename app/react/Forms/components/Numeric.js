@@ -2,12 +2,11 @@
 
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { UnwrapMetadataObject } from './MetadataUtil';
 
 export default class Numeric extends Component {
   onChange(e) {
     const { value } = e.target;
-    const { onChange } = UnwrapMetadataObject(this.props);
+    const { onChange } = this.props;
     if (!value) {
       return onChange('');
     }
@@ -17,7 +16,7 @@ export default class Numeric extends Component {
   }
 
   render() {
-    const { value } = UnwrapMetadataObject(this.props);
+    const { value } = this.props;
     return (
       <input className="form-control" onChange={this.onChange.bind(this)} value={value || ''} />
     );

@@ -9,6 +9,7 @@ import relationships from 'api/relationships/relationships';
 import createError from 'api/utils/Error';
 import search from 'api/search/search';
 import templates from 'api/templates/templates';
+import translationsModel from 'api/i18n/translations';
 import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
@@ -17,19 +18,24 @@ import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import { validateEntity } from './entitySchema';
 import settings from '../settings';
+import translate, { getContext } from 'shared/translate';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
-async function denormalizeMetadata(entity, template = undefined, dictionariesByKey = undefined) {
+async function denormalizeMetadata(entity, template, dictionariesByKey) {
   if (!entity.metadata) {
     return entity.metadata;
   }
+
+  const translation = (await translationsModel.get({ locale: entity.language }))[0];
+
   const resolveProp = async (key, value) => {
     if (!Array.isArray(value)) {
       throw new Error('denormalizeMetadata received non-array prop!');
     }
-    const prop = template.properties.find(p => p.name === key && p.content);
+    const prop = template.properties.find(p => p.name === key);
     return Promise.all(
-      value.map(async elem => {
+      value.map(async _elem => {
+        const elem = { ..._elem };
         if (!elem.hasOwnProperty('value')) {
           throw new Error('denormalizeMetadata received non-value prop!');
         }
@@ -41,17 +47,22 @@ async function denormalizeMetadata(entity, template = undefined, dictionariesByK
             ? dictionariesByKey[prop.content]
             : await dictionariesModel.getById(prop.content);
           if (dict) {
+            const context = getContext(translation, prop.content);
             const flattenValues = dict.values.reduce(
               (result, dv) => (dv.values ? result.concat(dv.values) : result.concat([dv])),
               []
             );
             const dictElem = flattenValues.find(v => v.id === elem.value);
+
             if (dictElem && dictElem.label) {
-              elem.label = dictElem.label;
+              elem.label = translate(context, dictElem.label, dictElem.label);
             }
           }
-        } else if (prop.type === 'relationship') {
+        }
+
+        if (prop.type === 'relationship') {
           const partner = await model.get({ sharedId: elem.value, language: entity.language });
+
           if (partner && partner[0] && partner[0].title) {
             elem.label = partner[0].title;
             elem.icon = partner[0].icon;
@@ -109,21 +120,21 @@ async function updateEntity(entity, _template) {
   const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
   return Promise.all(
     docLanguages.map(async d => {
-      if (d._id.toString() === entity._id.toString()) {
-        if (entity.title && currentDoc.title !== entity.title) {
-          await this.renameRelatedEntityInMetadata(entity);
-        }
-        return model.save(entity);
-      }
-      if (!d.metadata) {
-        d.metadata = entity.metadata;
-      }
-
       if (entity.metadata) {
+        d.metadata = d.metadata || entity.metadata;
         toSyncProperties.forEach(p => {
           d.metadata[p] = entity.metadata[p] || [];
         });
         d.metadata = await denormalizeMetadata(d, template);
+      }
+
+      if (d._id.toString() === entity._id.toString()) {
+        if (entity.title && currentDoc.title !== entity.title) {
+          await this.renameRelatedEntityInMetadata(entity);
+        }
+        return entity.metadata
+          ? model.save({ ...entity, metadata: await denormalizeMetadata(entity, template) })
+          : model.save(entity);
       }
 
       if (typeof entity.published !== 'undefined') {
@@ -267,6 +278,7 @@ export default {
     if (index) {
       await this.indexEntities({ sharedId }, '+fullText');
     }
+
     return entity;
   },
 
@@ -383,22 +395,22 @@ export default {
     const _templates = await templates.get();
     await Promise.all(
       entities.map(async entityId => {
-        const [entity, relations] = await Promise.all([
-          this.getById(entityId, language),
-          relationships.getByDocument(entityId, language),
-        ]);
+        const entity = await this.getById(entityId, language);
+        const relations = await relationships.getByDocument(entityId, language);
+
         if (entity && entity.template) {
           entity.metadata = entity.metadata || {};
           const template = _templates.find(t => t._id.toString() === entity.template.toString());
 
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach(property => {
-            const relationshipsGoingToThisProperty = relations.filter(
-              r =>
+            const relationshipsGoingToThisProperty = relations.filter(r => {
+              return (
                 r.template &&
-                r.template.toString() === property.relationType &&
+                r.template.toString() === property.relationType.toString() &&
                 (!property.content || r.entityData.template.toString() === property.content)
-            );
+              );
+            });
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
               value: r.entity,
               label: r.entityData.title,
@@ -515,6 +527,7 @@ export default {
       await model.delete({ sharedId });
     } catch (e) {
       await this.indexEntities({ sharedId }, '+fullText');
+      throw e;
     }
     await Promise.all([
       relationships.delete({ entity: sharedId }, null, false),

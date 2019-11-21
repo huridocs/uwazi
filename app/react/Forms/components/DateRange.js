@@ -4,11 +4,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { t } from 'app/I18N';
 import DatePicker from './DatePicker';
-import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 class DateRange extends Component {
   onChange(prop, propValue) {
-    const { value, onChange } = UnwrapMetadataObject(this.props);
+    const { value, onChange } = this.props;
     const state = Object.assign({}, value, { [prop]: propValue });
     onChange(state);
   }
@@ -18,7 +17,7 @@ class DateRange extends Component {
     let { locale, format } = this.props;
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
-    const { value } = UnwrapMetadataObject(this.props);
+    const { value } = this.props;
     const { from: stateFrom, to: stateTo } = value || { from: null, to: null };
 
     return (
@@ -58,7 +57,7 @@ DateRange.defaultProps = {
 };
 
 DateRange.propTypes = {
-  value: AllowMoType(PropTypes.shape({ from: PropTypes.number, to: PropTypes.number })),
+  value: PropTypes.shape({ from: PropTypes.number, to: PropTypes.number }),
   onChange: PropTypes.func,
   locale: PropTypes.string,
   format: PropTypes.string,

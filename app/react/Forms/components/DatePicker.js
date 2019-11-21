@@ -6,7 +6,6 @@ import DatePickerComponent from 'react-datepicker';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import moment from 'moment';
-import { AllowMoType, UnwrapMetadataObject } from './MetadataUtil';
 
 class DatePicker extends Component {
   constructor(props) {
@@ -16,7 +15,7 @@ class DatePicker extends Component {
 
   onChange(value) {
     const { endOfDay, useTimezone } = this.props;
-    const { onChange } = UnwrapMetadataObject(this.props);
+    const { onChange } = this.props;
     if (!value) {
       onChange(null);
     } else {
@@ -37,7 +36,7 @@ class DatePicker extends Component {
     let { locale, format } = this.props;
     locale = locale || 'en';
     format = format || 'DD/MM/YYYY';
-    let { value } = UnwrapMetadataObject(this.props);
+    let { value } = this.props;
     value = value ? moment.utc(value, 'X') : null;
 
     return (
@@ -66,7 +65,7 @@ DatePicker.defaultProps = {
 
 DatePicker.propTypes = {
   onChange: PropTypes.func.isRequired,
-  value: AllowMoType(PropTypes.number),
+  value: PropTypes.number,
   endOfDay: PropTypes.bool,
   locale: PropTypes.string,
   format: PropTypes.string,
