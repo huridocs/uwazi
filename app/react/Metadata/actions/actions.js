@@ -39,10 +39,10 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
       resetedMetadata[property.name] = metadata[property.name];
     }
     if (resetValue && !['date', 'geolocation', 'link'].includes(type)) {
-      resetedMetadata[name] = '';
+      resetedMetadata[name] = [];
     }
     if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = {};
+      resetedMetadata[name] = [];
     }
     if (
       resetValue &&
@@ -165,27 +165,14 @@ export function removeIcon(model) {
 }
 
 export function multipleUpdate(entities, values) {
-  return dispatch => {
-    const updatedEntities = entities.toJS().map(_entity => {
-      const entity = { ..._entity };
-      entity.metadata = Object.assign({}, entity.metadata, values.metadata);
-      if (values.icon) {
-        entity.icon = values.icon;
-      }
-      if (values.template) {
-        entity.template = values.template;
-      }
-      return entity;
-    });
-
-    const ids = updatedEntities.map(entity => entity.sharedId);
-    return api.multipleUpdate(new RequestParams({ ids, values })).then(() => {
-      dispatch(notificationActions.notify('Update success', 'success'));
-      if (values.published !== undefined) {
-        dispatch(unselectAllDocuments());
-        dispatch(removeDocuments(updatedEntities));
-      }
-      return updatedEntities;
-    });
+  return async dispatch => {
+    const ids = entities.map(e => e.get('sharedId')).toJS();
+    const updatedEntities = await api.multipleUpdate(new RequestParams({ ids, values }));
+    dispatch(notificationActions.notify('Update success', 'success'));
+    if (values.published !== undefined) {
+      dispatch(unselectAllDocuments());
+      dispatch(removeDocuments(updatedEntities));
+    }
+    return updatedEntities;
   };
 }

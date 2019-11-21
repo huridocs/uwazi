@@ -272,26 +272,23 @@ describe('libraryActions', () => {
     });
 
     describe('multipleUpdate', () => {
-      it('should update selected entities with the given metadata', (done) => {
+      it('should update selected entities with the given metadata', async () => {
         mockID();
-        spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
+        const metadataResponse = { text: 'something new', rest_of_metadata: 'test' };
+        spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve([{ sharedId: '1', metadataResponse }, { sharedId: '2', metadataResponse }]));
         const entities = Immutable.fromJS([{ sharedId: '1' }, { sharedId: '2' }]);
-        const metadata = { text: 'something new' };
 
         const expectedActions = [
           { type: notificationsTypes.NOTIFY, notification: { message: 'Update success', type: 'success', id: 'unique_id' } },
-          { type: types.UPDATE_DOCUMENTS, docs: [{ sharedId: '1', metadata }, { sharedId: '2', metadata }] }
+          { type: types.UPDATE_DOCUMENTS, docs: [{ sharedId: '1', metadataResponse }, { sharedId: '2', metadataResponse }] }
         ];
         const store = mockStore({});
-        store.dispatch(actions.multipleUpdate(entities, { metadata }))
-        .then(() => {
-          expect(api.multipleUpdate).toHaveBeenCalledWith(
-            new RequestParams({ ids: ['1', '2'], values: { metadata } })
-          );
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        const changes = { property_changes: 'change' };
+        await store.dispatch(actions.multipleUpdate(entities, { metadata: changes }));
+        expect(api.multipleUpdate).toHaveBeenCalledWith(
+          new RequestParams({ ids: ['1', '2'], values: { metadata: changes } })
+        );
+        expect(store.getActions()).toEqual(expectedActions);
       });
     });
 

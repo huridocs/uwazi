@@ -40,7 +40,7 @@ export default (app) => {
     }).required()),
     (req, res, next) => entities.multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })
     .then((docs) => {
-      res.json(docs.map(doc => doc.sharedId));
+      res.json(docs);
     })
     .catch(next));
 
