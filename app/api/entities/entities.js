@@ -1,6 +1,7 @@
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
-import date from 'api/utils/date.js';
+import { templateTypes } from 'shared/templateTypes';
+import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
 import createError from 'api/utils/Error';
 import search from 'api/search/search';
@@ -9,9 +10,23 @@ import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
 
-import { deleteFiles } from '../utils/files.js';
+import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
+import { validateEntity } from './entitySchema';
 import settings from '../settings';
+
+const FIELD_TYPES_TO_SYNC = [
+  templateTypes.select,
+  templateTypes.multiselect,
+  templateTypes.date,
+  templateTypes.multidate,
+  templateTypes.multidaterange,
+  templateTypes.nested,
+  templateTypes.relationship,
+  templateTypes.relationship,
+  templateTypes.geolocation,
+  templateTypes.numeric
+];
 
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
@@ -28,7 +43,7 @@ function updateEntity(entity, _template) {
   .then((docLanguages) => {
     const template = _template || { properties: [] };
     const toSyncProperties = template.properties
-    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation|numeric'))
+    .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
     const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
@@ -110,23 +125,23 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedMetadata[name])) {
+    if ((type === templateTypes.multiselect || type === templateTypes.relationship) && Array.isArray(sanitizedMetadata[name])) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
 
-    if (type === 'multidate' && sanitizedMetadata[name]) {
+    if (type === templateTypes.multidate && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value) });
     }
 
-    if (type === 'multidaterange' && sanitizedMetadata[name]) {
+    if (type === templateTypes.multidaterange && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
 
-    if (type === 'select' && !sanitizedMetadata[name]) {
+    if (type === templateTypes.select && !sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
     }
 
-    if (type === 'daterange' && sanitizedMetadata[name]) {
+    if (type === templateTypes.daterange && sanitizedMetadata[name]) {
       const value = sanitizedMetadata[name];
       if (!value.to && !value.from) {
         const { [name]: dateRange, ...withoutDateRange } = sanitizedMetadata;
@@ -145,7 +160,8 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(_doc, { user, language }, updateRelationships = true, index = true) {
+  async save(_doc, { user, language }, updateRelationships = true, index = true) {
+    await validateEntity(_doc);
     const doc = _doc;
     if (!doc.sharedId) {
       doc.user = user._id;
@@ -336,7 +352,7 @@ export default {
 
     return dbUpdate
     .then(() => {
-      if (!template.properties.find(p => p.type === 'relationship')) {
+      if (!template.properties.find(p => p.type === templateTypes.relationship)) {
         return this.indexEntities({ template: template._id }, null, 1000);
       }
 
@@ -439,8 +455,8 @@ export default {
   async deleteEntityFromMetadata(sharedId, propertyContent) {
     const allTemplates = await templates.get({ 'properties.content': propertyContent });
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-    const selectProperties = allProperties.filter(p => p.type === 'select');
-    const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
+    const selectProperties = allProperties.filter(p => p.type === templateTypes.select);
+    const multiselectProperties = allProperties.filter(p => p.type === templateTypes.multiselect);
     const selectQuery = { $or: [] };
     const selectChanges = {};
     selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
@@ -556,3 +572,4 @@ export default {
 
   count: model.count.bind(model)
 };
+
