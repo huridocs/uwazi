@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -12,24 +14,25 @@ import sortThesauri from '../utils/sortThesauri';
 
 export class ThesaurisList extends Component {
   deleteThesauri(thesauri) {
-    return this.props.checkThesauriCanBeDeleted(thesauri)
-    .then(() => {
-      this.context.confirm({
-        accept: () => {
-          this.props.deleteThesauri(thesauri);
-        },
-        title: `Confirm delete thesaurus: ${thesauri.name}`,
-        message: 'Are you sure you want to delete this thesaurus?'
+    return this.props
+      .checkThesauriCanBeDeleted(thesauri)
+      .then(() => {
+        this.context.confirm({
+          accept: () => {
+            this.props.deleteThesauri(thesauri);
+          },
+          title: `Confirm delete thesaurus: ${thesauri.name}`,
+          message: 'Are you sure you want to delete this thesaurus?',
+        });
+      })
+      .catch(() => {
+        this.context.confirm({
+          accept: () => {},
+          noCancel: true,
+          title: `Cannot delete thesaurus: ${thesauri.name}`,
+          message: 'This thesaurus is being used in document types and cannot be deleted.',
+        });
       });
-    })
-    .catch(() => {
-      this.context.confirm({
-        accept: () => {},
-        noCancel: true,
-        title: `Cannot delete thesaurus: ${thesauri.name}`,
-        message: 'This thesaurus is being used in document types and cannot be deleted.'
-      });
-    });
   }
 
   render() {
@@ -39,14 +42,32 @@ export class ThesaurisList extends Component {
         <ul className="list-group">
           {sortThesauri(this.props.dictionaries.toJS()).map((dictionary, index) => (
             <li key={index} className="list-group-item">
-              <I18NLink to={`/settings/dictionaries/edit/${dictionary._id}`}>{dictionary.name}</I18NLink>
+              <I18NLink to={`/settings/dictionaries/edit/${dictionary._id}`}>
+                {dictionary.name}
+              </I18NLink>
               <div className="list-group-item-actions">
-                <I18NLink to={`/settings/dictionaries/edit/${dictionary._id}`} className="btn btn-default btn-xs">
-                  <Icon icon="pencil-alt" />&nbsp;
+                <I18NLink
+                  to={`/settings/dictionaries/edit/${dictionary._id}`}
+                  className="btn btn-default btn-xs"
+                >
+                  <Icon icon="code" />
+                  &nbsp;
+                  <span>{t('System', 'Enable ML')}</span>
+                </I18NLink>
+                <I18NLink
+                  to={`/settings/dictionaries/edit/${dictionary._id}`}
+                  className="btn btn-default btn-xs"
+                >
+                  <Icon icon="pencil-alt" />
+                  &nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <a onClick={this.deleteThesauri.bind(this, dictionary)} className="btn btn-danger btn-xs template-remove">
-                  <Icon icon="trash-alt" />&nbsp;
+                <a
+                  onClick={this.deleteThesauri.bind(this, dictionary)}
+                  className="btn btn-danger btn-xs template-remove"
+                >
+                  <Icon icon="trash-alt" />
+                  &nbsp;
                   <span>{t('System', 'Delete')}</span>
                 </a>
               </div>
@@ -68,11 +89,11 @@ ThesaurisList.propTypes = {
   dictionaries: PropTypes.object,
   deleteThesauri: PropTypes.func,
   notify: PropTypes.func,
-  checkThesauriCanBeDeleted: PropTypes.func
+  checkThesauriCanBeDeleted: PropTypes.func,
 };
 
 ThesaurisList.contextTypes = {
-  confirm: PropTypes.func
+  confirm: PropTypes.func,
 };
 
 export function mapStateToProps(state) {
@@ -80,7 +101,13 @@ export function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ notify: notificationActions.notify, deleteThesauri, checkThesauriCanBeDeleted }, dispatch);
+  return bindActionCreators(
+    { notify: notificationActions.notify, deleteThesauri, checkThesauriCanBeDeleted },
+    dispatch
+  );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ThesaurisList);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ThesaurisList);
