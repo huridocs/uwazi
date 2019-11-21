@@ -9,17 +9,14 @@ export default class MultiDateRange extends Component {
   constructor(props) {
     super(props);
     const values =
-      this.props.value && this.props.value.length
-        ? this.props.value
-        : [{ value: { from: null, to: null } }];
+      this.props.value && this.props.value.length ? this.props.value : [{ from: null, to: null }];
     this.state = { values };
   }
 
   fromChange(index, value) {
     const values = this.state.values.slice();
     values[index] = Object.assign({}, values[index]);
-    values[index].value = Object.assign({}, values[index].value);
-    values[index].value.from = value;
+    values[index].from = value;
     this.setState({ values });
     this.props.onChange(values);
   }
@@ -27,8 +24,7 @@ export default class MultiDateRange extends Component {
   toChange(index, value) {
     const values = this.state.values.slice();
     values[index] = Object.assign({}, values[index]);
-    values[index].value = Object.assign({}, values[index].value);
-    values[index].value.to = value;
+    values[index].to = value;
     this.setState({ values });
     this.props.onChange(values);
   }
@@ -36,7 +32,7 @@ export default class MultiDateRange extends Component {
   add(e) {
     e.preventDefault();
     const values = this.state.values.slice();
-    values.push({ value: { from: null, to: null } });
+    values.push({ from: null, to: null });
     this.setState({ values });
   }
 
@@ -59,7 +55,7 @@ export default class MultiDateRange extends Component {
                   <span>From:&nbsp;</span>
                   <DatePicker
                     format={this.props.format}
-                    value={value.value.from}
+                    value={value.from}
                     onChange={this.fromChange.bind(this, index)}
                   />
                 </div>
@@ -67,7 +63,7 @@ export default class MultiDateRange extends Component {
                   <span>&nbsp;To:&nbsp;</span>
                   <DatePicker
                     format={this.props.format}
-                    value={value.value.to}
+                    value={value.to}
                     endOfDay
                     onChange={this.toChange.bind(this, index)}
                   />

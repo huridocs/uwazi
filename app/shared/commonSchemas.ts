@@ -72,6 +72,9 @@ export const metadataSchema = {
   additionalProperties: {
     anyOf: [{ type: 'array', items: metadataObjectSchema }],
   },
+  patternProperties: {
+    '^.*_nested$': { type: 'array', items: { type: 'object' } },
+  },
 };
 
 export const tocSchema = {

@@ -35,8 +35,6 @@ export class MetadataForm extends Component {
   }
 
   wrapEntityMetadata(entity) {
-    console.log(entity);
-
     const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
       wrappedMo[key] = Array.isArray(entity.metadata[key])
         ? entity.metadata[key].map(v => ({ value: v }))

@@ -1,58 +1,47 @@
 /** @format */
-import autobind from 'autobind-decorator';
+
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { MetadataObject } from 'api/entities';
 import DatePicker from './DatePicker';
 
 export interface MultiDateProps {
-  value: MetadataObject<number>[];
+  value?: (number | null)[];
   onChange: (event: any) => void;
   locale: string;
   format: string;
 }
 
 interface MultiDateState {
-  values: MetadataObject<number>[];
+  values: (number | null)[];
 }
 
 export default class MultiDate extends Component<MultiDateProps, MultiDateState> {
   constructor(props: MultiDateProps) {
     super(props);
-    const values =
-      this.props.value && this.props.value.length ? this.props.value : [{ value: null }];
+    const values = this.props.value && this.props.value.length ? this.props.value : [null];
     this.state = { values };
   }
 
-  @autobind
   onChange(index: number, value: number) {
-    this.setState(prevState => {
-      const values = prevState.values.slice();
-      values[index] = Object.assign({}, values[index], { value });
-      return { values };
-    });
-    this.props.onChange(this.state.values);
+    const values = this.state.values.slice();
+    values[index] = value;
+    this.setState({ values });
+    this.props.onChange(values);
   }
 
-  @autobind
   add(e: any) {
     e.preventDefault();
-    this.setState(prevState => {
-      const values = prevState.values.slice();
-      values.push({ value: null });
-      return { values };
-    });
+    const values = this.state.values.slice();
+    values.push(null);
+    this.setState({ values });
   }
 
-  @autobind
   remove(index: number, e: any) {
     e.preventDefault();
-    this.setState(prevState => {
-      const values = prevState.values.slice();
-      values.splice(index, 1);
-      return { values };
-    });
-    this.props.onChange(this.state.values);
+    const values = this.state.values.slice();
+    values.splice(index, 1);
+    this.setState({ values });
+    this.props.onChange(values);
   }
 
   render() {
@@ -65,7 +54,7 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
                 locale={this.props.locale}
                 format={this.props.format}
                 onChange={this.onChange.bind(this, index)}
-                value={value.value}
+                value={value}
               />
               <button
                 className="react-datepicker__delete-icon"
@@ -73,7 +62,7 @@ export default class MultiDate extends Component<MultiDateProps, MultiDateState>
               />
             </div>
           )))()}
-        <button className="btn btn-success add" onClick={this.add}>
+        <button className="btn btn-success add" onClick={this.add.bind(this)}>
           <Icon icon="plus" />
           &nbsp;
           <span>Add date</span>

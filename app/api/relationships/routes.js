@@ -37,10 +37,7 @@ export default app => {
     (req, res, next) => {
       relationships
         .save(req.body, req.language)
-        .then(response => {
-          console.log(response);
-          res.json(response);
-        })
+        .then(response => res.json(response))
         .catch(next);
     }
   );

@@ -13,7 +13,7 @@ describe('MultiDate', () => {
   beforeEach(() => {
     props = {
       label: 'input label',
-      value: [{ value: 1473984000 }, { value: 1474070400 }, { value: 1474156800 }],
+      value: [1473984000, 1474070400, 1474156800],
       onChange: jasmine.createSpy('onChange'),
     };
   });
@@ -33,11 +33,7 @@ describe('MultiDate', () => {
       render();
       const datepickers = component.find(DatePicker);
       datepickers.first().simulate('change', 1234);
-      expect(props.onChange).toHaveBeenCalledWith([
-        { value: 1234 },
-        { value: 1474070400 },
-        { value: 1474156800 },
-      ]);
+      expect(props.onChange).toHaveBeenCalledWith([1234, 1474070400, 1474156800]);
     });
   });
 
@@ -46,12 +42,7 @@ describe('MultiDate', () => {
       render();
       const addButton = component.find('.btn-success');
       addButton.simulate('click', { preventDefault: () => {} });
-      expect(component.state().values).toEqual([
-        { value: 1473984000 },
-        { value: 1474070400 },
-        { value: 1474156800 },
-        { value: null },
-      ]);
+      expect(component.state().values).toEqual([1473984000, 1474070400, 1474156800, null]);
     });
   });
 
@@ -60,8 +51,8 @@ describe('MultiDate', () => {
       render();
       const removeButtons = component.find('.react-datepicker__delete-icon');
       removeButtons.first().simulate('click', { preventDefault: () => {} });
-      expect(component.state().values).toEqual([{ value: 1474070400 }, { value: 1474156800 }]);
-      expect(props.onChange).toHaveBeenCalledWith([{ value: 1474070400 }, { value: 1474156800 }]);
+      expect(component.state().values).toEqual([1474070400, 1474156800]);
+      expect(props.onChange).toHaveBeenCalledWith([1474070400, 1474156800]);
     });
   });
 });
