@@ -89,9 +89,9 @@ export default (app) => {
     needsAuthorization(),
     validation.validateRequest(Joi.object().keys({
       searchId: Joi.string(),
-    }), 'query'),
+    })),
     (req, res, next) => {
-      semanticSearch.stopSearch(req.query.searchId)
+      semanticSearch.stopSearch(req.body.searchId)
       .then(search => res.json(search))
       .catch(next);
     });
@@ -100,9 +100,9 @@ export default (app) => {
     needsAuthorization(),
     validation.validateRequest(Joi.object().keys({
       searchId: Joi.string(),
-    }), 'query'),
+    })),
     (req, res, next) => {
-      semanticSearch.resumeSearch(req.query.searchId)
+      semanticSearch.resumeSearch(req.body.searchId)
       .then(search => res.json(search))
       .catch(next);
     });
