@@ -185,7 +185,7 @@ describe('Metadata Actions', () => {
 
       const expectedModel = {
         template: '1',
-        metadata: { year: [], powers: [], enemies: [], color: [] },
+        metadata: { year: '', powers: [], enemies: [], color: '' },
       };
 
       const dispatch = jasmine.createSpy('dispatch');

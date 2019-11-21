@@ -5,7 +5,7 @@ import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
 import { validation } from '../utils';
-import { saveSchema, metadataSchema, iconSchema } from './endpointSchema';
+// import { saveSchema, metadataSchema, iconSchema } from './endpointSchema';
 
 Joi.objectId = objectId(Joi);
 
@@ -13,7 +13,6 @@ export default (app) => {
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest(saveSchema),
     (req, res, next) => entities.save(req.body, { user: req.user, language: req.language })
     .then((response) => {
       res.json(response);
@@ -29,15 +28,6 @@ export default (app) => {
   app.post(
     '/api/entities/multipleupdate',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest(Joi.object().keys({
-      ids: Joi.array().items(Joi.string()).required(),
-      values: Joi.object().keys({
-        metadata: metadataSchema,
-        template: Joi.string(),
-        published: Joi.boolean(),
-        icon: iconSchema
-      }).required()
-    }).required()),
     (req, res, next) => entities.multipleUpdate(req.body.ids, req.body.values, { user: req.user, language: req.language })
     .then((docs) => {
       res.json(docs);
