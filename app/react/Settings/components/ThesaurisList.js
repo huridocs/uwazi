@@ -5,7 +5,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { I18NLink, t } from 'app/I18N';
-import { deleteThesauri, checkThesauriCanBeDeleted } from 'app/Thesauris/actions/thesaurisActions';
+import {
+  checkThesauriCanBeDeleted,
+  checkThesauriCanBeClassified,
+  deleteThesauri,
+  enableClassification,
+} from 'app/Thesauris/actions/thesaurisActions';
 import { Icon } from 'UI';
 
 import { notificationActions } from 'app/Notifications';
@@ -35,41 +40,57 @@ export class ThesaurisList extends Component {
       });
   }
 
+  enableClassification(thesauri) {
+    return this.props
+      .checkThesauriCanBeClassified(thesauri)
+      .then(this.props.enableClassification(thesauri))
+      .catch(() => {
+        this.context.confirm({
+          accept: () => {},
+          noCancel: true,
+          title: `Cannot enable classification for thesaurus: ${thesauri.name}`,
+          message: 'This thesaurus does not have its topic classification models in a good state.',
+        });
+      });
+  }
+
   render() {
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Thesauri')}</div>
         <ul className="list-group">
-          {sortThesauri(this.props.dictionaries.toJS()).map((dictionary, index) => (
-            <li key={index} className="list-group-item">
-              <I18NLink to={`/settings/dictionaries/edit/${dictionary._id}`}>
-                {dictionary.name}
+          {sortThesauri(this.props.dictionaries.toJS()).map(thesauri => (
+            <li key={thesauri.name} className="list-group-item">
+              <I18NLink to={`/settings/dictionaries/edit/${thesauri._id}`}>
+                {thesauri.name}
               </I18NLink>
               <div className="list-group-item-actions">
                 <I18NLink
-                  to={`/settings/dictionaries/edit/${dictionary._id}`}
-                  className="btn btn-default btn-xs"
-                >
-                  <Icon icon="code" />
-                  &nbsp;
-                  <span>{t('System', 'Enable ML')}</span>
-                </I18NLink>
-                <I18NLink
-                  to={`/settings/dictionaries/edit/${dictionary._id}`}
+                  to={`/settings/dictionaries/edit/${thesauri._id}`}
                   className="btn btn-default btn-xs"
                 >
                   <Icon icon="pencil-alt" />
                   &nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                <a
-                  onClick={this.deleteThesauri.bind(this, dictionary)}
+                <button
+                  onClick={this.enableClassification.bind(this, thesauri)}
+                  className="btn btn-default btn-xs"
+                  type="button"
+                >
+                  <Icon icon="code" />
+                  &nbsp;
+                  <span>{t('System', 'Enable ML')}</span>
+                </button>
+                <button
+                  onClick={this.deleteThesauri.bind(this, thesauri)}
                   className="btn btn-danger btn-xs template-remove"
+                  type="button"
                 >
                   <Icon icon="trash-alt" />
                   &nbsp;
                   <span>{t('System', 'Delete')}</span>
-                </a>
+                </button>
               </div>
             </li>
           ))}
@@ -88,6 +109,8 @@ export class ThesaurisList extends Component {
 ThesaurisList.propTypes = {
   dictionaries: PropTypes.object,
   deleteThesauri: PropTypes.func,
+  enableClassification: PropTypes.func,
+  checkThesauriCanBeClassified: PropTypes.func,
   notify: PropTypes.func,
   checkThesauriCanBeDeleted: PropTypes.func,
 };
@@ -103,6 +126,7 @@ export function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     { notify: notificationActions.notify, deleteThesauri, checkThesauriCanBeDeleted },
+    { notify: notificationActions.notify, enableClassification, checkThesauriCanBeClassified },
     dispatch
   );
 }
