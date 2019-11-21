@@ -732,23 +732,44 @@ describe('entities', () => {
   });
 
   describe('multipleUpdate()', () => {
-    it('should save() all the entities with the new metadata', done => {
-      spyOn(entities, 'save').and.returnValue(Promise.resolve());
+    it('should save() all the entities with the new metadata', async () => {
+      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+
       const metadata = {
-        property1: 'new text',
-        description: 'yeah!',
+        property1: [{ value: 'new text' }],
+        description: [{ value: 'yeah!' }],
         friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
       };
-      entities
-        .multipleUpdate(['shared', 'shared1'], { metadata }, { language: 'en' })
-        .then(() => {
-          expect(entities.save).toHaveBeenCalled();
-          expect(entities.save).toHaveBeenCalled();
-          expect(entities.save.calls.argsFor(0)[0].metadata).toEqual(metadata);
-          expect(entities.save.calls.argsFor(1)[0].metadata).toEqual(metadata);
-          done();
+
+      const updatedEntities = await entities.multipleUpdate(
+        ['shared', 'shared1', 'non_existent'],
+        { icon: { label: 'test' }, published: false, metadata },
+        { language: 'en' }
+      );
+
+      expect(updatedEntities.length).toBe(2);
+
+      const sharedEntity = updatedEntities.find(e => e.sharedId === 'shared');
+      expect(sharedEntity).toEqual(
+        expect.objectContaining({
+          sharedId: 'shared',
+          language: 'en',
+          icon: { label: 'test' },
+          published: false,
+          metadata: expect.objectContaining(metadata),
         })
-        .catch(catchErrors(done));
+      );
+
+      const shared1Entity = updatedEntities.find(e => e.sharedId === 'shared1');
+      expect(shared1Entity).toEqual(
+        expect.objectContaining({
+          sharedId: 'shared1',
+          language: 'en',
+          icon: { label: 'test' },
+          published: false,
+          metadata: expect.objectContaining(metadata),
+        })
+      );
     });
   });
 

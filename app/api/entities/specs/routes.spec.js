@@ -150,28 +150,24 @@ describe('entities', () => {
         expect(routes.post.validation('/api/entities/multipleupdate')).toMatchSnapshot();
       });
 
-      it('should call multipleUpdate with the ids and the metadata in the body', done => {
+      it('should call multipleUpdate with the ids and the metadata in the body', async () => {
+        const mockedResponse = [{ sharedId: '1' }, { sharedId: '2' }];
         spyOn(entities, 'multipleUpdate').and.returnValue(
-          new Promise(resolve => resolve([{ sharedId: '1' }, { sharedId: '2' }]))
+          new Promise(resolve => resolve(mockedResponse))
         );
-        routes
-          .post('/api/entities/multipleupdate', req)
-          .then(response => {
-            expect(entities.multipleUpdate).toHaveBeenCalledWith(
-              ['1', '2'],
-              { metadata: { text: [{ value: 'new text' }] } },
-              {
-                user: {
-                  _id: 'c08ef2532f0bd008ac5174b45e033c93',
-                  username: 'admin',
-                },
-                language: 'lang',
-              }
-            );
-            expect(response).toEqual(['1', '2']);
-            done();
-          })
-          .catch(catchErrors(done));
+        const response = await routes.post('/api/entities/multipleupdate', req);
+        expect(entities.multipleUpdate).toHaveBeenCalledWith(
+          ['1', '2'],
+          { metadata: { text: [{ value: 'new text' }] } },
+          {
+            user: {
+              _id: 'c08ef2532f0bd008ac5174b45e033c93',
+              username: 'admin',
+            },
+            language: 'lang',
+          }
+        );
+        expect(response).toBe(mockedResponse);
       });
     });
   });

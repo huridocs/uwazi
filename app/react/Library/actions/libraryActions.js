@@ -239,25 +239,11 @@ export function saveDocument(doc, formKey) {
 }
 
 export function multipleUpdate(entities, values) {
-  return (dispatch) => {
-    const updatedEntities = entities.toJS().map((_entity) => {
-      const entity = { ..._entity };
-      entity.metadata = Object.assign({}, entity.metadata, values.metadata);
-      if (values.icon) {
-        entity.icon = values.icon;
-      }
-      if (values.template) {
-        entity.template = values.template;
-      }
-      return entity;
-    });
-
-    const ids = updatedEntities.map(entity => entity.sharedId);
-    return entitiesAPI.multipleUpdate(new RequestParams({ ids, values }))
-    .then(() => {
-      dispatch(notificationActions.notify('Update success', 'success'));
-      dispatch(updateEntities(updatedEntities));
-    });
+  return async (dispatch) => {
+    const ids = entities.map(entity => entity.get('sharedId')).toJS();
+    const updatedDocs = await entitiesAPI.multipleUpdate(new RequestParams({ ids, values }));
+    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(updateEntities(updatedDocs));
   };
 }
 

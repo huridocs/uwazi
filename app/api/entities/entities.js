@@ -356,24 +356,22 @@ export default {
     await Promise.all(
       ids.map(async id => {
         const entity = await this.getById(id, params.language);
-        if (!entity) {
-          return;
+        if (entity) {
+          await this.save(
+            {
+              ...entity,
+              ...values,
+              metadata: { ...entity.metadata, ...values.metadata },
+            },
+            params,
+            true,
+            false
+          );
         }
-        entity.metadata = Object.assign({}, entity.metadata, values.metadata);
-        if (values.icon) {
-          entity.icon = values.icon;
-        }
-        if (values.template) {
-          entity.template = values.template;
-        }
-        if (values.published !== undefined) {
-          entity.published = values.published;
-        }
-        await this.save(entity, params, true, false);
       })
     );
     await this.indexEntities({ sharedId: { $in: ids } });
-    return ids;
+    return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
   getAllLanguages(sharedId) {

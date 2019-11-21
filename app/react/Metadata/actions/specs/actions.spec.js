@@ -49,12 +49,14 @@ describe('Metadata Actions', () => {
         { sharedId: '1', title: 'old title' },
         templates
       )(dispatch);
+
       const expectedDoc = {
         sharedId: '1',
         title: 'updated title',
         template: 'templateId',
-        metadata: { test: [{ value: 'test' }], newProp: [], testRelation: [] },
+        metadata: { test: 'test' },
       };
+
       expect(dispatch).toHaveBeenCalledWith('formload');
       expect(reactReduxForm.actions.load).toHaveBeenCalledWith('formNamespace', expectedDoc);
       expect(api.get).toHaveBeenCalledWith(new RequestParams({ sharedId: '1' }));
@@ -101,7 +103,7 @@ describe('Metadata Actions', () => {
 
         const expectedDoc = {
           title: 'test',
-          metadata: { test: [], newProp: [], multi: [], date: [], geolocation: [] },
+          metadata: {},
           template: 'templateId1',
         };
         expect(dispatch).toHaveBeenCalledWith('formreset');
@@ -193,27 +195,38 @@ describe('Metadata Actions', () => {
   });
 
   describe('multipleUpdate', () => {
-    it('should update selected entities with the given metadata and template', done => {
+    it('should update selected entities with the given metadata and template', async () => {
       mockID();
-      spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
+      const responseMetadata = { text: 'something new' };
       const entities = Immutable.fromJS([{ sharedId: '1' }, { sharedId: '2' }]);
-      const metadata = { text: 'something new' };
+      spyOn(api, 'multipleUpdate').and.returnValue(
+        Promise.resolve([
+          { sharedId: '1', metadata: responseMetadata },
+          { sharedId: '2', metadata: responseMetadata },
+        ])
+      );
       const template = 'template';
 
       const store = mockStore({});
-      store
-        .dispatch(actions.multipleUpdate(entities, { template, metadata }))
-        .then(docs => {
-          expect(api.multipleUpdate).toHaveBeenCalledWith(
-            new RequestParams({ ids: ['1', '2'], values: { template, metadata } })
-          );
-          expect(docs[0].metadata).toEqual(metadata);
-          expect(docs[0].template).toEqual('template');
-          expect(docs[1].metadata).toEqual(metadata);
-          expect(docs[1].template).toEqual('template');
+      const docs = await store.dispatch(
+        actions.multipleUpdate(entities, { template, metadata: { changed: 'changed' } })
+      );
+      expect(api.multipleUpdate).toHaveBeenCalledWith(
+        new RequestParams({
+          ids: ['1', '2'],
+          values: { template, metadata: { changed: 'changed' } },
         })
-        .then(done)
-        .catch(done.fail);
+      );
+      expect(docs[0]).toEqual(
+        expect.objectContaining({
+          metadata: expect.objectContaining(responseMetadata),
+        })
+      );
+      expect(docs[1]).toEqual(
+        expect.objectContaining({
+          metadata: expect.objectContaining(responseMetadata),
+        })
+      );
     });
   });
 
