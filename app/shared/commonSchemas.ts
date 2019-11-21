@@ -63,6 +63,8 @@ export const metadataObjectSchema = {
   properties: {
     value: propertyValueSchema,
     label: { type: 'string' },
+    // type: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+    // icon: { oneOf: [{ type: 'string' }, { type: 'null' }] },
   },
 };
 

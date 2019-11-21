@@ -84,7 +84,14 @@ describe('entity schema', () => {
           select: [{ value: 'value' }],
           multiselect: [{ value: 'one' }, { value: 'two' }],
           required_multiselect: [{ value: 'one' }],
-          relationship: [{ value: 'rel1' }, { value: 'rel2' }],
+          relationship: [
+            { icon: null, label: 'Daneryl', type: 'entity', value: '86raxe05i4uf2yb9' },
+            { value: 'rel2', type: 'entity', icon: '213' },
+          ],
+          field_nested: [
+            { value: { cadh: ['1.1', '25.1'], cipst: [], cbdp: [], cidfp: [] } },
+            { value: { cadh: ['1.1', '21.1', '21.2', '25', '1'], cipst: [], cbdp: [], cidfp: [] } },
+          ],
           link: [{ value: { label: 'label', url: 'url' } }],
           preview: [{ value: '' }],
         },
@@ -321,9 +328,9 @@ describe('entity schema', () => {
 
       describe('relationship property', () => {
         it('should fail if value is not an array of non-empty strings', async () => {
-          entity.metadata.relationship = ['val1', 10, {}];
+          entity.metadata.relationship = [{ value: 'val1' }, { value: 10 }, {}];
           await testInvalid();
-          entity.metadata.relationship = ['one', '', 'two'];
+          entity.metadata.relationship = [{ value: 'one' }, { value: '' }, { value: 'two' }];
           await testInvalid();
         });
       });
@@ -350,16 +357,6 @@ describe('entity schema', () => {
           await testInvalid();
           entity.metadata.link = { label: true, url: 'url' };
           await testInvalid();
-        });
-      });
-
-      describe('nested property', () => {
-        it('should allow nested values', async () => {
-          entity.metadata.field_nested = [
-            { value: { cadh: ['1.1', '25.1'], cipst: [], cbdp: [], cidfp: [] } },
-            { value: { cadh: ['1.1', '21.1', '21.2', '25', '1'], cipst: [], cbdp: [], cidfp: [] } },
-          ];
-          await testValid();
         });
       });
 
