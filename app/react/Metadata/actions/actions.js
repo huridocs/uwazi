@@ -39,10 +39,10 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
       resetedMetadata[property.name] = metadata[property.name];
     }
     if (resetValue && !['date', 'geolocation', 'link'].includes(type)) {
-      resetedMetadata[name] = [];
+      resetedMetadata[name] = '';
     }
     if (resetValue && type === 'daterange') {
-      resetedMetadata[name] = [];
+      resetedMetadata[name] = {};
     }
     if (
       resetValue &&
