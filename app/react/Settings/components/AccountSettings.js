@@ -24,6 +24,8 @@ export class AccountSettings extends Component {
     this.passwordChange = this.passwordChange.bind(this);
     this.repeatPasswordChange = this.repeatPasswordChange.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
+    this.updateEmail = this.updateEmail.bind(this);
+    this.emailChange = this.emailChange.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -102,14 +104,14 @@ export class AccountSettings extends Component {
           <div className="panel-heading">{t('System', 'Account')}</div>
           <div className="panel-body">
             <h5>{t('System', 'Email address')}</h5>
-            <form onSubmit={this.updateEmail.bind(this)}>
+            <form onSubmit={this.updateEmail}>
               <div className="form-group">
                 <label className="form-group-label" htmlFor="collection_name">
                   {t('System', 'Email')}
                 </label>
                 <input
                   type="email"
-                  onChange={this.emailChange.bind(this)}
+                  onChange={this.emailChange}
                   value={email}
                   className="form-control"
                 />
