@@ -12,6 +12,8 @@ function hasKey<O>(obj: O, key: keyof any): key is keyof O {
   return key in obj;
 }
 
+type Error = { code: number; message: string };
+
 describe('auth2fa userUtils', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
@@ -21,17 +23,22 @@ describe('auth2fa userUtils', () => {
     await db.disconnect();
   });
 
-  const verifyUserNotFound = async (method: string) => {
+  const expectError = async (method: string, _id: any, token: string, err: Error) => {
     if (hasKey(usersUtils, method)) {
       try {
-        await usersUtils[method]({ _id: db.id() }, 'any token');
-        fail('should throw error');
+        await usersUtils[method]({ _id }, token);
+        fail('Should throw error');
       } catch (e) {
-        expect(e).toEqual(createError('User not found', 403));
+        expect(e.code).toBe(err.code);
+        expect(e.message).toMatch(new RegExp(err.message, 'i'));
       }
     } else {
       fail('No such method');
     }
+  };
+
+  const verifyUserNotFound = async (method: string) => {
+    await expectError(method, db.id(), 'any token', { code: 403, message: 'user not found' });
   };
 
   const verifyTokenMock = (params: { token: string; secret: string }) => {
@@ -79,13 +86,8 @@ describe('auth2fa userUtils', () => {
     });
 
     it('should fail with 401 when invalid token', async () => {
-      try {
-        await usersUtils.verifyToken({ _id: secretedUserId }, 'incorrectToken');
-        fail('Should throw error');
-      } catch (e) {
-        expect(e.code).toBe(401);
-        expect(e.message).toMatch(/two-factor authentication failed/i);
-      }
+      const err = { code: 401, message: 'two-factor authentication failed' };
+      await expectError('verifyToken', secretedUserId, 'any token', err);
     });
 
     it('should throw if user not found', async () => {
@@ -106,13 +108,8 @@ describe('auth2fa userUtils', () => {
     });
 
     it('should not set "using2fa" and throw if token does not match', async () => {
-      try {
-        await usersUtils.enable2fa({ _id: secretedUserId }, 'incorrectToken');
-        fail('Should throw an error');
-      } catch (e) {
-        expect(e.code).toBe(409);
-        expect(e.message).toMatch(/token does not validate/i);
-      }
+      const err = { code: 409, message: 'token does not validate' };
+      await expectError('enable2fa', secretedUserId, 'any token', err);
     });
 
     it('should throw if user not found', async () => {
