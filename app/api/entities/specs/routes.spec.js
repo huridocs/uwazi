@@ -102,7 +102,6 @@ describe('entities', () => {
     });
 
     describe('get_raw_page', () => {
-
       it('should have a validation schema', () => {
         expect(routes.get.validation('/api/entities/get_raw_page')).toMatchSnapshot();
       });

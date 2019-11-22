@@ -21,7 +21,6 @@ import fixtures, {
   docId1,
   docId2,
 } from './fixtures.js';
-import { entity1 } from 'api/migrations/migrations/10-sync-starting-point/specs/fixtures.js';
 
 describe('entities', () => {
   beforeEach(async () => {
@@ -426,12 +425,10 @@ describe('entities', () => {
           filename: '8202c463d6158af8065022d9b5014cc1.pdf',
         },
       };
-      batmanFinishesId;
       const user = { _id: db.id() };
 
       await entities.save(doc, { user, language: 'es' });
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const [updatedEntity] = await entities.get({ sharedId: 'shared' });
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
