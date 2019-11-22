@@ -2,7 +2,7 @@
 
 import { EntitySchema } from 'api/entities/entityType';
 import db from 'api/utils/testing_db';
-import { extractSequence, modelName } from '../common';
+import { extractSequence, buildModelName } from '../common';
 import fixtures, { template1 } from './fixtures';
 
 describe('templates utils', () => {
@@ -14,9 +14,9 @@ describe('templates utils', () => {
     await db.disconnect();
   });
 
-  describe('modelName', () => {
+  describe('buildModelName', () => {
     process.env.DATABASE_NAME = 'test-db';
-    expect(modelName('Abc-D e')).toBe('test-db-abc-d_e');
+    expect(buildModelName('Abc-D e')).toBe('test-db-abc-d_e');
   });
 
   describe('extractSequence', () => {

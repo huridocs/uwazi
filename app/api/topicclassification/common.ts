@@ -33,6 +33,6 @@ export async function extractSequence(e: EntitySchema) {
   return parts.join(' ');
 }
 
-export function modelName(thesaurusName: string) {
+export function buildModelName(thesaurusName: string) {
   return `${process.env.DATABASE_NAME}-${thesaurusName.toLowerCase().replace(/ /g, '_')}`;
 }

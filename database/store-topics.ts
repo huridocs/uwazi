@@ -1,5 +1,5 @@
 /** @format */
-/* eslint-disable no-await-in-loop */
+/* eslint-disable no-await-in-loop, no-console */
 
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import yargs from 'yargs';
@@ -8,12 +8,12 @@ import entities from 'api/entities';
 import thesauri from 'api/thesauris';
 import templates from 'api/templates';
 import { WithId } from 'api/odm';
+import { extractSequence, buildModelName } from 'api/topicclassification';
 import { EntitySchema } from '../app/api/entities/entityType';
 
-const { server, seq_prop: seqPropName, max_upload: maxUpload, thesaurus, mode } = yargs
+const { server, max_upload: maxUpload, thesaurus, mode } = yargs
   .option('mode', { type: 'string', default: 'store' })
   .option('server', { default: 'http://localhost:5000', type: 'string' })
-  .option('seq_prop', { default: 'recommendation', type: 'string' })
   .option('thesaurus', { default: 'Issues', type: 'string' })
   .option('max_upload', { default: 100000 })
   .option('store_label_ids', { default: false })
@@ -57,9 +57,7 @@ connect().then(async () => {
         };
       }, {});
 
-      const modelName = `${process.env.DATABASE_NAME}-${thesaurus
-        .toLowerCase()
-        .replace(/ /g, '_')}`;
+      const modelName = buildModelName(thesaurus);
       const request: any = { samples: [] };
       const allE = await entities
         .get({})
@@ -71,8 +69,8 @@ connect().then(async () => {
         if (!e.template || !e.metadata) {
           return;
         }
-        const seqMeta = e.metadata[seqPropName];
-        if (!seqMeta || !seqMeta.length || !seqMeta[0].value) {
+        const sequence = await extractSequence(e);
+        if (!sequence) {
           return;
         }
         const prop = templateAndProp[e.template.toString()];
@@ -81,7 +79,7 @@ connect().then(async () => {
         }
         const propMeta = e.metadata[prop] || [];
         request.samples.push({
-          seq: seqMeta[0].value,
+          seq: sequence,
           training_labels: propMeta.map(mo => ({
             topic: mo.label,
           })),
