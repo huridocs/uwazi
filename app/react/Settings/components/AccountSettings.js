@@ -21,6 +21,9 @@ export class AccountSettings extends Component {
       repeatPassword: '',
       using2fa: props.user.using2fa,
     };
+    this.passwordChange = this.passwordChange.bind(this);
+    this.repeatPasswordChange = this.repeatPasswordChange.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -73,6 +76,23 @@ export class AccountSettings extends Component {
     this.setState({ email: e.target.value });
   }
 
+  renderPasswordField(id, value, label, passwordError) {
+    return (
+      <div className={`form-group${passwordError ? ' has-error' : ''}`}>
+        <label className="form-group-label" htmlFor={id}>
+          {t('System', label)}
+        </label>
+        <input
+          type="password"
+          onChange={this[`${id}Change`]}
+          value={value}
+          id={id}
+          className="form-control"
+        />
+      </div>
+    );
+  }
+
   render() {
     const { email, password, repeatPassword, passwordError, using2fa } = this.state;
 
@@ -100,31 +120,14 @@ export class AccountSettings extends Component {
             </form>
             <hr />
             <h5>{t('System', 'Change password')}</h5>
-            <form onSubmit={this.updatePassword.bind(this)}>
-              <div className={`form-group${passwordError ? ' has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="password">
-                  {t('System', 'New password')}
-                </label>
-                <input
-                  type="password"
-                  onChange={this.passwordChange.bind(this)}
-                  value={password}
-                  id="password"
-                  className="form-control"
-                />
-              </div>
-              <div className={`form-group${passwordError ? ' has-error' : ''}`}>
-                <label className="form-group-label" htmlFor="repeatPassword">
-                  {t('System', 'Confirm new password')}
-                </label>
-                <input
-                  type="password"
-                  onChange={this.repeatPasswordChange.bind(this)}
-                  value={repeatPassword}
-                  id="repeatPassword"
-                  className="form-control"
-                />
-              </div>
+            <form onSubmit={this.updatePassword}>
+              {this.renderPasswordField('password', password, 'New password', passwordError)}
+              {this.renderPasswordField(
+                'repeatPassword',
+                repeatPassword,
+                'Confirm new password',
+                passwordError
+              )}
               {passwordError && (
                 <div className="validation-error validation-error-centered">
                   <Icon icon="exclamation-triangle" />
