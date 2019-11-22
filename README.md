@@ -32,7 +32,7 @@ Intallation guide
 
 # Dependencies
 
-- **NodeJs 8.11.x** For ease of update, use nvm: https://github.com/creationix/nvm
+- **NodeJs 10.17.x** For ease of update, use nvm: https://github.com/creationix/nvm
 - **ElasticSearch 5.6.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.6, some sections of the instructions use 5.x which would install a different version). Please note that ElasticSearch requires java.
 - **MongoDB 4.0.3 instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.0-upgrade-standalone/)
 - **Yarn** https://yarnpkg.com/en/docs/install
@@ -73,7 +73,7 @@ $ yarn install
 $ yarn production-build
 ```
 
-The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running. 
+The first time you run Uwazi, you will need to initialize the database with its default blank values. Do no run this command for existing projects, as this will erase the entire database. Note that from this point you need ElasticSearch and MongoDB running.
 ```
 $ yarn blank-state
 ```
@@ -96,7 +96,7 @@ $ yarn migrate
 $ yarn production-build
 $ yarn run-production
 ```
-- If you are not using git, just download and overwrite the code in the Uwazi directory. 
+- If you are not using git, just download and overwrite the code in the Uwazi directory.
 - 'yarn install' will automatically add, remove or replace any changes in module dependecies.
 - 'yarn migrate' will track your last data version and, if needed, run a script over your data to modify it so that is up to date with your Uwazi version.
 
@@ -152,7 +152,7 @@ E2E Tests depend on electron.  If something appears to not be working, please ru
 
 ### Default login
 
-The application's default log in is admin / change this password now 
+The application's default log in is admin / change this password now
 
 Note the subtle nudge ;)
 
