@@ -1,5 +1,5 @@
 /* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emitTypes to update.*/
+/**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 export type ObjectIdSchema =
   | string
