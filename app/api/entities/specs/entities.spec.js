@@ -471,6 +471,7 @@ describe('entities', () => {
       expect(updatedEntity.metadata).toEqual({
         date: [],
         daterange: [],
+        field_nested: [],
         friends: [],
         multidate: [],
         multidaterange: [],

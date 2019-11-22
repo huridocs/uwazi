@@ -45,10 +45,6 @@ describe('entities', () => {
       expect(routes._post('/api/entities', req)).toNeedAuthorization();
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/entities')).toMatchSnapshot();
-    });
-
     it('should create a new document with current user', done => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
@@ -106,6 +102,7 @@ describe('entities', () => {
     });
 
     describe('get_raw_page', () => {
+
       it('should have a validation schema', () => {
         expect(routes.get.validation('/api/entities/get_raw_page')).toMatchSnapshot();
       });
@@ -144,10 +141,6 @@ describe('entities', () => {
 
       it('should need authorization', () => {
         expect(routes._post('/api/entities/multipleupdate', req)).toNeedAuthorization();
-      });
-
-      it('should have a validation schema', () => {
-        expect(routes.post.validation('/api/entities/multipleupdate')).toMatchSnapshot();
       });
 
       it('should call multipleUpdate with the ids and the metadata in the body', async () => {
