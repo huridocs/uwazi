@@ -5,11 +5,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 export default class Select extends Component {
-  /** If we're in metadata-object mode, extract the label: component from options. */
   onChange(event) {
     const newValue = event.hasOwnProperty('target') && event.target ? event.target.value : event;
-    const { onChange, isMo } = this.props;
-    if (!newValue || !isMo) {
+    const { onChange } = this.props;
+    if (!newValue) {
       return onChange(event);
     }
     const { options, optionsValue, optionsLabel } = this.props;
@@ -31,7 +30,7 @@ export default class Select extends Component {
       const sortRoot = options.reduce((memo, option) => memo && !option.options, true);
       _options = sortRoot ? advancedSort(options, { property: optionsLabel }) : options;
     }
-    const { value, onChange } = this.props;
+    const { value } = this.props;
 
     const disbaled = Boolean(required);
     return (

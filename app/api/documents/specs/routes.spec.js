@@ -35,10 +35,6 @@ describe('documents', () => {
       expect(routes.post('/api/documents', req)).toNeedAuthorization();
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/documents')).toMatchSnapshot();
-    });
-
     it('should create a new document with current user', (done) => {
       spyOn(documents, 'save').and.returnValue(new Promise(resolve => resolve('document')));
       routes.post('/api/documents', req)
