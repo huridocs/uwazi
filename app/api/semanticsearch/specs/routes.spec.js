@@ -93,7 +93,7 @@ describe('search routes', () => {
     it('should stop the search', async () => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'stopSearch').mockResolvedValue(result);
-      const req = { query: { searchId: 's1' } };
+      const req = { body: { searchId: 's1' } };
 
       const response = await routes.post('/api/semantic-search/stop', req);
       expect(response).toEqual(result);
@@ -105,7 +105,7 @@ describe('search routes', () => {
     it('should resume the search', async () => {
       const result = { _id: 's1' };
       jest.spyOn(semanticSearch, 'resumeSearch').mockResolvedValue(result);
-      const req = { query: { searchId: 's1' } };
+      const req = { body: { searchId: 's1' } };
 
       const response = await routes.post('/api/semantic-search/resume', req);
       expect(response).toEqual(result);
