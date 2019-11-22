@@ -1,3 +1,5 @@
+/** @format */
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons/faAngleLeft';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight';
@@ -19,6 +21,7 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { faClone } from '@fortawesome/free-solid-svg-icons/faClone';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons/faCloudUploadAlt';
+import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons/faCoffee';
 import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
 import { faComment } from '@fortawesome/free-solid-svg-icons/faComment';
@@ -103,6 +106,7 @@ const icons = {
   faClock,
   faClone,
   faCloudUploadAlt,
+  faCode,
   faCoffee,
   faCog,
   faComment,
