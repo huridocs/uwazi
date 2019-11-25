@@ -276,7 +276,7 @@ describe('entities', () => {
     });
 
     describe('when title changes', () => {
-      fit('should update title on entities with the entity as relationship', async () => {
+      it('should update title on entities with the entity as relationship', async () => {
         const doc = {
           _id: shared2,
           sharedId: 'shared2',
