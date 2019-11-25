@@ -1,14 +1,19 @@
+/** @format */
+
 import instanceElasticTesting from 'api/utils/elastic_testing';
 
+import { instanceSearch } from '../search';
 import elastic from '../elastic';
+import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('custom language analyzers', () => {
   const elasticIndex = 'analyzers_index_test';
-  const elasticTesting = instanceElasticTesting(elasticIndex);
+  const search = instanceSearch(elasticIndex);
+  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await elasticTesting.resetIndex();
-  });
+  }, fixturesTimeOut);
 
   describe('persian', () => {
     it('should index persian without errors', async () => {
@@ -23,7 +28,7 @@ describe('custom language analyzers', () => {
         type: 'fullText',
         body: { fullText_persian: persianText },
         id: '123_whatever',
-        parent: 123
+        parent: 123,
       });
     });
   });

@@ -1,17 +1,21 @@
 import db from 'api/utils/testing_db';
-import { search } from 'api/search';
+import { instanceSearch } from 'api/search/search';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 
 import inheritanceFixtures, { ids } from './fixturesInheritance';
+import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('search.searchGeolocations', () => {
-  const elasticTesting = instanceElasticTesting('search.geolocation_index_test');
   const user = { _id: 'u1' };
+
+  const elasticIndex = 'search.geolocation_index_test';
+  const search = instanceSearch(elasticIndex);
+  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeAll(async () => {
     await db.clearAllAndLoad(inheritanceFixtures);
     await elasticTesting.reindex();
-  });
+  }, fixturesTimeOut);
 
   afterAll((done) => {
     db.disconnect().then(done);
