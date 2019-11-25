@@ -38,12 +38,14 @@ export function reloadThesauris() {
 }
 
 export function enableClassification(thesauri) {
-  return dispatch =>
-    api.save(new RequestParams(thesauri)).then(_thesauri => {
+  return dispatch => {
+    thesauri.enable_classification = true;
+    return api.save(new RequestParams(thesauri)).then(_thesauri => {
       dispatch({ type: types.THESAURI_SAVED });
       notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
       dispatch(formActions.change('thesauri.data', _thesauri));
     });
+  };
 }
 
 export function checkThesauriCanBeClassified(thesauri) {

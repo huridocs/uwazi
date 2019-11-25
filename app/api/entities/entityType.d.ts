@@ -1,5 +1,5 @@
 /* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emitTypes to update.*/
+/**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
 import { ObjectIdSchema, MetadataSchema, TocSchema } from 'shared/commonTypes';
 
