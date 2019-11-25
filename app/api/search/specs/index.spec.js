@@ -166,7 +166,6 @@ describe('search', () => {
         .then(() => {
           expect(elastic.delete).toHaveBeenCalledWith({
             index: elasticIndex,
-            type: 'entity',
             id: id.toString(),
           });
           done();
@@ -188,8 +187,8 @@ describe('search', () => {
         .then(() => {
           expect(elastic.bulk).toHaveBeenCalledWith({
             body: [
-              { delete: { _index: elasticIndex, _type: 'entity', _id: 'id1' } },
-              { delete: { _index: elasticIndex, _type: 'entity', _id: 'id2' } },
+              { delete: { _index: elasticIndex, _id: 'id1' } },
+              { delete: { _index: elasticIndex, _id: 'id2' } },
             ],
           });
           done();

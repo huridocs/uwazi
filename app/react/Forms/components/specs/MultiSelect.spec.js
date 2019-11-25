@@ -75,21 +75,21 @@ describe('MultiSelect', () => {
         .find('input[type="checkbox"]')
         .at(0)
         .simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith([{ value: 'option1' }]);
+      expect(props.onChange).toHaveBeenCalledWith(['option1']);
     });
 
     it('it should handle multiple options selected', () => {
-      props.value = [{ value: 'option1' }];
+      props.value = ['option1'];
       render();
       component
         .find('input[type="checkbox"]')
         .at(1)
         .simulate('change');
-      expect(props.onChange).toHaveBeenCalledWith([{ value: 'option1' }, { value: 'option2' }]);
+      expect(props.onChange).toHaveBeenCalledWith(['option1', 'option2']);
     });
 
     it('it should remove options that were selected', () => {
-      props.value = [{ value: 'option1' }];
+      props.value = ['option1'];
       render();
       component
         .find('input[type="checkbox"]')
@@ -106,10 +106,7 @@ describe('MultiSelect', () => {
         .find('.group-checkbox')
         .first()
         .simulate('change', { target: { checked: true } });
-      expect(props.onChange).toHaveBeenCalledWith([
-        { value: 'group-option1' },
-        { value: 'group-option2' },
-      ]);
+      expect(props.onChange).toHaveBeenCalledWith(['group-option1', 'group-option2']);
       component
         .find('.group-checkbox')
         .first()

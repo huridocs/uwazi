@@ -68,7 +68,7 @@ const validateGeolocationProperty = value =>
   Array.isArray(value) && value.every(item => isValidGeolocation(item.value));
 
 const validateMultiSelectProperty = value =>
-  Array.isArray(value) && value.every(item => isValidSelect(item.value));
+  Array.isArray(value) && value.every(item => isValidSelect(item.value) && item.value);
 
 const isValidLinkField = value =>
   isString(value.label) && value.label && isString(value.url) && value.url;

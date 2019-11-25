@@ -105,7 +105,7 @@ Nightmare.action('logout', function logout(done) {
 });
 
 Nightmare.action('waitForTheEntityToBeIndexed', function waitForTheEntityToBeIndexed(done) {
-  this.wait(1200)
+  this.wait(1900)
   .then(() => { done(); });
 });
 

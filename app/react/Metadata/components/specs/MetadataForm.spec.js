@@ -8,7 +8,6 @@ import { Form, Field } from 'react-redux-form';
 import { MetadataForm, mapStateToProps } from '../MetadataForm';
 import MetadataFormFields from '../MetadataFormFields';
 import { Select as SimpleSelect } from '../../../Forms';
-import entitiesUtils from '../../../Entities/utils/filterBaseProperties';
 
 describe('MetadataForm', () => {
   let component;

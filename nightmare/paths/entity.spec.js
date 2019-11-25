@@ -64,7 +64,7 @@ describe('Entity zone', () => {
         },
         viewer: {
           realName: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(1) > dd',
-          age: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(2) > dd',
+          age: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(2) > dd li',
           knownAccomplices: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl > dd > ul > li > a',
           mainSuperpower: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(4) > dd',
           superpowers: '#app > div.content > div > div > main > div > div.tab-content.tab-content-visible > div > div > div.view > dl:nth-child(5) > dd > ul',

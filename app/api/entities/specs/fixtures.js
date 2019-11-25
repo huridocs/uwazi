@@ -265,6 +265,7 @@ export default {
         { type: 'multidaterange', name: 'multidaterange' },
         { type: 'daterange', name: 'daterange' },
         { type: 'relationship', name: 'friends', relationType: relationType1 },
+        { type: 'nested', name: 'field_nested' },
         { type: 'numeric', name: 'numeric' },
       ],
     },
