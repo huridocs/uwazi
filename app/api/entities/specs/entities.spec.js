@@ -14,6 +14,7 @@ import path from 'path';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
+  shared2,
   templateId,
   templateChangingNames,
   syncPropertiesEntityId,
@@ -271,6 +272,20 @@ describe('entities', () => {
             done();
           })
           .catch(catchErrors(done));
+      });
+    });
+
+    describe('when title changes', () => {
+      fit('should update title on entities with the entity as relationship', async () => {
+        const doc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          title: 'changedTitle',
+        };
+
+        await entities.save(doc, { language: 'en' });
+        const relatedEntity = await entities.getById('shared', 'en');
+        expect(relatedEntity.metadata.friends[0].label).toBe('changedTitle');
       });
     });
 

@@ -25,6 +25,7 @@ const hub5 = db.id();
 
 const docId1 = db.id();
 const docId2 = db.id();
+const shared2 = db.id();
 const unpublishedDocId = db.id('123456789012345678901234');
 const relationType1 = db.id();
 const relationType2 = db.id();
@@ -48,6 +49,7 @@ export default {
       metadata: {
         property1: [{ value: 'value1' }],
         friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        multiselect: [],
       },
       file: {
         filename: '8202c463d6158af8065022d9b5014cc1.pdf',
@@ -231,7 +233,14 @@ export default {
       metadata: { multiselect: [{ value: 'value1' }, { value: 'multiselect' }] },
       file: { filename: '123.pdf' },
     },
-    { sharedId: 'shared2', language: 'en', title: 'shared2title', metadata: {} },
+    {
+      _id: shared2,
+      template: templateId,
+      sharedId: 'shared2',
+      language: 'en',
+      title: 'shared2title',
+      metadata: {},
+    },
     { sharedId: 'source2', language: 'en' },
     {
       title: 'entity one',
@@ -264,7 +273,12 @@ export default {
         { type: 'multidate', name: 'multidate' },
         { type: 'multidaterange', name: 'multidaterange' },
         { type: 'daterange', name: 'daterange' },
-        { type: 'relationship', name: 'friends', relationType: relationType1 },
+        {
+          type: 'relationship',
+          name: 'friends',
+          relationType: relationType1,
+          content: templateId.toString(),
+        },
         { type: 'nested', name: 'field_nested' },
         { type: 'numeric', name: 'numeric' },
       ],
@@ -372,6 +386,7 @@ export {
   templateChangingNames,
   templateWithEntityAsThesauri,
   docId1,
+  shared2,
   docId2,
   c1,
   c2,

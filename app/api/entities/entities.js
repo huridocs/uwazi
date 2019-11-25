@@ -130,7 +130,7 @@ async function updateEntity(entity, _template) {
 
       if (d._id.toString() === entity._id.toString()) {
         if (entity.title && currentDoc.title !== entity.title) {
-          await this.renameRelatedEntityInMetadata(entity);
+          await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
         return entity.metadata
           ? model.save({ ...entity, metadata: await denormalizeMetadata(entity, template) })
@@ -625,13 +625,17 @@ export default {
         changes[`metadata.${property.name}.$[].label`] = newLabel;
         return p;
       });
+
     if (!query.$or.length) {
       return;
     }
+
     if (restrictLanguage) {
       query = { $and: [{ language: restrictLanguage }, query] };
     }
+
     const entities = await this.get(query, { _id: 1 });
+
     await model.db.updateMany(query, { $set: changes });
     await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
   },
