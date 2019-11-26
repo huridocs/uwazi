@@ -1,5 +1,4 @@
 /** @format */
-/* eslint-disable max-statements */
 
 const assessStatus = routeResult => {
   let status;
