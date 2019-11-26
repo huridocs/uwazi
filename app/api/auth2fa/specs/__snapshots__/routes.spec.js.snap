@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Auth2fa Routes auth2fa-enable should conform the route with auth, validation, respond correctly and call next on error 1`] = `
+Object {
+  "children": Object {
+    "token": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`Auth2fa Routes auth2fa-enable should conform the route with auth, validation, respond correctly and call next on error 2`] = `
+Object {
+  "success": true,
+}
+`;
+
+exports[`Auth2fa Routes auth2fa-reset should conform the route with auth, validation, respond correctly and call next on error 1`] = `
+Object {
+  "children": Object {
+    "_id": Object {
+      "flags": Object {
+        "presence": "required",
+      },
+      "invalids": Array [
+        "",
+      ],
+      "rules": Array [
+        Object {
+          "arg": 24,
+          "name": "length",
+        },
+        Object {
+          "name": "alphanum",
+        },
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
+exports[`Auth2fa Routes auth2fa-reset should conform the route with auth, validation, respond correctly and call next on error 2`] = `
+Object {
+  "success": true,
+}
+`;
+
+exports[`Auth2fa Routes auth2fa-secret should conform the route with auth, validation, respond correctly and call next on error 1`] = `
+Object {
+  "children": Object {},
+  "type": "object",
+}
+`;
+
+exports[`Auth2fa Routes auth2fa-secret should conform the route with auth, validation, respond correctly and call next on error 2`] = `
+Object {
+  "otpauth": "otpauthURL",
+  "secret": "secretKey",
+}
+`;
