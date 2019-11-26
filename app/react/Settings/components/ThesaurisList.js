@@ -9,6 +9,7 @@ import {
   checkThesauriCanBeDeleted,
   checkThesauriCanBeClassified,
   deleteThesauri,
+  disableClassification,
   enableClassification,
 } from 'app/Thesauris/actions/thesaurisActions';
 import { Icon } from 'UI';
@@ -54,6 +55,18 @@ export class ThesaurisList extends Component {
       });
   }
 
+  disableClassification(thesauri) {
+    console.log('disable', this.props);
+    return this.props.disableClassification(thesauri).catch(() => {
+      this.context.confirm({
+        accept: () => {},
+        noCancel: true,
+        title: `Cannot disable classification for thesaurus: ${thesauri.name}`,
+        message: 'This thesaurus does not have its topic classification models in a good state.',
+      });
+    });
+  }
+
   render() {
     return (
       <div className="panel panel-default">
@@ -93,6 +106,15 @@ export class ThesaurisList extends Component {
                   <span>{t('System', 'Enable ML')}</span>
                 </button>
                 <button
+                  onClick={this.disableClassification.bind(this.thesauri)}
+                  className="btn btn-danger btn-xs template-remove"
+                  type="button"
+                >
+                  <Icon icon="trash-alt" />
+                  &nbsp;
+                  <span>{t('System', 'Disable Classification')}</span>
+                </button>
+                <button
                   onClick={this.deleteThesauri.bind(this, thesauri)}
                   className="btn btn-danger btn-xs template-remove"
                   type="button"
@@ -119,6 +141,7 @@ export class ThesaurisList extends Component {
 ThesaurisList.propTypes = {
   dictionaries: PropTypes.object,
   deleteThesauri: PropTypes.func,
+  disableClassification: PropTypes.func,
   enableClassification: PropTypes.func,
   checkThesauriCanBeClassified: PropTypes.func,
   notify: PropTypes.func,
@@ -139,6 +162,7 @@ function mapDispatchToProps(dispatch) {
       notify: notificationActions.notify,
       deleteThesauri,
       checkThesauriCanBeDeleted,
+      disableClassification,
       enableClassification,
       checkThesauriCanBeClassified,
     },

@@ -38,6 +38,7 @@ export const thesaurusSchema = {
           classificationEnabled: {
             type: 'boolean',
             minLength: 1,
+            default: false,
           },
           values: {
             type: 'array',

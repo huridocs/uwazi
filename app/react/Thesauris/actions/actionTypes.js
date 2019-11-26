@@ -1,6 +1,9 @@
+/** @format */
+
 //DATA
 export const THESAURI_SAVED = 'THESAURI_SAVED';
 export const EDIT_THESAURI = 'EDIT_THESAURI';
+export const ENABLE_ML_THESAURI = 'ENABLE_ML_THESAURI';
 export const THESAURI_DELETED = 'THESAURI_DELETED';
 export const SET_THESAURIS = 'SET_THESAURIS';
 export const RESET_THESAURI = 'RESET_THESAURI';

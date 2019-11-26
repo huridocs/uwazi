@@ -5,7 +5,6 @@ import { actions as formActions } from 'react-redux-form';
 import { t } from 'app/I18N';
 import { actions } from 'app/BasicReducer';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
-import * as types from 'app/Thesauris/actions/actionTypes';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -37,13 +36,28 @@ export function reloadThesauris() {
     });
 }
 
+export function disableClassification(thesauri) {
+  return async dispatch => {
+    console.dir('data', thesauri);
+    const _thesauri = { ...thesauri, enableClassification: false };
+    console.dir('data', _thesauri);
+    // values.
+    await api.enable(new RequestParams(_thesauri)).then(_updatedThesauri => {
+      notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
+      dispatch(actions.update('dictionaries', _updatedThesauri));
+    });
+  };
+}
+
 export function enableClassification(thesauri) {
-  return dispatch => {
-    thesauri.enable_classification = true;
-    return api.save(new RequestParams(thesauri)).then(_thesauri => {
-      dispatch({ type: types.THESAURI_SAVED });
-      notifications.notify(t('System', 'Thesaurus saved', null, false), 'success')(dispatch);
-      dispatch(formActions.change('thesauri.data', _thesauri));
+  return async dispatch => {
+    console.dir('data', thesauri);
+    const _thesauri = { ...thesauri, enableClassification: true };
+    console.dir('data', _thesauri);
+    // values.
+    await api.enable(new RequestParams(_thesauri)).then(updatedThesauri => {
+      notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
+      dispatch(actions.update('dictionaries', updatedThesauri));
     });
   };
 }
