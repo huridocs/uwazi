@@ -34,11 +34,10 @@ const assessAuthorized = (routeResult, roles = []) => {
   return roles.join(',') === nextCalledFor.join(',');
 };
 
-const conformValidationErrors = (routeCanFail, expected) => {
-  return routeCanFail
+const conformValidationErrors = (routeCanFail, expected) =>
+  routeCanFail
     ? `Route is not correctly authorized for ['${expected.join("', '")}']`
     : 'Route is not authorized ! (Auth middleware should be the first one)';
-};
 
 const conformMessage = (result, routeCanFail, expected) =>
   result.pass ? 'route is authorized' : conformValidationErrors(routeCanFail, expected);
