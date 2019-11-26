@@ -1,5 +1,42 @@
+/** @format */
+/* eslint-disable max-statements */
+
+const assessStatus = routeResult => {
+  let status;
+  const req = {};
+  const next = () => {};
+  const res = {
+    status: code => {
+      status = code;
+    },
+    json: () => {},
+  };
+
+  routeResult.middlewares[0](req, res, next);
+
+  return status;
+};
+
+const assessAuthorized = (routeResult, roles = []) => {
+  const nextCalledFor = [];
+
+  roles.forEach(role => {
+    const req = {
+      user: { role },
+      get: key => (key === 'X-Requested-With' ? 'XMLHttpRequest' : ''),
+    };
+    const res = { status: () => {}, json: () => {} };
+    const next = () => {
+      nextCalledFor.push(role);
+    };
+    routeResult.middlewares[0](req, res, next);
+  });
+
+  return roles.join(',') === nextCalledFor.join(',');
+};
+
 export function catchErrors(done) {
-  return (error) => {
+  return error => {
     if (error instanceof Error) {
       return done.fail(error.stack);
     }
@@ -10,22 +47,25 @@ export function catchErrors(done) {
 const matchers = {
   toNeedAuthorization() {
     return {
-      compare(routeResult) {
-        let status;
-        const req = {};
-        const next = () => {};
-        const res = { status: (code) => { status = code; }, json: () => {} };
+      compare(routeResult, expected) {
+        let routeValidatesExpected = true;
+        const routeCanFail = assessStatus(routeResult) === 401;
 
-        routeResult.middlewares[0](req, res, next);
+        if (expected) {
+          routeValidatesExpected = assessAuthorized(routeResult, expected);
+        }
 
-        const result = { pass: status === 401 };
+        const result = { pass: routeCanFail && routeValidatesExpected };
         if (result.pass) {
           result.message = () => 'route is authorized';
         } else {
-          result.message = () => 'Route is not authorized ! (Auth middleware should be the first one)';
+          result.message = () =>
+            routeCanFail
+              ? `Route is not correctly authorized for ['${expected.join("', '")}']`
+              : 'Route is not authorized ! (Auth middleware should be the first one)';
         }
         return result;
-      }
+      },
     };
   },
   containItems() {
@@ -40,10 +80,10 @@ const matchers = {
           result.message = `Expected: [${expected}] but got: [${actual}]`;
         }
         return result;
-      }
+      },
     };
   },
-  toContainEqual: jasmine.matchers ? jasmine.matchers.toContain : () => {}
+  toContainEqual: jasmine.matchers ? jasmine.matchers.toContain : () => {},
 };
 
 beforeEach(() => {
