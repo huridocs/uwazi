@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { fromJS } from 'immutable';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
@@ -5,7 +7,7 @@ import { actions } from 'app/BasicReducer';
 
 import { browserHistory } from 'react-router';
 import { shallow } from 'enzyme';
-import ViewDocument from 'app/Viewer/ViewDocument';
+import PDFView from 'app/Viewer/PDFView';
 import Viewer from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -15,8 +17,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
 
-
-describe('ViewDocument', () => {
+describe('PDFView', () => {
   let component;
   let instance;
   let context;
@@ -24,16 +25,20 @@ describe('ViewDocument', () => {
 
   const render = () => {
     RouteHandler.renderedFromServer = true;
-    component = shallow(<ViewDocument {...props} />, { context });
+    component = shallow(<PDFView {...props} />, { context });
     instance = component.instance();
   };
 
   beforeEach(() => {
     const dispatch = jasmine.createSpy('dispatch');
-    context = { store: {
-      getState: () => ({}),
-      dispatch: dispatch.and.callFake(action => (typeof action === 'function') ? action(dispatch) : action),
-    } };
+    context = {
+      store: {
+        getState: () => ({}),
+        dispatch: dispatch.and.callFake(action =>
+          typeof action === 'function' ? action(dispatch) : action
+        ),
+      },
+    };
     props = { location: { query: {} }, routes: [] };
 
     render();
@@ -81,18 +86,31 @@ describe('ViewDocument', () => {
 
   describe('static requestState', () => {
     it('should call on requestViewerState', () => {
-      const requestParams = new RequestParams({ documentId: 'documentId', lang: 'es', page: 4, raw: 'true' });
-      ViewDocument.requestState(requestParams, 'globalResources');
-      expect(routeActions.requestViewerState)
-      .toHaveBeenCalledWith(new RequestParams({ documentId: 'documentId', lang: 'es', raw: true, page: 4 }), 'globalResources');
+      const requestParams = new RequestParams({
+        documentId: 'documentId',
+        lang: 'es',
+        page: 4,
+        raw: 'true',
+      });
+      PDFView.requestState(requestParams, 'globalResources');
+      expect(routeActions.requestViewerState).toHaveBeenCalledWith(
+        new RequestParams({ documentId: 'documentId', lang: 'es', raw: true, page: 4 }),
+        'globalResources'
+      );
     });
 
     it('should modify raw to true if is server side rendered', () => {
       utils.isClient = false;
-      const requestParams = new RequestParams({ documentId: 'documentId', lang: 'es', raw: 'false' });
-      ViewDocument.requestState(requestParams, 'globalResources');
-      expect(routeActions.requestViewerState)
-      .toHaveBeenCalledWith(new RequestParams({ documentId: 'documentId', lang: 'es', raw: true }), 'globalResources');
+      const requestParams = new RequestParams({
+        documentId: 'documentId',
+        lang: 'es',
+        raw: 'false',
+      });
+      PDFView.requestState(requestParams, 'globalResources');
+      expect(routeActions.requestViewerState).toHaveBeenCalledWith(
+        new RequestParams({ documentId: 'documentId', lang: 'es', raw: true }),
+        'globalResources'
+      );
     });
   });
 
@@ -119,10 +137,7 @@ describe('ViewDocument', () => {
       const reference = { _id: 'refId', range: { start: 200, end: 300 }, text: 'test' };
       const doc = fromJS({
         pdfInfo,
-        relationships: [
-          { _id: 'otherRef' },
-          reference
-        ]
+        relationships: [{ _id: 'otherRef' }, reference],
       });
       render();
       instance.onDocumentReady(doc);
@@ -142,7 +157,10 @@ describe('ViewDocument', () => {
   describe('changePage', () => {
     describe('when raw', () => {
       it('should changeBrowserHistoryPage', () => {
-        props.location = { query: { raw: true, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+        props.location = {
+          query: { raw: true, anotherProp: 'test', page: 15 },
+          pathname: 'pathname',
+        };
         spyOn(uiActions, 'scrollToPage');
         render();
         spyOn(instance, 'changeBrowserHistoryPage');
@@ -155,7 +173,10 @@ describe('ViewDocument', () => {
 
     describe('when not raw', () => {
       it('should scrollToPage', () => {
-        props.location = { query: { raw: false, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+        props.location = {
+          query: { raw: false, anotherProp: 'test', page: 15 },
+          pathname: 'pathname',
+        };
         spyOn(uiActions, 'scrollToPage');
         render();
         spyOn(instance, 'changeBrowserHistoryPage');
@@ -168,14 +189,17 @@ describe('ViewDocument', () => {
   });
 
   describe('componentWillReceiveProps', () => {
-    const setProps = (newProps) => {
+    const setProps = newProps => {
       entitiesAPI.getRawPage.calls.reset();
       component.setProps(newProps);
       component.update();
     };
 
     beforeEach(() => {
-      props.location = { query: { raw: 'true', anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+      props.location = {
+        query: { raw: 'true', anotherProp: 'test', page: 15 },
+        pathname: 'pathname',
+      };
       props.params = { sharedId: 'documentId' };
       spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
       render();
@@ -189,20 +213,32 @@ describe('ViewDocument', () => {
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
 
       entitiesAPI.getRawPage.calls.reset();
-      await instance.componentWillReceiveProps({ params: { sharedId: 'documentId' }, location: { query: { page: 17, raw: 'true' } } });
-      expect(context.store.dispatch).toHaveBeenCalledWith(actions.set('viewer/rawText', 'raw text'));
-      expect(entitiesAPI.getRawPage).toHaveBeenCalledWith(new RequestParams({ sharedId: 'documentId', pageNumber: 17 }));
+      await instance.componentWillReceiveProps({
+        params: { sharedId: 'documentId' },
+        location: { query: { page: 17, raw: 'true' } },
+      });
+      expect(context.store.dispatch).toHaveBeenCalledWith(
+        actions.set('viewer/rawText', 'raw text')
+      );
+      expect(entitiesAPI.getRawPage).toHaveBeenCalledWith(
+        new RequestParams({ sharedId: 'documentId', pageNumber: 17 })
+      );
     });
   });
 
   describe('changeBrowserHistoryPage', () => {
     it('should push new browserHistory with new page', () => {
-      props.location = { query: { raw: true, anotherProp: 'test', page: 15 }, pathname: 'pathname' };
+      props.location = {
+        query: { raw: true, anotherProp: 'test', page: 15 },
+        pathname: 'pathname',
+      };
       spyOn(browserHistory, 'push');
       render();
 
       instance.changeBrowserHistoryPage(16);
-      expect(browserHistory.push).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
+      expect(browserHistory.push).toHaveBeenCalledWith(
+        'pathname?raw=true&anotherProp=test&page=16'
+      );
 
       component.setProps({ location: { query: { raw: false, page: 15 }, pathname: 'pathname' } });
       component.update();
@@ -227,13 +263,19 @@ describe('ViewDocument', () => {
 
     it('should unset the state', () => {
       instance.emptyState();
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'SET_REFERENCES', references: [] });
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: 'SET_REFERENCES',
+        references: [],
+      });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/doc/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/templates/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/thesauris/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/relationTypes/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/rawText/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'rrf/reset', model: 'documentViewer.tocForm' });
+      expect(context.store.dispatch).toHaveBeenCalledWith({
+        type: 'rrf/reset',
+        model: 'documentViewer.tocForm',
+      });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDoc/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'relationshipsEmptyState' });
     });
