@@ -34,6 +34,15 @@ const assessAuthorized = (routeResult, roles = []) => {
   return roles.join(',') === nextCalledFor.join(',');
 };
 
+const conformValidationErrors = (routeCanFail, expected) => {
+  return routeCanFail
+    ? `Route is not correctly authorized for ['${expected.join("', '")}']`
+    : 'Route is not authorized ! (Auth middleware should be the first one)';
+};
+
+const conformMessage = (result, routeCanFail, expected) =>
+  result.pass ? 'route is authorized' : conformValidationErrors(routeCanFail, expected);
+
 export function catchErrors(done) {
   return error => {
     if (error instanceof Error) {
@@ -47,22 +56,10 @@ const matchers = {
   toNeedAuthorization() {
     return {
       compare(routeResult, expected) {
-        let routeValidatesExpected = true;
         const routeCanFail = assessStatus(routeResult) === 401;
-
-        if (expected) {
-          routeValidatesExpected = assessAuthorized(routeResult, expected);
-        }
-
+        const routeValidatesExpected = expected ? assessAuthorized(routeResult, expected) : true;
         const result = { pass: routeCanFail && routeValidatesExpected };
-        if (result.pass) {
-          result.message = () => 'route is authorized';
-        } else {
-          result.message = () =>
-            routeCanFail
-              ? `Route is not correctly authorized for ['${expected.join("', '")}']`
-              : 'Route is not authorized ! (Auth middleware should be the first one)';
-        }
+        result.message = () => conformMessage(result, routeCanFail, expected);
         return result;
       },
     };
