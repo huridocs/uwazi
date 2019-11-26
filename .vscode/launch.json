@@ -5,6 +5,7 @@
   "version": "0.2.0",
   "configurations": [
 
+
     {
       "type": "node",
       "request": "launch",
@@ -73,20 +74,6 @@
       "program": "${workspaceFolder}/run.js",
       "args": ["${file}"],
       "restart": true,
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "BABEL_ENV": "debug"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "e2e-this-file",
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": ["--projects=nightmare/jest.e2e.config.js", "-i", "--verbose=true", "${file}"],
-      "restart": true,
-      "smartStep": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "env": {

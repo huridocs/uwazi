@@ -2,8 +2,8 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "yarn",
-      "task": "hot-inspect",
+      "type": "npm",
+      "script": "hot-inspect",
       "isBackground": true,
       "label": "hot-inspect",
       "presentation": {

@@ -4,8 +4,7 @@
  * @format
  */
 
-import elasticIndexes from 'api/config/elasticIndexes';
-import { search, documentQueryBuilder, elastic } from 'api/search';
+import { search, elastic } from 'api/search';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
@@ -469,7 +468,7 @@ describe('search', () => {
           ),
         ])
           .then(([template1, template2, both, filtered]) => {
-            const template1Aggs = template1.aggregations.all['multiselect1'].buckets;
+            const template1Aggs = template1.aggregations.all.multiselect1.buckets;
             expect(template1Aggs.find(a => a.key === 'multiValue1').filtered.doc_count).toBe(2);
             expect(template1Aggs.find(a => a.key === 'multiValue2').filtered.doc_count).toBe(2);
 

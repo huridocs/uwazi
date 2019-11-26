@@ -40,9 +40,8 @@ export class ThesaurisList extends Component {
       });
   }
 
-  enableClassification(thesauri) {
-    console.log(this.props);
-    return this.props
+  async enableClassification(thesauri) {
+     this.props
       .checkThesauriCanBeClassified(thesauri)
       .then(this.props.enableClassification(thesauri))
       .catch(() => {
@@ -58,7 +57,7 @@ export class ThesaurisList extends Component {
   render() {
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Thesauri')}</div>
+        <dreturniv className="panel-heading">{t('System', 'Thesauri')}</div>
         <ul className="list-group">
           {sortThesauri(this.props.dictionaries.toJS()).map(thesauri => (
             <li key={thesauri.name} className="list-group-item">
@@ -74,6 +73,16 @@ export class ThesaurisList extends Component {
                   &nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
+                {thesauri.enable_classification ? (
+                  <I18NLink
+                    to={`/settings/dictionaries/classify_stats/${thesauri._id}`}
+                    className="btn btn-success btn-xs"
+                  >
+                    <Icon icon="code" />
+                    &nbsp;
+                    <span>{t('System', 'Review ML')}</span>
+                  </I18NLink>
+                ) : null}
                 <button
                   onClick={this.enableClassification.bind(this, thesauri)}
                   className="btn btn-default btn-xs"

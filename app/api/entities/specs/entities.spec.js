@@ -14,6 +14,7 @@ import path from 'path';
 import entities from '../entities.js';
 import fixtures, {
   batmanFinishesId,
+  shared2,
   templateId,
   templateChangingNames,
   syncPropertiesEntityId,
@@ -21,7 +22,6 @@ import fixtures, {
   docId1,
   docId2,
 } from './fixtures.js';
-import { entity1 } from 'api/migrations/migrations/10-sync-starting-point/specs/fixtures.js';
 
 describe('entities', () => {
   beforeEach(async () => {
@@ -275,6 +275,20 @@ describe('entities', () => {
       });
     });
 
+    describe('when title changes', () => {
+      it('should update title on entities with the entity as relationship', async () => {
+        const doc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          title: 'changedTitle',
+        };
+
+        await entities.save(doc, { language: 'en' });
+        const relatedEntity = await entities.getById('shared', 'en');
+        expect(relatedEntity.metadata.friends[0].label).toBe('changedTitle');
+      });
+    });
+
     describe('when published/template property changes', () => {
       it('should replicate the change for all the languages', done => {
         const doc = {
@@ -426,12 +440,10 @@ describe('entities', () => {
           filename: '8202c463d6158af8065022d9b5014cc1.pdf',
         },
       };
-      batmanFinishesId;
       const user = { _id: db.id() };
 
       await entities.save(doc, { user, language: 'es' });
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const [updatedEntity] = await entities.get({ sharedId: 'shared' });
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
@@ -471,6 +483,7 @@ describe('entities', () => {
       expect(updatedEntity.metadata).toEqual({
         date: [],
         daterange: [],
+        field_nested: [],
         friends: [],
         multidate: [],
         multidaterange: [],

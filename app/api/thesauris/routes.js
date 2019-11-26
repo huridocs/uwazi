@@ -21,6 +21,7 @@ export default (app) => {
         _id: Joi.string(),
         __v: Joi.number(),
         name: Joi.string().required(),
+        enable_classification: Joi.boolean(),
         values: Joi.array().items(
           Joi.object().keys({
             id: Joi.string(),
