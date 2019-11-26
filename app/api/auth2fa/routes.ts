@@ -1,5 +1,4 @@
 /** @format */
-// TEST!!!
 import Joi from 'joi';
 
 import needsAuthorization from 'api/auth/authMiddleware';
