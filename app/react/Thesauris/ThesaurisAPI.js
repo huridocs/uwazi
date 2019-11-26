@@ -13,6 +13,11 @@ export default {
     .then(response => response.json.rows);
   },
 
+  getClassificationStats(requestParams) {
+    const url = 'classification_stats';
+    return api.get(url, requestParams).then(response => response.json);
+  },
+
   save(requestParams) {
     return api.post('thesauris', requestParams)
     .then(response => response.json);

@@ -24,9 +24,9 @@ export function deleteThesauri(thesauri) {
 }
 
 export function checkThesauriCanBeDeleted(thesauri) {
-  return () =>
+  return dispatch =>
     TemplatesAPI.countByThesauri(new RequestParams({ _id: thesauri._id })).then(count =>
-      count ? Promise.reject() : null
+      count ? Promise.reject() : dispatch
     );
 }
 
@@ -51,8 +51,11 @@ export function enableClassification(thesauri) {
 export function checkThesauriCanBeClassified(thesauri) {
   console.log('can thesauri be classified?', thesauri);
   // TODO: make this actually validate models
-  return dispatch =>
-    api.get().then(response => {
-      dispatch(actions.set('thesauris', response));
-    });
+  return async dispatch => {
+    const stats = await api.getClassificationStats(new RequestParams({ _id: thesauri._id }));
+    if (stats && stats.can_enable) {
+      return dispatch;
+    }
+    throw new Error('Cannot enable!');
+  };
 }
