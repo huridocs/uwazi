@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchBar when feature activated should render children 1`] = `
+<Connect(NeedAuthorization)
+  roles={
+    Array [
+      "admin",
+    ]
+  }
+>
+  <span>
+    test
+  </span>
+</Connect(NeedAuthorization)>
+`;
