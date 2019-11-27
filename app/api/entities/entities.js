@@ -14,11 +14,11 @@ import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
+import translate, { getContext } from 'shared/translate';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import { validateEntity } from './entitySchema';
 import settings from '../settings';
-import translate, { getContext } from 'shared/translate';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(entity, template, dictionariesByKey) {
@@ -403,13 +403,13 @@ export default {
 
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach(property => {
-            const relationshipsGoingToThisProperty = relations.filter(r => {
-              return (
+            const relationshipsGoingToThisProperty = relations.filter(
+              r =>
                 r.template &&
                 r.template.toString() === property.relationType.toString() &&
                 (!property.content || r.entityData.template.toString() === property.content)
-              );
-            });
+            );
+
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
               value: r.entity,
               label: r.entityData.title,
@@ -610,34 +610,22 @@ export default {
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
   async renameInMetadata(valueId, newLabel, propertyContent, propTypes, restrictLanguage = null) {
-    const allTemplates = await templates.get({ 'properties.content': propertyContent });
-    const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-    const properties = allProperties.filter(p => propTypes.includes(p.type));
-    let query = { $or: [] };
-    const changes = {};
-    query.$or = properties
+    const properties = (await templates.get({ 'properties.content': propertyContent }))
+      .reduce((m, t) => m.concat(t.properties), [])
+      .filter(p => propTypes.includes(p.type))
       .filter(
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
+      );
+
+    return Promise.all(
+      properties.map(property =>
+        model.db.update(
+          { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
+          { $set: { [`metadata.${property.name}.$[valueObject].label`]: newLabel } },
+          { arrayFilters: [{ 'valueObject.value': valueId }], multi: true }
+        )
       )
-      .map(property => {
-        const p = {};
-        p[`metadata.${property.name}.value`] = valueId;
-        changes[`metadata.${property.name}.$[].label`] = newLabel;
-        return p;
-      });
-
-    if (!query.$or.length) {
-      return;
-    }
-
-    if (restrictLanguage) {
-      query = { $and: [{ language: restrictLanguage }, query] };
-    }
-
-    const entities = await this.get(query, { _id: 1 });
-
-    await model.db.updateMany(query, { $set: changes });
-    await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+    );
   },
 
   /** Propagate the change of a thesaurus label to all entity metadata. */

@@ -284,8 +284,28 @@ describe('entities', () => {
         };
 
         await entities.save(doc, { language: 'en' });
-        const relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.friends[0].label).toBe('changedTitle');
+        let relatedEntity = await entities.getById('shared', 'en');
+        expect(relatedEntity.metadata.enemies[0].label).toBe('changedTitle');
+
+        relatedEntity = await entities.getById('other', 'en');
+        expect(relatedEntity.metadata.enemies[1].label).toBe('changedTitle');
+        expect(relatedEntity.metadata.enemies[0].label).toBe('shouldNotChange');
+        expect(relatedEntity.metadata.enemies[2].label).toBe('shouldNotChange1');
+      });
+
+      it('should not change related labels on other languages', async () => {
+        const doc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          title: 'changedTitle',
+        };
+
+        await entities.save(doc, { language: 'en' });
+
+        const relatedEntity = await entities.getById('other', 'es');
+
+        expect(relatedEntity.metadata.enemies[0].label).toBe('translated1');
+        expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
       });
     });
 
@@ -483,6 +503,7 @@ describe('entities', () => {
       expect(updatedEntity.metadata).toEqual({
         date: [],
         daterange: [],
+        enemies: [],
         field_nested: [],
         friends: [],
         multidate: [],
@@ -696,14 +717,9 @@ describe('entities', () => {
   });
 
   describe('countByTemplate', () => {
-    it('should return how many entities using the template passed', done => {
-      entities
-        .countByTemplate(templateId)
-        .then(count => {
-          expect(count).toBe(5);
-          done();
-        })
-        .catch(done.fail);
+    it('should return how many entities using the template passed', async () => {
+      const count = await entities.countByTemplate(templateId);
+      expect(count).toBe(7);
     });
 
     it('should return 0 when no count found', done => {
@@ -730,17 +746,13 @@ describe('entities', () => {
         .catch(done.fail);
     });
 
-    it('should return all entities (including unpublished) if required', done => {
-      entities
-        .getByTemplate(templateId, 'en', false)
-        .then(docs => {
-          expect(docs.length).toBe(3);
-          expect(docs[0].title).toBe('Batman finishes');
-          expect(docs[1].title).toBe('Unpublished entity');
-          expect(docs[2].title).toBe('EN');
-          done();
-        })
-        .catch(done.fail);
+    it('should return all entities (including unpublished) if required', async () => {
+      const docs = await entities.getByTemplate(templateId, 'en', false);
+      expect(docs.length).toBe(4);
+      expect(docs[0].title).toBe('Batman finishes');
+      expect(docs[1].title).toBe('Unpublished entity');
+      expect(docs[2].title).toBe('EN');
+      expect(docs[3].title).toBe('shared2title');
     });
   });
 
@@ -805,10 +817,12 @@ describe('entities', () => {
 
           expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
           expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual({
-            property1: [{ value: 'value1' }],
-            friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-          });
+          expect(savedEntity.metadata).toEqual(
+            expect.objectContaining({
+              property1: [{ value: 'value1' }],
+              friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+            })
+          );
           expect(entities.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
           done();
         })
@@ -1133,8 +1147,8 @@ describe('entities', () => {
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
-      expect(newEntities[0].fullText).toEqual({ 1: 'text' });
-      expect(newEntities.length).toBe(10);
+      expect(newEntities.find(e => e.sharedId === 'shared1').fullText).toEqual({ 1: 'text' });
+      expect(newEntities.length).toBe(11);
     });
   });
 
