@@ -11,18 +11,18 @@ export default {
     {
       _id: templateToBeEditedId,
       name: 'template to be edited',
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       default: true
     },
     {
       _id: db.id(templateToBeDeleted),
       name: 'to be deleted',
-      commonProperties: [{ name: 'title', label: 'Title' }]
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }]
     },
     {
       _id: db.id(),
       name: 'duplicated name',
-      commonProperties: [{ name: 'title', label: 'Title' }]
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }]
     },
     {
       _id: db.id(),
@@ -55,7 +55,7 @@ export default {
     {
       _id: templateWithContents,
       name: 'content template',
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
         { id: '1', type: templateTypes.select, content: 'thesauri1', label: 'select3' },
         { id: '2', type: templateTypes.multiselect, content: 'thesauri2', label: 'select4' }
@@ -64,7 +64,7 @@ export default {
     {
       _id: swapTemplate,
       name: 'swap names template',
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
         { id: '1', type: templateTypes.text, name: 'text', label: 'Text' },
         { id: '2', type: templateTypes.select, name: 'select', label: 'Select' }

@@ -114,7 +114,7 @@ export default {
         system.values = valuesWithRemovedValues.concat(keysToAdd);
       });
 
-      return model.save(languages);
+      return model.saveMultiple(languages);
     });
   },
 

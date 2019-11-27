@@ -1,6 +1,7 @@
 import { generateNamesAndIds } from 'api/templates/utils';
 import ID from 'shared/uniqueID';
-import date from 'api/utils/date.js';
+import { templateTypes } from 'shared/templateTypes';
+import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
 import createError from 'api/utils/Error';
 import search from 'api/search/search';
@@ -9,9 +10,23 @@ import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
 
-import { deleteFiles } from '../utils/files.js';
+import { deleteFiles } from '../utils/files';
 import model from './entitiesModel';
+import { validateEntity } from './entitySchema';
 import settings from '../settings';
+
+const FIELD_TYPES_TO_SYNC = [
+  templateTypes.select,
+  templateTypes.multiselect,
+  templateTypes.date,
+  templateTypes.multidate,
+  templateTypes.multidaterange,
+  templateTypes.nested,
+  templateTypes.relationship,
+  templateTypes.relationship,
+  templateTypes.geolocation,
+  templateTypes.numeric
+];
 
 function updateEntity(entity, _template) {
   return this.getAllLanguages(entity.sharedId)
@@ -28,7 +43,7 @@ function updateEntity(entity, _template) {
   .then((docLanguages) => {
     const template = _template || { properties: [] };
     const toSyncProperties = template.properties
-    .filter(p => p.type.match('select|multiselect|date|multidate|multidaterange|nested|relationship|geolocation|numeric'))
+    .filter(p => p.type.match(FIELD_TYPES_TO_SYNC.join('|')))
     .map(p => p.name);
     const currentDoc = docLanguages.find(d => d._id.toString() === entity._id.toString());
     const docs = docLanguages.map((d) => {
@@ -59,7 +74,7 @@ function updateEntity(entity, _template) {
       return d;
     });
 
-    return Promise.all(docs.map(d => model.save(d)));
+    return model.saveMultiple(docs);
   });
 }
 
@@ -74,8 +89,7 @@ function createEntity(doc, languages, sharedId) {
     langDoc.sharedId = sharedId;
     return langDoc;
   });
-
-  return model.save(docs);
+  return model.saveMultiple(docs);
 }
 
 function getEntityTemplate(doc, language) {
@@ -111,23 +125,23 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
-    if ((type === 'multiselect' || type === 'relationship') && Array.isArray(sanitizedMetadata[name])) {
+    if ((type === templateTypes.multiselect || type === templateTypes.relationship) && Array.isArray(sanitizedMetadata[name])) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(unique) });
     }
 
-    if (type === 'multidate' && sanitizedMetadata[name]) {
+    if (type === templateTypes.multidate && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value) });
     }
 
-    if (type === 'multidaterange' && sanitizedMetadata[name]) {
+    if (type === templateTypes.multidaterange && sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: sanitizedMetadata[name].filter(value => value.from || value.to) });
     }
 
-    if (type === 'select' && !sanitizedMetadata[name]) {
+    if (type === templateTypes.select && !sanitizedMetadata[name]) {
       return Object.assign(sanitizedMetadata, { [name]: undefinedValue });
     }
 
-    if (type === 'daterange' && sanitizedMetadata[name]) {
+    if (type === templateTypes.daterange && sanitizedMetadata[name]) {
       const value = sanitizedMetadata[name];
       if (!value.to && !value.from) {
         const { [name]: dateRange, ...withoutDateRange } = sanitizedMetadata;
@@ -146,7 +160,8 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  save(_doc, { user, language }, updateRelationships = true, index = true) {
+  async save(_doc, { user, language }, updateRelationships = true, index = true) {
+    await validateEntity(_doc);
     const doc = _doc;
     if (!doc.sharedId) {
       doc.user = user._id;
@@ -182,7 +197,7 @@ export default {
 
       return [entity];
     })
-    .then(([entity]) => index ? this.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity);
+    .then(([entity]) => index ? search.indexEntities({ sharedId }, '+fullText').then(() => entity) : entity);
   },
 
   bulkProcessMetadataFromRelationships(query, language, limit = 200) {
@@ -197,25 +212,6 @@ export default {
     };
     return this.count(query)
     .then(totalRows => process(0, totalRows));
-  },
-
-  indexEntities(query, select, limit = 200, batchCallback = () => {}) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return this.get(query, select, { skip: offset, limit })
-      .then(entities => Promise.all(entities.map(entity => relationships.get({ entity: entity.sharedId })
-      .then((relations) => {
-        entity.relationships = relations || [];
-        return entity;
-      }))))
-      .then(entities => search.bulkIndex(entities).then(() => batchCallback(entities.length, totalRows)))
-      .then(() => index(offset + limit, totalRows));
-    };
-    return this.count(query)
-    .then(totalRows => index(0, totalRows));
   },
 
   async get(query, select, pagination) {
@@ -243,10 +239,9 @@ export default {
     return doc;
   },
 
-  saveMultiple(docs) {
-    return model.save(docs)
-    .then(response => Promise.all(response, this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText')))
-    .then(response => response);
+  async saveMultiple(docs) {
+    const response = await model.saveMultiple(docs);
+    return Promise.all(response, search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText'));
   },
 
   multipleUpdate(ids, values, params) {
@@ -264,7 +259,7 @@ export default {
       }
       return this.save(entity, params, true, false);
     }), Promise.resolve())
-    .then(() => this.indexEntities({ sharedId: { $in: ids } }))
+    .then(() => search.indexEntities({ sharedId: { $in: ids } }))
     .then(() => ids);
   },
 
@@ -303,7 +298,7 @@ export default {
         }
         return Promise.resolve(entity);
       }))))
-    .then(() => this.indexEntities({ sharedId: { $in: entitiesToReindex } }));
+    .then(() => search.indexEntities({ sharedId: { $in: entitiesToReindex } }));
   },
 
   updateMetadataProperties(template, currentTemplate, language) {
@@ -338,8 +333,8 @@ export default {
 
     return dbUpdate
     .then(() => {
-      if (!template.properties.find(p => p.type === 'relationship')) {
-        return this.indexEntities({ template: template._id }, null, 1000);
+      if (!template.properties.find(p => p.type === templateTypes.relationship)) {
+        return search.indexEntities({ template: template._id }, null, 1000);
       }
 
       return this.bulkProcessMetadataFromRelationships({ template: template._id, language }, language);
@@ -397,7 +392,7 @@ export default {
     .then(docs => deleteIndex ? Promise.all(docs.map(doc => search.delete(doc))).then(() => docs) : Promise.resolve(docs))
     .then(docs => model.delete({ sharedId })
     .then(() => docs)
-    .catch(e => this.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
+    .catch(e => search.indexEntities({ sharedId }, '+fullText').then(() => Promise.reject(e))))
     .then(docs => Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
       this.deleteFiles(docs),
@@ -435,14 +430,14 @@ export default {
       this.get(query, { _id: 1 }),
       model.db.updateMany(query, { $set: changes })
     ])
-    .then(([entitiesToReindex]) => this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
+    .then(([entitiesToReindex]) => search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }));
   },
 
   async deleteEntityFromMetadata(sharedId, propertyContent) {
     const allTemplates = await templates.get({ 'properties.content': propertyContent });
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-    const selectProperties = allProperties.filter(p => p.type === 'select');
-    const multiselectProperties = allProperties.filter(p => p.type === 'multiselect');
+    const selectProperties = allProperties.filter(p => p.type === templateTypes.select);
+    const multiselectProperties = allProperties.filter(p => p.type === templateTypes.multiselect);
     const selectQuery = { $or: [] };
     const selectChanges = {};
     selectQuery.$or = selectProperties.filter(p => propertyContent && p.content && propertyContent.toString() === p.content.toString())
@@ -472,7 +467,7 @@ export default {
       multiSelectQuery.$or.length ? model.db.updateMany(multiSelectQuery, { $pull: multiSelectChanges }) : null
     ]);
     const entitiesToReindex = entitiesWithSelect.concat(entitiesWithMultiSelect);
-    await this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
+    await search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } }, null, 1000);
   },
 
   async createThumbnail(entity) {
@@ -556,5 +551,6 @@ export default {
     .then(() => search.deleteLanguage(locale));
   },
 
-  count: model.count
+  count: model.count.bind(model)
 };
+

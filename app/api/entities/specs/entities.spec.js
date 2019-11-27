@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks, max-statements */
+import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
@@ -16,6 +17,7 @@ describe('entities', () => {
   beforeEach(async () => {
     spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     await db.clearAllAndLoad(fixtures);
   });
@@ -98,7 +100,7 @@ describe('entities', () => {
     });
 
     it('should return the newly created document for the passed language', (done) => {
-      const doc = { title: 'the dark knight', fullText: 'the full text!', metadata: { data: 'should not be here' } };
+      const doc = { title: 'the dark knight', fullText: { 1: 'the full text!' }, metadata: { data: 'should not be here' } };
       const user = { _id: db.id() };
 
       entities.save(doc, { user, language: 'en' })
@@ -115,7 +117,7 @@ describe('entities', () => {
     });
 
     it('should return updated entity', (done) => {
-      const doc = { title: 'the dark knight', fullText: 'the full text!', metadata: { data: 'should not be here' } };
+      const doc = { title: 'the dark knight', fullText: { 1: 'the full text!' }, metadata: { data: 'should not be here' } };
       const user = { _id: db.id() };
 
       entities.save(doc, { user, language: 'en' })
@@ -128,27 +130,25 @@ describe('entities', () => {
     });
 
     it('should index the newly created documents', (done) => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const doc = { title: 'the dark knight', template: templateId };
       const user = { _id: db.id() };
 
       entities.save(doc, { user, language: 'en' })
       .then(() => {
-        expect(entities.indexEntities).toHaveBeenCalled();
+        expect(search.indexEntities).toHaveBeenCalled();
         done();
       })
       .catch(catchErrors(done));
     });
 
     it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', (done) => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const partialDoc = { _id: batmanFinishesId, sharedId: 'shared', title: 'Updated title' };
       entities.save(partialDoc, { language: 'en' })
       .then(() => entities.getById(batmanFinishesId))
       .then((savedEntity) => {
         expect(savedEntity.title).toBe('Updated title');
         expect(savedEntity.metadata).toEqual({ property1: 'value1' });
-        expect(entities.indexEntities).toHaveBeenCalled();
+        expect(search.indexEntities).toHaveBeenCalled();
         done();
       })
       .catch(done.fail);
@@ -248,8 +248,8 @@ describe('entities', () => {
         metadata: {
           text: 'changedText',
           select: 'select',
-          multiselect: 'multiselect',
-          date: 'date',
+          multiselect: ['multiselect'],
+          date: 1234,
           multidate: [1234],
           multidaterange: [{ from: 1, to: 2 }],
           numeric: 100
@@ -268,16 +268,16 @@ describe('entities', () => {
       .then(([docEN, docES, docPT]) => {
         expect(docEN.metadata.text).toBe('changedText');
         expect(docEN.metadata.select).toBe('select');
-        expect(docEN.metadata.multiselect).toBe('multiselect');
-        expect(docEN.metadata.date).toBe('date');
+        expect(docEN.metadata.multiselect).toEqual(['multiselect']);
+        expect(docEN.metadata.date).toBe(1234);
         expect(docEN.metadata.multidate).toEqual([1234]);
         expect(docEN.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
         expect(docEN.metadata.numeric).toEqual(100);
 
         expect(docES.metadata.property1).toBe('text');
         expect(docES.metadata.select).toBe('select');
-        expect(docES.metadata.multiselect).toBe('multiselect');
-        expect(docES.metadata.date).toBe('date');
+        expect(docES.metadata.multiselect).toEqual(['multiselect']);
+        expect(docES.metadata.date).toBe(1234);
         expect(docES.metadata.multidate).toEqual([1234]);
         expect(docES.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
         expect(docES.metadata.numeric).toEqual(100);
@@ -285,8 +285,8 @@ describe('entities', () => {
 
         expect(docPT.metadata.property1).toBe('text');
         expect(docPT.metadata.select).toBe('select');
-        expect(docPT.metadata.multiselect).toBe('multiselect');
-        expect(docPT.metadata.date).toBe('date');
+        expect(docPT.metadata.multiselect).toEqual(['multiselect']);
+        expect(docPT.metadata.date).toBe(1234);
         expect(docPT.metadata.multidate).toEqual([1234]);
         expect(docPT.metadata.multidaterange).toEqual([{ from: 1, to: 2 }]);
         expect(docPT.metadata.numeric).toEqual(100);
@@ -454,46 +454,6 @@ describe('entities', () => {
     });
   });
 
-  describe('indexEntities', () => {
-    it('should index entities based on query params passed', (done) => {
-      entities.indexEntities({ sharedId: 'shared' })
-      .then(() => {
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].title).toBeDefined();
-        expect(documentsToIndex[0].fullText).not.toBeDefined();
-        expect(documentsToIndex[0].relationships.length).toBe(4);
-
-        expect(documentsToIndex[1].title).toBeDefined();
-        expect(documentsToIndex[1].fullText).not.toBeDefined();
-        expect(documentsToIndex[1].relationships.length).toBe(4);
-
-        expect(documentsToIndex[2].title).toBeDefined();
-        expect(documentsToIndex[2].fullText).not.toBeDefined();
-        expect(documentsToIndex[2].relationships.length).toBe(4);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-
-    it('should index entities withh fullText', (done) => {
-      entities.indexEntities({ sharedId: 'shared' }, '+fullText')
-      .then(() => {
-        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-        expect(documentsToIndex[0].title).toBeDefined();
-        expect(documentsToIndex[0].fullText).toBeDefined();
-        expect(documentsToIndex[0].relationships.length).toBe(4);
-
-        expect(documentsToIndex[1].title).toBeDefined();
-        expect(documentsToIndex[1].relationships.length).toBe(4);
-
-        expect(documentsToIndex[2].title).toBeDefined();
-        expect(documentsToIndex[2].relationships.length).toBe(4);
-        done();
-      })
-      .catch(catchErrors(done));
-    });
-  });
-
   describe('get', () => {
     it('should return matching entities for the conditions', (done) => {
       const sharedId = 'shared1';
@@ -574,7 +534,6 @@ describe('entities', () => {
 
   describe('saveMultiple()', () => {
     it('should allow partial saves with correct full indexing', (done) => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const partialDoc = { _id: batmanFinishesId, sharedId: 'shared', title: 'Updated title' };
       const partialDoc2 = { _id: syncPropertiesEntityId, sharedId: 'shared', title: 'Updated title 2' };
       entities.saveMultiple([partialDoc, partialDoc2])
@@ -587,7 +546,7 @@ describe('entities', () => {
         expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
         expect(savedEntity.title).toBe('Updated title');
         expect(savedEntity.metadata).toEqual({ property1: 'value1' });
-        expect(entities.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
+        expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
         done();
       })
       .catch(done.fail);
@@ -620,7 +579,6 @@ describe('entities', () => {
     });
 
     it('should update property names on entities based on the changes to the template', (done) => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const template = { _id: templateChangingNames,
         properties: [
           { id: '1', type: 'text', name: 'property1', label: 'new name1' },
@@ -643,7 +601,7 @@ describe('entities', () => {
         expect(docs[1].metadata.property3).toBe('value3');
 
         expect(docDiferentTemplate.metadata.property1).toBe('value1');
-        expect(entities.indexEntities).toHaveBeenCalledWith({ template: template._id }, null, 1000);
+        expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id }, null, 1000);
         done();
       })
       .catch(catchErrors(done));
@@ -696,12 +654,11 @@ describe('entities', () => {
 
   describe('removeValuesFromEntities', () => {
     it('should remove values of properties passed on all entities having that property', (done) => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       entities.removeValuesFromEntities({ multiselect: [] }, templateWithEntityAsThesauri)
       .then(() => entities.get({ template: templateWithEntityAsThesauri }))
       .then((_entities) => {
         expect(_entities[0].metadata.multiselect).toEqual([]);
-        expect(entities.indexEntities).toHaveBeenCalled();
+        expect(search.indexEntities).toHaveBeenCalled();
         done();
       })
       .catch(catchErrors(done));
@@ -724,11 +681,10 @@ describe('entities', () => {
     describe('when database deletion throws an error', () => {
       it('should reindex the documents', (done) => {
         spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject('error'));
-        spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
 
         entities.delete('shared')
         .catch(() => {
-          expect(entities.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
+          expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
           done();
         });
       });
@@ -823,6 +779,7 @@ describe('entities', () => {
 
     describe('when entity is being used as thesauri', () => {
       it('should delete the entity id on all entities using it from select/multiselect values', async () => {
+        search.indexEntities.and.callThrough();
         await entities.delete('shared');
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
         expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
@@ -833,6 +790,7 @@ describe('entities', () => {
 
       describe('when there is no multiselects but there is selects', () => {
         it('should only delete selects and not throw an error', async () => {
+          search.indexEntities.and.callThrough();
           await entities.delete('shared10');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
           expect(documentsToIndex[0].metadata.select).toBe('');
@@ -841,6 +799,7 @@ describe('entities', () => {
 
       describe('when there is no selects but there is multiselects', () => {
         it('should only delete multiselects and not throw an error', async () => {
+          search.indexEntities.and.callThrough();
           await entities.delete('multiselect');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
           expect(documentsToIndex[0].metadata.multiselect).toEqual(['value1']);
@@ -891,6 +850,27 @@ describe('entities', () => {
 
       expect(search.deleteLanguage).toHaveBeenCalledWith('ab');
       expect(newEntities.length).toBe(0);
+    });
+  });
+
+  describe('validation', () => {
+    it('should validate on save', async () => {
+      const entity = {
+        title: 'Test',
+        template: templateId,
+        metadata: {
+          date: 'invalid date'
+        }
+      };
+      const options = { user: { _id: db.id() }, language: 'en' };
+
+      try {
+        await entities.save(entity, options);
+        fail('should throw validation error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(Ajv.ValidationError);
+        expect(error.errors.some(e => e.params.keyword === 'metadataMatchesTemplateProperties')).toBe(true);
+      }
     });
   });
 });

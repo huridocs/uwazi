@@ -1,5 +1,5 @@
 /* eslint-disable import/no-dynamic-require, global-require */
-require('babel-core/register')();
+require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
 
 module.exports = (plop) => {
   let currentDelta;

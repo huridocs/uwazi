@@ -21,7 +21,7 @@ describe('entitiesModel', () => {
   });
 
   it('should return documents saved', (done) => {
-    entitiesModel.save([
+    entitiesModel.saveMultiple([
       { title: 'doc1' },
       { title: 'doc2' }
     ])
@@ -62,7 +62,7 @@ describe('entitiesModel', () => {
   });
 
   it('should set mongoLanguage when passing multiple documents', (done) => {
-    entitiesModel.save([
+    entitiesModel.saveMultiple([
       { title: 'docES', language: 'es' },
       { title: 'unsupported ar language', language: 'ar' },
       { title: 'unsupported ka language', language: 'ka' },

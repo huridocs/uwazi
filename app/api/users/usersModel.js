@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import instanceModel from 'api/odm';
+import { instanceModel } from 'api/odm';
 
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },

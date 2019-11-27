@@ -1,26 +1,28 @@
 /* eslint-disable max-nested-callbacks */
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import errorLog from 'api/log/errorLog';
-import elasticIndexConfig from 'api/config/elasticIndexes';
-import { search, elastic } from 'api/search';
+import { elastic } from 'api/search';
+import { instanceSearch } from 'api/search/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
-
+import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('search', () => {
-  const elasticTesting = instanceElasticTesting('search_index_test');
-  const elasticIndex = elasticIndexConfig.index;
+  const elasticIndex = 'index_for_index_testing';
+  const search = instanceSearch(elasticIndex);
+  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
-  beforeAll((done) => {
-    db.clearAllAndLoad({}).then(done);
-  });
+  beforeAll(async () => {
+    await db.clearAllAndLoad({});
+    await elasticTesting.resetIndex();
+  }, fixturesTimeOut);
 
-  afterAll((done) => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('when language is not supported (korean in this case)', () => {
-    it('should index the fullText as child as "other" language (so searches can be performed)', (done) => {
+    it('should index the fullText as child as "other" language (so searches can be performed)', async () => {
       const entity = {
         _id: db.id(),
         sharedId: 'sharedIdOtherLanguage',
@@ -33,18 +35,14 @@ describe('search', () => {
         language: 'en'
       };
 
-      search.bulkIndex([entity])
-      .then(() => elasticTesting.refresh())
-      .then(() => search.searchSnippets('조', entity.sharedId, 'en'))
-      .then((snippets) => {
-        expect(snippets.fullText.length).toBe(1);
-        return search.searchSnippets('nothing', entity.sharedId, 'en');
-      })
-      .then((snippets) => {
-        expect(snippets.fullText.length).toBe(0);
-        done();
-      })
-      .catch((e) => { done.fail(e); });
+      await search.bulkIndex([entity], 'index', elasticIndex);
+      await elasticTesting.refresh();
+      let snippets = await search.searchSnippets('조', entity.sharedId, 'en');
+
+      expect(snippets.fullText.length).toBe(1);
+      snippets = await search.searchSnippets('nothing', entity.sharedId, 'en');
+
+      expect(snippets.fullText.length).toBe(0);
     });
   });
 
@@ -56,7 +54,7 @@ describe('search', () => {
         { _id: 'id2', title: 'test2', pdfInfo: 'Should not be included' }
       ];
 
-      search.bulkIndex(toIndexDocs)
+      search.bulkIndex(toIndexDocs, 'index', elasticIndex)
       .then(() => {
         expect(elastic.bulk).toHaveBeenCalledWith({ body: [
           { index: { _index: elasticIndex, _type: 'entity', _id: 'id1' } },
@@ -77,7 +75,7 @@ describe('search', () => {
           { _id: 'id2', title: 'test2', fullText: { 1: 'text3[[1]]', 2: 'text4[[2]]' } }
         ];
 
-        search.bulkIndex(toIndexDocs, 'index')
+        search.bulkIndex(toIndexDocs, 'index', elasticIndex)
         .then(() => {
           const bulkIndexArguments = elastic.bulk.calls.allArgs()[0][0];
           expect(bulkIndexArguments).toEqual({ body: [
@@ -102,7 +100,7 @@ describe('search', () => {
         .and.returnValue(Promise.resolve({ items: [{ index: { _id: '_id1', error: 'something terrible happened' } }] }));
         spyOn(errorLog, 'error');
         const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
-        await search.bulkIndex(toIndexDocs, 'index');
+        await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
 
         expect(errorLog.error).toHaveBeenCalledWith('ERROR Failed to index document _id1: "something terrible happened"');
       });

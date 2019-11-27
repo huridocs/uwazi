@@ -34,7 +34,7 @@ Intallation guide
 
 - **NodeJs 8.11.x** For ease of update, use nvm: https://github.com/creationix/nvm
 - **ElasticSearch 5.6.x** https://www.elastic.co/guide/en/elasticsearch/reference/5.5/install-elasticsearch.html (Make sure to have 5.6, some sections of the instructions use 5.x which would install a different version). Please note that ElasticSearch requires java.
-- **MongoDB 3.4.x** https://docs.mongodb.com/v3.4/installation/ (there are known issues with 3.6, please ensure 3.4)
+- **MongoDB 4.0.3 instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.0-upgrade-standalone/)
 - **Yarn** https://yarnpkg.com/en/docs/install
 - **pdftotext (Poppler)** tested to work on version 0.26 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
@@ -102,10 +102,12 @@ $ yarn run-production
 
 ### Environment Variables
 
-Uwazi supports the following environment variables to customize its deployment:
+Uwazi supports the following environment variables to customize its deployment
+(`.env` is supported but not stored in the repository):
 
 * `DBHOST`: MongoDB hostname (default: `localhost`)
-* `DATABASE_NAME`: MongoDB instance name
+* `DATABASE_NAME`: MongoDB instance name (default: `uwazi_development`)
+* `INDEX_NAME`: Elastic search index name (default: `DATABASE_NAME`)
 * `ELASTICSEARCH_URL`: ElasticSearch connection URL (default: `http://localhost:9200`)
 * `UPLOADS_FOLDER`: Folder on local filesystem where uploaded PDF and other files are written to (_TODO temporarily or permanently?_)
 
