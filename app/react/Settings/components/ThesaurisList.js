@@ -55,9 +55,9 @@ export class ThesaurisList extends Component {
       });
   }
 
-  disableClassification(thesauri) {
+  async disableClassification(thesauri) {
     console.log('disable', this.props);
-    return this.props.disableClassification(thesauri).catch(() => {
+    this.props.disableClassification(thesauri).catch(() => {
       this.context.confirm({
         accept: () => {},
         noCancel: true,
@@ -86,34 +86,37 @@ export class ThesaurisList extends Component {
                   &nbsp;
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
-                {thesauri.enable_classification ? (
-                  <I18NLink
-                    to={`/settings/dictionaries/classify_stats/${thesauri._id}`}
-                    className="btn btn-success btn-xs"
+                {!thesauri.enable_classification ? (
+                  <button
+                    onClick={this.enableClassification.bind(this, thesauri)}
+                    className="btn btn-default btn-xs"
+                    type="button"
                   >
                     <Icon icon="code" />
                     &nbsp;
-                    <span>{t('System', 'Review ML')}</span>
-                  </I18NLink>
-                ) : null}
-                <button
-                  onClick={this.enableClassification.bind(this, thesauri)}
-                  className="btn btn-default btn-xs"
-                  type="button"
-                >
-                  <Icon icon="code" />
-                  &nbsp;
-                  <span>{t('System', 'Enable ML')}</span>
-                </button>
-                <button
-                  onClick={this.disableClassification.bind(this.thesauri)}
-                  className="btn btn-danger btn-xs template-remove"
-                  type="button"
-                >
-                  <Icon icon="trash-alt" />
-                  &nbsp;
-                  <span>{t('System', 'Disable Classification')}</span>
-                </button>
+                    <span>{t('System', 'Enable Classification')}</span>
+                  </button>
+                ) : (
+                  <div className="list-group-item-actions">
+                    <I18NLink
+                      to={`/settings/dictionaries/classify_stats/${thesauri._id}`}
+                      className="btn btn-success btn-xs"
+                    >
+                      <Icon icon="code" />
+                      &nbsp;
+                      <span>{t('System', 'Review ML')}</span>
+                    </I18NLink>
+                    <button
+                      onClick={this.disableClassification.bind(this.thesauri)}
+                      className="btn btn-danger btn-xs template-remove"
+                      type="button"
+                    >
+                      <Icon icon="trash-alt" />
+                      &nbsp;
+                      <span>{t('System', 'Disable Classification')}</span>
+                    </button>
+                  </div>
+                )}
                 <button
                   onClick={this.deleteThesauri.bind(this, thesauri)}
                   className="btn btn-danger btn-xs template-remove"
