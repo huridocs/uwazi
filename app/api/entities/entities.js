@@ -297,7 +297,7 @@ export default {
     await process(0, totalRows);
   },
 
-  async get(query, select, pagination) {
+  get(query, select, pagination) {
     return model.get(query, select, pagination);
   },
 
