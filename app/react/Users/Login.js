@@ -62,16 +62,13 @@ export class Login extends RouteHandler {
       await this.props.login(credentials);
       this.resolveSuccessfulLogin();
     } catch (err) {
-      // TEST for err 409
       if (!this.state.tokenRequired && err.status === 409) {
         this.setState({ tokenRequired: true });
       } else {
-        // TEST!!!
         const { tokenRequired } = this.state;
         this.formDispatch(formActions.change('loginForm.token', undefined));
         const error2fa = tokenRequired;
         this.setState({ error: true, tokenRequired: false, error2fa });
-        // -------
       }
     }
   }

@@ -103,19 +103,47 @@ describe('Login', () => {
     });
 
     describe('on response failure', () => {
-      it('should set error true', done => {
-        props.login = jasmine
-          .createSpy('login')
-          .and.returnValue(Promise.reject(new Error({ status: 123 })));
+      const prepareLoginResponse = response => {
+        props.login = jasmine.createSpy('login').and.returnValue(response);
         render();
+      };
 
-        instance
-          .submit(new Event('submit'))
-          .then(() => {
-            expect(instance.state.error).toBe(true);
-            done();
-          })
-          .catch(done.fail);
+      const response409 = () => {
+        const error = new Error('Conflict');
+        error.status = 409;
+        return error;
+      };
+
+      const expectState = (state, expected) => {
+        expect(state).toEqual(expect.objectContaining(expected));
+      };
+
+      describe('when authorization conflict (2fa required)', () => {
+        it('should not set error and flag "tokenRequired"', async () => {
+          prepareLoginResponse(Promise.reject(response409()));
+          await instance.submit(new Event('submit'));
+          expectState(instance.state, { error: false, tokenRequired: false });
+        });
+      });
+
+      describe('when authorization failure', () => {
+        beforeEach(() => {
+          prepareLoginResponse(Promise.reject(new Error({ status: 401 })));
+        });
+
+        it('should set error upon login failure', async () => {
+          await instance.submit(new Event('submit'));
+          expectState(instance.state, { error: true, tokenRequired: false, error2fa: false });
+        });
+
+        it('should set error2fa on token failure, and reset loginForm.token value', async () => {
+          instance.state.tokenRequired = true;
+          await instance.submit(new Event('submit'));
+          expectState(instance.state, { error: true, tokenRequired: false, error2fa: true });
+          expect(instance.formDispatch).toHaveBeenCalledWith(
+            expect.objectContaining({ model: 'loginForm.token', value: undefined })
+          );
+        });
       });
     });
   });
