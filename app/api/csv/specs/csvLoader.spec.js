@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import path from 'path';
 import translations from 'api/i18n';
+import { search } from 'api/search';
 
 import CSVLoader from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -16,8 +17,8 @@ describe('csvLoader', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(entities, 'indexEntities').and.returnValue({});
-    spyOn(translations, 'updateContext').and.returnValue({});
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
   });
 
   afterAll(async () => db.disconnect());

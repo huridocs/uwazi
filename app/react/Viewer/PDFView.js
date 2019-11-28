@@ -1,13 +1,16 @@
+/** @format */
+
 import { Helmet } from 'react-helmet';
 import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import { isClient, events } from 'app/utils';
 import { toUrlParams } from 'shared/JSONRequest';
-import RouteHandler from 'app/App/RouteHandler';
+import { Component } from 'react';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -16,7 +19,7 @@ import { setReferences } from './actions/referencesActions';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
-class ViewDocument extends RouteHandler {
+class PDFView extends Component {
   constructor(props, context) {
     super(props, context);
     this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
@@ -26,7 +29,7 @@ class ViewDocument extends RouteHandler {
 
   static async requestState(requestParams, globalResources) {
     return requestViewerState(
-      requestParams.add({ raw: (requestParams.data.raw === 'true') || !isClient }),
+      requestParams.add({ raw: requestParams.data.raw === 'true' || !isClient }),
       globalResources
     );
   }
@@ -42,17 +45,21 @@ class ViewDocument extends RouteHandler {
   }
 
   componentWillReceiveProps(props) {
-    super.componentWillReceiveProps(props);
     const { query = {} } = props.location;
     if (query.page !== this.props.location.query.page && query.raw !== 'true') {
       this.changePage(query.page);
     }
-    if ((query.page !== this.props.location.query.page || query.raw !== this.props.location.query.raw) && query.raw === 'true') {
+    if (
+      (query.page !== this.props.location.query.page ||
+        query.raw !== this.props.location.query.raw) &&
+      query.raw === 'true'
+    ) {
       const { sharedId } = props.params;
-      return entitiesAPI.getRawPage(new RequestParams({ sharedId, pageNumber: query.page }))
-      .then((pageText) => {
-        this.context.store.dispatch(actions.set('viewer/rawText', pageText));
-      });
+      return entitiesAPI
+        .getRawPage(new RequestParams({ sharedId, pageNumber: query.page }))
+        .then(pageText => {
+          this.context.store.dispatch(actions.set('viewer/rawText', pageText));
+        });
     }
   }
 
@@ -77,9 +84,13 @@ class ViewDocument extends RouteHandler {
   }
 
   changeBrowserHistoryPage(newPage) {
-    const { query: { page, ...queryWithoutPage } } = this.props.location;
+    const {
+      query: { page, ...queryWithoutPage },
+    } = this.props.location;
     queryWithoutPage.raw = queryWithoutPage.raw || undefined;
-    browserHistory.push(`${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`);
+    browserHistory.push(
+      `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`
+    );
   }
 
   onDocumentReady(doc) {
@@ -103,9 +114,7 @@ class ViewDocument extends RouteHandler {
     const page = Number(query.page || 1);
     return (
       <React.Fragment>
-        <Helmet>
-          {raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}
-        </Helmet>
+        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}
@@ -119,8 +128,12 @@ class ViewDocument extends RouteHandler {
   }
 }
 
-ViewDocument.defaultProps = {
-  params: {}
+PDFView.contextTypes = {
+  store: PropTypes.object,
 };
 
-export default ViewDocument;
+PDFView.defaultProps = {
+  params: {},
+};
+
+export default PDFView;

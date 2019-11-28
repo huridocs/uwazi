@@ -15,6 +15,7 @@ const templateMetadata1 = db.id();
 const templateMetadata2 = db.id();
 const countriesDictionaryID = db.id();
 const relationType = db.id();
+const fixturesTimeOut = 20000;
 
 export default {
   entities: [
@@ -404,3 +405,5 @@ export const ids = {
   templateMetadata1: templateMetadata1.toString(),
   templateMetadata2: templateMetadata2.toString(),
 };
+
+export { fixturesTimeOut };

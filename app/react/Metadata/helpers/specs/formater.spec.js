@@ -75,9 +75,9 @@ describe('metadata formater', () => {
       ] = data.metadata;
     });
 
-    const formatValue = (value, type = 'entity') => ({
+    const formatValue = value => ({
       icon: undefined,
-      url: `/${type}/${value.toLowerCase().replace(/ /g, '')}`,
+      url: `/entity/${value.toLowerCase().replace(/ /g, '')}`,
       value,
     });
 
@@ -152,18 +152,15 @@ describe('metadata formater', () => {
     it('should process bound relationship types', () => {
       assessBasicProperties(relationship1, ['Relationship', 'relationship1', 'templateID']);
       expect(relationship1.value.length).toBe(2);
-      assessMultiValues(relationship1, [
-        formatValue('Value 1', 'document'),
-        formatValue('Value 2', 'document'),
-      ]);
+      assessMultiValues(relationship1, [formatValue('Value 1'), formatValue('Value 2')]);
     });
 
     it('should process free relationship types', () => {
       assessBasicProperties(relationship2, ['Relationship 2', 'relationship2', 'templateID']);
       expect(relationship2.value.length).toBe(3);
       assessMultiValues(relationship2, [
-        formatValue('Value 1', 'document'),
-        formatValue('Value 2', 'document'),
+        formatValue('Value 1'),
+        formatValue('Value 2'),
         formatValue('Value 4'),
       ]);
     });

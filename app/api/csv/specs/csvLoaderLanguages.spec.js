@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
+import { search } from 'api/search';
 import settings from 'api/settings';
 import * as fileUtils from 'api/utils/files';
 
@@ -24,7 +25,7 @@ describe('csvLoader languages', () => {
 
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
 
     const { languages } = await settings.get();
     await settings.save({ languages: [...languages, { key: 'es' }] });

@@ -1,7 +1,6 @@
 import 'api/utils/jasmineHelpers';
 
 import { models } from 'api/odm';
-import entities from 'api/entities';
 import search from 'api/search/search';
 
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -31,7 +30,7 @@ describe('sync', () => {
       delete: jasmine.createSpy('model2.delete')
     };
     spyOn(search, 'delete');
-    spyOn(entities, 'indexEntities');
+    spyOn(search, 'indexEntities');
   });
 
   describe('POST', () => {
@@ -51,7 +50,7 @@ describe('sync', () => {
       req.body.namespace = 'model2';
       await routes.post('/api/sync', req);
       expect(models.model2.save).toHaveBeenCalledWith(dataObject);
-      expect(entities.indexEntities).not.toHaveBeenCalled();
+      expect(search.indexEntities).not.toHaveBeenCalled();
     });
 
     describe('on error', () => {
@@ -78,7 +77,7 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(entities.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
+        expect(search.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
       });
     });
 

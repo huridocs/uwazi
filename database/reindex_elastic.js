@@ -5,7 +5,7 @@ import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping';
 
 import indexConfig from '../app/api/config/elasticIndexes';
-import entities from '../app/api/entities/entities';
+import { search } from '../app/api/search';
 
 connect().then(() => {
   let docsIndexed = 0;
@@ -13,7 +13,7 @@ connect().then(() => {
   const spinner = ['|', '/', '-', '\\'];
 
   function indexEntities() {
-    return entities.indexEntities({}, '+fullText', 200, indexed => {
+    return search.indexEntities({}, '+fullText', 200, indexed => {
       process.stdout.write(
         `Indexing documents and entities... ${spinner[pos]} - ${docsIndexed} indexed\r`
       );

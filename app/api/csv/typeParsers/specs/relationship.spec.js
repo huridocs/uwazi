@@ -1,6 +1,7 @@
 /** @format */
 
 import entities, { model } from 'api/entities';
+import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 
 import fixtures, { templateToRelateId } from '../../specs/fixtures';
@@ -22,19 +23,9 @@ describe('relationship', () => {
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
 
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
-    await model.save({
-      title: 'value1',
-      template: templateToRelateId,
-      sharedId: '123',
-      language: 'en',
-    });
-    await model.save({
-      title: 'value1',
-      template: templateToRelateId,
-      sharedId: '123',
-      language: 'es',
-    });
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    await model.save({ title: 'value1', template: templateToRelateId, sharedId: '123', language: 'en' });
+    await model.save({ title: 'value1', template: templateToRelateId, sharedId: '123', language: 'es' });
     value1 = await typeParsers.relationship(
       { relationship_prop: 'value1|value3|value3' },
       templateProp
