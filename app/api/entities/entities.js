@@ -298,8 +298,7 @@ export default {
   },
 
   async get(query, select, pagination) {
-    const entities = await model.get(query, select, pagination);
-    return entities;
+    return model.get(query, select, pagination);
   },
 
   async getWithRelationships(query, select, pagination) {
