@@ -18,6 +18,7 @@ const mockSetSecret = () => {
     if (params instanceof RequestParams) {
       return { otpauth: 'otpAuthURL', secret: 'generatedSecret' };
     }
+    return fail('Wrong params sent!');
   });
 };
 
@@ -43,7 +44,7 @@ describe('Configure2fa Component', () => {
       if (_dispatch === dispatch) {
         return _props;
       }
-      fail('Wrong dispatch sent to mapDispatchToProps!');
+      return fail('Wrong dispatch sent to mapDispatchToProps!');
     });
   };
 
@@ -79,7 +80,7 @@ describe('Configure2fa Component', () => {
 
   describe('enable2fa (form submit)', () => {
     it('should call on enable2fa uppon success', async () => {
-      const onSubmit = component.find(LocalForm).props().onSubmit;
+      const { onSubmit } = component.find(LocalForm).props();
       await onSubmit({ token: 'correctToken' });
       expect(actions.enable2fa).toHaveBeenCalled();
     });
