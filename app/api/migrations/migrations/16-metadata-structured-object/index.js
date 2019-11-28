@@ -5,6 +5,7 @@
 /* eslint-disable max-statements */
 
 import entities from 'api/entities';
+import { QueryForEach } from 'api/odm';
 
 export default {
   delta: 16,
@@ -54,12 +55,8 @@ export default {
 
     let index = 0;
 
-    const allE = await db
-      .collection('entities')
-      .find({}, null, { noCursorTimeout: true, batchSize: 100, lean: true })
-      .toArray();
-    await allE.reduce(async (prom, entity) => {
-      await prom;
+    const total = await entities.count({});
+    await QueryForEach(entities.get({}), 1000, async entity => {
       const template = templatesByKey[entity.template ? entity.template.toString() : null];
       index += 1;
       if (entity.metadata && template) {
@@ -70,7 +67,7 @@ export default {
           .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });
       }
       if (index % 100 === 0) {
-        process.stdout.write(`Converted entities.metadata -> ${index} / ${allE.length}\r`);
+        process.stdout.write(`Converted entities.metadata -> ${index} / ${total}\r`);
       }
     });
     process.stdout.write(`Converted entities.metadata -> ${index}\r`);
