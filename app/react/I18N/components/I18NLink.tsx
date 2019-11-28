@@ -16,19 +16,21 @@ type I18NLinkProps = InferProps<typeof I18NLinkPropTypes>;
 
 export class I18NLink extends Component<I18NLinkProps> {
   static defaultProps: I18NLinkProps;
+
   constructor(props: I18NLinkProps) {
     super(props);
     this.onClick = this.onClick.bind(this);
   }
 
   onClick(e: { preventDefault: () => void }) {
-    if (this.props.disabled) {
+    const { disabled, onClick } = this.props;
+    if (disabled) {
       e.preventDefault();
       return;
     }
 
-    if (this.props.onClick) {
-      this.props.onClick(e);
+    if (onClick) {
+      onClick(e);
     }
   }
 
