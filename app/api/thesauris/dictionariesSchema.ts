@@ -34,12 +34,6 @@ export const thesaurusSchema = {
             type: 'string',
             minLength: 1,
           },
-          // consider whether this should itself be a dict of multiple ML-related values
-          classificationEnabled: {
-            type: 'boolean',
-            minLength: 1,
-            default: false,
-          },
           values: {
             type: 'array',
             items: {
