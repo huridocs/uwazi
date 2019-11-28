@@ -1,5 +1,4 @@
 /** @format */
-// TEST!!!
 
 import React, { Component } from 'react';
 import { Dispatch, bindActionCreators, ActionCreatorsMapObject } from 'redux';
