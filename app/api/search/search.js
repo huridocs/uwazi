@@ -472,8 +472,8 @@ const instanceSearch = elasticIndex => ({
     });
   },
 
-  async bulkIndex(docs, action = 'index') {
-    return bulkIndex(docs, action, elasticIndex);
+  async bulkIndex(docs, action = 'index', index = elasticIndex) {
+    return bulkIndex(docs, action, index);
   },
 
   bulkDelete(docs) {
