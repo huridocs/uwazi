@@ -51,7 +51,7 @@ describe('SearchItem', () => {
       jest.spyOn(actions, 'stopSearch').mockImplementation(() => {});
       search.status = 'inProgress';
       const component = render();
-      component.find('.stop-search').simulate('click');
+      component.find('.stop-search').simulate('click', { preventDefault: () => {} });
       expect(actions.stopSearch).toHaveBeenCalledWith(search._id);
     });
   });
@@ -66,7 +66,7 @@ describe('SearchItem', () => {
       jest.spyOn(actions, 'resumeSearch').mockImplementation(() => {});
       search.status = 'stopped';
       const component = render();
-      component.find('.resume-search').simulate('click');
+      component.find('.resume-search').simulate('click', { preventDefault: () => {} });
       expect(actions.resumeSearch).toHaveBeenCalledWith(search._id);
     });
   });

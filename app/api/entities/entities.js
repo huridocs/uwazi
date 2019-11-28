@@ -276,7 +276,7 @@ export default {
       await relationships.saveEntityBasedReferences(entity, language);
     }
     if (index) {
-      await this.indexEntities({ sharedId }, '+fullText');
+      await search.indexEntities({ sharedId }, '+fullText');
     }
 
     return entity;
@@ -295,31 +295,6 @@ export default {
     };
     const totalRows = await this.count(query);
     await process(0, totalRows);
-  },
-
-  indexEntities(query, select, limit = 200, batchCallback = () => {}) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return this.get(query, select, { skip: offset, limit })
-        .then(entities =>
-          Promise.all(
-            entities.map(entity =>
-              relationships.get({ entity: entity.sharedId }).then(relations => {
-                entity.relationships = relations || [];
-                return entity;
-              })
-            )
-          )
-        )
-        .then(entities =>
-          search.bulkIndex(entities).then(() => batchCallback(entities.length, totalRows))
-        )
-        .then(() => index(offset + limit, totalRows));
-    };
-    return this.count(query).then(totalRows => index(0, totalRows));
   },
 
   async get(query, select, pagination) {
@@ -349,7 +324,7 @@ export default {
 
   async saveMultiple(docs) {
     const response = await model.saveMultiple(docs);
-    await this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
+    await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
     return response;
   },
 
@@ -371,7 +346,7 @@ export default {
         }
       })
     );
-    await this.indexEntities({ sharedId: { $in: ids } });
+    await search.indexEntities({ sharedId: { $in: ids } });
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
@@ -422,7 +397,7 @@ export default {
         }
       })
     );
-    await this.indexEntities({ sharedId: { $in: entitiesToReindex } });
+    await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
   },
 
   /** Handle property deletion and renames. */
@@ -458,7 +433,7 @@ export default {
 
     await dbUpdate;
     if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
-      return this.indexEntities({ template: template._id }, null, 1000);
+      return search.indexEntities({ template: template._id }, null, 1000);
     }
     return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
   },
@@ -525,7 +500,7 @@ export default {
     try {
       await model.delete({ sharedId });
     } catch (e) {
-      await this.indexEntities({ sharedId }, '+fullText');
+      await search.indexEntities({ sharedId }, '+fullText');
       throw e;
     }
     await Promise.all([
@@ -563,7 +538,7 @@ export default {
 
     const entitiesToReindex = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $set: changes });
-    return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
+    return search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
   },
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
@@ -588,7 +563,7 @@ export default {
     }
     const entities = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $pull: changes });
-    await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+    await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
   },
 
   /** Propagate the deletion of a thesaurus entry to all entity metadata. */
@@ -627,7 +602,6 @@ export default {
       )
     );
   },
-
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId) {
     await this.renameInMetadata(valueId, newLabel, thesaurusId, [

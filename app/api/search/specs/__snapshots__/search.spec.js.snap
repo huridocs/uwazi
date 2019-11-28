@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`search search multiselect aggregations allAggregations should return all aggregations 1`] = `
+exports[`search multiselect aggregations allAggregations should return all aggregations 1`] = `
 Array [
   "meta",
   "doc_count",

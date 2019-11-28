@@ -6,29 +6,31 @@
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import errorLog from 'api/log/errorLog';
-import elasticIndexConfig from 'api/config/elasticIndexes';
-import { search, elastic } from 'api/search';
+import { elastic } from 'api/search';
+import { instanceSearch } from 'api/search/search';
 import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
+import { fixturesTimeOut } from './fixtures_elastic';
 
 describe('search', () => {
-  const elasticTesting = instanceElasticTesting('search_index_test');
-  const elasticIndex = elasticIndexConfig.index;
+  const elasticIndex = 'index_for_index_testing';
+  const search = instanceSearch(elasticIndex);
+  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
-  beforeAll(done => {
-    db.clearAllAndLoad({}).then(done);
-  });
+  beforeAll(async () => {
+    await db.clearAllAndLoad({});
+    await elasticTesting.resetIndex();
+  }, fixturesTimeOut);
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('when language is not supported (korean in this case)', () => {
-    it('should index the fullText as child as "other" language (so searches can be performed)', done => {
+    it('should index the fullText as child as "other" language (so searches can be performed)', async () => {
       const entity = {
         _id: db.id(),
         sharedId: 'sharedIdOtherLanguage',
-        type: 'document',
         title: 'Batman indexes',
         fullText: {
           1: '조',
@@ -37,21 +39,14 @@ describe('search', () => {
         language: 'en',
       };
 
-      search
-        .bulkIndex([entity])
-        .then(() => elasticTesting.refresh())
-        .then(() => search.searchSnippets('조', entity.sharedId, 'en'))
-        .then(snippets => {
-          expect(snippets.fullText.length).toBe(1);
-          return search.searchSnippets('nothing', entity.sharedId, 'en');
-        })
-        .then(snippets => {
-          expect(snippets.fullText.length).toBe(0);
-          done();
-        })
-        .catch(e => {
-          done.fail(e);
-        });
+      await search.bulkIndex([entity], 'index', elasticIndex);
+      await elasticTesting.refresh();
+      let snippets = await search.searchSnippets('조', entity.sharedId, 'en');
+
+      expect(snippets.fullText.length).toBe(1);
+      snippets = await search.searchSnippets('nothing', entity.sharedId, 'en');
+
+      expect(snippets.fullText.length).toBe(0);
     });
   });
 
@@ -140,7 +135,7 @@ describe('search', () => {
         );
         spyOn(errorLog, 'error');
         const toIndexDocs = [{ _id: 'id1', title: 'test1' }];
-        await search.bulkIndex(toIndexDocs, 'index');
+        await search.bulkIndex(toIndexDocs, 'index', elasticIndex);
 
         expect(errorLog.error).toHaveBeenCalledWith(
           'ERROR Failed to index document _id1: "something terrible happened"'
@@ -157,7 +152,6 @@ describe('search', () => {
 
       const entity = {
         _id: id,
-        type: 'document',
         title: 'Batman indexes',
       };
 

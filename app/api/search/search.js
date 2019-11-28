@@ -1,6 +1,5 @@
 /** @format */
 
-import errorLog from 'api/log/errorLog';
 import date from 'api/utils/date';
 
 import propertiesHelper from 'shared/comonProperties';
@@ -9,9 +8,6 @@ import translate, { getLocaleTranslation, getContext } from 'shared/translate';
 import translations from 'api/i18n/translations';
 import elasticIndexes from 'api/config/elasticIndexes';
 
-import languagesUtil from 'shared/languages';
-import languages from 'shared/languagesList';
-
 import dictionariesModel from 'api/thesauris/dictionariesModel';
 import { createError } from 'api/utils';
 import relationtypes from 'api/relationtypes';
@@ -19,6 +15,7 @@ import documentQueryBuilder from './documentQueryBuilder';
 import elastic from './elastic';
 import entities from '../entities';
 import templatesModel from '../templates';
+import { bulkIndex, indexEntities } from './entitiesIndex';
 
 function processFiltes(filters, properties) {
   return Object.keys(filters || {}).map(propertyName => {
@@ -199,89 +196,6 @@ const processResponse = response => {
   return { rows, totalRows: response.hits.total.value, aggregations: response.aggregations };
 };
 
-const mainSearch = (query, language, user) =>
-  Promise.all([
-    templatesModel.get(),
-    dictionariesModel.get(),
-    relationtypes.get(),
-    translations.get(),
-  ]).then(([templates, dictionaries, relationTypes, _translations]) => {
-    const textFieldsToSearch =
-      query.fields ||
-      propertiesHelper
-        .allUniqueProperties(templates)
-        .map(prop =>
-          ['text', 'markdown'].includes(prop.type)
-            ? `metadata.${prop.name}.value`
-            : `metadata.${prop.name}.label`
-        )
-        .concat(['title', 'fullText']);
-    const documentsQuery = documentQueryBuilder()
-      .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
-      .filterByTemplate(query.types)
-      .filterById(query.ids)
-      .language(language);
-
-    if (query.from) {
-      documentsQuery.from(query.from);
-    }
-
-    if (query.limit) {
-      documentsQuery.limit(query.limit);
-    }
-
-    if (query.includeUnpublished && user) {
-      documentsQuery.includeUnpublished();
-    }
-
-    if (query.unpublished && user) {
-      documentsQuery.unpublished();
-    }
-
-    const allTemplates = templates.map(t => t._id);
-    const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
-    const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
-    let properties = propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
-    properties =
-      !query.types || !query.types.length ? propertiesHelper.defaultFilters(templates) : properties;
-
-    if (query.sort) {
-      const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
-      if (sortingProp && sortingProp.type === 'select') {
-        const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
-        const translation = getLocaleTranslation(_translations, language);
-        const context = getContext(translation, dictionary._id.toString());
-        const keys = dictionary.values.reduce((result, value) => {
-          result[value.id] = translate(context, value.label, value.label);
-          return result;
-        }, {});
-        documentsQuery.sortByForeignKey(query.sort, keys, query.order);
-      } else {
-        documentsQuery.sort(query.sort, query.order);
-      }
-    }
-
-    if (query.allAggregations) {
-      properties = allUniqueProps;
-    }
-
-    const aggregations = agregationProperties(properties);
-    const filters = processFiltes(query.filters, properties);
-    documentsQuery.filterMetadata(filters);
-    documentsQuery.aggregations(aggregations, dictionaries);
-
-    if (query.geolocation) {
-      searchGeolocation(documentsQuery, templates);
-    }
-
-    return elastic
-      .search({ index: elasticIndexes.index, body: documentsQuery.query() })
-      .then(processResponse)
-      .catch(e => {
-        throw createError(e.message, 400);
-      });
-  });
-
 const determineInheritedProperties = templates =>
   templates.reduce((memo, template) => {
     const inheritedProperties = memo;
@@ -416,11 +330,95 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
   return results;
 };
 
-const search = {
-  search: mainSearch,
+const instanceSearch = elasticIndex => ({
+  search(query, language, user) {
+    return Promise.all([
+      templatesModel.get(),
+      dictionariesModel.get(),
+      relationtypes.get(),
+      translations.get(),
+    ]).then(([templates, dictionaries, relationTypes, _translations]) => {
+      const textFieldsToSearch =
+        query.fields ||
+        propertiesHelper
+          .allUniqueProperties(templates)
+          .map(prop =>
+            ['text', 'markdown'].includes(prop.type)
+              ? `metadata.${prop.name}.value`
+              : `metadata.${prop.name}.label`
+          )
+          .concat(['title', 'fullText']);
+      const documentsQuery = documentQueryBuilder()
+        .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+        .filterByTemplate(query.types)
+        .filterById(query.ids)
+        .language(language);
+
+      if (query.from) {
+        documentsQuery.from(query.from);
+      }
+
+      if (query.limit) {
+        documentsQuery.limit(query.limit);
+      }
+
+      if (query.includeUnpublished && user) {
+        documentsQuery.includeUnpublished();
+      }
+
+      if (query.unpublished && user) {
+        documentsQuery.unpublished();
+      }
+
+      const allTemplates = templates.map(t => t._id);
+      const allUniqueProps = propertiesHelper.allUniqueProperties(templates);
+      const filteringTypes = query.types && query.types.length ? query.types : allTemplates;
+      let properties = propertiesHelper.comonFilters(templates, relationTypes, filteringTypes);
+      properties =
+        !query.types || !query.types.length
+          ? propertiesHelper.defaultFilters(templates)
+          : properties;
+
+      if (query.sort) {
+        const sortingProp = allUniqueProps.find(p => `metadata.${p.name}` === query.sort);
+        if (sortingProp && sortingProp.type === 'select') {
+          const dictionary = dictionaries.find(d => d._id.toString() === sortingProp.content);
+          const translation = getLocaleTranslation(_translations, language);
+          const context = getContext(translation, dictionary._id.toString());
+          const keys = dictionary.values.reduce((result, value) => {
+            result[value.id] = translate(context, value.label, value.label);
+            return result;
+          }, {});
+          documentsQuery.sortByForeignKey(query.sort, keys, query.order);
+        } else {
+          documentsQuery.sort(query.sort, query.order);
+        }
+      }
+
+      if (query.allAggregations) {
+        properties = allUniqueProps;
+      }
+
+      const aggregations = agregationProperties(properties);
+      const filters = processFiltes(query.filters, properties);
+      documentsQuery.filterMetadata(filters);
+      documentsQuery.aggregations(aggregations, dictionaries);
+
+      if (query.geolocation) {
+        searchGeolocation(documentsQuery, templates);
+      }
+
+      return elastic
+        .search({ index: elasticIndex || elasticIndexes.index, body: documentsQuery.query() })
+        .then(processResponse)
+        .catch(e => {
+          throw createError(e.message, 400);
+        });
+    });
+  },
 
   async searchGeolocations(query, language, user) {
-    let results = await mainSearch({ ...query, geolocation: true }, language, user);
+    let results = await this.search({ ...query, geolocation: true }, language, user);
 
     if (results.rows.length) {
       const { templatesInheritedProperties, inheritedEntities } = await getInheritedEntities(
@@ -438,111 +436,64 @@ const search = {
     return entities.get({ user: user._id, language, published: false });
   },
 
-  searchSnippets(searchTerm, sharedId, language) {
-    return Promise.all([templatesModel.get()]).then(([templates]) => {
-      const searchFields = propertiesHelper
-        .textFields(templates)
-        .map(prop => `metadata.${prop.name}.value`)
-        .concat(['title', 'fullText']);
-      const query = documentQueryBuilder()
-        .fullTextSearch(searchTerm, searchFields, 9999)
-        .includeUnpublished()
-        .filterById(sharedId)
-        .language(language)
-        .query();
+  async searchSnippets(searchTerm, sharedId, language) {
+    const templates = await templatesModel.get();
 
-      return elastic.search({ index: elasticIndexes.index, body: query }).then(response => {
-        if (response.hits.hits.length === 0) {
-          return {
-            count: 0,
-            metadata: [],
-            fullText: [],
-          };
-        }
-        return snippetsFromSearchHit(response.hits.hits[0]);
-      });
+    const searchFields = propertiesHelper
+      .textFields(templates)
+      .map(prop => `metadata.${prop.name}.value`)
+      .concat(['title', 'fullText']);
+    const query = documentQueryBuilder()
+      .fullTextSearch(searchTerm, searchFields, 9999)
+      .includeUnpublished()
+      .filterById(sharedId)
+      .language(language)
+      .query();
+
+    const response = await elastic.search({
+      index: elasticIndex || elasticIndexes.index,
+      body: query,
+    });
+    if (response.hits.hits.length === 0) {
+      return {
+        count: 0,
+        metadata: [],
+        fullText: [],
+      };
+    }
+    return snippetsFromSearchHit(response.hits.hits[0]);
+  },
+
+  async indexEntities(query, select, limit = 200, batchCallback = () => {}) {
+    return indexEntities(query, select, limit, {
+      batchCallback,
+      elasticIndex: elasticIndex || elasticIndexes.index,
+      searchInstance: this,
     });
   },
 
-  bulkIndex(docs, _action = 'index') {
-    const body = [];
-    docs.forEach(doc => {
-      let docBody = Object.assign({}, doc);
-      docBody.fullText = 'entity';
-      const id = doc._id.toString();
-      delete docBody._id;
-      delete docBody._rev;
-      delete docBody.pdfInfo;
-
-      let action = {};
-      action[_action] = { _index: elasticIndexes.index, _id: id };
-      if (_action === 'update') {
-        docBody = { doc: docBody };
-      }
-
-      body.push(action);
-      body.push(docBody);
-
-      if (doc.fullText) {
-        const fullText = Object.values(doc.fullText).join('\f');
-
-        action = {};
-        action[_action] = {
-          _index: elasticIndexes.index,
-          _id: `${id}_fullText`,
-          routing: id,
-        };
-        body.push(action);
-
-        let language;
-        if (!doc.file || (doc.file && !doc.file.language)) {
-          language = languagesUtil.detect(fullText);
-        }
-        if (doc.file && doc.file.language) {
-          language = languages(doc.file.language);
-        }
-        const fullTextObject = {
-          [`fullText_${language}`]: fullText,
-          fullText: { name: 'fullText', parent: id },
-        };
-        body.push(fullTextObject);
-        delete doc.fullText;
-      }
-    });
-
-    return elastic.bulk({ body }).then(res => {
-      if (res.items) {
-        res.items.forEach(f => {
-          if (f.index.error) {
-            errorLog.error(
-              `ERROR Failed to index document ${f.index._id}: ${JSON.stringify(
-                f.index.error,
-                null,
-                ' '
-              )}`
-            );
-          }
-        });
-      }
-      return res;
-    });
+  async bulkIndex(docs, action = 'index') {
+    return bulkIndex(docs, action, elasticIndex);
   },
 
   bulkDelete(docs) {
     const body = docs.map(doc => ({
-      delete: { _index: elasticIndexes.index, _id: doc._id },
+      delete: { _index: elasticIndex || elasticIndexes.index, _id: doc._id },
     }));
     return elastic.bulk({ body });
   },
 
   delete(entity) {
     const id = entity._id.toString();
-    return elastic.delete({ index: elasticIndexes.index, id });
+    return elastic.delete({ index: elasticIndex || elasticIndexes.index, id });
   },
 
   deleteLanguage(language) {
     const query = { query: { match: { language } } };
-    return elastic.deleteByQuery({ index: elasticIndexes.index, body: query });
+    return elastic.deleteByQuery({ index: elasticIndex || elasticIndexes.index, body: query });
   },
-};
-export default search;
+});
+
+export { instanceSearch };
+
+export default instanceSearch();

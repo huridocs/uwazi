@@ -76,7 +76,7 @@ describe('upload routes', () => {
   beforeEach((done) => {
     deleteAllFiles(() => {
       spyOn(search, 'delete').and.returnValue(Promise.resolve());
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
       iosocket = jasmine.createSpyObj('socket', ['emit']);
       routes = instrumentRoutes(uploadRoutes);
       file = {
