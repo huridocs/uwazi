@@ -13,6 +13,8 @@ export class SearchItem extends Component {
   constructor(props) {
     super(props);
     this.delete = this.delete.bind(this);
+    this.handleResumeClicked = this.handleResumeClicked.bind(this);
+    this.handleStopClicked = this.handleStopClicked.bind(this);
   }
 
   delete(e) {
@@ -26,8 +28,20 @@ export class SearchItem extends Component {
     });
   }
 
+  handleStopClicked(e) {
+    const { search, onStopClicked } = this.props;
+    onStopClicked(search._id);
+    e.preventDefault();
+  }
+
+  handleResumeClicked(e) {
+    const { search, onResumeClicked } = this.props;
+    onResumeClicked(search._id);
+    e.preventDefault();
+  }
+
   renderButtons() {
-    const { search, onStopClicked, onResumeClicked } = this.props;
+    const { search } = this.props;
     const { status } = search;
     return (
       <div className="buttons">
@@ -42,7 +56,7 @@ export class SearchItem extends Component {
           <button
             type="button"
             className="btn btn-warning stop-search btn-xs"
-            onClick={() => onStopClicked(search._id)}
+            onClick={this.handleStopClicked}
           >
             <Icon icon="stop" size="sm" />
           </button>
@@ -51,7 +65,7 @@ export class SearchItem extends Component {
           <button
             type="button"
             className="btn btn-success resume-search btn-xs"
-            onClick={() => onResumeClicked(search._id)}
+            onClick={this.handleResumeClicked}
           >
             <Icon icon="play" size="sm"/>
           </button>

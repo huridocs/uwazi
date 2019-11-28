@@ -1,3 +1,5 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -5,6 +7,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import EntityLink from '../EntityLink.js';
 import PagesContext from '../Context';
+import { I18NLink } from 'app/I18N';
 
 describe('EntityLink', () => {
   let props;
@@ -14,7 +17,7 @@ describe('EntityLink', () => {
   beforeEach(() => {
     entity = { _id: '123', sharedId: 'abc' };
     props = {
-      children: 'I want this as the link content'
+      children: 'I want this as the link content',
     };
   });
 
@@ -22,19 +25,7 @@ describe('EntityLink', () => {
     const component = shallow(
       <Provider store={store}>
         <PagesContext.Provider value={entity}>
-          <EntityLink {...props}/>
-        </PagesContext.Provider>
-      </Provider>
-    );
-    expect(component).toMatchSnapshot();
-  });
-
-  it('should generate a link to the document viewer when it has file', () => {
-    entity.file = {};
-    const component = shallow(
-      <Provider store={store}>
-        <PagesContext.Provider value={entity}>
-          <EntityLink {...props}/>
+          <EntityLink {...props} />
         </PagesContext.Provider>
       </Provider>
     );

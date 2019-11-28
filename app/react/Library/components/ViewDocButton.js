@@ -1,3 +1,5 @@
+/** @format */
+
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
@@ -36,13 +38,12 @@ export class ViewDocButton extends Component {
   render() {
     const { sharedId, processed, searchTerm, file, targetReference } = this.props;
     const isEntity = !file;
-    const type = isEntity ? 'entity' : 'document';
 
-    const pathname = `/${type}/${sharedId}`;
+    const pathname = `/entity/${sharedId}`;
     const query = getDocumentUrlQuery(searchTerm, targetReference);
     const documentViewUrl = url.format({
       pathname,
-      query
+      query,
     });
 
     if (!processed && !isEntity) {
@@ -51,7 +52,7 @@ export class ViewDocButton extends Component {
 
     return (
       <I18NLink to={documentViewUrl} className="btn btn-default btn-xs" onClick={this.onClick}>
-        <Icon icon="angle-right" directionAware /> { t('System', 'View') }
+        <Icon icon="angle-right" directionAware /> {t('System', 'View')}
       </I18NLink>
     );
   }
@@ -60,7 +61,7 @@ export class ViewDocButton extends Component {
 ViewDocButton.defaultProps = {
   searchTerm: '',
   processed: false,
-  targetReference: null
+  targetReference: null,
 };
 
 ViewDocButton.propTypes = {
@@ -74,14 +75,21 @@ ViewDocButton.propTypes = {
 
 export function mapStateToProps(state, props) {
   return {
-    searchTerm: props.storeKey ? state[props.storeKey].search.searchTerm : ''
+    searchTerm: props.storeKey ? state[props.storeKey].search.searchTerm : '',
   };
 }
 
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    openReferencesTab: () => _dispatch => _dispatch(actions.set('viewer.sidepanel.tab', 'references'))
-  }, dispatch);
+  return bindActionCreators(
+    {
+      openReferencesTab: () => _dispatch =>
+        _dispatch(actions.set('viewer.sidepanel.tab', 'references')),
+    },
+    dispatch
+  );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewDocButton);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ViewDocButton);

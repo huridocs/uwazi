@@ -1,6 +1,7 @@
 import 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import relationships from 'api/relationships';
+import { search } from 'api/search';
 
 import attachmentsRoutes from '../routes';
 import entities from '../../entities';
@@ -19,16 +20,14 @@ describe('Attachments Routes', () => {
   };
 
   beforeEach(async () => {
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachments;
     routes = instrumentRoutes(attachmentsRoutes);
 
     await db.clearAllAndLoad(fixtures);
   });
 
-  afterEach(() => {
-    paths.attachments = originalAttachmentsPath;
-  });
+  afterEach(() => { paths.attachments = originalAttachmentsPath; });
 
   afterAll(async () => db.disconnect());
 

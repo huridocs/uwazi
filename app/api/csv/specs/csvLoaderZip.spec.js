@@ -1,5 +1,6 @@
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
+import { search } from 'api/search';
 import path from 'path';
 import fs from 'fs';
 import * as fileUtils from 'api/utils/files';
@@ -31,7 +32,7 @@ describe('csvLoader zip file', () => {
       path.join(__dirname, '/zipData/2.pdf'),
       path.join(__dirname, '/zipData/3.pdf'),
     ], 'test.zip');
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(fileUtils, 'generateFileName').and.callFake(
       file => `generated${file.originalname}`
     );

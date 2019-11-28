@@ -30,6 +30,7 @@ const unpublishedDocId = db.id('123456789012345678901234');
 const relationType1 = db.id();
 const relationType2 = db.id();
 const relationType3 = db.id();
+const relationType4 = db.id();
 
 export default {
   entities: [
@@ -49,7 +50,7 @@ export default {
       metadata: {
         property1: [{ value: 'value1' }],
         friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-        multiselect: [],
+        enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
       },
       file: {
         filename: '8202c463d6158af8065022d9b5014cc1.pdf',
@@ -86,7 +87,26 @@ export default {
       language: 'en',
       title: 'Unpublished entity',
       published: false,
-      metadata: { property1: [{ value: 'value1' }] },
+      metadata: {
+        property2: [{ value: 'value1' }],
+        enemies: [
+          { icon: null, label: 'shouldNotChange', type: 'entity', value: 'shared1' },
+          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+          { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
+        ],
+      },
+    },
+    {
+      sharedId: 'other',
+      template: templateId,
+      title: 'Unpublished entity ES',
+      language: 'es',
+      metadata: {
+        enemies: [
+          { icon: null, label: 'translated1', type: 'entity', value: 'shared2' },
+          { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
+        ],
+      },
     },
     //select/multiselect/date sync
     {
@@ -277,6 +297,11 @@ export default {
           type: 'relationship',
           name: 'friends',
           relationType: relationType1,
+        },
+        {
+          type: 'relationship',
+          name: 'enemies',
+          relationType: relationType4,
           content: templateId.toString(),
         },
         { type: 'nested', name: 'field_nested' },

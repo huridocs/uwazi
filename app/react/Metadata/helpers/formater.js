@@ -84,8 +84,7 @@ export default {
 
     let url;
     if (option && thesauri.get('type') === 'template') {
-      const { type } = option;
-      url = `/${type}/${option.value}`;
+      url = `/entity/${option.value}`;
     }
 
     return { value, url, icon };

@@ -6,7 +6,7 @@ import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
 import { RequestParams } from 'app/utils/RequestParams';
-import EntitiesAPI from '../EntitiesAPI';
+import EntitiesAPI from '../../Entities/EntitiesAPI';
 import EntityView from '../EntityView';
 
 describe('EntityView', () => {

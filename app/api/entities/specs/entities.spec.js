@@ -26,6 +26,7 @@ import fixtures, {
 describe('entities', () => {
   beforeEach(async () => {
     spyOn(search, 'delete').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
     spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
     await db.clearAllAndLoad(fixtures);
@@ -171,21 +172,19 @@ describe('entities', () => {
     });
 
     it('should index the newly created documents', done => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const doc = { title: 'the dark knight', template: templateId };
       const user = { _id: db.id() };
 
       entities
         .save(doc, { user, language: 'en' })
         .then(() => {
-          expect(entities.indexEntities).toHaveBeenCalled();
+          expect(search.indexEntities).toHaveBeenCalled();
           done();
         })
         .catch(catchErrors(done));
     });
 
     it('should allow partial saves with correct full indexing (NOTE!: partial update requires sending sharedId)', done => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const partialDoc = {
         _id: batmanFinishesId,
         sharedId: 'shared',
@@ -201,7 +200,7 @@ describe('entities', () => {
           expect(savedEntity.metadata.friends).toEqual([
             { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
           ]);
-          expect(entities.indexEntities).toHaveBeenCalled();
+          expect(search.indexEntities).toHaveBeenCalled();
           done();
         })
         .catch(done.fail);
@@ -284,8 +283,28 @@ describe('entities', () => {
         };
 
         await entities.save(doc, { language: 'en' });
-        const relatedEntity = await entities.getById('shared', 'en');
-        expect(relatedEntity.metadata.friends[0].label).toBe('changedTitle');
+        let relatedEntity = await entities.getById('shared', 'en');
+        expect(relatedEntity.metadata.enemies[0].label).toBe('changedTitle');
+
+        relatedEntity = await entities.getById('other', 'en');
+        expect(relatedEntity.metadata.enemies[1].label).toBe('changedTitle');
+        expect(relatedEntity.metadata.enemies[0].label).toBe('shouldNotChange');
+        expect(relatedEntity.metadata.enemies[2].label).toBe('shouldNotChange1');
+      });
+
+      it('should not change related labels on other languages', async () => {
+        const doc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          title: 'changedTitle',
+        };
+
+        await entities.save(doc, { language: 'en' });
+
+        const relatedEntity = await entities.getById('other', 'es');
+
+        expect(relatedEntity.metadata.enemies[0].label).toBe('translated1');
+        expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
       });
     });
 
@@ -483,6 +502,7 @@ describe('entities', () => {
       expect(updatedEntity.metadata).toEqual({
         date: [],
         daterange: [],
+        enemies: [],
         field_nested: [],
         friends: [],
         multidate: [],
@@ -636,48 +656,6 @@ describe('entities', () => {
     });
   });
 
-  describe('indexEntities', () => {
-    it('should index entities based on query params passed', done => {
-      entities
-        .indexEntities({ sharedId: 'shared' })
-        .then(() => {
-          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].title).toBeDefined();
-          expect(documentsToIndex[0].fullText).not.toBeDefined();
-          expect(documentsToIndex[0].relationships.length).toBe(4);
-
-          expect(documentsToIndex[1].title).toBeDefined();
-          expect(documentsToIndex[1].fullText).not.toBeDefined();
-          expect(documentsToIndex[1].relationships.length).toBe(4);
-
-          expect(documentsToIndex[2].title).toBeDefined();
-          expect(documentsToIndex[2].fullText).not.toBeDefined();
-          expect(documentsToIndex[2].relationships.length).toBe(4);
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-
-    it('should index entities withh fullText', done => {
-      entities
-        .indexEntities({ sharedId: 'shared' }, '+fullText')
-        .then(() => {
-          const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
-          expect(documentsToIndex[0].title).toBeDefined();
-          expect(documentsToIndex[0].fullText).toBeDefined();
-          expect(documentsToIndex[0].relationships.length).toBe(4);
-
-          expect(documentsToIndex[1].title).toBeDefined();
-          expect(documentsToIndex[1].relationships.length).toBe(4);
-
-          expect(documentsToIndex[2].title).toBeDefined();
-          expect(documentsToIndex[2].relationships.length).toBe(4);
-          done();
-        })
-        .catch(catchErrors(done));
-    });
-  });
-
   describe('get', () => {
     it('should return matching entities for the conditions', done => {
       const sharedId = 'shared1';
@@ -696,14 +674,9 @@ describe('entities', () => {
   });
 
   describe('countByTemplate', () => {
-    it('should return how many entities using the template passed', done => {
-      entities
-        .countByTemplate(templateId)
-        .then(count => {
-          expect(count).toBe(5);
-          done();
-        })
-        .catch(done.fail);
+    it('should return how many entities using the template passed', async () => {
+      const count = await entities.countByTemplate(templateId);
+      expect(count).toBe(7);
     });
 
     it('should return 0 when no count found', done => {
@@ -730,23 +703,18 @@ describe('entities', () => {
         .catch(done.fail);
     });
 
-    it('should return all entities (including unpublished) if required', done => {
-      entities
-        .getByTemplate(templateId, 'en', false)
-        .then(docs => {
-          expect(docs.length).toBe(3);
-          expect(docs[0].title).toBe('Batman finishes');
-          expect(docs[1].title).toBe('Unpublished entity');
-          expect(docs[2].title).toBe('EN');
-          done();
-        })
-        .catch(done.fail);
+    it('should return all entities (including unpublished) if required', async () => {
+      const docs = await entities.getByTemplate(templateId, 'en', false);
+      expect(docs.length).toBe(4);
+      expect(docs[0].title).toBe('Batman finishes');
+      expect(docs[1].title).toBe('Unpublished entity');
+      expect(docs[2].title).toBe('EN');
+      expect(docs[3].title).toBe('shared2title');
     });
   });
 
   describe('multipleUpdate()', () => {
     it('should save() all the entities with the new metadata', async () => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
 
       const metadata = {
         property1: [{ value: 'new text' }],
@@ -788,7 +756,6 @@ describe('entities', () => {
 
   describe('saveMultiple()', () => {
     it('should allow partial saves with correct full indexing', done => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const partialDoc = { _id: batmanFinishesId, sharedId: 'shared', title: 'Updated title' };
       const partialDoc2 = {
         _id: syncPropertiesEntityId,
@@ -805,11 +772,13 @@ describe('entities', () => {
 
           expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
           expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual({
-            property1: [{ value: 'value1' }],
-            friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-          });
-          expect(entities.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
+          expect(savedEntity.metadata).toEqual(
+            expect.objectContaining({
+              property1: [{ value: 'value1' }],
+              friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+            })
+          );
+          expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
           done();
         })
         .catch(done.fail);
@@ -843,7 +812,6 @@ describe('entities', () => {
     });
 
     it('should update property names on entities based on the changes to the template', done => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       const template = {
         _id: templateChangingNames,
         properties: [
@@ -871,7 +839,7 @@ describe('entities', () => {
           expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
 
           expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
-          expect(entities.indexEntities).toHaveBeenCalledWith(
+          expect(search.indexEntities).toHaveBeenCalledWith(
             { template: template._id },
             null,
             1000
@@ -930,13 +898,12 @@ describe('entities', () => {
 
   describe('removeValuesFromEntities', () => {
     it('should remove values of properties passed on all entities having that property', done => {
-      spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
       entities
         .removeValuesFromEntities({ multiselect: [] }, templateWithEntityAsThesauri)
         .then(() => entities.get({ template: templateWithEntityAsThesauri }))
         .then(_entities => {
           expect(_entities[0].metadata.multiselect).toEqual([]);
-          expect(entities.indexEntities).toHaveBeenCalled();
+          expect(search.indexEntities).toHaveBeenCalled();
           done();
         })
         .catch(catchErrors(done));
@@ -960,13 +927,12 @@ describe('entities', () => {
     describe('when database deletion throws an error', () => {
       it('should reindex the documents', async () => {
         spyOn(entitiesModel, 'delete').and.callFake(() => Promise.reject('error'));
-        spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
         let error;
         try {
           await entities.delete('shared');
         } catch (_error) {
           error = _error;
-          expect(entities.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
+          expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
         }
         expect(error).toBeDefined();
       });
@@ -1078,6 +1044,7 @@ describe('entities', () => {
 
     describe('when entity is being used as thesauri', () => {
       it('should delete the entity id on all entities using it from select/multiselect values', async () => {
+        search.indexEntities.and.callThrough();
         await entities.delete('shared');
         const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
         expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
@@ -1088,6 +1055,7 @@ describe('entities', () => {
 
       describe('when there is no multiselects but there is selects', () => {
         it('should only delete selects and not throw an error', async () => {
+          search.indexEntities.and.callThrough();
           await entities.delete('shared10');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
           expect(documentsToIndex[0].metadata.select).toEqual([]);
@@ -1096,6 +1064,7 @@ describe('entities', () => {
 
       describe('when there is no selects but there is multiselects', () => {
         it('should only delete multiselects and not throw an error', async () => {
+          search.indexEntities.and.callThrough();
           await entities.delete('multiselect');
           const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
           expect(documentsToIndex[0].metadata.multiselect).toEqual([{ value: 'value1' }]);
@@ -1133,8 +1102,8 @@ describe('entities', () => {
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+fullText');
 
-      expect(newEntities[0].fullText).toEqual({ 1: 'text' });
-      expect(newEntities.length).toBe(10);
+      expect(newEntities.find(e => e.sharedId === 'shared1').fullText).toEqual({ 1: 'text' });
+      expect(newEntities.length).toBe(11);
     });
   });
 

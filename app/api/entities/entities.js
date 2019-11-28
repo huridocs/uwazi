@@ -14,11 +14,11 @@ import path from 'path';
 import PDF from 'api/upload/PDF';
 import paths from 'api/config/paths';
 import dictionariesModel from 'api/thesauris/dictionariesModel';
+import translate, { getContext } from 'shared/translate';
 import { deleteFiles } from '../utils/files.js';
 import model from './entitiesModel';
 import { validateEntity } from './entitySchema';
 import settings from '../settings';
-import translate, { getContext } from 'shared/translate';
 
 /** Repopulate metadata object .label from thesauri and relationships. */
 async function denormalizeMetadata(entity, template, dictionariesByKey) {
@@ -276,7 +276,7 @@ export default {
       await relationships.saveEntityBasedReferences(entity, language);
     }
     if (index) {
-      await this.indexEntities({ sharedId }, '+fullText');
+      await search.indexEntities({ sharedId }, '+fullText');
     }
 
     return entity;
@@ -297,33 +297,9 @@ export default {
     await process(0, totalRows);
   },
 
-  indexEntities(query, select, limit = 200, batchCallback = () => {}) {
-    const index = (offset, totalRows) => {
-      if (offset >= totalRows) {
-        return Promise.resolve();
-      }
-
-      return this.get(query, select, { skip: offset, limit })
-        .then(entities =>
-          Promise.all(
-            entities.map(entity =>
-              relationships.get({ entity: entity.sharedId }).then(relations => {
-                entity.relationships = relations || [];
-                return entity;
-              })
-            )
-          )
-        )
-        .then(entities =>
-          search.bulkIndex(entities).then(() => batchCallback(entities.length, totalRows))
-        )
-        .then(() => index(offset + limit, totalRows));
-    };
-    return this.count(query).then(totalRows => index(0, totalRows));
-  },
-
-  get(query, select, pagination) {
-    return model.get(query, select, pagination);
+  async get(query, select, pagination) {
+    const entities = await model.get(query, select, pagination);
+    return entities;
   },
 
   async getWithRelationships(query, select, pagination) {
@@ -348,7 +324,7 @@ export default {
 
   async saveMultiple(docs) {
     const response = await model.saveMultiple(docs);
-    await this.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
+    await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
     return response;
   },
 
@@ -370,7 +346,7 @@ export default {
         }
       })
     );
-    await this.indexEntities({ sharedId: { $in: ids } });
+    await search.indexEntities({ sharedId: { $in: ids } });
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
@@ -402,13 +378,13 @@ export default {
 
           const relationshipProperties = template.properties.filter(p => p.type === 'relationship');
           relationshipProperties.forEach(property => {
-            const relationshipsGoingToThisProperty = relations.filter(r => {
-              return (
+            const relationshipsGoingToThisProperty = relations.filter(
+              r =>
                 r.template &&
                 r.template.toString() === property.relationType.toString() &&
                 (!property.content || r.entityData.template.toString() === property.content)
-              );
-            });
+            );
+
             entity.metadata[property.name] = relationshipsGoingToThisProperty.map(r => ({
               value: r.entity,
               label: r.entityData.title,
@@ -421,7 +397,7 @@ export default {
         }
       })
     );
-    await this.indexEntities({ sharedId: { $in: entitiesToReindex } });
+    await search.indexEntities({ sharedId: { $in: entitiesToReindex } });
   },
 
   /** Handle property deletion and renames. */
@@ -457,7 +433,7 @@ export default {
 
     await dbUpdate;
     if (!template.properties.find(p => p.type === propertyTypes.relationship)) {
-      return this.indexEntities({ template: template._id }, null, 1000);
+      return search.indexEntities({ template: template._id }, null, 1000);
     }
     return this.bulkUpdateMetadataFromRelationships({ template: template._id, language }, language);
   },
@@ -524,7 +500,7 @@ export default {
     try {
       await model.delete({ sharedId });
     } catch (e) {
-      await this.indexEntities({ sharedId }, '+fullText');
+      await search.indexEntities({ sharedId }, '+fullText');
       throw e;
     }
     await Promise.all([
@@ -562,7 +538,7 @@ export default {
 
     const entitiesToReindex = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $set: changes });
-    return this.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
+    return search.indexEntities({ _id: { $in: entitiesToReindex.map(e => e._id.toString()) } });
   },
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
@@ -587,7 +563,7 @@ export default {
     }
     const entities = await this.get(query, { _id: 1 });
     await model.db.updateMany(query, { $pull: changes });
-    await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+    await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
   },
 
   /** Propagate the deletion of a thesaurus entry to all entity metadata. */
@@ -609,36 +585,23 @@ export default {
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
   async renameInMetadata(valueId, newLabel, propertyContent, propTypes, restrictLanguage = null) {
-    const allTemplates = await templates.get({ 'properties.content': propertyContent });
-    const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
-    const properties = allProperties.filter(p => propTypes.includes(p.type));
-    let query = { $or: [] };
-    const changes = {};
-    query.$or = properties
+    const properties = (await templates.get({ 'properties.content': propertyContent }))
+      .reduce((m, t) => m.concat(t.properties), [])
+      .filter(p => propTypes.includes(p.type))
       .filter(
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
+      );
+
+    return Promise.all(
+      properties.map(property =>
+        model.db.update(
+          { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
+          { $set: { [`metadata.${property.name}.$[valueObject].label`]: newLabel } },
+          { arrayFilters: [{ 'valueObject.value': valueId }], multi: true }
+        )
       )
-      .map(property => {
-        const p = {};
-        p[`metadata.${property.name}.value`] = valueId;
-        changes[`metadata.${property.name}.$[].label`] = newLabel;
-        return p;
-      });
-
-    if (!query.$or.length) {
-      return;
-    }
-
-    if (restrictLanguage) {
-      query = { $and: [{ language: restrictLanguage }, query] };
-    }
-
-    const entities = await this.get(query, { _id: 1 });
-
-    await model.db.updateMany(query, { $set: changes });
-    await this.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
+    );
   },
-
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId) {
     await this.renameInMetadata(valueId, newLabel, thesaurusId, [
