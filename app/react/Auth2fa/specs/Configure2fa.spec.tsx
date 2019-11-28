@@ -25,9 +25,10 @@ const mockEnable = () => {
   spyOn(Auth2faAPI, 'enable').and.callFake(params => {
     if (params instanceof RequestParams && params.data.token === 'correctToken') {
       return { success: true };
-    } else {
-      throw { status: 409 };
     }
+
+    const error = { status: 409 };
+    throw error;
   });
 };
 
