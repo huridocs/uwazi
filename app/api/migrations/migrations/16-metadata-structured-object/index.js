@@ -52,37 +52,28 @@ export default {
       {}
     );
 
-    for (let attempt = 0; attempt < 10; attempt += 1) {
-      try {
-        let index = 0;
+    let index = 0;
 
-        const cursor = db
+    const allE = await db
+      .collection('entities')
+      .find({}, null, { noCursorTimeout: true, batchSize: 100, lean: true })
+      .toArray();
+    await allE.reduce(async (prom, entity) => {
+      await prom;
+      const template = templatesByKey[entity.template ? entity.template.toString() : null];
+      index += 1;
+      if (entity.metadata && template) {
+        entity.metadata = this.expandMetadata(entity.metadata);
+        entity.metadata = await entities.denormalizeMetadata(entity, template, dictionariesByKey);
+        await db
           .collection('entities')
-          .find({}, null, { noCursorTimeout: true, batchSize: 100, lean: true });
-        while (await cursor.hasNext()) {
-          const entity = await cursor.next();
-          const template = templatesByKey[entity.template ? entity.template.toString() : null];
-          if (entity.metadata && template) {
-            entity.metadata = this.expandMetadata(entity.metadata);
-            entity.metadata = await entities.denormalizeMetadata(
-              entity,
-              template,
-              dictionariesByKey
-            );
-            await db
-              .collection('entities')
-              .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });
-            index += 1;
-          }
-        }
-        process.stdout.write(`Converted entities.metadata -> ${index}\r`);
-        process.stdout.write('\r\n');
-        break;
-      } catch (err) {
-        process.stdout.write(
-          `Encountered error, but trying several times to increase the chance of success!\r\n${err}.\r\n`
-        );
+          .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });
       }
-    }
+      if (index % 100 === 0) {
+        process.stdout.write(`Converted entities.metadata -> ${index} / ${allE.length}\r`);
+      }
+    });
+    process.stdout.write(`Converted entities.metadata -> ${index}\r`);
+    process.stdout.write('\r\n');
   },
 };

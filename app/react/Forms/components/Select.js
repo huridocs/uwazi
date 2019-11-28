@@ -5,24 +5,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 export default class Select extends Component {
-  onChange(event) {
-    const newValue = event.hasOwnProperty('target') && event.target ? event.target.value : event;
-    const { onChange } = this.props;
-    if (!newValue) {
-      return onChange(event);
-    }
-    const { options, optionsValue, optionsLabel } = this.props;
-    const moValue = { value: newValue };
-    moValue.label = (options
-      .reduce(
-        (result, option) =>
-          option.options ? result.concat(option.options) : result.concat([option]),
-        []
-      )
-      .find(o => o[optionsValue] === newValue) || { [optionsLabel]: undefined })[optionsLabel];
-    return onChange(moValue);
-  }
-
   render() {
     const { options, optionsValue, optionsLabel, required, placeholder, sort } = this.props;
     let _options = options;
@@ -34,7 +16,7 @@ export default class Select extends Component {
 
     const disbaled = Boolean(required);
     return (
-      <select className="form-control" onChange={this.onChange.bind(this)} value={value}>
+      <select className="form-control" onChange={this.props.onChange} value={value}>
         <option disbaled={disbaled.toString()} value="">
           {placeholder}
         </option>
