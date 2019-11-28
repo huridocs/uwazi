@@ -3,7 +3,7 @@
 
 import { useThesaurusNames, tcServer } from 'api/config/topicclassification';
 import entities from 'api/entities';
-import { WithId } from 'api/odm';
+import { WithId, QueryForEach } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauris';
 import { buildModelName, extractSequence } from 'api/topicclassification';
@@ -54,38 +54,39 @@ connect().then(async () => {
         process.stdout.write(selectedThesaurus.name);
         const modelName = buildModelName(selectedThesaurus.name);
         const request: any = { samples: [] };
-        const allE = await entities
-          .get({})
-          .sort('-_id')
-          .limit(maxUpload)
-          .exec();
-        await allE.reduce(async (prom2, e: WithId<EntitySchema>) => {
-          await prom2;
-          if (!e.template || !e.metadata) {
-            return;
+        await QueryForEach(
+          entities
+            .get({})
+            .sort('-_id')
+            .limit(maxUpload),
+          2000,
+          async (e: WithId<EntitySchema>) => {
+            if (!e.template || !e.metadata) {
+              return;
+            }
+            const sequence = await extractSequence(e);
+            if (!sequence) {
+              return;
+            }
+            const prop = templateAndProp[e.template.toString()];
+            if (!prop) {
+              return;
+            }
+            const propMeta = e.metadata[prop] || [];
+            request.samples.push({
+              seq: sequence,
+              training_labels: propMeta.map(mo => ({
+                topic: useThesaurusNames ? mo.label : mo.value,
+              })),
+            });
+            if (request.samples.length >= 2000) {
+              process.stdout.write('.');
+              await storeSamples(request, modelName);
+              process.stdout.write('+');
+              request.samples = [];
+            }
           }
-          const sequence = await extractSequence(e);
-          if (!sequence) {
-            return;
-          }
-          const prop = templateAndProp[e.template.toString()];
-          if (!prop) {
-            return;
-          }
-          const propMeta = e.metadata[prop] || [];
-          request.samples.push({
-            seq: sequence,
-            training_labels: propMeta.map(mo => ({
-              topic: useThesaurusNames ? mo.label : mo.value,
-            })),
-          });
-          if (request.samples.length >= 2000) {
-            process.stdout.write('.');
-            await storeSamples(request, modelName);
-            process.stdout.write('+');
-            request.samples = [];
-          }
-        }, Promise.resolve());
+        );
         if (request.samples.length > 0) {
           process.stdout.write('!');
           await storeSamples(request, modelName);
