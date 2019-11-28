@@ -122,7 +122,7 @@ describe('Login', () => {
         it('should not set error and flag "tokenRequired"', async () => {
           prepareLoginResponse(Promise.reject(response409()));
           await instance.submit(new Event('submit'));
-          expectState(instance.state, { error: false, tokenRequired: false });
+          expectState(instance.state, { error: false, tokenRequired: true });
         });
       });
 
