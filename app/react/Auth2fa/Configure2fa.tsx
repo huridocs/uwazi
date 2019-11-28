@@ -139,9 +139,9 @@ Configure2fa.defaultProps = {
   enable2fa: () => {},
 };
 
-export function mapStateToProps(state: any) {
-  return { userUsing2fa: state.user.toJS().using2fa };
-}
+export const mapStateToProps = (state: any): { userUsing2fa: boolean } => ({
+  userUsing2fa: state.user.toJS().using2fa,
+});
 
 export const mapDispatchToProps = (dispatch: Dispatch<enable2faType>) =>
   bindActionCreators<ActionCreatorsMapObject>({ enable2fa: enable2faAction }, dispatch);
