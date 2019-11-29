@@ -618,11 +618,14 @@ export default {
   },
 
   /** Propagate the change of a thesaurus label to all entity metadata. */
-  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId) {
-    await this.renameInMetadata(valueId, newLabel, thesaurusId, [
-      propertyTypes.select,
-      propertyTypes.multiselect,
-    ]);
+  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
+    await this.renameInMetadata(
+      valueId,
+      newLabel,
+      thesaurusId,
+      [propertyTypes.select, propertyTypes.multiselect],
+      language
+    );
   },
 
   /** Propagate the title change of a related entity to all entity metadata. */
