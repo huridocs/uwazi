@@ -22,7 +22,7 @@ export default (app, server) => {
   require('./templates/routes.js').default(app);
   require('./search/routes.js').default(app);
   require('./semanticsearch/routes.js').default(app);
-  require('./topicclassification/routes.js').default(app);
+  require('./topicclassification/routes.ts').default(app);
   require('./thesauris/routes.js').default(app);
   require('./relationtypes/routes.js').default(app);
   require('./documents/routes.js').default(app);
