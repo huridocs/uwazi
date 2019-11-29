@@ -28,8 +28,6 @@ export type PropertyValueSchema = null | string | number | LinkSchema | DateRang
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
-  type?: string | null;
-  icon?: string | null;
   [k: string]: any | undefined;
 }
 
