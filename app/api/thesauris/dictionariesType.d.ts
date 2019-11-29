@@ -12,7 +12,6 @@ export interface ThesaurusSchema {
     _id?: ObjectIdSchema;
     id?: string;
     label: string;
-    classificationEnabled?: boolean;
     values?: {
       _id?: ObjectIdSchema;
       id?: string;
