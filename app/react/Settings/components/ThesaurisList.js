@@ -56,7 +56,6 @@ export class ThesaurisList extends Component {
   }
 
   async disableClassification(thesauri) {
-    console.log('disable', this.props);
     this.props.disableClassification(thesauri).catch(() => {
       this.context.confirm({
         accept: () => {},
@@ -68,6 +67,7 @@ export class ThesaurisList extends Component {
   }
 
   render() {
+    console.dir('thesaurislist render');
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Thesauri')}</div>
@@ -87,6 +87,7 @@ export class ThesaurisList extends Component {
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 {!thesauri.enable_classification ? (
+                  //{!thesauri.enable_classification && thesauri.model_available ? (
                   <button
                     onClick={this.enableClassification.bind(this, thesauri)}
                     className="btn btn-default btn-xs"

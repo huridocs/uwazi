@@ -38,10 +38,7 @@ export function reloadThesauris() {
 
 export function disableClassification(thesauri) {
   return async dispatch => {
-    console.dir('pre-disable', thesauri);
     const _thesauri = { ...thesauri, enableClassification: false };
-    console.dir('pre-disable', _thesauri);
-    // values.
     await api.save(new RequestParams(_thesauri)).then(_updatedThesauri => {
       notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
       dispatch(actions.update('dictionaries', _updatedThesauri));
@@ -51,10 +48,7 @@ export function disableClassification(thesauri) {
 
 export function enableClassification(thesauri) {
   return async dispatch => {
-    console.dir('pre-enable', thesauri);
     const _thesauri = { ...thesauri, enableClassification: true };
-    console.dir('post-enable', _thesauri);
-    // values.
     await api.save(new RequestParams(_thesauri)).then(updatedThesauri => {
       notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
       dispatch(actions.update('dictionaries', updatedThesauri));
@@ -69,7 +63,6 @@ export function checkThesauriCanBeClassified(thesauri) {
     if (stats && stats.can_enable) {
       return dispatch;
     }
-    //return dispatch;
     throw new Error('Cannot enable!');
   };
 }
