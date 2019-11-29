@@ -72,7 +72,7 @@ export default {
       if (index % 100 === 0) {
         process.stdout.write(`Converted entities.metadata -> ${index} / ${allE.length}\r`);
       }
-    });
+    }, Promise.resolve());
     process.stdout.write(`Converted entities.metadata -> ${index}\r`);
     process.stdout.write('\r\n');
   },
