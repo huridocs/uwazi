@@ -58,8 +58,8 @@ export default {
       .collection('entities')
       .find({}, null, { noCursorTimeout: true, batchSize: 100, lean: true })
       .toArray();
-    await allE.reduce(async (prom, entity) => {
-      await prom;
+    await allE.reduce(async (promise, entity) => {
+      await promise;
       const template = templatesByKey[entity.template ? entity.template.toString() : null];
       index += 1;
       if (entity.metadata && template) {
