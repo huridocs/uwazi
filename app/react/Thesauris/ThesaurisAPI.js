@@ -19,7 +19,8 @@ export default {
   },
 
   getModelStatus(requestParams) {
-    return api.get('topics', requestParams).then(response => response.json);
+    console.dir(requestParams);
+    return api.get('models', requestParams).then(response => response.json);
   },
 
   save(requestParams) {
