@@ -2,12 +2,13 @@
 
 import 'isomorphic-fetch';
 import { tcServer } from 'api/config/topicclassification';
+import { URL } from 'url';
 
 export async function getModels() {
   console.dir(getModels);
-  const url = new URL('models', tcServer);
+  const tcUrl = new URL('models', tcServer);
   console.dir(url);
-  const res = await fetch(url.pathname, {
+  const res = await fetch(tcUrl.pathname, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
