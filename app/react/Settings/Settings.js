@@ -13,36 +13,30 @@ import { I18NApi } from 'app/I18N';
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
-function modelAvailable(thesaurus, models) {
-  console.dir(thesaurus);
-  if (models.includes(buildModelName(thesaurus.name))) {
-    console.dir(thesaurus.name);
-    return { ...thesaurus, model_available: true };
-  }
-  console.dir('no match', thesaurus.name);
-  return { ...thesaurus, model_available: false };
-}
 export class Settings extends RouteHandler {
   static async requestState(requestParams) {
     const request = requestParams.onlyHeaders();
     const [user, thesauri, models, relationTypes, translations, collection] = await Promise.all([
       UsersAPI.currentUser(request),
-      ThesaurisAPI.getDictionaries(request),
+      ThesaurisAPI.getThesauri(request),
       ThesaurisAPI.getModelStatus(request),
       RelationTypesAPI.get(request),
       I18NApi.get(request),
       SettingsAPI.get(request),
     ]);
 
-    console.dir(models);
-    thesauri.map(thesaurus => modelAvailable(thesaurus, models.models));
-    console.dir('thesauri filtered');
-    console.dir(thesauri);
+    const modeledThesauri = thesauri.map(thesaurus => {
+      const thesaurusModelName = buildModelName(thesaurus.name);
+      if (models.models.includes(thesaurusModelName)) {
+        return { ...thesaurus, model_available: true };
+      }
+      return { ...thesaurus, model_available: false };
+    });
 
     // array of actions.update('dictionaries', {thesauri._id: id, model_available: true}) for all models available
     return [
       actions.set('auth/user', user),
-      actions.set('dictionaries', thesauri),
+      actions.set('dictionaries', modeledThesauri),
       actions.set('relationTypes', relationTypes),
       actions.set('translations', translations),
       actions.set('settings/collection', collection),

@@ -8,7 +8,7 @@ export default {
     return api.get(url, requestParams).then(response => response.json.rows);
   },
 
-  getDictionaries(requestParams) {
+  getThesauri(requestParams) {
     const url = 'dictionaries';
     return api.get(url, requestParams).then(response => response.json.rows);
   },
