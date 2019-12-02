@@ -3,6 +3,7 @@
 import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
 import entities from 'api/entities/entities';
 import templates from 'api/templates/templates';
+import settings from 'api/settings/settings';
 import translations from 'api/i18n/translations';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
@@ -76,9 +77,10 @@ async function updateOptionsInEntities(current, thesauri) {
   );
 
   const updatedIds = getUpdatedNames(currentProperties, newProperties, 'label', 'id');
+  const defaultLanguage = (await settings.get()).languages.find(lang => lang.default).key;
   await Promise.all(
     Object.entries(updatedIds).map(([updatedId, newLabel]) =>
-      entities.renameThesaurusInMetadata(updatedId, newLabel, thesauri._id)
+      entities.renameThesaurusInMetadata(updatedId, newLabel, thesauri._id, defaultLanguage)
     )
   );
 }

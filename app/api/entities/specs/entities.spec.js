@@ -306,6 +306,31 @@ describe('entities', () => {
         expect(relatedEntity.metadata.enemies[0].label).toBe('translated1');
         expect(relatedEntity.metadata.enemies[1].label).toBe('translated2');
       });
+
+      it('should index entities changed after propagating label change', async () => {
+        const doc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          title: 'changedTitle',
+        };
+
+        search.indexEntities.and.callThrough();
+
+        await entities.save(doc, { language: 'en' });
+
+        const documentsToIndex = search.bulkIndex.calls.argsFor(0)[0];
+
+        expect(documentsToIndex).toEqual([
+          expect.objectContaining({
+            sharedId: 'shared',
+            language: 'en',
+          }),
+          expect.objectContaining({
+            sharedId: 'other',
+            language: 'en',
+          }),
+        ]);
+      });
     });
 
     describe('when published/template property changes', () => {
@@ -715,7 +740,6 @@ describe('entities', () => {
 
   describe('multipleUpdate()', () => {
     it('should save() all the entities with the new metadata', async () => {
-
       const metadata = {
         property1: [{ value: 'new text' }],
         description: [{ value: 'yeah!' }],
@@ -839,11 +863,7 @@ describe('entities', () => {
           expect(docs[1].metadata.property3).toEqual([{ value: 'value3' }]);
 
           expect(docDiferentTemplate.metadata.property1).toEqual([{ value: 'value1' }]);
-          expect(search.indexEntities).toHaveBeenCalledWith(
-            { template: template._id },
-            null,
-            1000
-          );
+          expect(search.indexEntities).toHaveBeenCalledWith({ template: template._id }, null, 1000);
           done();
         })
         .catch(catchErrors(done));

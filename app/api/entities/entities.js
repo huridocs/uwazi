@@ -591,7 +591,11 @@ export default {
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
       );
 
-    return Promise.all(
+    if (!properties.length) {
+      return Promise.resolve();
+    }
+
+    await Promise.all(
       properties.map(property =>
         model.db.update(
           { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
@@ -600,13 +604,28 @@ export default {
         )
       )
     );
+
+    return search.indexEntities({
+      $and: [
+        {
+          language: restrictLanguage,
+        },
+        {
+          $or: properties.map(property => ({ [`metadata.${property.name}.value`]: valueId })),
+        },
+      ],
+    });
   },
+
   /** Propagate the change of a thesaurus label to all entity metadata. */
-  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId) {
-    await this.renameInMetadata(valueId, newLabel, thesaurusId, [
-      propertyTypes.select,
-      propertyTypes.multiselect,
-    ]);
+  async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
+    await this.renameInMetadata(
+      valueId,
+      newLabel,
+      thesaurusId,
+      [propertyTypes.select, propertyTypes.multiselect],
+      language
+    );
   },
 
   /** Propagate the title change of a related entity to all entity metadata. */
