@@ -1,3 +1,3 @@
 /** @format */
 
-export * from './common';
+export * from 'shared/commonTopicClassification';
