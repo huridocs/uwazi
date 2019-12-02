@@ -1,4 +1,5 @@
 import entities from 'api/entities';
+import { search } from 'api/search';
 import entitiesModel from 'api/entities/entitiesModel';
 import uploadFile from 'api/upload/uploadProcess';
 import typeParsers from './typeParsers';
@@ -40,7 +41,7 @@ const importEntity = async (rawEntity, template, importFile, { user = {}, langua
     await uploadFile(docs, file).start();
   }
 
-  await entities.indexEntities({ sharedId: entity.sharedId }, '+fullText');
+  await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
   return entity;
 };
 
@@ -63,7 +64,7 @@ const translateEntity = async (entity, translations, template, importFile) => {
     })
   );
 
-  await entities.indexEntities({ sharedId: entity.sharedId }, '+fullText');
+  await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
 };
 
 export { importEntity, translateEntity };

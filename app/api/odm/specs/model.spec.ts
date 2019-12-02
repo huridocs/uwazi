@@ -6,13 +6,15 @@ import { model as updatelogsModel } from 'api/updatelogs';
 import { UpdateLog } from 'api/updatelogs/updatelogsModel';
 import testingDB from 'api/utils/testing_db';
 import { instanceModel } from '../model';
-import { OdmModel, models } from '../models';
+import { OdmModel, WithId, models } from '../models';
 
 const testSchema = new mongoose.Schema({
   name: String,
+  value: String,
 });
-interface TestDoc extends mongoose.Document {
-  name: String;
+interface TestDoc {
+  name: string;
+  value?: string;
 }
 
 describe('ODM Model', () => {
@@ -30,10 +32,7 @@ describe('ODM Model', () => {
   it('should register all the models to the requirable models hashmap', () => {
     expect(models).toEqual({});
     const model1 = instanceModel<TestDoc>('tempSchema', testSchema);
-    const model2 = instanceModel<mongoose.Document>(
-      'anotherSchema',
-      new mongoose.Schema({ name: String })
-    );
+    const model2 = instanceModel('anotherSchema', new mongoose.Schema({ name: String }));
 
     expect(models.tempSchema.db).toBe(model1.db);
     expect(models.anotherSchema.db).toBe(model2.db);
@@ -41,27 +40,35 @@ describe('ODM Model', () => {
 
   describe('Save', () => {
     it('should be able to create when passing an _id and it does not exists', async () => {
-      const extendedModel = instanceModel('tempSchema', testSchema);
-      const id = testingDB.id();
-      await extendedModel.save(({
+      const extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
+      const id: mongoose.Schema.Types.ObjectId = testingDB.id();
+      const savedDoc = await extendedModel.save({
         _id: id,
         name: 'document 1',
-      } as unknown) as TestDoc);
-      const [createdDocument] = await extendedModel.get({ _id: id });
+      });
+      expect(savedDoc._id).toEqual(id);
+      const [createdDocument] = await extendedModel.get({ _id: savedDoc._id });
       expect(createdDocument).toBeDefined();
+      expect(createdDocument.name).toEqual('document 1');
+
+      await extendedModel.save({ _id: id, value: 'abc' });
+      const [updatedDoc] = await extendedModel.get({ _id: savedDoc._id });
+      expect(updatedDoc).toBeDefined();
+      expect(updatedDoc.name).toEqual('document 1');
+      expect(updatedDoc.value).toEqual('abc');
     });
   });
 
   describe('Logging functionality', () => {
     let extendedModel: OdmModel<TestDoc>;
-    let newDocument1: TestDoc;
-    let newDocument2: TestDoc;
+    let newDocument1: WithId<TestDoc>;
+    let newDocument2: WithId<TestDoc>;
 
     beforeEach(async () => {
       Date.now = () => 1;
-      extendedModel = instanceModel('tempSchema', testSchema);
-      newDocument1 = await extendedModel.save(ensure({ name: 'document 1' }));
-      newDocument2 = await extendedModel.save(ensure({ name: 'document 2' }));
+      extendedModel = instanceModel<TestDoc>('tempSchema', testSchema);
+      newDocument1 = await extendedModel.save({ name: 'document 1' });
+      newDocument2 = await extendedModel.save({ name: 'document 2' });
     });
 
     it('should extend create a log entry when saving', async () => {
@@ -78,7 +85,7 @@ describe('ODM Model', () => {
 
     it('should update the log when updating (not creating a new entry)', async () => {
       Date.now = () => 2;
-      await extendedModel.save(({
+      const savedDocument = await extendedModel.save(({
         ...newDocument1,
         name: 'edited name',
       } as unknown) as TestDoc);
@@ -86,13 +93,13 @@ describe('ODM Model', () => {
       expect(logEntries.length).toBe(2);
       expect(
         ensure<UpdateLog>(
-          logEntries.find(e => e.mongoId.toString() === newDocument1._id.toString())
+          logEntries.find(e => e.mongoId.toString() === savedDocument._id.toString())
         ).timestamp
       ).toBe(2);
     });
 
     it('should intercept updateMany', async () => {
-      const newDocument3 = await extendedModel.save(ensure({ name: 'document 3' }));
+      const newDocument3 = await extendedModel.save({ name: 'document 3' });
       Date.now = () => 3;
       await extendedModel.db.updateMany(
         { _id: { $in: [newDocument1._id, newDocument2._id] } },

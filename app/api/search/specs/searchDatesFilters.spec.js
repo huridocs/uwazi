@@ -2,17 +2,19 @@ import db from 'api/utils/testing_db';
 import instanceElasticTesting from 'api/utils/elastic_testing';
 import date from 'api/utils/date';
 
-import elasticFixtures, { ids } from './fixtures_elastic';
+import elasticFixtures, { ids, fixturesTimeOut } from './fixtures_elastic';
 import elastic from '../elastic';
-import search from '../search';
+import { instanceSearch } from '../search';
 
 describe('dates filters search', () => {
-  const elasticTesting = instanceElasticTesting('search_dates_index_test');
+  const elasticIndex = 'search_dates_index_test';
+  const search = instanceSearch(elasticIndex);
+  const elasticTesting = instanceElasticTesting(elasticIndex, search);
 
   beforeAll(async () => {
     await db.clearAllAndLoad(elasticFixtures);
     await elasticTesting.reindex();
-  });
+  }, fixturesTimeOut);
 
   afterAll(async () => {
     await db.disconnect();

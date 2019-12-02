@@ -3,7 +3,6 @@
 import multer from 'multer';
 
 import { models } from 'api/odm';
-import entities from 'api/entities';
 import path from 'path';
 import search from 'api/search/search';
 
@@ -34,7 +33,7 @@ export default app => {
       await saver;
 
       if (req.body.namespace === 'entities') {
-        await entities.indexEntities({ _id: req.body.data._id }, '+fullText');
+        await search.indexEntities({ _id: req.body.data._id }, '+fullText');
       }
       res.json('ok');
     } catch (e) {

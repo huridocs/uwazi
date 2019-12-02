@@ -2,6 +2,7 @@ import db from 'api/utils/testing_db';
 import path from 'path';
 import relationships from 'api/relationships';
 import fs from 'api/utils/async-fs';
+import { search } from 'api/search';
 
 import entities from '../../entities';
 import fixtures, { sharedId, entityId, entityIdEn, attachmentToDelete, toDeleteId } from './fixtures';
@@ -12,7 +13,7 @@ describe('attachments', () => {
   let originalAttachmentsPath;
 
   beforeEach(async () => {
-    spyOn(entities, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
     originalAttachmentsPath = paths.attachments;
 
     await db.clearAllAndLoad(fixtures);
