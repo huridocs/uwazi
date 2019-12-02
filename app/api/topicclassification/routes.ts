@@ -11,8 +11,8 @@ const tcUrlPrefix = '/api/models';
 export default (app: Application) => {
   app.get(
     tcUrlPrefix,
-    //needsAuthorization(),
-    //validation.validateRequest(Joi.object()),
+    needsAuthorization(),
+    validation.validateRequest(Joi.object()),
     (_req: Request, res: Response, next: NextFunction) => {
       getAllModels()
         .then(models => res.json(models))

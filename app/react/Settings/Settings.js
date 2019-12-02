@@ -29,10 +29,8 @@ export class Settings extends RouteHandler {
     console.dir('settings requeststate');
     const [user, dictionaries, models, relationTypes, translations, collection] = await Promise.all(
       [
-        //const [user, dictionaries, relationTypes, translations, collection] = await Promise.all([
         UsersAPI.currentUser(request),
         ThesaurisAPI.getDictionaries(request),
-        //TODO: fix this! it causes the page load to hang.
         ThesaurisAPI.getModelStatus(request),
         RelationTypesAPI.get(request),
         I18NApi.get(request),
@@ -41,6 +39,7 @@ export class Settings extends RouteHandler {
     );
 
     console.dir(models);
+
     // array of actions.update('dictionaries', {thesauri._id: id, model_available: true}) for all models available
     return [
       actions.set('auth/user', user),

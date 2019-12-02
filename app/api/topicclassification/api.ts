@@ -5,10 +5,8 @@ import { tcServer } from 'api/config/topicclassification';
 import { URL } from 'url';
 
 export async function getModels() {
-  console.dir(getModels);
   const tcUrl = new URL('models', tcServer);
-  console.dir(url);
-  const res = await fetch(tcUrl.pathname, {
+  const res = await fetch(tcUrl.href, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -19,10 +17,9 @@ export async function getModels() {
 }
 
 export async function checkModelReady(arg: { model: string }) {
-  console.dir('checkModelReady api.ts');
-  const url = new URL('models', tcServer);
-  url.searchParams.set('model', arg.model);
-  const res = await fetch(url.pathname, {
+  const tcUrl = new URL('models', tcServer);
+  tcUrl.searchParams.set('model', arg.model);
+  const res = await fetch(tcUrl.href, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
