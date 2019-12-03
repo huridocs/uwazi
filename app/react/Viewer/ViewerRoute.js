@@ -21,6 +21,10 @@ class ViewerRoute extends RouteHandler {
       : EntityView.requestState(requestParams, globalResources);
   }
 
+  componentWillUnmount() {
+    this.emptyState();
+  }
+
   emptyState() {
     this.context.store.dispatch(actions.unset('viewer/doc'));
     this.context.store.dispatch(actions.unset('viewer/templates'));

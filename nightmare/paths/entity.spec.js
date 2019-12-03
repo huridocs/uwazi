@@ -13,21 +13,18 @@ describe('Entity zone', () => {
   afterAll(async () => nightmare.end());
 
   describe('metadata editing', () => {
-    fit('should log in as admin and go into the entity viewer for the desired entity', done => {
+    it('should log in as admin and go into the entity viewer for the desired entity', done => {
       const entityTitle = 'Man-bat';
 
       nightmare
         .login('admin', 'admin')
-        .wait(2000)
         .openEntityFromLibrary(entityTitle)
-        .wait(2000)
-        .then(() => done());
-      // .getInnerText(selectors.entityView.contentHeader)
-      // .then(headerText => {
-      //   expect(headerText).toContain(entityTitle);
-      //   done();
-      // })
-      // .catch(catchErrors(done));
+        .getInnerText(selectors.entityView.contentHeader)
+        .then(headerText => {
+          expect(headerText).toContain(entityTitle);
+          done();
+        })
+        .catch(catchErrors(done));
     });
 
     it("should allow changing the entity's title and template (common properties)", done => {
