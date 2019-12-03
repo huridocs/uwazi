@@ -33,7 +33,6 @@ export class Settings extends RouteHandler {
       return { ...thesaurus, model_available: false };
     });
 
-    // array of actions.update('dictionaries', {thesauri._id: id, model_available: true}) for all models available
     return [
       actions.set('auth/user', user),
       actions.set('dictionaries', modeledThesauri),
