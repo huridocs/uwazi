@@ -7,9 +7,13 @@ import { URL } from 'url';
 
 export async function getModels() {
   const tcUrl = new URL('models', tcServer);
-  if (!(await isReachable(tcUrl.href, { timeout: 1000 }))) {
+  const msTimeout = 1000;
+  if (!(await isReachable(tcUrl.href, { timeout: msTimeout }))) {
     // TODO: move this backend check to server start-up time, maybe
-    return JSON.stringify({ models: {} });
+    return JSON.stringify({
+      models: {},
+      error: `Topic Classification server is unreachable (${msTimeout})`,
+    });
   }
   return fetch(tcUrl.href, {
     method: 'GET',
@@ -17,13 +21,13 @@ export async function getModels() {
       'Content-Type': 'application/json',
     },
   })
-    .then(async res => {
-      return res.json();
-    })
-    .catch(err => {
-      console.dir(err.toString());
-      return JSON.stringify({ models: {} });
-    });
+    .then(async res => res.json())
+    .catch(err =>
+      JSON.stringify({
+        models: {},
+        error: `Error from topic-classification server: ${err.toString()}`,
+      })
+    );
 }
 
 export async function checkModelReady(arg: { model: string }) {
