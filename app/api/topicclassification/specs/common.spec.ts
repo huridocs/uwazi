@@ -2,7 +2,8 @@
 
 import { EntitySchema } from 'api/entities/entityType';
 import db from 'api/utils/testing_db';
-import { extractSequence, buildModelName } from '../common';
+import { buildModelName } from 'shared/commonTopicClassification';
+import { extractSequence } from 'api/topicclassification/common';
 import fixtures, { template1 } from './fixtures';
 
 describe('templates utils', () => {

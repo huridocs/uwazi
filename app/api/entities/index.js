@@ -1,9 +1,9 @@
 /** @format */
 
 import entities from './entities.js';
-import model, { MetadataObject } from './entitiesModel';
+import model from './entitiesModel';
 import * as endpointSchema from './endpointSchema';
 
 export default entities;
 
-export { model, MetadataObject, endpointSchema };
+export { model, endpointSchema };

@@ -1,8 +1,9 @@
 /** @format */
 
 import { EntitySchema } from 'api/entities/entityType';
+import { buildModelName } from 'shared/commonTopicClassification';
+import { extractSequence } from './common';
 import { checkModelReady, getModels, processDocument } from './api';
-import { buildModelName, extractSequence } from './common';
 
 export async function getAllModels() {
   const results = await getModels();
