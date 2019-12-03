@@ -1,8 +1,12 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
 const englishTranslation = db.id();
+const dictionaryId = db.id();
+
 export default {
   translations: [
     {
@@ -17,34 +21,45 @@ export default {
             { key: 'Password', value: 'Password' },
             { key: 'Account', value: 'Account' },
             { key: 'Email', value: 'E-Mail' },
-            { key: 'Age', value: 'Age' }
-          ]
+            { key: 'Age', value: 'Age' },
+          ],
         },
         {
           _id: db.id(),
           id: 'Filters',
-          label: 'Filters'
+          label: 'Filters',
         },
         {
           _id: db.id(),
           id: 'Menu',
-          label: 'Menu'
+          label: 'Menu',
         },
         {
           _id: db.id(),
           id: entityTemplateId.toString(),
           label: 'Judge',
           values: [],
-          type: 'Entity'
+          type: 'Entity',
         },
         {
           _id: db.id(),
           id: documentTemplateId.toString(),
           label: 'Court order',
           values: [],
-          type: 'Document'
-        }
-      ]
+          type: 'Document',
+        },
+        {
+          id: dictionaryId,
+          type: 'Dictionary',
+          values: [
+            { key: 'dictionary 2', value: 'dictionary 2' },
+            { key: 'Password', value: 'Password' },
+            { key: 'Account', value: 'Account' },
+            { key: 'Email', value: 'E-Mail' },
+            { key: 'Age', value: 'Age' },
+          ],
+        },
+      ],
     },
     {
       _id: db.id(),
@@ -58,17 +73,17 @@ export default {
             { key: 'Password', value: 'Contraseña' },
             { key: 'Account', value: 'Cuenta' },
             { key: 'Email', value: 'Correo electronico' },
-            { key: 'Age', value: 'Edad' }
-          ]
-        }
-      ]
+            { key: 'Age', value: 'Edad' },
+          ],
+        },
+      ],
     },
     {
       _id: db.id(),
       type: 'translation',
       locale: 'other',
-      contexts: []
-    }
+      contexts: [],
+    },
   ],
   settings: [
     {
@@ -76,30 +91,38 @@ export default {
       languages: [
         {
           key: 'es',
-          label: 'Español'
+          label: 'Español',
         },
         {
           key: 'en',
           label: 'English',
-          default: true
-        }
-      ]
-    }
+          default: true,
+        },
+      ],
+    },
+  ],
+  dictionaries: [
+    {
+      _id: dictionaryId,
+      name: 'dictionary 2',
+      values: [
+        { id: '1', label: 'Password' },
+        { id: '2', label: 'Account' },
+        { id: '3', label: 'Email' },
+        { id: 'age id', label: 'Age' },
+      ],
+    },
   ],
   templates: [
     {
       _id: entityTemplateId,
-      type: 'template'
+      type: 'template',
     },
     {
       _id: documentTemplateId,
-      type: 'template'
-    }
-  ]
+      type: 'template',
+    },
+  ],
 };
 
-export {
-  entityTemplateId,
-  englishTranslation,
-  documentTemplateId
-};
+export { entityTemplateId, englishTranslation, documentTemplateId, dictionaryId };
