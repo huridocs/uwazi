@@ -17,18 +17,18 @@ import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
 class PDFView extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
-    this.changePage = this.changePage.bind(this);
-    this.onDocumentReady = this.onDocumentReady.bind(this);
-  }
-
   static async requestState(requestParams, globalResources) {
     return requestViewerState(
       requestParams.add({ raw: requestParams.data.raw === 'true' || !isClient }),
       globalResources
     );
+  }
+
+  constructor(props, context) {
+    super(props, context);
+    this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
+    this.changePage = this.changePage.bind(this);
+    this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
   componentWillMount() {

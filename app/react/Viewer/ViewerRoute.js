@@ -2,14 +2,14 @@
 
 import RouteHandler from 'app/App/RouteHandler';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
-import PDFView from './PDFView';
-import EntityView from './EntityView';
-import ViewerComponent from './components/ViewerComponent';
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
-import { setReferences } from './actions/referencesActions';
 import * as relationships from 'app/Relationships/utils/routeUtils';
+import PDFView from './PDFView';
+import EntityView from './EntityView';
+import ViewerComponent from './components/ViewerComponent';
+import { setReferences } from './actions/referencesActions';
 
 class ViewerRoute extends RouteHandler {
   static async requestState(requestParams, globalResources) {

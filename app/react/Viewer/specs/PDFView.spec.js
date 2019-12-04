@@ -246,38 +246,4 @@ describe('PDFView', () => {
       expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
     });
   });
-
-  describe('componentWillUnmount()', () => {
-    it('should call emptyState', () => {
-      spyOn(instance, 'emptyState');
-      instance.componentWillUnmount();
-
-      expect(instance.emptyState).toHaveBeenCalled();
-    });
-  });
-
-  describe('emptyState()', () => {
-    beforeEach(() => {
-      spyOn(relationships, 'emptyState').and.returnValue({ type: 'relationshipsEmptyState' });
-    });
-
-    it('should unset the state', () => {
-      instance.emptyState();
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        type: 'SET_REFERENCES',
-        references: [],
-      });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/doc/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/templates/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/thesauris/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/relationTypes/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/rawText/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        type: 'rrf/reset',
-        model: 'documentViewer.tocForm',
-      });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDoc/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'relationshipsEmptyState' });
-    });
-  });
 });
