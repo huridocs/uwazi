@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DocumentResults render should render results summary and snippets above threshold in SnippetsList 1`] = `
-<React.Fragment>
+<Fragment>
   <div
     className="view"
   >
@@ -164,5 +164,5 @@ exports[`DocumentResults render should render results summary and snippets above
       }
     }
   />
-</React.Fragment>
+</Fragment>
 `;

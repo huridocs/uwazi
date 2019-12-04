@@ -34,7 +34,17 @@ exports[`ValueList compact render should rendern icons when the value has one 1`
 Array [
   "first_value",
   ", ",
-  <React.Fragment />,
+  <Fragment>
+    <Connect(Icon)
+      className="item-icon item-icon-center"
+      data={
+        Object {
+          "icon": "icon2",
+        }
+      }
+    />
+    second_value
+  </Fragment>,
   ", ",
   "third value",
 ]
@@ -69,32 +79,28 @@ exports[`ValueList should rendern icons when the value has one 1`] = `
   <li
     key="label_0"
   >
-    <React.Fragment>
-      <Connect(Icon)
-        className="item-icon item-icon-center"
-        data={
-          Object {
-            "icon": "icon",
-          }
+    <Connect(Icon)
+      className="item-icon item-icon-center"
+      data={
+        Object {
+          "icon": "icon",
         }
-      />
-      first_value
-    </React.Fragment>
+      }
+    />
+    first_value
   </li>
   <li
     key="label_1"
   >
-    <React.Fragment>
-      <Connect(Icon)
-        className="item-icon item-icon-center"
-        data={
-          Object {
-            "icon": "icon2",
-          }
+    <Connect(Icon)
+      className="item-icon item-icon-center"
+      data={
+        Object {
+          "icon": "icon2",
         }
-      />
-      second_value
-    </React.Fragment>
+      }
+    />
+    second_value
   </li>
   <li
     key="label_2"
