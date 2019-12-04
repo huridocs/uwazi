@@ -110,20 +110,28 @@ exports[`Configure2fa Component when user already using 2fa should show a "succe
     <div
       className="panel-body"
     >
-      <div
-        className="alert alert-success"
-      >
-        <Connect(Icon)
-          icon="check"
-        />
+      <React.Fragment>
         <div
-          className="force-ltr"
+          className="alert alert-success"
         >
-          Congratulations!
-          <br />
-          You have successfully configured two-step verification.
+          <Connect(Icon)
+            icon="check"
+          />
+          <div
+            className="force-ltr"
+          >
+            Congratulations!
+            <br />
+            You have successfully configured two-step verification.
+          </div>
         </div>
-      </div>
+        <Connect(I18NLink)
+          className="btn btn-success"
+          to="/settings/account"
+        >
+          OK
+        </Connect(I18NLink)>
+      </React.Fragment>
     </div>
   </div>
 </div>

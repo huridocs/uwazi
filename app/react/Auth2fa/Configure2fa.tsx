@@ -25,6 +25,12 @@ type State = {
   secret: string;
 };
 
+const goToAccount = (type, label) => (
+  <I18NLink to="/settings/account" className={`btn btn-${type}`}>
+    {t('System', label)}
+  </I18NLink>
+);
+
 class Configure2fa extends Component<Configure2faProps, State> {
   static defaultProps: Configure2faProps;
 
@@ -76,14 +82,17 @@ class Configure2fa extends Component<Configure2faProps, State> {
           <div className="panel-heading">{t('System', 'Two-step verification')}</div>
           <div className="panel-body">
             {userUsing2fa && (
-              <div className="alert alert-success">
-                <Icon icon="check" />
-                <div className="force-ltr">
-                  Congratulations!
-                  <br />
-                  You have successfully configured two-step verification.
+              <React.Fragment>
+                <div className="alert alert-success">
+                  <Icon icon="check" />
+                  <div className="force-ltr">
+                    Congratulations!
+                    <br />
+                    You have successfully configured two-step verification.
+                  </div>
                 </div>
-              </div>
+                {goToAccount('success', 'OK')}
+              </React.Fragment>
             )}
             {!userUsing2fa && (
               <div>
@@ -118,9 +127,7 @@ class Configure2fa extends Component<Configure2faProps, State> {
                     </li>
                   </ol>
                   <p>
-                    <I18NLink to="/settings/account" className="btn btn-default">
-                      {t('System', 'Cancel')}
-                    </I18NLink>
+                    {goToAccount('default', 'Cancel')}
                     <input type="submit" className="btn btn-success" value="Confirm" />
                   </p>
                 </LocalForm>
