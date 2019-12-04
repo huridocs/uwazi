@@ -2,6 +2,7 @@
 
 import * as otplib from 'otplib';
 
+import settingsModel from 'api/settings';
 import usersModel, { User } from 'api/users/usersModel';
 import { createError } from 'api/utils';
 
@@ -17,10 +18,16 @@ const getUser = async (user: User, options?: string) => {
   return dbUser;
 };
 
+const conformSiteName = async (): Promise<string> => {
+  const { site_name: siteName } = await settingsModel.get();
+  return siteName.length > 30 ? `${siteName.substring(0, 30)}...` : siteName;
+};
+
 export const setSecret = async (user: User) => {
   const dbUser = await getUser({ _id: user._id });
+  const siteName = await conformSiteName();
   const secret = otplib.authenticator.generateSecret();
-  const otpauth = otplib.authenticator.keyuri(dbUser.username || '', 'Uwazi', secret);
+  const otpauth = otplib.authenticator.keyuri(dbUser.username || '', siteName, secret);
 
   if (!dbUser.using2fa) {
     await usersModel.save({ _id: dbUser._id, secret });

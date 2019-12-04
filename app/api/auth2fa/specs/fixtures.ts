@@ -6,6 +6,11 @@ const userId = db.id();
 const secretedUserId = db.id();
 
 export default {
+  settings: [
+    {
+      site_name: 'Uwazi Collection',
+    },
+  ],
   users: [
     {
       _id: userId,

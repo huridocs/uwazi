@@ -1,8 +1,10 @@
 /** @format */
 
 import * as otplib from 'otplib';
+
 import db from 'api/utils/testing_db';
 import usersModel from 'api/users/usersModel';
+import settingsModel from 'api/settings/settings';
 import { createError } from 'api/utils';
 
 import * as usersUtils from '../usersUtils';
@@ -49,13 +51,23 @@ describe('auth2fa userUtils', () => {
   };
 
   describe('setSecret', () => {
-    it("should save the secret string on a non-previously-2fa'd user", async () => {
+    beforeEach(() => {
+      spyOn(otplib.authenticator, 'generateSecret').and.returnValue('aVerySecretSecret');
+    });
+
+    it("should save the secret string on a non-previously-2fa'd user and return it along with the otpauth url", async () => {
       const { secret, otpauth } = await usersUtils.setSecret({ _id: userId });
       const [secretedUser] = await usersModel.get({ _id: userId }, '+secret');
       expect(secretedUser.secret).toBe(secret);
-      expect(otpauth).toBe(
-        otplib.authenticator.keyuri(secretedUser.username || '', 'Uwazi', secret)
-      );
+      expect(otpauth).toMatchSnapshot();
+    });
+
+    it('should truncate extremely long urls to prevent unreadable QR codes', async () => {
+      await settingsModel.save({
+        site_name: 'A very long? name, that should get truncated to avoid unreadable QR codes',
+      });
+      const { otpauth } = await usersUtils.setSecret({ _id: userId });
+      expect(otpauth).toMatchSnapshot();
     });
 
     it("should not change a secret on a previously-2fa'd user", async () => {
