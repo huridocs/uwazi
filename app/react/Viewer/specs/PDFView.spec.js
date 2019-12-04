@@ -10,7 +10,6 @@ import { shallow } from 'enzyme';
 import PDFView from 'app/Viewer/PDFView';
 import Viewer from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
-import * as relationships from 'app/Relationships/utils/routeUtils';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
 

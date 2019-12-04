@@ -1,8 +1,5 @@
 /** @format */
 
-import React from 'react';
-
-import { shallow } from 'enzyme';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import * as relationships from 'app/Relationships/utils/routeUtils';
