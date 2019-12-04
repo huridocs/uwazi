@@ -7,10 +7,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 
+import { Icon } from 'UI';
+
 import { t } from 'app/I18N';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
-import ShowIf from 'app/App/ShowIf';
 import { reloadThesauris } from 'app/Thesauris/actions/thesaurisActions';
 
 import auth from 'app/Auth';
@@ -68,7 +69,7 @@ export class Login extends RouteHandler {
         const { tokenRequired } = this.state;
         this.formDispatch(formActions.change('loginForm.token', undefined));
         const error2fa = tokenRequired;
-        this.setState({ error: true, tokenRequired: false, error2fa });
+        this.setState({ error: true, tokenRequired, error2fa });
       }
     }
   }
@@ -80,7 +81,7 @@ export class Login extends RouteHandler {
 
   setLogin() {
     this.formDispatch(formActions.reset('loginForm'));
-    this.setState({ recoverPassword: false, error: false });
+    this.setState({ recoverPassword: false, tokenRequired: false, error: false, error2fa: false });
   }
 
   render() {
@@ -133,12 +134,7 @@ export class Login extends RouteHandler {
                       />
                     </Field>
                     <div className="form-text">
-                      {this.state.error && !this.state.error2fa && (
-                        <span>{t('System', 'Login failed')} - </span>
-                      )}
-                      {this.state.error && this.state.error2fa && (
-                        <span>{t('System', 'Two-factor verification failed')} - </span>
-                      )}
+                      {this.state.error && <span>{t('System', 'Login failed')} - </span>}
                       <span
                         title={t('System', 'Forgot Password?', null, false)}
                         onClick={this.setRecoverPassword}
@@ -153,7 +149,7 @@ export class Login extends RouteHandler {
                 </React.Fragment>
               )}
               {this.state.tokenRequired && (
-                <div className="form-group login-token">
+                <div className={`form-group login-token${this.state.error2fa ? ' has-error' : ''}`}>
                   <h5>{t('System', 'Two-step verification')}</h5>
                   <Field model=".token">
                     <label className="form-group-label" htmlFor="token">
@@ -162,8 +158,26 @@ export class Login extends RouteHandler {
                     <input type="text" name="token" id="token" className="form-control" />
                     <div className="form-text">
                       <p>
+                        {this.state.error2fa && (
+                          <React.Fragment>
+                            <Icon icon="exclamation-triangle" />
+                            <span>{t('System', 'Two-factor verification failed')}</span>
+                          </React.Fragment>
+                        )}
+                      </p>
+                      <p>
                         Open the two-factor Authenticator app on your device <br />
                         to view your authentication code and verify your identity.
+                      </p>
+                      <p>
+                        <span
+                          onClick={this.setLogin}
+                          className={`button forgot-password ${
+                            this.state.error2fa ? 'label-danger' : ''
+                          }`}
+                        >
+                          {t('System', 'Return to login')}
+                        </span>
                       </p>
                     </div>
                   </Field>
@@ -179,7 +193,7 @@ export class Login extends RouteHandler {
                   {submitLabel}
                 </button>
               </p>
-              <ShowIf if={this.state.recoverPassword}>
+              {this.state.recoverPassword && (
                 <div className="form-text">
                   <span
                     title={t('System', 'Cancel', null, false)}
@@ -189,7 +203,7 @@ export class Login extends RouteHandler {
                     {t('System', 'Cancel')}
                   </span>
                 </div>
-              </ShowIf>
+              )}
             </LocalForm>
           </div>
         </div>

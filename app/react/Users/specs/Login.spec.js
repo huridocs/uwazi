@@ -20,6 +20,10 @@ describe('Login', () => {
     instance.attachDispatch(formDispatch);
   };
 
+  const expectState = (state, expected) => {
+    expect(state).toEqual(expect.objectContaining(expected));
+  };
+
   beforeEach(() => {
     formDispatch = jasmine.createSpy('formDispatch');
     props = {
@@ -41,6 +45,10 @@ describe('Login', () => {
         tokenRequired: false,
       });
     });
+
+    it('should render the component with the login form', () => {
+      expect(component).toMatchSnapshot();
+    });
   });
 
   describe('submit()', () => {
@@ -55,31 +63,28 @@ describe('Login', () => {
     });
 
     describe('when recoverPassword is true', () => {
-      it('should call recoverPassword with the email', done => {
+      it('should call recoverPassword with the email', async () => {
         instance.state.recoverPassword = true;
-        instance
-          .submit({ username: 'email@recover.com' })
-          .then(() => {
-            expect(props.recoverPassword).toHaveBeenCalledWith('email@recover.com');
-            expect(formDispatch).toHaveBeenCalledWith('loginForm');
-            done();
-          })
-          .catch(done.fail);
+        await instance.submit({ username: 'email@recover.com' });
+        expect(props.recoverPassword).toHaveBeenCalledWith('email@recover.com');
+        expect(formDispatch).toHaveBeenCalledWith('loginForm');
+        expectState(instance.state, {
+          error: false,
+          error2fa: false,
+          recoverPassword: false,
+          tokenRequired: false,
+        });
       });
     });
 
     describe('on response success', () => {
-      it('should reload thesauris and go to home', done => {
+      it('should reload thesauris and go to home', async () => {
         spyOn(browserHistory, 'push');
         expect(props.reloadThesauris).not.toHaveBeenCalled();
-        instance
-          .submit('credentials')
-          .then(() => {
-            expect(props.reloadThesauris).toHaveBeenCalled();
-            expect(browserHistory.push).toHaveBeenCalledWith('/');
-            done();
-          })
-          .catch(done.fail);
+        await instance.submit('credentials');
+
+        expect(props.reloadThesauris).toHaveBeenCalled();
+        expect(browserHistory.push).toHaveBeenCalledWith('/');
       });
 
       describe('when the instance is private', () => {
@@ -114,15 +119,12 @@ describe('Login', () => {
         return error;
       };
 
-      const expectState = (state, expected) => {
-        expect(state).toEqual(expect.objectContaining(expected));
-      };
-
       describe('when authorization conflict (2fa required)', () => {
         it('should not set error and flag "tokenRequired"', async () => {
           prepareLoginResponse(Promise.reject(response409()));
           await instance.submit(new Event('submit'));
           expectState(instance.state, { error: false, tokenRequired: true });
+          expect(component).toMatchSnapshot();
         });
       });
 
@@ -139,10 +141,11 @@ describe('Login', () => {
         it('should set error2fa on token failure, and reset loginForm.token value', async () => {
           instance.state.tokenRequired = true;
           await instance.submit(new Event('submit'));
-          expectState(instance.state, { error: true, tokenRequired: false, error2fa: true });
+          expectState(instance.state, { error: true, tokenRequired: true, error2fa: true });
           expect(instance.formDispatch).toHaveBeenCalledWith(
             expect.objectContaining({ model: 'loginForm.token', value: undefined })
           );
+          expect(component).toMatchSnapshot();
         });
       });
     });
