@@ -27,13 +27,12 @@ export class Settings extends RouteHandler {
 
     const modeledThesauri = thesauri.map(thesaurus => {
       const thesaurusModelName = buildModelName(thesaurus.name);
-      if (models.models.includes(thesaurusModelName)) {
+      if (models.models != null && models.models.includes(thesaurusModelName)) {
         return { ...thesaurus, model_available: true };
       }
       return { ...thesaurus, model_available: false };
     });
 
-    // array of actions.update('dictionaries', {thesauri._id: id, model_available: true}) for all models available
     return [
       actions.set('auth/user', user),
       actions.set('dictionaries', modeledThesauri),

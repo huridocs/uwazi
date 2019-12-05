@@ -19,7 +19,6 @@ export default {
   },
 
   getModelStatus(requestParams) {
-    console.dir(requestParams);
     return api.get('models', requestParams).then(response => response.json);
   },
 

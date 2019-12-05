@@ -19,54 +19,7 @@ import { notificationActions } from 'app/Notifications';
 import sortThesauri from '../utils/sortThesauri';
 
 export class ThesaurisList extends Component {
-  deleteThesauri(thesaurus) {
-    return this.props
-      .checkThesauriCanBeDeleted(thesaurus)
-      .then(() => {
-        this.context.confirm({
-          accept: () => {
-            this.props.deleteThesauri(thesaurus);
-          },
-          title: `Confirm delete thesaurus: ${thesaurus.name}`,
-          message: 'Are you sure you want to delete this thesaurus?',
-        });
-      })
-      .catch(() => {
-        this.context.confirm({
-          accept: () => {},
-          noCancel: true,
-          title: `Cannot delete thesaurus: ${thesaurus.name}`,
-          message: 'This thesaurus is being used in document types and cannot be deleted.',
-        });
-      });
-  }
-
-  async enableClassification(thesaurus) {
-    this.props
-      .checkThesauriCanBeClassified(thesaurus)
-      .then(this.props.enableClassification(thesaurus))
-      .catch(() => {
-        this.context.confirm({
-          accept: () => {},
-          noCancel: true,
-          title: `Cannot enable classification for thesaurus: ${thesaurus.name}`,
-          message: 'This thesaurus does not have its topic classification models in a good state.',
-        });
-      });
-  }
-
-  async disableClassification(thesaurus) {
-    this.props.disableClassification(thesaurus).catch(() => {
-      this.context.confirm({
-        accept: () => {},
-        noCancel: true,
-        title: `Cannot disable classification for thesaurus: ${thesaurus.name}`,
-        message: 'This thesaurus does not have its topic classification models in a good state.',
-      });
-    });
-  }
-
-  getThesaurusActions(thesaurus) {
+  getThesaurusClassificationActions(thesaurus) {
     if (!thesaurus.enable_classification && thesaurus.model_available) {
       return (
         <button
@@ -106,6 +59,53 @@ export class ThesaurisList extends Component {
     return null;
   }
 
+  async enableClassification(thesaurus) {
+    this.props
+      .checkThesauriCanBeClassified(thesaurus)
+      .then(this.props.enableClassification(thesaurus))
+      .catch(() => {
+        this.context.confirm({
+          accept: () => {},
+          noCancel: true,
+          title: `Cannot enable classification for thesaurus: ${thesaurus.name}`,
+          message: 'This thesaurus does not have its topic classification models in a good state.',
+        });
+      });
+  }
+
+  async disableClassification(thesaurus) {
+    this.props.disableClassification(thesaurus).catch(() => {
+      this.context.confirm({
+        accept: () => {},
+        noCancel: true,
+        title: `Cannot disable classification for thesaurus: ${thesaurus.name}`,
+        message: 'This thesaurus does not have its topic classification models in a good state.',
+      });
+    });
+  }
+
+  deleteThesauri(thesaurus) {
+    return this.props
+      .checkThesauriCanBeDeleted(thesaurus)
+      .then(() => {
+        this.context.confirm({
+          accept: () => {
+            this.props.deleteThesauri(thesaurus);
+          },
+          title: `Confirm delete thesaurus: ${thesaurus.name}`,
+          message: 'Are you sure you want to delete this thesaurus?',
+        });
+      })
+      .catch(() => {
+        this.context.confirm({
+          accept: () => {},
+          noCancel: true,
+          title: `Cannot delete thesaurus: ${thesaurus.name}`,
+          message: 'This thesaurus is being used in document types and cannot be deleted.',
+        });
+      });
+  }
+
   render() {
     return (
       <div className="panel panel-default">
@@ -117,7 +117,7 @@ export class ThesaurisList extends Component {
                 {thesauri.name}
               </I18NLink>
               <div className="list-group-item-actions">
-                {this.getThesaurusActions(thesauri)}
+                {this.getThesaurusClassificationActions(thesauri)}
                 <I18NLink
                   to={`/settings/dictionaries/edit/${thesauri._id}`}
                   className="btn btn-default btn-xs"

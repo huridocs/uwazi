@@ -120,6 +120,7 @@
     "htmlparser2": "^3.9.2",
     "immutable": "^3.7.6",
     "isomorphic-fetch": "2.2.1",
+    "is-reachable": "^4.0.0",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",
     "json-loader": "^0.5.4",
