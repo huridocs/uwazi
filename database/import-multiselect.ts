@@ -18,7 +18,7 @@ const { input_csv: inputCsv, format: csvColumnsStr, store_model: storeModel, for
   .option('input_csv', { default: '/home/bdittes/Downloads/PlanInternational_themes.csv' })
   .option('format', { default: 'add:themes,add:themes,search:paragraph_text,ignore' })
   .option('store_model', { default: 'PlanInternational_2000' })
-  .option('force', { default: true })
+  .option('force', { default: false })
   .help().argv;
 
 async function storeSample(model: string, seq: string, trainingLabels: string[]) {
@@ -172,8 +172,9 @@ connect().then(
               title: entity.title,
               language: entity.language,
             };
-            toSave.metadata = {};
+            toSave.metadata = entity.metadata || {};
             let toSaveChanged = false;
+            let foundGoodMo = false;
             let allMatch = true;
             for (let i = 0; i < columns.length && i < row.length; i += 1) {
               const { prop } = columns[i];
@@ -193,12 +194,14 @@ connect().then(
                 }
               }
               if (columns[i].op === 'add') {
+                const mo = await buildMO(entity, prop, row[i]);
+                if (!mo) {
+                  continue;
+                }
+                foundGoodMo = true;
                 const mos = toSave.metadata[prop] || entity.metadata[prop] || [];
-                if (!mos.find(mo => mo.label === row[i])) {
-                  const mo = await buildMO(entity, prop, row[i]);
-                  if (mo) {
-                    mos.push(mo);
-                  }
+                if (!mos.find(prevMo => prevMo.label === row[i])) {
+                  mos.push(mo);
                   toSave.metadata[prop] = mos;
                   toSaveChanged = true;
                 }
@@ -206,7 +209,11 @@ connect().then(
             }
             if (allMatch) {
               foundMatch = true;
-              if (toSaveChanged || force) {
+              if (!foundGoodMo) {
+                console.warn(
+                  `Did not find any properties to expand for matching entity of template ${entity.template}.`
+                );
+              } else if (toSaveChanged || force) {
                 await entities.save(
                   toSave,
                   { user: 'csv_import', language: entity.language },

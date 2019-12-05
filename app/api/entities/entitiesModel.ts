@@ -57,6 +57,11 @@ const mongoSchema = new mongoose.Schema(
     metadata: mongoose.Schema.Types.Mixed,
     pdfInfo: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
+    reviewed: {
+      user: String,
+      date: Number,
+    },
+    reviewLog: mongoose.Schema.Types.Mixed,
   },
   { emitIndexErrors: true }
 );
@@ -65,9 +70,11 @@ mongoSchema.index({ title: 'text' }, { language_override: 'mongoLanguage' });
 
 const Model = instanceModel<EntitySchema>('entities', mongoSchema);
 Model.db.collection.dropIndex('title_text', () => {
-  // We deliberately kick this promise into the void and ignore the result.
+  // We deliberately kick this promise into the void and ignore the result,
+  // because it's usually fast and we can't await here...
   Model.db.ensureIndexes().then(() => {}, () => {});
 });
+
 const suportedLanguages = [
   'da',
   'nl',

@@ -1128,6 +1128,11 @@
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
   integrity sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==
 
+"@types/events@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/events/-/events-3.0.0.tgz#2862f3f58a9a7f7c3e78d79f130dd4d71c25c2a7"
+  integrity sha512-EaObqwIvayI5a8dCzhFrjKzVwKLxjoG9T6Ppd5CEo07LRKfQ8Yokw54r5+Wq7FaBQ+yXRvQAYPrHwya1/UFt9g==
+
 "@types/express-serve-static-core@*":
   version "4.17.0"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.0.tgz#e80c25903df5800e926402b7e8267a675c54a281"
@@ -1195,19 +1200,21 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
   integrity sha512-FwI9gX75FgVBJ7ywgnq/P7tw+/o1GUbtP0KzbtusLigAOgIgNISRK0ZPl4qertvXSIE8YbsVJueQ90cDt9YYyw==
 
-"@types/mongodb@*":
-  version "3.3.6"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.3.6.tgz#ed8a2ff4a27170f8da284d817235c46019bdaa24"
-  integrity sha512-bPv0lGnkL/iOoA+GSAcS5ad9QyPc/rW547vrF5j+AKX4spaMZgpaCWQ4D6ipVSN6OKuks3ueCFEPinyJJSk2zA==
+"@types/mongodb@*", "@types/mongodb@3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.0.8.tgz#4d222cbe8831f326fe3bed5aca12bd3a3e061752"
+  integrity sha512-0OjvzdToaQ53zfhs+QJq6EaBLKuZgccImW3nlYN2wutI0Wuwso0aOrwZa8/96a1zTjLh7R6lUOOuYTvAhIcM0w==
   dependencies:
     "@types/bson" "*"
+    "@types/events" "*"
     "@types/node" "*"
 
-"@types/mongoose@^5.5.20":
-  version "5.5.20"
-  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.5.20.tgz#06106a0ffae6aeb2192f5351bcd1ed0599bd34f1"
-  integrity sha512-vaLVDjfuNp2LMfqHGMss4hN/K9puZfql/Rh6yXFvJvex3jKP646CXtvSKT8FM9uOUb2P4me266fmpPovBhEJXQ==
+"@types/mongoose@5.0.18":
+  version "5.0.18"
+  resolved "https://registry.yarnpkg.com/@types/mongoose/-/mongoose-5.0.18.tgz#4cb671e870f8312df86d734f9563a5c1b9d1ec6e"
+  integrity sha512-NTZYnHKJcIuVU7sqojZVG84SoitGEBHC6iDAT/hgGIzDHZ+mwO+snjUnglkHdS9+jJ2YssCJbSZp80i86fCBvQ==
   dependencies:
+    "@types/events" "*"
     "@types/mongodb" "*"
     "@types/node" "*"
 
@@ -3422,6 +3429,7 @@ configstore@^3.0.0:
 connect-mongo@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/connect-mongo/-/connect-mongo-2.0.1.tgz#514d649cff1d5d5546c087193245bb54ff5b703b"
+  integrity sha512-ghBvVq0SA0SkTFsbAB8HdF1+uoHdFJICSlrTklNloMKXuRpX9IuVBnG0DlKnXBZSQI0Joyaq22cazsrV9+5g2A==
   dependencies:
     mongodb "^2.0.36"
 
@@ -9311,6 +9319,14 @@ moment@^2.17.1:
 mongodb-core@2.1.19:
   version "2.1.19"
   resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.19.tgz#00fbd5e5a3573763b9171cfd844e60a8f2a3a18b"
+  dependencies:
+    bson "~1.0.4"
+    require_optional "~1.0.0"
+
+mongodb-core@2.1.20:
+  version "2.1.20"
+  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.20.tgz#fece8dd76b59ee7d7f2d313b65322c160492d8f1"
+  integrity sha512-IN57CX5/Q1bhDq6ShAR6gIv4koFsZP7L8WOK1S0lR0pVDQaScffSMV5jxubLsmZ7J+UdqmykKw4r9hG3XQEGgQ==
   dependencies:
     bson "~1.0.4"
     require_optional "~1.0.0"
