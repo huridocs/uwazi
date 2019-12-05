@@ -113,15 +113,15 @@ export class ThesaurisList extends Component {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Thesauri')}</div>
         <ul className="list-group">
-          {sortThesauri(this.props.dictionaries.toJS()).map(thesauri => (
-            <li key={thesauri.name} className="list-group-item">
-              <I18NLink to={`/settings/dictionaries/edit/${thesauri._id}`}>
-                {thesauri.name}
+          {sortThesauri(this.props.dictionaries.toJS()).map(thesaurus => (
+            <li key={thesaurus.name} className="list-group-item">
+              <I18NLink to={`/settings/dictionaries/edit/${thesaurus._id}`}>
+                {thesaurus.name}
               </I18NLink>
               <div className="list-group-item-actions">
-                {this.getThesaurusClassificationActions(thesauri)}
+                {this.getThesaurusClassificationActions(thesaurus)}
                 <I18NLink
-                  to={`/settings/dictionaries/edit/${thesauri._id}`}
+                  to={`/settings/dictionaries/edit/${thesaurus._id}`}
                   className="btn btn-default btn-xs"
                 >
                   <Icon icon="pencil-alt" />
@@ -129,7 +129,7 @@ export class ThesaurisList extends Component {
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <button
-                  onClick={this.deleteThesauri.bind(this, thesauri)}
+                  onClick={this.deleteThesauri.bind(this, thesaurus)}
                   className="btn btn-danger btn-xs template-remove"
                   type="button"
                 >

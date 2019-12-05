@@ -43,18 +43,27 @@ export function disableClassification(thesaurus) {
       notifications.notify(t('System', 'Classification disabled', null, false), 'success')(
         dispatch
       );
-      dispatch(actions.update('dictionaries', _updatedThesaurus));
+      dispatch(
+        actions.update('dictionaries', {
+          ..._updatedThesaurus,
+          model_available: thesaurus.model_available,
+        })
+      );
     });
   };
 }
 
 export function enableClassification(thesaurus) {
   return async dispatch => {
-    // TODO: figure out why the model_available field is wiped out here.
     const _thesaurus = { ...thesaurus, enable_classification: true };
     await api.save(new RequestParams(_thesaurus)).then(updatedThesaurus => {
       notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
-      dispatch(actions.update('dictionaries', updatedThesaurus));
+      dispatch(
+        actions.update('dictionaries', {
+          ...updatedThesaurus,
+          model_available: thesaurus.model_available,
+        })
+      );
     });
   };
 }
