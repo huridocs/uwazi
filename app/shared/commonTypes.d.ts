@@ -82,3 +82,9 @@ export interface PropertySchema {
   nestedProperties?: string[];
   [k: string]: any | undefined;
 }
+
+export interface ReviewSchema {
+  user?: string;
+  date?: number;
+  [k: string]: any | undefined;
+}

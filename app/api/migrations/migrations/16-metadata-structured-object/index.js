@@ -16,7 +16,7 @@ export default {
 
   expandMetadata(metadata) {
     const resolveProp = value => {
-      if (value === null || value === undefined) {
+      if (value === null || value === undefined || value === '') {
         value = [];
       }
       if (!Array.isArray(value)) {

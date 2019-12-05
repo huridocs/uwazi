@@ -1,18 +1,17 @@
 /** @format */
 
 import React from 'react';
-import { shallow } from 'enzyme';
+import Enzyme, { shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import EntityLink from '../EntityLink.js';
 import PagesContext from '../Context';
-import { I18NLink } from 'app/I18N';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 describe('EntityLink', () => {
   let props;
   let entity;
-  const store = createStore(() => ({}));
 
   beforeEach(() => {
     entity = { _id: '123', sharedId: 'abc' };
@@ -23,12 +22,13 @@ describe('EntityLink', () => {
 
   it('should generate a link based on the entity sharedId and if it has file or not', () => {
     const component = shallow(
-      <Provider store={store}>
-        <PagesContext.Provider value={entity}>
-          <EntityLink {...props} />
-        </PagesContext.Provider>
-      </Provider>
-    );
+      <PagesContext.Provider value={entity}>
+        <EntityLink {...props} />
+      </PagesContext.Provider>
+    )
+      .dive()
+      .dive();
+
     expect(component).toMatchSnapshot();
   });
 });

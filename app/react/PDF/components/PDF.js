@@ -10,6 +10,7 @@ import PDFPage from './PDFPage.js';
 class PDF extends Component {
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = { pdf: { numPages: 0 } };
     this.pagesLoaded = {};
     this.loadDocument(props.file);
@@ -24,6 +25,7 @@ class PDF extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     if (this.pdfContainer) {
       document.addEventListener('textlayerrendered', (e) => {
         this.pageLoaded(e.detail.pageNumber);
@@ -55,6 +57,10 @@ class PDF extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   onPageVisible(page, visibility) {
     this.pages[page] = visibility;
 
@@ -78,7 +84,9 @@ class PDF extends Component {
   loadDocument(file) {
     if (isClient) {
       PDFJS.getDocument(file).promise.then((pdf) => {
-        this.setState({ pdf });
+        if (this._isMounted) {
+          this.setState({ pdf });
+        }
       });
     }
   }

@@ -1,16 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`EntityLink should generate a link based on the entity sharedId and if it has file or not 1`] = `
-<[object Object]
-  value={
-    Object {
-      "_id": "123",
-      "sharedId": "abc",
-    }
-  }
+<Connect(I18NLink)
+  to="/entity/abc"
 >
-  <EntityLink>
-    I want this as the link content
-  </EntityLink>
-</[object Object]>
+  I want this as the link content
+</Connect(I18NLink)>
 `;

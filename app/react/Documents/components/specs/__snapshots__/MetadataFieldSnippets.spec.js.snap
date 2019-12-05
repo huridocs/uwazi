@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SnippetList should properly render title snippets with Title label as heading 1`] = `
-<React.Fragment>
+<Fragment>
   <li
     className="snippet-list-item-header metadata-snippet-header"
   >
@@ -31,11 +31,11 @@ exports[`SnippetList should properly render title snippets with Title label as h
       </SafeHTML>
     </span>
   </li>
-</React.Fragment>
+</Fragment>
 `;
 
 exports[`SnippetList should render all metadata snippets with the field label as heading 1`] = `
-<React.Fragment>
+<Fragment>
   <li
     className="snippet-list-item-header metadata-snippet-header"
   >
@@ -65,5 +65,5 @@ exports[`SnippetList should render all metadata snippets with the field label as
       </SafeHTML>
     </span>
   </li>
-</React.Fragment>
+</Fragment>
 `;

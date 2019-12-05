@@ -2,8 +2,14 @@
 
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
+import entities from 'api/entities';
 
-import fixtures, { entityTemplateId, documentTemplateId, englishTranslation } from './fixtures.js';
+import fixtures, {
+  entityTemplateId,
+  documentTemplateId,
+  englishTranslation,
+  dictionaryId,
+} from './fixtures.js';
 import translations from '../translations.js';
 
 describe('translations', () => {
@@ -168,6 +174,36 @@ describe('translations', () => {
         .catch(catchErrors(done));
     });
 
+    describe('when saving a dictionary context', () => {
+      it('should propagate translation changes to entities denormalized label', async () => {
+        spyOn(entities, 'renameThesaurusInMetadata').and.returnValue(Promise.resolve());
+        await translations.save({
+          _id: englishTranslation,
+          locale: 'en',
+          contexts: [
+            {
+              id: dictionaryId,
+              type: 'Dictionary',
+              values: {
+                'dictionary 2': 'new name',
+                Password: 'Password',
+                Account: 'Account',
+                Email: 'E-Mail',
+                Age: 'Age changed',
+              },
+            },
+          ],
+        });
+
+        expect(entities.renameThesaurusInMetadata).toHaveBeenLastCalledWith(
+          'age id',
+          'Age changed',
+          dictionaryId,
+          'en'
+        );
+      });
+    });
+
     it('should save partial translations', done => {
       translations
         .save({
@@ -183,7 +219,7 @@ describe('translations', () => {
         })
         .then(() => translations.get({ _id: englishTranslation }))
         .then(([translation]) => {
-          expect(translation.contexts.length).toBe(5);
+          expect(translation.contexts.length).toBe(6);
           expect(translation.contexts.find(context => context.id === 'Filters').values).toEqual({
             something: 'new',
           });
@@ -219,8 +255,8 @@ describe('translations', () => {
           return translations.get();
         })
         .then(result => {
-          expect(result.find(t => t.locale === 'en').contexts[5].values).toEqual(values);
-          expect(result.find(t => t.locale === 'en').contexts[5].type).toEqual('type');
+          expect(result.find(t => t.locale === 'en').contexts[6].values).toEqual(values);
+          expect(result.find(t => t.locale === 'en').contexts[6].type).toEqual('type');
           expect(result.find(t => t.locale === 'es').contexts[1].values).toEqual(values);
           expect(result.find(t => t.locale === 'es').contexts[1].type).toEqual('type');
           done();
@@ -238,7 +274,7 @@ describe('translations', () => {
           return translations.get();
         })
         .then(result => {
-          expect(result[0].contexts.length).toBe(4);
+          expect(result[0].contexts.length).toBe(5);
           expect(result[1].contexts.length).toBe(0);
           done();
         })

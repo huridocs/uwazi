@@ -13,20 +13,10 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { Component } from 'react';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
-import * as relationships from 'app/Relationships/utils/routeUtils';
-
-import { setReferences } from './actions/referencesActions';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
 class PDFView extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
-    this.changePage = this.changePage.bind(this);
-    this.onDocumentReady = this.onDocumentReady.bind(this);
-  }
-
   static async requestState(requestParams, globalResources) {
     return requestViewerState(
       requestParams.add({ raw: requestParams.data.raw === 'true' || !isClient }),
@@ -34,8 +24,11 @@ class PDFView extends Component {
     );
   }
 
-  componentWillUnmount() {
-    this.emptyState();
+  constructor(props, context) {
+    super(props, context);
+    this.changeBrowserHistoryPage = this.changeBrowserHistoryPage.bind(this);
+    this.changePage = this.changePage.bind(this);
+    this.onDocumentReady = this.onDocumentReady.bind(this);
   }
 
   componentWillMount() {
@@ -61,18 +54,6 @@ class PDFView extends Component {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
     }
-  }
-
-  emptyState() {
-    this.context.store.dispatch(actions.unset('viewer/doc'));
-    this.context.store.dispatch(actions.unset('viewer/templates'));
-    this.context.store.dispatch(actions.unset('viewer/thesauris'));
-    this.context.store.dispatch(actions.unset('viewer/relationTypes'));
-    this.context.store.dispatch(actions.unset('viewer/rawText'));
-    this.context.store.dispatch(formActions.reset('documentViewer.tocForm'));
-    this.context.store.dispatch(actions.unset('viewer/targetDoc'));
-    this.context.store.dispatch(setReferences([]));
-    this.context.store.dispatch(relationships.emptyState());
   }
 
   changePage(nextPage) {

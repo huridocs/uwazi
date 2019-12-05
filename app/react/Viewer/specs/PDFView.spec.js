@@ -10,7 +10,6 @@ import { shallow } from 'enzyme';
 import PDFView from 'app/Viewer/PDFView';
 import Viewer from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
-import * as relationships from 'app/Relationships/utils/routeUtils';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -244,40 +243,6 @@ describe('PDFView', () => {
       component.update();
       instance.changeBrowserHistoryPage(16);
       expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
-    });
-  });
-
-  describe('componentWillUnmount()', () => {
-    it('should call emptyState', () => {
-      spyOn(instance, 'emptyState');
-      instance.componentWillUnmount();
-
-      expect(instance.emptyState).toHaveBeenCalled();
-    });
-  });
-
-  describe('emptyState()', () => {
-    beforeEach(() => {
-      spyOn(relationships, 'emptyState').and.returnValue({ type: 'relationshipsEmptyState' });
-    });
-
-    it('should unset the state', () => {
-      instance.emptyState();
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        type: 'SET_REFERENCES',
-        references: [],
-      });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/doc/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/templates/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/thesauris/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/relationTypes/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/rawText/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        type: 'rrf/reset',
-        model: 'documentViewer.tocForm',
-      });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'viewer/targetDoc/UNSET' });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'relationshipsEmptyState' });
     });
   });
 });
