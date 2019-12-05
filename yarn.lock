@@ -7596,7 +7596,7 @@ is-property@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-property/-/is-property-1.0.2.tgz#57fe1c4e48474edd65b09911f26b1cd4095dda84"
 
-is-reachable@8.2.1:
+is-reachable@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/is-reachable/-/is-reachable-4.0.0.tgz#dcd6fe1d011eb1298030723979b785ce55186400"
   integrity sha512-eCTBKm9K6nO3H1S3BrJBAqZJIVXKNdwDuGl6KHf1bnf/bn02BvEe+l+MypjsxbqZ7mt5oMhu+bS/mm7G2FRW3A==
@@ -9547,14 +9547,6 @@ moment@^2.17.1:
 mongodb-core@2.1.19:
   version "2.1.19"
   resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.19.tgz#00fbd5e5a3573763b9171cfd844e60a8f2a3a18b"
-  dependencies:
-    bson "~1.0.4"
-    require_optional "~1.0.0"
-
-mongodb-core@2.1.20:
-  version "2.1.20"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.20.tgz#fece8dd76b59ee7d7f2d313b65322c160492d8f1"
-  integrity sha512-IN57CX5/Q1bhDq6ShAR6gIv4koFsZP7L8WOK1S0lR0pVDQaScffSMV5jxubLsmZ7J+UdqmykKw4r9hG3XQEGgQ==
   dependencies:
     bson "~1.0.4"
     require_optional "~1.0.0"
