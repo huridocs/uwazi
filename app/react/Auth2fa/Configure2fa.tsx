@@ -25,7 +25,7 @@ type State = {
   secret: string;
 };
 
-const goToAccount = (type, label) => (
+const goToAccount = (type: string, label: string) => (
   <I18NLink to="/settings/account" className={`btn btn-${type}`}>
     {t('System', label)}
   </I18NLink>
