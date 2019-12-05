@@ -22,7 +22,7 @@ export function deleteThesauri(thesauri) {
     });
 }
 
-export function checkThesauriCanBeDeleted(thesauri) {
+export function checkThesaurusCanBeDeleted(thesauri) {
   return dispatch =>
     TemplatesAPI.countByThesauri(new RequestParams({ _id: thesauri._id })).then(count =>
       count ? Promise.reject() : dispatch
@@ -36,31 +36,33 @@ export function reloadThesauris() {
     });
 }
 
-export function disableClassification(thesauri) {
+export function disableClassification(thesaurus) {
   return async dispatch => {
-    const _thesauri = { ...thesauri, enableClassification: false };
-    await api.save(new RequestParams(_thesauri)).then(_updatedThesauri => {
-      notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
-      dispatch(actions.update('dictionaries', _updatedThesauri));
+    const _thesaurus = { ...thesaurus, enable_classification: false };
+    await api.save(new RequestParams(_thesaurus)).then(_updatedThesaurus => {
+      notifications.notify(t('System', 'Classification disabled', null, false), 'success')(
+        dispatch
+      );
+      dispatch(actions.update('dictionaries', _updatedThesaurus));
     });
   };
 }
 
-export function enableClassification(thesauri) {
+export function enableClassification(thesaurus) {
   return async dispatch => {
-    const _thesauri = { ...thesauri, enableClassification: true };
-    await api.save(new RequestParams(_thesauri)).then(updatedThesauri => {
+    // TODO: figure out why the model_available field is wiped out here.
+    const _thesaurus = { ...thesaurus, enable_classification: true };
+    await api.save(new RequestParams(_thesaurus)).then(updatedThesaurus => {
       notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
-      dispatch(actions.update('dictionaries', updatedThesauri));
+      dispatch(actions.update('dictionaries', updatedThesaurus));
     });
   };
 }
 
-export function checkThesauriCanBeClassified(thesauri) {
-  console.log('can thesauri be classified?', thesauri);
+export function checkThesaurusCanBeClassified(thesaurus) {
   return async dispatch => {
-    const stats = await api.getClassificationStats(new RequestParams({ _id: thesauri._id }));
-    if (stats && stats.can_enable) {
+    const modelAvailable = await api.getModelStatus(new RequestParams({ model: thesaurus.name }));
+    if (modelAvailable && modelAvailable.preferred) {
       return dispatch;
     }
     throw new Error('Cannot enable!');
