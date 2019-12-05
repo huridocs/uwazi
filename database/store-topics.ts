@@ -62,7 +62,7 @@ connect().then(
               .get({})
               .sort('-_id')
               .limit(maxUpload),
-            2000,
+            1000,
             async (e: WithId<EntitySchema>) => {
               if (!e.template || !e.metadata) {
                 return;
@@ -83,10 +83,11 @@ connect().then(
                 })),
               });
               if (request.samples.length >= 2000) {
-                process.stdout.write('.');
-                await storeSamples(request, modelName);
-                process.stdout.write('+');
+                const toSend = { ...request };
                 request.samples = [];
+                process.stdout.write('.');
+                await storeSamples(toSend, modelName);
+                process.stdout.write('+');
               }
             }
           );

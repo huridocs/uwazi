@@ -32,7 +32,7 @@ Read the [user guide](https://github.com/huridocs/uwazi/wiki)
 
 # Dependencies
 
-- **NodeJs 8.11.x** For ease of update, use nvm: https://github.com/creationix/nvm
+- **NodeJs 10.17.x** For ease of update, use nvm: https://github.com/creationix/nvm
 - **ElasticSearch 7.4.1** https://www.elastic.co/guide/en/elasticsearch/reference/7.4/install-elasticsearch.html Please note that ElasticSearch requires java.
   Probably need to disable ml module in the elastic search config file:
   `xpack.ml.enabled: false`
