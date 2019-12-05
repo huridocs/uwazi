@@ -13,7 +13,7 @@ const rangeFilter = (filter, path = 'metadata') => {
 // eslint-disable-next-line max-statements
 const multiselectFilter = (filter, path = 'metadata') => {
   const filterValue = filter.value;
-  const { values = [] } = filterValue;
+  const { values = [], is_suggested: isSuggested = false } = filterValue;
   let match;
   if (values.includes('missing') && !filterValue.and) {
     const _values = values.filter(v => v !== 'missing');
@@ -32,26 +32,23 @@ const multiselectFilter = (filter, path = 'metadata') => {
             },
           },
           {
-            terms: {},
+            terms: { [`${path}.${filter.name}.raw`]: _values },
           },
         ],
       },
     };
-    match.bool.should[1].terms[`${path}.${filter.name}.raw`] = _values;
     return match;
   }
   if (!values.includes('missing') && !filterValue.and) {
-    match = { terms: {} };
-    match.terms[`${path}.${filter.name}.raw`] = values;
+    match = { terms: { [`${path}.${filter.name}.raw`]: values } };
   }
 
   if (filterValue.and) {
-    match = { bool: { must: [] } };
-    match.bool.must = values.map(value => {
-      const m = { term: {} };
-      m.term[`${path}.${filter.name}.raw`] = value;
-      return m;
-    });
+    match = {
+      bool: {
+        must: values.map(value => ({ term: { [`${path}.${filter.name}.raw`]: value } })),
+      },
+    };
   }
   return match;
 };
