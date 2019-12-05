@@ -12,18 +12,16 @@ exports[`CantDeleteTemplateAlert extraConfirm option should render a confirm inp
     <p>
       Are you sure you want to continue?
     </p>
-    <React.Fragment>
-      <p>
-         If you want to continue, please type '
-        CONFIRM
-        ' 
-      </p>
-      <input
-        onChange={[Function]}
-        type="text"
-        value=""
-      />
-    </React.Fragment>
+    <p>
+       If you want to continue, please type '
+      CONFIRM
+      ' 
+    </p>
+    <input
+      onChange={[Function]}
+      type="text"
+      value=""
+    />
   </Body>
   <Footer>
     <button

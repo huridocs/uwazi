@@ -8,13 +8,13 @@ import PagesContext from './Context';
 export default class EntityLink extends Component {
   render() {
     const { children } = this.props;
-    const sharedId = entity.toJS ? entity.get('sharedId') : entity.sharedId;
-    const url = `/entity/${sharedId}`;
     return (
       <PagesContext.Consumer>
-        <I18NLink to={url} onClick={this.onClick}>
-          {children}
-        </I18NLink>
+        {entity => {
+          const sharedId = entity.toJS ? entity.get('sharedId') : entity.sharedId;
+          const url = `/entity/${sharedId}`;
+          return <I18NLink to={url}>{children}</I18NLink>;
+        }}
       </PagesContext.Consumer>
     );
   }

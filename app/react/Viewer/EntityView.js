@@ -47,15 +47,6 @@ export default class Entity extends Component {
     this.context.store.dispatch(uiActions.showTab('info'));
   }
 
-  componentWillUnmount() {
-    this.emptyState();
-  }
-
-  emptyState() {
-    this.context.store.dispatch(actions.unset('entityView/entity'));
-    this.context.store.dispatch(relationships.emptyState());
-  }
-
   static renderTools() {
     return (
       <div className="searchBox">

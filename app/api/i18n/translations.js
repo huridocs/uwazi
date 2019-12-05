@@ -1,5 +1,7 @@
 /** @format */
 
+import entities from 'api/entities/entities';
+import thesauris from 'api/thesauris/thesauris';
 import settings from 'api/settings/settings';
 
 import model from './translationsModel.js';
@@ -32,20 +34,62 @@ function processContextValues(context) {
   return { ...context, values: values || context.values };
 }
 
-function update(translation) {
-  return model.getById(translation._id).then(currentTranslationData => {
-    currentTranslationData.contexts.forEach(context => {
-      const isPresentInTheComingData = translation.contexts.find(
-        _context => _context.id === context.id
-      );
-      if (!isPresentInTheComingData) {
-        translation.contexts.push(context);
-      }
-    });
+const update = async translation => {
+  const currentTranslationData = await model.getById(translation._id);
 
-    return model.save({ ...translation, contexts: translation.contexts.map(processContextValues) });
+  translation.contexts = translation.contexts.map(processContextValues);
+
+  currentTranslationData.contexts.forEach(context => {
+    const isPresentInTheComingData = translation.contexts.find(
+      _context => _context.id.toString() === context.id.toString()
+    );
+
+    if (!isPresentInTheComingData) {
+      translation.contexts.push(context);
+    }
   });
-}
+
+  await currentTranslationData.contexts.reduce(async (promise, context) => {
+    await promise;
+
+    const isPresentInTheComingData = translation.contexts.find(
+      _context => _context.id.toString() === context.id.toString()
+    );
+
+    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Dictionary') {
+      const changes = isPresentInTheComingData.values.reduce((changes, value) => {
+        const currentValue = context.values.find(v => v.key === value.key);
+        if (currentValue && currentValue.value !== value.value) {
+          return { ...changes, [currentValue.key]: value.value };
+        }
+        return changes;
+      }, {});
+
+      const thesauri = await thesauris.getById(context.id);
+      const changesAgain = Object.keys(changes)
+        .map(valueChanged => {
+          const valueFound = thesauri.values.find(v => v.label === valueChanged);
+          if (valueFound) {
+            return { id: valueFound.id, value: changes[valueChanged] };
+          }
+        })
+        .filter(a => a);
+
+      return Promise.all(
+        changesAgain.map(change => {
+          return entities.renameThesaurusInMetadata(
+            change.id,
+            change.value,
+            context.id,
+            translation.locale
+          );
+        })
+      );
+    }
+  }, Promise.resolve());
+
+  return model.save({ ...translation, contexts: translation.contexts.map(processContextValues) });
+};
 
 export default {
   prepareContexts,
