@@ -40,9 +40,10 @@ export function disableClassification(thesaurus) {
   return async dispatch => {
     const _thesaurus = { ...thesaurus, enable_classification: false };
     await api.save(new RequestParams(_thesaurus)).then(_updatedThesaurus => {
-      notifications.notify(t('System', 'Classification disabled', null, false), 'success')(
-        dispatch
-      );
+      notifications.notify(
+        t('System', `${_updatedThesaurus.name} will no longer be classified.`, null, false),
+        'success'
+      )(dispatch);
       dispatch(
         actions.update('dictionaries', {
           ..._updatedThesaurus,
@@ -56,11 +57,14 @@ export function disableClassification(thesaurus) {
 export function enableClassification(thesaurus) {
   return async dispatch => {
     const _thesaurus = { ...thesaurus, enable_classification: true };
-    await api.save(new RequestParams(_thesaurus)).then(updatedThesaurus => {
-      notifications.notify(t('System', 'Classification enabled', null, false), 'success')(dispatch);
+    await api.save(new RequestParams(_thesaurus)).then(_updatedThesaurus => {
+      notifications.notify(
+        t('System', `${_updatedThesaurus.name} will now be classified.`, null, false),
+        'success'
+      )(dispatch);
       dispatch(
         actions.update('dictionaries', {
-          ...updatedThesaurus,
+          ..._updatedThesaurus,
           model_available: thesaurus.model_available,
         })
       );
