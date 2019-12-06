@@ -52,7 +52,9 @@
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures;./restore.sh",
     "eslint": "./node_modules/.bin/eslint app --quiet --ext js,ts,tsx",
-    "prettier": "./node_modules/.bin/prettier --loglevel warn --write --require-pragma 'app/**/*.{js,ts,tsx}'"
+    "prettier": "./node_modules/.bin/prettier --loglevel warn --write --require-pragma 'app/**/*.{js,ts,tsx}'",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "dependencies": {
     "@babel/core": "7.4.4",
@@ -79,7 +81,6 @@
     "@types/react-dom": "^16.9.1",
     "@types/react-redux": "^7.1.5",
     "@types/react-router-dom": "^5.1.0",
-    "@types/react-redux": "^7.1.5",
     "@types/hoist-non-react-statics": "^3.3.0",
     "ajv": "^6.10.2",
     "ajv-keywords": "^3.4.1",
@@ -94,10 +95,10 @@
     "big.js": "^5.2.2",
     "bluebird": "^3.4.6",
     "body-parser": "1.18.2",
-    "bootstrap": "3.4.0",
+    "bootstrap": "3.4.1",
     "child-process-promise": "^2.2.1",
     "compression": "^1.6.0",
-    "connect-mongo": "2.0.1",
+    "connect-mongo": "3.0.0",
     "cookie": "^0.4.0",
     "cookie-parser": "^1.4.0",
     "crypto-js": "^3.1.9-1",
@@ -114,7 +115,7 @@
     "formatcoords": "^1.1.3",
     "franc": "4.0.0",
     "graylog2": "^0.2.1",
-    "helmet": "^3.13.0",
+    "helmet": "^3.21.1",
     "hoist-non-react-statics": "^3.3.0",
     "html-to-react": "^1.3.3",
     "htmlparser2": "^3.9.2",
@@ -126,11 +127,11 @@
     "jvent": "1.0.2",
     "macaddress": "0.2.9",
     "mark.js": "^8.11.1",
-    "markdown-it": "^8.4.1",
+    "markdown-it": "^10.0.0",
     "markdown-it-container": "^2.0.0",
     "moment": "2.21.0",
     "moment-timezone": "^0.5.5",
-    "mongoose": "5.0.18",
+    "mongoose": "5.7.5",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^4.0.1",
@@ -169,12 +170,12 @@
     "rison": "Nanonid/rison#e64af6c",
     "rtlcss": "^2.4.0",
     "sanitize-filename": "^1.6.0",
-    "serialize-javascript": "^1.5.0",
+    "serialize-javascript": "^2.1.1",
     "socket.io": "2.0.4",
     "socket.io-client": "2.0.4",
     "superagent": "^5.0.6",
     "svg-captcha": "^1.4.0",
-    "swagger-jsdoc": "^1.9.6",
+    "swagger-jsdoc": "^1.10.0",
     "tiny-cookie": "2.1.1",
     "typescript": "^3.6.4",
     "underscore.string": "3.3.5",
@@ -184,7 +185,8 @@
     "world-countries": "2.0.0",
     "wrap-range-text": "^1.0.1",
     "yauzl": "^2.10.0",
-    "yazl": "^2.5.1"
+    "yazl": "^2.5.1",
+    "snyk": "^1.258.1"
   },
   "devDependencies": {
     "@babel/cli": "7.4.4",
@@ -251,5 +253,6 @@
     "webpack-dev-middleware": "3.6.0",
     "webpack-hot-middleware": "^2.21.0",
     "yargs": "^13.2.2"
-  }
+  },
+  "snyk": true
 }
