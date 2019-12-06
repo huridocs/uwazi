@@ -8,12 +8,12 @@ import { actions as formActions } from 'react-redux-form';
 import api from 'app/Thesauris/ThesaurisAPI';
 
 describe('thesaurisActions', () => {
-  describe('editThesauri', () => {
+  describe('editThesaurus', () => {
     it('should set the thesauri in the form ', () => {
       const thesauri = { name: 'Secret list of things', values: [] };
       const dispatch = jasmine.createSpy('dispatch');
       spyOn(formActions, 'load');
-      actions.editThesauri(thesauri)(dispatch);
+      actions.editThesaurus(thesauri)(dispatch);
 
       expect(formActions.load).toHaveBeenCalledWith('thesauri.data', thesauri);
     });
@@ -43,7 +43,7 @@ describe('thesaurisActions', () => {
       it('should delete the thesauri and dispatch a thesauris/REMOVE action with the thesauri', done => {
         const thesauri = { _id: 'thesauriId' };
         actions
-          .deleteThesauri(thesauri)(dispatch)
+          .deleteThesaurus(thesauri)(dispatch)
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith({ type: 'dictionaries/REMOVE', value: thesauri });
             done();
@@ -83,7 +83,7 @@ describe('thesaurisActions', () => {
       it('should set thesauris to new values', done => {
         spyOn(api, 'get').and.returnValue(Promise.resolve('thesaurisResponse'));
         actions
-          .reloadThesauris()(dispatch)
+          .reloadThesauri()(dispatch)
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith({
               type: 'thesauris/SET',

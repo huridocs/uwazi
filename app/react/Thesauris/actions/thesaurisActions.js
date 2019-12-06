@@ -1,35 +1,34 @@
 /** @format */
-
-import api from 'app/Thesauris/ThesaurisAPI';
-import { actions as formActions } from 'react-redux-form';
-import { t } from 'app/I18N';
 import { actions } from 'app/BasicReducer';
+import { t } from 'app/I18N';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import api from 'app/Thesauris/ThesaurisAPI';
 import { RequestParams } from 'app/utils/RequestParams';
+import { actions as formActions } from 'react-redux-form';
 
-export function editThesauri(thesauri) {
+export function editThesaurus(thesaurus) {
   return dispatch => {
     dispatch(formActions.reset('thesauri.data'));
-    dispatch(formActions.load('thesauri.data', thesauri));
+    dispatch(formActions.load('thesauri.data', thesaurus));
   };
 }
 
-export function deleteThesauri(thesauri) {
+export function deleteThesaurus(thesaurus) {
   return dispatch =>
-    api.delete(new RequestParams({ _id: thesauri._id })).then(() => {
-      dispatch(actions.remove('dictionaries', thesauri));
+    api.delete(new RequestParams({ _id: thesaurus._id })).then(() => {
+      dispatch(actions.remove('dictionaries', thesaurus));
     });
 }
 
-export function checkThesaurusCanBeDeleted(thesauri) {
+export function checkThesaurusCanBeDeleted(thesaurus) {
   return dispatch =>
-    TemplatesAPI.countByThesauri(new RequestParams({ _id: thesauri._id })).then(count =>
+    TemplatesAPI.countByThesauri(new RequestParams({ _id: thesaurus._id })).then(count =>
       count ? Promise.reject() : dispatch
     );
 }
 
-export function reloadThesauris() {
+export function reloadThesauri() {
   return dispatch =>
     api.get().then(response => {
       dispatch(actions.set('thesauris', response));

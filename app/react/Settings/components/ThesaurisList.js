@@ -8,7 +8,7 @@ import { I18NLink, t } from 'app/I18N';
 import {
   checkThesaurusCanBeDeleted,
   checkThesaurusCanBeClassified,
-  deleteThesauri,
+  deleteThesaurus,
   disableClassification,
   enableClassification,
 } from 'app/Thesauris/actions/thesaurisActions';
@@ -86,13 +86,13 @@ export class ThesaurisList extends Component {
     });
   }
 
-  deleteThesauri(thesaurus) {
+  deleteThesaurus(thesaurus) {
     return this.props
       .checkThesaurusCanBeDeleted(thesaurus)
       .then(() => {
         this.context.confirm({
           accept: () => {
-            this.props.deleteThesauri(thesaurus);
+            this.props.deleteThesaurus(thesaurus);
           },
           title: `Confirm delete thesaurus: ${thesaurus.name}`,
           message: 'Are you sure you want to delete this thesaurus?',
@@ -129,7 +129,7 @@ export class ThesaurisList extends Component {
                   <span>{t('System', 'Edit')}</span>
                 </I18NLink>
                 <button
-                  onClick={this.deleteThesauri.bind(this, thesaurus)}
+                  onClick={this.deleteThesaurus.bind(this, thesaurus)}
                   className="btn btn-danger btn-xs template-remove"
                   type="button"
                 >
@@ -154,7 +154,7 @@ export class ThesaurisList extends Component {
 
 ThesaurisList.propTypes = {
   dictionaries: PropTypes.object,
-  deleteThesauri: PropTypes.func,
+  deleteThesaurus: PropTypes.func,
   disableClassification: PropTypes.func,
   enableClassification: PropTypes.func,
   checkThesaurusCanBeClassified: PropTypes.func,
@@ -174,7 +174,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       notify: notificationActions.notify,
-      deleteThesauri,
+      deleteThesaurus,
       checkThesaurusCanBeDeleted,
       disableClassification,
       enableClassification,
