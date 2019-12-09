@@ -64,7 +64,7 @@ connect().then(
               .limit(maxUpload),
             1000,
             async (e: WithId<EntitySchema>) => {
-              if (!e.template || !e.metadata) {
+              if (!e.template || !e.metadata || e.language !== 'en') {
                 return;
               }
               const sequence = await extractSequence(e);

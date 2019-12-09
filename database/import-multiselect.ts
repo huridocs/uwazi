@@ -17,7 +17,7 @@ import yargs from 'yargs';
 const { input_csv: inputCsv, format: csvColumnsStr, store_model: storeModel, force } = yargs
   .option('input_csv', { default: '/home/bdittes/Downloads/PlanInternational_themes.csv' })
   .option('format', { default: 'add:themes,add:themes,search:paragraph_text,ignore' })
-  .option('store_model', { default: 'PlanInternational_2000' })
+  .option('store_model', { default: 'planinternational_seqOnly-themes' })
   .option('force', { default: false })
   .help().argv;
 
