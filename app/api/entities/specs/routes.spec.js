@@ -42,10 +42,6 @@ describe('entities', () => {
       expect(routes._post('/api/entities', req)).toNeedAuthorization();
     });
 
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/entities')).toMatchSnapshot();
-    });
-
     it('should create a new document with current user', (done) => {
       spyOn(entities, 'save').and.returnValue(Promise.resolve('entity'));
       spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
