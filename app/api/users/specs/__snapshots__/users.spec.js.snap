@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Users login 2fa should login if account requires 2fa and correct token sent 1`] = `
+Object {
+  "__v": 0,
+  "email": "someuser1@mailer.com",
+  "role": "admin",
+  "username": "someuser1",
+  "using2fa": true,
+}
+`;
+
 exports[`Users login after locking account, it should send user and email with the unlock link 1`] = `
 Array [
   Object {
@@ -24,5 +34,6 @@ Object {
   "email": "someuser1@mailer.com",
   "role": "admin",
   "username": "someuser1",
+  "using2fa": false,
 }
 `;

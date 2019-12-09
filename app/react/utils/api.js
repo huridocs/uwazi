@@ -1,3 +1,5 @@
+/** @format */
+
 import { browserHistory } from 'react-router';
 
 import { isClient } from 'app/utils';
@@ -11,18 +13,20 @@ import request from '../../shared/JSONRequest';
 let API_URL = APIURL;
 let language;
 
-const doneLoading = (data) => {
+const doneLoading = data => {
   loadingBar.done();
   return data;
 };
 
-const isNonUsualApiError = error => error.status && ![500, 404, 401].includes(error.status);
+const isNonUsualApiError = error => error.status && ![401, 404, 409, 500].includes(error.status);
 
-const handleErrorStatus = (error) => {
+const handleErrorStatus = error => {
   if (error.status === 401) {
     browserHistory.replace('/login');
   } else if (error.status === 404) {
     browserHistory.replace('/404');
+  } else if (error.status === 409) {
+    store.dispatch(notify(error.json.error, 'warning'));
   } else if (error.status === 500) {
     store.dispatch(notify('An error has occurred', 'danger'));
   } else if (isNonUsualApiError(error)) {
@@ -53,10 +57,10 @@ const _request = (url, req, method) => {
   return request[method](API_URL + url, req.data, {
     'Content-Language': language,
     ...req.headers,
-    'X-Requested-With': 'XMLHttpRequest'
+    'X-Requested-With': 'XMLHttpRequest',
   })
-  .then(doneLoading)
-  .catch(e => handleError(e, { url, method }));
+    .then(doneLoading)
+    .catch(e => handleError(e, { url, method }));
 };
 
 export default {
@@ -76,5 +80,5 @@ export default {
 
   APIURL(url) {
     API_URL = url;
-  }
+  },
 };
