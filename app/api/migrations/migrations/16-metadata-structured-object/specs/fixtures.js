@@ -79,7 +79,7 @@ export default {
       metadata: {
         country: c1,
         current_address_geolocation: [{ lat: 1, lng: 2, label: 'a' }],
-        issues: [i1],
+        issues: [i1, null],
         friends: 'shared-e2',
       },
     },
