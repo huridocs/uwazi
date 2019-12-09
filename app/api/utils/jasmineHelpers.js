@@ -1,5 +1,49 @@
+/** @format */
+
+const assessStatus = routeResult => {
+  let status;
+  const req = {};
+  const next = () => {};
+  const res = {
+    status: code => {
+      status = code;
+    },
+    json: () => {},
+  };
+
+  routeResult.middlewares[0](req, res, next);
+
+  return status;
+};
+
+const assessAuthorized = (routeResult, roles = []) => {
+  const nextCalledFor = [];
+
+  roles.forEach(role => {
+    const req = {
+      user: { role },
+      get: key => (key === 'X-Requested-With' ? 'XMLHttpRequest' : ''),
+    };
+    const res = { status: () => {}, json: () => {} };
+    const next = () => {
+      nextCalledFor.push(role);
+    };
+    routeResult.middlewares[0](req, res, next);
+  });
+
+  return roles.join(',') === nextCalledFor.join(',');
+};
+
+const conformValidationErrors = (routeCanFail, expected) =>
+  routeCanFail
+    ? `Route is not correctly authorized for ['${expected.join("', '")}']`
+    : 'Route is not authorized ! (Auth middleware should be the first one)';
+
+const conformMessage = (result, routeCanFail, expected) =>
+  result.pass ? 'route is authorized' : conformValidationErrors(routeCanFail, expected);
+
 export function catchErrors(done) {
-  return (error) => {
+  return error => {
     if (error instanceof Error) {
       return done.fail(error);
     }
@@ -10,22 +54,13 @@ export function catchErrors(done) {
 const matchers = {
   toNeedAuthorization() {
     return {
-      compare(routeResult) {
-        let status;
-        const req = {};
-        const next = () => {};
-        const res = { status: (code) => { status = code; }, json: () => {} };
-
-        routeResult.middlewares[0](req, res, next);
-
-        const result = { pass: status === 401 };
-        if (result.pass) {
-          result.message = () => 'route is authorized';
-        } else {
-          result.message = () => 'Route is not authorized ! (Auth middleware should be the first one)';
-        }
+      compare(routeResult, expected) {
+        const routeCanFail = assessStatus(routeResult) === 401;
+        const routeValidatesExpected = expected ? assessAuthorized(routeResult, expected) : true;
+        const result = { pass: routeCanFail && routeValidatesExpected };
+        result.message = () => conformMessage(result, routeCanFail, expected);
         return result;
-      }
+      },
     };
   },
   containItems() {
@@ -40,10 +75,10 @@ const matchers = {
           result.message = `Expected: [${expected}] but got: [${actual}]`;
         }
         return result;
-      }
+      },
     };
   },
-  toContainEqual: jasmine.matchers ? jasmine.matchers.toContain : () => {}
+  toContainEqual: jasmine.matchers ? jasmine.matchers.toContain : () => {},
 };
 
 beforeEach(() => {

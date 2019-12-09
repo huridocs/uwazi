@@ -14,6 +14,7 @@
     "prettier/prettier": ["error", { "requirePragma": true }],
     "indent": "off", // handled by prettier
     "operator-linebreak": "off", // handled by prettier
+    "space-before-function-paren": "off", // handled by prettier
     "no-mixed-operators": "off",
     "no-underscore-dangle": "off",
     "space-before-function-paren": "off",

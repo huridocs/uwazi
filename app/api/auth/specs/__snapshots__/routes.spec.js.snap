@@ -12,6 +12,12 @@ Object {
       ],
       "type": "string",
     },
+    "token": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
     "username": Object {
       "flags": Object {
         "presence": "required",

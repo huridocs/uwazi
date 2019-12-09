@@ -1,8 +1,9 @@
+/** @format */
+
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS, Map } from 'immutable';
 
-import { I18NLink } from 'app/I18N';
 import { UsersList } from '../UsersList';
 
 describe('UsersList', () => {
@@ -14,14 +15,15 @@ describe('UsersList', () => {
     props = {
       users: fromJS([
         { _id: 1, username: 'User 1', sharedId: 'a1' },
-        { _id: 2, username: 'User 2', sharedId: 'a2' },
-        { _id: 3, username: 'User 3', sharedId: 'a3' }
+        { _id: 2, username: 'User 2', sharedId: 'a2', using2fa: true },
+        { _id: 3, username: 'User 3', sharedId: 'a3' },
       ]),
-      deleteUser: jasmine.createSpy('deleteUser').and.returnValue(Promise.resolve())
+      deleteUser: jasmine.createSpy('deleteUser').and.returnValue(Promise.resolve()),
+      reset2fa: jasmine.createSpy('reset2fa').and.returnValue(Promise.resolve()),
     };
 
     context = {
-      confirm: jasmine.createSpy('confirm')
+      confirm: jasmine.createSpy('confirm'),
     };
   });
 
@@ -30,16 +32,9 @@ describe('UsersList', () => {
   };
 
   describe('render', () => {
-    it('should render a list with all users names', () => {
+    it('should render a list with all users names, edit and delete buttons and global add button', () => {
       render();
-      expect(component.find('ul.users').find('li').length).toBe(3);
-      const span = component.find('ul.users').find('li').last().find('span').first();
-      expect(span.props().children).toBe('User 3');
-    });
-
-    it('should have a button to add a page', () => {
-      render();
-      expect(component.find(I18NLink).last().props().to).toBe('/settings/users/new');
+      expect(component).toMatchSnapshot();
     });
   });
 
@@ -56,6 +51,21 @@ describe('UsersList', () => {
     it('should call on props.deleteUser if confirmed', () => {
       context.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteUser).toHaveBeenCalledWith({ _id: 3, sharedId: 'a3' });
+    });
+  });
+
+  describe('reset2fa', () => {
+    let user;
+    beforeEach(() => {
+      user = { _id: 3, title: 'Judge', sharedId: 'a3' };
+      render();
+      component.instance().reset2fa(Map(user));
+    });
+
+    it('should confirm calling on reset2fa if confirmed', () => {
+      expect(context.confirm).toHaveBeenCalled();
+      context.confirm.calls.argsFor(0)[0].accept();
+      expect(props.reset2fa).toHaveBeenCalledWith(user);
     });
   });
 });
