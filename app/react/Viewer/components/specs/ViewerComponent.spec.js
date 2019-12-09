@@ -9,12 +9,10 @@ import EntityView from '../../EntityView';
 
 describe('ViewerComponent', () => {
   let component;
-  let props;
-  let context;
-  let entity = { _id: 'id', sharedId: 'sharedId', file: {} };
+  const entity = { _id: 'id', sharedId: 'sharedId', file: {} };
 
-  const render = ({ mount = false } = {}) => {
-    component = shallow(<ViewerComponent entity={fromJS(entity)} />);
+  const render = () => {
+    component = shallow(<ViewerComponent entity={fromJS(entity)} location={{}} />);
   };
   describe('when the entity has file', () => {
     it('should render a PDFView', () => {

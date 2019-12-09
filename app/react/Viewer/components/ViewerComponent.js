@@ -3,9 +3,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import PDFView from '../PDFView';
 import EntityView from 'app/Viewer/EntityView';
 import Loader from 'app/components/Elements/Loader';
+import { Map } from 'immutable';
+import PDFView from '../PDFView';
 
 export class ViewerComponent extends Component {
   render() {
@@ -17,8 +18,8 @@ export class ViewerComponent extends Component {
   }
 }
 
-ViewerComponent.contextTypes = {
-  store: PropTypes.object,
+ViewerComponent.propTypes = {
+  entity: PropTypes.instanceOf(Map).isRequired,
 };
 
 const mapStateToProps = state => {
