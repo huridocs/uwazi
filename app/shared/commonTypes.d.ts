@@ -28,7 +28,7 @@ export type PropertyValueSchema = null | string | number | LinkSchema | DateRang
 export interface MetadataObjectSchema {
   value: PropertyValueSchema;
   label?: string;
-  is_suggestion?: boolean;
+  suggestion_confidence?: number;
   [k: string]: any | undefined;
 }
 

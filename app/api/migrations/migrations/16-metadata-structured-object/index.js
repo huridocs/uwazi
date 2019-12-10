@@ -60,8 +60,12 @@ export default {
       const template = templatesByKey[entity.template ? entity.template.toString() : null];
       index += 1;
       if (entity.metadata && template) {
-        entity.metadata = this.expandMetadata(entity.metadata);
-        entity.metadata = await entities.denormalizeMetadata(entity, template, dictionariesByKey);
+        entity.metadata = await entities.denormalizeMetadata(
+          this.expandMetadata(entity.metadata),
+          entity,
+          template,
+          dictionariesByKey
+        );
         await db
           .collection('entities')
           .update({ _id: entity._id }, { $set: { metadata: entity.metadata } });

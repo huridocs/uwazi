@@ -55,6 +55,7 @@ export interface EntitySchema {
   toc?: TocSchema[];
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
+  suggestedMetadata?: MetadataSchema;
   reviewed?: ReviewSchema;
   reviewLog?: ReviewSchema[];
   [k: string]: any | undefined;
