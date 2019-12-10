@@ -4,21 +4,14 @@ import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
 
-// import {
-//   objectIdSchema,
-//   linkSchema,
-//   dateRangeSchema,
-//   geolocationSchema,
-//   tocSchema,
-// } from 'api/utils/jsonSchemas';
-
 import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 import { wrapValidator } from 'shared/tsUtils';
 
 const ajv = Ajv({ allErrors: true });
 
-const isEmpty = value => isNull(value) || isUndefined(value) || !value.length;
+const isEmpty = value =>
+  isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
 
 const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
 
