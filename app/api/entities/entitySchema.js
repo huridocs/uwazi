@@ -3,24 +3,32 @@
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
+
+// import {
+//   objectIdSchema,
+//   linkSchema,
+//   dateRangeSchema,
+//   geolocationSchema,
+//   tocSchema,
+// } from 'api/utils/jsonSchemas';
+
 import { objectIdSchema, metadataSchema, tocSchema } from 'shared/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 import { wrapValidator } from 'shared/tsUtils';
 
-export const emitSchemaTypes = true;
-
 const ajv = Ajv({ allErrors: true });
 
-const isEmpty = value =>
-  isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
+const isEmpty = value => isNull(value) || isUndefined(value) || !value.length;
 
 const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
+
+const validateDateProperty = value => isNumber(value);
 
 const isValidDateRange = value => {
   if (!isNonArrayObject(value)) {
     return false;
   }
-  if (isNumber(value.from) && isNumber(value.to)) {
+  if (validateDateProperty(value.from) && validateDateProperty(value.to)) {
     return value.from <= value.to;
   }
   return true;
@@ -56,8 +64,6 @@ const validateSingleWrappedValue = validationFn => value => {
 
 const validateNumericProperty = value => isNumber(value) || value === '';
 
-const validateDateProperty = value => isNumber(value) && value >= 0;
-
 const validateMultiDateProperty = value =>
   Array.isArray(value) && value.every(item => isNumber(item.value) || isNull(item.value));
 
@@ -73,6 +79,23 @@ const validateMultiSelectProperty = value =>
 const isValidLinkField = value =>
   isString(value.label) && value.label && isString(value.url) && value.url;
 
+const propertyValidators = {
+  [propertyTypes.date]: validateSingleWrappedValue(validateDateProperty),
+  [propertyTypes.multidate]: validateMultiDateProperty,
+  [propertyTypes.daterange]: validateSingleWrappedValue(isValidDateRange),
+  [propertyTypes.multidaterange]: validateMultiDateRangeProperty,
+  [propertyTypes.text]: validateSingleWrappedValue(isString),
+  [propertyTypes.markdown]: validateSingleWrappedValue(isString),
+  [propertyTypes.media]: validateSingleWrappedValue(isString),
+  [propertyTypes.image]: validateSingleWrappedValue(isString),
+  [propertyTypes.select]: validateSingleWrappedValue(isValidSelect),
+  [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
+  [propertyTypes.multiselect]: validateMultiSelectProperty,
+  [propertyTypes.relationship]: validateMultiSelectProperty,
+  [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
+  [propertyTypes.geolocation]: validateGeolocationProperty,
+};
+
 const validateMetadataField = (property, entity) => {
   const value = entity.metadata && entity.metadata[property.name];
   if (!validateRequiredProperty(property, value)) {
@@ -81,22 +104,6 @@ const validateMetadataField = (property, entity) => {
   if (isUndefined(value) || isNull(value)) {
     return true;
   }
-  const propertyValidators = {
-    [propertyTypes.date]: validateSingleWrappedValue(validateDateProperty),
-    [propertyTypes.multidate]: validateMultiDateProperty,
-    [propertyTypes.daterange]: validateSingleWrappedValue(isValidDateRange),
-    [propertyTypes.multidaterange]: validateMultiDateRangeProperty,
-    [propertyTypes.text]: validateSingleWrappedValue(isString),
-    [propertyTypes.markdown]: validateSingleWrappedValue(isString),
-    [propertyTypes.media]: validateSingleWrappedValue(isString),
-    [propertyTypes.image]: validateSingleWrappedValue(isString),
-    [propertyTypes.select]: validateSingleWrappedValue(isValidSelect),
-    [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
-    [propertyTypes.multiselect]: validateMultiSelectProperty,
-    [propertyTypes.relationship]: validateMultiSelectProperty,
-    [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
-    [propertyTypes.geolocation]: validateGeolocationProperty,
-  };
   const validator = propertyValidators[property.type];
   return validator ? validator(value) : true;
 };
