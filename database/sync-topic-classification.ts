@@ -10,6 +10,7 @@ import { extractSequence } from 'api/topicclassification/common';
 import connect, { disconnect } from 'api/utils/connect_to_mongo';
 import { buildModelName } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
+import { sleep } from 'shared/tsUtils';
 import yargs from 'yargs';
 import { MetadataObject } from '../app/api/entities/entitiesModel';
 import { EntitySchema } from '../app/api/entities/entityType';
@@ -41,10 +42,25 @@ async function syncEntity(
       },
     ],
   };
-  const response = await JSONRequest.put(
-    `${tcServer}/classification_sample?model=${model}`,
-    request
-  );
+  let response: {
+    json: { samples: { seq: string; predicted_labels: { topic: string; quality: number }[] }[] };
+    status: any;
+  } = { json: { samples: [] }, status: 0 };
+  let lastErr;
+  for (let i = 0; i < 10; i++) {
+    try {
+      response = await JSONRequest.put(`${tcServer}/classification_sample?model=${model}`, request);
+      if (response.status === 200) {
+        break;
+      }
+    } catch (err) {
+      lastErr = err;
+    }
+    await sleep(523);
+  }
+  if (lastErr) {
+    throw lastErr;
+  }
   if (response.status !== 200) {
     console.error(response);
     return false;
@@ -57,10 +73,10 @@ async function syncEntity(
     if (!e.suggestedMetadata) {
       e.suggestedMetadata = {};
     }
-    e.suggestedMetadata[prop] = response.json.samples[0].predicted_labels.reduce(
-      (res: MetadataObject<string>[], pred: { topic: string; quality: number }) => {
+    const newPropMetadata = response.json.samples[0].predicted_labels.reduce(
+      (res: MetadataObject<string>[], pred) => {
         const thesValue = (thesaurus.values || []).find(v => v.label === pred.topic);
-        if (!thesValue) {
+        if (!thesValue || !thesValue.id) {
           console.error(
             `Model prediction "${pred.topic}" not found in thesaurus ${thesaurus.name}`
           );
@@ -73,8 +89,12 @@ async function syncEntity(
       },
       []
     );
-    await entities.save(e, { user: 'sync-topic-classification', language: e.language });
-    console.info(`Saved ${e.sharedId}`);
+    // JSON.stringify provides an easy and fast deep-equal comparison.
+    if (JSON.stringify(newPropMetadata) !== JSON.stringify(e.suggestedMetadata[prop])) {
+      e.suggestedMetadata[prop] = newPropMetadata;
+      await entities.save(e, { user: 'sync-topic-classification', language: e.language });
+      console.info(`Saved ${e.sharedId}`);
+    }
   }
   return true;
 }
@@ -112,10 +132,10 @@ connect().then(
           let index = 0;
           await QueryForEach(
             entities
-              .get({})
+              .get({ language: 'en' })
               .sort('-_id')
               .limit(limit),
-            1000,
+            300,
             async (e: WithId<EntitySchema>) => {
               const didSomething = await syncEntity(
                 e,
