@@ -55,6 +55,7 @@ export function disableClassification(thesaurus) {
 
 export function enableClassification(thesaurus) {
   return async dispatch => {
+    console.dir(Object.getOwnPropertyNames(thesaurus));
     const _thesaurus = { ...thesaurus, enable_classification: true };
     await api.save(new RequestParams(_thesaurus)).then(_updatedThesaurus => {
       notifications.notify(

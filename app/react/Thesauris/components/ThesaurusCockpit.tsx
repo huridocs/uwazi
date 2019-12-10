@@ -4,17 +4,18 @@ import { t } from 'app/I18N';
 import { List } from 'immutable';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 interface ThesaurusCockpitProps {
+  models: any;
   thesauris: List<ThesaurusSchema>;
   thesauri: any;
-  state: any;
+  //state: any;
 }
 
 export class ThesaurusCockpit extends Component<ThesaurusCockpitProps> {
   render() {
     const { values: topics } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
+    const modelInfo = this.props.models[]
     return (
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', 'Thesaurus')}</div>
@@ -22,6 +23,7 @@ export class ThesaurusCockpit extends Component<ThesaurusCockpitProps> {
           {topics.map((topic: { label: string }) => (
             <li key={topic.label} className="list-group-item">
               {topic.label}
+              {this.models[]}
             </li>
           ))}
         </ul>
@@ -32,8 +34,9 @@ export class ThesaurusCockpit extends Component<ThesaurusCockpitProps> {
 }
 
 export function mapStateToProps(state: any) {
-  console.dir(state.thesauris);
+  console.dir(state.models);
   return {
+    models: state.models,
     thesauri: state.thesauri.data, // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
     thesauris: state.thesauris,
   };
