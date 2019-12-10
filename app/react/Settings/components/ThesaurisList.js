@@ -37,7 +37,7 @@ export class ThesaurisList extends Component {
       return (
         <div className="list-group-item-actions">
           <I18NLink
-            to={`/settings/dictionaries/classify_stats/${thesaurus._id}`}
+            to={`/settings/dictionaries/cockpit/${thesaurus._id}`}
             className="btn btn-success btn-xs"
           >
             <Icon icon="code" />

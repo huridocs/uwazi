@@ -1,59 +1,47 @@
 /** @format */
-
-import React from 'react';
-import { Route, IndexRoute } from 'react-router';
-
+import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
+import { trackPage } from 'app/App/GoogleAnalytics';
 import NoMatch from 'app/App/NoMatch';
-
+import EditTranslations from 'app/I18N/EditTranslations';
+import blankState from 'app/Library/helpers/blankState';
+import Library from 'app/Library/Library';
+import LibraryMap from 'app/Library/LibraryMap';
+import EditPage from 'app/Pages/EditPage';
+import NewPage from 'app/Pages/NewPage';
+import Pages from 'app/Pages/Pages';
+import PageView from 'app/Pages/PageView';
+import EditRelationType from 'app/RelationTypes/EditRelationType';
+import NewRelationType from 'app/RelationTypes/NewRelationType';
+import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
+import {
+  AccountSettings,
+  CollectionSettings,
+  Customisation,
+  CustomUploads,
+  EntityTypesList,
+  FiltersForm,
+  Languages,
+  NavlinksSettings,
+  RelationTypesList,
+  Settings,
+  ThesaurisList,
+  TranslationsList,
+} from 'app/Settings';
+import EditTemplate from 'app/Templates/EditTemplate';
+import NewTemplate from 'app/Templates/NewTemplate';
+import EditThesauri from 'app/Thesauris/EditThesauri';
+import ThesaurusClassifierCockpit from 'app/Thesauris/ThesaurusClassifierCockpit';
+import NewThesauri from 'app/Thesauris/NewThesauri';
+import Uploads from 'app/Uploads/UploadsRoute';
+import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
-
-import {
-  Settings,
-  AccountSettings,
-  CollectionSettings,
-  NavlinksSettings,
-  EntityTypesList,
-  RelationTypesList,
-  ThesaurisList,
-  TranslationsList,
-  FiltersForm,
-  Languages,
-  Customisation,
-  CustomUploads,
-} from 'app/Settings';
-
-import Activitylog from 'app/Activitylog/Activitylog';
-import Pages from 'app/Pages/Pages';
-import NewPage from 'app/Pages/NewPage';
-import EditPage from 'app/Pages/EditPage';
-import PageView from 'app/Pages/PageView';
-
-import { Users, NewUser, EditUser } from 'app/Users';
-
 import ViewerRoute from 'app/Viewer/ViewerRoute';
-import Uploads from 'app/Uploads/UploadsRoute';
+import React from 'react';
+import { IndexRoute, Route } from 'react-router';
 
-import EditTemplate from 'app/Templates/EditTemplate';
-import NewTemplate from 'app/Templates/NewTemplate';
-
-import EditThesauri from 'app/Thesauris/EditThesauri';
-import NewThesauri from 'app/Thesauris/NewThesauri';
-
-import EditRelationType from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
-
-import EditTranslations from 'app/I18N/EditTranslations';
-
-import Library from 'app/Library/Library';
-import LibraryMap from 'app/Library/LibraryMap';
-
-import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
-
-import { trackPage } from 'app/App/GoogleAnalytics';
-import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
 
 function onEnter() {
@@ -134,6 +122,7 @@ const routes = (
         <IndexRoute component={ThesaurisList} />
         <Route path="new" component={NewThesauri} />
         <Route path="edit/:_id" component={EditThesauri} />
+        <Route path="cockpit/:_id" component={ThesaurusClassifierCockpit} />
       </Route>
       <Route path="languages" component={Languages} />
       <Route path="translations">
