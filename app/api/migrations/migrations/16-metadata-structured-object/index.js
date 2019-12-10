@@ -22,7 +22,9 @@ export default {
       if (!Array.isArray(value)) {
         value = [value];
       }
-      return value.map(elem => (elem.hasOwnProperty('value') ? elem : { value: elem }));
+      return value
+        .filter(v => v)
+        .map(elem => (elem.hasOwnProperty('value') ? elem : { value: elem }));
     };
     return Object.keys(metadata).reduce(
       (meta, prop) => ({

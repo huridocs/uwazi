@@ -1,3 +1,5 @@
+/** @format */
+
 import { combineReducers } from 'redux';
 import createReducer from 'app/BasicReducer';
 
@@ -22,7 +24,6 @@ import progress from 'app/Uploads/reducers/progressReducer';
 import importEntities from 'app/Uploads/reducers/importReducer';
 import user from 'app/Auth/reducer';
 import settings from 'app/Settings/reducers/reducer';
-import login from 'app/Users/reducers/login';
 import metadata from 'app/Metadata/reducer';
 import locale from 'app/I18N/reducer';
 import inlineEdit from 'app/I18N/inlineEditReducer';
@@ -65,7 +66,6 @@ export default combineReducers({
   attachments,
   modals,
   user,
-  login,
   settings,
-  metadata
+  metadata,
 });

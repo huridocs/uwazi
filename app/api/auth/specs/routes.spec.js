@@ -1,3 +1,5 @@
+/** @format */
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import request from 'supertest';
@@ -22,7 +24,7 @@ describe('Auth Routes', () => {
     await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll((done) => {
+  afterAll(done => {
     db.disconnect().then(done);
   });
 
@@ -33,44 +35,50 @@ describe('Auth Routes', () => {
       authRoutes(app);
     });
 
+    const expectNextOnError = async username => {
+      const req = { body: { username, password: 'badPassword' }, get: () => {} };
+      const next = jasmine.createSpy('next');
+      try {
+        await routes.post('/api/login', req, {}, next);
+      } catch (err) {
+        expect(next.calls.mostRecent().args[0].code).toBe(401);
+        expect(next.calls.mostRecent().args[0].message).toMatch(/invalid username or password/i);
+      }
+    };
+
     it('should have a validation schema', () => {
       expect(routes.post.validation('/api/login')).toMatchSnapshot();
     });
 
     it('should login succesfully with sha256', async () => {
       await request(app)
-      .post('/api/login')
-      .send({ username: 'oldUser', password: 'oldPassword' })
-      .expect(200);
+        .post('/api/login')
+        .send({ username: 'oldUser', password: 'oldPassword' })
+        .expect(200);
     });
 
     it('should fail properly with sha256', async () => {
-      await request(app)
-      .post('/api/login')
-      .send({ username: 'oldUser', password: 'badPassword' })
-      .expect(401);
+      await expectNextOnError('oldUser');
     });
 
     it('should login succesfully with bcrypt', async () => {
-      await request(app)
-      .post('/api/login')
-      .send({ username: 'newUser', password: 'newPassword' })
-      .expect(200);
+      const res = await request(app)
+        .post('/api/login')
+        .send({ username: 'newUser', password: 'newPassword' });
+
+      expect(res.statusCode).toBe(200);
     });
 
     it('should fail properly with bcrypt', async () => {
-      await request(app)
-      .post('/api/login')
-      .send({ username: 'newUser', password: 'badPassword' })
-      .expect(401);
+      await expectNextOnError('newUser');
     });
 
     describe('when loging in with old encryption', () => {
       it('should reencrypt the password using bcrypt', async () => {
         await request(app)
-        .post('/api/login')
-        .send({ username: 'oldUser', password: 'oldPassword' })
-        .expect(200);
+          .post('/api/login')
+          .send({ username: 'oldUser', password: 'oldPassword' })
+          .expect(200);
 
         const [oldUser] = await users.get({ username: 'oldUser' }, '+password');
         const passwordHasBeenChanged = await comparePasswords('oldPassword', oldUser.password);
@@ -95,8 +103,11 @@ describe('Auth Routes', () => {
       stream.push('captchaImage');
       stream.push(null);
       backend.restore();
-      backend
-      .get('http://secret.place.io/captcha', { body: stream, headers: { 'set-cookie': ['connect.ssid: 12n32ndi23j4hsj;'] } }, { sendAsJson: false });
+      backend.get(
+        'http://secret.place.io/captcha',
+        { body: stream, headers: { 'set-cookie': ['connect.ssid: 12n32ndi23j4hsj;'] } },
+        { sendAsJson: false }
+      );
     });
 
     it('should return the captcha and store its value in session', async () => {

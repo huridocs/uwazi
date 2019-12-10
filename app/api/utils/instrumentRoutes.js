@@ -1,15 +1,19 @@
+/** @format */
+/* eslint-disable max-statements */
+
 import { validation } from 'api/utils';
 
-const createSpy = (key, resolve) => jasmine.createSpy(key).and.callFake((...args) => {
-  resolve(`${key}:${args.join(',')}`);
-});
+const createSpy = (key, resolve) =>
+  jasmine.createSpy(key).and.callFake((...args) => {
+    resolve(`${key}:${args.join(',')}`);
+  });
 
 const mockResponseAsWritableStream = (res, resolve) => {
   let response = '';
   res.on = () => {};
   res.once = () => {};
   res.emit = () => {};
-  res.write = (data) => {
+  res.write = data => {
     response += data.toString('utf8');
   };
   res.end = () => {
@@ -27,11 +31,11 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
     let resType;
     mockResponseAsWritableStream(res, resolve);
 
-    res.status = (code) => {
+    res.status = code => {
       statusCode = code;
     };
 
-    res.type = (type) => {
+    res.type = type => {
       resType = type;
     };
 
@@ -40,7 +44,7 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
     res.sendFile = createSpy('sendFile', resolve);
     res.send = createSpy('send', resolve);
 
-    res.json = jasmine.createSpy('json').and.callFake((response) => {
+    res.json = jasmine.createSpy('json').and.callFake(response => {
       if (statusCode) {
         response.status = statusCode;
       }
@@ -58,7 +62,7 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
       return resolve();
     }
 
-    const mockedNext = (error) => {
+    const mockedNext = error => {
       next(error);
       reject(error);
     };
@@ -84,17 +88,26 @@ export default (route, io) => {
   route(app, io);
   validation.validateRequest = originalValidateRequest;
 
-  const get = (routePath, req, res = {}, next) => executeRoute('get', routePath, req, res, next, app);
-  const _get = (routePath, req, res = {}, next) => executeRoute('get', routePath, req, res, next, app, false);
-  get.validation = (routePath, req, res = {}, next) => executeRoute('get', routePath, req, res, next, app, false).validation;
+  const get = (routePath, req, res = {}, next) =>
+    executeRoute('get', routePath, req, res, next, app);
+  const _get = (routePath, req, res = {}, next) =>
+    executeRoute('get', routePath, req, res, next, app, false);
+  get.validation = (routePath, req, res = {}, next) =>
+    executeRoute('get', routePath, req, res, next, app, false).validation;
 
-  const post = (routePath, req, res = {}, next) => executeRoute('post', routePath, req, res, next, app);
-  const _post = (routePath, req, res = {}, next) => executeRoute('post', routePath, req, res, next, app, false);
-  post.validation = (routePath, req, res = {}, next) => executeRoute('post', routePath, req, res, next, app, false).validation;
+  const post = (routePath, req, res = {}, next) =>
+    executeRoute('post', routePath, req, res, next, app);
+  const _post = (routePath, req, res = {}, next) =>
+    executeRoute('post', routePath, req, res, next, app, false);
+  post.validation = (routePath, req, res = {}, next) =>
+    executeRoute('post', routePath, req, res, next, app, false).validation;
 
-  const remove = (routePath, req, res = {}, next) => executeRoute('delete', routePath, req, res, next, app);
-  const _remove = (routePath, req, res = {}, next) => executeRoute('delete', routePath, req, res, next, app, false);
-  remove.validation = (routePath, req, res = {}, next) => executeRoute('delete', routePath, req, res, next, app, false).validation;
+  const remove = (routePath, req, res = {}, next) =>
+    executeRoute('delete', routePath, req, res, next, app);
+  const _remove = (routePath, req, res = {}, next) =>
+    executeRoute('delete', routePath, req, res, next, app, false);
+  remove.validation = (routePath, req, res = {}, next) =>
+    executeRoute('delete', routePath, req, res, next, app, false).validation;
 
   const instrumentedRoute = {
     get,

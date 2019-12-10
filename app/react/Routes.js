@@ -50,6 +50,8 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
 
+import Configure2fa from 'app/Auth2fa/Configure2fa';
+
 import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
 
 import { trackPage } from 'app/App/GoogleAnalytics';
@@ -108,6 +110,7 @@ const routes = (
   <Route getIndexRoute={getIndexRoute}>
     <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
+      <Route path="2fa" component={Configure2fa} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
       <Route path="users">

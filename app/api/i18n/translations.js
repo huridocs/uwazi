@@ -34,10 +34,56 @@ function processContextValues(context) {
   return { ...context, values: values || context.values };
 }
 
+const propagateTranslation = async (translation, currentTranslationData) => {
+  await currentTranslationData.contexts.reduce(async (promise, context) => {
+    await promise;
+
+    const isPresentInTheComingData = translation.contexts.find(
+      _context => _context.id.toString() === context.id.toString()
+    );
+
+    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Dictionary') {
+      const thesauri = await thesauris.getById(context.id);
+
+      const valuesChanged = isPresentInTheComingData.values.reduce((changes, value) => {
+        const currentValue = context.values.find(v => v.key === value.key);
+        if (currentValue && currentValue.value !== value.value) {
+          return { ...changes, [currentValue.key]: value.value };
+        }
+        return changes;
+      }, {});
+
+      const changesMathingDictionaryId = Object.keys(valuesChanged)
+        .map(valueChanged => {
+          const valueFound = thesauri.values.find(v => v.label === valueChanged);
+          if (valueFound) {
+            return { id: valueFound.id, value: valuesChanged[valueChanged] };
+          }
+          return null;
+        })
+        .filter(a => a);
+
+      return Promise.all(
+        changesMathingDictionaryId.map(change =>
+          entities.renameThesaurusInMetadata(
+            change.id,
+            change.value,
+            context.id,
+            translation.locale
+          )
+        )
+      );
+    }
+    return Promise.resolve();
+  }, Promise.resolve());
+};
+
 const update = async translation => {
   const currentTranslationData = await model.getById(translation._id);
 
   translation.contexts = translation.contexts.map(processContextValues);
+
+  await propagateTranslation(translation, currentTranslationData);
 
   currentTranslationData.contexts.forEach(context => {
     const isPresentInTheComingData = translation.contexts.find(
@@ -48,45 +94,6 @@ const update = async translation => {
       translation.contexts.push(context);
     }
   });
-
-  await currentTranslationData.contexts.reduce(async (promise, context) => {
-    await promise;
-
-    const isPresentInTheComingData = translation.contexts.find(
-      _context => _context.id.toString() === context.id.toString()
-    );
-
-    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Dictionary') {
-      const changes = isPresentInTheComingData.values.reduce((changes, value) => {
-        const currentValue = context.values.find(v => v.key === value.key);
-        if (currentValue && currentValue.value !== value.value) {
-          return { ...changes, [currentValue.key]: value.value };
-        }
-        return changes;
-      }, {});
-
-      const thesauri = await thesauris.getById(context.id);
-      const changesAgain = Object.keys(changes)
-        .map(valueChanged => {
-          const valueFound = thesauri.values.find(v => v.label === valueChanged);
-          if (valueFound) {
-            return { id: valueFound.id, value: changes[valueChanged] };
-          }
-        })
-        .filter(a => a);
-
-      return Promise.all(
-        changesAgain.map(change => {
-          return entities.renameThesaurusInMetadata(
-            change.id,
-            change.value,
-            context.id,
-            translation.locale
-          );
-        })
-      );
-    }
-  }, Promise.resolve());
 
   return model.save({ ...translation, contexts: translation.contexts.map(processContextValues) });
 };

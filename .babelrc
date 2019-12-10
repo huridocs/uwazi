@@ -27,7 +27,7 @@
   "plugins": [
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-transform-typeof-symbol",
-    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    "@babel/plugin-syntax-dynamic-import",
     [
       "module-resolver",
       {

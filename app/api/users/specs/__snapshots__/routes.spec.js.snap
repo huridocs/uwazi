@@ -156,6 +156,18 @@ Object {
       ],
       "type": "string",
     },
+    "using2fa": Object {
+      "falsy": Array [
+        false,
+      ],
+      "flags": Object {
+        "insensitive": true,
+      },
+      "truthy": Array [
+        true,
+      ],
+      "type": "boolean",
+    },
   },
   "flags": Object {
     "presence": "required",
