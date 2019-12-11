@@ -212,11 +212,11 @@ describe('entity schema', () => {
       });
 
       describe('date property', () => {
-        it('should fail if value is not a positive number', async () => {
+        it('should fail if value is not a number', async () => {
           entity.metadata.date = 'test';
           await testInvalid();
           entity.metadata.date = -100;
-          await testInvalid();
+          await testValid();
         });
         it('should allow value to be null if property is not required', async () => {
           entity.metadata.date = null;
@@ -226,7 +226,7 @@ describe('entity schema', () => {
 
       describe('multidate property', () => {
         it('should fail if value is not an array of numbers', async () => {
-          entity.metadata.multidate = [100, '200'];
+          entity.metadata.multidate = [100, '200', -5];
           await testInvalid();
           entity.metadata.multidate = ['100'];
           await testInvalid();
@@ -243,12 +243,14 @@ describe('entity schema', () => {
         it('should fail if value is not an object', async () => {
           entity.metadata.daterange = 'dates';
           await testInvalid();
-          entity.metadata.daterange = [100, 200];
+          entity.metadata.daterange = [100, 200, -5];
           await testInvalid();
         });
 
         it('should allow either from or to to be null', async () => {
           entity.metadata.daterange = { from: null, to: 100 };
+          await testValid();
+          entity.metadata.daterange = { from: null, to: -100 };
           await testValid();
           entity.metadata.daterange = { from: 100, to: null };
           await testValid();
@@ -277,6 +279,8 @@ describe('entity schema', () => {
           await testInvalid();
           entity.metadata.multidaterange = [{ from: 200, to: 100 }];
           await testInvalid();
+          entity.metadata.multidaterange = [{ from: -200, to: -100 }];
+          await testValid();
         });
       });
 

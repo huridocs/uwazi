@@ -35,7 +35,8 @@ module.exports = function(production) {
     output: {
       path: outputPath,
       publicPath: "/",
-      filename: "[name]" + jsChunkHashName + ".js"
+      filename: "[name]" + jsChunkHashName + ".js",
+      chunkFilename: '[name].bundle.js'
     },
     resolve: {
       extensions: ["*", ".webpack.js", ".web.js", ".js", ".tsx", ".ts"]
@@ -54,6 +55,11 @@ module.exports = function(production) {
               if (packageName.match(/pdfjs-dist/)) {
                 return packageName;
               }
+
+              if (packageName.match(/qrcode.react/)) {
+                return packageName;
+              }
+
               return 'vendor';
             },
           },

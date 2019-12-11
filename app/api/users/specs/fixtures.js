@@ -1,3 +1,5 @@
+/** @format */
+
 import db from 'api/utils/testing_db';
 import SHA256 from 'crypto-js/sha256';
 
@@ -7,19 +9,26 @@ const expectedKey = SHA256(`recovery@email.com${2000}`).toString();
 
 export default {
   users: [
-    { _id: userId, password: 'password', username: 'username', email: 'test@email.com', role: 'admin' },
-    { _id: recoveryUserId, password: 'anotherpassword', username: 'anotherusername', email: 'recovery@email.com', role: 'editor' }
+    {
+      _id: userId,
+      password: 'password',
+      username: 'username',
+      email: 'test@email.com',
+      role: 'admin',
+    },
+    {
+      _id: recoveryUserId,
+      password: 'anotherpassword',
+      username: 'anotherusername',
+      email: 'recovery@email.com',
+      role: 'editor',
+      using2fa: false,
+    },
   ],
-  passwordrecoveries: [
-    { _id: db.id(), key: expectedKey, user: recoveryUserId }
-  ],
+  passwordrecoveries: [{ _id: db.id(), key: expectedKey, user: recoveryUserId }],
   settings: [
-    { site_name: 'Uwazi instance' } // eslint-disable-line camelcase
-  ]
+    { site_name: 'Uwazi instance' }, // eslint-disable-line camelcase
+  ],
 };
 
-export {
-  userId,
-  recoveryUserId,
-  expectedKey
-};
+export { userId, recoveryUserId, expectedKey };

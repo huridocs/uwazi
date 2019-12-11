@@ -1,0 +1,30 @@
+/** @format */
+
+.configure2fa-settings {
+  h3 {
+    margin-bottom: 20px;
+  }
+
+  ol {
+    margin-bottom: 30px;
+
+    li {
+      margin: 8px 0;
+    }
+  }
+
+  .secret-key {
+    margin: 8px 0;
+    margin-bottom: 16px;
+    font-weight: bold;
+
+    & > span {
+      border: 1px solid #aaa;
+      padding: 3px 10px;
+    }
+  }
+
+  .btn {
+    margin-right: 5px;
+  }
+}

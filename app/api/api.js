@@ -14,6 +14,7 @@ export default (app, server) => {
   //require('./auth/routes.js')(app);
 
   require('./socketio/middleware.js').default(server, app);
+  require('./auth2fa/routes').default(app);
   require('./relationships/routes.js').default(app);
   require('./activitylog/routes.js').default(app);
   require('./users/routes.js').default(app);
