@@ -1,8 +1,9 @@
 /** @format */
 import Activitylog from 'app/Activitylog/Activitylog';
 import App from 'app/App/App';
-import { trackPage } from 'app/App/GoogleAnalytics';
+import { trackPage, trackPage } from 'app/App/GoogleAnalytics';
 import NoMatch from 'app/App/NoMatch';
+import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library from 'app/Library/Library';
@@ -31,8 +32,8 @@ import {
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauris/EditThesauri';
-import ThesaurusClassifierCockpit from 'app/Thesauris/ThesaurusClassifierCockpit';
 import NewThesauri from 'app/Thesauris/NewThesauri';
+import ThesaurusClassifierCockpit from 'app/Thesauris/ThesaurusClassifierCockpit';
 import Uploads from 'app/Uploads/UploadsRoute';
 import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';
@@ -42,20 +43,6 @@ import ViewerRoute from 'app/Viewer/ViewerRoute';
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 
-import EditRelationType from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
-
-import EditTranslations from 'app/I18N/EditTranslations';
-
-import Library from 'app/Library/Library';
-import LibraryMap from 'app/Library/LibraryMap';
-
-import Configure2fa from 'app/Auth2fa/Configure2fa';
-
-import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
-
-import { trackPage } from 'app/App/GoogleAnalytics';
-import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
 
 function onEnter() {
