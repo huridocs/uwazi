@@ -1,6 +1,21 @@
+/** @format */
+
 import mongoose from 'mongoose';
 
 import { instanceModel } from 'api/odm';
+
+export interface User {
+  _id?: any;
+  username?: string;
+  password?: string;
+  email?: string;
+  role?: string;
+  failedLogins?: number;
+  accountLocked?: boolean;
+  accountUnlockCode?: string;
+  using2fa?: boolean;
+  secret?: string;
+}
 
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
@@ -9,7 +24,9 @@ const userSchema = new mongoose.Schema({
   role: { type: String, unique: false, required: true },
   failedLogins: { type: Number, required: false, select: false },
   accountLocked: { type: Boolean, select: false },
-  accountUnlockCode: { type: String, select: false }
+  accountUnlockCode: { type: String, select: false },
+  using2fa: { type: Boolean, default: false },
+  secret: { type: String, select: false },
 });
 
-export default instanceModel('users', userSchema);
+export default instanceModel<User>('users', userSchema);

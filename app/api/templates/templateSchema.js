@@ -110,7 +110,7 @@ export const templateSchema = {
   type: 'object',
   uniqueName: true,
   required: ['name', 'commonProperties'],
-  uniquePropertyFields: ['id', 'name', 'label', 'relationType'],
+  uniquePropertyFields: ['id', 'name', 'label'],
   definitions: { objectIdSchema, propertySchema },
   properties: {
     _id: objectIdSchema,

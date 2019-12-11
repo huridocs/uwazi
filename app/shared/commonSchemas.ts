@@ -63,7 +63,7 @@ export const metadataObjectSchema = {
   properties: {
     value: propertyValueSchema,
     label: { type: 'string' },
-    is_suggestion: { type: 'boolean' },
+    suggestion_confidence: { type: 'number' },
   },
 };
 

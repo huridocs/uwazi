@@ -42,6 +42,20 @@ import ViewerRoute from 'app/Viewer/ViewerRoute';
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 
+import EditRelationType from 'app/RelationTypes/EditRelationType';
+import NewRelationType from 'app/RelationTypes/NewRelationType';
+
+import EditTranslations from 'app/I18N/EditTranslations';
+
+import Library from 'app/Library/Library';
+import LibraryMap from 'app/Library/LibraryMap';
+
+import Configure2fa from 'app/Auth2fa/Configure2fa';
+
+import SemanticSearchResultsView from 'app/SemanticSearch/SemanticSearchResultsView';
+
+import { trackPage } from 'app/App/GoogleAnalytics';
+import blankState from 'app/Library/helpers/blankState';
 import { store } from './store';
 
 function onEnter() {
@@ -96,6 +110,7 @@ const routes = (
   <Route getIndexRoute={getIndexRoute}>
     <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
+      <Route path="2fa" component={Configure2fa} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
       <Route path="users">

@@ -206,6 +206,7 @@ export const entitySchema = {
     },
     user: objectIdSchema,
     metadata: metadataSchema,
+    suggestedMetadata: metadataSchema,
     reviewed: reviewSchema,
     reviewLog: {
       type: 'array',

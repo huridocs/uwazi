@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth2fa userUtils reset2fa should set "using2fa" to false, and delete secret for sent user 1`] = `
+Object {
+  "email": "another@email.com",
+  "role": "admin",
+  "username": "otheruser",
+  "using2fa": false,
+}
+`;
+
+exports[`auth2fa userUtils setSecret should save the secret string on a non-previously-2fa'd user and return it along with the otpauth url 1`] = `"otpauth://totp/Uwazi%20Collection:username?secret=aVerySecretSecret&issuer=Uwazi%20Collection"`;
+
+exports[`auth2fa userUtils setSecret should truncate extremely long urls to prevent unreadable QR codes 1`] = `"otpauth://totp/A%20very%20long%3F%20name%2C%20that%20should...:username?secret=aVerySecretSecret&issuer=A%20very%20long%3F%20name%2C%20that%20should..."`;

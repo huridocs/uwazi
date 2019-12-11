@@ -55,6 +55,7 @@ const mongoSchema = new mongoose.Schema(
     uploaded: Boolean,
     published: Boolean,
     metadata: mongoose.Schema.Types.Mixed,
+    suggestedMetadata: mongoose.Schema.Types.Mixed,
     pdfInfo: mongoose.Schema.Types.Mixed,
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     reviewed: {

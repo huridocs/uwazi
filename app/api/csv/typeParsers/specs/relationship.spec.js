@@ -24,8 +24,18 @@ describe('relationship', () => {
     await db.clearAllAndLoad(fixtures);
 
     spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    await model.save({ title: 'value1', template: templateToRelateId, sharedId: '123', language: 'en' });
-    await model.save({ title: 'value1', template: templateToRelateId, sharedId: '123', language: 'es' });
+    await model.save({
+      title: 'value1',
+      template: templateToRelateId,
+      sharedId: '123',
+      language: 'en',
+    });
+    await model.save({
+      title: 'value1',
+      template: templateToRelateId,
+      sharedId: '123',
+      language: 'es',
+    });
     value1 = await typeParsers.relationship(
       { relationship_prop: 'value1|value3|value3' },
       templateProp

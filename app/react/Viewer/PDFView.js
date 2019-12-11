@@ -2,15 +2,13 @@
 
 import { Helmet } from 'react-helmet';
 import { browserHistory } from 'react-router';
-import { actions as formActions } from 'react-redux-form';
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import { isClient, events } from 'app/utils';
 import { toUrlParams } from 'shared/JSONRequest';
-import { Component } from 'react';
 import Viewer from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { scrollToPage, activateReference } from './actions/uiActions';
@@ -48,11 +46,26 @@ class PDFView extends Component {
       query.raw === 'true'
     ) {
       const { sharedId } = props.params;
-      return entitiesAPI
+      entitiesAPI
         .getRawPage(new RequestParams({ sharedId, pageNumber: query.page }))
         .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));
         });
+    }
+  }
+
+  onDocumentReady(doc) {
+    events.emit('documentLoaded');
+    if (this.props.location.query.raw === 'true') {
+      return;
+    }
+    if (this.props.location.query.page) {
+      scrollToPage(this.props.location.query.page, 0);
+    }
+    const { ref } = this.props.location.query;
+    if (ref) {
+      const reference = doc.get('relationships').find(r => r.get('_id') === ref);
+      this.context.store.dispatch(activateReference(reference.toJS(), doc.get('pdfInfo').toJS()));
     }
   }
 
@@ -72,21 +85,6 @@ class PDFView extends Component {
     browserHistory.push(
       `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`
     );
-  }
-
-  onDocumentReady(doc) {
-    events.emit('documentLoaded');
-    if (this.props.location.query.raw === 'true') {
-      return;
-    }
-    if (this.props.location.query.page) {
-      scrollToPage(this.props.location.query.page, 0);
-    }
-    const { ref } = this.props.location.query;
-    if (ref) {
-      const reference = doc.get('relationships').find(r => r.get('_id') === ref);
-      this.context.store.dispatch(activateReference(reference.toJS(), doc.get('pdfInfo').toJS()));
-    }
   }
 
   render() {
@@ -110,7 +108,12 @@ class PDFView extends Component {
 }
 
 PDFView.contextTypes = {
-  store: PropTypes.object,
+  store: PropTypes.instanceOf(Object),
+};
+
+PDFView.propTypes = {
+  location: PropTypes.instanceOf(Object).isRequired,
+  params: PropTypes.instanceOf(Object),
 };
 
 PDFView.defaultProps = {
