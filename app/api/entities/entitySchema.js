@@ -1,20 +1,30 @@
+/** @format */
+
 import Ajv from 'ajv';
 import templatesModel from 'api/templates/templatesModel';
 import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
-import { objectIdSchema, linkSchema, dateRangeSchema, geolocationSchema, tocSchema } from 'api/utils/jsonSchemas';
+import {
+  objectIdSchema,
+  linkSchema,
+  dateRangeSchema,
+  geolocationSchema,
+  tocSchema,
+} from 'api/utils/jsonSchemas';
 import { templateTypes } from 'shared/templateTypes';
 
 const ajv = Ajv({ allErrors: true });
 
-const isEmpty = (value) => isNull(value) || isUndefined(value) || !value.length;
+const isEmpty = value => isNull(value) || isUndefined(value) || !value.length;
 
-const isNonArrayObject = (value) => isObject(value) && !Array.isArray(value);
+const isNonArrayObject = value => isObject(value) && !Array.isArray(value);
 
-const isValidDateRange = (value) => {
+const validateDateProperty = value => isNumber(value);
+
+const isValidDateRange = value => {
   if (!isNonArrayObject(value)) {
     return false;
   }
-  if (isNumber(value.from) && isNumber(value.to)) {
+  if (validateDateProperty(value.from) && validateDateProperty(value.to)) {
     return value.from <= value.to;
   }
   return true;
@@ -22,7 +32,8 @@ const isValidDateRange = (value) => {
 
 const isValidSelect = value => isString(value) && value;
 
-const isValidGeolocation = value => isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
+const isValidGeolocation = value =>
+  isString(value.label) && isNumber(value.lat) && isNumber(value.lon);
 
 const validateRequiredProperty = (property, value) => {
   if (property.required) {
@@ -31,76 +42,41 @@ const validateRequiredProperty = (property, value) => {
   return true;
 };
 
-const validateTextProperty = (property, value) => {
-  const textProperties = [
-    templateTypes.text,
-    templateTypes.markdown,
-    templateTypes.media,
-    templateTypes.image,
-    templateTypes.select
-  ];
-  if (textProperties.includes(property.type)) {
-    return isString(value);
-  }
-  return true;
-};
+const validateTextProperty = value => isString(value);
 
-const validateNumericProperty = (property, value) => {
-  if (property.type === templateTypes.numeric) {
-    return isNumber(value) || value === '';
-  }
-  return true;
-};
+const validateNumericProperty = value => isNumber(value) || value === '';
 
-const validateDateProperty = (property, value) => {
-  if (property.type === templateTypes.date) {
-    return isNumber(value) && value >= 0;
-  }
-  return true;
-};
+const validateMultiDateProperty = value =>
+  Array.isArray(value) && value.every(item => validateDateProperty(item) || isNull(item));
 
-const validateMultiDateProperty = (property, value) => {
-  if (property.type === templateTypes.multidate) {
-    return Array.isArray(value) && value.every(item => isNumber(item) || isNull(item));
-  }
-  return true;
-};
+const validateDateRangeProperty = value => isValidDateRange(value);
 
-const validateDateRangeProperty = (property, value) => {
-  if (property.type === templateTypes.daterange) {
-    return isValidDateRange(value);
-  }
-  return true;
-};
+const validateMultiDateRangeProperty = value => value.every(isValidDateRange);
 
-const validateMultiDateRangeProperty = (property, value) => {
-  if (property.type === templateTypes.multidaterange) {
-    return value.every(isValidDateRange);
-  }
-  return true;
-};
+const validateGeolocationProperty = value =>
+  Array.isArray(value) && value.every(isValidGeolocation);
 
-const validateGeolocationProperty = (property, value) => {
-  if (property.type === templateTypes.geolocation) {
-    return Array.isArray(value) && value.every(isValidGeolocation);
-  }
-  return true;
-};
+const validateMultiSelectProperty = value => Array.isArray(value) && value.every(isValidSelect);
 
-const validateMultiSelectProperty = (property, value) => {
-  if ([templateTypes.multiselect, templateTypes.relationship].includes(property.type)) {
-    return Array.isArray(value) && value.every(isValidSelect);
-  }
-  return true;
-};
+const validateLinkProperty = value =>
+  isString(value.label) && value.label && isString(value.url) && value.url;
 
-const validateLinkProperty = (property, value) => {
-  if (property.type === templateTypes.link) {
-    return isString(value.label) && value.label && isString(value.url) && value.url;
-  }
-  return true;
+const validators = {
+  [templateTypes.date]: validateDateProperty,
+  [templateTypes.multidate]: validateMultiDateProperty,
+  [templateTypes.daterange]: validateDateRangeProperty,
+  [templateTypes.multidaterange]: validateMultiDateRangeProperty,
+  [templateTypes.text]: validateTextProperty,
+  [templateTypes.markdown]: validateTextProperty,
+  [templateTypes.media]: validateTextProperty,
+  [templateTypes.image]: validateTextProperty,
+  [templateTypes.select]: validateTextProperty,
+  [templateTypes.multiselect]: validateMultiSelectProperty,
+  [templateTypes.relationship]: validateMultiSelectProperty,
+  [templateTypes.numeric]: validateNumericProperty,
+  [templateTypes.link]: validateLinkProperty,
+  [templateTypes.geolocation]: validateGeolocationProperty,
 };
-
 
 const validateMetadataField = (property, entity) => {
   const value = entity.metadata && entity.metadata[property.name];
@@ -110,18 +86,8 @@ const validateMetadataField = (property, entity) => {
   if (isUndefined(value) || isNull(value)) {
     return true;
   }
-  const propertyValidators = [
-    validateDateProperty,
-    validateMultiDateProperty,
-    validateDateRangeProperty,
-    validateMultiDateRangeProperty,
-    validateTextProperty,
-    validateNumericProperty,
-    validateMultiSelectProperty,
-    validateLinkProperty,
-    validateGeolocationProperty
-  ];
-  return propertyValidators.every(validate => validate(property, value));
+
+  return validators[property.type] ? validators[property.type](value) : true;
 };
 
 ajv.addKeyword('metadataMatchesTemplateProperties', {
@@ -137,8 +103,8 @@ ajv.addKeyword('metadataMatchesTemplateProperties', {
       return false;
     }
 
-    return template.properties.every((property) => validateMetadataField(property, entity));
-  }
+    return template.properties.every(property => validateMetadataField(property, entity));
+  },
 });
 
 const schema = {
@@ -161,14 +127,14 @@ const schema = {
         mimetype: { type: 'string' },
         size: { type: 'number' },
         timestamp: { type: 'number' },
-        language: { type: 'string' }
-      }
+        language: { type: 'string' },
+      },
     },
     fullText: {
       type: 'object',
       patternProperties: {
-        '^[0-9]+$': { type: 'string' }
-      }
+        '^[0-9]+$': { type: 'string' },
+      },
     },
     totalPages: { type: 'number' },
     icon: {
@@ -176,8 +142,8 @@ const schema = {
       properties: {
         _id: { type: 'string' },
         label: { type: 'string' },
-        type: { type: 'string' }
-      }
+        type: { type: 'string' },
+      },
     },
     attachments: {
       type: 'array',
@@ -188,9 +154,9 @@ const schema = {
           filename: { type: 'string' },
           mimetype: { type: 'string' },
           timestamp: { type: 'number' },
-          size: { type: 'number' }
-        }
-      }
+          size: { type: 'number' },
+        },
+      },
     },
     creationDate: { type: 'number' },
     processed: { type: 'boolean' },
@@ -202,14 +168,14 @@ const schema = {
         '^[0-9]+$': {
           type: 'object',
           properties: {
-            chars: { type: 'number' }
-          }
-        }
-      }
+            chars: { type: 'number' },
+          },
+        },
+      },
     },
     toc: {
       type: 'array',
-      items: tocSchema
+      items: tocSchema,
     },
     user: objectIdSchema,
     metadata: {
@@ -222,39 +188,34 @@ const schema = {
           {
             type: 'array',
             items: {
-              type: 'string'
-            }
+              type: 'string',
+            },
           },
           {
             type: 'array',
             items: {
-              type: 'number'
-            }
+              type: 'number',
+            },
           },
           {
             type: 'array',
             items: {
-              oneOf: [
-                { type: 'number' },
-                { type: 'null' }
-              ],
-            }
+              oneOf: [{ type: 'number' }, { type: 'null' }],
+            },
           },
           dateRangeSchema,
           {
             type: 'array',
-            items: dateRangeSchema
+            items: dateRangeSchema,
           },
           linkSchema,
-          geolocationSchema
-        ]
-      }
+          geolocationSchema,
+        ],
+      },
     },
-  }
+  },
 };
 
 const validateEntity = ajv.compile(schema);
 
-export {
-  validateEntity
-};
+export { validateEntity };
