@@ -15,7 +15,7 @@ export default (app: Application) => {
     validation.validateRequest(Joi.object().keys({ model: Joi.string() })),
     (req: Request, res: Response, next: NextFunction) => {
       if (typeof req.query.model === 'undefined') {
-        getAllModels()
+        getAllModels(req.query.model)
           .then(models => res.json(models))
           .catch(next);
         return;

@@ -9,8 +9,8 @@ import api from 'app/Thesauris/ThesaurisAPI';
 
 export default class ClassifierCockpit extends RouteHandler {
   static async requestState(requestParams: any) {
-    //const thesauris = await api.get(requestParams);
-    //return [editThesaurus(thesauris[0])];
+    const thesauris = await api.get(requestParams);
+    return [editThesaurus(thesauris[0])];
   }
 
   render() {

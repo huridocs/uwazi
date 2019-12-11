@@ -8,7 +8,6 @@ import UsersAPI from 'app/Users/UsersAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import Helmet from 'react-helmet';
-import { buildModelName } from 'shared/commonTopicClassification';
 
 import SettingsNav from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
@@ -16,38 +15,37 @@ import SettingsAPI from './SettingsAPI';
 export class Settings extends RouteHandler {
   static async requestState(requestParams) {
     const request = requestParams.onlyHeaders();
-    const [user, thesauri, models, relationTypes, translations, collection] = await Promise.all([
+    const [user, thesauri, relationTypes, translations, collection] = await Promise.all([
       UsersAPI.currentUser(request),
       ThesaurisAPI.getThesauri(request),
-      ThesaurisAPI.getModelStatus(request),
       RelationTypesAPI.get(request),
       I18NApi.get(request),
       SettingsAPI.get(request),
     ]);
 
-    console.dir(Object.getOwnPropertyNames(models));
-    const modelsByThesaurus = {};
+    /** Fetch models associated with known thesauri.  */
+    const allModels = await Promise.all(
+      thesauri.map(thesaurus =>
+        ThesaurisAPI.getModelStatus(new RequestParams({ model: thesaurus.name }))
+      )
+    );
+    const models = allModels.filter(model => !model.hasOwnProperty('error'));
+
     const modeledThesauri = thesauri.map(thesaurus => {
-      const thesaurusModelName = buildModelName(thesaurus.name);
-      if (models != null && models.hasOwnProperty(thesaurusModelName)) {
-        /*const modelInfo = await ThesaurisAPI.getModelStatus(
-          new RequestParams({ model: thesaurusModelName })
-        );
-        console.log(modelInfo);*/
-        modelsByThesaurus[thesaurus.name] = models[thesaurusModelName];
+      const relevantModel = models.find(model => model.name === thesaurus.name);
+      if (relevantModel !== undefined) {
         return {
           ...thesaurus,
-          model_available: models[thesaurusModelName].preferred != null,
+          model_available: relevantModel.preferred != null,
         };
       }
       return { ...thesaurus, model_available: false };
     });
-    console.dir('modelsByThesaurus', modelsByThesaurus);
 
     return [
       actions.set('auth/user', user),
       actions.set('dictionaries', modeledThesauri),
-      actions.set('thesauri/models', modelsByThesaurus),
+      actions.set('thesauri/models', models),
       actions.set('relationTypes', relationTypes),
       actions.set('translations', translations),
       actions.set('settings/collection', collection),
