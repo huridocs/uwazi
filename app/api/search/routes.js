@@ -32,6 +32,7 @@ export default (app) => {
       includeUnpublished: Joi.any(),
       treatAs: Joi.string(),
       unpublished: Joi.any(),
+      select: Joi.array(),
       geolocation: Joi.boolean(),
     }), 'query'),
 
@@ -40,11 +41,13 @@ export default (app) => {
       req.query.types = parseQueryProperty(req.query, 'types');
       req.query.fields = parseQueryProperty(req.query, 'fields');
       req.query.aggregations = parseQueryProperty(req.query, 'aggregations');
+      req.query.select = parseQueryProperty(req.query, 'select');
 
       const action = req.query.geolocation ? 'searchGeolocations' : 'search';
 
       return search[action](req.query, req.language, req.user)
-      .then(results => res.json(results))
+      .then(results => 
+        res.json(results))
       .catch(next);
     }
   );

@@ -5,18 +5,22 @@ import { actions } from 'app/BasicReducer';
 import Loader from 'app/components/Elements/Loader';
 import EntityViewer from 'app/Entities/components/EntityViewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
+import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
+import * as metadataActions from 'app/Metadata/actions/actions';
+import { wrapDispatch } from 'app/Multireducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
+import api from 'app/Search/SearchAPI';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import { advancedSort } from 'app/utils/advancedSort';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { wrapDispatch } from 'app/Multireducer';
-import * as metadataActions from 'app/Metadata/actions/actions';
-import { advancedSort } from 'app/utils/advancedSort';
-import TemplatesAPI from 'app/Templates/TemplatesAPI';
+import { bindActionCreators } from 'redux';
+import { processQuery } from './helpers/requestState';
+import { RequestParams } from 'app/utils/RequestParams';
 
 function loadEntity(entity, templates) {
   const form = 'entityView.entityForm';
@@ -39,22 +43,70 @@ function loadEntity(entity, templates) {
   ];
 }
 
+function nextEntity() {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const current = state.entityView.entity.sharedId;
+    const index = state.documents.rows.findIndex(e => e.sharedId === current) + 1;
+    const { sharedId } = state.documents.rows[index];
+    const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
+      entitiesAPI.get(new RequestParams({ sharedId })),
+      relationships.requestState(new RequestParams({ sharedId }), state),
+    ]);
+
+    [
+      actions.set('entityView/entity', entity),
+      relationships.setReduxState({
+        relationships: {
+          list: {
+            sharedId: entity.sharedId,
+            entity,
+            connectionsGroups,
+            searchResults,
+            sort,
+            filters,
+            view: 'graph',
+          },
+        },
+      }),
+      ...loadEntity(entity, state.templates),
+    ].forEach(action => {
+      dispatch(action);
+    });
+  };
+}
+
 class LibraryOneUpReview extends RouteHandler {
   static async requestState(requestParams, state) {
-    const [
-      templates,
-      [entity],
-      relationTypes,
-      [connectionsGroups, searchResults, sort, filters],
-    ] = await Promise.all([
+    const documentsRequest = {
+      ...requestParams,
+      data: {
+        ...processQuery(requestParams.data, state),
+        limit: 10000,
+        select: ['sharedId'],
+      },
+    };
+    const [templates, relationTypes, documents] = await Promise.all([
       TemplatesAPI.get(requestParams.onlyHeaders()),
-      entitiesAPI.get(requestParams.set({ sharedId: 'cd8a7h760zo' })),
       relationTypesAPI.get(requestParams.onlyHeaders()),
-      relationships.requestState(requestParams.set({ sharedId: 'cd8a7h760zo' }), state),
+      api.search(documentsRequest),
+    ]);
+
+    if (!documents.rows.length) {
+      // TODO(bdittes): Forward to /library.
+      return [];
+    }
+    const currentSharedId = documents.rows[0].sharedId;
+
+    const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
+      entitiesAPI.get(requestParams.set({ sharedId: currentSharedId })),
+      relationships.requestState(requestParams.set({ sharedId: currentSharedId }), state),
     ]);
 
     return [
+      unsetDocuments(),
       actions.set('relationTypes', relationTypes),
+      setDocuments(documents),
       actions.set('entityView/entity', entity),
       relationships.setReduxState({
         relationships: {
@@ -77,14 +129,7 @@ class LibraryOneUpReview extends RouteHandler {
     this.emptyState();
   }
 
-  componentWillMount() {
-    // this.props.loadInReduxForm(
-    //   'entityView.entityForm',
-    //   { ...this.props.rawEntity.toJS(), sharedId: undefined },
-    //   this.props.templates.toJS()
-    // );
-    // this.context.store.dispatch(uiActions.showTab('info'));
-  }
+  componentWillMount() {}
 
   componentDidMount() {}
 
@@ -132,7 +177,7 @@ const mapStateToProps = state => {
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     {
-      loadInReduxForm: metadataActions.loadInReduxForm,
+      nextEntity,
     },
     wrapDispatch(dispatch, props.storeKey)
   );

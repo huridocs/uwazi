@@ -403,6 +403,9 @@ const instanceSearch = elasticIndex => ({
       const filters = processFiltes(query.filters, properties);
       documentsQuery.filterMetadata(filters);
       documentsQuery.aggregations(aggregations, dictionaries);
+      if (query.select) {
+        documentsQuery.select(query.select);
+      }
 
       if (query.geolocation) {
         searchGeolocation(documentsQuery, templates);
