@@ -239,8 +239,8 @@ describe('libraryActions', () => {
         actions.searchDocuments({ search, filters }, storeKey, limit)(dispatch, getState);
 
         expect(browserHistory.push).toHaveBeenCalledWith(
-          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))'
-        ); //eslint-disable-line
+          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
+        );
       });
 
       it('should set the storeKey selectedSorting if user has selected a custom sorting', () => {
