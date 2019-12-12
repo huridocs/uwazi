@@ -1,6 +1,8 @@
-@import "../../App/scss/config/_colors.scss";
-@import "../../App/scss/config/_materials.scss";
-@import "../../App/scss/config/_typography.scss";
+/** @format */
+
+@import '../../App/scss/config/_colors.scss';
+@import '../../App/scss/config/_materials.scss';
+@import '../../App/scss/config/_typography.scss';
 
 .content-header-document {
   .content-header-title {
@@ -9,7 +11,7 @@
 
   .btn-default {
     position: absolute;
-    right: 10px
+    right: 10px;
   }
 
   .paginator {
@@ -23,14 +25,10 @@
   max-width: 900px;
   margin: 0 -15px;
   padding: 15px;
-  
-  @media(min-width: 1024px) {
+
+  @media (min-width: 1024px) {
     padding: 30px;
     margin: 0 auto;
-  }
-
-  ::selection {
-    background: saturate(#4888BE, 20%);
   }
 
   .fake-selection {
@@ -69,12 +67,12 @@
       }
     }
     &.is-relation {
-      background: #FFFFC5;
+      background: #ffffc5;
       color: orange;
       border-color: orange;
       span {
         opacity: 1;
-        background: #FFFFC5;
+        background: #ffffc5;
         color: orange;
         border-color: orange;
       }
@@ -138,8 +136,10 @@
   background: url('../../../../public/document-loader.gif') center no-repeat;
 }
 
-.textLayer {
+.page .textLayer {
   opacity: 1;
+  mix-blend-mode: darken;
 }
-.textLayer ::selection { background: rgba(0,0,255,0.2); }
-.textLayer ::-moz-selection { background: rgba(0,0,255,0.2); }
+.page .textLayer ::selection {
+  background: #acd8ff;
+}
