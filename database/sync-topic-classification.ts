@@ -47,7 +47,8 @@ async function syncEntity(
     status: any;
   } = { json: { samples: [] }, status: 0 };
   let lastErr;
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i += 1) {
+    lastErr = undefined;
     try {
       response = await JSONRequest.put(`${tcServer}/classification_sample?model=${model}`, request);
       if (response.status === 200) {
@@ -56,6 +57,7 @@ async function syncEntity(
     } catch (err) {
       lastErr = err;
     }
+    console.error(`Attempt ${i} failed: ${response.status} ${lastErr}`);
     await sleep(523);
   }
   if (lastErr) {

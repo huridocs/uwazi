@@ -1,16 +1,14 @@
 /** @format */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
 import { actions } from 'app/BasicReducer';
 import SearchButton from 'app/Entities/components/SearchButton';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
-
-import EntityViewer from '../Entities/components/EntityViewer';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import entitiesAPI from '../Entities/EntitiesAPI';
 import * as uiActions from '../Entities/actions/uiActions';
+import EntityViewer from '../Entities/components/EntityViewer';
 
 export default class Entity extends Component {
   static async requestState(requestParams, state) {
