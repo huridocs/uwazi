@@ -73,6 +73,8 @@
     "@fortawesome/react-fontawesome": "^0.1.0",
     "@loadable/component": "^5.10.3",
     "@mapbox/mapbox-gl-rtl-text": "^0.1.2",
+    "@types/helmet": "^0.0.45",
+    "@types/react-helmet": "^5.0.14",
     "@types/hoist-non-react-statics": "^3.3.0",
     "@types/loadable__component": "^5.10.0",
     "@types/mongodb": "3.0.8",

@@ -5,7 +5,6 @@ import { I18NApi } from 'app/I18N';
 import RelationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import UsersAPI from 'app/Users/UsersAPI';
-import { RequestParams } from 'app/utils/RequestParams';
 import React from 'react';
 import Helmet from 'react-helmet';
 
@@ -23,11 +22,9 @@ export class Settings extends RouteHandler {
       SettingsAPI.get(request),
     ]);
 
-    /** Fetch models associated with known thesauri.  */
+    // Fetch models associated with known thesauri.
     const allModels = await Promise.all(
-      thesauri.map(thesaurus =>
-        ThesaurisAPI.getModelStatus(new RequestParams({ model: thesaurus.name }))
-      )
+      thesauri.map(thesaurus => ThesaurisAPI.getModelStatus(request.set({ model: thesaurus.name })))
     );
     const models = allModels.filter(model => !model.hasOwnProperty('error'));
 

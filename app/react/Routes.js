@@ -34,7 +34,7 @@ import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauris/EditThesauri';
 import NewThesauri from 'app/Thesauris/NewThesauri';
-import ThesaurusClassifierCockpit from 'app/Thesauris/ThesaurusClassifierCockpit';
+import ThesaurusCockpit from 'app/Thesauris/ThesaurusCockpit';
 import Uploads from 'app/Uploads/UploadsRoute';
 import { EditUser, NewUser, Users } from 'app/Users';
 import Login from 'app/Users/Login';
@@ -124,7 +124,7 @@ const routes = (
         <IndexRoute component={ThesaurisList} />
         <Route path="new" component={NewThesauri} />
         <Route path="edit/:_id" component={EditThesauri} />
-        <Route path="cockpit/:_id" component={ThesaurusClassifierCockpit} />
+        <Route path="cockpit/:_id" component={ThesaurusCockpit} />
       </Route>
       <Route path="languages" component={Languages} />
       <Route path="translations">

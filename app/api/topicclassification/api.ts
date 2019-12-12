@@ -10,10 +10,10 @@ export async function getModels() {
   const msTimeout = 1000;
   if (!(await isReachable(tcUrl.href, { timeout: msTimeout }))) {
     // TODO: move this backend check to server start-up time, maybe
-    return JSON.stringify({
+    return {
       models: {},
       error: `Topic Classification server is unreachable (${msTimeout})`,
-    });
+    };
   }
   return fetch(tcUrl.href, {
     method: 'GET',
@@ -22,12 +22,12 @@ export async function getModels() {
     },
   })
     .then(async res => res.json())
-    .catch(err =>
-      JSON.stringify({
+    .catch(err => {
+      return {
         models: {},
         error: `Error from topic-classification server: ${err.toString()}`,
-      })
-    );
+      };
+    });
 }
 
 export async function checkModelReady(arg: { model: string }) {
@@ -36,10 +36,7 @@ export async function checkModelReady(arg: { model: string }) {
   const msTimeout = 1000;
   if (!(await isReachable(tcUrl.href, { timeout: msTimeout }))) {
     // TODO: move this backend check to server start-up time, maybe
-    return JSON.stringify({
-      models: {},
-      error: `Topic Classification server is unreachable (${msTimeout})`,
-    });
+    return { models: {}, error: `Topic Classification server is unreachable (${msTimeout})` };
   }
   return fetch(tcUrl.href, {
     method: 'GET',
@@ -48,12 +45,12 @@ export async function checkModelReady(arg: { model: string }) {
     },
   })
     .then(async res => res.json())
-    .catch(err =>
-      JSON.stringify({
-        models: {},
+    .catch(err => {
+      return {
+        models: '',
         error: `Error from topic-classification server: ${err.toString()}`,
-      })
-    );
+      };
+    });
 }
 
 export async function processDocument(arg: { seq: string; model: string }) {
