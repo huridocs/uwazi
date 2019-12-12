@@ -26,7 +26,7 @@ const propertyExists = (property, previousTemplate) =>
     )
   );
 
-const resetMetadata = (metadata, template, options, previousTemplate) => {
+export const resetMetadata = (metadata, template, options, previousTemplate) => {
   const resetedMetadata = {};
   template.properties.forEach(property => {
     const resetValue =
@@ -54,7 +54,7 @@ const resetMetadata = (metadata, template, options, previousTemplate) => {
   return resetedMetadata;
 };
 
-const UnwrapMetadataObject = (MetadataObject, Template) => {
+export const UnwrapMetadataObject = (MetadataObject, Template) => {
   return Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
     if (!MetadataObject[key].length) {
       return UnwrapedMO;

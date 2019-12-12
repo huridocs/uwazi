@@ -8,6 +8,7 @@ import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
+import LibraryOneUpReview from 'app/Library/LibraryOneUpReview';
 import EditPage from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
 import Pages from 'app/Pages/Pages';
@@ -42,7 +43,6 @@ import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
-
 import { store } from './store';
 
 function onEnter() {
@@ -138,6 +138,7 @@ const routes = (
     </Route>
     <Route path="library" component={Library} onEnter={enterOnLibrary} />
     <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
+    <Route path="library/review" component={LibraryOneUpReview} />
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />
