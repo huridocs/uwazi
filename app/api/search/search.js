@@ -317,6 +317,21 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
   results.totalRows = processedRows.length;
   return results;
 };
+
+const escapeElasticSearchQueryString = query => {
+  const regex = /[^\\]\"|^\"/g;
+  const indices = [];
+  let result;
+
+  while ((result = regex.exec(query))) indices.push(result.index);
+
+  if (indices.length % 2 === 1) {
+    const lastOccurence = indices[indices.length - 1];
+    return `${query.substr(0, lastOccurence ? lastOccurence + 1:0)}\\"${query.substr(lastOccurence + 1)}`;
+  }
+  return query;
+};
+
 const instanceSearch = elasticIndex => ({
   search(query, language, user) {
     let searchEntitiesbyTitle = Promise.resolve([]);
@@ -357,8 +372,13 @@ const instanceSearch = elasticIndex => ({
             .textFields(templates)
             .map(prop => `metadata.${prop.name}`)
             .concat(['title', 'fullText']);
+
+        const elasticSearchTerm =
+          query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
+        console.log(elasticSearchTerm);
+
         const documentsQuery = documentQueryBuilder()
-          .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+          .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
           .filterByTemplate(query.types)
           .filterById(query.ids)
           .language(language);
@@ -455,12 +475,14 @@ const instanceSearch = elasticIndex => ({
   async searchSnippets(searchTerm, sharedId, language) {
     const templates = await templatesModel.get();
 
+    const elasticSearchTerm = searchTerm && escapeElasticSearchQueryString(searchTerm);
+
     const searchFields = propertiesHelper
       .textFields(templates)
       .map(prop => `metadata.${prop.name}`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(searchTerm, searchFields, 9999)
+      .fullTextSearch(elasticSearchTerm, searchFields, 9999)
       .includeUnpublished()
       .filterById(sharedId)
       .language(language)
