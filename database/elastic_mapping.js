@@ -1,6 +1,5 @@
 /** @format */
 /* eslint-disable camelcase */
-
 import languages from '../app/shared/languages';
 
 const config = {
