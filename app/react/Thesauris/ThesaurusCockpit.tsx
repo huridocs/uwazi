@@ -1,11 +1,10 @@
 /** @format */
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
+import { t } from 'app/I18N';
 import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
-import { t } from 'app/I18N';
-import { request } from 'https';
 
 /** Model is the type used for holding information about a classifier model. */
 interface ClassifierModel {
@@ -31,9 +30,7 @@ class ThesaurusCockpit extends RouteHandler {
   render() {
     const { values: topics } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
     const { name } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
-    const modelInfo = this.props.models.find((model: Map<string, any>) => {
-      return model.name === name;
-    });
+    const modelInfo = this.props.models.find((model: ClassifierModel) => model.name === name);
 
     return (
       <div className="panel panel-default">
@@ -73,12 +70,6 @@ class ThesaurusCockpit extends RouteHandler {
 }
 
 function mapStateToProps(state: any) {
-  console.dir(Object.getOwnPropertyNames(state.thesauri));
-  console.dir(Object.getOwnPropertyNames(state.thesauri.models));
-  console.dir(Object.getOwnPropertyNames(state.thesauri.thesaurus));
-  //console.dir(Object.getOwnPropertyNames(state.thesauri.toJS()));
-  console.dir(Object.getOwnPropertyNames(state.thesauri.models.toJS()));
-  console.dir(Object.getOwnPropertyNames(state.thesauri.thesaurus.toJS()));
   return {
     models: state.thesauri.models.toJS(),
     thesauri: state.thesauri.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
