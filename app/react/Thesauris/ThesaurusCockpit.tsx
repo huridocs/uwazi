@@ -5,6 +5,7 @@ import ThesaurisAPI from 'app/Thesauris/ThesaurisAPI';
 import React from 'react';
 import { connect } from 'react-redux';
 import { t } from 'app/I18N';
+import { request } from 'https';
 
 /** Model is the type used for holding information about a classifier model. */
 interface ClassifierModel {
@@ -16,38 +17,22 @@ interface ClassifierModel {
 
 class ThesaurusCockpit extends RouteHandler {
   static async requestState(requestParams: any) {
-    const request = requestParams.onlyHeaders();
-    const [thesauri] = await Promise.all([ThesaurisAPI.getThesauri(request)]);
+    // Thesauri should always have a length of 1
+    const thesauri = await ThesaurisAPI.getThesauri(requestParams);
+    const thesaurus = thesauri[0];
 
     // Fetch models associated with known thesauri.
-    const allModels: Array<ClassifierModel> = await Promise.all(
-      thesauri.map((thesaurus: { name: string }) =>
-        ThesaurisAPI.getModelStatus(request.set({ model: thesaurus.name }))
-      )
-    );
-    const models: Array<ClassifierModel> = allModels.filter(
-      model => !model.hasOwnProperty('error')
-    );
+    const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
+    const model: ClassifierModel = await ThesaurisAPI.getModelStatus(modelParams);
 
-    const modeledThesauri = thesauri.map((thesaurus: { name: any }) => {
-      const relevantModel = models.find(model => model.name === thesaurus.name);
-      if (relevantModel !== undefined) {
-        return {
-          ...thesaurus,
-          model_available: relevantModel.preferred != null,
-        };
-      }
-      return { ...thesaurus, model_available: false };
-    });
-
-    return [actions.set('dictionaries', modeledThesauri), actions.set('thesauri/models', models)];
+    return [actions.set('thesauri/thesaurus', thesaurus), actions.set('thesauri/models', [model])];
   }
 
   render() {
     const { values: topics } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
     const { name } = this.props.thesauri; // {name: Themes; values: [{label: Education}, ...]}
     const modelInfo = this.props.models.find((model: Map<string, any>) => {
-      return model.get('name') === name;
+      return model.name === name;
     });
 
     return (
@@ -57,19 +42,19 @@ class ThesaurusCockpit extends RouteHandler {
           <div className="force-ltr">
             <ul>
               <li key="Training Samples" className="list-group-item">
-                Number of documents sampled: {modelInfo.get('samples')}
+                Number of documents sampled: {modelInfo.samples}
               </li>
               <li key="BERT Model" className="list-group-item">
-                BERT: {modelInfo.get('bert')}
+                BERT: {modelInfo.bert}
               </li>
               <li key="Classifier Instance" className="list-group-item">
-                Classifier Instance: {modelInfo.get('preferred')}
+                Classifier Instance: {modelInfo.preferred}
               </li>
               <li key="Completness Score" className="list-group-item">
-                Completeness Score: {modelInfo.get('completeness')}
+                Completeness Score: {modelInfo.completeness}
               </li>
               <li key="Extraneous Value Score" className="list-group-item">
-                Extraneous Value Score: {modelInfo.get('extraneous')}
+                Extraneous Value Score: {modelInfo.extraneous}
               </li>
             </ul>
           </div>
@@ -88,10 +73,15 @@ class ThesaurusCockpit extends RouteHandler {
 }
 
 function mapStateToProps(state: any) {
+  console.dir(Object.getOwnPropertyNames(state.thesauri));
+  console.dir(Object.getOwnPropertyNames(state.thesauri.models));
+  console.dir(Object.getOwnPropertyNames(state.thesauri.thesaurus));
+  //console.dir(Object.getOwnPropertyNames(state.thesauri.toJS()));
+  console.dir(Object.getOwnPropertyNames(state.thesauri.models.toJS()));
+  console.dir(Object.getOwnPropertyNames(state.thesauri.thesaurus.toJS()));
   return {
-    models: state.thesauri.models,
-    // TODO: FIX ME THIS IS EMPTY
-    thesauri: state.thesauri.data, // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
+    models: state.thesauri.models.toJS(),
+    thesauri: state.thesauri.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
   };
 }
 
