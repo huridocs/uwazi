@@ -417,11 +417,46 @@ describe('libraryActions', () => {
       describe('when the doc has not semantic search but the active sidepanel tab is semantic search', () => {
         it('should reset the active sidepanel tab', () => {
           const doc = { sharedId: 'doc' };
+
           const store = mockStore({ library: { sidepanel: { tab: 'semantic-search-results' } } });
           store.dispatch(actions.selectDocument(doc));
           expect(store.getActions()).toMatchSnapshot();
         });
       });
+    });
+  });
+
+  describe('saveEntity', () => {
+    it('should save the document and dispatch a notification on success', done => {
+      mockID();
+      spyOn(api, 'save').and.returnValue(Promise.resolve('response'));
+      spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
+      const doc = { name: 'doc' };
+
+      const expectedActions = [
+        { model: 'library.sidepanel.metadata', type: 'rrf/reset' },
+        { type: 'UNSELECT_ALL_DOCUMENTS' },
+        {
+          notification: {
+            id: 'unique_id',
+            message: 'Entity created',
+            type: 'success',
+          },
+          type: 'NOTIFY',
+        },
+        { doc: 'response', type: 'ELEMENT_CREATED' },
+        { doc: 'response', type: 'SELECT_SINGLE_DOCUMENT' },
+      ];
+      const store = mockStore({});
+
+      store
+        .dispatch(actions.saveEntity(doc, 'library.sidepanel.metadata'))
+        .then(() => {
+          expect(api.save).toHaveBeenCalledWith(new RequestParams(doc));
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
     });
   });
 });

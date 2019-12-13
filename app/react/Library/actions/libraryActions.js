@@ -21,19 +21,15 @@ export function initializeFiltersForm(values = {}) {
   return Object.assign(values, { type: types.INITIALIZE_FILTERS_FORM });
 }
 
-export function selectDocument(doc) {
+export function selectDocument(_doc) {
   return (dispatch, getState) => {
-    let document = doc;
-    if (doc.toJS) {
-      document = doc.toJS();
-    }
-    if (
-      getState().library.sidepanel.tab === 'semantic-search-results' &&
-      !document.semanticSearch
-    ) {
+    const doc = _doc.toJS ? _doc.toJS() : _doc;
+    const showingSemanticSearch = getState().library.sidepanel.tab === 'semantic-search-results';
+    if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-    dispatch({ type: types.SELECT_DOCUMENT, doc: document });
+
+    dispatch({ type: types.SELECT_DOCUMENT, doc });
   };
 }
 
