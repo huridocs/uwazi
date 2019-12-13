@@ -117,20 +117,18 @@ class FreeBarChart extends Component<FreeBarChartProps, FreeBarChartState> {
         <React.Fragment>
           {dataKeysArray.length > 1 && (
             <div className="toggle-group">
-              {dataKeysArray.map((dataKeyValue: object, index: number) => {
-                return (
-                  <button
-                    type="button"
-                    className={`btn ${
-                      activeDataIndex === index ? 'btn-primary' : 'btn-default'
-                    } toggle-group-button`}
-                    key={Object.keys(dataKeyValue)[0]}
-                    onClick={this.changeData(index)}
-                  >
-                    {Object.values(dataKeyValue)[0]}
-                  </button>
-                );
-              })}
+              {dataKeysArray.map((dataKeyValue: object, index: number) => (
+                <button
+                  type="button"
+                  className={`btn ${
+                    activeDataIndex === index ? 'btn-primary' : 'btn-default'
+                  } toggle-group-button`}
+                  key={Object.keys(dataKeyValue)[0]}
+                  onClick={this.changeData(index)}
+                >
+                  {Object.values(dataKeyValue)[0]}
+                </button>
+              ))}
             </div>
           )}
           {children}

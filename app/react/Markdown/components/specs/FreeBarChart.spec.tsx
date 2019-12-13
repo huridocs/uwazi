@@ -8,7 +8,6 @@ import FreeBarChart, {
   CustomTooltip,
   CustomTooltipProps,
 } from '../FreeBarChart';
-import comonProperties from 'shared/comonProperties';
 
 describe('FreeBarChart', () => {
   let component: any;
@@ -56,32 +55,32 @@ describe('FreeBarChart', () => {
       expect(component).toMatchSnapshot();
     });
   });
+});
 
-  describe('CustomTooltip', () => {
-    let props: Partial<CustomTooltipProps>;
-    let component: any;
+describe('CustomTooltip', () => {
+  let props: Partial<CustomTooltipProps>;
+  let component: any;
 
-    const render = () => {
-      component = shallow(<CustomTooltip {...props} />);
-    };
+  const render = () => {
+    component = shallow(<CustomTooltip {...props} />);
+  };
 
-    const expectMatch = () => {
-      render();
-      expect(component).toMatchSnapshot();
-    };
+  const expectMatch = () => {
+    render();
+    expect(component).toMatchSnapshot();
+  };
 
-    it('should not render on inactive', () => {
-      expectMatch();
-    });
+  it('should not render on inactive', () => {
+    expectMatch();
+  });
 
-    it('should render the tooltip on active', () => {
-      props = { active: true, payload: [{ value: 3 }], label: 'tooltipLabel' };
-      expectMatch();
-    });
+  it('should render the tooltip on active', () => {
+    props = { active: true, payload: [{ value: 3 }], label: 'tooltipLabel' };
+    expectMatch();
+  });
 
-    it('should render with payload color', () => {
-      props = { active: true, payload: [{ value: 5, color: '#f00' }], label: 'tooltipLabel' };
-      expectMatch();
-    });
+  it('should render with payload color', () => {
+    props = { active: true, payload: [{ value: 5, color: '#f00' }], label: 'tooltipLabel' };
+    expectMatch();
   });
 });
