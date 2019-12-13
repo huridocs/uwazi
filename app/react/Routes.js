@@ -138,7 +138,7 @@ const routes = (
     </Route>
     <Route path="library" component={Library} onEnter={enterOnLibrary} />
     <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
-    <Route path="library/review" component={LibraryOneUpReview} />
+    <Route path="library/review" component={LibraryOneUpReview} onEnter={needsAuth} />
     <Route path="uploads" component={Uploads} />
     <Route path="login" component={Login} />
     <Route path="setpassword/:key" component={ResetPassword} />

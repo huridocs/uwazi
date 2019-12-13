@@ -27,6 +27,23 @@ const selectTemplateOptions = createSelector(
   templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
+export function wrapEntityMetadata(_entity) {
+  const entity = entitiesUtil.filterBaseProperties(_entity);
+  const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
+    wrappedMo[key] = Array.isArray(entity.metadata[key])
+      ? entity.metadata[key].map(v => ({ value: v }))
+      : [{ value: entity.metadata[key] }];
+    return wrappedMo;
+  }, {});
+  const suggestedMetadata = Object.keys(entity.suggestedMetadata).reduce((wrappedMo, key) => {
+    wrappedMo[key] = Array.isArray(entity.suggestedMetadata[key])
+      ? entity.suggestedMetadata[key].map(v => ({ value: v }))
+      : [{ value: entity.suggestedMetadata[key] }];
+    return wrappedMo;
+  }, {});
+  return { ...entity, metadata, suggestedMetadata };
+}
+
 export class MetadataForm extends Component {
   constructor(props) {
     super(props);
@@ -34,21 +51,8 @@ export class MetadataForm extends Component {
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
   }
 
-  wrapEntityMetadata(entity) {
-    const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
-      wrappedMo[key] = Array.isArray(entity.metadata[key])
-        ? entity.metadata[key].map(v => ({ value: v }))
-        : [{ value: entity.metadata[key] }];
-      return wrappedMo;
-    }, {});
-    return { ...entity, metadata };
-  }
-
   onSubmit(entity) {
-    this.props.onSubmit(
-      this.wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
-      this.props.model
-    );
+    this.props.onSubmit(this.wrapEntityMetadata(entity), this.props.model);
   }
 
   onSubmitFailed() {

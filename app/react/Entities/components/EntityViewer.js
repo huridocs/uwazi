@@ -94,15 +94,18 @@ export class EntityViewer extends Component {
     return (
       <div className="row">
         <Helmet title={entity.title ? entity.title : 'Entity'} />
-
         <div className="content-header content-header-entity">
+          <ShowIf if={this.props.oneUpMode}>
+            <div className="content-header-title">
+              {this.props.indexInDocs} of {this.props.totalDocs}
+            </div>
+          </ShowIf>
           <div className="content-header-title">
             <PropertyIcon className="item-icon item-icon-center" data={entity.icon} size="sm" />
             <h1 className="item-name">{entity.title}</h1>
             <TemplateLabel template={entity.template} />
           </div>
         </div>
-
         <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
           <Tabs selectedTab={selectedTab}>
             <TabContent
@@ -139,30 +142,23 @@ export class EntityViewer extends Component {
             </TabContent>
           </Tabs>
         </main>
-
         <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
           <div className="sidepanel-footer">
-            <MetadataFormButtons
-              delete={this.deleteEntity.bind(this)}
-              data={this.props.rawEntity}
-              formStatePath="entityView.entityForm"
-              entityBeingEdited={entityBeingEdited}
-            />
-            <ShowIf if={this.props.nextEntity}>
-              <button className="delete-metadata btn btn-danger" onClick={this.props.nextEntity}>
-                <Icon icon="trash-alt" />
-                <span className="btn-label">{t('System', 'Next')}</span>
-              </button>
+            <ShowIf if={!this.props.oneUpMode}>
+              <MetadataFormButtons
+                delete={this.deleteEntity.bind(this)}
+                data={this.props.rawEntity}
+                formStatePath="entityView.entityForm"
+                entityBeingEdited={entityBeingEdited}
+              />
             </ShowIf>
           </div>
         </ShowIf>
-
         <ShowIf if={selectedTab === 'connections'}>
           <div className="sidepanel-footer">
             <RelationshipsFormButtons />
           </div>
         </ShowIf>
-
         <SidePanel className={`entity-connections entity-${this.props.tab}`} open={panelOpen}>
           <div className="sidepanel-header">
             <button
@@ -196,9 +192,58 @@ export class EntityViewer extends Component {
               </ul>
             </Tabs>
           </div>
-          <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
+          <ShowIf
+            if={!this.props.oneUpMode && (selectedTab === 'info' || selectedTab === 'connections')}
+          >
             <div className="sidepanel-footer">
               <ResetSearch />
+            </div>
+          </ShowIf>
+          <ShowIf if={this.props.oneUpMode && !this.props.isPristine}>
+            <div className="sidepanel-footer">
+              <ShowIf if={this.props.indexInDocs > 0}>
+                <button
+                  onClick={() => this.props.oneUpSwitcher(-1, true)}
+                  className="delete-metadata btn"
+                >
+                  <Icon icon="times" />
+                  <span className="btn-label">{t('System', 'Save & Previous')}</span>
+                </button>
+              </ShowIf>
+              <button
+                onClick={() => this.props.oneUpSwitcher(0, false)}
+                className="cancel-edit-metadata btn btn-danger"
+              >
+                <Icon icon="trash-alt" />
+                <span className="btn-label">{t('System', 'Discard')}</span>
+              </button>
+              <button
+                onClick={() => this.props.oneUpSwitcher(+1, true)}
+                className="delete-metadata btn btn-primary"
+              >
+                <Icon icon="times" />
+                <span className="btn-label">{t('System', 'Save & Next')}</span>
+              </button>
+            </div>
+          </ShowIf>
+          <ShowIf if={this.props.oneUpMode && this.props.isPristine}>
+            <div className="sidepanel-footer">
+              <ShowIf if={this.props.indexInDocs > 0}>
+                <button
+                  onClick={() => this.props.oneUpSwitcher(-1, false)}
+                  className="delete-metadata btn"
+                >
+                  <Icon icon="times" />
+                  <span className="btn-label">{t('System', 'Previous')}</span>
+                </button>
+              </ShowIf>
+              <button
+                onClick={() => this.props.oneUpSwitcher(+1, false)}
+                className="delete-metadata btn btn-primary"
+              >
+                <Icon icon="times" />
+                <span className="btn-label">{t('System', 'Next')}</span>
+              </button>
             </div>
           </ShowIf>
 
@@ -212,7 +257,6 @@ export class EntityViewer extends Component {
             </Tabs>
           </div>
         </SidePanel>
-
         <ContextMenu
           align="bottom"
           overrideShow
@@ -225,7 +269,6 @@ export class EntityViewer extends Component {
             openPanel={this.openPanel}
           />
         </ContextMenu>
-
         <CreateConnectionPanel
           className="entity-create-connection-panel"
           containerId={entity.sharedId}
@@ -240,6 +283,7 @@ export class EntityViewer extends Component {
 
 EntityViewer.defaultProps = {
   relationships: Immutable([]),
+  oneUpMode: false,
 };
 
 EntityViewer.propTypes = {
@@ -251,13 +295,18 @@ EntityViewer.propTypes = {
   connectionsGroups: PropTypes.object,
   relationTypes: PropTypes.array,
   deleteEntity: PropTypes.func,
-  nextEntity: PropTypes.func,
   connectionsChanged: PropTypes.func,
   deleteConnection: PropTypes.func,
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
   library: PropTypes.object,
   showTab: PropTypes.func,
+  isPristine: PropTypes.bool,
+  oneUpMode: PropTypes.bool,
+  // function(delta (-1, 0, +1) and shouldSave bool) => dispatch => {...}.
+  oneUpSwitcher: PropTypes.func,
+  indexInDocs: PropTypes.number,
+  totalDocs: PropTypes.number,
 };
 
 EntityViewer.contextTypes = {
@@ -283,6 +332,11 @@ const mapStateToProps = state => ({
   entityBeingEdited: !!state.entityView.entityForm._id,
   tab: state.entityView.uiState.get('tab'),
   library: state.library,
+  isPristine: state.entityView.entityFormState.$form.pristine,
+  indexInDocs: state.library.documents
+    .get('rows')
+    .findIndex(e => e.get('sharedId') === state.entityView.entity.get('sharedId')),
+  totalDocs: state.library.documents.get('rows').size,
 });
 
 function mapDispatchToProps(dispatch) {

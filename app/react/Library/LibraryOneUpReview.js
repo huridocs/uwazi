@@ -14,13 +14,13 @@ import api from 'app/Search/SearchAPI';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { advancedSort } from 'app/utils/advancedSort';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { processQuery } from './helpers/requestState';
 import { RequestParams } from 'app/utils/RequestParams';
+import { wrapEntityMetadata } from 'app/Metadata/components/MetadataForm';
 
 function loadEntity(entity, templates) {
   const form = 'entityView.entityForm';
@@ -29,48 +29,74 @@ function loadEntity(entity, templates) {
   const template = entity.template || defaultTemplate._id;
   const templateconfig = sortedTemplates.find(t => t._id === template);
 
-  const _metadata = metadataActions.resetMetadata(
-    entity.metadata || {},
-    templateconfig,
-    { resetExisting: false },
+  const metadata = metadataActions.UnwrapMetadataObject(
+    metadataActions.resetMetadata(
+      entity.metadata || {},
+      templateconfig,
+      { resetExisting: false },
+      templateconfig
+    ),
     templateconfig
   );
-  const metadata = metadataActions.UnwrapMetadataObject(_metadata, templateconfig);
+  const suggestedMetadata = metadataActions.UnwrapMetadataObject(
+    metadataActions.resetMetadata(
+      entity.suggestedMetadata || {},
+      templateconfig,
+      { resetExisting: false },
+      templateconfig
+    ),
+    templateconfig
+  );
   return [
     formActions.reset(form),
-    formActions.load(form, { ...entity, metadata, template }),
+    formActions.load(form, { ...entity, metadata, suggestedMetadata, template }),
     formActions.setPristine(form),
   ];
 }
 
-function nextEntity() {
+async function getAndLoadEntity(sharedId, templates, state) {
+  const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
+    entitiesAPI.get(new RequestParams({ sharedId })),
+    relationships.requestState(new RequestParams({ sharedId }), state),
+  ]);
+
+  return [
+    actions.set('entityView/entity', entity),
+    relationships.setReduxState({
+      relationships: {
+        list: {
+          sharedId: entity.sharedId,
+          entity,
+          connectionsGroups,
+          searchResults,
+          sort,
+          filters,
+          view: 'graph',
+        },
+      },
+    }),
+    ...loadEntity(entity, templates),
+  ];
+}
+
+function oneUpSwitcher(delta, save) {
   return async (dispatch, getState) => {
     const state = getState();
-    const current = state.entityView.entity.sharedId;
-    const index = state.documents.rows.findIndex(e => e.sharedId === current) + 1;
-    const { sharedId } = state.documents.rows[index];
-    const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
-      entitiesAPI.get(new RequestParams({ sharedId })),
-      relationships.requestState(new RequestParams({ sharedId }), state),
-    ]);
+    if (save) {
+      const entity = wrapEntityMetadata(state.entityView.entityForm);
+      await entitiesAPI.save(new RequestParams(entity));
+    }
 
-    [
-      actions.set('entityView/entity', entity),
-      relationships.setReduxState({
-        relationships: {
-          list: {
-            sharedId: entity.sharedId,
-            entity,
-            connectionsGroups,
-            searchResults,
-            sort,
-            filters,
-            view: 'graph',
-          },
-        },
-      }),
-      ...loadEntity(entity, state.templates),
-    ].forEach(action => {
+    const templates = state.templates.toJS();
+    const current = state.entityView.entity.get('sharedId');
+    const index =
+      state.library.documents.get('rows').findIndex(e => e.get('sharedId') === current) + delta;
+    const sharedId = state.library.documents
+      .get('rows')
+      .get(index)
+      .get('sharedId');
+
+    (await getAndLoadEntity(sharedId, templates, state)).forEach(action => {
       dispatch(action);
     });
   };
@@ -96,32 +122,13 @@ class LibraryOneUpReview extends RouteHandler {
       // TODO(bdittes): Forward to /library.
       return [];
     }
-    const currentSharedId = documents.rows[0].sharedId;
-
-    const [[entity], [connectionsGroups, searchResults, sort, filters]] = await Promise.all([
-      entitiesAPI.get(requestParams.set({ sharedId: currentSharedId })),
-      relationships.requestState(requestParams.set({ sharedId: currentSharedId }), state),
-    ]);
+    const firstSharedId = documents.rows[0].sharedId;
 
     return [
-      unsetDocuments(),
+      dispatch => wrapDispatch(dispatch, 'library')(unsetDocuments()),
       actions.set('relationTypes', relationTypes),
-      setDocuments(documents),
-      actions.set('entityView/entity', entity),
-      relationships.setReduxState({
-        relationships: {
-          list: {
-            sharedId: entity.sharedId,
-            entity,
-            connectionsGroups,
-            searchResults,
-            sort,
-            filters,
-            view: 'graph',
-          },
-        },
-      }),
-      ...loadEntity(entity, templates),
+      dispatch => wrapDispatch(dispatch, 'library')(setDocuments(documents)),
+      ...(await getAndLoadEntity(firstSharedId, templates, state)),
     ];
   }
 
@@ -151,17 +158,9 @@ class LibraryOneUpReview extends RouteHandler {
     if (!entity.get('_id')) {
       return <Loader />;
     }
-    return <EntityViewer {...this.props} />;
+    return <EntityViewer {...this.props} oneUpMode />;
   }
 }
-
-LibraryOneUpReview.defaultProps = {
-  params: {},
-};
-
-LibraryOneUpReview.contextTypes = {
-  store: PropTypes.object,
-};
 
 const mapStateToProps = state => {
   const entity = state.documentViewer.doc.get('_id')
@@ -177,7 +176,7 @@ const mapStateToProps = state => {
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     {
-      nextEntity,
+      oneUpSwitcher,
     },
     wrapDispatch(dispatch, props.storeKey)
   );

@@ -89,15 +89,26 @@ export function loadInReduxForm(form, _entity, templates) {
       const template = entity.template || defaultTemplate._id;
       const templateconfig = sortedTemplates.find(t => t._id === template) || emptyTemplate;
 
-      const _metadata = resetMetadata(
-        entity.metadata || {},
-        templateconfig,
-        { resetExisting: false },
+      const metadata = UnwrapMetadataObject(
+        resetMetadata(
+          entity.metadata || {},
+          templateconfig,
+          { resetExisting: false },
+          templateconfig
+        ),
         templateconfig
       );
-      const metadata = UnwrapMetadataObject(_metadata, templateconfig);
+      const suggestedMetadata = UnwrapMetadataObject(
+        resetMetadata(
+          entity.suggestedMetadata || {},
+          templateconfig,
+          { resetExisting: false },
+          templateconfig
+        ),
+        templateconfig
+      );
       dispatch(formActions.reset(form));
-      dispatch(formActions.load(form, { ...entity, metadata, template }));
+      dispatch(formActions.load(form, { ...entity, metadata, suggestedMetadata, template }));
       dispatch(formActions.setPristine(form));
     });
   };

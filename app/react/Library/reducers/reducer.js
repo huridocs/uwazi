@@ -30,6 +30,7 @@ export default storeKey => combineReducers({
     searchForm: formReducer(`${storeKey}.search`, defaultSearch),
     selectedSorting: createReducer(`${storeKey}.selectedSorting`, {}),
     markers: createReducer(`${storeKey}.markers`, { rows: [] }),
+    oneUpState: createReducer(`${storeKey}.oneUpState`, {}),
     //
     sidepanel: combineReducers({
       metadata: modelReducer(`${storeKey}.sidepanel.metadata`, {}),

@@ -17,9 +17,11 @@ import entities from '../entities';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities } from './entitiesIndex';
 
-function processFiltes(filters, properties) {
+function processFiltes(filters, properties, allUniqueProps) {
   return Object.keys(filters || {}).map(propertyName => {
-    const property = properties.find(p => p.name === propertyName);
+    const property =
+      properties.find(p => p.name === propertyName) ||
+      allUniqueProps.find(p => p.name === propertyName);
     let { type } = property;
     const value = filters[property.name];
     if (['date', 'multidate', 'numeric'].includes(property.type)) {
@@ -400,7 +402,7 @@ const instanceSearch = elasticIndex => ({
       }
 
       const aggregations = agregationProperties(properties);
-      const filters = processFiltes(query.filters, properties);
+      const filters = processFiltes(query.filters, properties, allUniqueProps);
       documentsQuery.filterMetadata(filters);
       documentsQuery.aggregations(aggregations, dictionaries);
       if (query.select) {
