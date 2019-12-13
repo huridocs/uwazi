@@ -274,6 +274,39 @@ describe('entities', () => {
       });
     });
 
+    describe('when icon changes', () => {
+      it('should update icon on entities with the entity as relationship', async () => {
+        const doc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          icon: {
+            _id: 'changedIcon',
+          },
+        };
+
+        await entities.save(doc, { language: 'en' });
+        let relatedEntity = await entities.getById('shared', 'en');
+        expect(relatedEntity.metadata.enemies[0].icon._id).toBe('changedIcon');
+
+        relatedEntity = await entities.getById('other', 'en');
+        expect(relatedEntity.metadata.enemies[1].icon._id).toBe('changedIcon');
+        expect(relatedEntity.metadata.enemies[0].icon).toBe(null);
+        expect(relatedEntity.metadata.enemies[2].icon).toBe(null);
+
+        const updatedDoc = {
+          _id: shared2,
+          sharedId: 'shared2',
+          icon: {
+            _id: 'changedIconAgain',
+          },
+        };
+
+        await entities.save(updatedDoc, { language: 'en' });
+        relatedEntity = await entities.getById('shared', 'en');
+        expect(relatedEntity.metadata.enemies[0].icon._id).toBe('changedIconAgain');
+      });
+    });
+
     describe('when title changes', () => {
       it('should update title on entities with the entity as relationship', async () => {
         const doc = {
