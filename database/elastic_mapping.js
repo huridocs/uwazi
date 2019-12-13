@@ -17,12 +17,12 @@ const config = {
       analyzer: {
         other: {
           type: 'custom',
-          tokenizer: 'whitespace',
+          tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding'],
           char_filter: ['remove_annotation'],
         },
         tokenizer: {
-          tokenizer: 'whitespace',
+          tokenizer: 'standard',
           filter: ['lowercase', 'asciifolding'],
         },
         string_sorter: {
@@ -217,14 +217,14 @@ languages.getAll().forEach(language => {
 
   config.settings.analysis.analyzer[`stop_${language}`] = {
     type: 'custom',
-    tokenizer: 'whitespace',
+    tokenizer: 'standard',
     filter: ['lowercase', 'asciifolding', `${language}_stop`].concat(filters),
     char_filter: ['remove_annotation'],
   };
 
   config.settings.analysis.analyzer[`fulltext_${language}`] = {
     type: 'custom',
-    tokenizer: 'whitespace',
+    tokenizer: 'standard',
     filter: ['lowercase', 'asciifolding'].concat(filters),
     char_filter: ['remove_annotation'],
   };
