@@ -190,7 +190,7 @@ describe('search', () => {
             batman,
             fullTextNormal,
             fullTextExactMatch,
-            nonClosedQuote
+            nonClosedQuote,
           ]) => {
             expect(
               english.rows.find(r =>

@@ -326,8 +326,10 @@ const escapeElasticSearchQueryString = query => {
   while ((result = regex.exec(query))) indices.push(result.index);
 
   if (indices.length % 2 === 1) {
-    const lastOccurence = indices[indices.length - 1];
-    return `${query.substr(0, lastOccurence ? lastOccurence + 1:0)}\\"${query.substr(lastOccurence + 1)}`;
+    const lastOccurrence = indices[indices.length - 1];
+    return `${query.substr(0, lastOccurrence ? lastOccurrence + 1 : 0)}\\"${query.substr(
+      lastOccurrence + 1
+    )}`;
   }
   return query;
 };
@@ -375,7 +377,6 @@ const instanceSearch = elasticIndex => ({
 
         const elasticSearchTerm =
           query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
-        console.log(elasticSearchTerm);
 
         const documentsQuery = documentQueryBuilder()
           .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
