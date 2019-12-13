@@ -325,13 +325,7 @@ const escapeElasticSearchQueryString = query => {
 
   while ((result = regex.exec(query))) indices.push(result.index);
 
-  if (indices.length % 2 === 1) {
-    const lastOccurrence = indices[indices.length - 1];
-    return `${query.substr(0, lastOccurrence ? lastOccurrence + 1 : 0)}\\"${query.substr(
-      lastOccurrence + 1
-    )}`;
-  }
-  return query;
+  return indices.length % 2 === 1 ? query.replace(/\"/g, '\\"') : query;
 };
 
 const instanceSearch = elasticIndex => ({
