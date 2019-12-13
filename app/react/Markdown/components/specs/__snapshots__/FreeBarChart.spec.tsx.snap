@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FreeBarChart CustomTooltip should not render on inactive 1`] = `""`;
+exports[`CustomTooltip should not render on inactive 1`] = `""`;
 
-exports[`FreeBarChart CustomTooltip should render the tooltip on active 1`] = `
+exports[`CustomTooltip should render the tooltip on active 1`] = `
 <div
   className="custom-tooltip"
   style={
@@ -40,7 +40,7 @@ exports[`FreeBarChart CustomTooltip should render the tooltip on active 1`] = `
 </div>
 `;
 
-exports[`FreeBarChart CustomTooltip should render with payload color 1`] = `
+exports[`CustomTooltip should render with payload color 1`] = `
 <div
   className="custom-tooltip"
   style={
