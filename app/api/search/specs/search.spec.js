@@ -123,7 +123,7 @@ describe('search', () => {
         it('should not fail if they are paired', done => {
           search
             .searchSnippets('"text"', ids.batmanFinishes, 'es')
-            .then(snippets => {
+            .then(() => {
               done();
             })
             .catch(catchErrors(done));
@@ -131,7 +131,7 @@ describe('search', () => {
         it('should not fail if they are not paired', done => {
           search
             .searchSnippets('"text', ids.batmanFinishes, 'es')
-            .then(snippets => {
+            .then(() => {
               done();
             })
             .catch(catchErrors(done));
@@ -160,7 +160,7 @@ describe('search', () => {
         .then(([resultsNotFound, resultsFound, quote]) => {
           expect(resultsNotFound.rows.length).toBe(0);
           expect(resultsFound.rows.length).toBe(2);
-          expect(quote.rows.length).toBe(0)
+          expect(quote.rows.length).toBe(0);
           done();
         })
         .catch(catchErrors(done));
