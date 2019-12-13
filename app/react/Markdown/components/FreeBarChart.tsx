@@ -13,8 +13,6 @@ import {
   Cell,
 } from 'recharts';
 
-import Loader from 'app/components/Elements/Loader';
-
 type layoutType = 'horizontal' | 'vertical' | undefined;
 
 type XProps = {
@@ -34,13 +32,13 @@ const X = ({ layout, dataKey }: XProps) =>
 const Y = ({ layout }: YProps) =>
   layout === 'vertical' ? <YAxis width={200} type="category" dataKey="label" /> : <YAxis />;
 
-type CustomTooltipProps = {
+export type CustomTooltipProps = {
   active: boolean;
   payload?: any[];
   label?: string;
 };
 
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+export const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload[0]) {
     const finalItemStyle = {
       display: 'block',
@@ -68,7 +66,7 @@ CustomTooltip.defaultProps = {
   active: false,
 };
 
-type FreeBarChartProps = {
+export type FreeBarChartProps = {
   classname: string;
   layout: layoutType;
   data: string | null;
@@ -82,7 +80,7 @@ type FreeBarChartState = {
 };
 
 class FreeBarChart extends Component<FreeBarChartProps, FreeBarChartState> {
-  static defaultProps: FreeBarChartProps;
+  static defaultProps: Partial<FreeBarChartProps>;
 
   constructor(props: FreeBarChartProps) {
     super(props);
@@ -108,7 +106,7 @@ class FreeBarChart extends Component<FreeBarChartProps, FreeBarChartState> {
   render() {
     const { activeDataIndex } = this.state;
     const { layout, data, classname, colors, children } = this.props;
-    let output = <Loader />;
+    let output = null;
 
     if (data) {
       const sliceColors = colors.split(',');
