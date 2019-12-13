@@ -1,7 +1,6 @@
 /** @format */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import {
   ResponsiveContainer,
@@ -16,30 +15,33 @@ import {
 
 import Loader from 'app/components/Elements/Loader';
 
-const X = ({ layout, dataKey }) =>
+type layoutType = 'horizontal' | 'vertical' | undefined;
+
+type XProps = {
+  layout: layoutType;
+  dataKey: string;
+};
+
+type YProps = { layout: layoutType };
+
+const X = ({ layout, dataKey }: XProps) =>
   layout === 'vertical' ? (
     <XAxis type="number" dataKey={dataKey} />
   ) : (
     <XAxis dataKey="label" label="" />
   );
 
-const Y = ({ layout }) =>
+const Y = ({ layout }: YProps) =>
   layout === 'vertical' ? <YAxis width={200} type="category" dataKey="label" /> : <YAxis />;
 
-const propTypesY = {
-  layout: PropTypes.string.isRequired,
+type CustomTooltipProps = {
+  active: boolean;
+  payload?: any[];
+  label?: string;
 };
 
-const propTypesX = {
-  ...propTypesY,
-  dataKey: PropTypes.string.isRequired,
-};
-
-X.propTypes = propTypesX;
-Y.propTypes = propTypesY;
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active) {
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload[0]) {
     const finalItemStyle = {
       display: 'block',
       color: '#999',
@@ -64,18 +66,25 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 CustomTooltip.defaultProps = {
   active: false,
-  label: undefined,
-  payload: undefined,
 };
 
-CustomTooltip.propTypes = {
-  active: PropTypes.bool,
-  payload: PropTypes.instanceOf(Object),
-  label: PropTypes.string,
+type FreeBarChartProps = {
+  classname: string;
+  layout: layoutType;
+  data: string | null;
+  dataKeys: string;
+  colors: string;
+  children: any;
 };
 
-class SimpleBarChart extends Component {
-  constructor(props) {
+type FreeBarChartState = {
+  activeDataIndex: number;
+};
+
+class FreeBarChart extends Component<FreeBarChartProps, FreeBarChartState> {
+  static defaultProps: FreeBarChartProps;
+
+  constructor(props: FreeBarChartProps) {
     super(props);
     this.state = { activeDataIndex: 0 };
     this.changeData = this.changeData.bind(this);
@@ -90,7 +99,7 @@ class SimpleBarChart extends Component {
     return [{ [dataKeys]: dataKeys }];
   }
 
-  changeData(activeDataIndex) {
+  changeData(activeDataIndex: number) {
     return () => {
       this.setState({ activeDataIndex });
     };
@@ -98,19 +107,19 @@ class SimpleBarChart extends Component {
 
   render() {
     const { activeDataIndex } = this.state;
-    const { layout, data, dataKeys, classname, colors, children } = this.props;
+    const { layout, data, classname, colors, children } = this.props;
     let output = <Loader />;
 
     if (data) {
       const sliceColors = colors.split(',');
       const parsedData = JSON.parse(data);
-      const dataKeysArray = this.getDataKeys(dataKeys);
+      const dataKeysArray = this.getDataKeys();
       const dataKey = Object.keys(dataKeysArray[activeDataIndex])[0];
       output = (
         <React.Fragment>
           {dataKeysArray.length > 1 && (
             <div className="toggle-group">
-              {dataKeysArray.map((dataKeyValue, index) => {
+              {dataKeysArray.map((dataKeyValue: object, index: number) => {
                 return (
                   <button
                     type="button"
@@ -130,11 +139,11 @@ class SimpleBarChart extends Component {
           <ResponsiveContainer height={320}>
             <BarChart height={300} data={parsedData} layout={layout}>
               {X({ layout, dataKey })}
-              {Y({ layout, dataKey })}
+              {Y({ layout })}
               <CartesianGrid strokeDasharray="2 4" />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey={dataKey} fill="rgb(30, 28, 138)" stackId="unique">
-                {parsedData.map((entry, index) => (
+                {parsedData.map((_entry: any, index: number) => (
                   <Cell
                     cursor="pointer"
                     fill={sliceColors[index % sliceColors.length]}
@@ -152,22 +161,13 @@ class SimpleBarChart extends Component {
   }
 }
 
-SimpleBarChart.defaultProps = {
-  layout: 'horizontal',
+FreeBarChart.defaultProps = {
   classname: '',
+  layout: 'horizontal',
   data: null,
   dataKeys: 'results',
   colors: '#1e1c8a',
   children: null,
 };
 
-SimpleBarChart.propTypes = {
-  classname: PropTypes.string,
-  layout: PropTypes.string,
-  data: PropTypes.string,
-  dataKeys: PropTypes.string,
-  colors: PropTypes.string,
-  children: PropTypes.node,
-};
-
-export default SimpleBarChart;
+export default FreeBarChart;

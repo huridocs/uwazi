@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { Icon } from 'UI';
 
 import BarChart from './BarChart';
-import SimpleBarChart from './SimpleBarChart';
+import FreeBarChart from './FreeBarChart';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
 import EntityLink from './EntityLink';
@@ -40,7 +40,7 @@ export default {
   SearchBox,
   Counter,
   BarChart,
-  SimpleBarChart,
+  FreeBarChart,
   PieChart,
   ListChart,
   Repeat,
