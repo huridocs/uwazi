@@ -24,7 +24,11 @@ class ThesaurusCockpit extends RouteHandler {
     const modelParams = requestParams.onlyHeaders().set({ model: thesaurus.name });
     const model: ClassifierModel = await ThesaurisAPI.getModelStatus(modelParams);
 
-    return [actions.set('thesauri/thesaurus', thesaurus), actions.set('thesauri/models', [model])];
+    return [
+      actions.set('dictionaries', thesauri),
+      actions.set('thesauri/thesaurus', thesaurus),
+      actions.set('thesauri/models', [model]),
+    ];
   }
 
   render() {
@@ -38,11 +42,8 @@ class ThesaurusCockpit extends RouteHandler {
         {modelInfo === undefined ? null : (
           <div className="item item-info">
             <ul>
-              <p>Number of documents sampled: {modelInfo.samples}</p>
-              <p>BERT: {modelInfo.bert}</p>
               <p>Classifier Instance: {modelInfo.preferred}</p>
-              <p>Completeness Score: {modelInfo.completeness}</p>
-              <p>Extraneous Value Score: {modelInfo.extraneous}</p>
+              <p>BERT: {modelInfo.bert}</p>
             </ul>
           </div>
         )}
@@ -50,6 +51,13 @@ class ThesaurusCockpit extends RouteHandler {
           {topics.map((topic: { label: string }) => (
             <li key={topic.label} className="list-group-item">
               {topic.label}
+              <div className="item item-info">
+                <ul>
+                  <p>Completeness: {modelInfo.topics[topic.label].completeness}</p>
+                  <p>Extraneous: {modelInfo.topics[topic.label].extraneous}</p>
+                  <p>Number of Samples: {modelInfo.topics[topic.label].samples}</p>
+                </ul>
+              </div>
             </li>
           ))}
         </ul>
@@ -60,8 +68,14 @@ class ThesaurusCockpit extends RouteHandler {
 }
 
 function mapStateToProps(state: any) {
+  console.dir(`thesauri: ${state.thesauri.thesaurus.toJS()}`);
+  console.dir(`dictionaries: ${state.dictionaries.toJS()}`);
   return {
     models: state.thesauri.models.toJS(),
+    //thesauri: state.dictionaries
+    //.find((thesaurus: any) => thesaurus.name === state.thesauri.models.toJS().name)
+    //.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
+    // TODO: FIX ME I"M EMPTY
     thesauri: state.thesauri.thesaurus.toJS(), // {name: Themes; values: [{label: Education, id: lkajsdf}, ...]}
   };
 }
