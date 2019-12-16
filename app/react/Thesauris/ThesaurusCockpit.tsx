@@ -36,23 +36,13 @@ class ThesaurusCockpit extends RouteHandler {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', `${name}`)}</div>
         {modelInfo === undefined ? null : (
-          <div className="force-ltr">
+          <div className="alert alert-info">
             <ul>
-              <li key="Training Samples" className="list-group-item">
-                Number of documents sampled: {modelInfo.samples}
-              </li>
-              <li key="BERT Model" className="list-group-item">
-                BERT: {modelInfo.bert}
-              </li>
-              <li key="Classifier Instance" className="list-group-item">
-                Classifier Instance: {modelInfo.preferred}
-              </li>
-              <li key="Completness Score" className="list-group-item">
-                Completeness Score: {modelInfo.completeness}
-              </li>
-              <li key="Extraneous Value Score" className="list-group-item">
-                Extraneous Value Score: {modelInfo.extraneous}
-              </li>
+              <p>Number of documents sampled: {modelInfo.samples}</p>
+              <p>BERT: {modelInfo.bert}</p>
+              <p>Classifier Instance: {modelInfo.preferred}</p>
+              <p>Completeness Score: {modelInfo.completeness}</p>
+              <p>Extraneous Value Score: {modelInfo.extraneous}</p>
             </ul>
           </div>
         )}
