@@ -36,7 +36,7 @@ class ThesaurusCockpit extends RouteHandler {
       <div className="panel panel-default">
         <div className="panel-heading">{t('System', `${name}`)}</div>
         {modelInfo === undefined ? null : (
-          <div className="alert alert-info">
+          <div className="item item-info">
             <ul>
               <p>Number of documents sampled: {modelInfo.samples}</p>
               <p>BERT: {modelInfo.bert}</p>
