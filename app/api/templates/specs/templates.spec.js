@@ -411,4 +411,8 @@ describe('templates', () => {
       }
     });
   });
+
+  describe('canDeleteProperty()', () => {
+    it('shoul return false if the property is been inherited by others', () => {});
+  });
 });
