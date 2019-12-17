@@ -227,10 +227,8 @@ describe('entity schema', () => {
       });
 
       describe('date property', () => {
-        it('should fail if value is not a positive number', async () => {
+        it('should fail if value is not a number', async () => {
           entity.metadata.date = [{ value: 'test' }];
-          await testInvalid();
-          entity.metadata.date = [{ value: -100 }];
           await testInvalid();
         });
         it('should allow value to be null if property is not required', async () => {
@@ -241,7 +239,7 @@ describe('entity schema', () => {
 
       describe('multidate property', () => {
         it('should fail if value is not an array of numbers', async () => {
-          entity.metadata.multidate = [{ value: 100 }, { value: '200' }];
+          entity.metadata.multidate = [{ value: 100 }, { value: '200' }, { value: -5 }];
           await testInvalid();
           entity.metadata.multidate = [{ value: '100' }];
           await testInvalid();
@@ -263,7 +261,7 @@ describe('entity schema', () => {
         it('should fail if value is not an object', async () => {
           entity.metadata.daterange = [{ value: 'dates' }];
           await testInvalid();
-          entity.metadata.daterange = [{ value: 100 }, { value: 200 }];
+          entity.metadata.daterange = [{ value: 100 }, { value: 200 }, { value: -5 }];
           await testInvalid();
         });
 
@@ -271,6 +269,8 @@ describe('entity schema', () => {
           entity.metadata.daterange = [{ value: { from: null, to: 100 } }];
           await testValid();
           entity.metadata.daterange = [{ value: { from: 100, to: null } }];
+          await testValid();
+          entity.metadata.daterange = [{ value: { from: null, to: -100 } }];
           await testValid();
           entity.metadata.daterange = [{ value: { from: null, to: null } }];
           await testValid();
@@ -297,6 +297,8 @@ describe('entity schema', () => {
           await testInvalid();
           entity.metadata.multidaterange = [{ value: { from: 200, to: 100 } }];
           await testInvalid();
+          entity.metadata.multidaterange = [{ value: { from: -200, to: -100 } }];
+          await testValid();
         });
       });
 

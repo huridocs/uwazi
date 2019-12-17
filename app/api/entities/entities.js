@@ -121,7 +121,11 @@ async function updateEntity(entity, _template) {
   return Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
-        if (entity.title && currentDoc.title !== entity.title) {
+        if (
+          (entity.title && currentDoc.title !== entity.title) ||
+          (entity.icon && !currentDoc.icon) ||
+          (entity.icon && currentDoc.icon && currentDoc.icon._id !== entity.icon._id)
+        ) {
           await this.renameRelatedEntityInMetadata({ ...currentDoc, ...entity });
         }
         return model.save({
@@ -598,10 +602,10 @@ export default {
   },
 
   /** Propagate the change of a thesaurus or related entity label to all entity metadata. */
-  async renameInMetadata(valueId, newLabel, propertyContent, propTypes, restrictLanguage = null) {
+  async renameInMetadata(valueId, changes, propertyContent, { types, restrictLanguage = null }) {
     const properties = (await templates.get({ 'properties.content': propertyContent }))
       .reduce((m, t) => m.concat(t.properties), [])
-      .filter(p => propTypes.includes(p.type))
+      .filter(p => types.includes(p.type))
       .filter(
         p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
       );
@@ -614,7 +618,15 @@ export default {
       properties.map(property =>
         model.db.update(
           { language: restrictLanguage, [`metadata.${property.name}.value`]: valueId },
-          { $set: { [`metadata.${property.name}.$[valueObject].label`]: newLabel } },
+          {
+            $set: Object.keys(changes).reduce(
+              (set, prop) => ({
+                ...set,
+                [`metadata.${property.name}.$[valueObject].${prop}`]: changes[prop],
+              }),
+              {}
+            ),
+          },
           { arrayFilters: [{ 'valueObject.value': valueId }], multi: true }
         )
       )
@@ -634,23 +646,22 @@ export default {
 
   /** Propagate the change of a thesaurus label to all entity metadata. */
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    await this.renameInMetadata(
-      valueId,
-      newLabel,
-      thesaurusId,
-      [propertyTypes.select, propertyTypes.multiselect],
-      language
-    );
+    await this.renameInMetadata(valueId, { label: newLabel }, thesaurusId, {
+      types: [propertyTypes.select, propertyTypes.multiselect],
+      restrictLanguage: language,
+    });
   },
 
   /** Propagate the title change of a related entity to all entity metadata. */
   async renameRelatedEntityInMetadata(relatedEntity) {
     await this.renameInMetadata(
       relatedEntity.sharedId,
-      relatedEntity.title,
+      { label: relatedEntity.title, icon: relatedEntity.icon },
       relatedEntity.template,
-      [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
-      relatedEntity.language
+      {
+        types: [propertyTypes.select, propertyTypes.multiselect, propertyTypes.relationship],
+        restrictLanguage: relatedEntity.language,
+      }
     );
   },
 

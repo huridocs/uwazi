@@ -7,7 +7,6 @@ import templates from '../templates/templates';
 import thesauris from '../thesauris/thesauris';
 import needsAuthorization from '../auth/authMiddleware';
 import { validation } from '../utils';
-// import { saveSchema, metadataSchema, iconSchema } from './endpointSchema';
 
 Joi.objectId = objectId(Joi);
 
