@@ -1,4 +1,7 @@
-/** @format */
+/**
+ * @format
+ * @jest-environment jsdom
+ */
 
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config.js';

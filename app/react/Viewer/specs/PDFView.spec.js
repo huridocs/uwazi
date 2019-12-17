@@ -1,5 +1,9 @@
 /** @format */
 
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import { fromJS } from 'immutable';
 import entitiesAPI from 'app/Entities/EntitiesAPI';

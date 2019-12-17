@@ -1,15 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as matchers from 'jest-immutable-matchers';
-import { loadIcons } from 'UI/Icon/library';
-
-loadIcons();
-
 const { configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 
-jest.addMatchers(matchers);
-
-//Setup enzyme's react adapter
 configure({ adapter: new Adapter() });
 
 const error = console.error.bind(console);
@@ -20,11 +12,7 @@ console.error = function (message) {
   error(message);
 };
 
-//Mock mapbox arabic support plugin setup
-window.URL.createObjectURL = () => {};
-const mapbox = require('mapbox-gl');//eslint-disable-line
-mapbox.setRTLTextPlugin = () => {};
-//
+process.env.__testingEnvironment = true;
 
 jasmine.createSpyObj = (name, methodNames) => {
   let names = methodNames;

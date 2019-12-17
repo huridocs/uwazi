@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import socket from '../../socket';
 import '../sockets';
 import { store } from '../../store';
