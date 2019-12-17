@@ -1,4 +1,9 @@
-/* eslint-disable max-lines */
+/**
+ * /* eslint-disable max-lines
+ *
+ * @format
+ */
+
 /* eslint-disable max-statements */
 /** @format */
 
@@ -70,7 +75,7 @@ describe('entity schema', () => {
             range: { start: 100, end: 200 },
             label: 'Label',
             indentation: 0,
-          }
+          },
         ],
         user: 'user',
         metadata: {
@@ -109,6 +114,11 @@ describe('entity schema', () => {
       entity._id = db.id();
       entity.user = db.id();
       entity.template = templateId;
+      await testValid();
+    });
+
+    it('should allow removing the icon', async () => {
+      entity.icon = { _id: null, type: 'Empty' };
       await testValid();
     });
 

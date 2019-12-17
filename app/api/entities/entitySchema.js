@@ -140,7 +140,7 @@ const schema = {
     icon: {
       type: 'object',
       properties: {
-        _id: { type: 'string' },
+        _id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
         label: { type: 'string' },
         type: { type: 'string' },
       },
