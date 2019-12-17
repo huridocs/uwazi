@@ -319,17 +319,30 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
 };
 
 const escapeElasticSearchQueryString = query => {
-  const regex = /[^\\]"|^"/g;
+  const regex = /([^\\])"|^"/g;
   const indices = [];
+  let escaped = query;
 
   let result = regex.exec(query);
-
   while (result) {
     indices.push(result.index);
     result = regex.exec(query);
   }
 
-  return indices.length % 2 === 1 ? query.replace(/"/g, '\\"') : query;
+  if (indices.length % 2 === 1) {
+    result = /([^\\])"|^"/g.exec(escaped);
+    while (result) {
+      const firstPart = escaped.substr(0, result.index);
+      const charCount = result[1] ? 2 : 1;
+      const secondPart = escaped.substr(result.index + charCount, query.length);
+      const replacement = (charCount === 2 ? result[1] : '') + '\\"';
+
+      escaped = firstPart + replacement + secondPart;
+      result = /([^\\])"|^"/g.exec(escaped);
+    }
+  }
+
+  return escaped;
 };
 
 const instanceSearch = elasticIndex => ({

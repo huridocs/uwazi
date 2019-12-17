@@ -120,21 +120,22 @@ describe('search', () => {
       });
 
       describe('when quotes are present', () => {
-        it('should not fail if they are paired', done => {
-          search
-            .searchSnippets('"text"', ids.batmanFinishes, 'es')
-            .then(() => {
-              done();
-            })
-            .catch(catchErrors(done));
+        it('should not fail if they are paired', async () => {
+          await expect(
+            search.searchSnippets('"text"', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
         });
-        it('should not fail if they are not paired', done => {
-          search
-            .searchSnippets('"text', ids.batmanFinishes, 'es')
-            .then(() => {
-              done();
-            })
-            .catch(catchErrors(done));
+
+        it('should not fail if they are not paired', async () => {
+          await expect(
+            search.searchSnippets('"text', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+
+        it('should not fail if there are escaped quotes', async () => {
+          await expect(
+            search.searchSnippets('"this text \\"includes\\" quotes"', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
         });
       });
 
