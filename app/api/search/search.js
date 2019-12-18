@@ -317,6 +317,43 @@ const processGeolocationResults = (_results, templatesInheritedProperties, inher
   results.totalRows = processedRows.length;
   return results;
 };
+
+const escapeCharByRegex = (query, regex, char) => {
+  let escaped = query;
+
+  regex.lastIndex = 0;
+  let result = regex.exec(escaped);
+  while (result) {
+    const firstPart = escaped.substr(0, result.index);
+    const charCount = result[1] ? 2 : 1;
+    const secondPart = escaped.substr(result.index + charCount, query.length);
+    const replacement = `${charCount === 2 ? result[1] : ''}\\${char}`;
+
+    escaped = firstPart + replacement + secondPart;
+    regex.lastIndex = 0;
+    result = regex.exec(escaped);
+  }
+
+  return escaped;
+};
+
+const escapeElasticSearchQueryString = query => {
+  const regex = /([^\\])"|^"/g;
+  const indices = [];
+
+  let result = regex.exec(query);
+  while (result) {
+    indices.push(result.index);
+    result = regex.exec(query);
+  }
+
+  if (indices.length % 2 === 1) {
+    return escapeCharByRegex(query, regex, '"');
+  }
+
+  return query;
+};
+
 const instanceSearch = elasticIndex => ({
   search(query, language, user) {
     let searchEntitiesbyTitle = Promise.resolve([]);
@@ -357,8 +394,12 @@ const instanceSearch = elasticIndex => ({
             .textFields(templates)
             .map(prop => `metadata.${prop.name}`)
             .concat(['title', 'fullText']);
+
+        const elasticSearchTerm =
+          query.searchTerm && escapeElasticSearchQueryString(query.searchTerm);
+
         const documentsQuery = documentQueryBuilder()
-          .fullTextSearch(query.searchTerm, textFieldsToSearch, 2)
+          .fullTextSearch(elasticSearchTerm, textFieldsToSearch, 2)
           .filterByTemplate(query.types)
           .filterById(query.ids)
           .language(language);
@@ -455,12 +496,14 @@ const instanceSearch = elasticIndex => ({
   async searchSnippets(searchTerm, sharedId, language) {
     const templates = await templatesModel.get();
 
+    const elasticSearchTerm = searchTerm && escapeElasticSearchQueryString(searchTerm);
+
     const searchFields = propertiesHelper
       .textFields(templates)
       .map(prop => `metadata.${prop.name}`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
-      .fullTextSearch(searchTerm, searchFields, 9999)
+      .fullTextSearch(elasticSearchTerm, searchFields, 9999)
       .includeUnpublished()
       .filterById(sharedId)
       .language(language)
