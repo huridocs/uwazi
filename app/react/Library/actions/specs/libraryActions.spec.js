@@ -1,3 +1,5 @@
+/** @format */
+
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config.js';
 import Immutable from 'immutable';
@@ -20,7 +22,6 @@ import SearchApi from 'app/Search/SearchAPI';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-
 describe('libraryActions', () => {
   const documentCollection = [{ name: 'Secret list of things' }];
   const aggregations = [{ prop: { buckets: [] } }];
@@ -40,12 +41,14 @@ describe('libraryActions', () => {
     let getState;
     const filters = {
       documentTypes,
-      properties: ['library properties']
+      properties: ['library properties'],
     };
 
     beforeEach(() => {
       dispatch = jasmine.createSpy('dispatch');
-      getState = jasmine.createSpy('getState').and.returnValue({ library: { filters: Immutable.fromJS(filters), search: {} } });
+      getState = jasmine
+        .createSpy('getState')
+        .and.returnValue({ library: { filters: Immutable.fromJS(filters), search: {} } });
     });
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
@@ -53,7 +56,7 @@ describe('libraryActions', () => {
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_TEMPLATES,
         templates,
-        thesauris
+        thesauris,
       });
     });
   });
@@ -97,6 +100,12 @@ describe('libraryActions', () => {
     it('should return a query string with ?q= at the beginning by default', () => {
       expect(actions.encodeSearch({ a: 1, b: 'z' })).toBe('?q=(a:1,b:z)');
     });
+
+    it('should encode special characters to avoid errors with rison', () => {
+      expect(actions.encodeSearch({ searchTerm: 'number 19# (/) "', b: 'z' })).toBe(
+        "?q=(b:z,searchTerm:'number 19%23 (%2F) %22')"
+      );
+    });
     it('should allow returning a rison query value, not appending the ?q= when other options may be found in the URL', () => {
       expect(actions.encodeSearch({ a: 1, b: 'z' }, false)).toBe('(a:1,b:z)');
     });
@@ -114,17 +123,21 @@ describe('libraryActions', () => {
     beforeEach(() => {
       backend.restore();
       backend
-      .get(`${APIURL}search/match_title?searchTerm=batman`, { body: JSON.stringify(documentCollection) })
-      .get(`${APIURL}search?searchTerm=batman`, { body: JSON.stringify(documentCollection) })
-      .get(`${APIURL
-      }search?searchTerm=batman` +
-        '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D' +
-        '&aggregations=%5B%5D' +
-        '&types=%5B%22decision%22%5D',
-        { body: JSON.stringify({ rows: documentCollection, aggregations }) }
-      )
-      .get(`${APIURL}search?searchTerm=batman&filters=%7B%7D&aggregations=%5B%5D&types=%5B%22decision%22%5D`,
-            { body: JSON.stringify({ rows: documentCollection, aggregations }) });
+        .get(`${APIURL}search/match_title?searchTerm=batman`, {
+          body: JSON.stringify(documentCollection),
+        })
+        .get(`${APIURL}search?searchTerm=batman`, { body: JSON.stringify(documentCollection) })
+        .get(
+          `${APIURL}search?searchTerm=batman` +
+            '&filters=%7B%22author%22%3A%7B%22value%22%3A%22batman%22%2C%22type%22%3A%22text%22%7D%7D' +
+            '&aggregations=%5B%5D' +
+            '&types=%5B%22decision%22%5D',
+          { body: JSON.stringify({ rows: documentCollection, aggregations }) }
+        )
+        .get(
+          `${APIURL}search?searchTerm=batman&filters=%7B%7D&aggregations=%5B%5D&types=%5B%22decision%22%5D`,
+          { body: JSON.stringify({ rows: documentCollection, aggregations }) }
+        );
       dispatch = jasmine.createSpy('dispatch');
     });
 
@@ -143,20 +156,25 @@ describe('libraryActions', () => {
             { name: 'date', type: 'date' },
             { name: 'select', type: 'select' },
             { name: 'multiselect', type: 'multiselect' },
-            { name: 'nested', type: 'nested', nestedProperties: [{ key: 'prop1', label: 'prop one' }] },
+            {
+              name: 'nested',
+              type: 'nested',
+              nestedProperties: [{ key: 'prop1', label: 'prop one' }],
+            },
             {
               name: 'relationshipfilter',
               type: 'relationshipfilter',
-              filters: [
-                { name: 'status', type: 'select' },
-                { name: 'empty', type: 'date' }
-              ]
-            }
+              filters: [{ name: 'status', type: 'select' }, { name: 'empty', type: 'date' }],
+            },
           ],
-          documentTypes: ['decision']
+          documentTypes: ['decision'],
         };
         store = { library: { filters: Immutable.fromJS(state), search: { searchTerm: 'batman' } } };
-        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({ pathname: '/library', query: { view: 'chart' }, search: '?q=()' });
+        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
+          pathname: '/library',
+          query: { view: 'chart' },
+          search: '?q=()',
+        });
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
 
@@ -169,28 +187,30 @@ describe('libraryActions', () => {
             select: 'selectValue',
             multiselect: 'multiValue',
             nested: 'nestedValue',
-            relationshipfilter: { status: { values: ['open'] }, empty: '' }
-          }
+            relationshipfilter: { status: { values: ['open'] }, empty: '' },
+          },
         };
 
         const expectedQuery = {
           filters: {
-              author: 'batman',
-              date: 'dateValue',
-              multiselect: 'multiValue',
-              nested: 'nestedValue',
-              relationshipfilter: { status: { values: ['open'] } },
-              select: 'selectValue'
+            author: 'batman',
+            date: 'dateValue',
+            multiselect: 'multiValue',
+            nested: 'nestedValue',
+            relationshipfilter: { status: { values: ['open'] } },
+            select: 'selectValue',
           },
           limit: 'limit',
           searchTerm: 'batman',
           sort: '_score',
-          types: ['decision']
+          types: ['decision'],
         };
 
         spyOn(browserHistory, 'push');
         actions.searchDocuments({ search }, storeKey, 'limit')(dispatch, getState);
-        let queryObject = rison.decode(browserHistory.push.calls.mostRecent().args[0].split('q=')[1]);
+        let queryObject = rison.decode(
+          browserHistory.push.calls.mostRecent().args[0].split('q=')[1]
+        );
         expect(queryObject).toEqual(expectedQuery);
 
         search.filters.relationshipfilter.status.values = [];
@@ -208,8 +228,8 @@ describe('libraryActions', () => {
             select: 'selectValue',
             multiselect: { values: [] },
             nested: 'nestedValue',
-            object: {}
-          }
+            object: {},
+          },
         };
 
         const { filters } = store.library;
@@ -218,147 +238,178 @@ describe('libraryActions', () => {
         spyOn(browserHistory, 'push');
         actions.searchDocuments({ search, filters }, storeKey, limit)(dispatch, getState);
 
-        expect(browserHistory.push).toHaveBeenCalledWith(`/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))`); //eslint-disable-line
+        expect(browserHistory.push).toHaveBeenCalledWith(
+          '/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),limit:limit,searchTerm:batman,sort:_score,types:!(decision))' //eslint-disable-line
+        );
       });
 
       it('should set the storeKey selectedSorting if user has selected a custom sorting', () => {
         const expectedDispatch = {
           type: 'library.selectedSorting/SET',
-          value: { searchTerm: 'batman', filters: { author: 'batman' }, userSelectedSorting: true }
+          value: { searchTerm: 'batman', filters: { author: 'batman' }, userSelectedSorting: true },
         };
         spyOn(browserHistory, 'push');
         actions.searchDocuments(
-          { search: { searchTerm: 'batman', filters: { author: 'batman' }, userSelectedSorting: true } }, storeKey
+          {
+            search: {
+              searchTerm: 'batman',
+              filters: { author: 'batman' },
+              userSelectedSorting: true,
+            },
+          },
+          storeKey
         )(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith(expectedDispatch);
       });
 
       it('should set sort by relevance when the search term has changed and has value', () => {
-        browserHistory
-        .getCurrentLocation
-        .and.returnValue({ pathname: '/library', query: { view: 'chart' }, search: '?q=(searchTerm:%27batman%20begings%27)' });
+        browserHistory.getCurrentLocation.and.returnValue({
+          pathname: '/library',
+          query: { view: 'chart' },
+          search: '?q=(searchTerm:%27batman%20begings%27)',
+        });
         spyOn(browserHistory, 'push');
         actions.searchDocuments(
-          { search: { searchTerm: 'batman' }, filters: { properties: [] } }, storeKey
+          { search: { searchTerm: 'batman' }, filters: { properties: [] } },
+          storeKey
         )(dispatch, getState);
-        expect(browserHistory.push).toHaveBeenCalledWith('/library/?view=chart&q=(limit:30,searchTerm:batman,sort:_score)');
+        expect(browserHistory.push).toHaveBeenCalledWith(
+          '/library/?view=chart&q=(limit:30,searchTerm:batman,sort:_score)'
+        );
       });
     });
 
     describe('saveDocument', () => {
-      it('should save the document and dispatch a notification on success', (done) => {
+      it('should save the document and dispatch a notification on success', done => {
         mockID();
         spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
         spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Document updated', type: 'success', id: 'unique_id' } },
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Document updated', type: 'success', id: 'unique_id' },
+          },
           { type: 'rrf/reset', model: 'library.sidepanel.metadata' },
           { type: types.UPDATE_DOCUMENT, doc: 'response' },
           { type: 'library.markers/UPDATE_IN', key: ['rows'], value: 'response' },
-          { type: types.SELECT_SINGLE_DOCUMENT, doc: 'response' }
+          { type: types.SELECT_SINGLE_DOCUMENT, doc: 'response' },
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
-        .then(() => {
-          expect(documentsApi.save).toHaveBeenCalledWith(new RequestParams(doc));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
+          .then(() => {
+            expect(documentsApi.save).toHaveBeenCalledWith(new RequestParams(doc));
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
     describe('multipleUpdate', () => {
-      it('should update selected entities with the given metadata', (done) => {
+      it('should update selected entities with the given metadata', done => {
         mockID();
         spyOn(api, 'multipleUpdate').and.returnValue(Promise.resolve('response'));
         const entities = Immutable.fromJS([{ sharedId: '1' }, { sharedId: '2' }]);
         const metadata = { text: 'something new' };
 
         const expectedActions = [
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Update success', type: 'success', id: 'unique_id' } },
-          { type: types.UPDATE_DOCUMENTS, docs: [{ sharedId: '1', metadata }, { sharedId: '2', metadata }] }
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Update success', type: 'success', id: 'unique_id' },
+          },
+          {
+            type: types.UPDATE_DOCUMENTS,
+            docs: [{ sharedId: '1', metadata }, { sharedId: '2', metadata }],
+          },
         ];
         const store = mockStore({});
-        store.dispatch(actions.multipleUpdate(entities, { metadata }))
-        .then(() => {
-          expect(api.multipleUpdate).toHaveBeenCalledWith(
-            new RequestParams({ ids: ['1', '2'], values: { metadata } })
-          );
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.multipleUpdate(entities, { metadata }))
+          .then(() => {
+            expect(api.multipleUpdate).toHaveBeenCalledWith(
+              new RequestParams({ ids: ['1', '2'], values: { metadata } })
+            );
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
     describe('deleteDocument', () => {
-      it('should delete the document and dispatch a notification on success', (done) => {
+      it('should delete the document and dispatch a notification on success', done => {
         mockID();
         spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
-          { type: notificationsTypes.NOTIFY, notification: { message: 'Document deleted', type: 'success', id: 'unique_id' } },
+          {
+            type: notificationsTypes.NOTIFY,
+            notification: { message: 'Document deleted', type: 'success', id: 'unique_id' },
+          },
           { type: types.UNSELECT_ALL_DOCUMENTS },
-          { type: types.REMOVE_DOCUMENT, doc }
+          { type: types.REMOVE_DOCUMENT, doc },
         ];
         const store = mockStore({});
 
-        store.dispatch(actions.deleteDocument(doc))
-        .then(() => {
-          expect(documentsApi.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: doc.sharedId }));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.deleteDocument(doc))
+          .then(() => {
+            expect(documentsApi.delete).toHaveBeenCalledWith(
+              new RequestParams({ sharedId: doc.sharedId })
+            );
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
     describe('searchSnippets', () => {
-      it('should search snippets for the searchTerm', (done) => {
+      it('should search snippets for the searchTerm', done => {
         spyOn(SearchApi, 'searchSnippets').and.returnValue(Promise.resolve('response'));
 
-        const expectedActions = [
-          { type: 'storeKey.sidepanel.snippets/SET', value: 'response' }
-        ];
+        const expectedActions = [{ type: 'storeKey.sidepanel.snippets/SET', value: 'response' }];
 
         const store = mockStore({ locale: 'es' });
 
-        store.dispatch(actions.searchSnippets('query', 'sharedId', 'storeKey'))
-        .then((snippets) => {
-          expect(snippets).toBe('response');
-          expect(SearchApi.searchSnippets).toHaveBeenCalledWith(
-            new RequestParams({ searchTerm: 'query', id: 'sharedId' })
-          );
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.searchSnippets('query', 'sharedId', 'storeKey'))
+          .then(snippets => {
+            expect(snippets).toBe('response');
+            expect(SearchApi.searchSnippets).toHaveBeenCalledWith(
+              new RequestParams({ searchTerm: 'query', id: 'sharedId' })
+            );
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
     describe('getDocumentReferences', () => {
-      it('should set the library sidepanel references', (done) => {
+      it('should set the library sidepanel references', done => {
         mockID();
         spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('referencesResponse'));
 
         const expectedActions = [
-          { type: 'library.sidepanel.references/SET', value: 'referencesResponse' }
+          { type: 'library.sidepanel.references/SET', value: 'referencesResponse' },
         ];
 
         const store = mockStore({ locale: 'es' });
 
-        store.dispatch(actions.getDocumentReferences('id', 'library'))
-        .then(() => {
-          expect(referencesAPI.get).toHaveBeenCalledWith(new RequestParams({ sharedId: 'id' }));
-          expect(store.getActions()).toEqual(expectedActions);
-        })
-        .then(done)
-        .catch(done.fail);
+        store
+          .dispatch(actions.getDocumentReferences('id', 'library'))
+          .then(() => {
+            expect(referencesAPI.get).toHaveBeenCalledWith(new RequestParams({ sharedId: 'id' }));
+            expect(store.getActions()).toEqual(expectedActions);
+          })
+          .then(done)
+          .catch(done.fail);
       });
     });
 
@@ -366,11 +417,46 @@ describe('libraryActions', () => {
       describe('when the doc has not semantic search but the active sidepanel tab is semantic search', () => {
         it('should reset the active sidepanel tab', () => {
           const doc = { sharedId: 'doc' };
+
           const store = mockStore({ library: { sidepanel: { tab: 'semantic-search-results' } } });
           store.dispatch(actions.selectDocument(doc));
           expect(store.getActions()).toMatchSnapshot();
         });
       });
+    });
+  });
+
+  describe('saveEntity', () => {
+    it('should save the document and dispatch a notification on success', done => {
+      mockID();
+      spyOn(api, 'save').and.returnValue(Promise.resolve('response'));
+      spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('response'));
+      const doc = { name: 'doc' };
+
+      const expectedActions = [
+        { model: 'library.sidepanel.metadata', type: 'rrf/reset' },
+        { type: 'UNSELECT_ALL_DOCUMENTS' },
+        {
+          notification: {
+            id: 'unique_id',
+            message: 'Entity created',
+            type: 'success',
+          },
+          type: 'NOTIFY',
+        },
+        { doc: 'response', type: 'ELEMENT_CREATED' },
+        { doc: 'response', type: 'SELECT_SINGLE_DOCUMENT' },
+      ];
+      const store = mockStore({});
+
+      store
+        .dispatch(actions.saveEntity(doc, 'library.sidepanel.metadata'))
+        .then(() => {
+          expect(api.save).toHaveBeenCalledWith(new RequestParams(doc));
+          expect(store.getActions()).toEqual(expectedActions);
+        })
+        .then(done)
+        .catch(done.fail);
     });
   });
 });
