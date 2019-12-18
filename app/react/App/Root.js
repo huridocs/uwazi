@@ -12,8 +12,8 @@ const determineHotAssets = query => ({
     'http://localhost:8080/vendor.js',
   ],
   CSS: [
-    `http://localhost:8080/CSS/vendor.css${query}`,
-    `http://localhost:8080/CSS/main.css${query}`,
+    `http://localhost:8080/vendor.css${query}`,
+    `http://localhost:8080/main.css${query}`,
     'http://localhost:8080/pdfjs-dist.css',
   ]
 });
