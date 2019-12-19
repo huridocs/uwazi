@@ -119,43 +119,36 @@ describe('search', () => {
         });
       });
 
-      describe('when quotes are present', () => {
-        it('should not fail if they are paired', async () => {
-          await expect(
-            search.searchSnippets('"text"', ids.batmanFinishes, 'es')
-          ).resolves.toBeDefined();
-        });
+      const enclosingChars = {
+        quotes: '"',
+        regex: '/',
+      };
 
-        it('should not fail if they are not paired', async () => {
-          await expect(
-            search.searchSnippets('"text', ids.batmanFinishes, 'es')
-          ).resolves.toBeDefined();
-        });
+      Object.keys(enclosingChars).forEach(key => {
+        const char = enclosingChars[key];
 
-        it('should not fail if there are escaped quotes', async () => {
-          await expect(
-            search.searchSnippets('"this text \\"includes\\" quotes"', ids.batmanFinishes, 'es')
-          ).resolves.toBeDefined();
-        });
-      });
+        describe(`when ${key} are present`, () => {
+          it('should not fail if they are paired', async () => {
+            await expect(
+              search.searchSnippets(`${char}text${char}`, ids.batmanFinishes, 'es')
+            ).resolves.toBeDefined();
+          });
 
-      describe('when regular expression is present', () => {
-        it('should not fail if they are paired', async () => {
-          await expect(
-            search.searchSnippets('/text/', ids.batmanFinishes, 'es')
-          ).resolves.toBeDefined();
-        });
+          it('should not fail if they are not paired', async () => {
+            await expect(
+              search.searchSnippets(`${char}text`, ids.batmanFinishes, 'es')
+            ).resolves.toBeDefined();
+          });
 
-        it('should not fail if they are not paired', async () => {
-          await expect(
-            search.searchSnippets('/text', ids.batmanFinishes, 'es')
-          ).resolves.toBeDefined();
-        });
-
-        it('should not fail if there are escaped slashes', async () => {
-          await expect(
-            search.searchSnippets('/from 1\\/1\\/1234 and on/', ids.batmanFinishes, 'es')
-          ).resolves.toBeDefined();
+          it('should not fail if there are escaped chars', async () => {
+            await expect(
+              search.searchSnippets(
+                `${char}this text \\${char}includes\\${char} escaped chars${char}`,
+                ids.batmanFinishes,
+                'es'
+              )
+            ).resolves.toBeDefined();
+          });
         });
       });
 
@@ -215,7 +208,7 @@ describe('search', () => {
             fullTextExactMatch,
             nonClosedQuote,
             regex,
-            nonClosedRegex
+            nonClosedRegex,
           ]) => {
             expect(
               english.rows.find(r =>
