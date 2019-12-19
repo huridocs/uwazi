@@ -869,7 +869,6 @@ describe('entities', () => {
         fail('should throw validation error');
       } catch (error) {
         expect(error).toBeInstanceOf(Ajv.ValidationError);
-        expect(error.errors.some(e => e.params.keyword === 'metadataMatchesTemplateProperties')).toBe(true);
       }
     });
   });

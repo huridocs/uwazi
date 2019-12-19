@@ -7,21 +7,19 @@
 /* eslint-disable max-statements */
 /** @format */
 
-import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
-import { catchErrors } from 'api/utils/jasmineHelpers';
+import { templateTypes } from 'shared/templateTypes';
 import { validateEntity } from '../entitySchema';
+import { customErrorMessages } from '../metadataValidators.js';
 import fixtures, { templateId, simpleTemplateId, nonExistentId } from './validatorFixtures';
 
 describe('entity schema', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures)
-      .then(done)
-      .catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.clearAllAndLoad(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('validateEntity', () => {
@@ -101,13 +99,11 @@ describe('entity schema', () => {
 
     const testValid = () => validateEntity(entity);
 
-    const testInvalid = async () => {
-      try {
-        await validateEntity(entity);
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toBeInstanceOf(Ajv.ValidationError);
-      }
+    const expectError = async (message, dataPath) => {
+      await expect(validateEntity(entity)).rejects.toHaveProperty(
+        'errors',
+        expect.arrayContaining([expect.objectContaining({ dataPath, message })])
+      );
     };
 
     it('should allow ObjectId for _id fields', async () => {
@@ -131,14 +127,14 @@ describe('entity schema', () => {
 
     it('should fail if template does not exist', async () => {
       entity.template = nonExistentId.toString();
-      await testInvalid();
+      await expectError('template does not exist', '.template');
     });
 
     it('should fail if title is not a string', async () => {
       entity.title = {};
-      await testInvalid();
+      await expectError(expect.any(String), '.title');
       entity.title = 10;
-      await testInvalid();
+      await expectError(expect.any(String), '.title');
     });
 
     it('should allow title to be missing', async () => {
@@ -171,49 +167,52 @@ describe('entity schema', () => {
       describe('if property is required', () => {
         it('should fail if field does not exist', async () => {
           delete entity.metadata.name;
-          await testInvalid();
+          await expectError(customErrorMessages.required, ".metadata['name']");
+
           entity.metadata.name = '';
-          await testInvalid();
+          await expectError(customErrorMessages.required, ".metadata['name']");
+
           entity.metadata.name = null;
-          await testInvalid();
+          await expectError(customErrorMessages.required, ".metadata['name']");
+
           entity.metadata.name = 'name';
           entity.metadata.required_multiselect = [];
-          await testInvalid();
+          await expectError(customErrorMessages.required, ".metadata['required_multiselect']");
         });
       });
 
       describe('text property', () => {
         it('should fail if value is not a string', async () => {
           entity.metadata.name = 10;
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.text], ".metadata['name']");
         });
       });
 
       describe('markdown property', () => {
         it('should fail if value is not a string', async () => {
           entity.metadata.markdown = {};
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.markdown], ".metadata['markdown']");
         });
       });
 
       describe('media property', () => {
         it('should fail if value is not a string', async () => {
           entity.metadata.media = 10;
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.media], ".metadata['media']");
         });
       });
 
       describe('image property', () => {
         it('should fail if value is not a string', async () => {
           entity.metadata.image = 10;
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.image], ".metadata['image']");
         });
       });
 
       describe('numeric property', () => {
         it('should fail if value is not a number', async () => {
           entity.metadata.numeric = 'test';
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.numeric], ".metadata['numeric']");
         });
         it('should allow value to be empty string', async () => {
           entity.metadata.numeric = '';
@@ -224,7 +223,7 @@ describe('entity schema', () => {
       describe('date property', () => {
         it('should fail if value is not a number', async () => {
           entity.metadata.date = 'test';
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.date], ".metadata['date']");
           entity.metadata.date = -100;
           await testValid();
         });
@@ -237,11 +236,11 @@ describe('entity schema', () => {
       describe('multidate property', () => {
         it('should fail if value is not an array of numbers', async () => {
           entity.metadata.multidate = [100, '200', -5];
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.multidate], ".metadata['multidate']");
           entity.metadata.multidate = ['100'];
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.multidate], ".metadata['multidate']");
           entity.metadata.multidate = 100;
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.multidate], ".metadata['multidate']");
         });
         it('should allow null items', async () => {
           entity.metadata.multidate = [100, null, 200, null];
@@ -252,9 +251,9 @@ describe('entity schema', () => {
       describe('daterange property', () => {
         it('should fail if value is not an object', async () => {
           entity.metadata.daterange = 'dates';
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.daterange], ".metadata['daterange']");
           entity.metadata.daterange = [100, 200, -5];
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.daterange], ".metadata['daterange']");
         });
 
         it('should allow either from or to to be null', async () => {
@@ -267,28 +266,38 @@ describe('entity schema', () => {
           entity.metadata.daterange = { from: null, to: null };
           await testValid();
         });
+
         it('should allow value to be an empty object', async () => {
           entity.metadata.daterange = {};
           await testValid();
         });
         it('should fail if from and to are not numbers', async () => {
           entity.metadata.daterange = { from: 'test', to: 'test' };
-          await testInvalid();
+          await expectError('should be number', ".metadata['daterange']");
         });
         it('should fail if from is greater than to', async () => {
           entity.metadata.daterange = { from: 100, to: 50 };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.daterange], ".metadata['daterange']");
         });
       });
 
       describe('multidaterange property', () => {
         it('should fail if value is not array of date ranges', async () => {
           entity.metadata.multidaterange = [{ from: 100, to: '200' }];
-          await testInvalid();
+          await expectError('should be number', ".metadata['multidaterange']");
+
           entity.metadata.multidaterange = [100, 200];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.multidaterange],
+            ".metadata['multidaterange']"
+          );
+
           entity.metadata.multidaterange = [{ from: 200, to: 100 }];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.multidaterange],
+            ".metadata['multidaterange']"
+          );
+
           entity.metadata.multidaterange = [{ from: -200, to: -100 }];
           await testValid();
         });
@@ -297,9 +306,9 @@ describe('entity schema', () => {
       describe('select property', () => {
         it('should fail if value is not a non-empty string', async () => {
           entity.metadata.select = 10;
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.select], ".metadata['select']");
           entity.metadata.select = ['test'];
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.select], ".metadata['select']");
         });
         it('should allow empty string if property is not required', async () => {
           entity.metadata.select = '';
@@ -310,9 +319,15 @@ describe('entity schema', () => {
       describe('multiselect property', () => {
         it('should fail if value is not an array of non-empty strings', async () => {
           entity.metadata.multiselect = ['val1', 10, {}];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.multiselect],
+            ".metadata['multiselect']"
+          );
           entity.metadata.multiselect = ['one', '', 'two'];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.multiselect],
+            ".metadata['multiselect']"
+          );
         });
         it('should allow value to be an empty array', async () => {
           entity.metadata.multiselect = [];
@@ -323,71 +338,118 @@ describe('entity schema', () => {
       describe('relationship property', () => {
         it('should fail if value is not an array of non-empty strings', async () => {
           entity.metadata.relationship = ['val1', 10, {}];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.relationship],
+            ".metadata['relationship']"
+          );
           entity.metadata.relationship = ['one', '', 'two'];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.relationship],
+            ".metadata['relationship']"
+          );
         });
       });
 
       describe('link property', () => {
         it('should fail if value is not an object', async () => {
           entity.metadata.link = ['label', 'url'];
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
         });
 
         it('should fail if label or url are not provided', async () => {
           entity.metadata.link = { label: 'label', url: '' };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
           entity.metadata.link = { label: 'label' };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
           entity.metadata.link = { label: '', url: 'url' };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
           entity.metadata.link = { url: 'url' };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
         });
 
         it('should fail if label or url is not a string', async () => {
           entity.metadata.link = { label: 'label', url: 10 };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
           entity.metadata.link = { label: true, url: 'url' };
-          await testInvalid();
+          await expectError(customErrorMessages[templateTypes.link], ".metadata['link']");
         });
       });
 
       describe('geolocation property', () => {
         it('should fail if value is not an array of lat/lon object', async () => {
           entity.metadata.geolocation = { lat: 80, lon: 80, label: '' };
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
           entity.metadata.geolocation = [80, 90];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
         });
         it('should fail if lat or lon are not numbers', async () => {
           entity.metadata.geolocation = [{ lat: '', lon: 80, label: '' }];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
           entity.metadata.geolocation = [{ lat: 80, lon: '', label: '' }];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
         });
         it('should fail if label is not a string', async () => {
           entity.metadata.geolocation[0].label = 10;
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
         });
         it('should fail if lat or lon is missing', async () => {
           entity.metadata.geolocation = [{ lon: 80, label: '' }];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
           entity.metadata.geolocation = [{ lat: 80, label: '' }];
-          await testInvalid();
+          await expectError(
+            customErrorMessages[templateTypes.geolocation],
+            ".metadata['geolocation']"
+          );
         });
         it('should fail if lat is not within range -90 - 90', async () => {
           entity.metadata.geolocation[0].lat = -91;
-          await testInvalid();
+          await expect(validateEntity(entity)).rejects.toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].lat" }),
+            ])
+          );
           entity.metadata.geolocation[0].lat = 91;
-          await testInvalid();
+          await expect(validateEntity(entity)).rejects.toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].lat" }),
+            ])
+          );
         });
         it('should fail if lon is not within range -180 - 180', async () => {
           entity.metadata.geolocation[0].lon = -181;
-          await testInvalid();
+          await expect(validateEntity(entity)).rejects.toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].lon" }),
+            ])
+          );
           entity.metadata.geolocation[0].lon = 181;
-          await testInvalid();
+          await expect(validateEntity(entity)).rejects.toHaveProperty(
+            'errors',
+            expect.arrayContaining([
+              expect.objectContaining({ dataPath: ".metadata['geolocation'][0].lon" }),
+            ])
+          );
         });
       });
     });
