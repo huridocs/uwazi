@@ -119,6 +119,26 @@ describe('search', () => {
         });
       });
 
+      describe('when quotes are present', () => {
+        it('should not fail if they are paired', async () => {
+          await expect(
+            search.searchSnippets('"text"', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+
+        it('should not fail if they are not paired', async () => {
+          await expect(
+            search.searchSnippets('"text', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+
+        it('should not fail if there are escaped quotes', async () => {
+          await expect(
+            search.searchSnippets('"this text \\"includes\\" quotes"', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+      });
+
       describe('when searchTerm is empty', () => {
         it('should return empty array', done => {
           search
@@ -136,10 +156,12 @@ describe('search', () => {
       Promise.all([
         search.search({ searchTerm: 'spanish', fields: ['title'] }, 'es'),
         search.search({ searchTerm: 'Batman', fields: ['title'] }, 'es'),
+        search.search({ searchTerm: '"document english', fields: ['title'] }, 'es'),
       ])
-        .then(([resultsNotFound, resultsFound]) => {
+        .then(([resultsNotFound, resultsFound, quote]) => {
           expect(resultsNotFound.rows.length).toBe(0);
           expect(resultsFound.rows.length).toBe(2);
+          expect(quote.rows.length).toBe(0);
           done();
         })
         .catch(catchErrors(done));
@@ -156,6 +178,7 @@ describe('search', () => {
         search.search({ searchTerm: 'Batman' }, 'en'),
         search.search({ searchTerm: 'document english' }, 'en'),
         search.search({ searchTerm: '"document english"' }, 'en'),
+        search.search({ searchTerm: '"document english' }, 'en'),
       ])
         .then(
           ([
@@ -168,6 +191,7 @@ describe('search', () => {
             batman,
             fullTextNormal,
             fullTextExactMatch,
+            nonClosedQuote,
           ]) => {
             expect(
               english.rows.find(r =>
@@ -188,6 +212,7 @@ describe('search', () => {
             expect(batman.rows.length).toBe(2);
             expect(fullTextNormal.rows.length).toBe(2);
             expect(fullTextExactMatch.rows.length).toBe(1);
+            expect(nonClosedQuote.rows.length).toBe(2);
             done();
           }
         )

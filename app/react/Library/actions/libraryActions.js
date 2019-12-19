@@ -1,3 +1,5 @@
+/** @format */
+
 import * as types from 'app/Library/actions/actionTypes';
 import api from 'app/Search/SearchAPI';
 import { notificationActions } from 'app/Notifications';
@@ -19,23 +21,21 @@ export function initializeFiltersForm(values = {}) {
   return Object.assign(values, { type: types.INITIALIZE_FILTERS_FORM });
 }
 
-export function selectDocument(doc) {
+export function selectDocument(_doc) {
   return (dispatch, getState) => {
-    let document = doc;
-    if (doc.toJS) {
-      document = doc.toJS();
-    }
-    if (getState().library.sidepanel.tab === 'semantic-search-results' && !document.semanticSearch) {
+    const doc = _doc.toJS ? _doc.toJS() : _doc;
+    const showingSemanticSearch = getState().library.sidepanel.tab === 'semantic-search-results';
+    if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-    dispatch({ type: types.SELECT_DOCUMENT, doc: document });
+
+    dispatch({ type: types.SELECT_DOCUMENT, doc });
   };
 }
 
 export function getAndSelectDocument(sharedId) {
-  return (dispatch) => {
-    entitiesAPI.get(new RequestParams({ sharedId }))
-    .then((entity) => {
+  return dispatch => {
+    entitiesAPI.get(new RequestParams({ sharedId })).then(entity => {
       dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc: entity[0] });
     });
   };
@@ -78,7 +78,7 @@ export function unsetDocuments() {
 }
 
 export function setTemplates(templates, thesauris) {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({ type: types.SET_LIBRARY_TEMPLATES, templates, thesauris });
   };
 }
@@ -125,7 +125,10 @@ export function filterIsEmpty(value) {
   }
 
   if (typeof value === 'object') {
-    const hasValue = Object.keys(value).reduce((result, key) => result || Boolean(value[key]), false);
+    const hasValue = Object.keys(value).reduce(
+      (result, key) => result || Boolean(value[key]),
+      false
+    );
     return !hasValue;
   }
 
@@ -136,14 +139,14 @@ export function processFilters(readOnlySearch, filters, limit) {
   const search = Object.assign({ filters: {} }, readOnlySearch);
   search.filters = {};
 
-  filters.properties.forEach((property) => {
+  filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
       search.filters[property.name] = readOnlySearch.filters[property.name];
     }
 
     if (property.filters) {
       const searchFilter = Object.assign({}, readOnlySearch.filters[property.name]);
-      property.filters.forEach((filter) => {
+      property.filters.forEach(filter => {
         if (filterIsEmpty(searchFilter[filter.name])) {
           delete searchFilter[filter.name];
         }
@@ -160,8 +163,9 @@ export function processFilters(readOnlySearch, filters, limit) {
   return search;
 }
 
-export function encodeSearch(search, appendQ = true) {
-  Object.keys(search).forEach((key) => {
+export function encodeSearch(_search, appendQ = true) {
+  const search = { ..._search };
+  Object.keys(search).forEach(key => {
     if (search[key] && search[key].length === 0) {
       delete search[key];
     }
@@ -175,12 +179,16 @@ export function encodeSearch(search, appendQ = true) {
     }
   });
 
+  if (search.searchTerm) {
+    search.searchTerm = encodeURIComponent(search.searchTerm).replace(/%20/g, ' ');
+  }
+
   return appendQ ? `?q=${rison.encode(search)}` : rison.encode(search);
 }
 
 function setSearchInUrl(searchParams) {
   const { pathname } = browserHistory.getCurrentLocation();
-  const path = (`${pathname}/`).replace(/\/\//g, '/');
+  const path = `${pathname}/`.replace(/\/\//g, '/');
   const query = browserHistory.getCurrentLocation().query || {};
 
   query.q = encodeSearch(searchParams, false);
@@ -196,8 +204,13 @@ export function searchDocuments({ search, filters }, storeKey, limit = 30) {
     const finalSearchParams = processFilters(search, currentFilters, limit);
     finalSearchParams.searchTerm = state.search.searchTerm;
 
-    const currentSearchParams = rison.decode(decodeURIComponent(browserHistory.getCurrentLocation().q || '()'));
-    if (finalSearchParams.searchTerm && finalSearchParams.searchTerm !== currentSearchParams.searchTerm) {
+    const currentSearchParams = rison.decode(
+      decodeURIComponent(browserHistory.getCurrentLocation().q || '()')
+    );
+    if (
+      finalSearchParams.searchTerm &&
+      finalSearchParams.searchTerm !== currentSearchParams.searchTerm
+    ) {
       finalSearchParams.sort = '_score';
     }
 
@@ -220,27 +233,27 @@ export function updateEntities(updatedDocs) {
 }
 
 export function searchSnippets(searchTerm, sharedId, storeKey) {
-  return dispatch => api.searchSnippets(new RequestParams({ searchTerm, id: sharedId }))
-  .then((snippets) => {
-    dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
-    return snippets;
-  });
+  return dispatch =>
+    api.searchSnippets(new RequestParams({ searchTerm, id: sharedId })).then(snippets => {
+      dispatch(actions.set(`${storeKey}.sidepanel.snippets`, snippets));
+      return snippets;
+    });
 }
 
 export function saveDocument(doc, formKey) {
-  return dispatch => documentsApi.save(new RequestParams(doc))
-  .then((updatedDoc) => {
-    dispatch(notificationActions.notify('Document updated', 'success'));
-    dispatch(formActions.reset(formKey));
-    dispatch(updateEntity(updatedDoc));
-    dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
-    dispatch(selectSingleDocument(updatedDoc));
-  });
+  return dispatch =>
+    documentsApi.save(new RequestParams(doc)).then(updatedDoc => {
+      dispatch(notificationActions.notify('Document updated', 'success'));
+      dispatch(formActions.reset(formKey));
+      dispatch(updateEntity(updatedDoc));
+      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
+      dispatch(selectSingleDocument(updatedDoc));
+    });
 }
 
 export function multipleUpdate(entities, values) {
-  return (dispatch) => {
-    const updatedEntities = entities.toJS().map((_entity) => {
+  return dispatch => {
+    const updatedEntities = entities.toJS().map(_entity => {
       const entity = { ..._entity };
       entity.metadata = Object.assign({}, entity.metadata, values.metadata);
       if (values.icon) {
@@ -250,8 +263,7 @@ export function multipleUpdate(entities, values) {
     });
 
     const ids = updatedEntities.map(entity => entity.sharedId);
-    return entitiesAPI.multipleUpdate(new RequestParams({ ids, values }))
-    .then(() => {
+    return entitiesAPI.multipleUpdate(new RequestParams({ ids, values })).then(() => {
       dispatch(notificationActions.notify('Update success', 'success'));
       dispatch(updateEntities(updatedEntities));
     });
@@ -259,21 +271,21 @@ export function multipleUpdate(entities, values) {
 }
 
 export function saveEntity(entity, formModel) {
-  return dispatch => entitiesAPI.save(new RequestParams(entity))
-  .then((updatedDoc) => {
-    dispatch(formActions.reset(formModel));
-    dispatch(unselectAllDocuments());
-    if (entity._id) {
-      dispatch(notificationActions.notify('Entity updated', 'success'));
-      dispatch(updateEntity(updatedDoc));
-      dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
-    } else {
-      dispatch(notificationActions.notify('Entity created', 'success'));
-      dispatch(elementCreated(updatedDoc));
-    }
+  return dispatch =>
+    entitiesAPI.save(new RequestParams(entity)).then(updatedDoc => {
+      dispatch(formActions.reset(formModel));
+      dispatch(unselectAllDocuments());
+      if (entity._id) {
+        dispatch(notificationActions.notify('Entity updated', 'success'));
+        dispatch(updateEntity(updatedDoc));
+        dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
+      } else {
+        dispatch(notificationActions.notify('Entity created', 'success'));
+        dispatch(elementCreated(updatedDoc));
+      }
 
-    dispatch(selectSingleDocument(updatedDoc));
-  });
+      dispatch(selectSingleDocument(updatedDoc));
+    });
 }
 
 export function removeDocument(doc) {
@@ -285,21 +297,21 @@ export function removeDocuments(docs) {
 }
 
 export function deleteDocument(doc) {
-  return dispatch => documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }))
-  .then(() => {
-    dispatch(notificationActions.notify('Document deleted', 'success'));
-    dispatch(unselectAllDocuments());
-    dispatch(removeDocument(doc));
-  });
+  return dispatch =>
+    documentsApi.delete(new RequestParams({ sharedId: doc.sharedId })).then(() => {
+      dispatch(notificationActions.notify('Document deleted', 'success'));
+      dispatch(unselectAllDocuments());
+      dispatch(removeDocument(doc));
+    });
 }
 
 export function deleteEntity(entity) {
-  return dispatch => entitiesAPI.delete(entity)
-  .then(() => {
-    dispatch(notificationActions.notify('Entity deleted', 'success'));
-    dispatch(unselectDocument(entity._id));
-    dispatch(removeDocument(entity));
-  });
+  return dispatch =>
+    entitiesAPI.delete(entity).then(() => {
+      dispatch(notificationActions.notify('Entity deleted', 'success'));
+      dispatch(unselectDocument(entity._id));
+      dispatch(removeDocument(entity));
+    });
 }
 
 export function loadMoreDocuments(storeKey, amount) {
@@ -313,8 +325,8 @@ export function getSuggestions() {
 }
 
 export function getDocumentReferences(sharedId, storeKey) {
-  return dispatch => referencesAPI.get(new RequestParams({ sharedId }))
-  .then((references) => {
-    dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
-  });
+  return dispatch =>
+    referencesAPI.get(new RequestParams({ sharedId })).then(references => {
+      dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
+    });
 }

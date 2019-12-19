@@ -13,7 +13,7 @@ Nightmare.action('library', {
         if (found) {
           return;
         }
-        if (card.innerText.match(nameToFind)) {
+        if (card.innerText.toLowerCase().match(nameToFind.toLowerCase())) {
           found = card;
         }
       });
