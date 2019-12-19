@@ -139,6 +139,26 @@ describe('search', () => {
         });
       });
 
+      describe('when regular expression is present', () => {
+        it('should not fail if they are paired', async () => {
+          await expect(
+            search.searchSnippets('/text/', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+
+        it('should not fail if they are not paired', async () => {
+          await expect(
+            search.searchSnippets('/text', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+
+        it('should not fail if there are escaped slashes', async () => {
+          await expect(
+            search.searchSnippets('/from 1\\/1\\/1234 and on/', ids.batmanFinishes, 'es')
+          ).resolves.toBeDefined();
+        });
+      });
+
       describe('when searchTerm is empty', () => {
         it('should return empty array', done => {
           search
@@ -179,6 +199,8 @@ describe('search', () => {
         search.search({ searchTerm: 'document english' }, 'en'),
         search.search({ searchTerm: '"document english"' }, 'en'),
         search.search({ searchTerm: '"document english' }, 'en'),
+        search.search({ searchTerm: '/document english/' }, 'en'),
+        search.search({ searchTerm: '/document english' }, 'en'),
       ])
         .then(
           ([
@@ -192,6 +214,8 @@ describe('search', () => {
             fullTextNormal,
             fullTextExactMatch,
             nonClosedQuote,
+            regex,
+            nonClosedRegex
           ]) => {
             expect(
               english.rows.find(r =>
@@ -213,6 +237,8 @@ describe('search', () => {
             expect(fullTextNormal.rows.length).toBe(2);
             expect(fullTextExactMatch.rows.length).toBe(1);
             expect(nonClosedQuote.rows.length).toBe(2);
+            expect(regex.rows.length).toBe(0);
+            expect(nonClosedRegex.rows.length).toBe(2);
             done();
           }
         )
