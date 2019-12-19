@@ -18,6 +18,8 @@ import fixtures, {
   templateToBeDeleted,
   templateWithContents,
   swapTemplate,
+  templateToBeInherited,
+  propertyToBeInherited,
 } from './fixtures.js';
 
 describe('templates', () => {
@@ -290,6 +292,21 @@ describe('templates', () => {
           })
           .catch(done.fail);
       });
+
+      it('should throw an error when deleting an inherited property', async () => {
+        const edited = {
+          _id: templateToBeInherited,
+          name: 'changed name',
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+          properties: [],
+        };
+        try {
+          await templates.save(edited);
+          fail('should throw an error');
+        } catch (e) {
+          expect(e.message).toEqual("Can't delte properties being inherited by others: inherit_me");
+        }
+      });
     });
   });
 
@@ -413,6 +430,17 @@ describe('templates', () => {
   });
 
   describe('canDeleteProperty()', () => {
-    it('shoul return false if the property is been inherited by others', () => {});
+    it('shoul return false if the property is been inherited by others', async () => {
+      const canDelete = await templates.canDeleteProperty(
+        templateToBeInherited,
+        propertyToBeInherited
+      );
+      expect(canDelete).toBe(false);
+    });
+
+    it('should be true for other properties', async () => {
+      const canDelete = await templates.canDeleteProperty(swapTemplate, 'notMatchingId');
+      expect(canDelete).toBe(true);
+    });
   });
 });

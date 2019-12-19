@@ -1,4 +1,9 @@
-/* eslint-disable */
+/**
+ * /* eslint-disable
+ *
+ * @format
+ */
+
 import db from 'api/utils/testing_db';
 import { templateTypes } from 'shared/templateTypes';
 
@@ -6,23 +11,29 @@ const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
 const templateWithContents = db.id();
 const swapTemplate = db.id();
+const relatedTo = db.id();
+const templateToBeInherited = db.id();
+const propertyToBeInherited = db.id();
 export default {
   templates: [
     {
       _id: templateToBeEditedId,
       name: 'template to be edited',
+      properties: [],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      default: true
+      default: true,
     },
     {
       _id: db.id(templateToBeDeleted),
       name: 'to be deleted',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }]
+      properties: [],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
       _id: db.id(),
       name: 'duplicated name',
-      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }]
+      properties: [],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
       _id: db.id(),
@@ -31,7 +42,7 @@ export default {
         { type: templateTypes.select, content: 'thesauri1', label: 'select' },
         { type: templateTypes.relationship, content: templateToBeDeleted, label: 'select2' },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }]
+      commonProperties: [{ name: 'title', label: 'Title' }],
     },
     {
       _id: db.id(),
@@ -40,7 +51,7 @@ export default {
         { type: templateTypes.select, content: 'thesauri1', label: 'select2' },
         { type: templateTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }]
+      commonProperties: [{ name: 'title', label: 'Title' }],
     },
     {
       _id: db.id(),
@@ -50,7 +61,7 @@ export default {
         { type: templateTypes.text, label: 'text2' },
         { type: templateTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }]
+      commonProperties: [{ name: 'title', label: 'Title' }],
     },
     {
       _id: templateWithContents,
@@ -58,8 +69,8 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
         { id: '1', type: templateTypes.select, content: 'thesauri1', label: 'select3' },
-        { id: '2', type: templateTypes.multiselect, content: 'thesauri2', label: 'select4' }
-      ]
+        { id: '2', type: templateTypes.multiselect, content: 'thesauri2', label: 'select4' },
+      ],
     },
     {
       _id: swapTemplate,
@@ -67,24 +78,48 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       properties: [
         { id: '1', type: templateTypes.text, name: 'text', label: 'Text' },
-        { id: '2', type: templateTypes.select, name: 'select', label: 'Select' }
-      ]
-    }
+        { id: '2', type: templateTypes.select, name: 'select', label: 'Select' },
+      ],
+    },
+    {
+      _id: templateToBeInherited,
+      name: 'template to be inherited',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      properties: [{ _id: propertyToBeInherited, name: 'inherit_me', type: 'text' }],
+      default: true,
+    },
+    {
+      name: 'template inheriting from another',
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+      properties: [
+        {
+          id: '1',
+          type: templateTypes.relationship,
+          name: 'inherit',
+          label: 'Inherit',
+          relationtype: relatedTo,
+          content: templateToBeInherited,
+          inherit: true,
+          inheritProperty: propertyToBeInherited,
+        },
+      ],
+    },
   ],
+  relationtypes: [{ _id: relatedTo, name: 'related to' }],
   settings: [
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [
-        { key: 'en', label: 'English', default: true },
-      ]
-    }
-  ]
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
+  ],
 };
 
 export {
   templateToBeEditedId,
   templateToBeDeleted,
   templateWithContents,
-  swapTemplate
+  swapTemplate,
+  templateToBeInherited,
+  propertyToBeInherited,
 };
